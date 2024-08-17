@@ -158,7 +158,7 @@ function Module:CreateDurabilityDataText()
 	end
 
 	DurabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
-	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
+	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 166, 3)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
 	DurabilityDataText:Disable()

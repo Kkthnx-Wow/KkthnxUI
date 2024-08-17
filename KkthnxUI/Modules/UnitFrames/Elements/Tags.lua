@@ -32,51 +32,8 @@ local UnitPowerType = UnitPowerType
 local UnitReaction = UnitReaction
 local UnitStagger = UnitStagger
 
--- local function ColorPercent(value)
--- 	local r, g, b
--- 	if value < 20 then
--- 		r, g, b = 1, 0.1, 0.1
--- 	elseif value < 35 then
--- 		r, g, b = 1, 0.5, 0
--- 	elseif value < 80 then
--- 		r, g, b = 1, 0.9, 0.3
--- 	else
--- 		r, g, b = 1, 1, 1
--- 	end
-
--- 	return K.RGBToHex(r, g, b) .. value
--- end
-
--- local function ValueAndPercent(cur, per)
--- 	if per < 100 then
--- 		return K.ShortValue(cur) .. " - " .. ColorPercent(per)
--- 	else
--- 		return K.ShortValue(cur)
--- 	end
--- end
-
--- local function GetUnitHealthPerc(unit)
--- 	local unitHealth, unitMaxHealth = UnitHealth(unit), UnitHealthMax(unit)
--- 	if unitMaxHealth == 0 then
--- 		return 0, unitHealth
--- 	else
--- 		return K.Round(unitHealth / unitMaxHealth * 100, 1), unitHealth
--- 	end
--- end
-
--- oUF.Tags.Methods["hp"] = function(unit)
--- 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
--- 		return oUF.Tags.Methods["DDG"](unit)
--- 	else
--- 		local per, cur = GetUnitHealthPerc(unit)
--- 		if unit == "player" or unit == "target" or unit == "focus" or unit == "party" then
--- 			return ValueAndPercent(cur, per)
--- 		else
--- 			return ColorPercent(per)
--- 		end
--- 	end
--- end
--- oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED PARTY_MEMBER_ENABLE PARTY_MEMBER_DISABLE"
+-- Add scantip back, due to issue on ColorMixin
+local scanTip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
 
 local function GetHealthColor(percentage)
 	local r, g, b
@@ -332,18 +289,26 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 			return "<" .. guildName .. ">"
 		end
 	elseif not isPlayer and NameOnlyTitle then
-		local data = not PatchInfoCheck and C_TooltipInfo.GetUnit(unit) -- FIXME: ColorMixin error
-		if not data then
-			return ""
+		scanTip:SetOwner(UIParent, "ANCHOR_NONE")
+		scanTip:SetUnit(unit)
+
+		local title = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
+		if title and not strfind(title, "^" .. LEVEL) then
+			return title
 		end
 
-		local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
-		if lineData then
-			local title = lineData.leftText
-			if title and not strfind(title, "^" .. LEVEL) then
-				return title
-			end
-		end
+		-- local data = not PatchInfoCheck and C_TooltipInfo.GetUnit(unit) -- FIXME: ColorMixin error
+		-- if not data then
+		-- 	return ""
+		-- end
+
+		-- local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
+		-- if lineData then
+		-- 	local title = lineData.leftText
+		-- 	if title and not strfind(title, "^" .. LEVEL) then
+		-- 		return title
+		-- 	end
+		-- end
 	end
 end
 oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"

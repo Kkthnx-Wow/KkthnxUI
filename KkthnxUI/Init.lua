@@ -93,10 +93,6 @@ K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemp
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
 
--- Compatibility Layer for Firestorm Dragonflight Release
--- Determine if the game is running on the Firestorm server with the specific patch version 10.1.7.
-K.IsFirestorm = K.TocVersion == 100107 -- Check for 10.1.7
-
 -- Color Info
 K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF669DFF"
@@ -340,22 +336,22 @@ for i = 1, GetNumAddOns() do
 	K.AddOnVersion[string_lower(Name)] = C_AddOns_GetAddOnMetadata(Name, "Version")
 end
 
-local function EasyMenu_Initialize( frame, level, menuList )
-        for index = 1, #menuList do
-            local value = menuList[index]
-            if (value.text) then
-                value.index = index
-                UIDropDownMenu_AddButton( value, level )
-            end
-        end
-    end
-    
-    function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay )
-        if ( displayMode == "MENU" ) then
-            menuFrame.displayMode = displayMode
-        end
-        UIDropDownMenu_Initialize(menuFrame, EasyMenu_Initialize, displayMode, nil, menuList)
-        ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil, autoHideDelay)
-    end
+local function EasyMenu_Initialize(frame, level, menuList)
+	for index = 1, #menuList do
+		local value = menuList[index]
+		if value.text then
+			value.index = index
+			UIDropDownMenu_AddButton(value, level)
+		end
+	end
+end
+
+function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay)
+	if displayMode == "MENU" then
+		menuFrame.displayMode = displayMode
+	end
+	UIDropDownMenu_Initialize(menuFrame, EasyMenu_Initialize, displayMode, nil, menuList)
+	ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil, autoHideDelay)
+end
 
 _G.KkthnxUI = Engine

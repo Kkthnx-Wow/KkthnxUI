@@ -10,6 +10,7 @@ local string_match = string.match
 local table_wipe = table.wipe
 local unpack = unpack
 
+local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_NewItems_IsNewItem = C_NewItems.IsNewItem
@@ -34,7 +35,6 @@ local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
 local SortReagentBankBags = C_Container.SortReagentBankBags
-local SortAccountBankBags = C_Container.SortAccountBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
 
 local deleteEnable
@@ -394,6 +394,39 @@ function Module:CreateAccountBankButton(f)
 	return accountBankButton
 end
 
+function Module:CreateAccountMoney()
+	local frame = CreateFrame("Button", nil, self)
+	frame:SetSize(50, 22)
+
+	local tag = self:SpawnPlugin("TagDisplay", "[accountmoney]", self)
+	tag:SetFontObject(K.UIFontOutline)
+	tag:SetPoint("RIGHT", frame, -2, 0)
+	frame.tag = tag
+
+	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	frame:SetScript("OnClick", function(_, btn)
+		if btn == "RightButton" then
+			StaticPopup_Hide("BANK_MONEY_DEPOSIT")
+			if StaticPopup_Visible("BANK_MONEY_WITHDRAW") then
+				StaticPopup_Hide("BANK_MONEY_WITHDRAW")
+			else
+				StaticPopup_Show("BANK_MONEY_WITHDRAW", nil, nil, { bankType = ACCOUNT_BANK_TYPE })
+			end
+		else
+			StaticPopup_Hide("BANK_MONEY_WITHDRAW")
+			if StaticPopup_Visible("BANK_MONEY_DEPOSIT") then
+				StaticPopup_Hide("BANK_MONEY_DEPOSIT")
+			else
+				StaticPopup_Show("BANK_MONEY_DEPOSIT", nil, nil, { bankType = ACCOUNT_BANK_TYPE })
+			end
+		end
+	end)
+	frame.title = K.LeftButton .. BANK_DEPOSIT_MONEY_BUTTON_LABEL .. "|n" .. K.RightButton .. BANK_WITHDRAW_MONEY_BUTTON_LABEL
+	K.AddTooltip(frame, "ANCHOR_TOP")
+
+	return frame
+end
+
 function Module:CreateBankButton(f)
 	local BankButton = CreateFrame("Button", nil, self)
 	BankButton:SetSize(18, 18)
@@ -448,7 +481,6 @@ function Module:CreateDepositButton()
 
 	DepositButton:RegisterForClicks("AnyUp")
 	DepositButton:SetScript("OnClick", function(_, btn)
-		print(btn)
 		if btn == "RightButton" then
 			KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit = not KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit
 			updateDepositButtonStatus(DepositButton)
@@ -466,10 +498,8 @@ end
 
 local function updateAccountBankDeposit(bu)
 	if GetCVarBool("bankAutoDepositReagents") then
-		print(GetCVarBool("bankAutoDepositReagents"))
 		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	else
-		print(GetCVarBool("bankAutoDepositReagents"))
 		K.SetBorderColor(bu.KKUI_Border)
 	end
 end
@@ -492,7 +522,7 @@ function Module:CreateAccountBankDeposit()
 			SetCVar("bankAutoDepositReagents", isOn and 0 or 1)
 			updateAccountBankDeposit(AccountBankDepositButton)
 		else
-			C_Bank.AutoDepositItemsIntoBank(Enum.BankType.Account)
+			C_Bank.AutoDepositItemsIntoBank(ACCOUNT_BANK_TYPE)
 		end
 	end)
 	AccountBankDepositButton.title = ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL
@@ -1616,6 +1646,7 @@ function Module:OnEnable()
 			buttons[4] = Module.CreateAccountBankDeposit(self)
 			buttons[5] = Module.CreateBankButton(self, f)
 			buttons[6] = Module.CreateReagentButton(self, f)
+			buttons[7] = Module.CreateAccountMoney(self)
 		end
 
 		for i = 1, #buttons do
