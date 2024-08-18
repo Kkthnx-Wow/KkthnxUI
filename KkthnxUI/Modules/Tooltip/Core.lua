@@ -164,7 +164,7 @@ function Module:OnTooltipSetUnit()
 		local name, realm = UnitName(unit)
 		local pvpName = UnitPVPName(unit)
 		local relationship = UnitRealmRelationship(unit)
-		if not C["Tooltip"].HideTitle and pvpName then
+		if not C["Tooltip"].HideTitle and pvpName and pvpName ~= "" then
 			name = pvpName
 		end
 
@@ -436,7 +436,7 @@ function Module:ReskinTooltip()
 	if data then
 		local link = data.guid and C_Item.GetItemLinkByGUID(data.guid) or data.hyperlink
 		if link then
-			local quality = select(3, GetItemInfo(link))
+			local quality = select(3, C_Item.GetItemInfo(link))
 			local color = K.QualityColors[quality or 1]
 			if color then
 				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
@@ -728,9 +728,4 @@ Module:RegisterTooltips("Blizzard_EncounterJournal", function()
 	EncounterJournalTooltip.Item1.IconBorder:SetAlpha(0)
 	EncounterJournalTooltip.Item2.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	EncounterJournalTooltip.Item2.IconBorder:SetAlpha(0)
-end)
-
-Module:RegisterTooltips("Blizzard_Calendar", function()
-	CalendarContextMenu:HookScript("OnShow", Module.ReskinTooltip)
-	CalendarInviteStatusContextMenu:HookScript("OnShow", Module.ReskinTooltip)
 end)
