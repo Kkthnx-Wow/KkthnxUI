@@ -70,6 +70,20 @@ local Tracker = {
 	[20707] = { 0.8, 0.4, 0.8 }, -- Soulstone
 }
 
+local UnitAura = UnitAura
+
+if not UnitAura then
+	UnitAura = function(unitToken, index, filter)
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
+
+		if not auraData then
+			return nil
+		end
+
+		return AuraUtil.UnpackAuraData(auraData)
+	end
+end
+
 -- Declare a local function to handle the OnUpdate event
 local function OnUpdate(self)
 	-- Get the current time
