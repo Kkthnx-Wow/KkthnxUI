@@ -118,7 +118,6 @@ local function CreateMicroButton(parent, data)
 	if type(method) == "string" then
 		local button = _G[method]
 		if not button then
-			print(method)
 			return
 		end
 		button:SetHitRectInsets(0, 0, 0, 0)
@@ -209,8 +208,19 @@ function Module:CreateMicroMenu()
 		hooksecurefunc(CharacterMicroButton, "SetNormal", SkinCharacterPortrait)
 	end
 
-	-- Hide HelpOpenWebTicketButton and BagsBar
+	-- Default elements
+	if MainMenuMicroButton.MainMenuBarPerformanceBar then
+		K.HideInterfaceOption(MainMenuMicroButton.MainMenuBarPerformanceBar)
+	end
 	K.HideInterfaceOption(HelpOpenWebTicketButton)
+	MainMenuMicroButton:SetScript("OnUpdate", nil)
+
 	BagsBar:Hide()
 	BagsBar:UnregisterAllEvents()
+	MicroButtonAndBagsBar:Hide()
+	MicroButtonAndBagsBar:UnregisterAllEvents()
+
+	if MicroMenu and MicroMenu.UpdateHelpTicketButtonAnchor then
+		MicroMenu.UpdateHelpTicketButtonAnchor = K.Noop
+	end
 end
