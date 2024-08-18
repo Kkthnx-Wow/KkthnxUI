@@ -149,7 +149,11 @@ end
 function Module:RaidTool_UpdateRes(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local charges, _, started, duration = C_Spell.GetSpellCharges(20484)
+		local chargeInfo = C_Spell.GetSpellCharges(20484)
+		local charges = chargeInfo and chargeInfo.currentCharges
+		local started = chargeInfo and chargeInfo.cooldownStartTime
+		local duration = chargeInfo and chargeInfo.cooldownDuration
+
 		if charges then
 			local timer = duration - (GetTime() - started)
 			if timer < 0 then
