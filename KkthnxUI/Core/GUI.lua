@@ -1243,7 +1243,7 @@ local ColorOnMouseUp = function(self, button)
 			HideUIPanel(CPF)
 			CPF.Button = self
 
-			CPF:SetColorRGB(CurrentR, CurrentG, CurrentB)
+			CPF.Content.ColorPicker:SetColorRGB(CurrentR, CurrentG, CurrentB)
 
 			CPF.Group = self.Group
 			CPF.Option = self.Option
