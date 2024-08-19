@@ -12,18 +12,15 @@ local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
 local GetInventoryItemCooldown = GetInventoryItemCooldown
 local GetInventoryItemLink = GetInventoryItemLink
-local GetItemCooldown = C_Item.GetItemCooldown
 local GetItemInfo = C_Item.GetItemInfo
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetSpellCharges = C_Spell.GetSpellCharges
-local GetSpellCooldown = C_Spell.GetSpellCooldown
 local GetTime = GetTime
 local GetTotemInfo = GetTotemInfo
 local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsPlayerSpell = IsPlayerSpell
-local PlaySound = PlaySound
 local SlashCmdList = SlashCmdList
 local UnitGUID = UnitGUID
 local UnitInParty = UnitInParty
@@ -463,7 +460,6 @@ function Module:AuraWatch_UpdateCD()
 					local name, _, icon = C_Spell.GetSpellName(value.SpellID)
 					local start = C_Spell.GetSpellCooldown(value.SpellID).startTime
 					local duration = C_Spell.GetSpellCooldown(value.SpellID).duration
-					-- local start, duration = GetSpellCooldown(value.SpellID)
 					local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(value.SpellID)
 					if group.Mode == "ICON" then
 						name = nil
@@ -475,7 +471,7 @@ function Module:AuraWatch_UpdateCD()
 						Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, true, 1, value.SpellID)
 					end
 				elseif value.ItemID then
-					local start, duration = GetItemCooldown(value.ItemID)
+					local start, duration = C_Item.GetItemCooldown(value.ItemID)
 					if start and duration > 3 then
 						local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(value.ItemID)
 						if group.Mode == "ICON" then

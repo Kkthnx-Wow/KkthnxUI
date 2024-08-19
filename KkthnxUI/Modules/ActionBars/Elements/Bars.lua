@@ -130,14 +130,12 @@ function Module:UpdateActionSize(name)
 	end
 end
 
+-- Update the button configuration for action bars
 local directions = { "UP", "DOWN", "LEFT", "RIGHT" }
 function Module:UpdateButtonConfig(i)
-	-- Initialize buttonConfig if it does not exist
 	if not self.buttonConfig then
 		self.buttonConfig = {
-			-- hideElements table will store which elements of the button should be hidden
 			hideElements = {},
-			-- text table will store the font and position settings for the button's text elements
 			text = {
 				hotkey = {
 					font = {},
@@ -154,32 +152,20 @@ function Module:UpdateButtonConfig(i)
 			},
 		}
 	end
-	-- Set the clickOnDown attribute to true
+
 	self.buttonConfig.clickOnDown = true
-	-- Set the showGrid attribute based on the value of C["ActionBar"]["Grid"]
 	self.buttonConfig.showGrid = C["ActionBar"]["Grid"]
-	-- Set the flyoutDirection attribute based on the value of C["ActionBar"]["Bar" .. i .. "Flyout"]
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 
-	-- Get the hotkey field of the buttonConfig's text table
 	local hotkey = self.buttonConfig.text.hotkey
-
-	-- Set the font field of the hotkey table to the value of K.UIFont
 	hotkey.font.font = K.UIFont
-	-- Set the size field of the hotkey table's font field to the value of C["ActionBar"]["Bar" .. i .. "Font"]
 	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	-- Set the flags field of the hotkey table's font field to the value of K.UIFontStyle
 	hotkey.font.flags = K.UIFontStyle
 
-	-- Set the anchor field of the hotkey table's position field to "TOPRIGHT"
 	hotkey.position.anchor = "TOPRIGHT"
-	-- Set the relAnchor field of the hotkey table's position field to false
 	hotkey.position.relAnchor = false
-	-- Set the offsetX field of the hotkey table's position field to 0
 	hotkey.position.offsetX = 0
-	-- Set the offsetY field of the hotkey table's position field to -2
 	hotkey.position.offsetY = -2
-	-- Set the justifyH field of the hotkey table to "RIGHT"
 	hotkey.justifyH = "RIGHT"
 
 	-- Initialize the count text configuration
@@ -221,52 +207,37 @@ function Module:UpdateButtonConfig(i)
 	hideElements.macro = not C["ActionBar"]["Macro"]
 	hideElements.equipped = not C["ActionBar"]["EquipColor"]
 
-	-- Get the value of the CVAR "lockActionBars"
+	-- Update button attributes and configuration based on CVAR values and button config
 	local lockBars = GetCVar("lockActionBars") == "1"
-	-- Iterate through the buttons
 	for _, button in next, self.buttons do
-		-- Set the key bound target for the button and the button config
 		self.buttonConfig.keyBoundTarget = button.bindName
 		button.keyBoundTarget = self.buttonConfig.keyBoundTarget
 
-		-- Set the button lock attribute based on the CVAR value
 		button:SetAttribute("buttonlock", lockBars)
-		-- Set the unlocked prevent drag attribute to the opposite of the button lock attribute
 		button:SetAttribute("unlockedpreventdrag", not lockBars)
-		-- Set the check mouseover cast attribute to true
 		button:SetAttribute("checkmouseovercast", true)
-		-- Set the check focus cast attribute to true
 		button:SetAttribute("checkfocuscast", true)
-		-- Set the check self cast attribute to true
 		button:SetAttribute("checkselfcast", true)
-		-- Set the unit 2 attribute to "player"
-		-- button:SetAttribute("*unit2", "player")
+
 		-- Update the config for the button
 		button:UpdateConfig(self.buttonConfig)
 	end
 end
 
+-- Update action bar visibility and configuration based on settings
 local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
-	-- Iterate through the action bars
 	for i = 1, 8 do
-		-- Get the frame of the action bar
 		local frame = _G["KKUI_ActionBar" .. i]
-		-- Check if the frame exists
 		if frame then
-			-- Check if the action bar is enabled in the configuration table
 			if C["ActionBar"]["Bar" .. i] then
-				-- Show the frame and enable the mover
 				frame:Show()
 				frame.mover.isDisable = false
-				-- Register the frame with the visibility driver
 				RegisterStateDriver(frame, "visibility", frame.visibility)
 			else
-				-- Hide the frame and disable the mover
 				frame:Hide()
 				frame.mover.isDisable = true
-				-- Unregister the frame from the visibility driver
 				UnregisterStateDriver(frame, "visibility")
 			end
 		end
@@ -274,13 +245,9 @@ function Module:UpdateBarVisibility()
 end
 
 function Module:UpdateBarConfig()
-	-- Iterate through the action bars
 	for i = 1, 8 do
-		-- Get the frame of the action bar
 		local frame = _G["KKUI_ActionBar" .. i]
-		-- Check if the frame exists
 		if frame then
-			-- Update the button configuration for the current frame and action bar number
 			Module.UpdateButtonConfig(frame, i)
 		end
 	end

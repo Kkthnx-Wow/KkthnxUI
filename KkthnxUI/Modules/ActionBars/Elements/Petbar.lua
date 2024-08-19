@@ -1,9 +1,7 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
 -- Pet action related functions and constants
-local AutoCastShine_AutoCastStart = AutoCastShine_AutoCastStart
-local AutoCastShine_AutoCastStop = AutoCastShine_AutoCastStop
 local GetPetActionInfo = GetPetActionInfo
 local GetPetActionSlotUsable = GetPetActionSlotUsable
 local IsPetAttackAction = IsPetAttackAction

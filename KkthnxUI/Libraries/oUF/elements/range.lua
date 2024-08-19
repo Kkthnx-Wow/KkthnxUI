@@ -108,17 +108,24 @@ local function Enable(self)
 	if element then
 		element.__owner = self
 		element.insideAlpha = element.insideAlpha or 1
-		element.outsideAlpha = element.outsideAlpha or 0.55
+		element.outsideAlpha = element.outsideAlpha or 0.35
 
-		-- self:RegisterEvent("UNIT_IN_RANGE_UPDATE", Path)
+		-- Ensure that KkthnxUI[2]["Unitframe"] exists before checking Range
+		if KkthnxUI and KkthnxUI[2] and KkthnxUI[2]["Unitframe"] then
+			if not KkthnxUI[2]["Unitframe"].Range then
+				-- Register the event if Range is not enabled
+				self:RegisterEvent("UNIT_IN_RANGE_UPDATE", Path)
+			else
+				-- Set up OnRangeFrame if Range is enabled
+				if not OnRangeFrame then
+					OnRangeFrame = CreateFrame("Frame")
+					OnRangeFrame:SetScript("OnUpdate", OnRangeUpdate)
+				end
 
-		if not OnRangeFrame then
-			OnRangeFrame = CreateFrame("Frame")
-			OnRangeFrame:SetScript("OnUpdate", OnRangeUpdate)
+				tinsert(_FRAMES, self)
+				OnRangeFrame:Show()
+			end
 		end
-
-		tinsert(_FRAMES, self)
-		OnRangeFrame:Show()
 
 		return true
 	end
@@ -129,17 +136,23 @@ local function Disable(self)
 	if element then
 		self:SetAlpha(element.insideAlpha)
 
-		-- self:UnregisterEvent("UNIT_IN_RANGE_UPDATE", Path)
+		if KkthnxUI and KkthnxUI[2] and KkthnxUI[2]["Unitframe"] then
+			if not KkthnxUI[2]["Unitframe"].Range then
+				-- Unregister the event if KkthnxUI[2]["Unitframe"] exists
+				self:UnregisterEvent("UNIT_IN_RANGE_UPDATE", Path)
+			else
+				-- Remove self from _FRAMES and hide OnRangeFrame if _FRAMES is empty
+				for index, frame in ipairs(_FRAMES) do
+					if frame == self then
+						tremove(_FRAMES, index)
+						break
+					end
+				end
 
-		for index, frame in next, _FRAMES do
-			if frame == self then
-				tremove(_FRAMES, index)
-				break
+				if #_FRAMES == 0 and OnRangeFrame then
+					OnRangeFrame:Hide()
+				end
 			end
-		end
-
-		if #_FRAMES == 0 then
-			OnRangeFrame:Hide()
 		end
 	end
 end

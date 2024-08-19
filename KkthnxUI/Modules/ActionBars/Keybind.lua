@@ -1,11 +1,12 @@
 local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
--- WoW API bindings for easy reference
 local GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings = GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings
-local GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot = GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot
+local C_SpellBook_GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot = C_SpellBook.GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot
 local InCombatLockdown, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown = InCombatLockdown, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
 local tonumber, strfind, strupper = tonumber, strfind, strupper
+local CreateFrame, hooksecurefunc, format = CreateFrame, hooksecurefunc, format
+local GameTooltip = GameTooltip
 
 -- Constants and Global Variables
 local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
@@ -33,9 +34,9 @@ end
 
 local macroInit
 function Module:Bind_RegisterMacro()
-	-- if self ~= "Blizzard_MacroUI" then -- Is this needed?
-	-- 	return
-	-- end
+	if self ~= "Blizzard_MacroUI" then
+		return
+	end
 
 	if macroInit then
 		return
@@ -131,7 +132,7 @@ function Module:Bind_Update(button, spellmacro)
 
 	if spellmacro == "SPELL" then
 		frame.id = SpellBook_GetSpellBookSlot(button)
-		frame.name = GetSpellBookItemName(frame.id, SpellBookFrame.bookType)
+		frame.name = C_SpellBook_GetSpellBookItemName(frame.id, SpellBookFrame.bookType)
 		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "MACRO" then
 		frame.id = button.selectionIndex or button:GetID()
@@ -350,7 +351,6 @@ function Module:Bind_CreateDialog()
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	checkBox.text:SetPoint("CENTER", 0, 0)
-	-- stylua: ignore
 	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r" or K.GreyColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r")
 	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
 

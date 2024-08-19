@@ -173,19 +173,20 @@ function Module:ReskinBars()
 			Module:StyleActionButton(_G["KKUI_ActionBar" .. i .. "Button" .. j])
 		end
 	end
-	--petbar buttons
+
+	-- petbar buttons
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		Module:StyleActionButton(_G["PetActionButton" .. i])
 	end
-	--stancebar buttons
+	-- stancebar buttons
 	for i = 1, 10 do
 		Module:StyleActionButton(_G["StanceButton" .. i])
 	end
-	--leave vehicle
+	-- leave vehicle
 	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"])
-	--extra action button
+	-- extra action button
 	Module:StyleActionButton(ExtraActionButton1)
-	--spell flyout
+	-- spell flyout
 	SpellFlyout.Background:SetAlpha(0)
 	local numFlyouts = 1
 

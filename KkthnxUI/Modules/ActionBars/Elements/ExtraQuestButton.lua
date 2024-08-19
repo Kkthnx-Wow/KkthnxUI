@@ -1,21 +1,12 @@
 -- ExtraQuestButton Modification by p3lim for KkthnxUI
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
-
--- Utility functions
 local next, type, sqrt, GetTime, format = next, type, sqrt, GetTime, format
-
--- Game state and action functions
 local RegisterStateDriver, InCombatLockdown = RegisterStateDriver, InCombatLockdown
-
--- Item and action bar related functions
-local IsItemInRange, ItemHasRange, HasExtraActionBar = IsItemInRange, ItemHasRange, HasExtraActionBar
-local GetItemCooldown, GetItemCount, GetItemIcon, GetItemInfoFromHyperlink = GetItemCooldown, GetItemCount, GetItemIcon, GetItemInfoFromHyperlink
-
--- Binding and quest related functions
-local GetBindingKey, GetBindingText, GetQuestLogSpecialItemInfo, QuestHasPOIInfo = GetBindingKey, GetBindingText, GetQuestLogSpecialItemInfo, QuestHasPOIInfo
-
--- Map and quest log functions from C_Map and C_QuestLog namespaces
+local C_Item_IsItemInRange, C_Item_ItemHasRange, HasExtraActionBar = C_Item.IsItemInRange, C_Item.ItemHasRange, HasExtraActionBar
+local C_Item_GetItemCooldown, C_Item_GetItemCount, C_Item_GetItemIconByID, GetItemInfoFromHyperlink = C_Item.GetItemCooldown, C_Item.GetItemCount, C_Item.GetItemIconByID, GetItemInfoFromHyperlink
+local GetBindingKey, GetBindingText = GetBindingKey, GetBindingText
+local GetQuestLogSpecialItemInfo, QuestHasPOIInfo = GetQuestLogSpecialItemInfo, QuestHasPOIInfo
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local C_QuestLog_GetInfo = C_QuestLog.GetInfo
 local C_QuestLog_IsOnMap = C_QuestLog.IsOnMap
@@ -78,7 +69,7 @@ local onAttributeChanged = [[
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
 	if self:IsShown() and self.itemID then
-		local start, duration = GetItemCooldown(self.itemID)
+		local start, duration = C_Item_GetItemCooldown(self.itemID)
 		if duration > 0 then
 			self.Cooldown:SetCooldown(start, duration)
 			self.Cooldown:Show()
@@ -90,7 +81,7 @@ end
 
 function ExtraQuestButton:UpdateCount()
 	if self:IsShown() then
-		local count = GetItemCount(self.itemLink)
+		local count = C_Item_GetItemCount(self.itemLink)
 		self.Count:SetText(tostring(count and count > 1 and count or ""))
 	end
 end
@@ -228,7 +219,7 @@ ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 
 			if not inCombat then -- IsItemInRange is combat restricted now...
 				-- BUG: IsItemInRange() is broken versus friendly NPCs (and possibly others)
-				local inRange = IsItemInRange(self.itemLink, "target")
+				local inRange = C_Item_IsItemInRange(self.itemLink, "target")
 
 				if HotKey:GetText() == RANGE_INDICATOR then
 					if inRange == false then
@@ -291,7 +282,7 @@ function ExtraQuestButton:SetItem(itemLink)
 	end
 
 	if itemLink then
-		self.Icon:SetTexture(C_Item.GetItemIconByID(itemLink))
+		self.Icon:SetTexture(C_Item_GetItemIconByID(itemLink))
 		local itemID = GetItemInfoFromHyperlink(itemLink)
 		self.itemID = itemID
 		self.itemLink = itemLink
@@ -304,7 +295,7 @@ function ExtraQuestButton:SetItem(itemLink)
 	if self.itemID then
 		local HotKey = self.HotKey
 		local key = GetBindingKey("EXTRAACTIONBUTTON1")
-		local hasRange = ItemHasRange(itemLink)
+		local hasRange = C_Item_ItemHasRange(itemLink)
 		if key then
 			HotKey:SetText(GetBindingText(key, 1))
 			HotKey:Show()
@@ -345,10 +336,12 @@ local function GetQuestDistanceWithItem(questID)
 			itemLink = format("|Hitem:%d|h", fallbackItemID)
 		end
 	end
+
 	if not itemLink then
 		return
 	end
-	if GetItemCount(itemLink) == 0 then
+
+	if C_Item_GetItemCount(itemLink) == 0 then
 		return
 	end
 

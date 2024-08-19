@@ -2,6 +2,17 @@ local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
 local next = next
+local _G = _G
+local pairs = pairs
+local strmatch = string.match
+
+local MainMenuBar = _G.MainMenuBar
+local StatusTrackingBarManager = _G.StatusTrackingBarManager
+local ActionBarController = _G.ActionBarController
+local ActionBarActionEventsFrame = _G.ActionBarActionEventsFrame
+local ActionBarButtonEventsFrame = _G.ActionBarButtonEventsFrame
+local SettingsPanel = _G.SettingsPanel
+local MainMenuBarVehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
 
 local actionbar = {
 	eventScripts = {
@@ -19,114 +30,106 @@ local actionbar = {
 
 	framesToHide = {
 		MainMenuBar,
-		MultiBarBottomLeft,
-		MultiBarBottomRight,
-		MultiBarLeft,
-		MultiBarRight,
-		MultiBar5,
-		MultiBar6,
-		MultiBar7,
-		OverrideActionBar,
-		PossessActionBar,
-		PetActionBar,
+		_G.MultiBarBottomLeft,
+		_G.MultiBarBottomRight,
+		_G.MultiBarLeft,
+		_G.MultiBarRight,
+		_G.MultiBar5,
+		_G.MultiBar6,
+		_G.MultiBar7,
+		_G.OverrideActionBar,
+		_G.PossessActionBar,
+		_G.PetActionBar,
 	},
 
 	framesToDisable = {
 		MainMenuBar,
-		MultiBarBottomLeft,
-		MultiBarBottomRight,
-		MultiBarLeft,
-		MultiBarRight,
-		MultiBar5,
-		MultiBar6,
-		MultiBar7,
-		PossessActionBar,
-		PetActionBar,
-		MicroButtonAndBagsBar,
+		_G.MultiBarBottomLeft,
+		_G.MultiBarBottomRight,
+		_G.MultiBarLeft,
+		_G.MultiBarRight,
+		_G.MultiBar5,
+		_G.MultiBar6,
+		_G.MultiBar7,
+		_G.PossessActionBar,
+		_G.PetActionBar,
+		_G.MicroButtonAndBagsBar,
 		StatusTrackingBarManager,
 		MainMenuBarVehicleLeaveButton,
-		OverrideActionBar,
-		OverrideActionBarExpBar,
-		OverrideActionBarHealthBar,
-		OverrideActionBarPowerBar,
-		OverrideActionBarPitchFrame,
+		_G.OverrideActionBar,
+		_G.OverrideActionBarExpBar,
+		_G.OverrideActionBarHealthBar,
+		_G.OverrideActionBarPowerBar,
+		_G.OverrideActionBarPitchFrame,
 	},
 }
 
 local function DisableAllScripts(frame)
-	for _, script in next, actionbar.eventScripts do
+	for _, script in ipairs(actionbar.eventScripts) do
 		if frame:HasScript(script) then
 			frame:SetScript(script, nil)
 		end
 	end
 end
 
-local function updateTokenVisibility()
-	TokenFrame_LoadUI()
-	TokenFrame:Update()
-end
-
 local function buttonEventsRegisterFrame(self, added)
 	local frames = self.frames
 	for index = #frames, 1, -1 do
 		local frame = frames[index]
-		local wasAdded = frame == added
-		if not added or wasAdded then
+		if not added or frame == added then
 			if not strmatch(frame:GetName(), "ExtraActionButton%d") then
-				self.frames[index] = nil
+				table.remove(frames, index)
 			end
 
-			if wasAdded then
+			if frame == added then
 				break
 			end
 		end
 	end
 end
 
-local function DisableDefaultBarEvents() -- credit: Simpy
-	-- MainMenuBar:ClearAllPoints taint during combat
-	_G.MainMenuBar.SetPositionForStatusBars = K.Noop
+local function DisableDefaultBarEvents()
+	-- Prevent taint from MainMenuBar:ClearAllPoints
+	MainMenuBar.SetPositionForStatusBars = K.Noop
 
-	-- Spellbook open in combat taint, only happens sometimes
+	-- Prevent taint when opening the spellbook in combat
 	_G.MultiActionBar_HideAllGrids = K.Noop
 	_G.MultiActionBar_ShowAllGrids = K.Noop
 
-	-- Shut down some events for things we don't use
-	_G.ActionBarController:UnregisterAllEvents()
-	_G.ActionBarController:RegisterEvent("SETTINGS_LOADED") -- This is needed for the page controller to spawn properly
-	_G.ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- This is needed to let the ExtraActionBar show
+	-- Disable unused events for ActionBarController and other frames
+	ActionBarController:UnregisterAllEvents()
+	ActionBarController:RegisterEvent("SETTINGS_LOADED")
+	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
 
-	_G.ActionBarActionEventsFrame:UnregisterAllEvents()
+	ActionBarActionEventsFrame:UnregisterAllEvents()
 
-	-- Used for ExtraActionButton and TotemBar (on Wrath)
-	_G.ActionBarButtonEventsFrame:UnregisterAllEvents()
-	_G.ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED") -- Needed to let the ExtraActionButton show and Totems to swap
-	_G.ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN") -- Needed for cooldowns of both
+	ActionBarButtonEventsFrame:UnregisterAllEvents()
+	ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+	ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
 
-	hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
-	buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
+	hooksecurefunc(ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
+	buttonEventsRegisterFrame(ActionBarButtonEventsFrame)
 
-	-- Fix keybind error; this prevents the reopening of the GameMenu
-	_G.SettingsPanel.TransitionBackOpeningPanel = HideUIPanel
+	-- Prevent reopening of the GameMenu
+	SettingsPanel.TransitionBackOpeningPanel = HideUIPanel
 end
 
 function Module:HideBlizz()
-	for _, frame in next, actionbar.framesToHide do
+	for _, frame in pairs(actionbar.framesToHide) do
 		frame:SetParent(K.UIFrameHider)
 	end
 
-	for _, frame in next, actionbar.framesToDisable do
+	for _, frame in pairs(actionbar.framesToDisable) do
 		frame:UnregisterAllEvents()
 		DisableAllScripts(frame)
 	end
 
 	DisableDefaultBarEvents()
-	-- Fix maw block anchor
-	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
-	-- Update token panel
-	-- K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility) -- Taints Money Transfer
 
-	-- Hide blizzard expbar
+	-- Fix for the vehicle leave button
+	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+	-- Hide Blizzard experience bar
 	StatusTrackingBarManager:UnregisterAllEvents()
 	StatusTrackingBarManager:Hide()
 end
