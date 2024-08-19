@@ -924,7 +924,7 @@ local function favouriteOnClick(self)
 		Module.selectItemID = itemID
 		Module.CustomMenu[1].text = link
 		Module.CustomMenu[1].icon = texture
-		EasyMenu(Module.CustomMenu, K.EasyMenu, self, 0, 0, "MENU")
+		K.LibEasyMenu.Create(Module.CustomMenu, K.EasyMenu, self, 0, 0, "MENU")
 	end
 end
 

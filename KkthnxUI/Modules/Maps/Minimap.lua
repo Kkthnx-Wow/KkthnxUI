@@ -30,7 +30,9 @@ local menuList = {
 		text = _G.SPELLBOOK_ABILITIES_BUTTON,
 		microOffset = "SpellbookMicroButton",
 		func = function()
-			if PlayerSpellsUtil then PlayerSpellsUtil.ToggleSpellBookFrame() end
+			if PlayerSpellsUtil then
+				PlayerSpellsUtil.ToggleSpellBookFrame()
+			end
 		end,
 	},
 	{
@@ -61,7 +63,7 @@ local menuList = {
 		text = _G.TALENTS_BUTTON,
 		microOffset = "TalentMicroButton",
 		func = function()
-			if PlayerSpellsUtil then 
+			if PlayerSpellsUtil then
 				PlayerSpellsUtil.ToggleClassTalentFrame()
 			end
 		end,
@@ -304,7 +306,7 @@ function Module:ReskinRegions()
 				if _G.ExpansionLandingPage and _G.ExpansionLandingPage:IsShown() then
 					HideUIPanel(_G.ExpansionLandingPage)
 				end
-				EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
+				K.LibEasyMenu.Create(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
 			end
 		end)
 		garrMinimapButton:SetScript("OnEnter", function(self)
@@ -684,9 +686,9 @@ function Module:Minimap_OnMouseUp(btn)
 		end
 
 		if position:match("LEFT") then
-			EasyMenu(menuList, K.EasyMenu, "cursor", 0, 0)
+			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", 0, 0)
 		else
-			EasyMenu(menuList, K.EasyMenu, "cursor", -160, 0)
+			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", -160, 0)
 		end
 	elseif btn == "RightButton" and Module.TrackingDropdown then
 		if position:match("LEFT") then

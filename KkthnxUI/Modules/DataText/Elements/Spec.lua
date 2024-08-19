@@ -244,7 +244,7 @@ local function OnMouseUp(self, btn)
 		PlayerSpellsUtil.ToggleClassTalentOrSpecFrame()
 	else
 		BuildSpecMenu()
-		EasyMenu(newMenu, K.EasyMenu, self, -80, 100, "MENU", 1)
+		K.LibEasyMenu.Create(newMenu, K.EasyMenu, self, -80, 100, "MENU", 1)
 		GameTooltip:Hide()
 	end
 end

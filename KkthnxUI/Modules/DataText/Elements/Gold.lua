@@ -303,7 +303,7 @@ local function OnMouseUp(self, btn)
 				RebuildCharList()
 				menuList[1].created = true
 			end
-			EasyMenu(menuList, K.EasyMenu, self, -80, 100, "MENU", 1)
+			K.LibEasyMenu.Create(menuList, K.EasyMenu, self, -80, 100, "MENU", 1)
 		else
 			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
 			if KkthnxUIDB["ShowSlots"] then

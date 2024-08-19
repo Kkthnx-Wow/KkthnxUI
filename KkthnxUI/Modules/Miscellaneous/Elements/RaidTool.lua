@@ -628,7 +628,7 @@ function Module:RaidTool_EasyMarker()
 						menu.checked = false
 					end
 				end
-				EasyMenu(menuList, K.EasyMenu, "cursor", 0, 0, "MENU", 1)
+				K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", 0, 0, "MENU", 1)
 			end
 		end
 	end)

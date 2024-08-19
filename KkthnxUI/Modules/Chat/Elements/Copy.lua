@@ -403,7 +403,7 @@ function Module:ChatCopy_Create()
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
 			PlaySound(111)
-			_G.EasyMenu(menuList, K.EasyMenu, kkuiconfig, 24, 290, "MENU", 2)
+			K.LibEasyMenu.Create(menuList, K.EasyMenu, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
 			K.GUI:Toggle()
 		end

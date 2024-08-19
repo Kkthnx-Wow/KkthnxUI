@@ -348,7 +348,7 @@ local function buttonOnClick(self, button)
 					return
 				end
 
-				EasyMenu(menuList, K.EasyMenu, self, 0, 0, "MENU", 1)
+				K.LibEasyMenu.Create(menuList, K.EasyMenu, self, 0, 0, "MENU", 1)
 			else
 				InviteToGroup(self.data[1])
 			end
