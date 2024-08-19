@@ -1,79 +1,67 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
-local string_format = string.format
+-- Localize API functions
+local string_format, GetInstanceInfo, C_Spell_GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, IsPartyLFG, UnitInParty, UnitInRaid = string.format, GetInstanceInfo, C_Spell.GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, IsPartyLFG, UnitInParty, UnitInRaid
 
 local AURA_TYPE_BUFF = AURA_TYPE_BUFF
-local GetInstanceInfo = GetInstanceInfo
-local GetSpellLink = GetSpellLink
-local IsActiveBattlefieldArena = IsActiveBattlefieldArena
-local IsArenaSkirmish = IsArenaSkirmish
-local IsInGroup = IsInGroup
-local IsInRaid = IsInRaid
-local IsPartyLFG = IsPartyLFG
-local UnitInParty = UnitInParty
-local UnitInRaid = UnitInRaid
-
 local infoType = {}
 
 local spellBlackList = {
-	[102359] = true, -- Mass Entanglement
-	[105421] = true, -- Blinding Light
-	[115191] = true, -- Stealth
-	[122] = true, -- Frost Nova
-	[157997] = true, -- Frost Nova
-	[1776] = true, -- Gouging
-	[1784] = true, -- Sneak
-	[197214] = true, -- Fissure
-	[198121] = true, -- Frostbite
-	[207167] = true, -- Blizzard
-	[207685] = true, -- Symbol of Misery
-	[226943] = true, -- Mind Bomb
-	[228600] = true, -- Glacial Spike
-	[285515] = true, -- Surge of Power
-	[31661] = true, -- Dragon's Breath
-	[331866] = true, -- Chaotic Proxy
-	[33395] = true, -- Freeze
-	[354051] = true, -- Light Steps
-	[355689] = true, -- Avalanche
-	[386770] = true, -- Frigid
-	[5246] = true, -- Shout out
-	[64695] = true, -- Land Trap
-	[8122] = true, -- Psychic Scream
-	[82691] = true, -- Ring of Frost
-	[91807] = true, -- Disoriented Charge
-	[99] = true, -- Reaping Roar
+	[102359] = true,
+	[105421] = true,
+	[115191] = true,
+	[122] = true,
+	[157997] = true,
+	[1776] = true,
+	[1784] = true,
+	[197214] = true,
+	[198121] = true,
+	[207167] = true,
+	[207685] = true,
+	[226943] = true,
+	[228600] = true,
+	[285515] = true,
+	[31661] = true,
+	[331866] = true,
+	[33395] = true,
+	[354051] = true,
+	[355689] = true,
+	[386770] = true,
+	[5246] = true,
+	[64695] = true,
+	[8122] = true,
+	[82691] = true,
+	[91807] = true,
+	[99] = true,
 }
 
 local function getAlertChannel()
-	local inRaid = IsInRaid()
-	local inPartyLFG = IsPartyLFG()
-
 	local _, instanceType = GetInstanceInfo()
+	local inPartyLFG = IsPartyLFG()
+	local inRaid = IsInRaid()
+
 	if instanceType == "arena" then
 		local isSkirmish = IsArenaSkirmish()
 		local _, isRegistered = IsActiveBattlefieldArena()
-		if isSkirmish or not isRegistered then
-			inPartyLFG = true
-		end
-		inRaid = false -- IsInRaid() returns true for arenas and they should not be considered a raid
+		inPartyLFG = isSkirmish or not isRegistered
+		inRaid = false -- Arenas should not be considered raids
 	end
 
 	local alertChannel = C["Announcements"].AlertChannel.Value
-	local channel = "EMOTE"
 	if alertChannel == 1 then
-		channel = inPartyLFG and "INSTANCE_CHAT" or "PARTY"
+		return inPartyLFG and "INSTANCE_CHAT" or "PARTY"
 	elseif alertChannel == 2 then
-		channel = inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY")
+		return inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY")
 	elseif alertChannel == 3 and inRaid then
-		channel = inPartyLFG and "INSTANCE_CHAT" or "RAID"
+		return inPartyLFG and "INSTANCE_CHAT" or "RAID"
 	elseif alertChannel == 4 and instanceType ~= "none" then
-		channel = "SAY"
+		return "SAY"
 	elseif alertChannel == 5 and instanceType ~= "none" then
-		channel = "YELL"
+		return "YELL"
 	end
 
-	return channel
+	return "EMOTE"
 end
 
 function Module:InterruptAlert_Toggle()
@@ -89,14 +77,11 @@ function Module:InterruptAlert_IsEnabled()
 			return true
 		end
 	end
+	return false
 end
 
 function Module:IsAllyPet(sourceFlags)
-	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then
-		return true
-	else
-		return false
-	end
+	return K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags
 end
 
 function Module:InterruptAlert_Update(...)
@@ -107,34 +92,30 @@ function Module:InterruptAlert_Update(...)
 
 	local isPlayerOrAllyPet = sourceName == K.Name or Module:IsAllyPet(sourceFlags)
 
-	if UnitInRaid(sourceName) or UnitInParty(sourceName) or Module:IsAllyPet(sourceFlags) then
+	if (UnitInRaid(sourceName) or UnitInParty(sourceName) or isPlayerOrAllyPet) and infoType[eventType] then
 		local infoText = infoType[eventType]
-		if infoText then
-			local sourceSpellID, destSpellID
-			if infoText == L["Broken Spell"] then
-				if auraType and auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then
-					return
-				end
-				sourceSpellID, destSpellID = extraskillID, spellID
-			elseif infoText == L["Interrupt"] then
-				if C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet then
-					return
-				end
-				sourceSpellID, destSpellID = spellID, extraskillID
-			else
-				if C["Announcements"].OwnDispell and not isPlayerOrAllyPet then
-					return
-				end
-				sourceSpellID, destSpellID = spellID, extraskillID
-			end
+		local sourceSpellID, destSpellID
 
-			if sourceSpellID and destSpellID then
-				if infoText == L["Broken Spell"] then
-					SendChatMessage(string_format(infoText, sourceName, GetSpellLink(destSpellID)), getAlertChannel())
-				else
-					SendChatMessage(string_format(infoText, GetSpellLink(destSpellID)), getAlertChannel())
-				end
+		if infoText == L["Broken Spell"] then
+			if auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then
+				return
 			end
+			sourceSpellID, destSpellID = extraskillID, spellID
+		elseif infoText == L["Interrupt"] then
+			if C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet then
+				return
+			end
+			sourceSpellID, destSpellID = spellID, extraskillID
+		else
+			if C["Announcements"].OwnDispell and not isPlayerOrAllyPet then
+				return
+			end
+			sourceSpellID, destSpellID = spellID, extraskillID
+		end
+
+		if sourceSpellID and destSpellID then
+			local message = infoText == L["Broken Spell"] and string_format(infoText, sourceName, C_Spell_GetSpellLink(destSpellID)) or string_format(infoText, C_Spell_GetSpellLink(destSpellID))
+			SendChatMessage(message, getAlertChannel())
 		end
 	end
 end

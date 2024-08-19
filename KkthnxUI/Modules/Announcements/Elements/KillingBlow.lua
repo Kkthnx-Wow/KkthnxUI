@@ -1,34 +1,67 @@
--- Unpack the KkthnxUI Engine
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Announcements = K:GetModule("Announcements")
 
--- Cache Lua functions
-local bit_band = bit.band
-local math_random = math.random
-
--- Cache WoW API functions
-local BossBanner_BeginAnims = BossBanner_BeginAnims
-local COMBATLOG_OBJECT_TYPE_PLAYER = COMBATLOG_OBJECT_TYPE_PLAYER
-local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
-local DoEmote = DoEmote
-local GetAchievementInfo = GetAchievementInfo
-local GetBattlefieldScore = GetBattlefieldScore
-local GetNumBattlefieldScores = GetNumBattlefieldScores
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local TopBannerManager_Show = TopBannerManager_Show
-local hooksecurefunc = hooksecurefunc
+-- Cache Lua and WoW API functions
+local bit_band, math_random = bit.band, math.random
+local BossBanner_BeginAnims, DoEmote, GetAchievementInfo, GetBattlefieldScore, GetNumBattlefieldScores, RAID_CLASS_COLORS = BossBanner_BeginAnims, DoEmote, GetAchievementInfo, GetBattlefieldScore, GetNumBattlefieldScores, RAID_CLASS_COLORS
+local TopBannerManager_Show, hooksecurefunc, CombatLogGetCurrentEventInfo = TopBannerManager_Show, hooksecurefunc, CombatLogGetCurrentEventInfo
 
 -- List of PvP emotes
--- stylua: ignore start
 local pvpEmotes = {
-	"ANGRY", "BARK", "BECKON", "BITE", "BONK", "BURP", "BYE", "CACKLE", "CALM", "CHUCKLE",
-	"COMFORT", "CRACK", "CUDDLE", "CURTSEY", "FLEX", "GIGGLE", "GLOAT", "GRIN", "GROWL",
-	"GUFFAW", "INSULT", "LAUGH", "LICK", "MOCK", "MOO", "MOON", "MOURN", "NO", "NOSEPICK",
-	"PITY", "RASP", "ROAR", "ROFL", "RUDE", "SCRATCH", "SHOO", "SIGH", "SLAP", "SMIRK",
-	"SNARL", "SNICKER", "SNIFF", "SNUB", "SOOTHE", "TAP", "TAUNT", "TEASE", "THANK",
-	"THREATEN", "TICKLE", "VETO", "VIOLIN", "YAWN"
+	"ANGRY",
+	"BARK",
+	"BECKON",
+	"BITE",
+	"BONK",
+	"BURP",
+	"BYE",
+	"CACKLE",
+	"CALM",
+	"CHUCKLE",
+	"COMFORT",
+	"CRACK",
+	"CUDDLE",
+	"CURTSEY",
+	"FLEX",
+	"GIGGLE",
+	"GLOAT",
+	"GRIN",
+	"GROWL",
+	"GUFFAW",
+	"INSULT",
+	"LAUGH",
+	"LICK",
+	"MOCK",
+	"MOO",
+	"MOON",
+	"MOURN",
+	"NO",
+	"NOSEPICK",
+	"PITY",
+	"RASP",
+	"ROAR",
+	"ROFL",
+	"RUDE",
+	"SCRATCH",
+	"SHOO",
+	"SIGH",
+	"SLAP",
+	"SMIRK",
+	"SNARL",
+	"SNICKER",
+	"SNIFF",
+	"SNUB",
+	"SOOTHE",
+	"TAP",
+	"TAUNT",
+	"TEASE",
+	"THANK",
+	"THREATEN",
+	"TICKLE",
+	"VETO",
+	"VIOLIN",
+	"YAWN",
 }
--- stylua: ignore end
 
 local battlegroundOpponents = {} -- Table to store opponents in battlegrounds
 
@@ -72,6 +105,7 @@ end
 
 -- Setup the killing blow announcement system
 function Announcements:SetupKillingBlowAnnounce()
+	-- Hook to customize the BossBanner
 	hooksecurefunc(_G.BossBanner, "PlayBanner", function(self, data)
 		if data and data.mode == "KKUI_PVPKILL" then
 			self.Title:SetText(data.name)
@@ -83,6 +117,12 @@ function Announcements:SetupKillingBlowAnnounce()
 		end
 	end)
 
-	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.OnCombatLogEvent)
-	K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.BuildBattlegroundOpponents)
+	-- Register or unregister events based on settings
+	if C["Announcements"].KillingBlow or C["Announcements"].PvPEmote then
+		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.OnCombatLogEvent)
+		K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.BuildBattlegroundOpponents)
+	else
+		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.OnCombatLogEvent)
+		K:UnregisterEvent("UPDATE_BATTLEFIELD_SCORE", self.BuildBattlegroundOpponents)
+	end
 end

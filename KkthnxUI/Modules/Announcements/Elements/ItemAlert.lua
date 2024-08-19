@@ -1,10 +1,10 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Announcements")
 
+-- Localize WoW API functions
 local string_format = string.format
-
+local C_Spell_GetSpellLink = C_Spell.GetSpellLink
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
-local C_Spell_GetSpellLink = C_Spell and C_Spell.GetSpellLink
 local IsInGroup = IsInGroup
 local SendChatMessage = SendChatMessage
 local UnitName = UnitName
@@ -20,47 +20,50 @@ for i = 1, 40 do
 	groupUnits["raidpet" .. i] = true
 end
 
--- Define important spells with IDs and descriptions
+-- Define important spells with IDs
 local importantSpells = {
-	[54710] = true, -- Portable Mailbox
-	[67826] = true, -- Jeeves
-	[226241] = true, -- Tome of Tranquil Mind
-	[256230] = true, -- Codex of the Quiet Mind
-	[185709] = true, -- Sugar-Crusted Fish Feast
-	[199109] = true, -- Auto-Hammer
-	[259409] = true, -- Feast of the Fishes
-	[259410] = true, -- Captain's Feast
-	[276972] = true, -- Arcane Cauldron
-	[286050] = true, -- Blood Feast
-	[265116] = true, -- Engineering Battle Rez (BfA)
-	[308458] = true, -- Grand Feast
-	[308462] = true, -- Lavish Feast
-	[345130] = true, -- Engineering Battle Rez (Shadowlands)
-	[307157] = true, -- Eternal Cauldron
-	[359336] = true, -- Stone Soup
-	[324029] = true, -- Tome of Tranquil Mind (Shadowlands)
-	[2825] = true, -- Bloodlust
-	[32182] = true, -- Heroism
-	[80353] = true, -- Time Warp
-	[264667] = true, -- Primal Rage (Pet)
-	[272678] = true, -- Primal Rage (Hunter Pet)
-	[178207] = true, -- Drums of Fury
-	[230935] = true, -- Drums of the Mountain
-	[256740] = true, -- Drums of the Maelstrom
-	[292686] = true, -- Drums of the Raging Tempest
-	[309658] = true, -- Drums of Deathly Ferocity
-	[390386] = true, -- Fury of the Aspects
+	[54710] = true,
+	[67826] = true,
+	[226241] = true,
+	[256230] = true,
+	[185709] = true,
+	[199109] = true,
+	[259409] = true,
+	[259410] = true,
+	[276972] = true,
+	[286050] = true,
+	[265116] = true,
+	[308458] = true,
+	[308462] = true,
+	[345130] = true,
+	[307157] = true,
+	[359336] = true,
+	[324029] = true,
+	[2825] = true,
+	[32182] = true,
+	[80353] = true,
+	[264667] = true,
+	[272678] = true,
+	[178207] = true,
+	[230935] = true,
+	[256740] = true,
+	[292686] = true,
+	[309658] = true,
+	[390386] = true,
 }
 
 -- Function to handle spell cast alerts
 function Module:UpdateItemAlert(unit, castID, spellID)
-	if groupUnits[unit] and importantSpells[spellID] and (importantSpells[spellID] ~= castID) then
-		SendChatMessage(string_format("%s used %s", UnitName(unit), C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)), K.CheckChat())
-		importantSpells[spellID] = castID
+	if groupUnits[unit] and importantSpells[spellID] and importantSpells[spellID] ~= castID then
+		local spellLink = C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)
+		if spellLink then
+			SendChatMessage(string_format("%s used %s", UnitName(unit), spellLink), K.CheckChat())
+			importantSpells[spellID] = castID
+		end
 	end
 end
 
--- Function to check if the player is in a group and register events accordingly
+-- Function to check if the player is in a group and register/unregister events accordingly
 function Module:CheckGroupStatus()
 	if IsInGroup() then
 		K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
@@ -71,8 +74,8 @@ end
 
 -- Main function to handle spell and item alerts
 function Module:CreateItemAnnounce()
-	Module.factionSpell = K.Faction == "Alliance" and 32182 or 2825
-	Module.factionSpell = C_Spell_GetSpellLink(Module.factionSpell)
+	Module.factionSpell = (K.Faction == "Alliance" and 32182 or 2825)
+	Module.factionSpell = C_Spell_GetSpellLink(Module.factionSpell) or C_Spell_GetSpellInfo(Module.factionSpell)
 
 	if C["Announcements"].ItemAlert then
 		Module:CheckGroupStatus()

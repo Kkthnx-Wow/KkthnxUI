@@ -6,15 +6,17 @@ local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local SendChatMessage = SendChatMessage
 local UNKNOWN = UNKNOWN
 
+-- Function to handle sap events
 local function HandleSapEvent()
 	local _, eventType, _, _, sourceName, _, _, _, destName, spellID = CombatLogGetCurrentEventInfo()
 
-	if (spellID == 6770) and (destName == K.Name) and (eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH") then
+	if spellID == 6770 and destName == K.Name and (eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH") then
 		SendChatMessage(L["Sapped"], "SAY")
 		K.Print(L["SappedBy"] .. (sourceName or UNKNOWN))
 	end
 end
 
+-- Function to toggle sap announcement
 function Module:ToggleSapAnnounce()
 	if C["Announcements"].SaySapped then
 		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", HandleSapEvent)

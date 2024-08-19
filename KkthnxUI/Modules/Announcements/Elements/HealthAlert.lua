@@ -1,29 +1,23 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
--- UI and String Functions
-local string_format = string.format
-local UIErrorsFrame = UIErrorsFrame
+-- Localize API functions
+local UnitHealth, UnitHealthMax, UnitIsPlayer, UnitIsDead, UnitExists, UnitName = UnitHealth, UnitHealthMax, UnitIsPlayer, UnitIsDead, UnitExists, UnitName
+local DoEmote, PlaySound, UnitAffectingCombat, IsInGroup = DoEmote, PlaySound, UnitAffectingCombat, IsInGroup
+local string_format, UIErrorsFrame = string.format, UIErrorsFrame
 
--- Unit and Combat Functions
-local UnitHealth, UnitHealthMax = UnitHealth, UnitHealthMax
-local UnitIsPlayer, UnitIsDead, UnitExists, UnitName = UnitIsPlayer, UnitIsDead, UnitExists, UnitName
-local DoEmote, PlaySound = DoEmote, PlaySound
-
-local playerNearDeath = false
-local petNearDeath = false
+-- Local variables
+local playerNearDeath, petNearDeath = false, false
 local validPetClasses = { ["HUNTER"] = true, ["WARLOCK"] = true }
 
+-- Check if player should check health
 local function shouldCheckHealth()
 	return UnitAffectingCombat("player") and IsInGroup()
 end
 
+-- Check player's health and handle low health alerts
 local function checkPlayerHealth()
-	if not shouldCheckHealth() then
-		return
-	end
-
-	if not UnitIsPlayer("player") or UnitIsDead("player") then
+	if not shouldCheckHealth() or UnitIsDead("player") then
 		return
 	end
 
@@ -38,12 +32,9 @@ local function checkPlayerHealth()
 	end
 end
 
+-- Check pet's health and handle low health alerts
 local function checkPetHealth()
-	if not shouldCheckHealth() then
-		return
-	end
-
-	if not validPetClasses[K.Class] or not UnitExists("pet") or UnitIsDead("pet") then
+	if not shouldCheckHealth() or not validPetClasses[K.Class] or UnitIsDead("pet") then
 		return
 	end
 
@@ -58,11 +49,13 @@ local function checkPetHealth()
 	end
 end
 
+-- Set up health announcement checks
 function Module:SetupHealthAnnounce()
 	checkPlayerHealth()
 	checkPetHealth()
 end
 
+-- Create the health announcement system
 function Module:CreateHealthAnnounce()
 	if not C["Announcements"].HealthAlert then
 		return
