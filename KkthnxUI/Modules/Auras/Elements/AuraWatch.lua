@@ -144,17 +144,20 @@ local function BuildAuraList()
 end
 
 local function BuildUnitIDTable()
-	for _, VALUE in pairs(AuraList) do
-		for _, value in pairs(VALUE.List) do
-			local flag = true
-			for _, v in pairs(UnitIDTable) do
-				if value.UnitID == v then
-					flag = false
-				end
-			end
+	local existingUnits = {}
+	for _, v in pairs(UnitIDTable) do
+		if v then
+			existingUnits[v] = true
+		end
+	end
 
-			if flag then
-				table_insert(UnitIDTable, value.UnitID)
+	for _, VALUE in pairs(AuraList) do
+		if VALUE and VALUE.List then
+			for _, value in pairs(VALUE.List) do
+				if value and value.UnitID and not existingUnits[value.UnitID] then
+					existingUnits[value.UnitID] = true
+					table_insert(UnitIDTable, value.UnitID)
+				end
 			end
 		end
 	end
@@ -164,12 +167,14 @@ local function BuildCooldownTable()
 	table_wipe(cooldownTable)
 
 	for KEY, VALUE in pairs(AuraList) do
-		for spellID, value in pairs(VALUE.List) do
-			if value.SpellID and IsPlayerSpell(value.SpellID) or value.ItemID or value.SlotID or value.TotemID then
-				if not cooldownTable[KEY] then
-					cooldownTable[KEY] = {}
+		if VALUE and VALUE.List then
+			for spellID, value in pairs(VALUE.List) do
+				if value and (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
+					if not cooldownTable[KEY] then
+						cooldownTable[KEY] = {}
+					end
+					cooldownTable[KEY][spellID] = true
 				end
-				cooldownTable[KEY][spellID] = true
 			end
 		end
 	end
@@ -811,7 +816,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 end
 
 -- CleanUp
-function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do this
+function Module:AuraWatch_Cleanup()
 	for _, value in pairs(FrameList) do
 		for i = 1, maxFrames do
 			local frame = value[i]
@@ -840,6 +845,7 @@ function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do
 				K.HideOverlayGlow(frame.glowFrame)
 			end
 		end
+
 		value.Index = 1
 	end
 end
@@ -874,6 +880,10 @@ function Module:AuraWatch_PostCleanup()
 
 			if frame.Spellname then
 				frame.Spellname:SetText("")
+			end
+
+			if frame.glowFrame then
+				K.HideOverlayGlow(frame.glowFrame)
 			end
 		end
 	end
