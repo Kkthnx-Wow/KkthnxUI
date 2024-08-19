@@ -283,5 +283,7 @@ function Module:CreateArena()
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")
 
-	self.Range = Module.CreateRangeIndicator(self)
+	self.Range = {
+		Override = Module.UpdateRange,
+	}
 end

@@ -174,7 +174,9 @@ function Module:CreatePet()
 		Override = Module.UpdateThreat,
 	}
 
-	local Range = Module.CreateRangeIndicator(self)
+	local Range = {
+		Override = Module.UpdateRange,
+	}
 
 	self.Overlay = Overlay
 	self.Health = Health

@@ -412,7 +412,9 @@ function Module:CreateTarget()
 		Override = Module.UpdateThreat,
 	}
 
-	self.Range = Module.CreateRangeIndicator(self)
+	self.Range = {
+		Override = Module.UpdateRange,
+	}
 
 	self.Overlay = Overlay
 	self.Health = Health

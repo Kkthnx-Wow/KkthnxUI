@@ -161,5 +161,7 @@ function Module:CreateFocusTarget()
 		Override = Module.UpdateThreat,
 	}
 
-	self.Range = Module.CreateRangeIndicator(self)
+	self.Range = {
+		Override = Module.UpdateRange,
+	}
 end

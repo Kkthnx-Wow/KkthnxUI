@@ -14,20 +14,6 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsUnit = UnitIsUnit
 local UnitPhaseReason = UnitPhaseReason
 
-function Module:CreateRangeIndicator()
-	-- if not C["Unitframe"].Range then
-	-- 	return
-	-- end
-
-	local Range = {
-		insideAlpha = 1,
-		outsideAlpha = 0.35,
-	}
-	Range.Override = Module.UpdateRange
-
-	return Range
-end
-
 local function GetGroupUnit(unit)
 	if UnitIsUnit(unit, "player") then
 		return
