@@ -569,7 +569,7 @@ function Module:RaidTool_EasyMarker()
 	local menuList = {}
 
 	local function GetMenuTitle(text, ...)
-		return (... and K.HexRGB(...) or "") .. text
+		return (... and K.RGBToHex(...) or "") .. text
 	end
 
 	local function SetRaidTargetByIndex(_, arg1)
