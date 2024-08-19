@@ -72,25 +72,23 @@ end
 
 function Module:GetRaidMaxGroup()
 	local _, instType, difficulty = GetInstanceInfo()
-	local maxGroup = 8
-
 	if (instType == "party" or instType == "scenario") and not IsInRaid() then
-		maxGroup = 1
+		return 1
 	elseif instType ~= "raid" then
-		maxGroup = 8
+		return 8
 	elseif difficulty == 8 or difficulty == 1 or difficulty == 2 or difficulty == 24 then
-		maxGroup = 1
+		return 1
 	elseif difficulty == 14 or difficulty == 15 then
-		maxGroup = 6
+		return 6
 	elseif difficulty == 16 then
-		maxGroup = 4
+		return 4
 	elseif difficulty == 3 or difficulty == 5 then
-		maxGroup = 2
+		return 2
 	elseif difficulty == 9 then
-		maxGroup = 8
+		return 8
+	else
+		return 5
 	end
-
-	return maxGroup
 end
 
 function Module:RaidTool_RoleCount(parent)
@@ -570,8 +568,8 @@ function Module:RaidTool_EasyMarker()
 
 	local menuList = {}
 
-	local function GetMenuTitle(color, text)
-		return (color and K.RGBToHex(color) or "") .. text
+	local function GetMenuTitle(text, ...)
+		return (... and K.HexRGB(...) or "") .. text
 	end
 
 	local function SetRaidTargetByIndex(_, arg1)
@@ -590,14 +588,14 @@ function Module:RaidTool_EasyMarker()
 		UnitPopupRaidTargetNoneButtonMixin,
 	}
 	for index, mixin in pairs(mixins) do
-		local texCoords = mixin:GetTextureCoords()
+		local t1, t2, t3, t4 = mixin:GetTextureCoords()
 		menuList[index] = {
-			text = GetMenuTitle(mixin:GetColor(), mixin:GetText()),
+			text = GetMenuTitle(mixin:GetText(), mixin:GetColor()),
 			icon = mixin:GetIcon(),
-			tCoordLeft = texCoords.tCoordLeft,
-			tCoordRight = texCoords.tCoordRight,
-			tCoordTop = texCoords.tCoordTop,
-			tCoordBottom = texCoords.tCoordBottom,
+			tCoordLeft = t1,
+			tCoordRight = t2,
+			tCoordTop = t3,
+			tCoordBottom = t4,
 			arg1 = 9 - index,
 			func = SetRaidTargetByIndex,
 		}
