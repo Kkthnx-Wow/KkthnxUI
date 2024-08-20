@@ -55,7 +55,7 @@ local UseCustomFlyout = WoWRetail
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
-local LCG = LibStub("LibCustomGlow-1.0-NDui", true) -- NDui: use LCG mod
+local LCG = LibStub("LibCustomGlow-1.0-KkthnxUI", true) -- NDui: use LCG mod
 local Masque = LibStub("Masque", true)
 
 lib.eventFrame = lib.eventFrame or CreateFrame("Frame")

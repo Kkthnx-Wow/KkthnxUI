@@ -16,7 +16,7 @@ if not lib then
 end
 local Masque = LibStub("Masque", true)
 
-local fallbackLevel = 0 -- KkthnxUI: decreased from 8
+local fallbackLevel = 2 -- KkthnxUI: decreased from 8
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local textureList = {
 	empty = [[Interface\AdventureMap\BrokenIsles\AM_29]],
