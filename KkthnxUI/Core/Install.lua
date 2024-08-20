@@ -165,73 +165,33 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
-	local function resetAndConfigureChatFrames()
-		FCF_ResetChatWindows()
+	-- General
+	FCF_ResetChatWindows()
 
-		for _, name in ipairs(_G.CHAT_FRAMES) do
-			local frame = _G[name]
-			local id = frame:GetID()
+	-- Set positions and fonts for all chat frames
+	for _, name in ipairs(_G.CHAT_FRAMES) do
+		local frame = _G[name]
+		local id = frame:GetID()
 
-			-- Configure specific frames based on their IDs
-			if id == 1 then
-				frame:ClearAllPoints()
-				frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
-			elseif id == 2 then
-				FCF_SetWindowName(frame, L["CombatLog"])
-			elseif id == 3 then
-				-- Voice transcription specific settings
-				VoiceTranscriptionFrame_UpdateVisibility(frame)
-				VoiceTranscriptionFrame_UpdateVoiceTab(frame)
-				VoiceTranscriptionFrame_UpdateEditBox(frame)
-			end
-
-			-- Common configuration for all frames
-			FCF_SetChatWindowFontSize(nil, frame, 12)
-			FCF_SavePositionAndDimensions(frame)
-			FCF_StopDragging(frame)
+		-- Set the position for ChatFrame1 (General)
+		if id == 1 then
+			frame:ClearAllPoints()
+			frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
 		end
+
+		-- Common configurations for all frames
+		FCF_SetChatWindowFontSize(nil, frame, 12)
+		FCF_SavePositionAndDimensions(frame)
+		FCF_StopDragging(frame)
 	end
 
-	local function configureChatFrame(chatFrame, windowName, removeChannels, messageGroups, isDocked)
-		-- Configuration for individual chat frames
-		if isDocked then
-			FCF_DockFrame(chatFrame)
-		else
-			FCF_OpenNewWindow(windowName)
-		end
+	-- Lock and configure ChatFrame1 (General)
+	FCF_SetLocked(ChatFrame1, true)
+	FCF_SetWindowName(ChatFrame1, L["General"])
+	ChatFrame1:Show()
 
-		FCF_SetLocked(chatFrame, 1)
-		FCF_SetWindowName(chatFrame, windowName)
-		chatFrame:Show()
-
-		-- Remove specified channels and add message groups
-		for _, channel in ipairs(removeChannels or {}) do
-			ChatFrame_RemoveChannel(chatFrame, channel)
-		end
-
-		ChatFrame_RemoveAllMessageGroups(chatFrame)
-		for _, group in ipairs(messageGroups) do
-			ChatFrame_AddMessageGroup(chatFrame, group)
-		end
-	end
-
-	local function configureChatColors()
-		-- Set specific colors for chat channels
-		ChangeChatColor("CHANNEL1", 195 / 255, 230 / 255, 232 / 255) -- General
-		ChangeChatColor("CHANNEL2", 232 / 255, 158 / 255, 121 / 255) -- Trade
-		ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255) -- Local Defense
-	end
-
-	local function enableClassColors(chatGroups)
-		-- Enable class colors for specified chat groups
-		for _, group in ipairs(chatGroups) do
-			ToggleChatColorNamesByClassGroup(true, group)
-		end
-	end
-
-	-- Apply configurations
-	resetAndConfigureChatFrames()
-
+	-- Remove channels and message groups from ChatFrame1
+	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
 	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(ChatFrame1, "LocalDefense")
@@ -239,49 +199,108 @@ function Module:ForceChatSettings()
 	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
 	ChatFrame_RemoveChannel(ChatFrame1, "Services")
 
-	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD")
-	ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD_ACHIEVEMENT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_WARNING")
-	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "SYSTEM")
-	ChatFrame_AddMessageGroup(ChatFrame1, "ERRORS")
-	ChatFrame_AddMessageGroup(ChatFrame1, "AFK")
-	ChatFrame_AddMessageGroup(ChatFrame1, "DND")
-	ChatFrame_AddMessageGroup(ChatFrame1, "IGNORED")
-	ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
-
-	-- Configure specific chat frames
-	configureChatFrame(ChatFrame1, L["General"], { TRADE, GENERAL, "LocalDefense", "GuildRecruitment", "LookingForGroup", L["Services"] }, { "SAY", "EMOTE", "YELL", "GUILD", "OFFICER", "GUILD_ACHIEVEMENT", "MONSTER_SAY", "MONSTER_EMOTE", "MONSTER_YELL", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "SYSTEM", "ERRORS", "AFK", "DND", "IGNORED", "ACHIEVEMENT" })
-	configureChatFrame(ChatFrame2, L["CombatLog"], nil, {}, true)
-	configureChatFrame(ChatFrame4, L["Whisper"], nil, { "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }, true)
-	configureChatFrame(ChatFrame5, L["Trade"], nil, { TRADE, GENERAL, L["Services"] }, true)
-	configureChatFrame(ChatFrame6, L["Loot"], nil, { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "MONEY", "SKILL" }, true)
-
-	configureChatColors()
-	local classColorGroups = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
-	local maxChatChannels = _G.MAX_WOW_CHAT_CHANNELS or 10 -- Fallback in case the global isn't set
-	for i = 1, maxChatChannels do
-		table.insert(classColorGroups, "CHANNEL" .. i)
+	-- Add message groups to ChatFrame1
+	local generalMessageGroups = {
+		"SAY",
+		"EMOTE",
+		"YELL",
+		"GUILD",
+		"OFFICER",
+		"GUILD_ACHIEVEMENT",
+		"MONSTER_SAY",
+		"MONSTER_EMOTE",
+		"MONSTER_YELL",
+		"MONSTER_WHISPER",
+		"MONSTER_BOSS_EMOTE",
+		"MONSTER_BOSS_WHISPER",
+		"PARTY",
+		"PARTY_LEADER",
+		"RAID",
+		"RAID_LEADER",
+		"RAID_WARNING",
+		"INSTANCE_CHAT",
+		"INSTANCE_CHAT_LEADER",
+		"BG_HORDE",
+		"BG_ALLIANCE",
+		"BG_NEUTRAL",
+		"SYSTEM",
+		"ERRORS",
+		"AFK",
+		"DND",
+		"IGNORED",
+		"ACHIEVEMENT",
+	}
+	for _, group in ipairs(generalMessageGroups) do
+		ChatFrame_AddMessageGroup(ChatFrame1, group)
 	end
-	enableClassColors(classColorGroups)
+
+	-- Configure ChatFrame2 (Combat Log)
+	FCF_DockFrame(ChatFrame2)
+	FCF_SetLocked(ChatFrame2, true)
+	FCF_SetWindowName(ChatFrame2, L["Combat"])
+	ChatFrame2:Show()
+
+	-- Configure Whispers Window
+	local Whispers = FCF_OpenNewWindow("Whispers")
+	FCF_SetLocked(Whispers, true)
+	FCF_DockFrame(Whispers)
+	ChatFrame_RemoveAllMessageGroups(Whispers)
+	ChatFrame_AddMessageGroup(Whispers, "WHISPER")
+	ChatFrame_AddMessageGroup(Whispers, "BN_WHISPER")
+	ChatFrame_AddMessageGroup(Whispers, "BN_CONVERSATION")
+
+	-- Configure Trade Window
+	local Trade = FCF_OpenNewWindow(L["Trade"])
+	FCF_SetLocked(Trade, true)
+	FCF_DockFrame(Trade)
+	ChatFrame_RemoveAllMessageGroups(Trade)
+	ChatFrame_AddChannel(Trade, TRADE)
+	ChatFrame_AddChannel(Trade, GENERAL)
+	ChatFrame_AddChannel(Trade, L["Services"])
+
+	-- Configure Loot Window
+	local Loot = FCF_OpenNewWindow(L["Loot"])
+	FCF_SetLocked(Loot, true)
+	FCF_DockFrame(Loot)
+	ChatFrame_RemoveAllMessageGroups(Loot)
+	ChatFrame_AddMessageGroup(Loot, "COMBAT_XP_GAIN")
+	ChatFrame_AddMessageGroup(Loot, "COMBAT_HONOR_GAIN")
+	ChatFrame_AddMessageGroup(Loot, "COMBAT_FACTION_CHANGE")
+	ChatFrame_AddMessageGroup(Loot, "LOOT")
+	ChatFrame_AddMessageGroup(Loot, "MONEY")
+	ChatFrame_AddMessageGroup(Loot, "SKILL")
+
+	-- Finalize
+	FCF_SelectDockFrame(ChatFrame1)
+
+	-- Enable class color for chat types
+	local classColorChatTypes = {
+		"SAY",
+		"YELL",
+		"GUILD",
+		"OFFICER",
+		"WHISPER",
+		"WHISPER_INFORM",
+		"BN_WHISPER",
+		"BN_WHISPER_INFORM",
+		"PARTY",
+		"PARTY_LEADER",
+		"RAID",
+		"RAID_LEADER",
+		"RAID_WARNING",
+		"INSTANCE_CHAT",
+		"INSTANCE_CHAT_LEADER",
+		"EMOTE",
+		"CHANNEL",
+		"GUILD_ACHIEVEMENT",
+	}
+	for i = 1, 20 do
+		table.insert(classColorChatTypes, "CHANNEL" .. i)
+	end
+
+	for _, chatType in ipairs(classColorChatTypes) do
+		ChatTypeInfo[chatType].colorNameByClass = true
+	end
 end
 
 local function CreateFakeAchievementPopup()
