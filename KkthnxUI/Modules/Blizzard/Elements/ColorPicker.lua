@@ -1,41 +1,45 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
+-- Cache global references
 local string_format = string.format
 local string_match = string.match
+local tonumber = tonumber
+local CreateFrame = CreateFrame
+local ColorPickerFrame = ColorPickerFrame
+local pairs = pairs
+local _G = _G
 
--- Enhanced ColorPickerFrame
+-- Utility function to translate color
 local function translateColor(r)
 	if not r then
 		r = "ff"
 	end
-
 	return tonumber(r, 16) / 255
 end
 
+-- Enhanced ColorPickerFrame functions
 function Module:EnhancedPicker_UpdateColor()
 	local r, g, b = string_match(self.colorStr, "(%x%x)(%x%x)(%x%x)$")
 	r = translateColor(r)
 	g = translateColor(g)
 	b = translateColor(b)
 
-	_G.ColorPickerFrame:SetColorRGB(r, g, b)
+	ColorPickerFrame:SetColorRGB(r, g, b)
 end
 
 local function GetBoxColor(box)
-	local r = box:GetText()
-	r = tonumber(r)
+	local r = tonumber(box:GetText())
 	if not r or r < 0 or r > 255 then
 		r = 255
 	end
-
 	return r
 end
 
 local function updateColorRGB(self)
-	local r = GetBoxColor(_G.ColorPickerFrame.__boxR)
-	local g = GetBoxColor(_G.ColorPickerFrame.__boxG)
-	local b = GetBoxColor(_G.ColorPickerFrame.__boxB)
+	local r = GetBoxColor(ColorPickerFrame.__boxR)
+	local g = GetBoxColor(ColorPickerFrame.__boxG)
+	local b = GetBoxColor(ColorPickerFrame.__boxB)
 
 	self.colorStr = string_format("%02x%02x%02x", r, g, b)
 	Module.EnhancedPicker_UpdateColor(self)
@@ -51,19 +55,18 @@ local function editBoxClearFocus(self)
 end
 
 local function createCodeBox(width, index, text)
-	local box = CreateFrame("EditBox", nil, _G.ColorPickerFrame)
+	local box = CreateFrame("EditBox", nil, ColorPickerFrame)
 	box:SetSize(width, 20)
 	box:SetAutoFocus(false)
 	box:SetTextInsets(5, 5, 0, 0)
 	box:SetMaxLetters(index == 4 and 6 or 3)
-	box:SetTextInsets(0, 0, 0, 0)
 	box:SetPoint("TOPLEFT", _G.ColorSwatch, "BOTTOMLEFT", 0, -index * 26)
 	box:SetFontObject(K.UIFont)
 
-	box.bg = CreateFrame("Button", nil, box)
-	box.bg:SetAllPoints()
-	box.bg:SetFrameLevel(box:GetFrameLevel())
-	box.bg:CreateBorder()
+	local bg = CreateFrame("Button", nil, box)
+	bg:SetAllPoints()
+	bg:SetFrameLevel(box:GetFrameLevel())
+	bg:CreateBorder()
 
 	box:SetScript("OnEscapePressed", editBoxClearFocus)
 	box:SetScript("OnEnterPressed", editBoxClearFocus)
@@ -75,11 +78,10 @@ local function createCodeBox(width, index, text)
 		box:HookScript("OnEnterPressed", updateColorRGB)
 	end
 
-	-- box.Type = "EditBox"
-
 	return box
 end
 
+-- Create enhanced color picker frame
 function Module:CreateColorPicker()
 	if C_AddOns.IsAddOnLoaded("ColorPickerPlus") or C["Misc"].ColorPicker ~= true then
 		return
@@ -87,8 +89,7 @@ function Module:CreateColorPicker()
 
 	local pickerFrame = ColorPickerFrame
 	pickerFrame:SetHeight(250)
-	K.CreateMoverFrame(pickerFrame.Header, pickerFrame) -- movable by header
-	--_G.OpacitySliderFrame:SetPoint("TOPLEFT", _G.ColorSwatch, "TOPRIGHT", 50, 0)
+	K.CreateMoverFrame(pickerFrame.Header, pickerFrame)
 
 	local colorBar = CreateFrame("Frame", nil, pickerFrame)
 	colorBar:SetSize(1, 20)
@@ -101,10 +102,10 @@ function Module:CreateColorPicker()
 			local bu = CreateFrame("Button", nil, colorBar)
 			bu:SetSize(20, 20)
 
-			bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-			bu.Icon:SetAllPoints()
-			bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			bu.Icon:SetColorTexture(value.r, value.g, value.b)
+			local icon = bu:CreateTexture(nil, "ARTWORK")
+			icon:SetAllPoints()
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			icon:SetColorTexture(value.r, value.g, value.b)
 
 			bu:SetPoint("LEFT", count * 25, 0)
 			bu:CreateBorder()

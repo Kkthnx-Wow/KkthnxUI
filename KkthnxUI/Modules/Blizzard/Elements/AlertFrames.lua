@@ -1,11 +1,13 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
+-- Cache global references
 local _G = getfenv(0)
 local ipairs, tremove = ipairs, table.remove
-local UIParent = _G.UIParent
-local AlertFrame = _G.AlertFrame
-local GroupLootContainer = _G.GroupLootContainer
+local CreateFrame, UIParent = CreateFrame, _G.UIParent
+local AlertFrame, GroupLootContainer = _G.AlertFrame, _G.GroupLootContainer
+local select = select
+local hooksecurefunc = hooksecurefunc
 
 local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -6
 local parentFrame
@@ -96,20 +98,23 @@ local function NoTalkingHeads()
 		return
 	end
 
-	_G.TalkingHeadFrame:UnregisterAllEvents() -- needs review
+	_G.TalkingHeadFrame:UnregisterAllEvents() -- Disable Talking Head Frame events
 	hooksecurefunc(_G.TalkingHeadFrame, "Show", function(self)
 		self:Hide()
 	end)
 end
 
 function Module:CreateAlertFrames()
+	-- Create parent frame
 	parentFrame = CreateFrame("Frame", nil, UIParent)
 	parentFrame:SetSize(200, 30)
 	K.Mover(parentFrame, "AlertFrameMover", "AlertFrameMover", { "TOP", UIParent, 0, -40 })
 
+	-- Configure GroupLootContainer
 	GroupLootContainer:EnableMouse(false)
 	GroupLootContainer.ignoreFramePositionManager = true
 
+	-- Adjust position of alert frames, excluding TalkingHeadFrame
 	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
 		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == _G.TalkingHeadFrame then
 			tremove(_G.AlertFrame.alertFrameSubSystems, index)
@@ -118,6 +123,7 @@ function Module:CreateAlertFrames()
 		end
 	end
 
+	-- Hook alert frame functions for adjusting positions
 	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(_, alertFrameSubSystem)
 		Module.AlertFrame_AdjustPosition(alertFrameSubSystem)
 	end)
@@ -125,7 +131,8 @@ function Module:CreateAlertFrames()
 	hooksecurefunc(AlertFrame, "UpdateAnchors", Module.AlertFrame_UpdateAnchor)
 	hooksecurefunc("GroupLootContainer_Update", Module.UpdatGroupLootContainer)
 
-	if TalkingHeadFrame then
+	-- Disable Talking Head Frame if necessary
+	if _G.TalkingHeadFrame then
 		NoTalkingHeads()
 	end
 end
