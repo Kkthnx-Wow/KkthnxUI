@@ -2,8 +2,11 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
 local C_DeathInfo_GetSelfResurrectOptions = C_DeathInfo.GetSelfResurrectOptions
-local IsInInstance, C_Map_GetBestMapForUnit, RepopMe = IsInInstance, C_Map.GetBestMapForUnit, RepopMe
+local IsInInstance = IsInInstance
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local RepopMe = RepopMe
 
+-- List of PvP areas by their map IDs
 local pvpAreas = {
 	[123] = true, -- Wintergrasp
 	[244] = true, -- Tol Barad (PvP)
@@ -13,16 +16,16 @@ local pvpAreas = {
 }
 
 local function PLAYER_DEAD()
-	local InstStat, InstType = IsInInstance()
-	local areaID = C_Map_GetBestMapForUnit("player") or 0
-
-	-- If player has ability to self-resurrect (soulstone, reincarnation, etc), do nothing and quit
+	-- Check if self-resurrection options exist (soulstone, reincarnation, etc.)
 	if C_DeathInfo_GetSelfResurrectOptions() and #C_DeathInfo_GetSelfResurrectOptions() > 0 then
-		return
+		return -- Player can self-resurrect, do nothing
 	end
 
-	-- Resurrect if player is in a PvP location or battleground
-	if (InstStat and InstType == "pvp") or pvpAreas[areaID] then
+	local isInstance, instanceType = IsInInstance()
+	local areaID = C_Map_GetBestMapForUnit("player")
+
+	-- Automatically release if in a PvP location or battleground
+	if (isInstance and instanceType == "pvp") or (areaID and pvpAreas[areaID]) then
 		RepopMe()
 	end
 end

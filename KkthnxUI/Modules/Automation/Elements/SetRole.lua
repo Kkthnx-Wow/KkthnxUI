@@ -13,18 +13,14 @@ local UnitSetRole = UnitSetRole
 
 -- Local variables
 local lastRoleChangeTime = 0
-local currentRole = nil
 local ROLE_CHANGE_THRESHOLD = 2
 
--- Change player role function
+-- Function to change the player's role
 local function changePlayerRole(role)
 	local currentTime = GetTime()
-	if not InCombatLockdown() and (currentTime - lastRoleChangeTime > ROLE_CHANGE_THRESHOLD) and (UnitGroupRolesAssigned("player") ~= role) then
-		local success = UnitSetRole("player", role)
-		if success then
-			lastRoleChangeTime = currentTime
-			currentRole = role
-		end
+	if (currentTime - lastRoleChangeTime > ROLE_CHANGE_THRESHOLD) and UnitGroupRolesAssigned("player") ~= role then
+		UnitSetRole("player", role)
+		lastRoleChangeTime = currentTime
 	end
 end
 
@@ -37,11 +33,7 @@ function Module:SetupAutoRole()
 	local spec = GetSpecialization()
 	if spec then
 		local role = GetSpecializationRole(spec)
-		if role ~= currentRole then
-			changePlayerRole(role)
-		end
-	else
-		changePlayerRole("No Role")
+		changePlayerRole(role)
 	end
 end
 

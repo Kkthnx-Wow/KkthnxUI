@@ -8,6 +8,7 @@ local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
+-- Localized names for specific items
 local localizedPylonNames = {
 	enUS = "Failure Detection Pylon",
 	zhCN = "故障检测晶塔",
@@ -35,41 +36,33 @@ local localizedBrazierNames = {
 	itIT = "Braciere del Risveglio",
 }
 
-local function SetupAutoResurrect(event, arg1)
-	-- Check if the arg1 is a Pylon or Brazier by comparing it to the localized names.
-	-- If it is, we don't need to do anything and we return
-	if localizedPylonNames[K.Client] == arg1 or localizedBrazierNames[K.Client] == arg1 then
+local function HandleAutoResurrect(event, arg1)
+	local clientLocale = K.Client
+	-- Ignore resurrection requests from specific items
+	if localizedPylonNames[clientLocale] == arg1 or localizedBrazierNames[clientLocale] == arg1 then
 		return
 	end
 
-	-- Check if the player is in combat
-	if not UnitAffectingCombat(arg1) then
-		-- If not in combat, accept the resurrect and hide the "RESURRECT_NO_TIMER" popup
+	-- Accept resurrection if not in combat
+	if not UnitAffectingCombat("player") then
 		AcceptResurrect()
 		StaticPopup_Hide("RESURRECT_NO_TIMER")
 
-		-- Check if the user has AutoResurrectThank enabled in the settings
-		if not C["Automation"].AutoResurrectThank then
-			return
+		-- Optionally thank the resurrector
+		if C["Automation"].AutoResurrectThank then
+			C_Timer_After(3, function()
+				if not UnitIsDeadOrGhost("player") then
+					DoEmote("thank", arg1)
+				end
+			end)
 		end
-
-		-- Wait 3 seconds and then check if the player is alive or not
-		C_Timer_After(3, function()
-			-- Give this more time to say thanks.
-			if not UnitIsDeadOrGhost("player") then
-				-- If player is alive, do the "thank" emote to the arg1
-				DoEmote("thank", arg1)
-			end
-		end)
 	end
 end
 
 function Module:CreateAutoResurrect()
 	if C["Automation"].AutoResurrect then
-		-- Register the event
-		K:RegisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
+		K:RegisterEvent("RESURRECT_REQUEST", HandleAutoResurrect)
 	else
-		-- Unregister the event if AutoResurrect is not enabled
-		K:UnregisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
+		K:UnregisterEvent("RESURRECT_REQUEST", HandleAutoResurrect)
 	end
 end

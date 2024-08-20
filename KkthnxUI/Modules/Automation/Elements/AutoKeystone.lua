@@ -1,36 +1,37 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
-local NUM_BAG_SLOTS = NUM_BAG_SLOTS
+local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
 
 local function isKeystone(itemID)
-	local class, subclass = select(6, GetItemInfo(itemID))
+	local class, subclass = select(6, C_Item.GetItemInfo(itemID))
 	return class == "Gem" and subclass == "Artifact Relic"
 end
 
 local function useKeystone()
 	for container = 0, NUM_BAG_SLOTS - 1 do
-		local slots = C_Container.GetContainerNumSlots(container)
-		for slot = 1, slots do
+		for slot = 1, C_Container.GetContainerNumSlots(container) do
 			local itemID = C_Container.GetContainerItemID(container, slot)
 			if itemID and isKeystone(itemID) then
 				C_Container.UseContainerItem(container, slot)
-				return true
+				return true -- Keystone found and used, exit loop
 			end
 		end
 	end
-	return false
+	return false -- No keystone found
 end
 
 function Module:SetupAutoKeystone()
 	if useKeystone() then
-		K.Print("Used Keystone from bag")
+		K.Print(L["Keystone used from bag"])
 	end
 end
 
 function Module:LoadAutoKeystone(event, addon)
 	if addon == "Blizzard_ChallengesUI" then
-		ChallengesKeystoneFrame:HookScript("OnShow", self.SetupAutoKeystone)
+		ChallengesKeystoneFrame:HookScript("OnShow", function()
+			self:SetupAutoKeystone()
+		end)
 		K:UnregisterEvent(event, self.LoadAutoKeystone)
 	end
 end
@@ -39,6 +40,6 @@ function Module:CreateAutoKeystone()
 	if C_AddOns.IsAddOnLoaded("AngryKeystones") or not C["Automation"].AutoKeystone then
 		return
 	end
-	NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
+
 	K:RegisterEvent("ADDON_LOADED", self.LoadAutoKeystone, self)
 end
