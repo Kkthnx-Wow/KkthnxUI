@@ -2,6 +2,47 @@ local K = KkthnxUI[1]
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.5.0] - 2024-08-22 - Patch 11.0",
+		General = "The KkthnxUI has been updated to align with The War Within expansion. Stay engaged with the community on Discord for the latest developments, updates, and discussions.",
+		Sections = {
+
+			{
+				Header = "General",
+				Entries = {
+					"Major update to support The War Within expansion and Patch 11.0.",
+					"Significant backend improvements and new features added.",
+				},
+			},
+
+			{
+				Header = "UI Updates",
+				Entries = {
+					"Updated and refined various modules for compatibility with The War Within expansion.",
+					"Upgraded Warbank functionalities and ensured integration with the latest game systems.",
+					"Updated core libraries to the latest versions, enhancing stability and performance.",
+					"Improved multiple UI elements to ensure smooth operation in the new expansion.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Resolved various minor bugs reported by the community.",
+					"Fixed issues related to group functionality and unit frames.",
+				},
+			},
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Thorough optimizations across all modules to ensure better performance and faster response times.",
+					"Refined the codebase for enhanced performance, especially in high-stress environments.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.4.9] - 2023-11-24 - Patch 10.2",
 		General = "Stay connected with the KkthnxUI community on our Discord server for the latest updates and engaging discussions about the addon's development and features.",
 		Sections = {
