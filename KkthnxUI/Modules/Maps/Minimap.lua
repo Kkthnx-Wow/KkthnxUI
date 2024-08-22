@@ -278,25 +278,10 @@ function Module:ReskinRegions()
 		hooksecurefunc(garrMinimapButton, "UpdateIcon", updateMinimapButtons)
 
 		local menuList = {
-			{
-				text = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE,
-				func = ToggleLandingPage,
-				arg1 = Enum.GarrisonType.Type_9_0,
-				notCheckable = true,
-			},
-			{ text = WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0, notCheckable = true },
-			{
-				text = ORDER_HALL_LANDING_PAGE_TITLE,
-				func = ToggleLandingPage,
-				arg1 = Enum.GarrisonType.Type_7_0,
-				notCheckable = true,
-			},
-			{
-				text = GARRISON_LANDING_PAGE_TITLE,
-				func = ToggleLandingPage,
-				arg1 = Enum.GarrisonType.Type_6_0,
-				notCheckable = true,
-			},
+			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0_Garrison, notCheckable = true },
+			{ text = _G.WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0_Garrison, notCheckable = true },
+			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0_Garrison, notCheckable = true },
+			{ text = _G.GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_6_0_Garrison, notCheckable = true },
 		}
 		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
 			if btn == "RightButton" then
@@ -690,11 +675,16 @@ function Module:Minimap_OnMouseUp(btn)
 		else
 			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", -160, 0)
 		end
-	elseif btn == "RightButton" and Module.TrackingDropdown then
-		if position:match("LEFT") then
-			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", 0, 0)
-		else
-			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", -160, 0)
+	elseif btn == "RightButton" then
+		local button = _G.MinimapCluster.Tracking.Button
+		if button then
+			button:OpenMenu()
+
+			if button.menu then
+				local left = position and position:match("RIGHT")
+				button.menu:ClearAllPoints()
+				button.menu:SetPoint(left and "TOPRIGHT" or "TOPLEFT", Minimap, left and "LEFT" or "RIGHT", left and -4 or 4, 0)
+			end
 		end
 	else
 		_G.Minimap:OnClick(self)
@@ -893,7 +883,8 @@ function Module:OnEnable()
 
 	-- Hide Blizz
 	MinimapCluster:EnableMouse(false)
-	-- MinimapCluster.Tracking:Hide()
+	MinimapCluster.Tracking:SetAlpha(0)
+	MinimapCluster.Tracking:SetScale(0.0001)
 	MinimapCluster.BorderTop:Hide()
 	MinimapCluster.ZoneTextButton:Hide()
 	Minimap:SetArchBlobRingScalar(0)

@@ -1,16 +1,21 @@
+-- Cache Global Variables
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
 local select = select
+local hooksecurefunc = hooksecurefunc
+local tinsert = tinsert
 
+local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
+local CreateFrame = CreateFrame
+local GetInventoryItemLink = GetInventoryItemLink
+
+-- Global Colors
+local greyRGB = K.QualityColors[0].r
+
+-- Helper Functions
 local function colourPopout(self)
-	local aR, aG, aB
 	local glow = self:GetParent().IconBorder
-
-	if glow:IsShown() then
-		aR, aG, aB = glow:GetVertexColor()
-	else
-		aR, aG, aB = K.r, K.g, K.b
-	end
-
+	local aR, aG, aB = glow:IsShown() and glow:GetVertexColor() or K.r, K.g, K.b
 	self.arrow:SetVertexColor(aR, aG, aB)
 end
 
@@ -21,13 +26,12 @@ end
 local function UpdateAzeriteItem(self)
 	if not self.styled then
 		self.AzeriteTexture:SetAlpha(0)
-		self.RankFrame.Texture:SetTexture("")
+		self.RankFrame.Texture:SetTexture(nil)
 		self.RankFrame.Label:ClearAllPoints()
 		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
 		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
 		self.RankFrame.Label:SetFontObject(K.UIFontOutline)
 		self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
-
 		self.styled = true
 	end
 end
@@ -40,10 +44,8 @@ end
 
 local function UpdateCosmetic(self)
 	local itemLink = GetInventoryItemLink("player", self:GetID())
-	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+	self.IconOverlay:SetShown(itemLink and C_Item_IsCosmeticItem(itemLink))
 end
-
-local greyRGB = K.QualityColors[0].r
 
 local function updateIconBorderColor(slot, r, g, b)
 	if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
@@ -73,36 +75,22 @@ local function styleEquipmentSlot(slotName)
 	local cooldown = slot.Cooldown or _G[slotName .. "Cooldown"]
 	local popout = slot.popoutButton
 
-	-- Strip textures and set slot size
 	slot:StripTextures()
 	slot:SetSize(36, 36)
-
-	-- Set slot icon coordinates
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	-- Hide icon border
 	iconBorder:SetAlpha(0)
-
-	-- Create border for the slot
 	slot:CreateBorder()
-
-	-- Set cooldown to cover entire slot
 	cooldown:SetAllPoints()
-
-	-- Set ignore texture
 	slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
-
-	-- Set atlas for Icon Overlay
 	slot.IconOverlay:SetAtlas("CosmeticIconFrame")
 	slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 	slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
-	-- Hook IconBorder to set color for slot border and handle hiding
 	hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
 		updateIconBorderColor(slot, r, g, b)
 	end)
 
-	hooksecurefunc(iconBorder, "Hide", function(_)
+	hooksecurefunc(iconBorder, "Hide", function()
 		resetIconBorderColor(slot)
 	end)
 
@@ -110,11 +98,9 @@ local function styleEquipmentSlot(slotName)
 		iconBorderShown(slot, show)
 	end)
 
-	-- Set up popout button
-	popout:SetNormalTexture(0)
-	popout:SetHighlightTexture(0)
+	popout:SetNormalTexture("")
+	popout:SetHighlightTexture("")
 
-	-- Create arrow for popout button
 	local arrow = popout:CreateTexture(nil, "OVERLAY")
 	arrow:SetSize(16, 16)
 	if slot.verticalFlyout then
@@ -126,11 +112,9 @@ local function styleEquipmentSlot(slotName)
 	end
 	popout.arrow = arrow
 
-	-- Hook scripts for popout button
 	popout:HookScript("OnEnter", clearPopout)
 	popout:HookScript("OnLeave", colourPopout)
 
-	-- Hook DisplayAsAzeriteItem and DisplayAsAzeriteEmpoweredItem
 	hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
 	hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
 end
@@ -140,7 +124,6 @@ tinsert(C.defaultThemes, function()
 		return
 	end
 
-	-- Character model scene
 	CharacterModelScene:DisableDrawLayer("BACKGROUND")
 	CharacterModelScene:DisableDrawLayer("BORDER")
 	CharacterModelScene:DisableDrawLayer("OVERLAY")
@@ -178,23 +161,11 @@ tinsert(C.defaultThemes, function()
 		UpdateCosmetic(button)
 	end)
 
-	CharacterHeadSlot:ClearAllPoints()
-	CharacterHandsSlot:ClearAllPoints()
-	CharacterMainHandSlot:ClearAllPoints()
-	CharacterSecondaryHandSlot:ClearAllPoints()
-	CharacterModelScene:ClearAllPoints()
-	CharacterModelScene.ControlFrame:ClearAllPoints()
-
-	-- Character control buttons
-	CharacterModelScene.ControlFrame:SetPoint("TOP", CharacterFrame.Inset, "TOP", 0, -2)
-
-	-- Character slots
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
 	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
 	CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
 	CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-	-- Character model scene
 	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 4, -4)
 	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, -4, 4)
 
@@ -202,19 +173,16 @@ tinsert(C.defaultThemes, function()
 		if CharacterFrame.activeSubframe == "PaperDollFrame" then
 			CharacterFrame:SetSize(640, 431)
 			CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
-
 			CharacterFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class)
 			CharacterFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
 			CharacterFrame.Inset.Bg:SetHorizTile(false)
 			CharacterFrame.Inset.Bg:SetVertTile(false)
-
 			CharacterFrame.Background:Hide()
 		else
 			CharacterFrame.Background:Show()
 		end
 	end)
 
-	-- Fonts
 	if CharacterLevelText then
 		CharacterLevelText:SetFontObject(K.UIFont)
 	end
@@ -223,39 +191,25 @@ tinsert(C.defaultThemes, function()
 	CharItemLvLValue:SetFontObject(K.UIFont)
 	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
-	-- Class background
 	CharacterStatsPane.ClassBackground:ClearAllPoints()
 	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
 	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
 	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 
-	local function TabTextureCoords(tex, x1)
-		if x1 ~= 0.16001 then
-			tex:SetTexCoord(0.16001, 0.86, 0.16, 0.86)
-		end
-	end
-
 	local function StyleSidebarTab(tab)
 		if not tab.bg then
-			-- Create background frame
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetAllPoints(tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:CreateBorder(nil, nil, nil, nil, nil, { 255 / 255, 223 / 255, 0 / 255 })
-
-			-- Set up textures
 			tab.Icon:SetAllPoints(tab.bg)
 			tab.Hider:SetAllPoints(tab.bg)
-
-			-- Set up highlighting
 			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
 			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
 			tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
 			tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
 			tab.TabBg:SetAlpha(0)
 		end
-
-		-- Apply texture coordinates to the first region
 		local region = select(1, tab:GetRegions())
 		if region and not tab.regionStyled then
 			region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
@@ -268,14 +222,6 @@ tinsert(C.defaultThemes, function()
 		local tab = _G["PaperDollSidebarTab" .. index]
 		while tab do
 			StyleSidebarTab(tab)
-
-			-- Hook SetTexCoord function for the first tab
-			if index == 1 then
-				for _, region in ipairs({ tab:GetRegions() }) do
-					hooksecurefunc(region, "SetTexCoord", TabTextureCoords)
-				end
-			end
-
 			index = index + 1
 			tab = _G["PaperDollSidebarTab" .. index]
 		end
@@ -283,17 +229,13 @@ tinsert(C.defaultThemes, function()
 
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", StyleSidebarTabs)
 
-	local function HideScrollbarBackground(scrollBox)
-		for i = 1, scrollBox.ScrollTarget:GetNumChildren() do
-			local child = select(i, scrollBox.ScrollTarget:GetChildren())
+	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local child = select(i, self.ScrollTarget:GetChildren())
 			if not child.styled then
 				child:DisableDrawLayer("BACKGROUND")
 				child.styled = true
 			end
 		end
-	end
-
-	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
-		HideScrollbarBackground(self)
 	end)
 end)

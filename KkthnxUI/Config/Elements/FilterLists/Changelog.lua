@@ -2,6 +2,34 @@ local K = KkthnxUI[1]
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.5.1] - 2024-08-22 - Patch 11.0",
+		General = "This update includes various performance optimizations across the codebase to improve maintainability and efficiency. These optimizations enhance overall functionality and responsiveness.",
+
+		Sections = {
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Implemented global caching for frequently used functions and API calls to reduce redundant operations and improve performance.",
+					"Optimized the LossOfControl frame reskinning process to ensure better performance and code clarity.",
+					"Streamlined the header reskinning function for ObjectiveTracker, reducing code duplication and improving efficiency.",
+					"Improved tooltip handling for mount sources and auras, optimizing lookup processes and reducing performance impact.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Fixed an issue with an empty icon in the aura watch caused by incorrect calls being used.",
+					"Fixed the `ExpansionLandingPageMinimapButton` not working on right-click.",
+					"Fixed the minimap tracking icon always being shown.",
+					"Fixed the tracking menu not opening with a right-click on the minimap tracking button.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.0] - 2024-08-22 - Patch 11.0",
 		General = "The KkthnxUI has been updated to align with The War Within expansion. Stay engaged with the community on Discord for the latest developments, updates, and discussions.",
 		Sections = {

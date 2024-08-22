@@ -1,7 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = {}
 
-local type, unpack = type, unpack
+local type, unpack, setmetatable, pairs, error = type, unpack, setmetatable, pairs, error
 
 local objectToWidgets = setmetatable({}, { __index = objectToWidgets })
 
@@ -17,13 +17,12 @@ local borderSections = {
 }
 
 local borderStyle = C["General"].BorderStyle.Value
-
-local function getBorderSize()
-	return borderStyle == "KkthnxUI" and 12 or 10
-end
+local borderSizeKkthnx = 12
+local borderSizeDefault = 10
+local getBorderSize = (borderStyle == "KkthnxUI") and borderSizeKkthnx or borderSizeDefault
 
 local function getTile(border, w, h)
-	return (w + 2 * border.__offset) / getBorderSize()
+	return (w + 2 * border.__offset) / getBorderSize
 end
 
 local function setTextureCoordinates(border, tile)
@@ -50,12 +49,13 @@ function Module:SetOffset(offset)
 end
 
 function Module:SetTexture(texture)
+	local len = #borderSections
 	if type(texture) == "table" then
-		for _, v in pairs(borderSections) do
+		for i = 1, len do
+			local v = borderSections[i]
 			self[v.name]:SetColorTexture(unpack(texture))
 		end
 	else
-		local len = #borderSections
 		for i = 1, len do
 			local v = borderSections[i]
 			if i > 4 then
@@ -86,7 +86,8 @@ function Module:SetSize(size)
 		end
 	end
 
-	onSizeChanged(self.__parent, self.__parent:GetWidth(), self.__parent:GetHeight())
+	local parentWidth, parentHeight = self.__parent:GetWidth(), self.__parent:GetHeight()
+	onSizeChanged(self.__parent, parentWidth, parentHeight)
 end
 
 function Module:Hide()
@@ -136,7 +137,8 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	local border = setmetatable({}, { __index = Module })
 	border.__parent = self
 
-	for _, section in pairs(borderSections) do
+	for i = 1, #borderSections do
+		local section = borderSections[i]
 		border[section.name] = self:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)
 		border[section.name]:SetTexCoord(unpack(section.coord))
 	end
@@ -158,7 +160,7 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	objectToWidgets[self] = border
 
 	border:SetOffset(-4)
-	border:SetSize(getBorderSize())
+	border:SetSize(getBorderSize)
 
 	return border
 end

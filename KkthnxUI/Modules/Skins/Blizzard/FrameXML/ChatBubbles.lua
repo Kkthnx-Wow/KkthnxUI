@@ -1,4 +1,5 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
 local table_insert = table.insert
 local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
 

@@ -65,8 +65,7 @@ local function CreateBorder(bFrame, ...)
 	end
 
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
-	local General = C.General
-	local Media = C.Media
+	local General, Media = C.General, C.Media
 	local BorderValue = General.BorderStyle.Value or "KkthnxUI"
 	local BorderSize = bSize or (BorderValue == "KkthnxUI" and 12 or 10)
 

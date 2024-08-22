@@ -172,7 +172,6 @@
    <Include file="Skins\Blizzard\FrameXML\GhostFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\LossOfControlFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
-   <Include file="Skins\Blizzard\FrameXML\SpellBookFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIWidgets.lua" />

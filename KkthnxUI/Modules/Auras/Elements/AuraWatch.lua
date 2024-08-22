@@ -8,13 +8,16 @@ local table_insert = table.insert
 local table_remove = table.remove
 local table_wipe = table.wipe
 
+local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
+local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown
+local C_Spell_GetSpellName = C_Spell.GetSpellName
+local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
 local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
 local GetInventoryItemCooldown = GetInventoryItemCooldown
 local GetInventoryItemLink = GetInventoryItemLink
-local GetItemInfo = C_Item.GetItemInfo
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
-local GetSpellCharges = C_Spell.GetSpellCharges
 local GetTime = GetTime
 local GetTotemInfo = GetTotemInfo
 local InCombatLockdown = InCombatLockdown
@@ -27,10 +30,12 @@ local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
 local UnitName = UnitName
 
-local maxFrames = 12 -- Max Tracked Auras
+-- Constants
+local maxFrames = 12
 local hasCentralize
-local auraWatchUpdater = CreateFrame("Frame")
 
+-- Pre-allocate tables
+local auraWatchUpdater = CreateFrame("Frame")
 local AuraList = {}
 local FrameList = {}
 local UnitIDTable = {}
@@ -39,7 +44,7 @@ local IntCD = {}
 local myTable = {}
 local cooldownTable = {}
 
--- DataConvert
+-- Data conversion
 local function DataAnalyze(v)
 	local newTable = {}
 	if type(v[1]) == "number" then
@@ -63,7 +68,6 @@ local function DataAnalyze(v)
 		newTable.Text = v[9]
 		newTable.Flash = v[10]
 	end
-
 	return newTable
 end
 
@@ -71,7 +75,6 @@ local function InsertData(index, target)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
 		table_wipe(target)
 	end
-
 	for spellID, v in pairs(myTable[index]) do
 		local value = target[spellID]
 		if value and value.AuraID == v.AuraID then
@@ -84,27 +87,21 @@ end
 local function ConvertTable()
 	for i = 1, 10 do
 		myTable[i] = {}
-		if i < 10 then
-			local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
-			if value and next(value) then
-				for spellID, v in pairs(value) do
-					myTable[i][spellID] = DataAnalyze(v)
-				end
-			end
-		else
-			if next(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) then
-				for spellID, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) do
-					myTable[i][spellID] = DataAnalyze(v)
-				end
+		local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
+		if value and next(value) then
+			for spellID, v in pairs(value) do
+				myTable[i][spellID] = DataAnalyze(v)
 			end
 		end
 	end
-
-	for _, v in pairs(C.AuraWatchList[K.Class]) do
-		-- if v.Name == "Player Aura" then
-		-- 	InsertData(1, v.List)
-		-- elseif v.Name == "Target Aura" then
-		-- InsertData(3, v.List)
+	local internalCD = KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD
+	if next(internalCD) then
+		for spellID, v in pairs(internalCD) do
+			myTable[10][spellID] = DataAnalyze(v)
+		end
+	end
+	local auraWatchList = C.AuraWatchList[K.Class]
+	for _, v in pairs(auraWatchList) do
 		if v.Name == "Special Aura" then
 			InsertData(2, v.List)
 		elseif v.Name == "Focus Aura" then
@@ -113,8 +110,8 @@ local function ConvertTable()
 			InsertData(6, v.List)
 		end
 	end
-
-	for i, v in pairs(C.AuraWatchList["ALL"]) do
+	local allAuras = C.AuraWatchList["ALL"]
+	for i, v in pairs(allAuras) do
 		if v.Name == "Enchant Aura" then
 			InsertData(7, v.List)
 		elseif v.Name == "Raid Buff" then
@@ -126,19 +123,16 @@ local function ConvertTable()
 		elseif v.Name == "InternalCD" then
 			InsertData(10, v.List)
 			IntCD = v
-			table_remove(C.AuraWatchList["ALL"], i)
+			table_remove(allAuras, i)
 		end
 	end
 end
 
 local function BuildAuraList()
 	AuraList = C.AuraWatchList["ALL"] or {}
-	for class in pairs(C.AuraWatchList) do
-		if class == K.Class then
-			for _, value in pairs(C.AuraWatchList[class]) do
-				table_insert(AuraList, value)
-			end
-		end
+	local classAuras = C.AuraWatchList[K.Class]
+	for _, value in pairs(classAuras) do
+		table_insert(AuraList, value)
 	end
 	table_wipe(C.AuraWatchList)
 end
@@ -150,11 +144,10 @@ local function BuildUnitIDTable()
 			existingUnits[v] = true
 		end
 	end
-
 	for _, VALUE in pairs(AuraList) do
-		if VALUE and VALUE.List then
+		if VALUE.List then
 			for _, value in pairs(VALUE.List) do
-				if value and value.UnitID and not existingUnits[value.UnitID] then
+				if value.UnitID and not existingUnits[value.UnitID] then
 					existingUnits[value.UnitID] = true
 					table_insert(UnitIDTable, value.UnitID)
 				end
@@ -165,11 +158,10 @@ end
 
 local function BuildCooldownTable()
 	table_wipe(cooldownTable)
-
 	for KEY, VALUE in pairs(AuraList) do
-		if VALUE and VALUE.List then
+		if VALUE.List then
 			for spellID, value in pairs(VALUE.List) do
-				if value and (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
+				if (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
 					if not cooldownTable[KEY] then
 						cooldownTable[KEY] = {}
 					end
@@ -196,7 +188,7 @@ local function tooltipOnEnter(self)
 	if self.type == 1 then
 		GameTooltip:SetSpellByID(self.spellID)
 	elseif self.type == 2 then
-		GameTooltip:SetHyperlink(select(2, GetItemInfo(self.spellID)))
+		GameTooltip:SetHyperlink(select(2, C_Item_GetItemInfo(self.spellID)))
 	elseif self.type == 3 then
 		GameTooltip:SetInventoryItem("player", self.spellID)
 	elseif self.type == 4 then
@@ -462,10 +454,10 @@ function Module:AuraWatch_UpdateCD()
 			local value = group.List[spellID]
 			if value then
 				if value.SpellID then
-					local name, _, icon = C_Spell.GetSpellName(value.SpellID)
-					local start = C_Spell.GetSpellCooldown(value.SpellID).startTime
-					local duration = C_Spell.GetSpellCooldown(value.SpellID).duration
-					local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(value.SpellID)
+					local name, icon = C_Spell_GetSpellName(value.SpellID), C_Spell_GetSpellTexture(value.SpellID)
+					local start = C_Spell_GetSpellCooldown(value.SpellID).startTime
+					local duration = C_Spell_GetSpellCooldown(value.SpellID).duration
+					local charges, maxCharges, chargeStart, chargeDuration = C_Spell_GetSpellCharges(value.SpellID)
 					if group.Mode == "ICON" then
 						name = nil
 					end
@@ -478,7 +470,7 @@ function Module:AuraWatch_UpdateCD()
 				elseif value.ItemID then
 					local start, duration = C_Item.GetItemCooldown(value.ItemID)
 					if start and duration > 3 then
-						local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(value.ItemID)
+						local name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(value.ItemID)
 						if group.Mode == "ICON" then
 							name = nil
 						end
@@ -489,7 +481,7 @@ function Module:AuraWatch_UpdateCD()
 					if link then
 						local itemID = GetItemInfoFromHyperlink(link)
 						if not Module.IgnoredItems[itemID] then
-							local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(link)
+							local name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(link)
 							local start, duration = GetInventoryItemCooldown("player", value.SlotID)
 							if duration > 1.5 then
 								if group.Mode == "ICON" then
@@ -515,11 +507,12 @@ end
 
 -- UpdateAura
 local replacedTexture = {
-	[336892] = 135130, -- 无懈警戒换成瞄准射击图标
-	[378770] = 236174, -- 夺命打击换成夺命射击图标
-	[389020] = 132330, -- 子弹风暴换成多重射击
-	[378747] = 132176, -- 凶暴兽群换成杀戮命令
+	[336892] = 135130, -- Change (Unyielding Vigil) to the Aimed Shot icon
+	[378770] = 236174, -- Change (Killing Strike) to the Kill Shot icon
+	[389020] = 132330, -- Change (Bullet Storm) to the Multi-Shot icon
+	[378747] = 132176, -- Change (Frenzied Pack) to the Kill Command icon
 }
+
 function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count, duration, expires, spellID, flash)
 	if not KEY then
 		return
@@ -694,11 +687,11 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 
 	local name, icon, _, class
 	if itemID then
-		name, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemID)
+		name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(itemID)
 		frame.type = 2
 		frame.spellID = itemID
 	else
-		name, _, icon = C_Spell.GetSpellName(intID)
+		name, icon = C_Spell_GetSpellName(intID), C_Spell_GetSpellTexture(intID)
 		frame.type = 1
 		frame.spellID = intID
 	end

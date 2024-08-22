@@ -1,10 +1,14 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
 local CreateFrame = CreateFrame
+local UIParent = UIParent
 local hooksecurefunc = hooksecurefunc
+local select = select
 local table_insert = table.insert
+local unpack = unpack
 
 -- Function to skin the LossOfControl frame
-table.insert(C.defaultThemes, function()
+table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
@@ -19,15 +23,18 @@ table.insert(C.defaultThemes, function()
 
 	frame.Icon:SetTexCoord(unpack(K.TexCoords))
 
-	frame.AbilityName:ClearAllPoints()
-	frame.AbilityName:SetPoint("BOTTOM", frame, 0, -8)
-	frame.AbilityName.scrollTime = nil
-	frame.AbilityName:SetFontObject(K.UIFont)
-	frame.AbilityName:SetFont(select(1, frame.AbilityName:GetFont()), 20, select(3, frame.AbilityName:GetFont()))
+	local abilityName = frame.AbilityName
+	abilityName:ClearAllPoints()
+	abilityName:SetPoint("BOTTOM", frame, 0, -8)
+	abilityName.scrollTime = nil
+	abilityName:SetFontObject(K.UIFont)
+	abilityName:SetFont(select(1, abilityName:GetFont()), 20, select(3, abilityName:GetFont()))
 
+	-- Hide TimeLeft text
 	frame.TimeLeft.NumberText:Hide()
 	frame.TimeLeft.SecondsText:Hide()
 
+	-- Hook function to control LossOfControlFrame display
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
 		local icon = self.Icon
 		local abilityName = self.AbilityName
