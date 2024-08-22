@@ -45,7 +45,7 @@ function Module:AddLineForID(id, linkType, noadd)
 
 	if linkType == types.item then
 		local bagCount = GetItemCount(id)
-		local bankCount = GetItemCount(id, true) - bagCount
+		local bankCount = C_Item.GetItemCount(id, true, nil, true, true) - bagCount
 		local itemStackCount = select(8, GetItemInfo(id))
 		if bankCount > 0 then
 			self:AddDoubleLine(BAGSLOT .. "/" .. BANK .. ":", K.InfoColor .. bagCount .. "/" .. bankCount)
