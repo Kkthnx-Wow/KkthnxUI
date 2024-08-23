@@ -33,8 +33,6 @@ table_insert(C.defaultThemes, function()
 		end
 	end
 
-	local cr, cg, cb = K.r, K.g, K.b
-
 	hooksecurefunc(GameMenuFrame, "InitButtons", function(self)
 		if not self.buttonPool then
 			return

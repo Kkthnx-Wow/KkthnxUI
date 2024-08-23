@@ -284,6 +284,8 @@ function Module:CreateArena()
 	self:Tag(altPower, "[altpower]")
 
 	self.Range = {
-		Override = Module.UpdateRange,
+		Override = function()
+			Module.UpdateRange(self, "arena")
+		end,
 	}
 end

@@ -35,6 +35,7 @@ C.NameplateWhiteList = {
 	[255972] = true, -- Empowered Loa's Bargain, Atal'Dazar
 	[260805] = true, -- Focusing Iris, Plaguefall
 	[264027] = true, -- Ward Candle, Plaguefall
+	[372824] = true, -- 燃烧锁链，奈萨鲁斯
 }
 
 C.NameplateBlackList = {
@@ -64,6 +65,8 @@ C.NameplateCustomUnits = {
 	[190426] = true, -- Decaying Totem, Fernskin
 	[190381] = true, -- Rotburst Totem, Fernskin
 	[186696] = true, -- Tremor Totem, Tyrant
+	[84400] = true, -- 繁盛古树，永茂林地
+	[199368] = true, -- 硬化的水晶，碧蓝魔馆
 	-- Condemned Demon
 	[169430] = true,
 	[169428] = true,
@@ -193,4 +196,5 @@ C.MajorSpells = {
 	[411300] = true, -- Salted Fish Arrow Rain, Eternal Dawn
 	[413607] = true, -- Erosion Volley, Eternal Dawn
 	[417011] = true, -- Holy Light Spell, Eternal Dawn
+	[169179] = true, -- 巨灵猛击，永茂林地
 }

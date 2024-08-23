@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
 -- Global caching
-local string_find, UnitIsUnit, UnitInParty, UnitInRaid, GetNumGroupMembers, IsInRaid, UnitIsPlayer, UnitPhaseReason, UnitInRange, UnitCanAttack, UnitIsConnected = string.find, UnitIsUnit, UnitInParty, UnitInRaid, GetNumGroupMembers, IsInRaid, UnitIsPlayer, UnitPhaseReason, UnitInRange, UnitCanAttack, UnitIsConnected
+local string_find, UnitIsUnit, GetNumGroupMembers, IsInRaid, UnitIsPlayer, UnitPhaseReason, UnitInRange, UnitCanAttack, UnitIsConnected = string.find, UnitIsUnit, GetNumGroupMembers, IsInRaid, UnitIsPlayer, UnitPhaseReason, UnitInRange, UnitCanAttack, UnitIsConnected
 
 local function GetGroupUnit(unit)
 	if UnitIsUnit(unit, "player") then
@@ -28,46 +28,45 @@ end
 
 local function getMaxRange(unit)
 	local minRange, maxRange = K.LibRangeCheck:GetRange(unit, true, true)
-	return maxRange
+	return (not minRange) or maxRange
 end
 
 local function friendlyIsInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
-	if UnitIsPlayer(unit) and UnitPhaseReason(unit) then
-		return false -- not in the same phase
+	if UnitIsPlayer(unit) and (UnitPhaseReason(unit)) then
+		return false -- is not in same phase
 	end
 
 	local inRange, checkedRange = UnitInRange(unit)
 	if checkedRange and not inRange then
-		return false -- Blizzard API indicates out of range
+		return false -- blizz checked and said the unit is out of range
 	end
 
 	return getMaxRange(unit)
 end
 
-function Module:UpdateRange()
+function Module:UpdateRange(unit)
 	if not self.Range then
 		return
 	end
 
-	local unit = self.unit
-	local alpha = self.Range.insideAlpha
+	local alpha
 
-	if not unit then
-		self.Range.RangeAlpha = alpha
-		self:SetAlpha(self.Range.RangeAlpha)
-		return
-	end
+	unit = unit or self.unit
 
-	if not self.forceInRange and not self.forceNotInRange then
-		local canAttack = UnitCanAttack("player", unit) or UnitIsUnit(unit, "pet")
-		local inRange = (canAttack and getMaxRange(unit)) or (UnitIsConnected(unit) and friendlyIsInRange(unit))
-		alpha = inRange and self.Range.insideAlpha or self.Range.outsideAlpha
-	elseif self.forceInRange or unit == "player" then
+	if self.forceInRange or unit == "player" then
 		alpha = self.Range.insideAlpha
-	else
+	elseif self.forceNotInRange then
 		alpha = self.Range.outsideAlpha
+	elseif unit then
+		if UnitCanAttack("player", unit) or UnitIsUnit(unit, "pet") then
+			alpha = (getMaxRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha
+		else
+			alpha = (UnitIsConnected(unit) and friendlyIsInRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha
+		end
+	else
+		alpha = self.Range.insideAlpha
 	end
 
 	self.Range.RangeAlpha = alpha

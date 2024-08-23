@@ -175,7 +175,9 @@ function Module:CreatePet()
 	}
 
 	local Range = {
-		Override = Module.UpdateRange,
+		Override = function()
+			Module.UpdateRange(self, "pet")
+		end,
 	}
 
 	self.Overlay = Overlay

@@ -1,7 +1,9 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K = KkthnxUI[1]
+local C = KkthnxUI[2]
+local L = KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
--- Localizing Lua built-in functions for performance
+-- Localizing Lua built-in functions
 local select = select
 local tonumber = tonumber
 local next = next
@@ -10,30 +12,29 @@ local ipairs = ipairs
 local pcall = pcall
 local error = error
 
--- Localizing WoW API functions and variables
-local BNToastFrame = BNToastFrame
+-- Localizing WoW API functions
+local CreateFrame = CreateFrame
+local PlaySound = PlaySound
+local StaticPopup_Show = StaticPopup_Show
+local hooksecurefunc = hooksecurefunc
+local UIParent = UIParent
+local UnitXP = UnitXP
+local UnitXPMax = UnitXPMax
+local UnitGUID = UnitGUID
+local GetMerchantItemLink = GetMerchantItemLink
+local GetMerchantItemMaxStack = GetMerchantItemMaxStack
+local GetRewardXP = GetRewardXP
+local GetQuestLogRewardXP = GetQuestLogRewardXP
+local IsAltKeyDown = IsAltKeyDown
+local InCombatLockdown = InCombatLockdown
 local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = C_FriendList.IsFriend
 local C_QuestLog_GetSelectedQuest = C_QuestLog.GetSelectedQuest
 local C_QuestLog_ShouldShowQuestRewards = C_QuestLog.ShouldShowQuestRewards
-local CreateFrame = CreateFrame
-local GetItemInfo = GetItemInfo
-local GetItemQualityColor = GetItemQualityColor
-local GetMerchantItemLink = GetMerchantItemLink
-local GetMerchantItemMaxStack = GetMerchantItemMaxStack
-local GetQuestLogRewardXP = GetQuestLogRewardXP
-local GetRewardXP = GetRewardXP
-local InCombatLockdown = InCombatLockdown
-local IsAltKeyDown = IsAltKeyDown
-local IsGuildMember = IsGuildMember
-local PlaySound = PlaySound
+local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Item_GetItemQualityColor = C_Item.GetItemQualityColor
 local StaticPopupDialogs = StaticPopupDialogs
-local StaticPopup_Show = StaticPopup_Show
-local UIParent = UIParent
-local UnitGUID = UnitGUID
-local UnitXP = UnitXP
-local UnitXPMax = UnitXPMax
-local hooksecurefunc = hooksecurefunc
+local IsGuildMember = IsGuildMember
 
 -- Localizing WoW UI constants
 local FRIEND = FRIEND
@@ -41,23 +42,119 @@ local GUILD = GUILD
 local NO = NO
 local YES = YES
 
+-- Miscellaneous Module Registry
 local KKUI_MISC_MODULE = {}
 
+-- Register Miscellaneous Modules
 function Module:RegisterMisc(name, func)
 	if not KKUI_MISC_MODULE[name] then
 		KKUI_MISC_MODULE[name] = func
 	end
 end
 
+-- Unregister Talent Event
+local function unregisterTalentEvent()
+	if PlayerTalentFrame then
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
+end
+
+-- Enable Auto Chat Bubbles
+local function enableAutoBubbles()
+	if C["Misc"].AutoBubbles then
+		local function updateBubble()
+			local name, instType = GetInstanceInfo()
+			SetCVar("chatBubbles", (name and instType == "raid") and 1 or 0)
+		end
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
+	end
+end
+
+-- Modify Delete Dialog
+local function modifyDeleteDialog()
+	local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
+	local _, confirmationType = strsplit("@", confirmationText, 2)
+
+	local function setHyperlinkHandlers(dialog)
+		dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
+		dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
+	end
+
+	setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
+	setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
+	setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
+
+	local deleteConfirmationFrame = CreateFrame("FRAME")
+	deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
+	deleteConfirmationFrame:SetScript("OnEvent", function()
+		local staticPopup = StaticPopup1
+		local editBox = StaticPopup1EditBox
+		local button = StaticPopup1Button1
+		local popupText = StaticPopup1Text
+
+		if editBox:IsShown() then
+			staticPopup:SetHeight(staticPopup:GetHeight() - 14)
+			editBox:Hide()
+			button:Enable()
+			local link = select(3, GetCursorInfo())
+
+			if link then
+				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
+				if linkType == "battlepet" then
+					local _, level, breedQuality = strsplit(":", linkOptions)
+					local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
+					link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+				end
+				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
+			end
+		else
+			staticPopup:SetHeight(staticPopup:GetHeight() + 40)
+			editBox:Hide()
+			button:Enable()
+			local link = select(3, GetCursorInfo())
+
+			if link then
+				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
+				if linkType == "battlepet" then
+					local _, level, breedQuality = strsplit(":", linkOptions)
+					local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
+					link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+				end
+				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
+			end
+		end
+	end)
+end
+
+-- Fix Addon Tooltip
+local function fixAddonTooltip()
+	local _AddonTooltip_Update = AddonTooltip_Update
+	function AddonTooltip_Update(owner)
+		if owner and owner:GetID() >= 1 then
+			_AddonTooltip_Update(owner)
+		end
+	end
+end
+
+-- Fix Party Guide Promote
+local function fixPartyGuidePromote()
+	if not PROMOTE_GUIDE then
+		PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
+	end
+end
+
+-- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
-	-- First loop: Iterating over KKUI_MISC_MODULE
 	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
 		end
 	end
 
-	-- Second loop: Iterating over loadMiscModules
 	local loadMiscModules = {
 		"CreateBossBanner",
 		"CreateBossEmote",
@@ -88,128 +185,29 @@ function Module:OnEnable()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
-	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 }, _G.BNToastFrame:GetSize())
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 }, BNToastFrame:GetSize())
 	else
-		BNToastFrame.mover:SetSize(_G.BNToastFrame:GetSize())
+		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
-	-- Unregister talent event
-	local function unregisterTalentEvent()
-		if PlayerTalentFrame then
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		else
-			hooksecurefunc("TalentFrame_LoadUI", function()
-				PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-			end)
-		end
-	end
 	unregisterTalentEvent()
-
-	-- Auto chatBubbles
-	local function enableAutoBubbles()
-		if C["Misc"].AutoBubbles then
-			local function updateBubble()
-				local name, instType = GetInstanceInfo()
-				if name and instType == "raid" then
-					SetCVar("chatBubbles", 1)
-				else
-					SetCVar("chatBubbles", 0)
-				end
-			end
-			K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
-		end
-	end
 	enableAutoBubbles()
-
-	local function modifyDeleteDialog()
-		-- Modify DELETE_GOOD_ITEM text to get the confirmation type
-		local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
-		local _, confirmationType = strsplit("@", confirmationText, 2)
-
-		-- Add hyperlinks to regular item destroy
-		local function setHyperlinkHandlers(dialog)
-			dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
-			dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
-		end
-
-		setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
-		setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
-		setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
-
-		-- Create frame to handle events
-		local deleteConfirmationFrame = CreateFrame("FRAME")
-		deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
-		deleteConfirmationFrame:SetScript("OnEvent", function()
-			local staticPopup = StaticPopup1
-			local editBox = StaticPopup1EditBox
-			local button = StaticPopup1Button1
-			local popupText = StaticPopup1Text
-
-			-- Check if edit box is shown
-			if editBox:IsShown() then
-				staticPopup:SetHeight(staticPopup:GetHeight() - 14)
-				editBox:Hide()
-				button:Enable()
-				local link = select(3, GetCursorInfo())
-
-				-- Handle battle pets
-				if link then
-					local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
-					if linkType == "battlepet" then
-						local _, level, breedQuality = strsplit(":", linkOptions)
-						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
-					end
-					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
-				end
-			else
-				staticPopup:SetHeight(staticPopup:GetHeight() + 40)
-				editBox:Hide()
-				button:Enable()
-				local link = select(3, GetCursorInfo())
-
-				-- Handle battle pets
-				if link then
-					local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
-					if linkType == "battlepet" then
-						local _, level, breedQuality = strsplit(":", linkOptions)
-						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
-					end
-					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
-				end
-			end
-		end)
-	end
 	modifyDeleteDialog()
-
-	-- Fix blizz bug in addon list
-	local function fixAddonTooltip()
-		local _AddonTooltip_Update = AddonTooltip_Update
-		function AddonTooltip_Update(owner)
-			if not owner then
-				return
-			end
-
-			if owner:GetID() < 1 then
-				return
-			end
-			_AddonTooltip_Update(owner)
-		end
-	end
 	fixAddonTooltip()
-
-	local function fixPartyGuidePromote()
-		if not PROMOTE_GUIDE then
-			PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
-		end
-	end
 	fixPartyGuidePromote()
 end
 
+-- BNToast Frame Mover Setup
+function Module:PostBNToastMove(_, anchor)
+	if anchor ~= BNToastFrame.mover then
+		BNToastFrame:ClearAllPoints()
+		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
+	end
+end
+
+-- Update Drag Cursor for Minimap
 local function KKUI_UpdateDragCursor(self)
 	local mx, my = Minimap:GetCenter()
 	local px, py = GetCursorPosition()
@@ -236,25 +234,22 @@ local function KKUI_UpdateDragCursor(self)
 	self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
+-- Click Minimap Button Functionality
 local function KKUI_ClickMinimapButton(_, btn)
 	if btn == "LeftButton" then
-		-- Prevent options panel from showing if Blizzard options panel is showing
 		if SettingsPanel:IsShown() or ChatConfigFrame:IsShown() then
 			return
 		end
-
-		-- Check if the player is in combat before opening the options panel
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
-
-		-- Toggle the options panel
 		K["GUI"]:Toggle()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+		PlaySound(SOUNDKIT_IG_MAINMENU_OPTION)
 	end
 end
 
+-- Create Minimap Button
 function Module:CreateMinimapButtonToggle()
 	local mmb = CreateFrame("Button", "KKUI_MinimapButton", Minimap)
 	mmb:SetPoint("BOTTOMLEFT", -15, 20)
@@ -269,31 +264,28 @@ function Module:CreateMinimapButtonToggle()
 
 	local overlay = mmb:CreateTexture(nil, "OVERLAY")
 	overlay:SetSize(53, 53)
-	overlay:SetTexture(136430) -- "Interface\\Minimap\\MiniMap-TrackingBorder"
+	overlay:SetTexture(136430)
 	overlay:SetPoint("TOPLEFT")
 
 	local background = mmb:CreateTexture(nil, "BACKGROUND")
 	background:SetSize(20, 20)
-	background:SetTexture(136467) -- "Interface\\Minimap\\UI-Minimap-Background"
+	background:SetTexture(136467)
 	background:SetPoint("TOPLEFT", 7, -5)
 
 	local icon = mmb:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(22, 11)
 	icon:SetPoint("CENTER")
 	icon:SetTexture(C["Media"].Textures.LogoSmallTexture)
-	--icon.__ignored = false -- ignore KkthnxUI recycle bin
 
 	mmb:SetScript("OnEnter", function()
-		GameTooltip:ClearLines()
-		GameTooltip:Hide()
 		GameTooltip:SetOwner(mmb, "ANCHOR_LEFT")
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine("KkthnxUI", 1, 1, 1)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("LeftButton: Toggle Config", 0.6, 0.8, 1)
-		-- GameTooltip:AddLine("RightButton: Toggle MoveUI", 0.6, 0.8, 1)
 		GameTooltip:Show()
 	end)
+
 	mmb:SetScript("OnLeave", GameTooltip_Hide)
 	mmb:RegisterForClicks("AnyUp")
 	mmb:SetScript("OnClick", KKUI_ClickMinimapButton)
@@ -304,7 +296,6 @@ function Module:CreateMinimapButtonToggle()
 		self:SetScript("OnUpdate", nil)
 	end)
 
-	-- Function to toggle LibDBIcon
 	function Module:ToggleMinimapIcon()
 		if C["General"].MinimapIcon then
 			mmb:Show()
@@ -316,45 +307,89 @@ function Module:CreateMinimapButtonToggle()
 	Module:ToggleMinimapIcon()
 end
 
-function Module:CreateGUIGameMenuButton()
-	local function toggleGUI()
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-			return
-		end
-		K["GUI"]:Toggle()
-		HideUIPanel(_G.GameMenuFrame)
-		PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
-	end
+-- Game Menu Setup
+local gameMenuLastButtons = {
+	[_G.GAMEMENU_OPTIONS] = 1,
+	[_G.BLIZZARD_STORE] = 2,
+}
 
-	hooksecurefunc(GameMenuFrame, "InitButtons", function(self)
-		self:AddButton(K.Title, toggleGUI)
+function Module:PositionGameMenuButton()
+	local anchorIndex = (C_StorePublic.IsEnabled and C_StorePublic.IsEnabled() and 2) or 1
+	for button in GameMenuFrame.buttonPool:EnumerateActive() do
+		local text = button:GetText()
+		GameMenuFrame.MenuButtons[text] = button
+		local lastIndex = gameMenuLastButtons[text]
+		if lastIndex == anchorIndex and GameMenuFrame.KkthnxUI then
+			GameMenuFrame.KkthnxUI:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -10)
+		elseif not lastIndex then
+			local point, anchor, point2, x, y = button:GetPoint()
+			button:SetPoint(point, anchor, point2, x, y - 30)
+		end
+	end
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 30)
+	if GameMenuFrame.KkthnxUI then
+		GameMenuFrame.KkthnxUI:SetFormattedText(K.Title)
+	end
+end
+
+function Module:ClickGameMenu()
+	if InCombatLockdown() then
+		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+		return
+	end
+	K["GUI"]:Toggle()
+	HideUIPanel(GameMenuFrame)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	if not InCombatLockdown() then
+		HideUIPanel(GameMenuFrame)
+	end
+end
+
+function Module:CreateGUIGameMenuButton()
+	if GameMenuFrame.KkthnxUI then
+		return
+	end
+	local button = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "MainMenuFrameButtonTemplate")
+	button:SetScript("OnClick", function()
+		Module:ClickGameMenu()
+	end)
+	button:SetSize(200, 30)
+	button:SkinButton()
+	GameMenuFrame.KkthnxUI = button
+	GameMenuFrame.MenuButtons = {}
+	hooksecurefunc(GameMenuFrame, "Layout", function()
+		Module:PositionGameMenuButton()
 	end)
 end
 
+-- Create Quest XP Percent Display
 function Module:CreateQuestXPPercent()
-	local playerCurrentXP, playerMaxXP = UnitXP("player"), UnitXPMax("player")
-	local questXP, xpText, xpFrame
+	local playerCurrentXP = UnitXP("player")
+	local playerMaxXP = UnitXPMax("player")
+	local questXP
+	local xpText
+	local xpFrame
 
 	if _G.QuestInfoFrame.questLog then
 		local selectedQuest = C_QuestLog_GetSelectedQuest()
 		if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
 			questXP = GetQuestLogRewardXP()
-			xpText, xpFrame = MapQuestInfoRewardsFrame.XPFrame.Name:GetText(), _G.MapQuestInfoRewardsFrame.XPFrame.Name
+			xpText = MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
+			xpFrame = _G.MapQuestInfoRewardsFrame.XPFrame.Name
 		end
 	else
 		questXP = GetRewardXP()
-		xpText, xpFrame = QuestInfoXPFrame.ValueText:GetText(), _G.QuestInfoXPFrame.ValueText
+		xpText = QuestInfoXPFrame.ValueText:GetText()
+		xpFrame = _G.QuestInfoXPFrame.ValueText
 	end
 
-	-- Calculate and display the XP percentage gain
 	if questXP and questXP > 0 and xpText then
 		local xpPercentageIncrease = (((playerCurrentXP + questXP) / playerMaxXP) - (playerCurrentXP / playerMaxXP)) * 100
 		xpFrame:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", xpText, xpPercentageIncrease)
 	end
 end
 
--- Reanchor Vehicle
+-- Reanchor Vehicle Seat Indicator
 function Module:CreateVehicleSeatMover()
 	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
 	frame:SetSize(125, 125)
@@ -368,7 +403,7 @@ function Module:CreateVehicleSeatMover()
 	end)
 end
 
--- Reanchor DurabilityFrame
+-- Reanchor Durability Frame
 function Module:CreateDurabilityFrameMove()
 	hooksecurefunc(DurabilityFrame, "SetPoint", function(self, _, parent)
 		if parent == "MinimapCluster" or parent == MinimapCluster then
@@ -378,7 +413,7 @@ function Module:CreateDurabilityFrameMove()
 	end)
 end
 
--- Reanchor TicketStatusFrame
+-- Reanchor Ticket Status Frame
 function Module:CreateTicketStatusFrameMove()
 	hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, relF)
 		if relF == "TOPRIGHT" then
@@ -388,7 +423,7 @@ function Module:CreateTicketStatusFrameMove()
 	end)
 end
 
--- Hide Bossbanner
+-- Hide Boss Banner
 function Module:CreateBossBanner()
 	if C["Misc"].HideBanner and not C["Misc"].KillingBlow then
 		BossBanner:UnregisterAllEvents()
@@ -398,7 +433,7 @@ function Module:CreateBossBanner()
 	end
 end
 
--- Hide boss emote
+-- Hide Boss Emote
 function Module:CreateBossEmote()
 	if C["Misc"].HideBossEmote then
 		RaidBossEmoteFrame:UnregisterAllEvents()
@@ -409,6 +444,7 @@ function Module:CreateBossEmote()
 	end
 end
 
+-- Error Frame Toggle Setup
 local function SetupErrorFrameToggle(event)
 	if event == "PLAYER_REGEN_DISABLED" then
 		_G.UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
@@ -427,18 +463,20 @@ function Module:CreateErrorFrameToggle()
 	end
 end
 
+-- Create Quest Size Update
 function Module:CreateQuestSizeUpdate()
 	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
 	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
 	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
 end
 
+-- Create Objective Size Update
 function Module:CreateObjectiveSizeUpdate()
 	ObjectiveFont:SetFontObject(K.UIFont)
 	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
 end
 
--- TradeFrame hook
+-- TradeFrame Hook
 function Module:CreateTradeTargetInfo()
 	local infoText = K.CreateFontString(TradeFrame, 16, "", "")
 	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -8)
@@ -446,12 +484,10 @@ function Module:CreateTradeTargetInfo()
 	local function updateColor()
 		local r, g, b = K.UnitColor("NPC")
 		TradeFrameRecipientNameText:SetTextColor(r, g, b)
-
 		local guid = UnitGUID("NPC")
 		if not guid then
 			return
 		end
-
 		local text = "|cffff0000" .. L["Stranger"]
 		if C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) then
 			text = "|cffffff00" .. FRIEND
@@ -461,83 +497,11 @@ function Module:CreateTradeTargetInfo()
 		infoText:SetText(text)
 	end
 
-	-- Call the update function once when the frame is shown
 	updateColor()
-
-	-- Only hook the update function once, to avoid excessive function calls
 	TradeFrame:HookScript("OnShow", updateColor)
 end
 
--- Archaeology counts
-do
-	local function DisplayArchaeologyCounts(tooltip, anchor)
-		tooltip:SetOwner(anchor, "ANCHOR_BOTTOMRIGHT")
-		tooltip:ClearLines()
-		tooltip:AddLine("|c0000FF00Arch Count:")
-		tooltip:AddLine(" ")
-
-		local totalArtifacts = 0
-		for raceIndex = 1, GetNumArchaeologyRaces() do
-			local numArtifacts = GetNumArtifactsByRace(raceIndex)
-			local raceArtifactCount = 0
-			for artifactIndex = 1, numArtifacts do
-				local completionCount = select(10, GetArtifactInfoByRace(raceIndex, artifactIndex))
-				raceArtifactCount = raceArtifactCount + completionCount
-			end
-			if numArtifacts > 1 then
-				local raceName = GetArchaeologyRaceInfo(raceIndex)
-				tooltip:AddDoubleLine(raceName .. ":", K.InfoColor .. raceArtifactCount)
-				totalArtifacts = totalArtifacts + raceArtifactCount
-			end
-		end
-
-		tooltip:AddLine(" ")
-		tooltip:AddDoubleLine("|c0000ff00" .. TOTAL .. ":", "|cffff0000" .. totalArtifacts)
-		tooltip:Show()
-	end
-
-	local function CreateArchaeologyCalculateButton()
-		local button = CreateFrame("Button", nil, ArchaeologyFrameCompletedPage)
-		button:SetPoint("TOPRIGHT", -45, -45)
-		button:SetSize(35, 35)
-		button.Icon = button:CreateTexture(nil, "ARTWORK")
-		button.Icon:SetAllPoints()
-		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		button.Icon:SetTexture("Interface\\ICONS\\Ability_Iyyokuk_Calculate")
-		button:CreateBorder()
-		button:StyleButton()
-
-		button:SetScript("OnEnter", function()
-			DisplayArchaeologyCounts(GameTooltip, button)
-		end)
-		button:SetScript("OnLeave", K.HideTooltip)
-	end
-
-	local function InitializeArchaeologyUI(event, addon)
-		if addon == "Blizzard_ArchaeologyUI" then
-			CreateArchaeologyCalculateButton()
-
-			-- Reposition Archaeology Progress Bar
-			ArcheologyDigsiteProgressBar.ignoreFramePositionManager = true
-			ArcheologyDigsiteProgressBar:SetPoint("TOP", _G.UIParent, "TOP", 0, -400)
-			K.CreateMoverFrame(ArcheologyDigsiteProgressBar)
-
-			K:UnregisterEvent(event, InitializeArchaeologyUI)
-		end
-	end
-	K:RegisterEvent("ADDON_LOADED", InitializeArchaeologyUI)
-
-	local updatedProgressBarTitle = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE .. " - %s/%s"
-	local function UpdateProgressBarTitle(_, numFindsCompleted, totalFinds)
-		if ArcheologyDigsiteProgressBar then
-			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(updatedProgressBarTitle, numFindsCompleted, totalFinds)
-		end
-	end
-	K:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST", UpdateProgressBarTitle)
-	K:RegisterEvent("ARCHAEOLOGY_FIND_COMPLETE", UpdateProgressBarTitle)
-end
-
--- ALT+RightClick to buy a stack
+-- ALT + Right Click to Buy a Stack
 do
 	local cache = {}
 	local itemLink, id
@@ -567,10 +531,10 @@ do
 				return
 			end
 
-			local name, _, quality, _, _, _, _, maxStack, _, texture = GetItemInfo(itemLink)
+			local name, _, quality, _, _, _, _, maxStack, _, texture = C_Item_GetItemInfo(itemLink)
 			if maxStack and maxStack > 1 then
 				if not cache[itemLink] then
-					local r, g, b = GetItemQualityColor(quality or 1)
+					local r, g, b = C_Item_GetItemQualityColor(quality or 1)
 					StaticPopup_Show("BUY_STACK", " ", " ", {
 						["texture"] = texture,
 						["name"] = name,
@@ -584,17 +548,15 @@ do
 				end
 			end
 		end
-
 		_MerchantItemButton_OnModifiedClick(self, ...)
 	end
 end
 
--- Fix Drag Collections taint
+-- Fix Collection Taint
 do
 	local done
 	local function fixCollectionTaint(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
-			-- Fix undragable issue
 			local checkBox = WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
 			checkBox.Label:ClearAllPoints()
 			checkBox.Label:SetPoint("LEFT", checkBox, "RIGHT", 2, 1)
@@ -616,11 +578,10 @@ do
 			K:UnregisterEvent(event, fixCollectionTaint)
 		end
 	end
-
 	K:RegisterEvent("ADDON_LOADED", fixCollectionTaint)
 end
 
--- Select target when click on raid units
+-- Fix Raid Group Button Targeting
 do
 	local function fixRaidGroupButton()
 		for i = 1, 40 do
@@ -628,7 +589,6 @@ do
 			if bu and bu.unit and not bu.clickFixed then
 				bu:SetAttribute("type", "target")
 				bu:SetAttribute("unit", bu.unit)
-
 				bu.clickFixed = true
 			end
 		end
@@ -649,17 +609,15 @@ do
 			end
 		end
 	end
-
 	K:RegisterEvent("ADDON_LOADED", setupfixRaidGroup)
 end
 
--- Fix blizz guild news hyperlink error
+-- Fix Guild News Hyperlink Error
 do
 	local function fixGuildNews(event, addon)
 		if addon ~= "Blizzard_GuildUI" then
 			return
 		end
-
 		local _GuildNewsButton_OnEnter = GuildNewsButton_OnEnter
 		function GuildNewsButton_OnEnter(self)
 			if not (self.newsInfo and self.newsInfo.whatText) then
@@ -667,13 +625,12 @@ do
 			end
 			_GuildNewsButton_OnEnter(self)
 		end
-
 		K:UnregisterEvent(event, fixGuildNews)
 	end
-
 	K:RegisterEvent("ADDON_LOADED", fixGuildNews)
 end
 
+-- Resurrect Sound on Request
 do
 	local function soundOnResurrect()
 		if C["Unitframe"].ResurrectSound then
@@ -681,14 +638,6 @@ do
 		end
 	end
 	K:RegisterEvent("RESURRECT_REQUEST", soundOnResurrect)
-end
-
--- Make it so we can move this
-function Module:PostBNToastMove(_, anchor)
-	if anchor ~= BNToastFrame.mover then
-		BNToastFrame:ClearAllPoints()
-		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
-	end
 end
 
 function Module:CreateCustomWaypoint()
@@ -738,16 +687,12 @@ function Module:CreateCustomWaypoint()
 	SLASH_KKUI_CUSTOM_WAYPOINT2 = "/go"
 end
 
+-- Update Max Camera Zoom
 function Module:UpdateMaxCameraZoom()
 	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end
 
--- Fix missing localization file
-if not GuildControlUIRankSettingsFrameRosterLabel then
-	GuildControlUIRankSettingsFrameRosterLabel = CreateFrame("Frame")
-end
-
--- Buttons to enhance popup menu
+-- Enhance Popup Menu with Additional Buttons
 function Module:CustomMenu_AddFriend(rootDescription, data, name)
 	rootDescription:CreateButton(K.InfoColor .. ADD_CHARACTER_FRIEND, function()
 		C_FriendList.AddFriend(name or data.name)
@@ -779,15 +724,8 @@ function Module:CustomMenu_Whisper(rootDescription, data)
 	end)
 end
 
+-- Quick Menu Button Setup
 function Module:CreateQuickMenuButton()
-	-- if not C.db["Misc"]["MenuButton"] then
-	-- 	return
-	-- end
-
-	--hooksecurefunc(UnitPopupManager, "OpenMenu", function(_, which)
-	--	print("MENU_UNIT_"..which)
-	--end)
-
 	Menu.ModifyMenu("MENU_UNIT_SELF", function(_, rootDescription, data)
 		Module:CustomMenu_CopyName(rootDescription, data)
 		Module:CustomMenu_Whisper(rootDescription, data)

@@ -80,7 +80,7 @@ function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
 end
 
 function ExtraQuestButton:UpdateCount()
-	if self:IsShown() then
+	if self:IsShown() and self.itemLink then
 		local count = C_Item_GetItemCount(self.itemLink)
 		self.Count:SetText(tostring(count and count > 1 and count or ""))
 	end
@@ -295,7 +295,7 @@ function ExtraQuestButton:SetItem(itemLink)
 	if self.itemID then
 		local HotKey = self.HotKey
 		local key = GetBindingKey("EXTRAACTIONBUTTON1")
-		local hasRange = C_Item_ItemHasRange(itemLink)
+		local hasRange = C_Item_ItemHasRange(self.itemID)
 		if key then
 			HotKey:SetText(GetBindingText(key, 1))
 			HotKey:Show()
