@@ -2,6 +2,45 @@ local K = KkthnxUI[1]
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.5.2] - 2024-08-23 - Patch 11.0",
+		General = "This update includes significant bug fixes, visual improvements, and feature enhancements aimed at providing a smoother and more reliable experience.",
+
+		Sections = {
+
+			{
+				Header = "Appearance and Functionality Updates",
+				Entries = {
+					"Updated the version out of date notification system with improved visuals and messaging.",
+					"Improved compatibility with third-party addons by handling minimap recycling for features such as TomTom and WIM.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Fixed several range-related issues that caused incorrect fading behavior during combat.",
+					"Resolved an error related to item count tracking.",
+				},
+			},
+
+			{
+				Header = "Feature Additions and Code Updates",
+				Entries = {
+					"Implemented new safeguards in unitframe tags to improve the handling of text and title displays.",
+					"Updated several AuraWatch lists and filters to ensure accurate tracking for all relevant classes.",
+				},
+			},
+
+			{
+				Header = "Version Bump",
+				Entries = {
+					"Increased the addon version to 10.5.2 to reflect the latest fixes and enhancements.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.1] - 2024-08-22 - Patch 11.0",
 		General = "This update includes various performance optimizations across the codebase to improve maintainability and efficiency. These optimizations enhance overall functionality and responsiveness.",
 
