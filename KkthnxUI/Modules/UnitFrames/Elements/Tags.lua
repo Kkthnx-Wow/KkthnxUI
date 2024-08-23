@@ -278,7 +278,6 @@ oUF.Tags.Methods["pppower"] = function(unit)
 end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
-local PatchInfoCheck = select(4, GetBuildInfo()) >= 110000 -- 11.0.0
 local NameOnlyGuild = false
 local NameOnlyTitle = true
 oUF.Tags.Methods["npctitle"] = function(unit)
@@ -292,23 +291,11 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 		scanTip:SetOwner(UIParent, "ANCHOR_NONE")
 		scanTip:SetUnit(unit)
 
-		local title = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
+		local textLine = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]
+		local title = textLine and textLine:GetText()
 		if title and not strfind(title, "^" .. LEVEL) then
 			return title
 		end
-
-		-- local data = not PatchInfoCheck and C_TooltipInfo.GetUnit(unit) -- FIXME: ColorMixin error
-		-- if not data then
-		-- 	return ""
-		-- end
-
-		-- local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
-		-- if lineData then
-		-- 	local title = lineData.leftText
-		-- 	if title and not strfind(title, "^" .. LEVEL) then
-		-- 		return title
-		-- 	end
-		-- end
 	end
 end
 oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
