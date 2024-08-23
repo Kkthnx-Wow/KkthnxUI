@@ -163,7 +163,7 @@ function Module:CreateFocusTarget()
 
 	self.Range = {
 		Override = function()
-			Module.UpdateRange(self, "focus")
+			Module.UpdateRange(self, "focustarget")
 		end,
 	}
 end

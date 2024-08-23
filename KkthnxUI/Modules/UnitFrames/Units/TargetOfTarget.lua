@@ -163,7 +163,7 @@ function Module:CreateTargetOfTarget()
 
 	local Range = {
 		Override = function()
-			Module.UpdateRange(self, "targetoftarget")
+			Module.UpdateRange(self, "targettarget")
 		end,
 	}
 
