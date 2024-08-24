@@ -11,7 +11,7 @@
 ## X-Wago-ID: lQNlqP6e
 
 # General taint fixes
-Taintless.xml
+TaintLess.xml
 # Global Fonts
 FontStyles.xml
 # KkthnxUI
