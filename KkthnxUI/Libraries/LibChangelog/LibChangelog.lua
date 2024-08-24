@@ -1,4 +1,4 @@
---- LibChangelog
+-- LibChangelog
 -- Provides a way to create a simple in-game frame to show a changelog
 
 local MAJOR, MINOR = "LibChangelog-KkthnxUI", 0
@@ -11,51 +11,59 @@ end
 -- Lua APIs
 local error = error
 
+-- WoW APIs and UI functions
+local CreateFrame = CreateFrame
+local UIParent = UIParent
+local GetLocale = GetLocale
+
 -- Local variables for GameFont constants
 local GameFontNormalHuge = GameFontNormalHuge
 local GameFontNormal = GameFontNormal
 local GameFontHighlight = GameFontHighlight
+local GameFontDisableHuge = GameFontDisableHuge
+local GameFontDisable = GameFontDisable
+local GameFontDisableHighlight = GameFontDisableHighlight
 
 -- Localization strings for different languages
 local L = {
 	["enUS"] = {
-		CHANGLOG_VIEWER = " Changelog Viewer",
+		CHANGLOG_VIEWER = " Changelog",
 		HIDE_UNTIL_NEXT_UPDATE = "Hide until next update",
 	},
 	["esES"] = {
-		CHANGLOG_VIEWER = " Visor de cambios",
+		CHANGLOG_VIEWER = " Registro de cambios",
 		HIDE_UNTIL_NEXT_UPDATE = "Ocultar hasta la próxima actualización",
 	},
 	["deDE"] = {
-		CHANGLOG_VIEWER = " Änderungsprotokoll-Anzeige",
+		CHANGLOG_VIEWER = " Änderungsprotokoll",
 		HIDE_UNTIL_NEXT_UPDATE = "Verstecken bis zum nächsten Update",
 	},
 	["frFR"] = {
-		CHANGLOG_VIEWER = " Visualiseur de journal des modifications",
+		CHANGLOG_VIEWER = " Journal des modifications",
 		HIDE_UNTIL_NEXT_UPDATE = "Cacher jusqu'à la prochaine mise à jour",
 	},
 	["itIT"] = {
-		CHANGLOG_VIEWER = " Visualizzatore del registro delle modifiche",
+		CHANGLOG_VIEWER = " Registro delle modifiche",
 		HIDE_UNTIL_NEXT_UPDATE = "Nascondi fino al prossimo aggiornamento",
 	},
 	["koKR"] = {
-		CHANGLOG_VIEWER = " 변경 로그 뷰어",
+		CHANGLOG_VIEWER = " 변경 로그",
 		HIDE_UNTIL_NEXT_UPDATE = "다음 업데이트까지 숨기기",
 	},
 	["ptBR"] = {
-		CHANGLOG_VIEWER = " Visualizador de changelog",
+		CHANGLOG_VIEWER = " Registro de mudanças",
 		HIDE_UNTIL_NEXT_UPDATE = "Ocultar até a próxima atualização",
 	},
 	["ruRU"] = {
-		CHANGLOG_VIEWER = " Просмотрщик журнала изменений",
+		CHANGLOG_VIEWER = " Журнал изменений",
 		HIDE_UNTIL_NEXT_UPDATE = "Скрыть до следующего обновления",
 	},
 	["zhCN"] = {
-		CHANGLOG_VIEWER = " 更新日志查看器",
+		CHANGLOG_VIEWER = " 更新日志",
 		HIDE_UNTIL_NEXT_UPDATE = "直到下次更新前隐藏",
 	},
 	["zhTW"] = {
-		CHANGLOG_VIEWER = " 更新日誌檢視器",
+		CHANGLOG_VIEWER = " 更新日誌",
 		HIDE_UNTIL_NEXT_UPDATE = "直到下次更新前隱藏",
 	},
 }
@@ -73,7 +81,7 @@ local NEW_MESSAGE_FONTS = {
 local VIEWED_MESSAGE_FONTS = {
 	version = GameFontDisableHuge,
 	title = GameFontDisable,
-	text = GameFontDisable,
+	text = GameFontDisableHighlight,
 }
 
 function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, lastReadVersionKey, onlyShowWhenNewVersionKey, texts)
@@ -176,21 +184,41 @@ function LibChangelog:ShowChangelog(addonName)
 
 		frame.CloseButton:SkinCloseButton()
 
+		-- Create an improved CheckButton
 		frame.CheckButton = CreateFrame("CheckButton", "LibChangelogCheckButton_" .. addonName, frame, "UICheckButtonTemplate")
 		frame.CheckButton:SetChecked(addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey])
 		frame.CheckButton:SetFrameStrata("HIGH")
-		frame.CheckButton:SetSize(14, 14)
+		frame.CheckButton:SetSize(26, 26) -- Increase size for better visibility
+		frame.CheckButton:SetPoint("LEFT", frame, "BOTTOMLEFT", 4, 16)
+
+		-- Customize the appearance of the CheckButton
+		frame.CheckButton:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
+		frame.CheckButton:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down")
+		frame.CheckButton:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight", "ADD")
+		frame.CheckButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check")
+		frame.CheckButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled")
+
+		-- Add tooltip functionality to explain the checkbox
+		frame.CheckButton:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:AddLine(addonData.texts.onlyShowWhenNewVersion or localization.HIDE_UNTIL_NEXT_UPDATE, 1, 1, 1)
+			GameTooltip:Show()
+		end)
+		frame.CheckButton:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+
+		-- Add functionality for when the CheckButton is clicked
 		frame.CheckButton:SetScript("OnClick", function(self)
 			local isChecked = self:GetChecked()
 			addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] = isChecked
 			frame.CheckButton:SetChecked(isChecked)
 		end)
-		frame.CheckButton:SetPoint("LEFT", frame, "BOTTOMLEFT", 10, 13)
-		frame.CheckButton:SkinCheckBox()
 
-		frame.CheckButton.text:ClearAllPoints()
-		frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
-		frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or localization.HIDE_UNTIL_NEXT_UPDATE)
+		-- Create a label for the CheckButton with better alignment and styling
+		frame.CheckButton.Label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		frame.CheckButton.Label:SetPoint("LEFT", frame.CheckButton, "RIGHT", 6, 0)
+		frame.CheckButton.Label:SetText(addonData.texts.onlyShowWhenNewVersion or localization.HIDE_UNTIL_NEXT_UPDATE)
 
 		addonData.frame = frame
 	end

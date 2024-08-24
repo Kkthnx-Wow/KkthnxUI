@@ -19,7 +19,7 @@ local C_MajorFactions_GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local C_MajorFactions_HasMaximumRenown = C_MajorFactions.HasMaximumRenown
 local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon, C_Reputation_IsMajorFaction = C_Reputation.IsFactionParagon, C_Reputation.IsMajorFaction
-local GameTooltip, GetWatchedFactionInfo = GameTooltip, GetWatchedFactionInfo
+local GameTooltip, C_Reputation_GetWatchedFactionData = GameTooltip, C_Reputation.GetWatchedFactionData
 
 -- Experience
 local CurrentXP, XPToLevel, PercentRested, PercentXP, RemainXP, RemainTotal, RemainBars
@@ -120,8 +120,8 @@ local function OnExpBarEvent(self, event, unit)
 
 		-- Update text display with XP information
 		self.text:SetText(barDisplayString)
-	elseif C_Reputation.GetWatchedFactionData() then
-		local data = C_Reputation.GetWatchedFactionData()
+	elseif C_Reputation_GetWatchedFactionData() then
+		local data = C_Reputation_GetWatchedFactionData()
 		local name, reaction, currentReactionThreshold, nextReactionThreshold, currentStanding, factionID = data.name, data.reaction, data.currentReactionThreshold, data.nextReactionThreshold, data.currentStanding, data.factionID
 
 		local standing, rewardPending, _
@@ -252,12 +252,12 @@ local function OnExpBarEnter(self)
 		GameTooltip:AddDoubleLine(altKeyText .. KEY_PLUS .. K.RightButton, sendExperienceText)
 	end
 
-	if C_Reputation.GetWatchedFactionData() then
+	if C_Reputation_GetWatchedFactionData() then
 		if not XPIsLevelMax() then
 			GameTooltip:AddLine(" ")
 		end
 
-		local data = C_Reputation.GetWatchedFactionData()
+		local data = C_Reputation_GetWatchedFactionData()
 		local name, reaction, currentReactionThreshold, nextReactionThreshold, currentStanding, factionID = data.name, data.reaction, data.currentReactionThreshold, data.nextReactionThreshold, data.currentStanding, data.factionID
 		local isParagon = factionID and C_Reputation_IsFactionParagon(factionID)
 		local standing
@@ -309,9 +309,6 @@ local function OnExpBarEnter(self)
 				end
 			end
 		end
-
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(altKeyText .. KEY_PLUS .. K.RightButton, sendReputationText)
 	end
 
 	if IsWatchingHonorAsXP() then
@@ -355,7 +352,7 @@ local function OnExpRepMouseUp(self, button)
 		local currentTime = GetTime()
 		if currentTime - lastMessageTime >= COOLDOWN_DURATION then
 			if not IsInGroup() then
-				print("You are not in a party.")
+				K.Print(ERR_QUEST_PUSH_NOT_IN_PARTY_S)
 				return
 			end
 
@@ -367,14 +364,10 @@ local function OnExpRepMouseUp(self, button)
 					expMessage = expMessage .. string_format(", Rested XP: %s", K.ShortValue(RestedXP))
 				end
 				SendChatMessage(expMessage, "PARTY")
-			elseif XPIsLevelMax() and GetWatchedFactionInfo() then
-				local name, reaction, _, _, curValue = GetWatchedFactionInfo()
-				local standing = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
-				SendChatMessage(string_format("%s Reputation: %s - Standing: %s", name, K.ShortValue(curValue), standing), "PARTY")
 			end
 			lastMessageTime = currentTime
 		else
-			print("Please wait before sending another message.")
+			K.Print(SPELL_FAILED_CUSTOM_ERROR_808)
 		end
 	end
 end
