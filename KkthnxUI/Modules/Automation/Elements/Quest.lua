@@ -324,7 +324,7 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 		for index = 1, choices do
 			local link = GetQuestItemLink("choice", index)
 			if link then
-				local value = select(11, GetItemInfo(link))
+				local value = select(11, C_Item.GetItemInfo(link))
 				local itemID = GetItemInfoFromHyperlink(link)
 				value = C["AutoQuestData"].CashRewards[itemID] or value
 
