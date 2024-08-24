@@ -307,19 +307,17 @@ function Module:ReskinRegions()
 	if QueueStatusButton then
 		QueueStatusButton:SetParent(MinimapCluster)
 		QueueStatusButton:SetSize(24, 24)
-		QueueStatusButton:SetFrameLevel(999)
-		QueueStatusButton:ClearAllPoints()
-		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -9, 9)
+		QueueStatusButton:SetFrameLevel(20)
+		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -4, 4)
 
 		QueueStatusButtonIcon:SetAlpha(0)
 
-		QueueStatusFrame:ClearAllPoints()
 		QueueStatusFrame:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 
 		hooksecurefunc(QueueStatusButton, "SetPoint", function(button, _, _, _, x, y)
-			if not (x == -9 and y == 9) then
+			if not (x == -4 and y == 4) then
 				button:ClearAllPoints()
-				button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -9, 9)
+				button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -4, 4)
 			end
 		end)
 
@@ -351,7 +349,7 @@ function Module:ReskinRegions()
 			queueStatusDisplay.text:ClearAllPoints()
 			queueStatusDisplay.text:SetPoint("CENTER", QueueStatusButton, 0, -5)
 			queueStatusDisplay.text:SetFontObject(K.UIFont)
-			queueStatusDisplay.text:SetFont(select(1, queueStatusDisplay.text:GetFont()), 16, select(3, queueStatusDisplay.text:GetFont()))
+			queueStatusDisplay.text:SetFont(select(1, queueStatusDisplay.text:GetFont()), 13, select(3, queueStatusDisplay.text:GetFont()))
 
 			if queueStatusDisplay.title then
 				Module:ClearQueueStatus()

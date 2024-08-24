@@ -162,9 +162,7 @@ function Module:CreateTargetOfTarget()
 	}
 
 	local Range = {
-		Override = function()
-			Module.UpdateRange(self, "targettarget")
-		end,
+		Override = Module.UpdateRange,
 	}
 
 	self.Overlay = Overlay

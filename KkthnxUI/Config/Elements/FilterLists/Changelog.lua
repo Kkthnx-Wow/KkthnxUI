@@ -2,6 +2,36 @@ local K = KkthnxUI[1]
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.5.4] - 2024-08-23 - Patch 11.0",
+		General = "This update includes important fixes and improvements to enhance the functionality and visual experience of KkthnxUI.",
+
+		Sections = {
+
+			{
+				Header = "Appearance and Functionality Updates",
+				Entries = {
+					"Fixed a bug where range checks were not working on certain units.",
+					"Adjusted the minimap queue timer size and font for better readability.",
+				},
+			},
+
+			{
+				Header = "Code Cleanup",
+				Entries = {
+					"Removed old code related to status reports, improving overall efficiency and maintainability.",
+				},
+			},
+
+			{
+				Header = "Version Bump",
+				Entries = {
+					"Increased the addon version to 10.5.4 to reflect the latest fixes and enhancements.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.2] - 2024-08-23 - Patch 11.0",
 		General = "This update includes significant bug fixes, visual improvements, and feature enhancements aimed at providing a smoother and more reliable experience.",
 

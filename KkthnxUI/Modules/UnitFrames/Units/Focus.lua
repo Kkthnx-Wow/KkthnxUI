@@ -355,8 +355,6 @@ function Module:CreateFocus()
 	}
 
 	self.Range = {
-		Override = function()
-			Module.UpdateRange(self, "focus")
-		end,
+		Override = Module.UpdateRange,
 	}
 end

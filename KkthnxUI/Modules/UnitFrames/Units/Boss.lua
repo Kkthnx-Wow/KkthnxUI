@@ -288,8 +288,6 @@ function Module:CreateBoss()
 	}
 
 	self.Range = {
-		Override = function()
-			Module.UpdateRange(self, "boss")
-		end,
+		Override = Module.UpdateRange,
 	}
 end

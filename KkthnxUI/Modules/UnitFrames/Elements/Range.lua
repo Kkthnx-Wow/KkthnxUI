@@ -46,14 +46,14 @@ local function friendlyIsInRange(realUnit)
 	return getMaxRange(unit)
 end
 
-function Module:UpdateRange(unit)
+function Module:UpdateRange()
 	if not self.Range then
 		return
 	end
 
 	local alpha
 
-	unit = unit or self.unit
+	local unit = self.unit
 
 	if self.forceInRange or unit == "player" then
 		alpha = self.Range.insideAlpha
