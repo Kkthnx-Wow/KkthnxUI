@@ -1,17 +1,29 @@
 local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
-local GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings = GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings
-local C_SpellBook_GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot = C_SpellBook.GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot
-local InCombatLockdown, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown = InCombatLockdown, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
-local tonumber, strfind, strupper = tonumber, strfind, strupper
-local CreateFrame, hooksecurefunc, format = CreateFrame, hooksecurefunc, format
+local C_SpellBook_GetSpellBookItemName = C_SpellBook.GetSpellBookItemName
+local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
-
--- Constants and Global Variables
+local GetBindingKey = GetBindingKey
+local GetBindingName = GetBindingName
+local GetMacroInfo = GetMacroInfo
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local IsShiftKeyDown = IsShiftKeyDown
+local LoadBindings = LoadBindings
 local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
-local NOT_BOUND, PRESS_KEY_TO_BIND = NOT_BOUND, PRESS_KEY_TO_BIND
+local NOT_BOUND = NOT_BOUND
+local PRESS_KEY_TO_BIND = PRESS_KEY_TO_BIND
+local SaveBindings = SaveBindings
+local SetBinding = SetBinding
+local SpellBook_GetSpellBookSlot = SpellBook_GetSpellBookSlot
 local UIErrorsFrame = UIErrorsFrame
+local format = format
+local hooksecurefunc = hooksecurefunc
+local strfind = strfind
+local strupper = strupper
+local tonumber = tonumber
 
 -- Button types
 local function hookActionButton(self)
@@ -19,9 +31,11 @@ local function hookActionButton(self)
 	local stance = self.commandName and strfind(self.commandName, "^SHAPESHIFT") and "STANCE"
 	Module:Bind_Update(self, pet or stance or nil)
 end
+
 local function hookMacroButton(self)
 	Module:Bind_Update(self, "MACRO")
 end
+
 local function hookSpellButton(self)
 	Module:Bind_Update(self, "SPELL")
 end
@@ -106,11 +120,13 @@ function Module:Bind_Create()
 
 	for i = 1, 12 do
 		local button = _G["SpellButton" .. i]
-		button:HookScript("OnEnter", hookSpellButton)
+		if button then
+			button:HookScript("OnEnter", hookSpellButton)
+		end
 	end
 
 	if not C_AddOns.IsAddOnLoaded("Blizzard_MacroUI") then
-		hooksecurefunc("LoadAddOn", Module.Bind_RegisterMacro)
+		hooksecurefunc(C_AddOns, "LoadAddOn", Module.Bind_RegisterMacro)
 	else
 		Module.Bind_RegisterMacro("Blizzard_MacroUI")
 	end
@@ -323,8 +339,6 @@ function Module:Bind_CreateDialog()
 	button1.text:SetPoint("CENTER", button1)
 	button1.text:SetText(APPLY)
 
-	--- @class MyButton : Button
-	--- @field public text FontString
 	local button2 = CreateFrame("Button", nil, frame)
 	button2:SetSize(118, 20)
 	button2:SkinButton()
