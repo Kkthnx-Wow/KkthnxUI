@@ -266,8 +266,6 @@ local function ForceCursorTrail()
 		return
 	end
 
-	print(C_AddOns.IsAddOnLoaded("CursorTrail"))
-
 	if CursorTrail_PlayerConfig then
 		table_wipe(CursorTrail_PlayerConfig)
 	end
@@ -289,6 +287,10 @@ local function ForceCursorTrail()
 end
 
 function Module:ForceAddonSkins()
+	if not K.IsDeveloper then -- This is personal for now.
+		return
+	end
+
 	if KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest then
 		ForceDBMOptions()
 	end

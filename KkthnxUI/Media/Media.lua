@@ -49,6 +49,7 @@ C["Media"] = {
 		KkthnxUI = mediaFolder .. "Statusbars\\Statusbar",
 		Kui = mediaFolder .. "Statusbars\\KuiStatusbar.tga",
 		KuiBright = mediaFolder .. "Statusbars\\KuiStatusbarBright.tga",
+		Ohi_Dragon = mediaFolder .. "Statusbars\\Ohi_Dragon.tga",
 		Palooza = mediaFolder .. "Statusbars\\Palooza.tga",
 		PinkGradient = mediaFolder .. "Statusbars\\PinkGradient.tga",
 		Rain = mediaFolder .. "Statusbars\\Rain.tga",

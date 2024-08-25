@@ -2,10 +2,8 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 -- local Module = K:NewModule("Developer")
 
 K.Devs = {
+	["Kkthnx-Area 52"] = true,
 	["Kkthnx-Valdrakken"] = true,
-	["Informant-Valdrakken"] = true,
-	-- Fenox Temp
-	["Trittlendy-Valdrakken"] = true,
 }
 
 local function isDeveloper()
