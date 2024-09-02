@@ -272,7 +272,8 @@ Module.PipColors = {
 	[1] = { 0.08, 1, 0, 0.3 },
 	[2] = { 1, 0.1, 0.1, 0.3 },
 	[3] = { 1, 0.5, 0, 0.3 },
-	[4] = { 0.1, 0.9, 0.9, 0.3 },
+	[4] = { 0.1, 0.7, 0.7, 0.3 },
+	[5] = { 0, 1, 1, 0.3 },
 }
 function Module:CreatePip(stage)
 	local _, height = self:GetSize()

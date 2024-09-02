@@ -321,7 +321,7 @@ local cycles = {
 	{
 		chatType = "INSTANCE_CHAT",
 		IsActive = function()
-			return IsPartyLFG()
+			return IsPartyLFG() or C_PartyInfo.IsPartyWalkIn()
 		end,
 	},
 

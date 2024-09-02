@@ -124,6 +124,8 @@ function Module:SetupCVars()
 		nameplateSelectedScale = 1.1, -- Determines the scale of the selected nameplate. A value greater than 1 enlarges the nameplate.
 		nameplateLargerScale = 1.1, -- Adjusts the scale of larger nameplates, such as for bosses or important enemies. Default is 1 (normal size).
 		nameplateGlobalScale = 1, -- Sets the overall scale for all nameplates. Default is 1 (normal size).
+		NamePlateHorizontalScale = 1,
+		NamePlateVerticalScale = 1,
 		nameplateShowSelf = 0, -- Toggles the visibility of the player's own nameplate. 0 means the player's nameplate will not be shown.
 		nameplateResourceOnTarget = 0, -- Controls whether class resources (e.g., combo points, runes) are displayed on the target's nameplate. 0 means resources are shown below the character, not on the target.
 		nameplatePlayerMaxDistance = 60, -- Sets the maximum distance at which player nameplates are visible. The default value is 60 yards.

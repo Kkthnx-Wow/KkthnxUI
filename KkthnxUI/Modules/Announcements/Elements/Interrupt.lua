@@ -38,7 +38,7 @@ local spellBlackList = {
 
 local function getAlertChannel()
 	local _, instanceType = GetInstanceInfo()
-	local inPartyLFG = IsPartyLFG()
+	local inPartyLFG = IsPartyLFG() or C_PartyInfo.IsPartyWalkIn()
 	local inRaid = IsInRaid()
 
 	if instanceType == "arena" then
@@ -121,7 +121,7 @@ function Module:InterruptAlert_Update(...)
 end
 
 function Module:InterruptAlert_CheckGroup()
-	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsPartyLFG())) then
+	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsRandomGroup())) then
 		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	else
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)

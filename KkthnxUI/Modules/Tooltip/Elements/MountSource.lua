@@ -67,13 +67,21 @@ function Module:CreateMountSource()
 	end
 
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self, ...)
-		local spellID = C_UnitAuras.GetAuraDataByIndex(...).spellId
-		HandleAura(self, spellID)
+		local spellID = select(10, AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataByIndex(...)))
+		local table = spellID and GetMountInfoBySpell(spellID)
+		if table then
+			HandleAura(self, spellID)
+		end
 	end)
 
 	hooksecurefunc(GameTooltip, "SetUnitBuffByAuraInstanceID", function(self, unit, auraInstanceID)
 		local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-		if data then
+		if not data then
+			return
+		end
+
+		local table = data.spellId and GetMountInfoBySpell(data.spellId)
+		if table then
 			HandleAura(self, data.spellId)
 		end
 	end)

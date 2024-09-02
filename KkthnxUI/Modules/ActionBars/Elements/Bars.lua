@@ -260,10 +260,14 @@ function Module:ReassignBindings()
 
 	for index = 1, 8 do
 		local frame = Module.headers[index]
-		for _, button in next, frame.buttons do
-			for _, key in next, { GetBindingKey(button.keyBoundTarget) } do
-				if key and key ~= "" then
-					SetOverrideBindingClick(frame, false, key, button:GetName(), "Keybind")
+		if frame then
+			ClearOverrideBindings(frame)
+
+			for _, button in next, frame.buttons do
+				for _, key in next, { GetBindingKey(button.keyBoundTarget) } do
+					if key and key ~= "" then
+						SetOverrideBindingClick(frame, false, key, button:GetName())
+					end
 				end
 			end
 		end
@@ -277,7 +281,9 @@ function Module:ClearBindings()
 
 	for index = 1, 8 do
 		local frame = Module.headers[index]
-		ClearOverrideBindings(frame)
+		if frame then
+			ClearOverrideBindings(frame)
+		end
 	end
 end
 

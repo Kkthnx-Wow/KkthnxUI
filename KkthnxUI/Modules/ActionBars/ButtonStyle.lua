@@ -23,6 +23,8 @@ local replaces = {
 	{ "Capslock", "CL" },
 	{ "BUTTON", "M" },
 	{ "NUMPAD", "N" },
+	{ "(META%-)", "m" },
+	{ "(Meta%-)", "m" },
 	{ "(ALT%-)", "a" },
 	{ "(CTRL%-)", "c" },
 	{ "(SHIFT%-)", "s" },
