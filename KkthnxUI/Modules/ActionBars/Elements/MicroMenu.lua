@@ -7,50 +7,12 @@ local type = type
 
 local MicroButtons = {}
 local updateWatcher = 0
-local FadeMicroMenuEnabled = C["ActionBar"].FadeMicroMenu
 
-local KKUI_MenuBar = _G.KKUI_MenuBar
-local MainMenuMicroButton = _G.MainMenuMicroButton
-local CharacterMicroButton = _G.CharacterMicroButton
-local BagsBar = _G.BagsBar
-local MicroButtonAndBagsBar = _G.MicroButtonAndBagsBar
-
--- Fade out the micro menu
-local function FadeOutMicroMenu()
-	if FadeMicroMenuEnabled then
-		UIFrameFadeOut(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 0)
-	end
-end
-
--- Update micro menu on mouse over
-local function UpdateOnMouseOver(_, elapsed)
-	updateWatcher = updateWatcher + elapsed
-	if updateWatcher > 0.1 then
-		if not KKUI_MenuBar:IsMouseOver() then
-			KKUI_MenuBar.IsMouseOvered = nil
-			KKUI_MenuBar:SetScript("OnUpdate", nil)
-			FadeOutMicroMenu()
-		end
-		updateWatcher = 0
-	end
-end
-
--- Handle micro button hover
-local function OnMicroButtonEnter()
-	if not KKUI_MenuBar.IsMouseOvered then
-		KKUI_MenuBar.IsMouseOvered = true
-		KKUI_MenuBar:SetScript("OnUpdate", UpdateOnMouseOver)
-		UIFrameFadeIn(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 1)
-	end
-end
-
--- Reset button properties
 local function ResetButtonProperties(button)
 	button:ClearAllPoints()
 	button:SetAllPoints(button.__owner)
 end
 
--- Setup textures for the micro buttons
 local function SetupMicroButtonTextures(button)
 	local function SetTextureProperties(texture)
 		texture:SetTexCoord(0.2, 0.80, 0.22, 0.8)
@@ -64,12 +26,15 @@ local function SetupMicroButtonTextures(button)
 	if highlight then
 		highlight:SetAlpha(0)
 	end
+
 	if normal then
 		SetTextureProperties(normal)
 	end
+
 	if pushed then
 		SetTextureProperties(pushed)
 	end
+
 	if disabled then
 		SetTextureProperties(disabled)
 	end
@@ -84,16 +49,50 @@ local function SetupMicroButtonTextures(button)
 	if button.FlashContent then
 		button.FlashContent:SetTexture(nil)
 	end
+
 	if button.Background then
 		button.Background:SetAlpha(0)
 	end
+
 	if button.PushedBackground then
 		button.PushedBackground:SetAlpha(0)
 	end
 end
 
--- Create micro buttons
-local function CreateMicroButton(parent, data)
+local function FadeOutMicroMenu()
+	local KKUI_MenuBar = _G.KKUI_MenuBar
+	if KKUI_MenuBar then
+		UIFrameFadeOut(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 0)
+	end
+end
+
+local function UpdateOnMouseOver(_, elapsed)
+	local KKUI_MenuBar = _G.KKUI_MenuBar
+	if not KKUI_MenuBar then
+		return
+	end
+
+	updateWatcher = updateWatcher + elapsed
+	if updateWatcher > 0.1 then
+		if not KKUI_MenuBar:IsMouseOver() then
+			KKUI_MenuBar.IsMouseOvered = nil
+			KKUI_MenuBar:SetScript("OnUpdate", nil)
+			FadeOutMicroMenu()
+		end
+		updateWatcher = 0
+	end
+end
+
+local function OnMicroButtonEnter()
+	local KKUI_MenuBar = _G.KKUI_MenuBar
+	if KKUI_MenuBar and not KKUI_MenuBar.IsMouseOvered then
+		KKUI_MenuBar.IsMouseOvered = true
+		KKUI_MenuBar:SetScript("OnUpdate", UpdateOnMouseOver)
+		UIFrameFadeIn(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 1)
+	end
+end
+
+local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 	local method, tooltip = unpack(data)
 	local buttonFrame = CreateFrame("Frame", "KKUI_MicroButtons", parent)
 	insert(MicroButtons, buttonFrame)
@@ -117,6 +116,7 @@ local function CreateMicroButton(parent, data)
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
 		end
+
 		if FadeMicroMenuEnabled then
 			button:HookScript("OnEnter", OnMicroButtonEnter)
 		end
@@ -137,19 +137,19 @@ local function CreateMicroButton(parent, data)
 	end
 end
 
--- Set up the micro menu
 function Module:CreateMicroMenu()
 	if not C["ActionBar"].MicroMenu then
 		return
 	end
 
-	local microMenuBar = CreateFrame("Frame", "KKUI_MenuBar", K.PetBattleFrameHider)
-	microMenuBar:SetSize(302, 30)
-	microMenuBar:SetAlpha(FadeMicroMenuEnabled and not microMenuBar.IsMouseOvered and 0 or 1)
-	microMenuBar:EnableMouse(false)
-	K.Mover(microMenuBar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
+	local FadeMicroMenuEnabled = C["ActionBar"].FadeMicroMenu
 
-	-- Define micro buttons
+	local KKUI_MenuBar = CreateFrame("Frame", "KKUI_MenuBar", K.PetBattleFrameHider)
+	KKUI_MenuBar:SetSize(302, 30)
+	KKUI_MenuBar:SetAlpha(FadeMicroMenuEnabled and not KKUI_MenuBar.IsMouseOvered and 0 or 1)
+	KKUI_MenuBar:EnableMouse(false)
+	K.Mover(KKUI_MenuBar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
+
 	local buttonInfo = {
 		{ "CharacterMicroButton" },
 		{ "ProfessionMicroButton" },
@@ -164,9 +164,8 @@ function Module:CreateMicroMenu()
 		{ "MainMenuMicroButton", MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU") },
 	}
 
-	-- Create and arrange micro buttons
 	for i, info in ipairs(buttonInfo) do
-		CreateMicroButton(microMenuBar, info)
+		CreateMicroButton(KKUI_MenuBar, info, FadeMicroMenuEnabled)
 		if i > 1 then
 			MicroButtons[i]:SetPoint("LEFT", MicroButtons[i - 1], "RIGHT", 6, 0)
 		else
@@ -174,12 +173,14 @@ function Module:CreateMicroMenu()
 		end
 	end
 
-	-- Adjust MainMenuMicroButton textures
-	MainMenuMicroButton.MainMenuBarPerformanceBar:SetTexture(K.GetTexture(C["General"].Texture))
-	MainMenuMicroButton.MainMenuBarPerformanceBar:SetSize(16, 2)
-	MainMenuMicroButton.MainMenuBarPerformanceBar:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 0)
+	local MainMenuMicroButton = _G.MainMenuMicroButton
+	if MainMenuMicroButton then
+		MainMenuMicroButton.MainMenuBarPerformanceBar:SetTexture(K.GetTexture(C["General"].Texture))
+		MainMenuMicroButton.MainMenuBarPerformanceBar:SetSize(16, 2)
+		MainMenuMicroButton.MainMenuBarPerformanceBar:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 0)
+	end
 
-	-- Skin CharacterMicroButton
+	local CharacterMicroButton = _G.CharacterMicroButton
 	if CharacterMicroButton then
 		local function SkinCharacterPortrait(self)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -5)
@@ -190,16 +191,22 @@ function Module:CreateMicroMenu()
 		hooksecurefunc(CharacterMicroButton, "SetNormal", SkinCharacterPortrait)
 	end
 
-	-- Default elements and adjustments
 	K.HideInterfaceOption(MainMenuMicroButton.MainMenuBarPerformanceBar)
-	K.HideInterfaceOption(HelpOpenWebTicketButton)
+	K.HideInterfaceOption(_G.HelpOpenWebTicketButton)
 	MainMenuMicroButton:SetScript("OnUpdate", nil)
 
-	BagsBar:Hide()
-	BagsBar:UnregisterAllEvents()
-	MicroButtonAndBagsBar:Hide()
-	MicroButtonAndBagsBar:UnregisterAllEvents()
+	local BagsBar = _G.BagsBar
+	local MicroButtonAndBagsBar = _G.MicroButtonAndBagsBar
+	if BagsBar then
+		BagsBar:Hide()
+		BagsBar:UnregisterAllEvents()
+	end
+	if MicroButtonAndBagsBar then
+		MicroButtonAndBagsBar:Hide()
+		MicroButtonAndBagsBar:UnregisterAllEvents()
+	end
 
+	local MicroMenu = _G.MicroMenu
 	if MicroMenu and MicroMenu.UpdateHelpTicketButtonAnchor then
 		MicroMenu.UpdateHelpTicketButtonAnchor = K.Noop
 	end
