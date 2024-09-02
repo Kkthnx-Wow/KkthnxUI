@@ -569,7 +569,7 @@ local function HelloWorld()
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Fyrakk the Burning")
+	welcomeBoss:SetTexture(5907274)
 	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)
