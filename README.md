@@ -25,8 +25,3 @@ Appreciate the hard work that goes into KkthnxUI? Consider showing your support:
 Your contributions, whether big or small, are invaluable in shaping the future of KkthnxUI. Interested in helping out? Reach out on [Discord](https://discord.gg/Rc9wcK9cAB).
 
 ![KkthnxUI Example](https://github.com/Kkthnx-Wow/KkthnxUI/assets/40672673/917cf332-6520-4ea7-aed1-37f3f42a3bb3)
-
----
-
-This template can be easily adapted for other addons by replacing the relevant links, images, and names. Just follow the structure and update the necessary fields.
-
