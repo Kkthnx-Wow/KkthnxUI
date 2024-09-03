@@ -827,18 +827,20 @@ local DropdownButtonOnMouseUp = function(self, button)
 		self.Parent.Value = Value
 
 		if self.Parent.Type == "Texture" then
-			self.Parent.Texture:SetTexture(K.GetTexture(Value))
+			if C["Media"].Statusbars[Value] then
+				self.Parent.Texture:SetTexture(K.GetTexture(Value))
+			elseif K.LibSharedMedia then
+				self.Parent.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", Value))
+			end
 		end
 
 		self.Parent.Current:SetText(self.Parent.Value)
-
 		SetValue(self.Parent.Group, self.Parent.Option, self.Parent.Value)
 	end
 end
 
 local DropdownButtonOnMouseDown = function(self)
 	local Red, Green, Blue = unpack(BrightColor)
-
 	self.Parent.Texture:SetVertexColor(Red * 0.85, Green * 0.85, Blue * 0.85)
 end
 
@@ -850,24 +852,22 @@ local MenuItemOnMouseUp = function(self)
 
 	if self.GrandParent.Type then
 		SetValue(self.Group, self.Option, self.Key)
-
 		self.GrandParent.Value = self.Key
 
-		if self.GrandParent.Hook then
-			self.GrandParent.Hook(self.Key, self.Group)
+		if self.GrandParent.Type == "Texture" then
+			if C["Media"].Statusbars[self.Key] then
+				self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
+			elseif K.LibSharedMedia then
+				self.GrandParent.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", self.Key))
+			end
 		end
 	else
 		SetValue(self.Group, self.Option, self.Value)
-
 		self.GrandParent.Value = self.Value
-
-		if self.GrandParent.Hook then
-			self.GrandParent.Hook(self.Value, self.Group)
-		end
 	end
 
-	if self.GrandParent.Type == "Texture" then
-		self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
+	if self.GrandParent.Hook then
+		self.GrandParent.Hook(self.Key, self.Group)
 	end
 
 	self.GrandParent.Current:SetText(self.Key)
@@ -1012,13 +1012,25 @@ end
 
 local CreateDropdown = function(self, group, option, text, custom, tooltip, hook)
 	local Value
-	local Selections
+	local Selections = {}
 
 	if custom then
 		Value = C[group][option]
 
 		if custom == "Texture" then
-			Selections = C["Media"].Statusbars
+			-- Start with your existing textures
+			for k, v in pairs(C["Media"].Statusbars) do
+				Selections[k] = v
+			end
+
+			-- Check if LibSharedMedia-3.0 is available
+			if K.LibSharedMedia then
+				-- Add textures from LibSharedMedia-3.0
+				local sharedMediaTextures = K.LibSharedMedia:List("statusbar")
+				for _, textureName in ipairs(sharedMediaTextures) do
+					Selections[textureName] = textureName
+				end
+			end
 		end
 	else
 		Value = C[group][option].Value
@@ -1154,12 +1166,24 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 		MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
 		MenuItem.Texture:SetAllPoints()
-		MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
-		MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 		MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
 		MenuItem.Selected:SetAllPoints()
-		MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
+
+		if custom == "Texture" then
+			if C["Media"].Statusbars[k] then
+				MenuItem.Texture:SetTexture(K.GetTexture(k)) -- For existing textures
+				MenuItem.Selected:SetTexture(K.GetTexture(k)) -- For existing textures
+			elseif K.LibSharedMedia then
+				MenuItem.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", v)) -- For LibSharedMedia textures
+				MenuItem.Selected:SetTexture(K.LibSharedMedia:Fetch("statusbar", v)) -- For LibSharedMedia textures
+			end
+		else
+			MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
+		end
+
+		MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 		MenuItem.Selected:SetVertexColor(R, G, B)
 
 		MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
@@ -1168,11 +1192,6 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		MenuItem.Text:SetFontObject(K.UIFont)
 		MenuItem.Text:SetJustifyH("LEFT")
 		MenuItem.Text:SetText(k)
-
-		if custom == "Texture" then
-			MenuItem.Texture:SetTexture(K.GetTexture(k))
-			MenuItem.Selected:SetTexture(K.GetTexture(k))
-		end
 
 		if custom then
 			if MenuItem.Key == MenuItem.GrandParent.Value then
@@ -1206,7 +1225,11 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 	end
 
 	if custom == "Texture" then
-		Dropdown.Texture:SetTexture(K.GetTexture(Value))
+		if C["Media"].Statusbars[Value] then
+			Dropdown.Texture:SetTexture(K.GetTexture(Value)) -- For custom textures
+		elseif K.LibSharedMedia then
+			Dropdown.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", Value)) -- For LibSharedMedia textures
+		end
 	else
 		Dropdown.Texture:SetTexture(K.GetTexture(C["General"].Texture))
 	end

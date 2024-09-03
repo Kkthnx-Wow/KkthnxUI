@@ -5,11 +5,9 @@ C["Media"] = {
 	["Sounds"] = {
 		KillingBlow = mediaFolder .. "Sounds\\KillingBlow.ogg",
 	},
-
 	["Backdrops"] = {
 		ColorBackdrop = { 0.060, 0.060, 0.060, 0.9 },
 	},
-
 	["Borders"] = {
 		AzeriteUIBorder = mediaFolder .. "Border\\AzeriteUI\\Border.tga",
 		AzeriteUITooltipBorder = mediaFolder .. "Border\\AzeriteUI\\Border_Tooltip.tga",
@@ -18,7 +16,6 @@ C["Media"] = {
 		KkthnxUIBorder = mediaFolder .. "Border\\KkthnxUI\\Border.tga",
 		KkthnxUITooltipBorder = mediaFolder .. "Border\\KkthnxUI\\Border_Tooltip.tga",
 	},
-
 	["Textures"] = {
 		ArrowTexture = mediaFolder .. "Textures\\Arrow.tga",
 		BlankTexture = mediaFolder .. "Textures\\BlankTexture.blp",
@@ -33,11 +30,9 @@ C["Media"] = {
 		TargetIndicatorTexture = mediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
 		White8x8Texture = "Interface\\BUTTONS\\WHITE8X8",
 	},
-
 	["Fonts"] = {
 		BlankFont = mediaFolder .. "Fonts\\Invisible.ttf",
 	},
-
 	["Statusbars"] = {
 		AltzUI = mediaFolder .. "Statusbars\\AltzUI.tga",
 		AsphyxiaUI = mediaFolder .. "Statusbars\\AsphyxiaUI.tga",
@@ -65,10 +60,24 @@ local statusbars = C["Media"].Statusbars
 local defaultTexture = statusbars.KkthnxUI
 
 function K.GetTexture(texture)
-	return statusbars[texture] and statusbars[texture] or defaultTexture
+	-- Check if the texture exists in your custom media
+	if statusbars[texture] then
+		return statusbars[texture]
+	end
+
+	-- Check if LibSharedMedia is loaded and has the texture
+	if K.LibSharedMedia then
+		local libTexture = K.LibSharedMedia:Fetch("statusbar", texture)
+		if libTexture then
+			return libTexture
+		end
+	end
+
+	-- Fallback to the default texture if neither are found
+	return defaultTexture
 end
 
--- Register media types
+-- Register your custom media with LibSharedMedia if it's loaded
 if K.LibSharedMedia then
 	for mediaType, mediaTable in pairs(C["Media"]) do
 		for name, path in pairs(mediaTable) do
