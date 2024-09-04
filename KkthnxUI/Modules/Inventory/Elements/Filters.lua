@@ -1,10 +1,13 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Bags")
 
+-- Cache global references
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
+local C_Item_IsAnimaItemByID = C_Item.IsAnimaItemByID
+local C_Item_GetItemSpell = C_Item.GetItemSpell
 
--- Custom filter
+-- Custom filter lists
 local CustomFilterList = {
 	[37863] = false,
 	[187532] = false,
@@ -61,6 +64,14 @@ local consumableIDs = {
 	[Enum.ItemClass.ItemEnhancement] = true,
 }
 
+local primordialStones = {}
+for id = 204000, 204030 do
+	primordialStones[id] = true
+end
+
+local emptyBags = { [0] = true, [11] = true }
+
+-- Function Definitions
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -69,7 +80,6 @@ local function isCustomFilter(item)
 	return CustomFilterList[item.id]
 end
 
--- Default filter
 local function isItemInBag(item)
 	return item.bagId >= 0 and item.bagId <= 4
 end
@@ -82,12 +92,12 @@ local function isItemInBank(item)
 	return item.bagId == -1 or (item.bagId > 5 and item.bagId < 13)
 end
 
-local function isItemJunk(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
+local function isItemInAccountBank(item)
+	return item.bagId > 12 and item.bagId < 18
+end
 
-	if not C["Inventory"].FilterJunk then
+local function isItemJunk(item)
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterJunk then
 		return
 	end
 
@@ -95,11 +105,7 @@ local function isItemJunk(item)
 end
 
 local function isItemEquipSet(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterEquipSet then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterEquipSet then
 		return
 	end
 
@@ -107,15 +113,7 @@ local function isItemEquipSet(item)
 end
 
 local function isAzeriteArmor(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterAzerite then
-		return
-	end
-
-	if not item.link then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterAzerite or not item.link then
 		return
 	end
 
@@ -128,23 +126,15 @@ function Module:IsItemHasLevel(item)
 end
 
 local function isItemEquipment(item)
-	if not C["Inventory"].ItemFilter then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterEquipment or not item.link or item.quality <= Enum.ItemQuality.Common then
 		return
 	end
 
-	if not C["Inventory"].FilterEquipment then
-		return
-	end
-
-	return item.link and item.quality > Enum.ItemQuality.Common and Module:IsItemHasLevel(item)
+	return Module:IsItemHasLevel(item)
 end
 
 local function isItemConsumable(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterConsumable then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterConsumable then
 		return
 	end
 
@@ -155,11 +145,7 @@ local function isItemConsumable(item)
 end
 
 local function isItemLegendary(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterLegendary then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterLegendary then
 		return
 	end
 
@@ -175,11 +161,7 @@ function Module:IsPetTrashCurrency(itemID)
 end
 
 local function isItemCollection(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterCollection then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterCollection then
 		return
 	end
 
@@ -187,17 +169,14 @@ local function isItemCollection(item)
 end
 
 local function isItemCustom(item, index)
-	if not C["Inventory"].ItemFilter then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterCustom then
 		return
 	end
-	if not C["Inventory"].FilterCustom then
-		return
-	end
+
 	local customIndex = item.id and KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]
 	return customIndex and customIndex == index
 end
 
-local emptyBags = { [0] = true, [11] = true }
 local function isEmptySlot(item)
 	if not C["Inventory"].GatherEmpty then
 		return
@@ -207,11 +186,7 @@ local function isEmptySlot(item)
 end
 
 local function isTradeGoods(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterGoods then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterGoods then
 		return
 	end
 
@@ -223,11 +198,7 @@ local function isTradeGoods(item)
 end
 
 local function isQuestItem(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterQuest then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterQuest then
 		return
 	end
 
@@ -235,192 +206,150 @@ local function isQuestItem(item)
 end
 
 local function isAnimaItem(item)
-	if not C["Inventory"].ItemFilter then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterAnima or not item.link then
 		return
 	end
 
-	if not C["Inventory"].FilterAnima then
-		return
-	end
-
-	if not item.link then
-		return
-	end
-
-	return C_Item.IsAnimaItemByID(item.link)
+	return C_Item_IsAnimaItemByID(item.link)
 end
 
 local function isKorthiaRelicByID(itemID)
-	local _, spellID = C_Item.GetItemSpell(itemID)
+	local _, spellID = C_Item_GetItemSpell(itemID)
 	return spellID and relicSpellIDs[spellID]
 end
 
 local function isKorthiaRelic(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-
-	if not C["Inventory"].FilterRelic then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterRelic then
 		return
 	end
 
 	return item.id and isKorthiaRelicByID(item.id)
 end
 
-local primordialStones = {}
-for id = 204000, 204030 do
-	primordialStones[id] = true
-end
 local function isPrimordialStone(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-	if not C["Inventory"].FilterStone then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterStone then
 		return
 	end
 	return item.id and primordialStones[item.id]
 end
 
 local function isWarboundUntilEquipped(item)
-	if not C["Inventory"].ItemFilter then
-		return
-	end
-	if not C["Inventory"].FilterAOE then
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterAOE then
 		return
 	end
 	return item.bindOn and item.bindOn == "accountequip"
 end
 
-local accountBankIDs = {
-	[Enum.BagIndex.AccountBankTab_1 or 13] = true,
-	[Enum.BagIndex.AccountBankTab_2 or 14] = true,
-	[Enum.BagIndex.AccountBankTab_3 or 15] = true,
-	[Enum.BagIndex.AccountBankTab_4 or 16] = true,
-	[Enum.BagIndex.AccountBankTab_5 or 17] = true,
-}
-
+-- Main Module Filters
 function Module:GetFilters()
 	local filters = {}
 
 	filters.onlyBags = function(item)
 		return isItemInBag(item) and not isEmptySlot(item)
 	end
-
 	filters.bagAzeriteItem = function(item)
 		return isItemInBag(item) and isAzeriteArmor(item)
 	end
-
-	filters.bagLegendary = function(item)
-		return isItemInBag(item) and isItemLegendary(item)
-	end
-
 	filters.bagEquipment = function(item)
 		return isItemInBag(item) and isItemEquipment(item)
 	end
-
 	filters.bagEquipSet = function(item)
 		return isItemInBag(item) and isItemEquipSet(item)
 	end
-
 	filters.bagConsumable = function(item)
 		return isItemInBag(item) and isItemConsumable(item)
 	end
-
 	filters.bagsJunk = function(item)
 		return isItemInBag(item) and isItemJunk(item)
 	end
-
+	filters.bagCollection = function(item)
+		return isItemInBag(item) and isItemCollection(item)
+	end
+	filters.bagGoods = function(item)
+		return isItemInBag(item) and isTradeGoods(item)
+	end
+	filters.bagQuest = function(item)
+		return isItemInBag(item) and isQuestItem(item)
+	end
+	filters.bagAnima = function(item)
+		return isItemInBag(item) and isAnimaItem(item)
+	end
+	filters.bagRelic = function(item)
+		return isItemInBag(item) and isKorthiaRelic(item)
+	end
 	filters.bagStone = function(item)
 		return isItemInBag(item) and isPrimordialStone(item)
 	end
-
-	filters.accountbank = function(item)
-		return accountBankIDs[item.bagId] and not isEmptySlot(item)
-	end
-
 	filters.bagAOE = function(item)
 		return isItemInBag(item) and isWarboundUntilEquipped(item)
-	end
-
-	filters.bankAOE = function(item)
-		return isItemInBank(item) and isWarboundUntilEquipped(item)
 	end
 
 	filters.onlyBank = function(item)
 		return isItemInBank(item) and not isEmptySlot(item)
 	end
-
 	filters.bankAzeriteItem = function(item)
 		return isItemInBank(item) and isAzeriteArmor(item)
 	end
-
 	filters.bankLegendary = function(item)
 		return isItemInBank(item) and isItemLegendary(item)
 	end
-
 	filters.bankEquipment = function(item)
 		return isItemInBank(item) and isItemEquipment(item)
 	end
-
 	filters.bankEquipSet = function(item)
 		return isItemInBank(item) and isItemEquipSet(item)
 	end
-
 	filters.bankConsumable = function(item)
 		return isItemInBank(item) and isItemConsumable(item)
+	end
+	filters.bankCollection = function(item)
+		return isItemInBank(item) and isItemCollection(item)
+	end
+	filters.bankGoods = function(item)
+		return isItemInBank(item) and isTradeGoods(item)
+	end
+	filters.bankQuest = function(item)
+		return isItemInBank(item) and isQuestItem(item)
+	end
+	filters.bankAnima = function(item)
+		return isItemInBank(item) and isAnimaItem(item)
+	end
+	filters.bankAOE = function(item)
+		return isItemInBank(item) and isWarboundUntilEquipped(item)
 	end
 
 	filters.onlyReagent = function(item)
 		return item.bagId == -3 and not isEmptySlot(item)
-	end
-
-	filters.bagCollection = function(item)
-		return isItemInBag(item) and isItemCollection(item)
-	end
-
-	filters.bankCollection = function(item)
-		return isItemInBank(item) and isItemCollection(item)
-	end
-
-	filters.bagGoods = function(item)
-		return isItemInBag(item) and isTradeGoods(item)
-	end
-
-	filters.bankGoods = function(item)
-		return isItemInBank(item) and isTradeGoods(item)
-	end
-
-	filters.bagQuest = function(item)
-		return isItemInBag(item) and isQuestItem(item)
-	end
-
-	filters.bankQuest = function(item)
-		return isItemInBank(item) and isQuestItem(item)
-	end
-
-	filters.bagAnima = function(item)
-		return isItemInBag(item) and isAnimaItem(item)
-	end
-
-	filters.bankAnima = function(item)
-		return isItemInBank(item) and isAnimaItem(item)
-	end
-
-	filters.bagRelic = function(item)
-		return isItemInBag(item) and isKorthiaRelic(item)
-	end
-
+	end -- reagent bank
 	filters.onlyBagReagent = function(item)
-		return isItemInBagReagent(item) and not isEmptySlot(item)
+		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (isItemInBag(item) and isTradeGoods(item))
+	end -- reagent bagslot
+
+	filters.accountbank = function(item)
+		return isItemInAccountBank(item) and not isEmptySlot(item)
+	end
+	filters.accountEquipment = function(item)
+		return isItemInAccountBank(item) and isItemEquipment(item)
+	end
+	filters.accountConsumable = function(item)
+		return isItemInAccountBank(item) and isItemConsumable(item)
+	end
+	filters.accountGoods = function(item)
+		return isItemInAccountBank(item) and isTradeGoods(item)
+	end
+	filters.accountAOE = function(item)
+		return isItemInAccountBank(item) and isWarboundUntilEquipped(item)
 	end
 
 	for i = 1, 5 do
 		filters["bagCustom" .. i] = function(item)
-			return isItemInBag(item) and isItemCustom(item, i)
+			return (isItemInBag(item) or isItemInBagReagent(item)) and isItemCustom(item, i)
 		end
-
 		filters["bankCustom" .. i] = function(item)
 			return isItemInBank(item) and isItemCustom(item, i)
+		end
+		filters["accountCustom" .. i] = function(item)
+			return isItemInAccountBank(item) and isItemCustom(item, i)
 		end
 	end
 

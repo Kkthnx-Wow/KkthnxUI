@@ -274,7 +274,7 @@ end
 
 function Module:CreateBagTab(settings, columns)
 	local bagTab = self:SpawnPlugin("BagTab", settings.Bags)
-	bagTab:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 6)
+	bagTab:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
 	bagTab:CreateBorder()
 	bagTab.highlightFunction = highlightFunction
 	bagTab:Hide()
@@ -583,7 +583,7 @@ function Module:CreateSortButton(name)
 			SortBankBags()
 		elseif name == "Reagent" then
 			SortReagentBankBags()
-		elseif name == "AccountBank" then
+		elseif name == "Account" then
 			StaticPopup_Show("BANK_CONFIRM_CLEANUP", nil, nil, { bankType = ACCOUNT_BANK_TYPE })
 		else
 			if C["Inventory"].ReverseSort then
@@ -643,7 +643,7 @@ function Module:GetEmptySlot(name)
 		if slotID then
 			return 5, slotID
 		end
-	elseif name == "AccountBank" then
+	elseif name == "Account" then
 		for bagID = 13, 17 do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
@@ -665,7 +665,7 @@ local freeSlotContainer = {
 	["Bank"] = true,
 	["Reagent"] = true,
 	["BagReagent"] = true,
-	["AccountBank"] = true,
+	["Account"] = true,
 }
 
 function Module:CreateFreeSlots()
@@ -1130,7 +1130,7 @@ function Module:OnEnable()
 	local f = {}
 	local filters = Module:GetFilters()
 	local MyContainer = Backpack:GetContainerClass()
-	Module.ContainerGroups = { ["Bag"] = {}, ["Bank"] = {} }
+	Module.ContainerGroups = { ["Bag"] = {}, ["Bank"] = {}, ["Account"] = {} }
 
 	local function AddNewContainer(bagType, index, name, filter)
 		local newContainer = MyContainer:New(name, { BagType = bagType, Index = index })
@@ -1186,7 +1186,15 @@ function Module:OnEnable()
 		f.reagent:SetPoint(unpack(f.bank.__anchor))
 		f.reagent:Hide()
 
-		f.accountbank = MyContainer:New("AccountBank", { Bags = "accountbank", BagType = "Bank" })
+		for i = 1, 5 do
+			AddNewContainer("Account", i, "AccountCustom" .. i, filters["accountCustom" .. i])
+		end
+		AddNewContainer("Account", 7, "AccountAOE", filters.accountAOE)
+		AddNewContainer("Account", 6, "AccountEquipment", filters.accountEquipment)
+		AddNewContainer("Account", 9, "AccountConsumable", filters.accountConsumable)
+		AddNewContainer("Account", 8, "AccountGoods", filters.accountGoods)
+
+		f.accountbank = MyContainer:New("Account", { Bags = "accountbank", BagType = "Account" })
 		f.accountbank:SetFilter(filters.accountbank, true)
 		f.accountbank:SetPoint(unpack(f.bank.__anchor))
 		f.accountbank:Hide()
@@ -1217,7 +1225,7 @@ function Module:OnEnable()
 		BankFrame.activeTabIndex = 1
 		self:GetContainer("Bank"):Hide()
 		self:GetContainer("Reagent"):Hide()
-		self:GetContainer("AccountBank"):Hide()
+		self:GetContainer("Account"):Hide()
 	end
 
 	local MyButton = Backpack:GetItemButtonClass()
@@ -1512,6 +1520,7 @@ function Module:OnEnable()
 	function Module:UpdateAllAnchors()
 		Module:UpdateBagsAnchor(f.main, Module.ContainerGroups["Bag"])
 		Module:UpdateBankAnchor(f.bank, Module.ContainerGroups["Bank"])
+		Module:UpdateBankAnchor(f.accountbank, Module.ContainerGroups["Account"])
 	end
 
 	function Module:GetContainerColumns(bagType)
@@ -1519,6 +1528,8 @@ function Module:OnEnable()
 			return C["Inventory"].BagsWidth
 		elseif bagType == "Bank" then
 			return C["Inventory"].BankWidth
+		elseif bagType == "Account" then
+			return C["Inventory"].BankWidth -- AccountWidth
 		end
 	end
 
@@ -1641,7 +1652,7 @@ function Module:OnEnable()
 			buttons[3] = Module.CreateDepositButton(self)
 			buttons[4] = Module.CreateBankButton(self, f)
 			buttons[5] = Module.CreateAccountBankButton(self, f)
-		elseif name == "AccountBank" then
+		elseif name == "Account" then
 			Module.CreateBagTab(self, settings, 5)
 			buttons[3] = Module.CreateBagToggle(self, true)
 			buttons[4] = Module.CreateAccountBankDeposit(self)
