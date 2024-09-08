@@ -121,7 +121,7 @@ function Module:InterruptAlert_Update(...)
 end
 
 function Module:InterruptAlert_CheckGroup()
-	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsRandomGroup())) then
+	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsPartyLFG() or C_PartyInfo.IsPartyWalkIn())) then
 		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	else
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)

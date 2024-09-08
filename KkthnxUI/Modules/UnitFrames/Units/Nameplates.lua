@@ -591,9 +591,15 @@ function Module:UpdateClassIcon(self, unit)
 	local reaction = UnitReaction(unit, "player")
 	if UnitIsPlayer(unit) and (reaction and reaction <= 4) then
 		local _, class = UnitClass(unit)
-		local texcoord = CLASS_ICON_TCOORDS[class]
-		self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
-		self.Class:Show()
+
+		if class and CLASS_ICON_TCOORDS[class] then
+			local texcoord = CLASS_ICON_TCOORDS[class]
+			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
+			self.Class:Show()
+		else
+			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
+			self.Class:Hide()
+		end
 	else
 		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
 		self.Class:Hide()

@@ -48,18 +48,18 @@ Engine[3] = {} -- L, Locale
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
-K.LibEasyMenu = LibStub("LibEasyMenu-1.0")
-K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
-K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI")
-K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
-K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
-K.LibSharedMedia = LibStub("LibSharedMedia-3.0")
-K.LibRangeCheck = LibStub("LibRangeCheck-3.0-KkthnxUI")
-K.LibSerialize = LibStub("LibSerialize-KkthnxUI")
-K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
-K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI")
-K.cargBags = Engine.cargBags
-K.oUF = Engine.oUF
+K.LibEasyMenu = LibStub("LibEasyMenu-1.0", true) or nil
+K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
+K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
+K.LibChangeLog = LibStub("LibChangelog-KkthnxUI", true) or nil
+K.LibDeflate = LibStub("LibDeflate-KkthnxUI", true) or nil
+K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true) or nil
+K.LibRangeCheck = LibStub("LibRangeCheck-3.0-KkthnxUI", true) or nil
+K.LibSerialize = LibStub("LibSerialize-KkthnxUI", true) or nil
+K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true) or nil
+K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI", true) or nil
+K.cargBags = Engine and Engine.cargBags or nil
+K.oUF = Engine and Engine.oUF or nil
 
 -- AddOn Info
 K.Title = C_AddOns_GetAddOnMetadata(AddOnName, "Title")

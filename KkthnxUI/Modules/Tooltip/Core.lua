@@ -408,14 +408,14 @@ function Module:ReskinTooltip()
 	if self:IsForbidden() then
 		return
 	end
-	self:SetScale(1)
 
 	if not self.tipStyled then
 		self:HideBackdrop()
 		self:DisableDrawLayer("BACKGROUND")
 		self.bg = CreateFrame("Frame", nil, self)
-		self.bg:SetPoint("TOPLEFT", self, 2, -2)
-		self.bg:SetPoint("BOTTOMRIGHT", self, -2, 2)
+		self.bg:ClearAllPoints()
+		self.bg:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -2)
+		self.bg:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -2, 2)
 		self.bg:SetFrameLevel(self:GetFrameLevel())
 		self.bg:CreateBorder()
 
