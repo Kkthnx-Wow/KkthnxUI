@@ -323,10 +323,10 @@ function Module:PositionGameMenuButton()
 			GameMenuFrame.KkthnxUI:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -10)
 		elseif not lastIndex then
 			local point, anchor, point2, x, y = button:GetPoint()
-			button:SetPoint(point, anchor, point2, x, y - 30)
+			button:SetPoint(point, anchor, point2, x, y - 36)
 		end
 	end
-	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 30)
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 36)
 	if GameMenuFrame.KkthnxUI then
 		GameMenuFrame.KkthnxUI:SetFormattedText(K.Title)
 	end
@@ -353,7 +353,8 @@ function Module:CreateGUIGameMenuButton()
 	button:SetScript("OnClick", function()
 		Module:ClickGameMenu()
 	end)
-	button:SetSize(200, 30)
+
+	-- button:SetSize(200, 36)
 	button:SkinButton()
 	GameMenuFrame.KkthnxUI = button
 	GameMenuFrame.MenuButtons = {}

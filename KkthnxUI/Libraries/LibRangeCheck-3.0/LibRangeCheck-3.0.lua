@@ -85,11 +85,21 @@ local BOOKTYPE_SPELL = (Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Play
 
 local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines or GetNumSpellTabs
 
+local IsPassiveSpell = IsPassiveSpell
+local GetSpellBookItemName = GetSpellBookItemName
+local GetSpellBookItemInfo = GetSpellBookItemInfo
 local C_SpellBook_GetSpellBookItemInfo = C_SpellBook.GetSpellBookItemInfo
 local CustomSpellBookItemData = C_SpellBook_GetSpellBookItemInfo and function(index, bookType)
 	local result = C_SpellBook_GetSpellBookItemInfo(index, bookType)
 	return result.name, result.subName, result.spellID, result.itemType, result.isPassive
-end or _G.GetSpellBookItemName
+end or function(index, bookType)
+	local name, subName = GetSpellBookItemName(index, bookType)
+	if name then
+		local spellType, spellID = GetSpellBookItemInfo(index, bookType)
+		local isPassive = IsPassiveSpell(index, bookType)
+		return name, subName, spellID, spellType, isPassive
+	end
+end
 
 local C_Spell_IsSpellInRange = C_Spell.IsSpellInRange
 local CustomSpellBookItemInRange = C_Spell_IsSpellInRange and function(spellID, spellBank, unit)
@@ -99,7 +109,6 @@ local CustomSpellBookItemInRange = C_Spell_IsSpellInRange and function(spellID, 
 	elseif result == false then
 		return 0
 	end
-	return nil
 end or _G.IsSpellInRange
 
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
@@ -168,7 +177,6 @@ local InteractLists = {
 }
 
 local MeleeRange = 2
-local MatchSpellByID = {} -- specific matching to avoid incorrect index
 local FriendSpells, HarmSpells, ResSpells, PetSpells = {}, {}, {}, {}
 
 for _, n in ipairs({ "EVOKER", "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "MONK", "ROGUE" }) do
@@ -228,8 +236,6 @@ tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards, level 8)
 tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 9)
 
 if isEraSOD then
-	MatchSpellByID[401417] = true -- Regeneration (Rune): Conflicts with Racial Passive on Trolls
-
 	tinsert(FriendSpells.MAGE, 401417) -- Regeneration (40 yards)
 	tinsert(FriendSpells.MAGE, 412510) -- Mass Regeneration (40 yards)
 end
@@ -242,9 +248,6 @@ tinsert(HarmSpells.MAGE, 133) -- Fireball (40 yards)
 tinsert(HarmSpells.MAGE, 44425) -- Arcane Barrage (40 yards)
 
 -- Monks
-MatchSpellByID[218164] = true -- Detox
-MatchSpellByID[115450] = true -- Detox
-
 tinsert(FriendSpells.MONK, 218164) -- Detox (40 yards): Brewmaster, Windwalker
 tinsert(FriendSpells.MONK, 115450) -- Detox (40 yards): Mistweaver
 tinsert(FriendSpells.MONK, 115546) -- Provoke (30 yards)
@@ -299,8 +302,8 @@ tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 
 -- Rogues
 if isRetail then
-	tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
-	tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
+	tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18); works on friendly in retail
+	tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24); this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
 else
 	tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
 end
@@ -325,6 +328,7 @@ end
 
 tinsert(HarmSpells.SHAMAN, 370) -- Purge (30 yards)
 tinsert(HarmSpells.SHAMAN, 188196) -- Lightning Bolt (40 yards)
+tinsert(HarmSpells.SHAMAN, 188389) -- Flame Shock (40 yards); Fallback for when Lightning Bolt fails due to hero talents
 tinsert(HarmSpells.SHAMAN, 73899) -- Primal Strike (Melee Range)
 
 if not isRetail then
@@ -461,7 +465,7 @@ local FriendItems = {
 
 if isRetail then
 	FriendItems[1] = {
-		90175, -- Gin-Ji Knife Set -- doesn't seem to work for pets (always returns nil)
+		90175, -- Gin-Ji Knife Set; doesn't seem to work for pets (always returns nil)
 	}
 	FriendItems[4] = {
 		129055, -- Shoe Shine Kit
@@ -597,9 +601,7 @@ local lastUpdate = 0
 local checkers_Spell = setmetatable({}, {
 	__index = function(t, spellIdx)
 		local func = function(unit)
-			if CustomSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
-				return true
-			end
+			return CustomSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1
 		end
 		t[spellIdx] = func
 		return func
@@ -709,13 +711,11 @@ local function findSpellIdx(spellName, sid)
 	end
 
 	for i = 1, getNumSpells() do
-		local name, _, id, spellType, isPassive = CustomSpellBookItemData(i, BOOKTYPE_SPELL)
-		if (sid == id and IsSpellKnownOrOverridesKnown(id)) or (spellName == name and not MatchSpellByID[id]) then
-			return (not spellType and i) or (not isPassive and id)
+		local _, _, id, _, isPassive = CustomSpellBookItemData(i, BOOKTYPE_SPELL)
+		if sid == id and not isPassive and IsSpellKnownOrOverridesKnown(id) then
+			return C_Spell_IsSpellInRange and id or i
 		end
 	end
-
-	return nil
 end
 
 local function fixRange(range)
@@ -1065,12 +1065,14 @@ function lib:init(forced)
 	if self.initialized and not forced then
 		return
 	end
+
 	self.initialized = true
 	local _, playerClass = UnitClass("player")
 	local _, playerRace = UnitRace("player")
 
 	local interactList = InteractLists[playerRace] or DefaultInteractList
 	self.handSlotItem = GetInventoryItemLink("player", HandSlotId)
+
 	local changed = false
 	if updateCheckers(self.friendRC, self.friendRCInCombat, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) then
 		changed = true
@@ -1093,6 +1095,7 @@ function lib:init(forced)
 	if updateCheckers(self.petRC, self.petRCInCombat, createCheckerList(PetSpells[playerClass], nil, interactList)) then
 		changed = true
 	end
+
 	if changed and self.callbacks then
 		self.callbacks:Fire(self.CHECKERS_CHANGED)
 	end
@@ -1415,16 +1418,14 @@ function lib:activate()
 		local frame = CreateFrame("Frame")
 		self.frame = frame
 
-		frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
 		frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
+		frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
 		frame:RegisterEvent("SPELLS_CHANGED")
-
-		if isEra or isCata then
-			frame:RegisterEvent("CVAR_UPDATE")
-		end
 
 		if isRetail or isCata then
 			frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		elseif isEra then
+			frame:RegisterEvent("CVAR_UPDATE")
 		end
 
 		local _, playerClass = UnitClass("player")
