@@ -55,6 +55,65 @@ local KKUI_Changelog = {
 	-- },
 
 	{
+		Version = "[10.5.6] - 2024-09-08 - Patch 110002",
+		General = "This update is here to fix those annoying bugs and make your KkthnxUI experience even better. We’ve also added a few neat tricks and improvements—because who doesn’t like a bit of polish?",
+
+		Sections = {
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Fixed that pesky Interrupt nil error—turns out we left an old function call hanging around. Oops!",
+					"Added some safety checks for libraries, because nobody likes surprises when a library decides to take a day off.",
+				},
+			},
+
+			{
+				Header = "Nameplates",
+				Entries = {
+					"Your enemy nameplates now have a class icon check. No more mysterious vanishing icons—because they belong right where you can see 'em!",
+				},
+			},
+
+			{
+				Header = "Warband Bank",
+				Entries = {
+					"Warband Bank got some love with various updates and improvements. It's less clunky, and you'll like it more now. Trust us.",
+					"Bags filter list updated: it’s now smart enough to include the Warband Bank. Because, really, how did we miss that?",
+				},
+			},
+
+			{
+				Header = "SharedMedia Integration",
+				Entries = {
+					"Added support for SharedMedia—probably. Let’s be honest, we’re still testing this one, but go ahead and play around with it!",
+				},
+			},
+
+			{
+				Header = "Installer Updates",
+				Entries = {
+					"Installer got a makeover! Now it’s smoother and less likely to throw a fit while setting up. It might even say ‘thank you’—who knows?",
+				},
+			},
+
+			{
+				Header = "Micromenu Refactoring",
+				Entries = {
+					"We cleaned up the micromenu code, making it less of a tangled mess. Oh, and that annoying mouseover issue? Yeah, it’s gone. Bye-bye!",
+				},
+			},
+
+			{
+				Header = "Party Walk-In",
+				Entries = {
+					"Added some extra checks for IsPartyWalkIn, because walking into parties unprepared? Not on our watch.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.5] - 2024-08-24 - Patch 11.0",
 		General = "This release introduces key updates and optimizations to KkthnxUI, improving overall performance and compatibility.",
 

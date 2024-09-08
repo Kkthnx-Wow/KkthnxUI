@@ -9,7 +9,8 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
     the API provides a powerful set of tools to help you achieve your goals.
 ]]
 
-local getmetatable, select = getmetatable, select
+local getmetatable, select, unpack = getmetatable, select, unpack
+local math_min, math_max, math_pi = math.min, math.max, math.pi
 local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver, UIParent = RegisterStateDriver, UIParent
@@ -18,7 +19,7 @@ local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseBu
 
 -- Utility Functions
 local function rad(degrees)
-	return degrees * math.pi / 180
+	return degrees * math_pi / 180
 end
 
 -- Frame Hiders
@@ -47,9 +48,9 @@ do
 
 		if colorTextures and texturesColor and #texturesColor == 3 then
 			-- Ensure each color component is within the valid range
-			local r = math.min(math.max(texturesColor[1], 0), 1)
-			local g = math.min(math.max(texturesColor[2], 0), 1)
-			local b = math.min(math.max(texturesColor[3], 0), 1)
+			local r = math_min(math_max(texturesColor[1], 0), 1)
+			local g = math_min(math_max(texturesColor[2], 0), 1)
+			local b = math_min(math_max(texturesColor[3], 0), 1)
 
 			self:SetVertexColor(r, g, b)
 		else

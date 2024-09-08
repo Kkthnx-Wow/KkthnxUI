@@ -72,6 +72,10 @@ end
 local emptyBags = { [0] = true, [11] = true }
 
 -- Function Definitions
+local function hasReagentBagEquipped()
+	return ContainerFrame_GetContainerNumSlots(5) > 0
+end
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -322,7 +326,7 @@ function Module:GetFilters()
 		return item.bagId == -3 and not isEmptySlot(item)
 	end -- reagent bank
 	filters.onlyBagReagent = function(item)
-		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (isItemInBag(item) and isTradeGoods(item))
+		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (hasReagentBagEquipped() and isItemInBag(item) and isTradeGoods(item))
 	end -- reagent bagslot
 
 	filters.accountbank = function(item)
