@@ -129,6 +129,23 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 	end,
 }
 
+StaticPopupDialogs["KKUI_DELETE_PROFILE"] = {
+	text = "Are you sure you want to delete the selected profile? This action cannot be undone!",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
+
+		-- Remove profile data from the database
+		KkthnxUIDB.Variables[SelectedServer][SelectedNickname] = nil
+		KkthnxUIDB.Settings[SelectedServer][SelectedNickname] = nil
+
+		-- Ensure to update profiles and reload UI
+		K.LoadProfiles()
+		_G.ReloadUI()
+	end,
+}
+
 local SetValue = function(group, option, value)
 	-- Check if C[group][option] is a table, if it is set C[group][option].Value = value, otherwise set C[group][option] = value
 	if type(C[group][option]) == "table" then
@@ -2218,16 +2235,23 @@ GUI.PLAYER_REGEN_ENABLED = function(self)
 	end
 end
 
-GUI.SetProfile = function(self)
+GUI.SetProfile = function(self, btn)
+	print(btn)
 	local Dropdown = self:GetParent()
 	local Profile = Dropdown.Current:GetText()
 
 	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
 		MySelectedProfile = Profile
 
-		GUI:Toggle()
-
-		_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
+		-- Check for SHIFT + RIGHT CLICK
+		if IsShiftKeyDown() then
+			-- Open the deletion confirmation popup
+			_G.StaticPopup_Show("KKUI_DELETE_PROFILE")
+		else
+			-- Regular profile switch
+			GUI:Toggle()
+			_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
+		end
 	end
 end
 

@@ -1,7 +1,7 @@
 -- LibEasyMenu - A library for creating dropdown menus in World of Warcraft addons
 
 -- Version information
-local MAJOR, MINOR = "LibEasyMenu-1.0", 1
+local MAJOR, MINOR = "LibEasyMenu-1.0-KkthnxUI", 1
 
 -- Create a new library using LibStub
 local LibEasyMenu = LibStub:NewLibrary(MAJOR, MINOR)

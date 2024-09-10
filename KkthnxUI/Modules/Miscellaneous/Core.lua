@@ -354,7 +354,6 @@ function Module:CreateGUIGameMenuButton()
 		Module:ClickGameMenu()
 	end)
 
-	-- button:SetSize(200, 36)
 	button:SkinButton()
 	GameMenuFrame.KkthnxUI = button
 	GameMenuFrame.MenuButtons = {}

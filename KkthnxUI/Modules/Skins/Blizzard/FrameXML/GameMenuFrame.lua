@@ -27,14 +27,14 @@ table_insert(C.defaultThemes, function()
 				if not button.IsSkinned then
 					button:SkinButton(true)
 					button.KKUI_Border:SetOffset(-8)
-					button.IsSkinned = true
+					-- button.IsSkinned = true
 				end
 			end
 
 			if menu.KkthnxUI and not menu.KkthnxUI.IsSkinned then
 				menu.KkthnxUI:SkinButton(true)
 				menu.KkthnxUI.KKUI_Border:SetOffset(-8)
-				menu.KkthnxUI.IsSkinned = true
+				-- menu.KkthnxUI.IsSkinned = true
 			end
 		end)
 	end

@@ -29,7 +29,7 @@ local function KKUI_VerifyDatabase()
 	charData.InternalCD = charData.InternalCD or {}
 	charData.Mover = charData.Mover or {}
 	charData.RevealWorldMap = charData.RevealWorldMap or false
-	charData.RevealWorldMap = charData.AutoDeposit or false
+	charData.AutoDeposit = charData.AutoDeposit or false
 	charData.SplitCount = charData.SplitCount or 1
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
@@ -129,6 +129,7 @@ local function KKUI_LoadProfiles()
 		end
 	end
 end
+K.LoadProfiles = KKUI_LoadProfiles
 
 local function KKUI_LoadVariables()
 	KKUI_CreateDefaults()
@@ -145,8 +146,6 @@ local function KKUI_LoadAddon()
 end
 
 local function KKUI_OnEvent(_, event, addonName)
-	-- KKUI_VerifyDatabase()
-
 	if event == "VARIABLES_LOADED" then
 		KKUI_VerifyDatabase()
 		KKUI_LoadVariables()

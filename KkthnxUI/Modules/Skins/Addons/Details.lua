@@ -117,6 +117,8 @@ local function ReskinDetails()
 		Details:SelectNumericalSystem()
 	end
 
+	print(K.UIFont)
+
 	-- Reset to one window
 	Details.OpenWelcomeWindow = function()
 		if instance1 then

@@ -48,7 +48,7 @@ Engine[3] = {} -- L, Locale
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
-K.LibEasyMenu = LibStub("LibEasyMenu-1.0", true) or nil
+K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true) or nil
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
 K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
 K.LibChangeLog = LibStub("LibChangelog-KkthnxUI", true) or nil

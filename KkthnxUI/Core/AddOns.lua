@@ -287,7 +287,7 @@ local function ForceCursorTrail()
 end
 
 function Module:ForceAddonSkins()
-	if not K.IsDeveloper then -- This is personal for now.
+	if not K.isDeveloper then -- This is personal for now.
 		return
 	end
 
