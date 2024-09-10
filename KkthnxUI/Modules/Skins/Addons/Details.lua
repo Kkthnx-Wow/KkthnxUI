@@ -14,7 +14,7 @@ local function SetupInstance(instance)
 
 	-- reset texture if using Details default texture
 	-- print(instance.row_info.texture)
-	local needReset = instance.row_info.texture == "Details Hyanda"
+	local needReset = instance.row_info.texture == "You Are the Best!"
 	instance:ChangeSkin("Minimalistic")
 	instance:InstanceWallpaper(false)
 	instance:DesaturateMenu(true)
@@ -24,7 +24,7 @@ local function SetupInstance(instance)
 	instance:ToolbarMenuButtonsSize(1)
 	instance:AttributeMenu(true, 0, 3, needReset and K.UIFont, needReset and 13, { 1, 1, 1 }, 1, false)
 	instance:SetBarSettings(needReset and 20, needReset and "KkthnxUIStatusbar")
-	instance:SetBarTextSettings(needReset and 12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0, 0, 0, 1 }, true, { 0, 0, 0, 1 })
+	instance:SetBarTextSettings(needReset and 12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0.04, 0.04, 0.04, 0.9 }, true, { 0.04, 0.04, 0.04, 0.9 })
 	instance.baseframe:CreateBackdrop(-1, 18, 1, 0)
 
 	instance.styled = true
@@ -116,8 +116,6 @@ local function ReskinDetails()
 		Details.numerical_system = current
 		Details:SelectNumericalSystem()
 	end
-
-	print(K.UIFont)
 
 	-- Reset to one window
 	Details.OpenWelcomeWindow = function()

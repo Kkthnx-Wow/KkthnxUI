@@ -2236,14 +2236,13 @@ GUI.PLAYER_REGEN_ENABLED = function(self)
 end
 
 GUI.SetProfile = function(self, btn)
-	print(btn)
 	local Dropdown = self:GetParent()
 	local Profile = Dropdown.Current:GetText()
 
 	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
 		MySelectedProfile = Profile
 
-		-- Check for SHIFT + RIGHT CLICK
+		-- Check for SHIFT
 		if IsShiftKeyDown() then
 			-- Open the deletion confirmation popup
 			_G.StaticPopup_Show("KKUI_DELETE_PROFILE")
