@@ -8,7 +8,12 @@ local Screenshot = Screenshot
 -- Achievement screenshot
 local ScreenShotFrame
 
-local function ScreenShotOnEvent()
+local function ScreenShotOnEvent(_, alreadyEarnedOnAccount)
+	print(alreadyEarnedOnAccount)
+	if alreadyEarnedOnAccount then
+		return
+	end
+
 	ScreenShotFrame.delay = 1
 	ScreenShotFrame:Show()
 end

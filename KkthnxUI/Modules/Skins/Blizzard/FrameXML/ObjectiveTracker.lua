@@ -80,6 +80,10 @@ end
 
 -- Add the theme reskin to default themes
 tinsert(C.defaultThemes, function()
+	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
+		return
+	end
+
 	local mainHeader = ObjectiveTrackerFrame.Header
 	mainHeader:StripTextures()
 
