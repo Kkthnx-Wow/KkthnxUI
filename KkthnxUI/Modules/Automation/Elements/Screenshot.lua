@@ -8,7 +8,7 @@ local Screenshot = Screenshot
 -- Achievement screenshot
 local ScreenShotFrame
 
-local function ScreenShotOnEvent(_, alreadyEarnedOnAccount)
+local function ScreenShotOnEvent(alreadyEarnedOnAccount)
 	print(alreadyEarnedOnAccount)
 	if alreadyEarnedOnAccount then
 		return

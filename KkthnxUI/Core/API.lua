@@ -442,6 +442,31 @@ local function SkinCheckBox(self, forceSaturation)
 	self.forceSaturation = forceSaturation
 end
 
+local function SkinEditBox(frame, width, height)
+	frame:DisableDrawLayer("BACKGROUND")
+
+	frame:CreateBackdrop()
+
+	local frameName = frame.GetName and frame:GetName()
+	if frameName and (frameName:find("Gold") or frameName:find("Silver") or frameName:find("Copper")) then
+		if frameName:find("Gold") then
+			frame.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 1)
+			frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -3, 0)
+		else
+			frame.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 1)
+			frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -13, 0)
+		end
+	end
+
+	if width then
+		frame:SetWidth(width)
+	end
+
+	if height then
+		frame:SetHeight(height)
+	end
+end
+
 -- Hide Backdrop
 local function HideBackdrop(self)
 	if self.NineSlice then
@@ -560,6 +585,10 @@ local function addapi(object)
 
 	if not object.SkinCheckBox then
 		mt.SkinCheckBox = SkinCheckBox
+	end
+
+	if not object.SkinEditBox then
+		mt.SkinEditBox = SkinEditBox
 	end
 
 	if not object.SkinScrollBar then

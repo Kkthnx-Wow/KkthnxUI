@@ -1,144 +1,90 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local r, g, b = K.r, K.g, K.b
-
-local function colorMinimize(f)
-	if f:IsEnabled() then
-		f.minimize:SetVertexColor(r, g, b)
-	end
-end
-
-local function clearMinimize(f)
-	f.minimize:SetVertexColor(1, 1, 1)
-end
-
-local function updateMinorButtonState(button)
-	if button:GetChecked() then
-		button.bg:SetBackdropColor(1, 0.8, 0, 0.25)
-	else
-		button.bg:SetBackdropColor(0, 0, 0, 0.25)
-	end
-end
 
 tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
 
-	for i = 1, 4 do
-		local frame = _G["StaticPopup" .. i]
-		local bu = _G["StaticPopup" .. i .. "ItemFrame"]
-		local icon = _G["StaticPopup" .. i .. "ItemFrameIconTexture"]
-		local close = _G["StaticPopup" .. i .. "CloseButton"]
-
-		local gold = _G["StaticPopup" .. i .. "MoneyInputFrameGold"]
-		local silver = _G["StaticPopup" .. i .. "MoneyInputFrameSilver"]
-		local copper = _G["StaticPopup" .. i .. "MoneyInputFrameCopper"]
-
-		_G["StaticPopup" .. i .. "ItemFrameNameFrame"]:Hide()
-
-		bu:SetNormalTexture(0)
-		bu:SetHighlightTexture(0)
-		bu:SetPushedTexture(0)
-		-- bu.bg = B.ReskinIcon(icon)
-		-- B.ReskinIconBorder(bu.IconBorder)
-
-		local bg = CreateFrame("Frame", nil, bu)
-		bg:SetPoint("TOPLEFT", bu.bg, "TOPRIGHT", 2, 0)
-		bg:SetPoint("BOTTOMRIGHT", bu.bg, 115, 0)
-		bg:SetFrameLevel(gold:GetFrameLevel())
-		bg:CreateBorder()
-
-		silver:SetPoint("LEFT", gold, "RIGHT", 1, 0)
-		copper:SetPoint("LEFT", silver, "RIGHT", 1, 0)
-
-		frame.Border:Hide()
-		frame:CreateBorder()
+	-- Helper function to skin popup buttons
+	local function SkinPopupButtons(popup)
 		for j = 1, 4 do
-			frame["button" .. j]:SkinButton()
+			local button = _G[popup .. "Button" .. j]
+			if button then
+				button:SkinButton()
+			end
 		end
-		frame.extraButton:SkinButton()
-		close:SkinCloseButton()
-
-		-- close.minimize = close:CreateTexture(nil, "OVERLAY")
-		-- close.minimize:SetSize(9, C.mult)
-		-- close.minimize:SetPoint("CENTER")
-		-- close.minimize:SetTexture(DB.bdTex)
-		-- close.minimize:SetVertexColor(1, 1, 1)
-		-- close:HookScript("OnEnter", colorMinimize)
-		-- close:HookScript("OnLeave", clearMinimize)
-
-		_G["StaticPopup" .. i .. "EditBox"].bg = CreateFrame("Frame", nil, _G["StaticPopup" .. i .. "EditBox"], "BackdropTemplate")
-		_G["StaticPopup" .. i .. "EditBox"].bg:SetAllPoints(_G["StaticPopup" .. i .. "EditBox"])
-		_G["StaticPopup" .. i .. "EditBox"].bg:SetFrameLevel(_G["StaticPopup" .. i .. "EditBox"]:GetFrameLevel())
-		_G["StaticPopup" .. i .. "EditBox"].bg:CreateBorder()
-
-		gold.bg = CreateFrame("Frame", nil, gold)
-		gold.bg:SetAllPoints(gold)
-		gold.bg:SetFrameLevel(gold:GetFrameLevel())
-		gold.bg:CreateBorder()
-
-		silver.bg = CreateFrame("Frame", nil, silver)
-		silver.bg:SetAllPoints(silver)
-		silver.bg:SetFrameLevel(silver:GetFrameLevel())
-		silver.bg:CreateBorder()
-
-		copper.bg = CreateFrame("Frame", nil, copper)
-		copper.bg:SetAllPoints(copper)
-		copper.bg:SetFrameLevel(copper:GetFrameLevel())
-		copper.bg:CreateBorder()
 	end
 
-	hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
-		local info = StaticPopupDialogs[which]
-
-		if not info then
-			return
+	-- Helper function to skin popup edit boxes
+	local function SkinPopupEditBoxes(popup)
+		local editBox = _G[popup .. "EditBox"]
+		if editBox then
+			editBox:SkinEditBox()
+			editBox.KKUI_Backdrop:SetPoint("TOPLEFT", -3, -6)
+			editBox.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -3, 6)
 		end
 
-		local dialog = nil
-		dialog = StaticPopup_FindVisible(which, data)
+		local goldBox = _G[popup .. "MoneyInputFrameGold"]
+		local silverBox = _G[popup .. "MoneyInputFrameSilver"]
+		local copperBox = _G[popup .. "MoneyInputFrameCopper"]
 
-		if not dialog then
-			local index = 1
-			if info.preferredIndex then
-				index = info.preferredIndex
-			end
-			for i = index, STATICPOPUP_NUMDIALOGS do
-				local frame = _G["StaticPopup" .. i]
-				if not frame:IsShown() then
-					dialog = frame
-					break
-				end
-			end
+		if goldBox then
+			goldBox:SkinEditBox()
+			goldBox.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 0)
+		end
+		if silverBox then
+			silverBox:SkinEditBox()
+			silverBox.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 0)
+		end
+		if copperBox then
+			copperBox:SkinEditBox()
+			copperBox.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 0)
+		end
+	end
 
-			if not dialog and info.preferredIndex then
-				for i = 1, info.preferredIndex do
-					local frame = _G["StaticPopup" .. i]
-					if not frame:IsShown() then
-						dialog = frame
-						break
-					end
-				end
+	-- Helper function to skin popup item frame
+	local function SkinPopupItemFrame(popup)
+		local itemFrame = _G[popup .. "ItemFrame"]
+		if itemFrame then
+			_G[popup .. "ItemFrameNameFrame"]:Kill()
+			itemFrame:GetNormalTexture():Kill()
+			itemFrame:CreateBorder()
+			itemFrame:StyleButton()
+			itemFrame.IconBorder:SetAlpha(0)
+
+			local iconTexture = itemFrame.IconTexture
+			if iconTexture then -- Check if iconTexture exists
+				iconTexture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				iconTexture:ClearAllPoints()
+				iconTexture:SetPoint("TOPLEFT", 2, -2)
+				iconTexture:SetPoint("BOTTOMRIGHT", -2, 2)
 			end
 		end
+	end
 
-		if not dialog then
-			return
-		end
+	-- Skin StaticPopup frames
+	for i = 1, 4 do
+		local popup = "StaticPopup" .. i
+		SkinPopupButtons(popup)
 
-		if info.closeButton then
-			local closeButton = _G[dialog:GetName() .. "CloseButton"]
+		local frame = _G[popup]
+		frame:StripTextures()
+		frame.Border:StripTextures()
+		frame:CreateBackdrop()
+		frame.KKUI_Backdrop:SetPoint("TOPLEFT", 2, -2)
+		frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -2, 2)
 
-			closeButton:SetNormalTexture(0)
-			closeButton:SetPushedTexture(0)
+		SkinPopupEditBoxes(popup)
+		SkinPopupItemFrame(popup)
 
-			if info.closeButtonIsHide then
-				closeButton.__texture:Hide()
-				closeButton.minimize:Show()
-			else
-				closeButton.__texture:Show()
-				closeButton.minimize:Hide()
-			end
-		end
-	end)
+		local closeButton = _G[popup .. "CloseButton"]
+		closeButton:SetNormalTexture(0)
+		closeButton.SetNormalTexture = K.Noop
+		closeButton:SetPushedTexture(0)
+		closeButton.SetPushedTexture = K.Noop
+		closeButton:SkinCloseButton()
+	end
+
+	-- Skin the extra button on StaticPopup1
+	_G["StaticPopup1ExtraButton"]:SkinButton()
 end)
