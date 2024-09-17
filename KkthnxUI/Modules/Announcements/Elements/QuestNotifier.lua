@@ -77,7 +77,7 @@ local function SendQuestMessage(message)
 
 	if debugMode and K.isDeveloper then
 		print(message)
-	elseif IsPartyLFG() or C_PartyInfo.IsPartyWalkIn() then
+	elseif IsPartyLFG() then
 		SendChatMessage(message, "INSTANCE_CHAT")
 	elseif IsInRaid() then
 		SendChatMessage(message, "RAID")
