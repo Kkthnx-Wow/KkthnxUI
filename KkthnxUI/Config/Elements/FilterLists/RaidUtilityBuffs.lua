@@ -2,18 +2,15 @@ local C = KkthnxUI[2]
 
 C.RaidUtilityBuffCheckList = {
 	[1] = { -- Flasks
-		370652, -- Electrostatically Charged Flask
-		370653, -- Frost Protection Flask
-		371172, -- Gentle All-Purpose Flask
-		371204, -- Windstopper Flask
-		371339, -- Elemental Chaos Flask
-		371354, -- Storm Eye Flask
-		371386, -- Detachment Infused Flask
-		373257, -- Glacier's Fury Flask
-		374000, -- Corruption's Fury Frozen Flask
+		431971, -- 淬火侵攻合剂
+		431972, -- 淬火矫健合剂
+		431973, -- 淬火全能合剂
+		431974, -- 淬火精通合剂
+		432021, -- 炼金混沌合剂
 	},
-	[2] = { -- Well Fed
-		104273, -- 250 Agility, same name as the BUFF
+	[2] = { -- 食物
+		104273, -- 进食充分
+		462210, -- 丰盛进食充分
 	},
 	[3] = { -- 10% Intelligence
 		1459,
@@ -28,6 +25,6 @@ C.RaidUtilityBuffCheckList = {
 		264761,
 	},
 	[6] = { -- Runes
-		270058,
+		453250, -- 晶化强化符文
 	},
 }

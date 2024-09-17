@@ -182,7 +182,7 @@ function Module:CreateTarget()
 		Castbar:CreateBorder()
 		Castbar.castTicks = {}
 
-		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 7)
 		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		Castbar.Spark:SetBlendMode("ADD")

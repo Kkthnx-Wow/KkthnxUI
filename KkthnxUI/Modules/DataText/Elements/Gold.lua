@@ -243,7 +243,7 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 	end
 
 	title = false
-	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2912) -- Tier charges
+	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2813) -- Tier charges
 	if chargeInfo then
 		if not title then
 			GameTooltip:AddLine(" ")

@@ -22,8 +22,6 @@ local C_Calendar_SetAbsMonth = C_Calendar.SetAbsMonth
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 local C_Map_GetMapInfo = C_Map.GetMapInfo
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
-local C_TaskQuest_GetQuestInfoByQuestID = C_TaskQuest.GetQuestInfoByQuestID
-local C_TaskQuest_GetThreatQuests = C_TaskQuest.GetThreatQuests
 local FULLDATE = FULLDATE
 local GameTime_GetGameTime = GameTime_GetGameTime
 local GameTime_GetLocalTime = GameTime_GetLocalTime
@@ -103,18 +101,10 @@ local questlist = {
 	{ name = "", id = 70893, questName = true }, -- Community feast
 	{ name = "", id = 79226, questName = true }, -- The big dig
 	{ name = "", id = 78319, questName = true }, -- The superbloom
-}
-
-local lesserVisions = { 58151, 58155, 58156, 58167, 58168 }
-local horrificVisions = {
-	[1] = { id = 57848, desc = "470 (5+5)" },
-	[2] = { id = 57844, desc = "465 (5+4)" },
-	[3] = { id = 57847, desc = "460 (5+3)" },
-	[4] = { id = 57843, desc = "455 (5+2)" },
-	[5] = { id = 57846, desc = "450 (5+1)" },
-	[6] = { id = 57842, desc = "445 (5+0)" },
-	[7] = { id = 57845, desc = "430 (3+0)" },
-	[8] = { id = 57841, desc = "420 (1+0)" },
+	{ name = "", id = 76586, questName = true }, -- 散步圣光
+	{ name = "", id = 82946, questName = true }, -- 蜡团
+	{ name = "", id = 83240, questName = true }, -- 剧场
+	{ name = C_Map.GetAreaInfo(15141), id = 83333 }, -- 觉醒主机
 }
 
 local currentTime
@@ -233,23 +223,27 @@ local function GetNextLocation(nextTime, index)
 	return C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name
 end
 
-local cache = {}
-local nzothAssaults
-local function GetNzothThreatName(questID)
-	local name = cache[questID]
-	if not name then
-		name = C_TaskQuest_GetQuestInfoByQuestID(questID)
-		cache[questID] = name
-	end
-	return name
-end
-
 -- Grant hunts
 local huntAreaToMapID = { -- 狩猎区域ID转换为地图ID
 	[7342] = 2023, -- 欧恩哈拉平原
 	[7343] = 2022, -- 觉醒海岸
 	[7344] = 2025, -- 索德拉苏斯
 	[7345] = 2024, -- 碧蓝林海
+}
+
+local delveList = {
+	{ uiMapID = 2248, delveID = 7787 }, -- Earthcrawl Mines
+	{ uiMapID = 2248, delveID = 7781 }, -- Kriegval's Rest
+	{ uiMapID = 2248, delveID = 7779 }, -- Fungal Folly
+	{ uiMapID = 2215, delveID = 7789 }, -- Skittering Breach
+	{ uiMapID = 2215, delveID = 7785 }, -- Nightfall Sanctum
+	{ uiMapID = 2215, delveID = 7783 }, -- The Sinkhole
+	{ uiMapID = 2215, delveID = 7780 }, -- Mycomancer Cavern
+	{ uiMapID = 2214, delveID = 7782 }, -- The Waterworks
+	{ uiMapID = 2214, delveID = 7788 }, -- The Dread Pit
+	{ uiMapID = 2255, delveID = 7790 }, -- The Spiral Weave
+	{ uiMapID = 2255, delveID = 7784 }, -- Tak-Rethan Abyss
+	{ uiMapID = 2255, delveID = 7786 }, -- TThe Underkeep
 }
 
 -- Elemental invasion
@@ -385,7 +379,9 @@ function Module:OnEnter()
 				r, g, b = 192 / 255, 192 / 255, 192 / 255
 			end
 
-			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. " (" .. encounterProgress .. "/" .. numEncounters .. ")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
+			local progressColor = (numEncounters == encounterProgress) and "ff0000" or "00ff00"
+			local progressStr = format(" |cff%s(%s/%s)|r", progressColor, encounterProgress, numEncounters)
+			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. progressStr .. " (" .. encounterProgress .. "/" .. numEncounters .. ")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
@@ -397,6 +393,17 @@ function Module:OnEnter()
 				addTitle(QUESTS_LABEL)
 				GameTooltip:AddDoubleLine((v.itemID and GetItemLink(v.itemID)) or (v.questName and QuestUtils_GetQuestName(v.id)) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
+		end
+	end
+
+	-- Delves
+	title = false
+	for _, v in pairs(delveList) do
+		local delveInfo = C_AreaPoiInfo_GetAreaPOIInfo(v.uiMapID, v.delveID)
+		if delveInfo then
+			addTitle(delveInfo.description)
+			local mapInfo = C_Map_GetMapInfo(v.uiMapID)
+			GameTooltip:AddDoubleLine(mapInfo.name .. " - " .. delveInfo.name, SecondsToTime(GetQuestResetTime(), true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
@@ -461,33 +468,6 @@ function Module:OnEnter()
 			end -- green text if progressing
 			GameTooltip:AddDoubleLine(date("%m/%d %H:%M", nextTime - duration * 2), date("%m/%d %H:%M", nextTime - duration), 1, 1, 1, r, g, b)
 			GameTooltip:AddDoubleLine(date("%m/%d %H:%M", nextTime), date("%m/%d %H:%M", nextTime + duration), 1, 1, 1, 1, 1, 1)
-		end
-
-		-- Nzoth relavants
-		for _, v in ipairs(horrificVisions) do
-			if C_QuestLog_IsQuestFlaggedCompleted(v.id) then
-				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine(SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE, v.desc, 1, 1, 1, 0, 1, 0)
-				break
-			end
-		end
-
-		for _, id in pairs(lesserVisions) do
-			if C_QuestLog_IsQuestFlaggedCompleted(id) then
-				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine("Lesser Vision of N'Zoth", QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-				break
-			end
-		end
-
-		if not nzothAssaults then
-			nzothAssaults = C_TaskQuest_GetThreatQuests() or {}
-		end
-		for _, v in pairs(nzothAssaults) do
-			if C_QuestLog_IsQuestFlaggedCompleted(v) then
-				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine(GetNzothThreatName(v), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-			end
 		end
 
 		-- Invasions

@@ -27,6 +27,7 @@ local spellBlackList = {
 	[33395] = true,
 	[354051] = true,
 	[355689] = true,
+	[378760] = true,
 	[386770] = true,
 	[5246] = true,
 	[64695] = true,

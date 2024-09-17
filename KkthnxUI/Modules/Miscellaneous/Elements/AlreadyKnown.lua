@@ -94,7 +94,7 @@ local function IsAlreadyKnown(link, index)
 			if knowns[link] then
 				return true
 			end
-			if not knowables[itemClassID] then
+			if not knowables[itemClassID] and not C_Item.IsCosmeticItem(link) then
 				return
 			end
 

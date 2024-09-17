@@ -15,7 +15,6 @@ local GetProfessionInfo = GetProfessionInfo
 local PlayerHasToy = PlayerHasToy
 
 -- Cache WoW C API functions
-local C_ToyBox_IsToyUsable = C_ToyBox.IsToyUsable
 local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
 local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes
 local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.SetOnlyShowSkillUpRecipes
@@ -23,7 +22,7 @@ local C_TradeSkillUI_GetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMake
 local C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.SetOnlyShowMakeableRecipes
 local C_Item_GetItemCount = C_Item.GetItemCount
 local C_Item_GetItemCooldown = C_Item.GetItemCooldown
-local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Item_GetItemIconByID = C_Item.GetItemIconByID
 local C_Spell_GetSpellBookItemInfo = C_SpellBook.GetSpellBookItemInfo
 local C_Spell_GetSpellName = C_Spell.GetSpellName
 local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
@@ -75,7 +74,7 @@ function Module:UpdateProfessions()
 		end
 	end
 
-	if isCook and PlayerHasToy(CHEF_HAT) and C_ToyBox_IsToyUsable(CHEF_HAT) then
+	if isCook and PlayerHasToy(CHEF_HAT) then
 		Module:TradeTabs_Create(nil, CHEF_HAT)
 	end
 	if C_Item_GetItemCount(THERMAL_ANVIL) > 0 then
@@ -128,7 +127,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	if toyID then
 		_, name, texture = C_ToyBox_GetToyInfo(toyID)
 	elseif itemID then
-		name, _, _, _, _, _, _, _, _, texture = C_Item_GetItemInfo(itemID)
+		name, texture = C_Item_GetItemNameByID(itemID), C_Item_GetItemIconByID(itemID)
 	else
 		name, texture = C_Spell_GetSpellName(spellID), C_Spell_GetSpellTexture(spellID)
 	end
@@ -187,7 +186,8 @@ function Module:TradeTabs_FilterIcons()
 	for index, value in pairs(buttonList) do
 		local bu = CreateFrame("Button", nil, ProfessionsFrame.CraftingPage.RecipeList, "BackdropTemplate")
 		bu:SetSize(22, 22)
-		bu:SetPoint("BOTTOMRIGHT", ProfessionsFrame.CraftingPage.RecipeList.FilterButton, "TOPRIGHT", -(index - 1) * 28, 10)
+		-- bu:SetPoint("BOTTOMRIGHT", ProfessionsFrame.CraftingPage.RecipeList.FilterButton, "TOPRIGHT", -(index - 1) * 28, 10)
+		bu:SetPoint("BOTTOMRIGHT", ProfessionsFrame.CraftingPage.RecipeList.FilterDropdown, "TOPRIGHT", -(index - 1) * 28 + 6, 10)
 		bu:CreateBorder()
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		local atlas = string.match(value[1], "Atlas:(.+)$")

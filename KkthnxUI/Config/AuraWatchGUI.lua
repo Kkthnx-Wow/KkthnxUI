@@ -32,23 +32,22 @@ local r, g, b = K.r, K.g, K.b
 local f
 
 local function editBoxClearFocus(self)
-	self:ClearFocus()
+	if self.ClearFocus then
+		self:ClearFocus()
+	end
 end
 
 local function optOnClick(self)
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
-	local opt = self.__owner.options
-	for i = 1, #opt do
-		if self == opt[i] then
-			opt[i].KKUI_Background:SetVertexColor(1, 0.8, 0, 0.3)
-			opt[i].selected = true
-		else
-			opt[i].KKUI_Background:SetVertexColor(0.04, 0.04, 0.04, 0.9)
-			opt[i].selected = false
-		end
+	local options = self.__owner.options
+
+	for _, option in ipairs(options) do
+		option.selected = (option == self)
+		option.KKUI_Background:SetVertexColor(option.selected and 1 or 0.04, 0.8, option.selected and 0 or 0.04, option.selected and 0.3 or 0.9)
 	end
+
 	self.__owner.Text:SetText(self.text)
-	self:GetParent():Hide()
+	self.__owner.__list:Hide() -- Hide the dropdown list after selection
 end
 
 local function optOnEnter(self)
@@ -75,26 +74,25 @@ local function buttonOnClick(self)
 end
 
 -- Elements
-local function labelOnEnter(self)
-	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", 0, 3)
-	GameTooltip:AddLine(self.text)
-	GameTooltip:AddLine(self.tip, 0.5, 0.7, 1, 1)
-	GameTooltip:Show()
-end
-
 local function createLabel(parent, text, tip)
 	local label = K.CreateFontString(parent, 14, text, "", "system", "CENTER", 0, 25)
-	if not tip then
-		return
+
+	if tip then
+		local frame = CreateFrame("Frame", nil, parent)
+		frame:SetAllPoints(label)
+		frame.text = text
+		frame.tip = tip
+		frame:SetScript("OnEnter", function(self)
+			GameTooltip:ClearLines()
+			GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", 0, 3)
+			GameTooltip:AddLine(self.text)
+			GameTooltip:AddLine(self.tip, 0.5, 0.7, 1, 1)
+			GameTooltip:Show()
+		end)
+		frame:SetScript("OnLeave", K.HideTooltip)
 	end
 
-	local frame = CreateFrame("Frame", nil, parent)
-	frame:SetAllPoints(label)
-	frame.text = text
-	frame.tip = tip
-	frame:SetScript("OnEnter", labelOnEnter)
-	frame:SetScript("OnLeave", K.HideTooltip)
+	return label
 end
 
 local function AW_CreateEditbox(parent, text, x, y, tip, width, height)
@@ -255,29 +253,25 @@ local function AW_CreateScroll(parent, width, height, text)
 end
 
 local function AW_CreateBarWidgets(parent, texture)
-	local icon = CreateFrame("Frame", nil, parent)
-	icon:SetSize(22, 22)
-	icon:SetPoint("LEFT", 5, 0)
+	local iconFrame = CreateFrame("Frame", nil, parent)
+	iconFrame:SetSize(22, 22)
+	iconFrame:SetPoint("LEFT", 5, 0)
+	iconFrame:CreateBorder()
 
-	icon.bg = CreateFrame("Frame", nil, icon, "BackdropTemplate")
-	icon.bg:SetAllPoints(icon)
-	icon.bg:SetFrameLevel(icon:GetFrameLevel())
-	icon.bg:CreateBorder()
+	local iconTexture = iconFrame:CreateTexture(nil, "ARTWORK")
+	iconTexture:SetAllPoints(iconFrame)
+	iconTexture:SetTexCoord(unpack(K.TexCoords))
+	iconTexture:SetTexture(texture)
 
-	icon.Icon = icon:CreateTexture(nil, "ARTWORK")
-	icon.Icon:SetAllPoints()
-	icon.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	icon.Icon:SetTexture(texture)
+	local closeButton = CreateFrame("Button", nil, parent)
+	closeButton:SetSize(20, 20)
+	closeButton:SetPoint("RIGHT", -5, 0)
+	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
+	closeButton.Icon:SetAllPoints()
+	closeButton.Icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Pass-Up")
+	closeButton:SetHighlightTexture(closeButton.Icon:GetTexture())
 
-	local close = CreateFrame("Button", nil, parent)
-	close:SetSize(20, 20)
-	close:SetPoint("RIGHT", -5, 0)
-	close.Icon = close:CreateTexture(nil, "ARTWORK")
-	close.Icon:SetAllPoints()
-	close.Icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Pass-Up")
-	close:SetHighlightTexture(close.Icon:GetTexture())
-
-	return icon, close
+	return iconFrame, closeButton
 end
 
 local function auraWatchShow()
@@ -362,19 +356,19 @@ local function CreatePanel()
 	local barTable = {}
 	local function SortBars(index)
 		local num, onLeft, onRight = 1, 1, 1
-		for k in pairs(barTable[index]) do
-			if (index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k]) or (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k]) then
-				local bar = barTable[index][k]
-				if num == 1 then
-					bar:SetPoint("TOPLEFT", 10, -10)
-				elseif num > 1 and num / 2 ~= math_floor(num / 2) then
-					bar:SetPoint("TOPLEFT", 10, -10 - 35 * onLeft)
-					onLeft = onLeft + 1
-				elseif num == 2 then
-					bar:SetPoint("TOPLEFT", 295, -10)
-				elseif num > 2 and num / 2 == math_floor(num / 2) then
-					bar:SetPoint("TOPLEFT", 295, -10 - 35 * onRight)
+		for k, bar in pairs(barTable[index]) do
+			local isInternalCD = (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k])
+			local isAuraWatch = (index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k])
+
+			if isInternalCD or isAuraWatch then
+				local posY = -10 - 35 * ((num > 1 and math_floor(num / 2)) == num / 2 and onRight or onLeft)
+				local posX = (num % 2 == 0) and 295 or 10
+				bar:SetPoint("TOPLEFT", posX, posY)
+
+				if num % 2 == 0 then
 					onRight = onRight + 1
+				else
+					onLeft = onLeft + 1
 				end
 				num = num + 1
 			end
