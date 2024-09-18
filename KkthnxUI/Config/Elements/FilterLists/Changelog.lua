@@ -55,6 +55,70 @@ local KKUI_Changelog = {
 	-- },
 
 	{
+		Version = "[10.5.7] - 2024-09-18 - Patch 11.2",
+		General = "This update brings new aura adjustments, quality-of-life changes, and some bug fixes to ensure smoother gameplay. We’ve also made updates to key spells, buffs, and UI elements to keep your experience running smoothly.",
+
+		Sections = {
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Fixed an issue with nil values in oUF auras.",
+					"Resolved an issue where realm could return nil, causing errors.",
+					"Updated TradeTabs to fix filter buttons that weren't working correctly.",
+				},
+			},
+
+			{
+				Header = "Auras",
+				Entries = {
+					"Updated and refined aura lists, including improvements for Hunter and other classes.",
+					"Removed deprecated auras for a cleaner experience.",
+				},
+			},
+
+			{
+				Header = "Spells & Trinkets",
+				Entries = {
+					"Updated trinkets to ensure they are properly tracked and utilized in gameplay.",
+					"Added new tier charge ID for upcoming updates.",
+					"Updated major spells to keep them aligned with current content.",
+				},
+			},
+
+			{
+				Header = "Nameplates",
+				Entries = {
+					"Updated nameplate filters to reflect current spells and buffs, ensuring a better visual representation.",
+				},
+			},
+
+			{
+				Header = "Buff Checker",
+				Entries = {
+					"Updated food and buff tracking in the buff checker to support newer consumables.",
+					"Refined raid buff checks for a more streamlined experience.",
+				},
+			},
+
+			{
+				Header = "Skins & UI",
+				Entries = {
+					"Updated UI skins to accommodate changes in Delves.",
+					"Added a cosmetic item indicator to show whether an item is already known for cosmetic items.",
+				},
+			},
+
+			{
+				Header = "Weekly Updates",
+				Entries = {
+					"Removed Nzoth-related content and added new weekly content in Timewalking Weekly.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.6] - 2024-09-08 - Patch 110002",
 		General = "This update is here to fix those annoying bugs and make your KkthnxUI experience even better. We’ve also added a few neat tricks and improvements—because who doesn’t like a bit of polish?",
 
