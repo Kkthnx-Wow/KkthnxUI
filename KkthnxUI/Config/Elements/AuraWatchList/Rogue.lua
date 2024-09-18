@@ -42,6 +42,7 @@ local list = {
 		{ AuraID = 196980, UnitID = "player" }, -- 暗影大师
 		{ AuraID = 315496, UnitID = "player" }, -- 切割
 		{ AuraID = 343142, UnitID = "player" }, -- 恐惧之刃
+		{ AuraID = 381623, UnitID = "player" }, -- 菊花茶
 	},
 	["Focus Aura"] = { -- 焦点光环组
 		{ AuraID = 6770, UnitID = "focus", Caster = "player" }, -- 闷棍

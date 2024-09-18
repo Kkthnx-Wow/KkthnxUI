@@ -116,7 +116,7 @@ function Module:ChantLumos(self)
 		end
 
 		UpdateBuff(self.lumos[3], 12975, 12975, true, true)
-		UpdateBuff(self.lumos[4], 107574, 107574, true)
+		UpdateBuff(self.lumos[4], 401150, 401150, true)
 		UpdateBuff(self.lumos[5], 871, 871, true, true)
 	end
 end

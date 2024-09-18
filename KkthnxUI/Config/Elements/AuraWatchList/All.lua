@@ -16,6 +16,7 @@ local list = {
 		{ AuraID = 371028, UnitID = "player" }, -- 究极元素强能药水
 		-- 11.0 饰品
 		{ AuraID = 443531, UnitID = "player" }, -- 振奋之光
+		{ AuraID = 435493, UnitID = "player" }, -- 死亡之吻
 		-- 10.0 饰品
 		{ AuraID = 381476, UnitID = "player" }, -- 爆发烈焰
 		{ AuraID = 383941, UnitID = "player" }, -- 崩坏之力
@@ -332,7 +333,7 @@ local list = {
 		{ AuraID = 228323, UnitID = "target", Value = true }, -- 克罗塔的护盾
 	},
 	["InternalCD"] = { -- 自定义内置冷却组
-		{ IntID = 410232, Duration = 120 }, -- 孢子披风冷却
+		{ IntID = 450978, Duration = 15.4 }, -- 皎月风暴，猎人英雄天赋
 		{ IntID = 114018, Duration = 15, OnSuccess = true, UnitID = "all" }, -- 帷幕
 		-- {IntID = 240447, Duration = 20},	-- 大米，践踏
 		-- {IntID = 316958, Duration = 30, OnSuccess = true, UnitID = "all"},	-- 红土
