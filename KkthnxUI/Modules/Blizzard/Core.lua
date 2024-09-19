@@ -5,7 +5,7 @@ function Module:OnEnable()
 	local loadBlizzardModules = {
 		"CreateAlertFrames",
 		"CreateAltPowerbar",
-		-- "CreateColorPicker",
+		"CreateColorPicker",
 		"CreateMirrorBars",
 		"CreateObjectiveFrame",
 		"CreateOrderHallIcon",

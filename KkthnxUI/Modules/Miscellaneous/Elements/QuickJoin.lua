@@ -2,21 +2,18 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 local TT = K:GetModule("Tooltip")
 
-local select, wipe, sort, gsub, tremove = select, wipe, sort, gsub, tremove
 local StaticPopup_Hide, HideUIPanel, GetTime = StaticPopup_Hide, HideUIPanel, GetTime
-local UnitIsGroupLeader, UnitClass, UnitGroupRolesAssigned = UnitIsGroupLeader, UnitClass, UnitGroupRolesAssigned
+local UnitIsGroupLeader = UnitIsGroupLeader
 local C_Timer_After, IsAltKeyDown = C_Timer.After, IsAltKeyDown
 local C_LFGList_GetSearchResultInfo = C_LFGList.GetSearchResultInfo
 local C_LFGList_GetActivityInfoTable = C_LFGList.GetActivityInfoTable
-local C_LFGList_GetSearchResultMemberInfo = C_LFGList.GetSearchResultMemberInfo
-local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
-local HEADER_COLON = HEADER_COLON
-local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME or 1
-local LFG_LIST_GROUP_DATA_ATLASES = LFG_LIST_GROUP_DATA_ATLASES
+local HEADER_COLON = _G.HEADER_COLON
+local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME or 1
 local scoreFormat = K.GreyColor .. "(%s) |r%s"
 
-local LFGListFrame = LFGListFrame
+local LFGListFrame = _G.LFGListFrame
 local ApplicationViewerFrame = LFGListFrame.ApplicationViewer
 local searchPanel = LFGListFrame.SearchPanel
 local categorySelection = LFGListFrame.CategorySelection
@@ -47,127 +44,6 @@ end
 function Module:HookDialogOnShow()
 	pendingFrame = self
 	C_Timer_After(1, Module.DialogHideInSecond)
-end
-
-local roleCache = {}
-local roleOrder = {
-	["TANK"] = 1,
-	["HEALER"] = 2,
-	["DAMAGER"] = 3,
-}
-
-local indexToRole = { "TANK", "HEALER", "DAMAGER" }
-
-local function sortRoleOrder(a, b)
-	if a and b then
-		return a[1] < b[1]
-	end
-end
-
-local function GetPartyMemberInfo(index)
-	local unit = "player"
-	if index > 1 then
-		unit = "party" .. (index - 1)
-	end
-
-	local class = select(2, UnitClass(unit))
-	if not class then
-		return
-	end
-	local role = UnitGroupRolesAssigned(unit)
-	if role == "NONE" then
-		role = "DAMAGER"
-	end
-	return role, class, UnitIsGroupLeader(unit)
-end
-
-local function GetCorrectRoleInfo(frame, i)
-	if frame.resultID then
-		local role, class = C_LFGList_GetSearchResultMemberInfo(frame.resultID, i)
-		return role, class, i == 1
-	elseif frame == ApplicationViewerFrame then
-		return GetPartyMemberInfo(i)
-	end
-end
-
-local function UpdateGroupRoles(self)
-	wipe(roleCache)
-
-	if not self.__owner then
-		self.__owner = self:GetParent():GetParent()
-	end
-
-	local count = 0
-	for i = 1, 5 do
-		local role, class, isLeader = GetCorrectRoleInfo(self.__owner, i)
-		local roleIndex = role and roleOrder[role]
-		if roleIndex then
-			count = count + 1
-			if not roleCache[count] then
-				roleCache[count] = {}
-			end
-			roleCache[count][1] = roleIndex
-			roleCache[count][2] = class
-			roleCache[count][3] = isLeader
-		end
-	end
-
-	sort(roleCache, sortRoleOrder)
-end
-
-function Module:ReplaceGroupRoles(numPlayers, _, disabled)
-	UpdateGroupRoles(self)
-
-	for i = 1, 5 do
-		local icon = self.Icons[i]
-		if not icon.role then
-			if i == 1 then
-				icon:SetPoint("RIGHT", -5, -2)
-			else
-				icon:ClearAllPoints()
-				icon:SetPoint("RIGHT", self.Icons[i - 1], "LEFT", 2, 0)
-			end
-			icon:SetSize(26, 26)
-
-			icon.role = self:CreateTexture(nil, "OVERLAY", nil, 2)
-			icon.role:SetSize(16, 16)
-			icon.role:SetPoint("TOPLEFT", icon, -3, 3)
-
-			icon.leader = self:CreateTexture(nil, "OVERLAY", nil, 1)
-			icon.leader:SetSize(14, 14)
-			icon.leader:SetPoint("TOP", icon, 4, 7)
-			icon.leader:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon")
-			icon.leader:SetRotation(rad(-15))
-		end
-
-		if i > numPlayers then
-			icon.role:Hide()
-		else
-			icon.role:Show()
-			icon.role:SetDesaturated(disabled)
-			icon.role:SetAlpha(disabled and 0.5 or 1)
-			icon.leader:SetDesaturated(disabled)
-			icon.leader:SetAlpha(disabled and 0.5 or 1)
-		end
-		icon.leader:Hide()
-	end
-
-	local iconIndex = numPlayers
-	for i = 1, #roleCache do
-		local roleInfo = roleCache[i]
-		if roleInfo then
-			local icon = self.Icons[iconIndex]
-			icon:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[roleInfo[2]])
-			icon.role:SetSize(14, 14)
-			K.ReskinSmallRole(icon.role, indexToRole[roleInfo[1]])
-			icon.leader:SetShown(roleInfo[3])
-			iconIndex = iconIndex - 1
-		end
-	end
-
-	for i = 1, iconIndex do
-		self.Icons[i].role:SetTexture(nil)
-	end
 end
 
 function Module:AddAutoAcceptButton()
@@ -245,7 +121,7 @@ function Module:ShowLeaderOverallScore()
 end
 
 function Module:ReplaceFindGroupButton()
-	if not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter") then
+	if not IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
@@ -298,12 +174,12 @@ local function createSortButton(parent, texture, sortStr, panel)
 end
 
 function Module:AddPGFSortingExpression()
-	if not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter") then
+	if not IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
 	local PGFDialog = _G.PremadeGroupsFilterDialog
-	local ExpressionPanel = _G.PremadeGroupsFilterExpressionPanel
+	local ExpressionPanel = _G.PremadeGroupsFilterMiniPanel
 	PGFDialog.__sortBu = {}
 
 	createSortButton(PGFDialog, 525134, "mprating desc", ExpressionPanel)
@@ -329,6 +205,10 @@ function Module:AddPGFSortingExpression()
 end
 
 function Module:FixListingTaint() -- From PremadeGroupsFilter
+	if IsAddOnLoaded("PremadeGroupsFilter") then
+		return
+	end
+
 	local activityIdOfArbitraryMythicPlusDungeon = 1160 -- Algeth'ar Academy
 	if not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon) then
 		return
@@ -381,8 +261,6 @@ function Module:QuickJoin()
 
 	hooksecurefunc("StaticPopup_Show", Module.HookDialogOnShow)
 	hooksecurefunc("LFGListInviteDialog_Show", Module.HookDialogOnShow)
-
-	hooksecurefunc("LFGListGroupDataDisplayEnumerate_Update", Module.ReplaceGroupRoles)
 	hooksecurefunc("LFGListSearchEntry_Update", Module.ShowLeaderOverallScore)
 
 	Module:AddAutoAcceptButton()
@@ -390,5 +268,4 @@ function Module:QuickJoin()
 	Module:AddPGFSortingExpression()
 	Module:FixListingTaint()
 end
-
 Module:RegisterMisc("QuickJoin", Module.QuickJoin)

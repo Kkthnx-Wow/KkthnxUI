@@ -45,8 +45,8 @@ local function ReskinWidgetStatusBar(bar)
 			bar.BorderGlow:SetAlpha(0)
 		end
 		if bar.Label then
-			bar.Label:SetPoint("CENTER", 0, -5)
-			bar.Label:SetFontObject(K.UIFont)
+			-- bar.Label:SetPoint("CENTER", 0, -5)
+			-- bar.Label:SetFontObject(K.UIFont)
 			ResetLabelColor(bar.Label)
 			hooksecurefunc(bar.Label, "SetTextColor", ResetLabelColor)
 		end
@@ -179,26 +179,10 @@ tinsert(C.defaultThemes, function()
 	hooksecurefunc(_G.ObjectiveTrackerUIWidgetContainer, "UpdateWidgetLayout", ReskinPowerBarWidget)
 	ReskinPowerBarWidget(_G.ObjectiveTrackerUIWidgetContainer)
 
-	-- hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", ReskinPowerBarWidget)
-
-	-- hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
-	-- 	if not self.widgetFrames then
-	-- 		return
-	-- 	end
-
-	-- 	for _, widgetFrame in pairs(self.widgetFrames) do
-	-- 		if widgetFrame.widgetType == Type_SpellDisplay then
-	-- 			if not widgetFrame:IsForbidden() then
-	-- 				ReskinSpellDisplayWidget(widgetFrame.Spell)
-	-- 			end
-	-- 		end
-	-- 	end
+	-- if font outline enabled in tooltip, fix text shows in two lines on Torghast info || This breaks tooltips in worldmap on world quests.
+	-- hooksecurefunc(_G.UIWidgetTemplateTextWithStateMixin, "Setup", function(self)
+	-- 	self.Text:SetWidth(self.Text:GetStringWidth() + 2)
 	-- end)
-
-	-- if font outline enabled in tooltip, fix text shows in two lines on Torghast info
-	hooksecurefunc(_G.UIWidgetTemplateTextWithStateMixin, "Setup", function(self)
-		self.Text:SetWidth(self.Text:GetStringWidth() + 2)
-	end)
 
 	-- needs review, might remove this in the future
 	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
@@ -206,6 +190,9 @@ tinsert(C.defaultThemes, function()
 			return
 		end
 		ReskinWidgetStatusBar(self.Bar)
+		if self.Label then
+			self.Label:SetTextColor(1, 0.8, 0)
+		end
 	end)
 
 	_G.UIWidgetCenterDisplayFrame.CloseButton:SkinCloseButton()
