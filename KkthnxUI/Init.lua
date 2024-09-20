@@ -245,25 +245,22 @@ local MAX_SCALE = 1.15
 local MIN_SCALE = 0.4
 
 local function GetBestScale()
-	-- Calculate the best scale based on the current screen height
-	return K.Round(math.max(MIN_SCALE, math.min(MAX_SCALE, PIXEL_RATIO / K.ScreenHeight)), 2)
+	local scale = max(0.4, min(1.15, 768 / K.ScreenHeight))
+	return K.Round(scale, 2)
 end
 
 function K.SetupUIScale(init)
-	-- If autoscaling is enabled, set the UIScale to the best calculated scale
 	if C["General"].AutoScale then
 		C["General"].UIScale = GetBestScale()
 	end
 
 	local scale = C["General"].UIScale
-
-	if not InCombatLockdown() then
-		UIParent:SetScale(scale)
-	end
-
 	if init then
-		local pixelRatio = 768 / K.ScreenHeight
-		K.Mult = (1 - pixelRatio) / scale
+		local pixel = 1
+		local ratio = 768 / K.ScreenHeight
+		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
+	elseif not InCombatLockdown() then
+		UIParent:SetScale(scale)
 	end
 end
 
