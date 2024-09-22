@@ -239,11 +239,6 @@ function K:GetModule(name)
 	return module
 end
 
--- Constants
-local PIXEL_RATIO = 768
-local MAX_SCALE = 1.15
-local MIN_SCALE = 0.4
-
 local function GetBestScale()
 	local scale = max(0.4, min(1.15, 768 / K.ScreenHeight))
 	return K.Round(scale, 2)
@@ -270,6 +265,8 @@ local function UpdatePixelScale(event)
 		return
 	end
 	isScaling = true
+
+	print(event)
 
 	if event == "UI_SCALE_CHANGED" then
 		-- If the UI scale has changed, update the screen width and height

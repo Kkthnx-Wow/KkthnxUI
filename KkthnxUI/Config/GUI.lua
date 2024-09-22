@@ -175,14 +175,6 @@ local function UpdateBlipTextures()
 	K:GetModule("Minimap"):UpdateBlipTexture()
 end
 
-local function UpdateFilterList()
-	K:GetModule("Chat"):UpdateFilterList()
-end
-
-local function UpdateFilterWhiteList()
-	K:GetModule("Chat"):UpdateFilterWhiteList()
-end
-
 local function UpdateTotemBar()
 	if not C["Auras"].Totems then
 		return
