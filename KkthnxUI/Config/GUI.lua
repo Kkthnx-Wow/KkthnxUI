@@ -183,11 +183,13 @@ local function UpdateTotemBar()
 	K:GetModule("Auras"):TotemBar_Init()
 end
 
-local function UIScaleNotice()
+local function UIScaleUpdate()
 	if C["General"].AutoScale and not K.IsPrinted then
-		K.Print("Turn off AutoScale before using UIScale slider!")
+		K.Print("Ensure AutoScale is disabled before adjusting the UIScale slider!")
 		K.IsPrinted = true
 	end
+
+	K.SetupUIScale()
 end
 
 local function UpdateQuestFontSize()
@@ -536,6 +538,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
 	Window:CreateSwitch("Inventory", "UpgradeIcon", L["Show Upgrade Icon"])
 	Window:CreateSlider("Inventory", "BagsPerRow", L["Bags Per Row"], 1, 20, 1, nil, updateBagAnchor)
+	Window:CreateSlider("Inventory", "iLvlToShow", newFeatureIcon .. "ItemLevel Threshold", 1, 800, 1, "Functions only when filtering items with a lower item level. Separates items based on a specified item level threshold..")
 
 	Window:CreateSection(BANK)
 	Window:CreateSlider("Inventory", "BankPerRow", L["Bank Bags Per Row"], 1, 20, 1, nil, updateBagAnchor)
@@ -546,7 +549,7 @@ local Inventory = function(self)
 
 	Window:CreateSection(FILTERS)
 	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
-	Window:CreateSwitch("Inventory", "FilterAOE", "Filter Warband BOE", nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "FilterAOE", newFeatureIcon .. "Filter Warband BOE", nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterAnima", L["Filter Anima Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterAzerite", "Filter Azerite Items", nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterCollection", L["Filter Collection Items"], nil, UpdateBagStatus)
@@ -557,8 +560,8 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "FilterGoods", L["Filter Goods Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterJunk", L["Filter Junk Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterLegendary", L["Filter Legendary Items"], nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "FilterLower", newFeatureIcon .. L["Filter Lower Itemlevel"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterQuest", L["Filter Quest Items"], nil, UpdateBagStatus)
-	Window:CreateSwitch("Inventory", "FilterRelic", L["Filter Korthia Relic Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterStone", "Filter Primordial Stones", nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "GatherEmpty", L["Gather Empty Slots Into One Button"], nil, UpdateBagStatus)
 
@@ -694,8 +697,8 @@ local General = function(self)
 
 	-- Scaling
 	Window:CreateSection(L["Scaling"])
-	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"])
-	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleNotice)
+	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"], UIScaleUpdate)
+	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleUpdate)
 
 	-- Colors
 	Window:CreateSection(COLORS)

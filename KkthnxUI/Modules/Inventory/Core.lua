@@ -1147,14 +1147,14 @@ function Module:OnEnable()
 		AddNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 10, "BagAOE", filters.bagAOE)
 		AddNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
+		AddNewContainer("Bag", 17, "BagLower", filters.bagLower)
 		AddNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 11, "BagCollection", filters.bagCollection)
-		AddNewContainer("Bag", 16, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 15, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 12, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 17, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 16, "BagQuest", filters.bagQuest)
 		AddNewContainer("Bag", 13, "BagAnima", filters.bagAnima)
-		AddNewContainer("Bag", 14, "BagRelic", filters.bagRelic)
-		AddNewContainer("Bag", 15, "BagStone", filters.bagStone)
+		AddNewContainer("Bag", 14, "BagStone", filters.bagStone)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
@@ -1168,6 +1168,7 @@ function Module:OnEnable()
 		AddNewContainer("Bank", 9, "BankAOE", filters.bankAOE)
 		AddNewContainer("Bank", 6, "BankAzeriteItem", filters.bankAzeriteItem)
 		AddNewContainer("Bank", 10, "BankLegendary", filters.bankLegendary)
+		AddNewContainer("Bank", 16, "BankLower", filters.bankLower)
 		AddNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
 		AddNewContainer("Bank", 11, "BankCollection", filters.bankCollection)
 		AddNewContainer("Bank", 14, "BankConsumable", filters.bankConsumable)
@@ -1343,7 +1344,7 @@ function Module:OnEnable()
 	}
 
 	local function isItemNeedsLevel(item)
-		return item.link and item.quality > 1 and (Module:IsItemHasLevel(item) or item.classID == Enum.ItemClass.Gem)
+		return item.link and item.quality > 1 and item.ilvl
 	end
 
 	local function GetIconOverlayAtlas(item)
@@ -1439,10 +1440,7 @@ function Module:OnEnable()
 		if showItemLevel then
 			local level = item.level -- ilvl for keystone and battlepet
 			if not level and isItemNeedsLevel(item) then
-				local ilvl = K.GetItemLevel(item.link, item.bagId ~= -1 and item.bagId, item.slotId) -- SetBagItem return nil for default bank slots
-				if ilvl and ilvl > 1 then
-					level = ilvl
-				end
+				level = item.ilvl
 			end
 
 			if level then
@@ -1606,6 +1604,8 @@ function Module:OnEnable()
 			label = C_Spell.GetSpellName(404861)
 		elseif strmatch(name, "AOE") then
 			label = ITEM_ACCOUNTBOUND_UNTIL_EQUIP
+		elseif strmatch(name, "Lower") then
+			label = "Lower item level"
 		else
 			if name:match("Legendary$") then
 				label = LOOT_JOURNAL_LEGENDARIES
@@ -1786,17 +1786,21 @@ function Module:OnEnable()
 	SetCVar("professionToolSlotsExampleShown", 1)
 	SetCVar("professionAccessorySlotsExampleShown", 1)
 
-	-- Shift Key Alert
-	local function CheckShiftKey(self, elapsed)
-		if IsShiftKeyDown() then
-			self.elapsed = (self.elapsed or 0) + elapsed
-			if self.elapsed > 5 then
-				UIErrorsFrame:AddMessage(K.InfoColor .. "Please check if your SHIFT key is pressed or stuck.")
-				self.elapsed = 0
-			end
-		end
-	end
+	-- Delay updates for data jam
+	local updater = CreateFrame("Frame", nil, f.main)
+	updater:Hide()
 
-	local shiftKeyUpdater = CreateFrame("Frame", nil, f.main)
-	shiftKeyUpdater:SetScript("OnUpdate", CheckShiftKey)
+	updater:SetScript("OnUpdate", function(self, elapsed)
+		self.delay = self.delay - elapsed
+		if self.delay < 0 then
+			Module:UpdateAllBags()
+			self:Hide()
+		end
+	end)
+
+	-- Event listener for GET_ITEM_INFO_RECEIVED
+	K:RegisterEvent("GET_ITEM_INFO_RECEIVED", function()
+		updater.delay = 1.5
+		updater:Show()
+	end)
 end

@@ -36,12 +36,6 @@ local petTrashCurrenies = {
 	[190382] = true, -- Warped Pocket Dimension
 }
 
-local iLvlClassIDs = {
-	[Enum.ItemClass.Gem] = Enum.ItemGemSubclass.Artifactrelic,
-	[Enum.ItemClass.Armor] = 0,
-	[Enum.ItemClass.Weapon] = 0,
-}
-
 local collectionIDs = {
 	[Enum.ItemMiscellaneousSubclass.Mount] = Enum.ItemClass.Miscellaneous,
 	[Enum.ItemMiscellaneousSubclass.CompanionPet] = Enum.ItemClass.Miscellaneous,
@@ -124,17 +118,24 @@ local function isAzeriteArmor(item)
 	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link)
 end
 
-function Module:IsItemHasLevel(item)
-	local index = iLvlClassIDs[item.classID]
-	return index and (index == 0 or index == item.subClassID)
-end
-
 local function isItemEquipment(item)
 	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterEquipment or not item.link or item.quality <= Enum.ItemQuality.Common then
 		return
 	end
 
-	return Module:IsItemHasLevel(item)
+	return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl
+end
+
+local function isItemLowerLevel(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+
+	if not C["Inventory"].FilterLower then
+		return
+	end
+
+	return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl and item.ilvl < C["Inventory"].iLvlToShow
 end
 
 local function isItemConsumable(item)
@@ -217,19 +218,6 @@ local function isAnimaItem(item)
 	return C_Item_IsAnimaItemByID(item.link)
 end
 
-local function isKorthiaRelicByID(itemID)
-	local _, spellID = C_Item_GetItemSpell(itemID)
-	return spellID and relicSpellIDs[spellID]
-end
-
-local function isKorthiaRelic(item)
-	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterRelic then
-		return
-	end
-
-	return item.id and isKorthiaRelicByID(item.id)
-end
-
 local function isPrimordialStone(item)
 	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterStone then
 		return
@@ -278,14 +266,14 @@ function Module:GetFilters()
 	filters.bagAnima = function(item)
 		return isItemInBag(item) and isAnimaItem(item)
 	end
-	filters.bagRelic = function(item)
-		return isItemInBag(item) and isKorthiaRelic(item)
-	end
 	filters.bagStone = function(item)
 		return isItemInBag(item) and isPrimordialStone(item)
 	end
 	filters.bagAOE = function(item)
 		return isItemInBag(item) and isWarboundUntilEquipped(item)
+	end
+	filters.bagLower = function(item)
+		return isItemInBag(item) and isItemLowerLevel(item)
 	end
 
 	filters.onlyBank = function(item)
@@ -320,6 +308,9 @@ function Module:GetFilters()
 	end
 	filters.bankAOE = function(item)
 		return isItemInBank(item) and isWarboundUntilEquipped(item)
+	end
+	filters.bankLower = function(item)
+		return isItemInBank(item) and isItemLowerLevel(item)
 	end
 
 	filters.onlyReagent = function(item)

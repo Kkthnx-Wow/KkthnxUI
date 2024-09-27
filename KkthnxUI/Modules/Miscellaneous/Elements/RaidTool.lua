@@ -663,7 +663,7 @@ function Module:RaidTool_WorldMarker()
 		button:SetPushedTexture(iconTexture[i])
 
 		if i ~= 9 then
-			button:RegisterForClicks("AnyDown")
+			button:RegisterForClicks("AnyUp", "AnyDown")
 			button:SetAttribute("type", "macro")
 			button:SetAttribute("macrotext1", format("/wm %d", i))
 			button:SetAttribute("macrotext2", format("/cwm %d", i))

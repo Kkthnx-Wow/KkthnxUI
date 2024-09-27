@@ -142,7 +142,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.spellID = spellID
 	tab.itemID = toyID or itemID
 	tab.type = (toyID and "toy") or (itemID and "item") or "spell"
-	tab:RegisterForClicks("AnyDown")
+	tab:RegisterForClicks("AnyUp", "AnyDown")
 	if spellID == 818 then -- cooking fire
 		tab:SetAttribute("type", "macro")
 		tab:SetAttribute("macrotext", "/cast [@player]" .. name)

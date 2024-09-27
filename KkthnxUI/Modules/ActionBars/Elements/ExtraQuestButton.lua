@@ -27,7 +27,7 @@ local onlyCurrentZone = true -- Flag to indicate if only the current zone is con
 local ExtraQuestButton = CreateFrame("Button", "KKUI_ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)
 ExtraQuestButton:RegisterEvent("PLAYER_LOGIN")
-ExtraQuestButton:RegisterForClicks("AnyDown")
+ExtraQuestButton:RegisterForClicks("AnyUp", "AnyDown")
 ExtraQuestButton:Hide()
 ExtraQuestButton:SetScript("OnEvent", function(self, event, ...)
 	if self[event] then
