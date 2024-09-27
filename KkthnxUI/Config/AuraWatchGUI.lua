@@ -39,22 +39,25 @@ end
 
 local function optOnClick(self)
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
-	local options = self.__owner.options
-
-	for _, option in ipairs(options) do
-		option.selected = (option == self)
-		option.KKUI_Background:SetVertexColor(option.selected and 1 or 0.04, 0.8, option.selected and 0 or 0.04, option.selected and 0.3 or 0.9)
+	local opt = self.__owner.options
+	for i = 1, #opt do
+		if self == opt[i] then
+			opt[i].KKUI_Background:SetVertexColor(1, 0.8, 0, 0.3)
+			opt[i].selected = true
+		else
+			opt[i].KKUI_Background:SetVertexColor(0.04, 0.04, 0.04, 0.9)
+			opt[i].selected = false
+		end
 	end
-
 	self.__owner.Text:SetText(self.text)
-	self.__owner.__list:Hide() -- Hide the dropdown list after selection
+	self:GetParent():Hide()
 end
 
 local function optOnEnter(self)
 	if self.selected then
 		return
 	end
-	self.KKUI_Background:SetVertexColor(1, 1, 1, 0.3)
+	self.KKUI_Background:SetVertexColor(1, 1, 1, 0.25)
 end
 
 local function optOnLeave(self)
@@ -190,7 +193,7 @@ local function AW_CreateDropdown(parent, text, x, y, data, tip, width, height)
 		local text = K.CreateFontString(opt[i], 14, j, "", false, "LEFT", 5, 0)
 		text:SetPoint("RIGHT", -5, 0)
 		opt[i].text = j
-
+		opt[i].index = i
 		opt[i].__owner = dd
 		opt[i]:SetScript("OnClick", optOnClick)
 		opt[i]:SetScript("OnEnter", optOnEnter)
