@@ -119,6 +119,7 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.GameFont_Gigantic, NORMAL, 32) -- Used at the install steps
 	ReskinFont(_G.GameFontHighlightMedium, NORMAL, stock and medium or 15) -- 14  Fix QuestLog Title mouseover
 	ReskinFont(_G.GameFontHighlightSmall2, NORMAL, stock and small or size) -- 11  Skill or Recipe description on TradeSkill frame
+	ReskinFont(_G.GameFontNormalHuge, NORMAL, 20, outline)
 	ReskinFont(_G.GameFontNormalHuge2, NORMAL, stock and huge or 24) -- 24  Mythic weekly best dungeon name
 	ReskinFont(_G.GameFontNormalLarge, NORMAL, stock and large or 16) -- 16
 	ReskinFont(_G.GameFontNormalLarge2, NORMAL, stock and large or 15) -- 18  Garrison Follower Names
@@ -130,7 +131,6 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.InvoiceFont_Med, NORMAL, stock and size or 12) -- 12  Mail
 	ReskinFont(_G.InvoiceFont_Small, NORMAL, stock and small or size) -- 10  Mail
 	ReskinFont(_G.MailFont_Large, NORMAL, 14) -- 10  Mail
-	ReskinFont(_G.Number11Font, NORMAL, 11)
 	ReskinFont(_G.Number11Font, NUMBER, 11)
 	ReskinFont(_G.Number12Font, NORMAL, 12)
 	ReskinFont(_G.Number12Font_o1, NUMBER, 12, outline)

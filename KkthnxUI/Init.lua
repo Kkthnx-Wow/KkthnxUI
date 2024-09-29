@@ -92,10 +92,10 @@ K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
 
 -- Color Info
-K.GreyColor = "|CFFC0C0C0"
-K.InfoColor = "|CFF669DFF"
-K.InfoColorTint = "|CFF93BAFF" -- 30% Tint
-K.SystemColor = "|CFFFFCC66"
+K.GreyColor = "|CFFC0C0C0" -- Soft gray
+K.InfoColor = "|CFF669DFF" -- Soft blue
+K.InfoColorTint = "|CFF93BAFF" -- Softened tint
+K.SystemColor = "|CFFFFCC66" -- Soft gold
 
 -- Media Info
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"

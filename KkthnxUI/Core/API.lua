@@ -356,11 +356,7 @@ local function SkinButton(self, override, ...)
 	end
 
 	if self.SetHighlightTexture then
-		self:SetHighlightTexture([[interface\lfgframe\groupfinder]])
-		self:GetHighlightTexture():SetTexCoord(0.31103515625, 0.45947265625, 0.4208984375, 0.4521484375)
-		self:GetHighlightTexture():SetAlpha(0.5)
-		self:GetHighlightTexture():SetPoint("TOPLEFT", 6, -6)
-		self:GetHighlightTexture():SetPoint("BOTTOMRIGHT", -6, 6)
+		self:SetHighlightTexture(0)
 	end
 
 	if self.SetPushedTexture then
