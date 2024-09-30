@@ -210,37 +210,31 @@ end)
 
 ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 	if self.updateRange then
-		if (self.rangeTimer or 0) > TOOLTIP_UPDATE_TIME then
+		if not InCombatLockdown() and ((self.rangeTimer or 0) > TOOLTIP_UPDATE_TIME) then
 			local HotKey = self.HotKey
 			local Icon = self.Icon
 
-			-- Check if in combat
-			local inCombat = InCombatLockdown()
-
-			if not inCombat then -- IsItemInRange is combat restricted now...
-				-- BUG: IsItemInRange() is broken versus friendly NPCs (and possibly others)
-				local inRange = C_Item_IsItemInRange(self.itemLink, "target")
-
-				if HotKey:GetText() == RANGE_INDICATOR then
-					if inRange == false then
-						HotKey:SetTextColor(1, 0.1, 0.1)
-						HotKey:Show()
-						Icon:SetVertexColor(1, 0.1, 0.1)
-					elseif inRange then
-						HotKey:SetTextColor(0.6, 0.6, 0.6)
-						HotKey:Show()
-						Icon:SetVertexColor(1, 1, 1)
-					else
-						HotKey:Hide()
-					end
+			-- BUG: C_Item.IsItemInRange() is broken versus friendly npcs (and possibly others)
+			local inRange = C_Item_IsItemInRange(self.itemLink, "target")
+			if HotKey:GetText() == RANGE_INDICATOR then
+				if inRange == false then
+					HotKey:SetTextColor(1, 0.1, 0.1)
+					HotKey:Show()
+					Icon:SetVertexColor(1, 0.1, 0.1)
+				elseif inRange then
+					HotKey:SetTextColor(0.6, 0.6, 0.6)
+					HotKey:Show()
+					Icon:SetVertexColor(1, 1, 1)
 				else
-					if inRange == false then
-						HotKey:SetTextColor(1, 0.1, 0.1)
-						Icon:SetVertexColor(1, 0.1, 0.1)
-					else
-						HotKey:SetTextColor(0.6, 0.6, 0.6)
-						Icon:SetVertexColor(1, 1, 1)
-					end
+					HotKey:Hide()
+				end
+			else
+				if inRange == false then
+					HotKey:SetTextColor(1, 0.1, 0.1)
+					Icon:SetVertexColor(1, 0.1, 0.1)
+				else
+					HotKey:SetTextColor(0.6, 0.6, 0.6)
+					Icon:SetVertexColor(1, 1, 1)
 				end
 			end
 
@@ -424,6 +418,18 @@ local function GetClosestQuestItem()
 					closestDistance = distance
 					closestQuestItemLink = itemLink
 				end
+			end
+		end
+	end
+
+	local tasksTable = GetTasksTable() -- bonus tracker, needs review
+	for i = 1, #tasksTable do
+		local questID = tasksTable[i]
+		if questID and not C_QuestLog_IsWorldQuest(questID) and not QuestUtils_IsQuestWatched(questID) and GetTaskInfo(questID) then
+			local distance, itemLink = GetQuestDistanceWithItem(questID)
+			if distance and distance <= closestDistance then
+				closestDistance = distance
+				closestQuestItemLink = itemLink
 			end
 		end
 	end

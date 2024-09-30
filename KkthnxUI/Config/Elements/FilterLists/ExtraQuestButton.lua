@@ -35,6 +35,7 @@ C.ExtraQuestButtonData = {
 		[59809] = true,
 		[60004] = 118,
 		[63971] = 1543,
+		[79960] = 2255,
 	},
 
 	QuestItems = {
