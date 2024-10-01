@@ -642,7 +642,7 @@ L["Show AuraWatch Icons"] = "Show AuraWatch Icons"
 L["Show Away/DND Status"] = "Show Away/DND Status"
 L["Show Group Number Team Index"] = "Show Group Number Team Index"
 L["Show MainTank Frames"] = "Show MainTank Frames"
-L["Show Manabars"] = "Show Manabars"
+L["Show Manabars"] = "Only Show Mana Bars, Hide All Other Power Types"
 L["Show Raid Utility Frame"] = "Show Raid Utility Frame"
 
 L["Alert QuestProgress In Chat"] = "Alert QuestProgress In Chat"

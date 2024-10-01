@@ -26,20 +26,34 @@ local function UpdateRaidThreat(self, _, unit)
 	end
 end
 
-local function UpdateRaidPower(self, _, unit)
-	if self.unit ~= unit then
+local function UpdateRaidPower(self, event, unit)
+	if self.unit ~= unit or not self.Health then
 		return
 	end
 
-	local powerType = UnitPowerType(unit)
-	local isHealer = UnitGroupRolesAssigned(unit) == "HEALER"
-
-	if powerType == "MANA" and isHealer then
-		if not self.Power:IsVisible() then
-			self.Health:ClearAllPoints()
-			self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
-			self.Health:SetPoint("TOPRIGHT", self)
-			self.Power:Show()
+	-- Check power type (MANA or others)
+	local _, powerToken = UnitPowerType(unit)
+	if C["Raid"].PowerBarShow then
+		if powerToken == "MANA" and C["Raid"].ManabarShow then
+			if not self.Power:IsVisible() then
+				self.Health:ClearAllPoints()
+				self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
+				self.Health:SetPoint("TOPRIGHT", self)
+				self.Power:Show()
+			end
+		elseif powerToken ~= "MANA" and not C["Raid"].ManabarShow then
+			if not self.Power:IsVisible() then
+				self.Health:ClearAllPoints()
+				self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
+				self.Health:SetPoint("TOPRIGHT", self)
+				self.Power:Show()
+			end
+		else
+			if self.Power:IsVisible() then
+				self.Health:ClearAllPoints()
+				self.Health:SetAllPoints(self)
+				self.Power:Hide()
+			end
 		end
 	else
 		if self.Power:IsVisible() then
@@ -91,28 +105,26 @@ function Module:CreateRaid()
 		K:SmoothBar(Health)
 	end
 
-	if C["Raid"].ManabarShow then
-		local Power = CreateFrame("StatusBar", nil, self)
-		Power:SetFrameStrata("LOW")
-		Power:SetFrameLevel(self:GetFrameLevel())
-		Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -1)
-		Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -1)
-		Power:SetHeight(4)
-		Power:SetStatusBarTexture(RaidframeTexture)
+	local Power = CreateFrame("StatusBar", nil, self)
+	Power:SetFrameStrata("LOW")
+	Power:SetFrameLevel(self:GetFrameLevel())
+	Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -1)
+	Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -1)
+	Power:SetHeight(4)
+	Power:SetStatusBarTexture(RaidframeTexture)
 
-		Power.colorPower = true
-		Power.frequentUpdates = false
+	Power.colorPower = true
+	Power.frequentUpdates = false
 
-		if C["Raid"].Smooth then
-			K:SmoothBar(Power)
-		end
-
-		self.Power = Power
-
-		table.insert(self.__elements, UpdateRaidPower)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidPower)
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
+	if C["Raid"].Smooth then
+		K:SmoothBar(Power)
 	end
+
+	self.Power = Power
+
+	table.insert(self.__elements, UpdateRaidPower)
+	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
+	UpdateRaidPower(self, "UNIT_DISPLAYPOWER", self.unit)
 
 	if C["Raid"].ShowHealPrediction then
 		local mhpb = Health:CreateTexture(nil, "BORDER", nil, 5)

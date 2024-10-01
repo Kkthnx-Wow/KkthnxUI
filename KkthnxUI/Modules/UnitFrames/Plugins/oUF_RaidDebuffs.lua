@@ -273,7 +273,7 @@ local function HideElement(self, unit)
 		element.ticker:Cancel()
 	end
 
-	element.Backdrop:SetBorderColor(color.r, color.g, color.b)
+	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	element.cd:SetCooldown(0, 0)
 	element.timer:SetText("")
 	element.count:SetText("")
