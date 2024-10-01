@@ -259,7 +259,7 @@ function Module:CreateRollBar(name)
 end
 
 local function GetFrame()
-	for _, bar in next, LR.RollBars do
+	for _, bar in next, Module.RollBars do
 		if not bar.rollID then
 			return bar
 		end
