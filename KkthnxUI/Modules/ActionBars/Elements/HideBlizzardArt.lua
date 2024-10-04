@@ -1,7 +1,6 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
-local next = next
 local _G = _G
 local pairs = pairs
 local strmatch = string.match
@@ -89,13 +88,6 @@ local function buttonEventsRegisterFrame(self, added)
 end
 
 local function DisableDefaultBarEvents()
-	-- Prevent taint from MainMenuBar:ClearAllPoints
-	MainMenuBar.SetPositionForStatusBars = K.Noop
-
-	-- Prevent taint when opening the spellbook in combat
-	_G.MultiActionBar_HideAllGrids = K.Noop
-	_G.MultiActionBar_ShowAllGrids = K.Noop
-
 	-- Disable unused events for ActionBarController and other frames
 	ActionBarController:UnregisterAllEvents()
 	ActionBarController:RegisterEvent("SETTINGS_LOADED")
@@ -109,9 +101,6 @@ local function DisableDefaultBarEvents()
 
 	hooksecurefunc(ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
 	buttonEventsRegisterFrame(ActionBarButtonEventsFrame)
-
-	-- Prevent reopening of the GameMenu
-	SettingsPanel.TransitionBackOpeningPanel = HideUIPanel
 end
 
 function Module:HideBlizz()
@@ -128,6 +117,9 @@ function Module:HideBlizz()
 
 	-- Fix for the vehicle leave button
 	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+	-- Update token panel, some alts may hide token as default
+	SetCVar("showTokenFrame", 1)
 
 	-- Hide Blizzard experience bar
 	StatusTrackingBarManager:UnregisterAllEvents()

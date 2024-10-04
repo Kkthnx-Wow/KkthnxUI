@@ -62,6 +62,10 @@ local primordialStones = {}
 for id = 204000, 204030 do
 	primordialStones[id] = true
 end
+for id = 204573, 204579 do
+	primordialStones[id] = true
+end
+primordialStones[203703] = true -- 棱光碎片
 
 local emptyBags = { [0] = true, [11] = true }
 

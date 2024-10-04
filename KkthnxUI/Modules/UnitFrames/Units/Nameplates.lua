@@ -301,17 +301,6 @@ function Module:UpdateColor(_, unit)
 				r, g, b = K.UnitColor(unit)
 			end
 
-			-- [0] = { 1.00, 0.18, 0.18 }, -- HOSTILE
-			-- [1] = { 1.00, 0.51, 0.20 }, -- UNFRIENDLY
-			-- [2] = { 1.00, 0.85, 0.20 }, -- NEUTRAL
-			-- [3] = { 0.20, 0.71, 0.00 }, -- FRIENDLY
-			-- [5] = { 0.40, 0.53, 1.00 }, -- PLAYER_EXTENDED
-			-- [6] = { 0.40, 0.20, 1.00 }, -- PARTY
-			-- [7] = { 0.73, 0.20, 1.00 }, -- PARTY_PVP
-			-- [8] = { 0.20, 1.00, 0.42 }, -- FRIEND
-			-- [9] = { 0.60, 0.60, 0.60 }, -- DEAD
-			-- [13] = { 0.10, 0.58, 0.28 }, -- BATTLEGROUND_FRIENDLY_PVP
-
 			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 				if status == 3 then
 					if K.Role ~= "Tank" and revertThreat then
@@ -906,60 +895,84 @@ function Module:CreatePlates()
 	self.RaidTargetIndicator:SetSize(18, 18)
 
 	do
-		local mhpb = self:CreateTexture(nil, "BORDER", nil, 5)
-		mhpb:SetWidth(1)
-		mhpb:SetTexture(K.GetTexture(C["General"].Texture))
-		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+		local frame = CreateFrame("Frame", nil, self)
+		frame:SetAllPoints(self.Health)
+		local frameLevel = frame:GetFrameLevel()
 
-		local ohpb = self:CreateTexture(nil, "BORDER", nil, 5)
-		ohpb:SetWidth(1)
-		ohpb:SetTexture(K.GetTexture(C["General"].Texture))
-		ohpb:SetVertexColor(0, 1, 0, 0.25)
+		-- Position and size
+		local myBar = CreateFrame("StatusBar", nil, frame)
+		myBar:SetPoint("TOP")
+		myBar:SetPoint("BOTTOM")
+		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		myBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.5)
+		myBar:Hide()
 
-		local abb = self:CreateTexture(nil, "BORDER", nil, 5)
-		abb:SetWidth(1)
-		abb:SetTexture(K.GetTexture(C["General"].Texture))
-		abb:SetVertexColor(1, 1, 0, 0.25)
+		local otherBar = CreateFrame("StatusBar", nil, frame)
+		otherBar:SetPoint("TOP")
+		otherBar:SetPoint("BOTTOM")
+		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
+		otherBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		otherBar:SetStatusBarColor(0, 1, 0, 0.5)
+		otherBar:Hide()
 
-		local abbo = self:CreateTexture(nil, "ARTWORK", nil, 1)
-		abbo:SetAllPoints(abb)
-		abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		abbo.tileSize = 32
+		local absorbBar = CreateFrame("StatusBar", nil, frame)
+		absorbBar:SetPoint("TOP")
+		absorbBar:SetPoint("BOTTOM")
+		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
+		absorbBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		absorbBar:SetStatusBarColor(0.66, 1, 1, 0.7)
+		absorbBar:SetFrameLevel(frameLevel)
+		absorbBar:Hide()
 
-		local oag = self:CreateTexture(nil, "ARTWORK", nil, 1)
-		oag:SetWidth(15)
-		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
-		oag:SetBlendMode("ADD")
-		oag:SetAlpha(0.25)
-		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
-		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
+		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
+		overAbsorbBar:SetAllPoints()
+		overAbsorbBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		overAbsorbBar:SetStatusBarColor(0.66, 1, 1, 0.7)
+		overAbsorbBar:SetFrameLevel(frameLevel)
+		overAbsorbBar:Hide()
 
-		local hab = CreateFrame("StatusBar", nil, self)
-		hab:SetPoint("TOP")
-		hab:SetPoint("BOTTOM")
-		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
-		hab:SetWidth(self.Health:GetWidth())
-		hab:SetReverseFill(true)
-		hab:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		hab:SetStatusBarColor(1, 0, 0, 0.25)
+		local healAbsorbBar = CreateFrame("StatusBar", nil, frame)
+		healAbsorbBar:SetPoint("TOP")
+		healAbsorbBar:SetPoint("BOTTOM")
+		healAbsorbBar:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
+		healAbsorbBar:SetReverseFill(true)
+		healAbsorbBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		local tex = healAbsorbBar:GetStatusBarTexture()
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetHorizTile(true)
+		tex:SetVertTile(true)
+		healAbsorbBar:Hide()
 
-		local ohg = self:CreateTexture(nil, "ARTWORK", nil, 1)
-		ohg:SetWidth(15)
-		ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
-		ohg:SetBlendMode("ADD")
-		ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
-		ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
+		local overAbsorb = self.Health:CreateTexture(nil, "OVERLAY")
+		overAbsorb:SetWidth(15)
+		overAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
+		overAbsorb:SetBlendMode("ADD")
+		overAbsorb:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
+		overAbsorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
+		overAbsorb:Hide()
 
-		self.HealPredictionAndAbsorb = {
-			myBar = mhpb,
-			otherBar = ohpb,
-			absorbBar = abb,
-			absorbBarOverlay = abbo,
-			overAbsorbGlow = oag,
-			healAbsorbBar = hab,
-			overHealAbsorbGlow = ohg,
+		local overHealAbsorb = frame:CreateTexture(nil, "OVERLAY")
+		overHealAbsorb:SetWidth(15)
+		overHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
+		overHealAbsorb:SetBlendMode("ADD")
+		overHealAbsorb:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
+		overHealAbsorb:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
+		overHealAbsorb:Hide()
+
+		-- Register with oUF
+		self.HealthPrediction = {
+			myBar = myBar,
+			otherBar = otherBar,
+			absorbBar = absorbBar,
+			healAbsorbBar = healAbsorbBar,
+			overAbsorbBar = overAbsorbBar,
+			overAbsorb = overAbsorb,
+			overHealAbsorb = overHealAbsorb,
 			maxOverflow = 1,
+			PostUpdate = Module.PostUpdatePrediction,
 		}
+		self.predicFrame = frame
 	end
 
 	self.Auras = CreateFrame("Frame", nil, self)

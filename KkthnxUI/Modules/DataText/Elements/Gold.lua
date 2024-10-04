@@ -35,20 +35,15 @@ local RebuildCharList
 -- Player Information
 local myName, myRealm = K.Name, K.Realm
 myRealm = gsub(myRealm, "%s", "") -- fix for multi-word realm name
-local crossRealms = GetAutoCompleteRealms()
-if not crossRealms or #crossRealms == 0 then
-	crossRealms = { [1] = myRealm }
-end
 
 StaticPopupDialogs["RESETGOLD"] = {
 	text = "Are you sure to reset the gold count?",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		for _, realm in pairs(crossRealms) do
-			if KkthnxUIDB.Gold[realm] then
-				wipe(KkthnxUIDB.Gold[realm])
-			end
+		wipe(KkthnxUIDB.Gold)
+		if not KkthnxUIDB.Gold[myRealm] then
+			KkthnxUIDB.Gold[myRealm] = {}
 		end
 		KkthnxUIDB.Gold[myRealm][myName] = { GetMoney(), K.Class, K.Faction }
 	end,
@@ -178,20 +173,18 @@ function RebuildCharList()
 	end
 
 	local index = 1
-	for _, realm in pairs(crossRealms) do
-		if KkthnxUIDB.Gold[realm] then
-			for name, value in pairs(KkthnxUIDB.Gold[realm]) do
-				if not (realm == myRealm and name == myName) then
-					index = index + 1
-					if not menuList[index] then
-						menuList[index] = {}
-					end
-					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. " - " .. realm, "none")
-					menuList[index].notCheckable = true
-					menuList[index].arg1 = realm
-					menuList[index].arg2 = name
-					menuList[index].func = clearCharGold
+	for realm, data in pairs(KkthnxUIDB.Gold) do
+		for name, value in pairs(data) do
+			if not (realm == myRealm and name == myName) then
+				index = index + 1
+				if not menuList[index] then
+					menuList[index] = {}
 				end
+				menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. "-" .. realm, "none")
+				menuList[index].notCheckable = true
+				menuList[index].arg1 = realm
+				menuList[index].arg2 = name
+				menuList[index].func = clearCharGold
 			end
 		end
 	end
@@ -218,36 +211,50 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 
 	local totalGold = 0
 	GameTooltip:AddLine(CHARACTER_BUTTON .. ":", 0.5, 0.7, 1)
-	for _, realm in pairs(crossRealms) do
-		local thisRealmList = KkthnxUIDB.Gold[realm]
-		if thisRealmList then
-			for k, v in pairs(thisRealmList) do
-				local name = Ambiguate(k .. " - " .. realm, "none")
+	if KkthnxUIDB.Gold[myRealm] then
+		for k, v in pairs(KkthnxUIDB.Gold[myRealm]) do
+			local name = Ambiguate(k .. "-" .. myRealm, "none")
+			local gold, class, faction = unpack(v)
+			local r, g, b = K.ColorClass(class)
+			GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+			totalGold = totalGold + gold
+		end
+	end
+
+	local isShiftKeyDown = IsShiftKeyDown()
+	for realm, data in pairs(KkthnxUIDB.Gold) do
+		if realm ~= myRealm then
+			for k, v in pairs(data) do
 				local gold, class, faction = unpack(v)
-				local r, g, b = K.ColorClass(class)
-				GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+				if isShiftKeyDown then -- show other realms while holding shift
+					local name = Ambiguate(k .. "-" .. realm, "none")
+					local r, g, b = K.ColorClass(class)
+					GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+				end
 				totalGold = totalGold + gold
 			end
 		end
 	end
-	GameTooltip:AddLine(" ")
-	local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
-	if accountmoney > 0 then
-		GameTooltip:AddDoubleLine(ACCOUNT_BANK_PANEL_TITLE .. ":", K.FormatMoney(accountmoney), 0.63, 0.82, 1, 1, 1, 1)
+
+	if not isShiftKeyDown then
+		GameTooltip:AddLine(L["Hold Shift"], 0.63, 0.82, 1)
 	end
+
+	local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine(CHARACTER .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(ACCOUNT_BANK_PANEL_TITLE .. ":", K.FormatMoney(accountmoney), 0.63, 0.82, 1, 1, 1, 1)
 	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold + accountmoney), 0.63, 0.82, 1, 1, 1, 1)
 
-	if not K.IsFirestorm then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
-	end
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
 	title = false
 	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2813) -- Tier charges
 	if chargeInfo then
 		if not title then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(CURRENCY .. ":", 0.6, 0.8, 1)
+			GameTooltip:AddLine(CURRENCY .. ":", 0.63, 0.82, 1)
 			title = true
 		end
 		local iconTexture = "|T" .. chargeInfo.iconFileID .. ":12:12:0:0:50:50:4:46:4:46|t"

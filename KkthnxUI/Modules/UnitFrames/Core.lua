@@ -122,6 +122,22 @@ function Module:UpdatePhaseIcon(isPhased)
 	self:SetTexCoord(unpack(phaseIconTexCoords[isPhased == 2 and 2 or 1]))
 end
 
+function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allAbsorb)
+	self.overAbsorb:Hide()
+	local overAbsorbAmount = health + allIncomingHeal + allAbsorb - maxHealth
+	if overAbsorbAmount > 0 then
+		if overAbsorbAmount > maxHealth then
+			self.overAbsorb:Show()
+			overAbsorbAmount = maxHealth
+		end
+		self.overAbsorbBar:SetMinMaxValues(0, maxHealth)
+		self.overAbsorbBar:SetValue(overAbsorbAmount)
+		self.overAbsorbBar:Show()
+	else
+		self.overAbsorbBar:Hide()
+	end
+end
+
 function Module:CreateHeader()
 	-- Register for mouse clicks and hook mouse enter/leave events
 	self:RegisterForClicks("AnyUp")
@@ -159,26 +175,6 @@ function Module:ToggleCastBarLatency(frame)
 		end
 	end
 end
-
--- function Module.auraIconSize(w, n, s)
--- 	return (w - (n - 1) * s) / n
--- end
-
--- function Module:UpdateAuraContainer(width, element, maxAuras)
--- 	local iconsPerRow = element.iconsPerRow
--- 	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
--- 	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
-
--- 	element.size = size
--- 	element:SetWidth(width)
--- 	element:SetHeight((size + element.spacing) * maxLines)
--- end
-
--- function Module:UpdateIconTexCoord(width, height)
--- 	local ratio = height / width
--- 	local mult = (1 - ratio) / 2
--- 	self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
--- end
 
 -- Cache the result of auraIconSize calculation
 local auraIconSizeCache = {}

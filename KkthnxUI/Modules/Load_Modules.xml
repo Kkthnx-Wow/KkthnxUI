@@ -18,7 +18,7 @@
    <Script file="Blizzard\Elements\AltPowerBar.lua" />
    <Script file="Blizzard\Elements\ColorPicker.lua" />
    <Script file="Blizzard\Elements\MirrorBars.lua" />
-   <Script file="Blizzard\Elements\ObjectiveFrame.lua" />
+   <!-- <Script file="Blizzard\Elements\ObjectiveFrame.lua" /> -->
    <Script file="Blizzard\Elements\OrderHall.lua" />
    <Script file="Blizzard\Elements\TimerTracker.lua" />
    <Script file="Blizzard\Elements\TutorialFrames.lua" />

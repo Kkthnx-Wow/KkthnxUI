@@ -7,7 +7,7 @@ function Module:OnEnable()
 		"CreateAltPowerbar",
 		"CreateColorPicker",
 		"CreateMirrorBars",
-		"CreateObjectiveFrame",
+		-- "CreateObjectiveFrame",
 		"CreateOrderHallIcon",
 		"CreateTimerTracker",
 		"CreateTutorialDisabling",

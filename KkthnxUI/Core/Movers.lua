@@ -456,7 +456,7 @@ local function isCastbarEnable()
 end
 
 local function isPartyEnable()
-	return C["Party"].Enable
+	return C["Raid"].Enable and C["Party"].Enable
 end
 
 local function isRaidEnable()
@@ -464,72 +464,11 @@ local function isRaidEnable()
 end
 
 local function isArenaEnable()
-	return C["Raid"].Enable
+	return C["Unitframe"].Enable and C["Arena"].Enable
 end
-
-local function isTalkingHeadHidden()
-	return C["Misc"].NoTalkingHead
-end
-
-local ignoredFrames = {
-	-- ActionBars
-	["StanceBar"] = isActionbarEnable,
-	["EncounterBar"] = isActionbarEnable,
-	["PetActionBar"] = isActionbarEnable,
-	["PossessActionBar"] = isActionbarEnable,
-	["MainMenuBarVehicleLeaveButton"] = isActionbarEnable,
-	["MultiBarBottomLeft"] = isActionbarEnable,
-	["MultiBarBottomRight"] = isActionbarEnable,
-	["MultiBarLeft"] = isActionbarEnable,
-	["MultiBarRight"] = isActionbarEnable,
-	["MultiBar5"] = isActionbarEnable,
-	["MultiBar6"] = isActionbarEnable,
-	["MultiBar7"] = isActionbarEnable,
-	-- Auras
-	["BuffFrame"] = isBuffEnable,
-	["DebuffFrame"] = isBuffEnable,
-	-- UnitFrames
-	["PlayerFrame"] = isUnitFrameEnable,
-	["PlayerCastingBarFrame"] = isCastbarEnable,
-	["FocusFrame"] = isUnitFrameEnable,
-	["TargetFrame"] = isUnitFrameEnable,
-	["BossTargetFrameContainer"] = isUnitFrameEnable,
-	["PartyFrame"] = isPartyEnable,
-	["CompactRaidFrameContainer"] = isRaidEnable,
-	["ArenaEnemyFramesContainer"] = isArenaEnable,
-	-- Misc
-	["MinimapCluster"] = function()
-		return not C["Minimap"].Enable
-	end,
-	["GameTooltipDefaultContainer"] = function()
-		return true
-	end,
-	["TalkingHeadFrame"] = isTalkingHeadHidden,
-}
-
-local shutdownMode = {
-	"OnEditModeEnter",
-	"OnEditModeExit",
-	"HasActiveChanges",
-	"HighlightSystem",
-	"SelectSystem",
-}
 
 function Module:DisableBlizzardMover()
-	local editMode = EditModeManagerFrame
-
-	-- remove the initial registers
-	local registered = editMode.registeredSystemFrames
-	for i = #registered, 1, -1 do
-		local frame = registered[i]
-		local ignore = ignoredFrames[frame:GetName()]
-
-		if ignore and ignore() then
-			for _, key in next, shutdownMode do
-				frame[key] = K.Noop
-			end
-		end
-	end
+	local editMode = _G.EditModeManagerFrame
 
 	-- account settings will be tainted
 	local mixin = editMode.AccountSettings
@@ -537,36 +476,26 @@ function Module:DisableBlizzardMover()
 		mixin.RefreshCastBar = K.Noop
 	end
 	if isBuffEnable() then
-		mixin.RefreshAuraFrame = K.Noop
+		mixin.RefreshBuffsAndDebuffs = K.Noop
 	end
 	if isRaidEnable() then
-		mixin.ResetRaidFrames = K.Noop
 		mixin.RefreshRaidFrames = K.Noop
 	end
 	if isArenaEnable() then
 		mixin.RefreshArenaFrames = K.Noop
 	end
 	if isPartyEnable() then
-		mixin.ResetPartyFrames = K.Noop
 		mixin.RefreshPartyFrames = K.Noop
 	end
-	if isTalkingHeadHidden() then
-		mixin.RefreshTalkingHeadFrame = K.Noop
-	end
 	if isUnitFrameEnable() then
-		mixin.ResetTargetAndFocus = K.Noop
 		mixin.RefreshTargetAndFocus = K.Noop
 		mixin.RefreshBossFrames = K.Noop
 	end
 	if isActionbarEnable() then
+		mixin.RefreshPetFrame = K.Noop
 		mixin.RefreshEncounterBar = K.Noop
 		mixin.RefreshActionBarShown = K.Noop
 		mixin.RefreshVehicleLeaveButton = K.Noop
-		mixin.RefreshReputationBar = K.Noop
-
-		if _G.MainStatusTrackingBarContainer then -- Ignore Experience Bar in EditMode
-			_G.MainStatusTrackingBarContainer.OnEditModeEnter = K.Noop
-		end
+		mixin.ResetActionBarShown = K.Noop
 	end
-	--ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop
 end
