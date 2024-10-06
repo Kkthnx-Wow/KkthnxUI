@@ -269,7 +269,7 @@ function Module:CreateTarget()
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
 		overAbsorbBar:SetStatusBarTexture(HealPredictionTexture)
-		overAbsorbBar:SetStatusBarColor(0.66, 1, 1, 0.7)
+		overAbsorbBar:SetStatusBarColor(0.66, 1, 1, 0.5)
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:Hide()
 

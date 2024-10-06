@@ -1,5 +1,4 @@
-<Ui>
-    <Script><![CDATA[--[[
+<Ui><Script><![CDATA[--[[
 
 TaintLess [24-07-27]
 https://www.townlong-yak.com/addons/taintless
@@ -91,5 +90,4 @@ patch("CUF_PROFILE_ACTIVATE_PATCH_VERSION", 1, function(V)
 	end)
 end)
 
-]]>    </Script>
-</Ui>
+]]></Script></Ui>

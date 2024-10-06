@@ -123,11 +123,11 @@ function Module:UpdatePhaseIcon(isPhased)
 end
 
 function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allAbsorb)
-	self.overAbsorb:Hide()
+	local hasOverAbsorb
 	local overAbsorbAmount = health + allIncomingHeal + allAbsorb - maxHealth
 	if overAbsorbAmount > 0 then
 		if overAbsorbAmount > maxHealth then
-			self.overAbsorb:Show()
+			hasOverAbsorb = true
 			overAbsorbAmount = maxHealth
 		end
 		self.overAbsorbBar:SetMinMaxValues(0, maxHealth)
@@ -135,6 +135,12 @@ function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allA
 		self.overAbsorbBar:Show()
 	else
 		self.overAbsorbBar:Hide()
+	end
+
+	if hasOverAbsorb then
+		self.overAbsorb:Show()
+	else
+		self.overAbsorb:Hide()
 	end
 end
 

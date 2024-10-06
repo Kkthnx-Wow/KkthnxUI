@@ -111,7 +111,7 @@ local CustomSpellBookItemInRange = C_Spell_IsSpellInRange and function(spellID, 
 	end
 end or _G.IsSpellInRange
 
-local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+local C_Spell_GetSpellInfo = not GetSpellInfo and C_Spell.GetSpellInfo
 local CustomSpellInfo = C_Spell_GetSpellInfo and function(spellID)
 	if not spellID then
 		return nil
@@ -232,8 +232,12 @@ end
 tinsert(PetSpells.HUNTER, 136) -- Mend Pet (45 yards)
 
 -- Mages
-tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards, level 8)
-tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 9)
+tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards retail, 30 cata/era, level 8)
+tinsert(FriendSpells.MAGE, 475) -- Remove Curse (40 yards retail/cata, 30 era, level 30)
+
+if isCata then
+	tinsert(FriendSpells.MAGE, 61316) -- Dalaran Brilliance (40 yards); requires Tome of Dalaran Brilliance
+end
 
 if isEraSOD then
 	tinsert(FriendSpells.MAGE, 401417) -- Regeneration (40 yards)

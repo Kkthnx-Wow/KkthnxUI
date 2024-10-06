@@ -145,8 +145,10 @@ function Module:BlockAddons()
 		return
 	end
 
-	if _G.DBM.Options then
-		_G.DBM.Options.DontShowNameplateIconsCD = true
+	if DBM.Options then
+		DBM.Options.DontShowNameplateIcons = true
+		DBM.Options.DontShowNameplateIconsCD = true
+		DBM.Options.DontShowNameplateIconsCast = true
 	end
 
 	local function showAurasForDBM(_, _, _, spellID)
@@ -928,7 +930,7 @@ function Module:CreatePlates()
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
 		overAbsorbBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		overAbsorbBar:SetStatusBarColor(0.66, 1, 1, 0.7)
+		overAbsorbBar:SetStatusBarColor(0.66, 1, 1, 0.5)
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:Hide()
 
@@ -1111,7 +1113,7 @@ end
 
 local DisabledElements = {
 	"Castbar",
-	"HealPredictionAndAbsorb",
+	"HealthPrediction",
 	"Health",
 	"PvPClassificationIndicator",
 	"ThreatIndicator",
