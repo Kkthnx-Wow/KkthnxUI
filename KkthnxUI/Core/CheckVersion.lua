@@ -166,7 +166,7 @@ function Module:VersionCheck_Init()
 
 		if status == "IsNew" then
 			local release = string_gsub(KkthnxUIDB.DetectVersion, "(%d+)$", "0")
-			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date!|nPlease update to the latest version: |cff70C0F5%s|r.", release))
+			Module:VersionCheck_Create(string_format("|cff5C8BCFKkthnxUI|r is out of date!|nPlease update to the latest version: |cff70C0F5%s|r.", release))
 		elseif status == "IsOld" then
 			KkthnxUIDB.DetectVersion = K.Version
 		end
@@ -243,7 +243,7 @@ function Module:VersionCheck_Test()
 	local fakeVersion = "9.9.9"
 
 	-- Force the creation of the update notice frame with fake text
-	local fakeText = string_format("|cff669dffKkthnxUI|r is out of date!|nPlease update to the latest version: |cff70C0F5%s|r.", fakeVersion)
+	local fakeText = string_format("|cff5C8BCFKkthnxUI|r is out of date!|nPlease update to the latest version: |cff70C0F5%s|r.", fakeVersion)
 	Module:VersionCheck_Create(fakeText)
 
 	-- Print debug message for testing

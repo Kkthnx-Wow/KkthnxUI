@@ -69,7 +69,7 @@ StaticPopupDialogs["KKUI_QUEST_CHECK_ID"] = {
 }
 
 StaticPopupDialogs["KKUI_POPUP_LINK"] = {
-	text = format("|cff669dff%s |r", "KkthnxUI Popup"),
+	text = format("|cff5C8BCF%s |r", "KkthnxUI Popup"),
 	button1 = OKAY,
 	hasEditBox = 1,
 	OnShow = function(self, data)

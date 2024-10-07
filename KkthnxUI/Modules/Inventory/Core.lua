@@ -683,7 +683,7 @@ function Module:CreateFreeSlots()
 	K.AddTooltip(slot, "ANCHOR_RIGHT", "FreeSlots")
 	slot.__name = name
 
-	local tag = self:SpawnPlugin("TagDisplay", "|cff669dff[space]|r", slot)
+	local tag = self:SpawnPlugin("TagDisplay", "|cff5C8BCF[space]|r", slot)
 	tag:SetFontObject(K.UIFontOutline)
 	tag:SetFont(select(1, tag:GetFont()), 16, select(3, tag:GetFont()))
 	tag:SetPoint("CENTER", 0, 0)

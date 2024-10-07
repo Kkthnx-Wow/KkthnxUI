@@ -238,4 +238,21 @@ tinsert(C.defaultThemes, function()
 			end
 		end
 	end)
+
+	local function updateReputationBars(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local child = select(i, self.ScrollTarget:GetChildren())
+			if child and not child.styled then
+				local repbar = child.Content and child.Content.ReputationBar
+				if repbar then
+					-- B.StripTextures(repbar)
+					repbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+					-- B.CreateBDFrame(repbar, 0.25)
+				end
+
+				child.styled = true
+			end
+		end
+	end
+	-- hooksecurefunc(ReputationFrame.ScrollBox, "Update", updateReputationBars)
 end)

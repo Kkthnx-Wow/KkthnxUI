@@ -3,109 +3,85 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local tinsert = table.insert
 local pairs = pairs
 
--- Function to reskin headers
-local function reskinHeader(header)
-	header.Text:SetTextColor(K.r, K.g, K.b)
-	header.Background:SetTexture(nil)
+local trackers = {
+	_G.ScenarioObjectiveTracker,
+	_G.UIWidgetObjectiveTracker,
+	_G.CampaignQuestObjectiveTracker,
+	_G.QuestObjectiveTracker,
+	_G.AdventureObjectiveTracker,
+	_G.AchievementObjectiveTracker,
+	_G.MonthlyActivitiesObjectiveTracker,
+	_G.ProfessionsRecipeTracker,
+	_G.BonusObjectiveTracker,
+	_G.WorldQuestObjectiveTracker,
+}
 
-	local bg = header:CreateTexture(nil, "ARTWORK")
-	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
-	bg:SetTexCoord(0, 0.66, 0, 0.31)
-	bg:SetVertexColor(K.r, K.g, K.b, 0.8)
-	bg:SetPoint("BOTTOMLEFT", 0, -4)
-	bg:SetSize(250, 30)
-
-	header.bg = bg
-end
-
--- Handle collapse
-local function UpdateCollapseIcon(texture, collapsed)
-	local atlas = collapsed and "Soulbinds_Collection_CategoryHeader_Expand" or "Soulbinds_Collection_CategoryHeader_Collapse"
-	texture:SetAtlas(atlas, true)
-end
-
-local function ResetCollapseIcon(self, texture)
-	if self.settingTexture then
-		return
+local function SkinOjectiveTrackerHeaders(header)
+	if header and header.Background then
+		header.Background:SetAtlas(nil)
 	end
-	self.settingTexture = true
-	self:SetNormalTexture(0)
+end
 
-	if texture and texture ~= "" then
-		if strfind(texture, "Plus") or strfind(texture, "[Cc]losed") then
-			self.__texture:DoCollapse(true)
-		elseif strfind(texture, "Minus") or strfind(texture, "[Oo]pen") then
-			self.__texture:DoCollapse(false)
-		end
-		self.bg:Show()
+local function SetCollapsed(header, collapsed)
+	local MinimizeButton = header.MinimizeButton
+	local normalTexture = MinimizeButton:GetNormalTexture()
+	local pushedTexture = MinimizeButton:GetPushedTexture()
+
+	if collapsed then
+		normalTexture:SetAtlas("UI-QuestTrackerButton-Secondary-Expand", true)
+		pushedTexture:SetAtlas("UI-QuestTrackerButton-Secondary-Expand-Pressed", true)
 	else
-		self.bg:Hide()
-	end
-	self.settingTexture = nil
-end
-
--- Handle close button
-local function ReskinCollapseButton(self)
-	self:SetNormalTexture(0)
-	self:SetHighlightTexture(0)
-	self:SetPushedTexture(0)
-
-	local bg = CreateFrame("Frame", nil, self)
-	bg:ClearAllPoints()
-	bg:SetSize(13, 13)
-	bg:SetPoint("LEFT", self:GetNormalTexture())
-	self.bg = bg
-
-	self.__texture = self:CreateTexture(nil, "OVERLAY")
-	self.__texture:SetPoint("CENTER")
-	self.__texture.DoCollapse = UpdateCollapseIcon
-
-	hooksecurefunc(self, "SetNormalAtlas", ResetCollapseIcon)
-end
-
-local function UpdateMinimizeButtonState(button, collapsed)
-	button = button.MinimizeButton
-	button.__texture:DoCollapse(collapsed)
-end
-
-local function ReskinMinimizeButton(button, header)
-	ReskinCollapseButton(button)
-	button:GetNormalTexture():SetAlpha(0)
-	button:GetPushedTexture():SetAlpha(0)
-	button.__texture:DoCollapse(false)
-	if button.SetCollapsed then
-		hooksecurefunc(button, "SetCollapsed", UpdateMinimizeButtonState)
+		normalTexture:SetAtlas("UI-QuestTrackerButton-Secondary-Collapse", true)
+		pushedTexture:SetAtlas("UI-QuestTrackerButton-Secondary-Collapse-Pressed", true)
 	end
 end
 
--- Add the theme reskin to default themes
+local function ReskinBarTemplate(bar)
+	-- bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	bar:SetStatusBarColor(K.r, K.g, K.b)
+end
+
+local function HandleProgressBar(tracker, key)
+	local progressBar = tracker.usedProgressBars[key]
+	local bar = progressBar and progressBar.Bar
+
+	if bar then
+		ReskinBarTemplate(bar)
+	end
+end
+
+local function HandleTimers(tracker, key)
+	local timerBar = tracker.usedTimerBars[key]
+	local bar = timerBar and timerBar.Bar
+
+	if bar then
+		ReskinBarTemplate(bar)
+	end
+end
+
 tinsert(C.defaultThemes, function()
 	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
 		return
 	end
 
-	local mainHeader = ObjectiveTrackerFrame.Header
-	mainHeader:StripTextures()
+	local TrackerFrame = _G.ObjectiveTrackerFrame
+	local TrackerHeader = TrackerFrame and TrackerFrame.Header
+	if TrackerHeader then
+		SkinOjectiveTrackerHeaders(TrackerHeader)
 
-	-- Minimize Button
-	local mainMinimizeButton = mainHeader.MinimizeButton
-	ReskinMinimizeButton(mainMinimizeButton, mainHeader)
+		local MinimizeButton = TrackerHeader.MinimizeButton
+		if MinimizeButton then
+			MinimizeButton:SetSize(16, 16)
+			MinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
 
-	local trackers = {
-		ScenarioObjectiveTracker,
-		UIWidgetObjectiveTracker,
-		CampaignQuestObjectiveTracker,
-		QuestObjectiveTracker,
-		AdventureObjectiveTracker,
-		AchievementObjectiveTracker,
-		MonthlyActivitiesObjectiveTracker,
-		ProfessionsRecipeTracker,
-		BonusObjectiveTracker,
-		WorldQuestObjectiveTracker,
-	}
+			SetCollapsed(TrackerHeader, TrackerFrame.isCollapsed)
+			hooksecurefunc(TrackerHeader, "SetCollapsed", SetCollapsed)
+		end
+	end
 
-	-- Reskin each tracker header in the list
 	for _, tracker in pairs(trackers) do
-		reskinHeader(tracker.Header)
+		SkinOjectiveTrackerHeaders(tracker.Header)
+		hooksecurefunc(tracker, "GetProgressBar", HandleProgressBar)
+		hooksecurefunc(tracker, "GetTimerBar", HandleTimers)
 	end
 end)

@@ -93,7 +93,7 @@ K.WowBuild = tonumber(K.WowBuild)
 
 -- Color Info
 K.GreyColor = "|CFFC0C0C0" -- Soft gray
-K.InfoColor = "|CFF669DFF" -- Soft blue
+K.InfoColor = "|CFF5C8BCF" -- Soft blue
 K.InfoColorTint = "|CFF93BAFF" -- Softened tint
 K.SystemColor = "|CFFFFCC66" -- Soft gold
 

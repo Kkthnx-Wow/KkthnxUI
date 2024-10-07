@@ -1,6 +1,6 @@
 ## Interface: 110002
 ## Name: KkthnxUI
-## Title: |cff669DFFKkthnxUI|r
+## Title: |cff5C8BCFKkthnxUI|r
 ## Notes: Empty toc for Curseforge
 ## Author: Josh "Kkthnx" Russell
 ## Version: 10.5.7

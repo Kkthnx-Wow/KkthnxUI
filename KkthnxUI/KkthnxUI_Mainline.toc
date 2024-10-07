@@ -1,7 +1,7 @@
 ## Interface: 110002
 ## Name: KkthnxUI
-## Title: |cff669DFFKkthnxUI|r
-## Notes: Enhances the game's user interface (UI) by providing a clean, minimalist design and a range of customizable features.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Title: |cff5C8BCFKkthnxUI|r
+## Notes: Enhances the game's user interface (UI) by providing a clean, minimalist design and a range of customizable features.|n|n|cff5C8BCFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
 ## Author: Josh "Kkthnx" Russell
 ## Version: 10.5.7
 ## IconTexture: Interface\AddOns\KkthnxUI\Media\KkthnxUI_Spell_Icon

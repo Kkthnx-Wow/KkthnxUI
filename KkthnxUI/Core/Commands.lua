@@ -94,15 +94,11 @@ local function CheckQuestStatus(questid)
 	end
 
 	if C_QuestLog_IsQuestFlaggedCompleted(questid) == true then
-		UIErrorsFrame:AddMessage(
-			QuestCheckComplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"]
-		)
+		UIErrorsFrame:AddMessage(QuestCheckComplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"])
 		PlaySound("878")
 		K.Print(WoWHeadLoc .. questid)
 	else
-		UIErrorsFrame:AddMessage(
-			QuestCheckIncomplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"]
-		)
+		UIErrorsFrame:AddMessage(QuestCheckIncomplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"])
 		PlaySound("847")
 		K.Print(WoWHeadLoc .. questid)
 	end
@@ -206,10 +202,7 @@ local function StoreAndDisableAddons()
 	end
 
 	StaticPopupDialogs["CONFIRM_DISABLE_ADDONS"] = {
-		text = string.format(
-			"Are you sure you want to disable |cff669DFF%d|r addon(s) except |cff669DFFKkthnxUI|r for debugging?|n|nYou can use '|cff669DFFkkdebug off|r' to restore them.",
-			addonsToDisable
-		),
+		text = string.format("Are you sure you want to disable |cff5C8BCF%d|r addon(s) except |cff5C8BCFKkthnxUI|r for debugging?|n|nYou can use '|cff5C8BCFkkdebug off|r' to restore them.", addonsToDisable),
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function()
@@ -233,7 +226,7 @@ end
 
 local function RestoreAddons()
 	StaticPopupDialogs["CONFIRM_RESTORE_ADDONS"] = {
-		text = "You are about to re-enable all previously disabled addons.|n|nThanks for using |cff669DFFKkthnxUI|r |cffff0000<3|r",
+		text = "You are about to re-enable all previously disabled addons.|n|nThanks for using |cff5C8BCFKkthnxUI|r |cffff0000<3|r",
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function()
