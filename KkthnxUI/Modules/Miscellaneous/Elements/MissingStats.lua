@@ -12,6 +12,7 @@ function Module:CreateMissingStats()
 	if not C["Misc"].ImprovedStats then
 		return
 	end
+
 	if C_AddOns.IsAddOnLoaded("DejaCharacterStats") then
 		return
 	end

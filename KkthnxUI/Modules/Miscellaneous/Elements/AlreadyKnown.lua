@@ -10,37 +10,37 @@ local ceil = math.ceil
 local format = string.format
 
 -- Cache WoW API functions
-local GetItemInfo = GetItemInfo
-local GetInboxItem = GetInboxItem
-local GetInboxItemLink = GetInboxItemLink
-local GetLootSlotInfo = GetLootSlotInfo
-local GetLootSlotLink = GetLootSlotLink
-local GetMerchantNumItems = GetMerchantNumItems
-local GetMerchantItemInfo = GetMerchantItemInfo
-local GetMerchantItemLink = GetMerchantItemLink
-local GetNumQuestRewards = GetNumQuestRewards
-local GetNumQuestChoices = GetNumQuestChoices
-local GetQuestItemInfo = GetQuestItemInfo
-local GetQuestLogItemLink = GetQuestLogItemLink
-local GetQuestItemLink = GetQuestItemLink
-local GetNumBuybackItems = GetNumBuybackItems
+local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_PetJournal_GetNumCollectedInfo = C_PetJournal.GetNumCollectedInfo
 local GetBuybackItemInfo = GetBuybackItemInfo
 local GetBuybackItemLink = GetBuybackItemLink
 local GetCurrentGuildBankTab = GetCurrentGuildBankTab
 local GetGuildBankItemInfo = GetGuildBankItemInfo
 local GetGuildBankItemLink = GetGuildBankItemLink
-local C_PetJournal_GetNumCollectedInfo = C_PetJournal.GetNumCollectedInfo
+local GetInboxItem = GetInboxItem
+local GetInboxItemLink = GetInboxItemLink
+local GetLootSlotInfo = GetLootSlotInfo
+local GetLootSlotLink = GetLootSlotLink
+local GetMerchantItemInfo = GetMerchantItemInfo
+local GetMerchantItemLink = GetMerchantItemLink
+local GetMerchantNumItems = GetMerchantNumItems
+local GetNumBuybackItems = GetNumBuybackItems
+local GetNumQuestChoices = GetNumQuestChoices
+local GetNumQuestRewards = GetNumQuestRewards
+local GetQuestItemInfo = GetQuestItemInfo
+local GetQuestItemLink = GetQuestItemLink
+local GetQuestLogItemLink = GetQuestLogItemLink
 
 -- Cache WoW API objects and constants
-local C_TooltipInfo = C_TooltipInfo
-local C_AddOns = C_AddOns
-local LootFrameElementMixin = LootFrameElementMixin
+local ATTACHMENTS_MAX_RECEIVE = ATTACHMENTS_MAX_RECEIVE or 16
 local COLLECTED = COLLECTED
+local C_AddOns = C_AddOns
+local C_TooltipInfo = C_TooltipInfo
 local ITEM_SPELL_KNOWN = ITEM_SPELL_KNOWN
-local ATTACHMENTS_MAX_RECEIVE = ATTACHMENTS_MAX_RECEIVE
-local MERCHANT_ITEMS_PER_PAGE = MERCHANT_ITEMS_PER_PAGE
-local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
-local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
+local LootFrameElementMixin = LootFrameElementMixin
+local MAX_GUILDBANK_SLOTS_PER_TAB = 98
+local MERCHANT_ITEMS_PER_PAGE = MERCHANT_ITEMS_PER_PAGE or 10
+local NUM_SLOTS_PER_GUILDBANK_GROUP = 14
 
 -- Cache UI functions
 local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
@@ -80,7 +80,7 @@ local function IsAlreadyKnown(link, index)
 	if linkType == "battlepet" then
 		return isPetCollected(linkID)
 	elseif linkType == "item" then
-		local name, _, _, _, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
+		local name, _, _, _, _, _, _, _, _, _, _, itemClassID = C_Item_GetItemInfo(link)
 		if not name then
 			return
 		end
@@ -195,7 +195,9 @@ local function QuestInfo_ShowRewards()
 				else
 					_, _, _, _, isUsable = GetQuestItemInfo("choice", i)
 				end
-				if isUsable and IsAlreadyKnown(QuestInfoFrame.questLog and GetQuestLogItemLink("choice", i) or GetQuestItemLink("choice", i)) then
+
+				local itemLink = QuestInfoFrame.questLog and GetQuestLogItemLink("choice", i) or GetQuestItemLink("choice", i)
+				if isUsable and itemLink and IsAlreadyKnown(itemLink) then
 					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
 				end
 			end
@@ -215,7 +217,9 @@ local function QuestInfo_ShowRewards()
 				else
 					_, _, _, _, isUsable = GetQuestItemInfo("reward", i)
 				end
-				if isUsable and IsAlreadyKnown(QuestInfoFrame.questLog and GetQuestLogItemLink("reward", i) or GetQuestItemLink("reward", i)) then
+
+				local itemLink = QuestInfoFrame.questLog and GetQuestLogItemLink("reward", i) or GetQuestItemLink("reward", i)
+				if isUsable and itemLink and IsAlreadyKnown(itemLink) then
 					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
 				end
 				rewardsCount = rewardsCount + 1
@@ -293,21 +297,21 @@ local function GuildBankFrame_Update(self)
 
 	for i = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		index = (i - 1) % NUM_SLOTS_PER_GUILDBANK_GROUP + 1
-
 		column = ceil(i / NUM_SLOTS_PER_GUILDBANK_GROUP)
 		button = self.Columns[column].Buttons[index]
 
 		local isButtonShown = button and button:IsShown()
 		if isButtonShown then
 			texture, _, locked = GetGuildBankItemInfo(currentTab, i)
-
 			if texture and not locked then
 				local itemLink = GetGuildBankItemLink(currentTab, i)
-				if IsAlreadyKnown(itemLink, i) then
+				if itemLink and IsAlreadyKnown(itemLink, i) then
 					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
 				else
 					SetItemButtonTextureVertexColor(button, 1, 1, 1)
 				end
+			else
+				SetItemButtonTextureVertexColor(button, 1, 1, 1)
 			end
 		end
 	end

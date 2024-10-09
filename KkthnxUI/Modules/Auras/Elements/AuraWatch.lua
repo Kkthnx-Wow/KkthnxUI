@@ -6,7 +6,7 @@ local select = select
 local string_find = string.find
 local table_insert = table.insert
 local table_remove = table.remove
-local table_wipe = table.wipe
+-- local table_wipe = table.wipe
 
 local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
@@ -71,10 +71,19 @@ local function DataAnalyze(v)
 	return newTable
 end
 
+local function RecycleTable(t)
+	for k in pairs(t) do
+		t[k] = nil
+	end
+
+	return t
+end
+
 local function InsertData(index, target)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
-		table_wipe(target)
+		RecycleTable(target)
 	end
+
 	for spellID, v in pairs(myTable[index]) do
 		local value = target[spellID]
 		if value and value.AuraID == v.AuraID then
@@ -87,10 +96,11 @@ end
 local function ConvertTable()
 	for i = 1, 10 do
 		if myTable[i] then
-			table_wipe(myTable[i])
+			RecycleTable(myTable[i])
 		else
 			myTable[i] = {}
 		end
+
 		local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
 		if value and next(value) then
 			for spellID, v in pairs(value) do
@@ -98,12 +108,14 @@ local function ConvertTable()
 			end
 		end
 	end
+
 	local internalCD = KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD
 	if next(internalCD) then
 		for spellID, v in pairs(internalCD) do
 			myTable[10][spellID] = DataAnalyze(v)
 		end
 	end
+
 	local auraWatchList = C.AuraWatchList[K.Class]
 	for _, v in pairs(auraWatchList) do
 		if v.Name == "Special Aura" then
@@ -114,6 +126,7 @@ local function ConvertTable()
 			InsertData(6, v.List)
 		end
 	end
+
 	local allAuras = C.AuraWatchList["ALL"]
 	for i, v in pairs(allAuras) do
 		if v.Name == "Enchant Aura" then
@@ -133,13 +146,15 @@ local function ConvertTable()
 end
 
 local function BuildAuraList()
-	table_wipe(AuraList)
+	RecycleTable(AuraList)
+
 	AuraList = C.AuraWatchList["ALL"] or {}
 	local classAuras = C.AuraWatchList[K.Class]
 	for _, value in pairs(classAuras) do
 		table_insert(AuraList, value)
 	end
-	table_wipe(C.AuraWatchList)
+
+	RecycleTable(C.AuraWatchList)
 end
 
 local function BuildUnitIDTable()
@@ -149,6 +164,7 @@ local function BuildUnitIDTable()
 			existingUnits[v] = true
 		end
 	end
+
 	for _, VALUE in pairs(AuraList) do
 		if VALUE.List then
 			for _, value in pairs(VALUE.List) do
@@ -162,7 +178,8 @@ local function BuildUnitIDTable()
 end
 
 local function BuildCooldownTable()
-	table_wipe(cooldownTable)
+	RecycleTable(cooldownTable)
+
 	for KEY, VALUE in pairs(AuraList) do
 		if VALUE.List then
 			for spellID, value in pairs(VALUE.List) do
@@ -170,6 +187,7 @@ local function BuildCooldownTable()
 					if not cooldownTable[KEY] then
 						cooldownTable[KEY] = {}
 					end
+
 					cooldownTable[KEY][spellID] = true
 				end
 			end
@@ -190,6 +208,7 @@ end
 local function tooltipOnEnter(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 3)
+
 	if self.type == 1 then
 		GameTooltip:SetSpellByID(self.spellID)
 	elseif self.type == 2 then
@@ -201,6 +220,7 @@ local function tooltipOnEnter(self)
 	elseif self.type == 5 then
 		GameTooltip:SetTotem(self.spellID)
 	end
+
 	GameTooltip:Show()
 end
 
@@ -263,6 +283,7 @@ local function BuildICON(iconSize)
 	end
 
 	frame:Hide()
+
 	return frame
 end
 
@@ -302,6 +323,7 @@ local function BuildBAR(barWidth, iconSize)
 	end
 
 	frame:Hide()
+
 	return frame
 end
 
@@ -325,6 +347,7 @@ local function BuildAura()
 			end
 		end
 		frameTable.Index = 1
+
 		table_insert(FrameList, frameTable)
 	end
 end
@@ -337,9 +360,11 @@ local function SetupAnchor()
 		if value.Mode == "BAR" and direction == "CENTER" then
 			direction = "UP" -- sorry, no "CENTER" for bars mode
 		end
+
 		if not hasCentralize then
 			hasCentralize = direction == "CENTER"
 		end
+
 		local previous
 		for i = 1, #VALUE do
 			local frame = VALUE[i]
@@ -360,6 +385,7 @@ local function SetupAnchor()
 					frame:SetPoint("TOP", previous, "BOTTOM", 0, -interval)
 				end
 			end
+
 			previous = frame
 		end
 	end
@@ -463,8 +489,9 @@ function Module:AuraWatch_UpdateCD()
 					local start = C_Spell_GetSpellCooldown(value.SpellID).startTime
 					local duration = C_Spell_GetSpellCooldown(value.SpellID).duration
 					local charges, maxCharges, chargeStart, chargeDuration = C_Spell_GetSpellCharges(value.SpellID)
+
 					if group.Mode == "ICON" then
-						name = nil
+						name = ""
 					end
 
 					if charges and maxCharges and maxCharges > 1 and charges < maxCharges then
@@ -477,7 +504,7 @@ function Module:AuraWatch_UpdateCD()
 					if start and duration > 3 then
 						local name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(value.ItemID)
 						if group.Mode == "ICON" then
-							name = nil
+							name = "" -- Change nil to empty string
 						end
 						Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, false, 2, value.ItemID)
 					end
@@ -490,7 +517,7 @@ function Module:AuraWatch_UpdateCD()
 							local start, duration = GetInventoryItemCooldown("player", value.SlotID)
 							if duration > 1.5 then
 								if group.Mode == "ICON" then
-									name = nil
+									name = "" -- Change nil to empty string
 								end
 								Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, false, 3, value.SlotID)
 							end
@@ -500,7 +527,7 @@ function Module:AuraWatch_UpdateCD()
 					local haveTotem, name, start, duration, icon = GetTotemInfo(value.TotemID)
 					if haveTotem then
 						if group.Mode == "ICON" then
-							name = nil
+							name = "" -- Change nil to empty string
 						end
 						Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, false, 5, value.TotemID)
 					end
@@ -782,7 +809,8 @@ function Module:AuraWatch_UpdateInt(event, ...)
 		if value and value.CastSucceed and unit then
 			local unitID = value.UnitID:lower()
 			local guid = UnitGUID(unit)
-			local isPassed
+			local isPassed = false
+
 			if unitID == "all" and (unit == "player" or string_find(unit, "pet") or UnitInRaid(unit) or UnitInParty(unit) or not GetPlayerInfoByGUID(guid)) then
 				isPassed = true
 			elseif unitID == "player" and (unit == "player" or unit == "pet") then
@@ -808,7 +836,8 @@ function Module:AuraWatch_UpdateInt(event, ...)
 		end
 
 		if #cache > 666 then
-			table_wipe(cache)
+			RecycleTable(cache)
+			cache = {}
 		end
 	end
 end
@@ -993,7 +1022,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			table_wipe(IntTable)
+			RecycleTable(IntTable)
 
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
@@ -1026,7 +1055,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			table_wipe(IntTable)
+			RecycleTable(IntTable)
 		end
 	end
 end
