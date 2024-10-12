@@ -367,7 +367,7 @@ L["Totems IconSize"] = "Totem Icon Size"
 L["Vertical TotemBar"] = "Display Totem Bar Vertically"
 
 L["Alert On M+ Quake"] = "Alert for Mythic+ Quake"
-L["AuraWatch GUI"] = "Open AuraWatch Interface"
+L["AuraWatch GUI"] = "Open AuraWatch UI"
 L["AuraWatch IconScale"] = "Scale AuraWatch Icons"
 L["Disable AuraWatch Tooltip (ClickThrough)"] = "Disable AuraWatch Tooltip (Click-Through)"
 L["Enable AuraWatch"] = "Enable AuraWatch"

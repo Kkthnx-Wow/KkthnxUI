@@ -1,9 +1,8 @@
-local K, C = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Minimap")
 
 local math_floor = math.floor
 local mod = mod
-local pairs = pairs
 local select = select
 local table_sort = table.sort
 
@@ -17,107 +16,102 @@ local UnitClass = UnitClass
 local hooksecurefunc = hooksecurefunc
 
 -- Create the minimap micro menu
-local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
 local menuList = {
 	{
 		text = _G.CHARACTER_BUTTON,
-		microOffset = "CharacterMicroButton",
 		func = function()
 			_G.ToggleCharacter("PaperDollFrame")
 		end,
+		notCheckable = 1,
+		icon = 236415,
 	},
 	{
-		text = _G.SPELLBOOK_ABILITIES_BUTTON,
-		microOffset = "SpellbookMicroButton",
+		text = _G.SPELLBOOK,
 		func = function()
 			if PlayerSpellsUtil then
 				PlayerSpellsUtil.ToggleSpellBookFrame()
+			else
+				ToggleFrame(_G.SpellBookFrame)
 			end
 		end,
+		notCheckable = 1,
+		icon = 133741,
 	},
 	{
 		text = _G.TIMEMANAGER_TITLE,
 		func = function()
 			ToggleFrame(_G.TimeManagerFrame)
 		end,
-		icon = 134376,
-		cropIcon = 1,
-	}, -- Interface\ICONS\INV_Misc_PocketWatch_01
+		notCheckable = 1,
+		icon = 237538,
+	},
 	{
 		text = _G.CHAT_CHANNELS,
 		func = function()
 			_G.ToggleChannelFrame()
 		end,
+		notCheckable = 1,
 		icon = 2056011,
-		cropIcon = 1,
-	}, -- Interface\ICONS\UI_Chat
+	},
 	{
 		text = _G.SOCIAL_BUTTON,
 		func = function()
 			_G.ToggleFriendsFrame()
 		end,
-		icon = 796351,
-		cropIcon = 10,
-	}, -- Interface\FriendsFrame\Battlenet-BattlenetIcon
+		notCheckable = 1,
+		icon = 442272,
+	},
 	{
 		text = _G.TALENTS_BUTTON,
-		microOffset = "TalentMicroButton",
 		func = function()
 			if PlayerSpellsUtil then
 				PlayerSpellsUtil.ToggleClassTalentFrame()
+			else
+				_G.ToggleTalentFrame()
 			end
 		end,
+		notCheckable = 1,
+		icon = 3717418,
 	},
 	{
 		text = _G.GUILD,
-		microOffset = "GuildMicroButton",
 		func = function()
 			_G.ToggleGuildFrame()
 		end,
+		notCheckable = 1,
+		icon = 135026,
 	},
 	{
 		text = _G.COLLECTIONS,
-		microOffset = "CollectionsMicroButton",
 		func = function()
 			_G.ToggleCollectionsJournal()
 		end,
-		icon = "Interface\\ICONS\\INV_Misc_Coin_01",
+		notCheckable = 1,
+		icon = 5321228,
 	},
 	{
 		text = _G.ACHIEVEMENT_BUTTON,
-		microOffset = "AchievementMicroButton",
 		func = function()
 			_G.ToggleAchievementFrame()
 		end,
+		notCheckable = 1,
+		icon = 1033987,
 	},
 	{
 		text = _G.LFG_TITLE,
-		microOffset = "LFDMicroButton",
 		func = function()
 			_G.ToggleLFDParentFrame()
 		end,
+		notCheckable = 1,
+		icon = 134149,
 	},
 	{
 		text = "Calendar",
 		func = function()
 			_G.GameTimeFrame:Click()
 		end,
-		icon = 235486,
-		cropIcon = 1,
-	},
-	{
-		text = _G.BLIZZARD_STORE,
-		microOffset = "StoreMicroButton",
-		func = function()
-			_G.StoreMicroButton:Click()
-		end,
-	},
-	{
-		text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
-		microOffset = "QuestLogMicroButton",
-		func = function()
-			_G.ExpansionLandingPageMinimapButton:ToggleLandingPage()
-		end,
+		notCheckable = 1,
+		icon = 3007435,
 	},
 	{
 		text = _G.ENCOUNTER_JOURNAL,
@@ -128,48 +122,97 @@ local menuList = {
 			end
 			ToggleFrame(_G.EncounterJournal)
 		end,
+		notCheckable = 1,
+		icon = 236409,
 	},
 	{
-		text = _G.MAINMENU_BUTTON,
-		microOffset = "MainMenuMicroButton",
-		isAlwaysLast = true, -- Custom flag to identify this item
+		text = _G.PROFESSIONS_BUTTON,
 		func = function()
-			if not _G.GameMenuFrame:IsShown() then
-				CloseMenus()
-				CloseAllWindows()
-				PlaySound(850) -- IG_MAINMENU_OPEN
-				ShowUIPanel(_G.GameMenuFrame)
-			else
-				PlaySound(854) -- IG_MAINMENU_QUIT
-				HideUIPanel(_G.GameMenuFrame)
-				MainMenuMicroButton:SetButtonState("NORMAL")
-			end
+			_G.ToggleProfessionsBook()
 		end,
+		notCheckable = 1,
+		icon = 236574,
 	},
 	{
-		text = _G.HELP_BUTTON,
-		microOffset = "HelpMicroButton",
-		isAlwaysLast = true, -- Custom flag to identify this item
-		bottom = true,
+		text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
 		func = function()
-			_G.ToggleHelpFrame()
+			_G.ExpansionLandingPageMinimapButton:ToggleLandingPage()
 		end,
-		icon = 132088,
-		cropIcon = 8,
+		notCheckable = 1,
+		icon = 1044996,
+	},
+	{
+		text = _G.QUESTLOG_BUTTON,
+		func = function()
+			_G.ToggleQuestLog()
+		end,
+		notCheckable = 1,
+		icon = 236669,
 	},
 }
 
--- Sorting the menu list (excluding separators from sorting)
-table_sort(menuList, function(a, b)
-	-- Check for the custom flag isAlwaysLast to keep certain items at the bottom
-	if a.isAlwaysLast then
-		return false
-	elseif b.isAlwaysLast then
-		return true
-	else
+if K.Level == 80 then
+	tinsert(menuList, {
+		text = RATED_PVP_WEEKLY_VAULT,
+		func = function()
+			if not WeeklyRewardsFrame then
+				WeeklyRewards_LoadUI()
+			end
+			ToggleFrame(WeeklyRewardsFrame)
+		end,
+		notCheckable = 1,
+		icon = "greatVault-whole-normal",
+	})
+end
+
+if C_StorePublic.IsEnabled and C_StorePublic.IsEnabled() then
+	tinsert(menuList, {
+		text = _G.BLIZZARD_STORE,
+		func = function()
+			_G.StoreMicroButton:Click()
+		end,
+		notCheckable = 1,
+		icon = 939375,
+	})
+end
+
+sort(menuList, function(a, b)
+	if a and b and a.text and b.text then
 		return a.text < b.text
 	end
 end)
+
+-- want these two on the bottom
+tinsert(menuList, {
+	text = _G.MAINMENU_BUTTON,
+	microOffset = "MainMenuMicroButton",
+	func = function()
+		if not _G.GameMenuFrame:IsShown() then
+			CloseMenus()
+			CloseAllWindows()
+			PlaySound(850) --IG_MAINMENU_OPEN
+			ShowUIPanel(_G.GameMenuFrame)
+		else
+			PlaySound(854) --IG_MAINMENU_QUIT
+			HideUIPanel(_G.GameMenuFrame)
+
+			MainMenuMicroButton:SetButtonState("NORMAL")
+		end
+	end,
+	notCheckable = 1,
+	icon = 134400,
+})
+
+tinsert(menuList, {
+	text = _G.HELP_BUTTON,
+	microOffset = nil,
+	bottom = true,
+	func = function()
+		_G.ToggleHelpFrame()
+	end,
+	notCheckable = 1,
+	icon = 511544,
+})
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -797,61 +840,29 @@ end
 -- Define the module and its offsets
 do
 	local meep = 12.125
-	local MICRO_OFFSETS = {
+	Module.MICRO_OFFSETS = {
 		CharacterMicroButton = 0.07 / meep,
 		SpellbookMicroButton = 1.05 / meep,
+		ProfessionMicroButton = 1.05 / meep,
 		TalentMicroButton = 2.04 / meep,
+		PlayerSpellsMicroButton = 2.04 / meep,
 		AchievementMicroButton = 3.03 / meep,
 		QuestLogMicroButton = 4.02 / meep,
 		GuildMicroButton = 5.01 / meep, -- Retail
+		SocialsMicroButton = 5.01 / meep, -- Classic, use Guild button
 		LFDMicroButton = 6.00 / meep, -- Retail
+		LFGMicroButton = 6.00 / meep, -- Classic
 		EJMicroButton = 7.00 / meep,
 		CollectionsMicroButton = 8.00 / meep,
 		MainMenuMicroButton = 9 / meep, -- flip these
 		HelpMicroButton = 10 / meep, -- on classic
 		StoreMicroButton = 10.0 / meep,
 	}
-
-	Module.MICRO_OFFSETS = MICRO_OFFSETS
-end
-
-function Module:GetMicroCoords(name, icons, character)
-	local l, r, t, b = 0.17, 0.87, 0.5, 0.908
-
-	if character and name == "CharacterMicroButton" then
-		l, r, t, b = 0, 1, 0, 1
-	elseif icons then
-		local offset = Module.MICRO_OFFSETS[name]
-		if offset then
-			l, r = offset, offset + 0.065
-			t, b = icons and 0.41 or 0.038, icons and 0.72 or 0.35
-		end
-	end
-
-	return l, r, t, b
 end
 
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
-	end
-
-	for _, menu in ipairs(menuList) do
-		menu.notCheckable = true
-
-		if menu.cropIcon then
-			local left = 0.02 * menu.cropIcon
-			local right = 1 - left
-			menu.tCoordLeft, menu.tCoordRight, menu.tCoordTop, menu.tCoordBottom = left, right, left, right
-			menu.cropIcon = nil
-		end
-
-		if menu.microOffset then
-			local left, right, top, bottom = Module:GetMicroCoords(menu.microOffset, true)
-			menu.tCoordLeft, menu.tCoordRight, menu.tCoordTop, menu.tCoordBottom = left, right, top, bottom
-			menu.icon = menu.microOffset == "PVPMicroButton" and ((K.Faction == "Horde" and "H") or "A") or "?"
-			menu.microOffset = nil
-		end
 	end
 
 	-- Shape and Position
