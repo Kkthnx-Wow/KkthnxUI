@@ -55,6 +55,58 @@ local KKUI_Changelog = {
 	-- },
 
 	{
+		Version = "[10.5.8] - 2024-10-12 - Patch 11.2",
+		General = "This update brings improvements, bug fixes, and a more polished experience for KkthnxUI users. We've refined visuals, optimized performance, and added new features.",
+
+		Sections = {
+			{
+				Header = "UI Enhancements",
+				Entries = {
+					"Added skinning for the Menu to match the overall UI aesthetic.",
+					"Refactored the Minimap menu by adding icons and improving functionality.",
+					"Updated and refactored GroupLoot visuals for a cleaner experience.",
+					"Enhanced ExtraQuestButton to better fit with the UI theme.",
+				},
+			},
+
+			{
+				Header = "Module Improvements",
+				Entries = {
+					"Recycled tables cleared in the AuraWatch module to improve performance.",
+					"Updated the AlreadyKnown module and fixed API compatibility issues.",
+					"Updated various Auras to ensure consistency and functionality.",
+					"Refactored HealPrediction for unit frames to be more efficient.",
+					"Updated LibRangeCheck for improved range detection.",
+				},
+			},
+
+			{
+				Header = "Color and Visual Refinements",
+				Entries = {
+					"Refactored most colors to be easier on the eyes for extended gameplay.",
+					"Fixed ManaBars in raid frames and added an option to display all power types.",
+					"Fixed ColorPicker errors that were causing inconsistent color selection.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes and Optimizations",
+				Entries = {
+					"Fixed an AuraWatch error in the GUI that caused occasional crashes.",
+					"Added new bag filters to better organize inventory management.",
+				},
+			},
+
+			{
+				Header = "New Features and Commands",
+				Entries = {
+					"Added a new /kk help command to provide guidance on available commands.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.7] - 2024-09-18 - Patch 11.2",
 		General = "This update brings new aura adjustments, quality-of-life changes, and some bug fixes to ensure smoother gameplay. We’ve also made updates to key spells, buffs, and UI elements to keep your experience running smoothly.",
 
