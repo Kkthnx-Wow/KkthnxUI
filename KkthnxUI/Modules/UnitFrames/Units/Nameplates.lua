@@ -126,6 +126,7 @@ function Module:SetupCVars()
 		nameplateGlobalScale = 1, -- Sets the overall scale for all nameplates. Default is 1 (normal size).
 		NamePlateHorizontalScale = 1,
 		NamePlateVerticalScale = 1,
+		NamePlateClassificationScale = 1,
 		nameplateShowSelf = 0, -- Toggles the visibility of the player's own nameplate. 0 means the player's nameplate will not be shown.
 		nameplateResourceOnTarget = 0, -- Controls whether class resources (e.g., combo points, runes) are displayed on the target's nameplate. 0 means resources are shown below the character, not on the target.
 		nameplatePlayerMaxDistance = 60, -- Sets the maximum distance at which player nameplates are visible. The default value is 60 yards.
@@ -652,7 +653,7 @@ function Module:UpdateDungeonProgress(unit)
 end
 
 function Module:AddCreatureIcon(self)
-	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
+	local ClassifyIndicator = self.Health:CreateTexture(nil, "ARTWORK")
 	ClassifyIndicator:SetTexture(K.MediaFolder .. "Nameplates\\star")
 	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 10, 0)
 	ClassifyIndicator:SetSize(16, 16)
@@ -1111,6 +1112,11 @@ function Module:RefreshAllPlates()
 	Module:ResizeTargetPower()
 end
 
+local SoftTargetBlockElements = {
+	"Auras",
+	"RaidTargetIndicator",
+}
+
 local DisabledElements = {
 	"Castbar",
 	"HealthPrediction",
@@ -1127,11 +1133,32 @@ function Module:UpdatePlateByType()
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
 
-	name:SetShown(not self.widgetsOnly)
-	name:ClearAllPoints()
+	-- name:SetShown(not self.widgetsOnly)
+	-- name:ClearAllPoints()
+	if self.widgetsOnly then
+		name:Hide()
+	else
+		name:Show()
+		-- name:UpdateTag()
+		name:ClearAllPoints()
+	end
 	-- self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
 	-- self.npcTitle:UpdateTag()
 	raidtarget:ClearAllPoints()
+
+	if self.isSoftTarget then
+		for _, element in pairs(SoftTargetBlockElements) do
+			if self:IsElementEnabled(element) then
+				self:DisableElement(element)
+			end
+		end
+	else
+		for _, element in pairs(SoftTargetBlockElements) do
+			if not self:IsElementEnabled(element) then
+				self:EnableElement(element)
+			end
+		end
+	end
 
 	if self.plateType == "NameOnly" then
 		for _, element in pairs(DisabledElements) do
@@ -1195,7 +1222,7 @@ end
 function Module:RefreshPlateType(unit)
 	self.reaction = UnitReaction(unit, "player")
 	self.isFriendly = self.reaction and self.reaction >= 4 and not UnitCanAttack("player", unit)
-	self.isSoftTarget = GetCVarBool("SoftTargetIconGameObject") and UnitIsUnit(unit, "softinteract")
+	self.isSoftTarget = UnitIsUnit(unit, "softinteract")
 	if C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly or self.isSoftTarget then
 		self.plateType = "NameOnly"
 	elseif C["Nameplate"].FriendPlate and self.isFriendly then
@@ -1230,7 +1257,6 @@ function Module:OnUnitSoftTargetChanged(previousTarget, currentTarget)
 			unitFrame.previousType = nil
 			Module.RefreshPlateType(unitFrame, unitFrame.unit)
 			Module.UpdateTargetChange(unitFrame)
-			unitFrame.RaidTargetIndicator:ForceUpdate()
 		end
 	end
 end
