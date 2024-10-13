@@ -217,7 +217,7 @@ function Module:VersionCheck_UpdateGroup()
 		return
 	end
 
-	local channel = IsPartyLFG() and "INSTANCE_CHAT" or (IsInRaid() and "RAID" or "PARTY")
+	local channel = IsPartyLFG() or C_PartyInfo.IsPartyWalkIn() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 	Module:VersionCheck_Send(channel)
 end
 
