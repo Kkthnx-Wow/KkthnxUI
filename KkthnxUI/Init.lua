@@ -145,19 +145,42 @@ for k, v in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
 	K.ClassList[v] = k
 end
 
+-- Custom class colors (modify as needed)
+local CustomColors = {
+	DEATHKNIGHT = { r = 0.70, g = 0.15, b = 0.20 }, -- Deep muted red
+	DEMONHUNTER = { r = 0.60, g = 0.25, b = 0.75 }, -- Softer violet
+	DRUID = { r = 1.00, g = 0.45, b = 0.10 }, -- Warm earthy orange
+	EVOKER = { r = 0.25, g = 0.55, b = 0.50 }, -- Muted teal
+	HUNTER = { r = 0.65, g = 0.80, b = 0.50 }, -- Soft olive green
+	MAGE = { r = 0.40, g = 0.75, b = 1.00 }, -- Softer sky blue
+	MONK = { r = 0.00, g = 0.90, b = 0.55 }, -- Muted bright green
+	PALADIN = { r = 0.90, g = 0.60, b = 0.70 }, -- Soft pink
+	PRIEST = { r = 0.85, g = 0.90, b = 0.95 }, -- Soft pastel blue
+	ROGUE = { r = 1.00, g = 0.90, b = 0.35 }, -- Softened golden yellow
+	SHAMAN = { r = 0.20, g = 0.35, b = 0.60 }, -- Deep muted blue
+	WARLOCK = { r = 0.55, g = 0.50, b = 0.75 }, -- Softened purple
+	WARRIOR = { r = 0.75, g = 0.55, b = 0.40 }, -- Earthy brown
+	UNKNOWN = { r = 0.70, g = 0.75, b = 0.80 }, -- Soft light gray
+}
+
+-- Use either custom or default raid class colors
+local classColors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
+
 -- Populate the ClassColors table with the colors of each class
-local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
-for class, value in pairs(colors) do
-	K.ClassColors[class] = {}
-	K.ClassColors[class].r = value.r
-	K.ClassColors[class].g = value.g
-	K.ClassColors[class].b = value.b
-	K.ClassColors[class].colorStr = value.colorStr
+for class, defaultColor in pairs(classColors) do
+	local customColor = CustomColors[class]
+	K.ClassColors[class] = {
+		r = (customColor and customColor.r) or defaultColor.r,
+		g = (customColor and customColor.g) or defaultColor.g,
+		b = (customColor and customColor.b) or defaultColor.b,
+		colorStr = string_format("|cff%02x%02x%02x", ((customColor and customColor.r) or defaultColor.r) * 255, ((customColor and customColor.g) or defaultColor.g) * 255, ((customColor and customColor.b) or defaultColor.b) * 255),
+	}
 end
 
 -- Get the player's class color
-K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
-K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
+local myColor = K.ClassColors[K.Class]
+K.r, K.g, K.b = myColor.r, myColor.g, myColor.b
+K.MyClassColor = myColor.colorStr
 
 -- Populate the QualityColors table with the colors of each item quality
 local qualityColors = BAG_ITEM_QUALITY_COLORS

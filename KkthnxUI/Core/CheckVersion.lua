@@ -31,7 +31,7 @@ local function DebugLog(message)
 	end
 end
 
-local function HandleVersonTag(version, author)
+local function HandleVersonTag(version)
 	local major, minor = string_split(".", version)
 	major, minor = tn(major), tn(minor)
 
@@ -188,7 +188,8 @@ function Module:VersionCheck_Send(channel)
 	end
 end
 
-function Module:VersionCheck_Update(prefix, msg, distType, author)
+function Module:VersionCheck_Update(...)
+	local prefix, msg, distType, author = ...
 	if prefix ~= "KKUIVersionCheck" then
 		return
 	end
