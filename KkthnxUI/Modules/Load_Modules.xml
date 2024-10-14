@@ -49,6 +49,7 @@
    <Script file="ActionBars\Keybind.lua" />
    <Script file="ActionBars\ButtonStyle.lua" />
    <Script file="ActionBars\Cooldown.lua" />
+   <Script file="ActionBars\Fader.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />
