@@ -315,7 +315,6 @@ C["General"] = {
 	TexturesColor = { 1, 1, 1 },
 	UIScale = 0.71,
 	UseGlobal = false,
-	VersionCheck = true,
 	Texture = "KkthnxUI",
 	SmoothAmount = 0.25,
 	BorderStyle = {

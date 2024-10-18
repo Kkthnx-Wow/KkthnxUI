@@ -717,7 +717,6 @@ local General = function(self)
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
 	Window:CreateSwitch("General", "NoErrorFrame", L["Disable Blizzard Error Frame Combat"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
-	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
 
 	Window:CreateDropdown("General", "GlowMode", "Button Glow Mode")
 
