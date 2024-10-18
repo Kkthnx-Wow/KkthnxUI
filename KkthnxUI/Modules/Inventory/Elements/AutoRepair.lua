@@ -3,7 +3,6 @@ local Module = K:GetModule("Bags")
 
 local string_format = string.format
 
-local C_Timer_After = C_Timer.After
 local CanGuildBankRepair = CanGuildBankRepair
 local CanMerchantRepair = CanMerchantRepair
 local GetGuildBankWithdrawMoney = GetGuildBankWithdrawMoney
@@ -52,7 +51,7 @@ function autoRepair(override)
 				return
 			end
 		end
-		C_Timer_After(0.5, delayFunc)
+		K.Delay(0.5, delayFunc)
 	end
 end
 

@@ -17,7 +17,7 @@ function Module:AutoDismissHelpTips()
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AutoCompleteHelpTips)
-	C_Timer.After(1, AutoCompleteHelpTips)
+	K.Delay(1, AutoCompleteHelpTips)
 end
 
 local function DeactivateNewPlayerExperience()

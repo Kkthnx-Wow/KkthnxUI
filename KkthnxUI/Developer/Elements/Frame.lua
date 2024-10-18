@@ -147,7 +147,7 @@ do
 		-- Send the version check request
 		C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "VersionCheck", channel)
 		-- Schedule the print function to run after 3 seconds
-		C_Timer.After(3, PrintVerCheck)
+		K.Delay(3, PrintVerCheck)
 	end
 
 	-- Define a function to listen for version check responses

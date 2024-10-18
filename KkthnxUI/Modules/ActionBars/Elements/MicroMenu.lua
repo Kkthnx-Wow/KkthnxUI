@@ -62,7 +62,7 @@ end
 local function FadeOutMicroMenu()
 	local KKUI_MenuBar = _G.KKUI_MenuBar
 	if KKUI_MenuBar then
-		UIFrameFadeOut(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 0)
+		K.UIFrameFadeOut(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 0)
 	end
 end
 
@@ -88,7 +88,7 @@ local function OnMicroButtonEnter()
 	if KKUI_MenuBar and not KKUI_MenuBar.IsMouseOvered then
 		KKUI_MenuBar.IsMouseOvered = true
 		KKUI_MenuBar:SetScript("OnUpdate", UpdateOnMouseOver)
-		UIFrameFadeIn(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 1)
+		K.UIFrameFadeIn(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 1)
 	end
 end
 

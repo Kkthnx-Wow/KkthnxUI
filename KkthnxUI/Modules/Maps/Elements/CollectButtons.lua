@@ -9,7 +9,6 @@ local string_match = string.match
 local string_upper = string.upper
 local table_insert = table.insert
 
-local C_Timer_After = C_Timer.After
 local CreateFrame = CreateFrame
 local Minimap = Minimap
 local PlaySound = PlaySound
@@ -78,8 +77,8 @@ function Module:CreateRecycleBin()
 	local function clickFunc(force)
 		if force == 1 then
 			PlaySound(825)
-			UIFrameFadeOut(bin, 0.5, 1, 0)
-			C_Timer_After(0.5, hideBinButton)
+			UIFrameFadeOut(bin, 0.5, bin:GetAlpha(), 0)
+			K.Delay(0.5, hideBinButton)
 		end
 	end
 
@@ -202,7 +201,7 @@ function Module:CreateRecycleBin()
 		currentIndex = currentIndex + 1
 		if currentIndex < timeThreshold then
 			-- schedule another call if within time threshold
-			C_Timer_After(pendingTime, CollectRubbish)
+			K.Delay(pendingTime, CollectRubbish)
 		end
 	end
 
@@ -242,7 +241,7 @@ function Module:CreateRecycleBin()
 		else
 			PlaySound(825)
 			SortRubbish()
-			UIFrameFadeIn(bin, 0.5, 0, 1)
+			UIFrameFadeIn(bin, 0.5, bin:GetAlpha(), 1)
 		end
 	end)
 

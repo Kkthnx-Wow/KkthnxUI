@@ -1,8 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
-local C_Timer_After = C_Timer.After
-
 -- Random list of auto-thanks messages
 local AutoThanksList = {
 	L["Farewell friends, until we meet again."],
@@ -39,7 +37,7 @@ local function SendAutoGoodbyeMessage()
 end
 
 local function SetupAutoGoodbye()
-	C_Timer_After(math.random(2, 5), SendAutoGoodbyeMessage)
+	K.Delay(math.random(2, 5), SendAutoGoodbyeMessage)
 end
 
 function Module:CreateAutoGoodbye()

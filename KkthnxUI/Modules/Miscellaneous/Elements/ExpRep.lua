@@ -126,9 +126,13 @@ local function OnExpBarEvent(self, event, unit)
 
 		local standing, rewardPending, _
 
+		if reaction == 0 then
+			reaction = 1
+		end
+
 		local info = factionID and C_GossipInfo_GetFriendshipReputation(factionID)
 		if info and info.friendshipFactionID and info.friendshipFactionID > 0 then
-			standing, currentReactionThreshold, nextReactionThreshold, currentStanding = info.reaction, info.reactionThreshold or 0, info.nextThreshold or huge, info.standing or 1
+			standing, currentReactionThreshold, nextReactionThreshold, currentStanding = info.reaction, info.reactionThreshold or 0, info.nextThreshold or math.huge, info.standing or 1
 		end
 
 		if not standing and factionID and C_Reputation_IsFactionParagon(factionID) then

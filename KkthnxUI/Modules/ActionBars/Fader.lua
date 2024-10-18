@@ -3,6 +3,7 @@ local Module = K:GetModule("ActionBar")
 
 -- Credit: ElvUI
 
+local fadeParent
 Module.handledbuttons = {}
 
 local function CancelTimer(timer)
@@ -21,10 +22,10 @@ local function DelayFadeOut(frame, timeToFade, startAlpha, endAlpha)
 
 	if C["ActionBar"].BarFadeDelay > 0 then
 		frame.delayTimer = C_Timer.NewTimer(C["ActionBar"].BarFadeDelay, function()
-			UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
+			K.UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
 		end)
 	else
-		UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
+		K.UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
 	end
 end
 
@@ -41,16 +42,16 @@ function Module:FadeBlings(alpha)
 end
 
 function Module:Button_OnEnter()
-	if not Module.fadeParent.mouseLock then
-		ClearTimers(Module.fadeParent)
-		UIFrameFadeIn(Module.fadeParent, 0.2, Module.fadeParent:GetAlpha(), 1)
+	if not fadeParent.mouseLock then
+		ClearTimers(fadeParent)
+		K.UIFrameFadeIn(fadeParent, 0.2, fadeParent:GetAlpha(), 1)
 		Module:FadeBlings(1)
 	end
 end
 
 function Module:Button_OnLeave()
-	if not Module.fadeParent.mouseLock then
-		DelayFadeOut(Module.fadeParent, 0.38, Module.fadeParent:GetAlpha(), C["ActionBar"].BarFadeAlpha)
+	if not fadeParent.mouseLock then
+		DelayFadeOut(fadeParent, 0.38, fadeParent:GetAlpha(), C["ActionBar"].BarFadeAlpha)
 		Module:FadeBlings(C["ActionBar"].BarFadeAlpha)
 	end
 end
@@ -91,7 +92,7 @@ function Module:FadeParent_OnEvent(event)
 	if event == "ACTIONBAR_SHOWGRID" or inCombat or hasTarget or isCasting or lowHealth or inVehicle then
 		self.mouseLock = true
 		ClearTimers(self)
-		UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
+		K.UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
 		Module:FadeBlings(1)
 	else
 		self.mouseLock = false
@@ -144,12 +145,12 @@ function Module:UpdateFaderSettings()
 	for key, option in pairs(options) do
 		if C["ActionBar"][key] then
 			if option.enable then
-				option.enable(Module.fadeParent)
+				option.enable(fadeParent)
 			end
 		else
 			if option.events and next(option.events) then
 				for _, event in ipairs(option.events) do
-					Module.fadeParent:UnregisterEvent(event)
+					fadeParent:UnregisterEvent(event)
 				end
 			end
 		end
@@ -183,7 +184,7 @@ function Module:UpdateFaderState()
 	for key, name in pairs(KKUI_ActionBars) do
 		local bar = _G[name]
 		if bar then
-			bar:SetParent(C["ActionBar"][key] and Module.fadeParent or UIParent)
+			bar:SetParent(C["ActionBar"][key] and fadeParent or UIParent)
 		end
 	end
 
@@ -221,12 +222,12 @@ function Module:CreateBarFadeGlobal()
 		return
 	end
 
-	Module.fadeParent = CreateFrame("Frame", "KKUI_BarFader", _G.UIParent, "SecureHandlerStateTemplate")
-	RegisterStateDriver(Module.fadeParent, "visibility", "[petbattle] hide; show")
-	Module.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
-	Module.fadeParent:RegisterEvent("ACTIONBAR_SHOWGRID")
-	Module.fadeParent:RegisterEvent("ACTIONBAR_HIDEGRID")
-	Module.fadeParent:SetScript("OnEvent", Module.FadeParent_OnEvent)
+	fadeParent = CreateFrame("Frame", "KKUI_BarFader", _G.UIParent, "SecureHandlerStateTemplate")
+	RegisterStateDriver(fadeParent, "visibility", "[petbattle] hide; show")
+	fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
+	fadeParent:RegisterEvent("ACTIONBAR_SHOWGRID")
+	fadeParent:RegisterEvent("ACTIONBAR_HIDEGRID")
+	fadeParent:SetScript("OnEvent", Module.FadeParent_OnEvent)
 
 	Module:UpdateFaderSettings()
 	Module:UpdateFaderState()

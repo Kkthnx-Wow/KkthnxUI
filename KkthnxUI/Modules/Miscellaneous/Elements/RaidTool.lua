@@ -12,7 +12,6 @@ local GetTime, SendChatMessage, C_AddOns_IsAddOnLoaded = GetTime, SendChatMessag
 local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown
 local UnitExists, UninviteUnit = UnitExists, UninviteUnit
 local DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus = DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus
-local C_Timer_After = C_Timer.After
 local LeaveParty = C_PartyInfo.LeaveParty
 local ConvertToRaid = C_PartyInfo.ConvertToRaid
 local ConvertToParty = C_PartyInfo.ConvertToParty
@@ -225,7 +224,7 @@ function Module:RaidTool_ReadyCheck(parent)
 			else
 				rc:SetTextColor(1, 0, 0)
 			end
-			C_Timer_After(5, hideRCFrame)
+			K.Delay(5, hideRCFrame)
 		else
 			count, total = 0, 0
 

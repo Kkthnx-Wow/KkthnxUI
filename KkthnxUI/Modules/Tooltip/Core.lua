@@ -653,7 +653,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 	end)
 
 	-- Others
-	C_Timer.After(5, function()
+	K.Delay(5, function()
 		-- BagSync
 		if BSYC_EventAlertTooltip then
 			Module.ReskinTooltip(BSYC_EventAlertTooltip)

@@ -4,7 +4,7 @@ local TT = K:GetModule("Tooltip")
 
 local StaticPopup_Hide, HideUIPanel, GetTime = StaticPopup_Hide, HideUIPanel, GetTime
 local UnitIsGroupLeader = UnitIsGroupLeader
-local C_Timer_After, IsAltKeyDown = C_Timer.After, IsAltKeyDown
+local IsAltKeyDown = IsAltKeyDown
 local C_LFGList_GetSearchResultInfo = C_LFGList.GetSearchResultInfo
 local C_LFGList_GetActivityInfoTable = C_LFGList.GetActivityInfoTable
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
@@ -43,7 +43,7 @@ end
 
 function Module:HookDialogOnShow()
 	pendingFrame = self
-	C_Timer_After(1, Module.DialogHideInSecond)
+	K.Delay(1, Module.DialogHideInSecond)
 end
 
 function Module:AddAutoAcceptButton()

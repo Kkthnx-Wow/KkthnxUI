@@ -2,7 +2,6 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
 local AcceptResurrect = AcceptResurrect
-local C_Timer_After = C_Timer.After
 local DoEmote = DoEmote
 local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
@@ -50,7 +49,7 @@ local function HandleAutoResurrect(event, arg1)
 
 		-- Optionally thank the resurrector
 		if C["Automation"].AutoResurrectThank then
-			C_Timer_After(3, function()
+			K.Delay(3, function()
 				if not UnitIsDeadOrGhost("player") then
 					DoEmote("thank", arg1)
 				end

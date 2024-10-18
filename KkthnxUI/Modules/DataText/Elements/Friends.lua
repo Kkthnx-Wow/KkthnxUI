@@ -16,7 +16,6 @@ local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
 local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
 local C_FriendList_GetNumOnlineFriends = C_FriendList.GetNumOnlineFriends
 local FriendsFrame_GetFormattedCharacterName = FriendsFrame_GetFormattedCharacterName
-local C_Timer_After = C_Timer.After
 local EXPANSION_NAME0 = EXPANSION_NAME0
 local EXPANSION_NAME3 = EXPANSION_NAME3
 local GameTooltip = GameTooltip
@@ -665,7 +664,7 @@ local function OnLeave()
 		return
 	end
 
-	C_Timer_After(0.1, delayLeave)
+	K.Delay(0.1, delayLeave)
 end
 
 local function OnMouseUp(_, btn)

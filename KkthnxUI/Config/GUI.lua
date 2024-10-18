@@ -158,6 +158,15 @@ function UpdateActionbar()
 	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 
+local function SetABFaderState()
+	local Module = K:GetModule("ActionBar")
+	if not Module.fadeParent then
+		return
+	end
+
+	Module.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
+end
+
 local function UpdateABFaderState()
 	local Module = K:GetModule("ActionBar")
 	if not Module.fadeParent then
@@ -475,7 +484,7 @@ local ActionBar = function(self)
 
 	Window:CreateSection("Fader Options")
 	Window:CreateSwitch("ActionBar", "BarFadeGlobal", "Enable Global Fade", "Enables fading on all action bars globally when certain conditions are met.")
-	Window:CreateSlider("ActionBar", "BarFadeAlpha", "Fade Alpha", 0, 1, 0.1, "Set the transparency level of the bars when they are faded. 0 = fully transparent, 1 = fully visible.")
+	Window:CreateSlider("ActionBar", "BarFadeAlpha", "Fade Alpha", 0, 1, 0.1, "Set the transparency level of the bars when they are faded. 0 = fully transparent, 1 = fully visible.", SetABFaderState)
 	Window:CreateSlider("ActionBar", "BarFadeDelay", "Fade Delay", 0, 3, 0.1, "The amount of time (in seconds) before the bars start to fade after the conditions are met.")
 	Window:CreateSwitch("ActionBar", "BarFadeCombat", "Fade Out of Combat", "Fades the action bars when the player is out of combat.")
 	Window:CreateSwitch("ActionBar", "BarFadeTarget", "Fade without Target", "Fades the bars when the player has no target selected.")

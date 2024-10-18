@@ -6,7 +6,6 @@ local wipe, select, pairs = wipe, _G.select, _G.pairs
 local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR
 local C_Mail_HasInboxMoney = C_Mail.HasInboxMoney
 local C_Mail_IsCommandPending = C_Mail.IsCommandPending
-local C_Timer_After = C_Timer.After
 local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, _G.GetInboxHeaderInfo, _G.GetInboxItem, _G.GetItemInfo
 local GetSendMailPrice, GetMoney = GetSendMailPrice, _G.GetMoney
 local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
@@ -86,7 +85,7 @@ function Module:MailBox_CollectGold()
 			end
 			mailIndex = mailIndex - 1
 		end
-		C_Timer_After(timeToWait, Module.MailBox_CollectGold)
+		K.Delay(timeToWait, Module.MailBox_CollectGold)
 	else
 		isGoldCollecting = false
 		Module:UpdateOpeningText()
@@ -167,7 +166,7 @@ function Module:MailBox_CollectAttachment()
 		local attachmentButton = OpenMailFrame.OpenMailAttachments[i]
 		if attachmentButton:IsShown() then
 			TakeInboxItem(InboxFrame.openMailID, i)
-			C_Timer_After(timeToWait, Module.MailBox_CollectAttachment)
+			K.Delay(timeToWait, Module.MailBox_CollectAttachment)
 			return
 		end
 	end

@@ -116,7 +116,7 @@ function Module:OnCastbarUpdate(elapsed)
 							self.pipStage = i
 							local nextStage = self.numStages == i and 1 or i + 1
 							local nextPip = self.Pips[nextStage]
-							UIFrameFadeIn(nextPip.tex, 0.25, 0.3, 1)
+							K.UIFrameFadeIn(nextPip.tex, 0.25, 0.3, 1)
 						end
 						break
 					end

@@ -40,6 +40,8 @@ end
 -- Create auto set role function
 function Module:CreateAutoSetRole()
 	if not C["Automation"].AutoSetRole then
+		K:UnregisterEvent("PLAYER_TALENT_UPDATE", self.SetupAutoRole)
+		K:UnregisterEvent("GROUP_ROSTER_UPDATE", self.SetupAutoRole)
 		return
 	end
 

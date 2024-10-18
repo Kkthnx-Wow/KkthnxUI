@@ -22,8 +22,6 @@ local GetSelectedFaction = GetSelectedFaction
 local Item = Item
 local PlaySound = PlaySound
 local PlayerHasToy = PlayerHasToy
-local UIFrameFadeIn = UIFrameFadeIn
-local UIFrameFadeOut = UIFrameFadeOut
 
 local C_MountJournal_GetMountInfoByID = C_MountJournal.GetMountInfoByID
 local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
@@ -793,23 +791,23 @@ function Module:ShowToast(name, text)
 	Module.toast.title:SetAlpha(0)
 	Module.toast.description:SetText(text)
 	Module.toast.description:SetAlpha(0)
-	UIFrameFadeIn(Module.toast, 0.5, 0, 1)
+	K.UIFrameFadeIn(Module.toast, 0.5, 0, 1)
 
-	C_Timer.After(0.5, function()
-		UIFrameFadeIn(Module.toast.title, 0.5, 0, 1)
+	K.Delay(0.5, function()
+		K.UIFrameFadeIn(Module.toast.title, 0.5, 0, 1)
 	end)
 
-	C_Timer.After(0.75, function()
-		UIFrameFadeIn(Module.toast.description, 0.5, 0, 1)
+	K.Delay(0.75, function()
+		K.UIFrameFadeIn(Module.toast.description, 0.5, 0, 1)
 	end)
 
 	print(self.toast.description)
 
-	C_Timer.After(ParaRep_Settings.toast.fade_time, function()
-		UIFrameFadeOut(Module.toast, 1, 1, 0)
+	K.Delay(ParaRep_Settings.toast.fade_time, function()
+		K.UIFrameFadeOut(Module.toast, 1, 1, 0)
 	end)
 
-	C_Timer.After(ParaRep_Settings.toast.fade_time + 1.25, function()
+	K.Delay(ParaRep_Settings.toast.fade_time + 1.25, function()
 		Module.toast:Hide()
 		ACTIVE_TOAST = false
 		if #WAITING_TOAST > 0 then

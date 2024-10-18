@@ -269,7 +269,7 @@ function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 end
 
 function Module:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
-	C_Timer.After(0.1, function()
+	K.Delay(0.1, function()
 		local quality = select(3, GetItemInfo(link))
 		local info = K.GetItemLevel(link, unit, index, C["Misc"].GemEnchantInfo)
 		if info == "tooSoon" then

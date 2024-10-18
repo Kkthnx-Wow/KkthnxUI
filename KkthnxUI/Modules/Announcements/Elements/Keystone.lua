@@ -57,7 +57,7 @@ function Module:Keystone(event)
 		local link = getKeystoneLink()
 		if link then
 			local message = string.gsub("My new keystone is %keystone%.", "%%keystone%%", link)
-			C_Timer.After(1, function()
+			K.Delay(1, function()
 				if IsPartyLFG() then
 					SendChatMessage(message, "INSTANCE_CHAT")
 				elseif IsInGroup() then
@@ -87,7 +87,7 @@ function Module:KeystoneLink(message, sender)
 		end
 
 		if channel then
-			C_Timer.After(1, function()
+			K.Delay(1, function()
 				sendKeystoneLink(channel)
 			end)
 		end

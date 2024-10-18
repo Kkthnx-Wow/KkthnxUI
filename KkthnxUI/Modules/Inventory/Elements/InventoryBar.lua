@@ -15,11 +15,11 @@ local bagBar
 local bagPosition
 
 function Module:BagBar_OnEnter()
-	return C["Inventory"].BagBarMouseover and UIFrameFadeIn(bagBar, 0.2, bagBar:GetAlpha(), 1)
+	return C["Inventory"].BagBarMouseover and K.UIFrameFadeIn(bagBar, 0.2, bagBar:GetAlpha(), 1)
 end
 
 function Module:BagBar_OnLeave()
-	return C["Inventory"].BagBarMouseover and UIFrameFadeOut(bagBar, 0.2, bagBar:GetAlpha(), 0)
+	return C["Inventory"].BagBarMouseover and K.UIFrameFadeOut(bagBar, 0.2, bagBar:GetAlpha(), 0)
 end
 
 function Module:BagBar_OnEvent(event)
