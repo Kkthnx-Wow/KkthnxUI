@@ -355,6 +355,10 @@ local function Disable(self)
 			element.overHealAbsorb:Hide()
 		end
 
+		if element.overAbsorbBar then -- KkthnxUI
+			element.overAbsorbBar:Hide()
+		end
+
 		self:UnregisterEvent("UNIT_HEALTH", Path)
 		self:UnregisterEvent("UNIT_MAXHEALTH", Path)
 		self:UnregisterEvent("UNIT_HEAL_PREDICTION", Path)

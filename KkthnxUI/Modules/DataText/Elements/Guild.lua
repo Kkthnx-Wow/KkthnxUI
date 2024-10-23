@@ -367,11 +367,11 @@ local function GuildPanel_Refresh()
 
 	wipe(guildTable)
 	local count = 0
-	local total, _, online = GetNumGuildMembers()
+	local total, numOnline, allOnline = GetNumGuildMembers()
 	local guildName, guildRank = GetGuildInfo("player")
 
 	gName:SetText("|cff0099ff<" .. (guildName or "") .. ">")
-	gOnline:SetText(string_format(K.InfoColor .. "%s:" .. " %d/%d", GUILD_ONLINE_LABEL, online, total))
+	gOnline:SetText(string_format(K.InfoColor .. "%s:" .. " %d/%d", GUILD_ONLINE_LABEL, (allOnline or numOnline), total))
 	gRank:SetText(K.InfoColor .. RANK .. ": " .. (guildRank or ""))
 
 	-- Declare status variable as string
@@ -433,8 +433,8 @@ local function OnEvent(_, event, arg1)
 	end
 
 	if IsInGuild() then
-		local online = select(3, GetNumGuildMembers())
-		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. online
+		local _, numOnline, allOnline = GetNumGuildMembers()
+		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. (allOnline or numOnline)
 		GuildDataText.Text:SetText(message)
 
 		if infoFrame and infoFrame:IsShown() then
