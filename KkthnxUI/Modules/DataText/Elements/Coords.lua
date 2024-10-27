@@ -51,7 +51,7 @@ local function OnEvent(_, event, ...)
 	if tContains(eventList, event) then
 		subzone = GetSubZoneText()
 		zone = GetZoneText()
-		pvpType, _, faction = GetZonePVPInfo()
+		pvpType, _, faction = C_PvP.GetZonePVPInfo()
 		pvpType = pvpType or "neutral"
 	end
 end
@@ -81,24 +81,21 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
+local zoneString = "|cffffff00|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a %s: %s (%s) %s]|h|r"
+local lastRightClick = 0
 local function OnMouseUp(_, btn)
-	-- Toggle world map if left button is clicked
 	if btn == "LeftButton" then
 		ToggleWorldMap()
-	-- Open chat frame with position and target information if right button is clicked
 	elseif btn == "RightButton" then
-		local zone = GetZoneText()
-		local subzone = GetSubZoneText()
-		local mapID = C_Map.GetBestMapForUnit("player")
-		local position = C_Map.GetPlayerMapPosition(mapID, "player")
-		local coordString = position and format("%.1f, %.1f", position:GetXY()) or "N/A"
-		local unitName = UnitExists("target") and not UnitIsPlayer("target") and UnitName("target")
-
-		-- Format chat message with position, subzone, coordinates, and target name (if applicable)
-		local chatMsg = format("%s: %s %s (%s) %s", L["My Position"], zone, subzone or "", coordString, unitName or "")
-
-		-- Open chat frame with message and selected dock frame
-		ChatFrame_OpenChat(chatMsg, SELECTED_DOCK_FRAME)
+		if GetTime() - lastRightClick > 5 then
+			local mapID = C_Map.GetBestMapForUnit("player")
+			local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
+			local unitName = hasUnit and UnitName("target") or ""
+			print(format(zoneString, mapID, coordX * 10000, coordY * 10000, "My Position", zone, formatCoords(), unitName))
+			lastRightClick = GetTime()
+		else
+			print("You can send your position again in " .. math.ceil(5 - (GetTime() - lastRightClick)) .. " seconds.")
+		end
 	end
 end
 
@@ -112,7 +109,7 @@ function Module:CreateCoordsDataText()
 
 	CoordsDataText.Text = K.CreateFontString(CoordsDataText, 12)
 	CoordsDataText.Text:ClearAllPoints()
-	CoordsDataText.Text:SetPoint("TOP", UIParent, "TOP", 0, -40)
+	CoordsDataText.Text:SetPoint("TOP", UIParent, "TOP", 0, -90)
 
 	CoordsDataText.Texture = CoordsDataText:CreateTexture(nil, "ARTWORK")
 	CoordsDataText.Texture:SetPoint("BOTTOM", CoordsDataText, "TOP", 0, 0)
