@@ -187,7 +187,7 @@ end
 
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > 0.1 then
+	if self.timer > 0.5 then -- Increased delay to 0.5 seconds
 		if not infoFrame:IsMouseOver() then
 			self:Hide()
 			self:SetScript("OnUpdate", nil)
@@ -610,10 +610,6 @@ local function OnEnter()
 		updateRequest = true
 	end
 
-	if _G.KKUI_GuildInfoFrame and _G.KKUI_GuildInfoFrame:IsShown() then
-		_G.KKUI_GuildInfoFrame:Hide()
-	end
-
 	FriendsPanel_Init()
 	FriendsPanel_Update()
 	infoFrame.friendCountText:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
@@ -649,14 +645,6 @@ local function OnEvent(event, arg1)
 	end
 end
 
-local function delayLeave()
-	if MouseIsOver(infoFrame) then
-		return
-	end
-
-	infoFrame:Hide()
-end
-
 local function OnLeave()
 	GameTooltip:Hide()
 
@@ -664,7 +652,19 @@ local function OnLeave()
 		return
 	end
 
-	K.Delay(0.1, delayLeave)
+	-- Check if mouse is over the infoFrame or any of its buttons
+	local mouseOverFrame = MouseIsOver(infoFrame)
+	if not mouseOverFrame then
+		for i, button in ipairs(infoFrame.scrollFrame.buttons) do
+			if MouseIsOver(button) then
+				mouseOverFrame = true
+				break
+			end
+		end
+	end
+	if not mouseOverFrame then
+		infoFrame:Hide()
+	end
 end
 
 local function OnMouseUp(_, btn)
@@ -685,7 +685,6 @@ function Module:CreateSocialDataText()
 	end
 
 	FriendsDataText = CreateFrame("Frame", nil, UIParent)
-	FriendsDataText:SetHitRectInsets(-16, 0, -10, -10)
 
 	FriendsDataText.Text = K.CreateFontString(FriendsDataText, 12)
 	FriendsDataText.Text:ClearAllPoints()

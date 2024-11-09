@@ -202,15 +202,6 @@ local function UpdateTotemBar()
 	K:GetModule("Auras"):TotemBar_Init()
 end
 
-local function UIScaleUpdate()
-	if C["General"].AutoScale and not K.IsPrinted then
-		K.Print("Ensure AutoScale is disabled before adjusting the UIScale slider!")
-		K.IsPrinted = true
-	end
-
-	K.SetupUIScale()
-end
-
 local function UpdateQuestFontSize()
 	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
 end
@@ -731,8 +722,8 @@ local General = function(self)
 
 	-- Scaling
 	Window:CreateSection(L["Scaling"])
-	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"], UIScaleUpdate)
-	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleUpdate)
+	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"])
+	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"])
 
 	-- Colors
 	Window:CreateSection(COLORS)

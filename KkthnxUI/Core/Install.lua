@@ -513,7 +513,7 @@ local function YesTutor()
 			PlaySound(21968)
 		elseif currentPage == 3 then
 			StopSound(21968)
-			K.SetupUIScale(true)
+			K.SetupUIScale()
 			ShowFakeAchievement("Achievement Earned", "You have successfully applied the UIScale Settings.")
 			PlaySound(21968)
 		elseif currentPage == 4 then

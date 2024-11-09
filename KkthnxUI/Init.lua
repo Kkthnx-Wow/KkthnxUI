@@ -251,7 +251,7 @@ function K.SetupUIScale(init)
 
 	local scale = C["General"].UIScale
 	if init then
-		local pixel = 1
+		local pixel = 16
 		local ratio = 768 / K.ScreenHeight
 		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
 	elseif not InCombatLockdown() then
@@ -288,6 +288,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 
 	-- Register event for UI scale change
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdatePixelScale)
 
 	-- Set smoothing amount
 	K:SetSmoothingAmount(C["General"].SmoothAmount)

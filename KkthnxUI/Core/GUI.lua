@@ -1916,7 +1916,6 @@ GUI.Enable = function(self)
 	Apply:SetScript("OnEnter", ButtonOnEnter)
 	Apply:SetScript("OnLeave", ButtonOnLeave)
 	Apply:HookScript("OnMouseUp", function()
-		K.SetupUIScale()
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return

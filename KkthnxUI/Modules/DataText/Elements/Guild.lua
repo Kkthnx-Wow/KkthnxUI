@@ -262,7 +262,7 @@ end
 
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > 0.1 then
+	if self.timer > 0.5 then
 		if not infoFrame:IsMouseOver() then
 			self:Hide()
 			self:SetScript("OnUpdate", nil)
@@ -451,27 +451,31 @@ local function OnEnter()
 		return
 	end
 
-	if _G.KKUI_FriendsInfoFrame and _G.KKUI_FriendsInfoFrame:IsShown() then
-		_G.KKUI_FriendsInfoFrame:Hide()
-	end
-
 	GuildPanel_Init()
 	GuildPanel_Refresh()
 	GuildPanel_SortUpdate()
 end
 
-local function delayLeave()
-	if MouseIsOver(infoFrame) then
-		return
-	end
-	infoFrame:Hide()
-end
-
 local function OnLeave()
+	GameTooltip:Hide()
 	if not infoFrame then
 		return
 	end
-	K.Delay(0.1, delayLeave)
+
+	-- Check if mouse is over the infoFrame or any of its buttons
+	local mouseOverFrame = MouseIsOver(infoFrame)
+	if not mouseOverFrame then
+		for i, button in ipairs(infoFrame.scrollFrame.buttons) do
+			if MouseIsOver(button) then
+				mouseOverFrame = true
+				break
+			end
+		end
+	end
+
+	if not mouseOverFrame then
+		infoFrame:Hide()
+	end
 end
 
 local function OnMouseUp(_, btn)
@@ -500,7 +504,6 @@ function Module:CreateGuildDataText()
 	end
 
 	GuildDataText = CreateFrame("Frame", nil, UIParent)
-	GuildDataText:SetHitRectInsets(-16, 0, -10, -10)
 
 	GuildDataText.Text = K.CreateFontString(GuildDataText, 12)
 	GuildDataText.Text:ClearAllPoints()

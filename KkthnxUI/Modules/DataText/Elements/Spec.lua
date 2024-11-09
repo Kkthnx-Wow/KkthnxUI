@@ -255,7 +255,6 @@ function Module:CreateSpecDataText()
 	end
 
 	SpecDataText = CreateFrame("Frame", nil, UIParent)
-	SpecDataText:SetHitRectInsets(-16, 0, -10, -10)
 
 	SpecDataText.Text = K.CreateFontString(SpecDataText, 12)
 	SpecDataText.Text:ClearAllPoints()
