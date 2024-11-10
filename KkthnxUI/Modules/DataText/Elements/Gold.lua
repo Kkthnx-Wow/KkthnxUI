@@ -45,7 +45,7 @@ StaticPopupDialogs["RESETGOLD"] = {
 		if not KkthnxUIDB.Gold[myRealm] then
 			KkthnxUIDB.Gold[myRealm] = {}
 		end
-		KkthnxUIDB.Gold[myRealm][myName] = { GetMoney(), K.Class, K.Faction }
+		KkthnxUIDB.Gold[myRealm][myName] = { GetMoney(), K.Class, K.Faction, K.Race:lower() }
 	end,
 	whileDead = 1,
 }
@@ -61,21 +61,31 @@ local menuList = {
 }
 
 local function getClassIcon(class)
-	local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
+	local coords = CLASS_ICON_TCOORDS[class] or { 0, 0, 0, 0 }
+	local c1, c2, c3, c4 = unpack(coords)
 	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
-	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
-	return classStr or ""
+	return "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
 end
 
+local factionIcons = {
+	["Horde"] = "ui_horde_honorboundmedal",
+	["Alliance"] = "UI_Alliance_7LegionMedal",
+	["Unknown"] = "INV_Misc_QuestionMark",
+}
+
 local function getFactionIcon(faction)
-	local factionPath, trimIcon = "|TInterface\\ICONS\\", ":12:12:0:0:50:50:4:46:4:46|t "
-	if faction == "Horde" then
-		return factionPath .. "ui_horde_honorboundmedal" .. trimIcon
-	elseif faction == "Alliance" then
-		return factionPath .. "UI_Alliance_7LegionMedal" .. trimIcon
-	else
-		return factionPath .. "INV_Misc_QuestionMark" .. trimIcon -- return ?? icon for unknown factions
-	end
+	local icon = factionIcons[faction] or "INV_Misc_QuestionMark"
+	return "|TInterface\\ICONS\\" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t "
+end
+
+local raceMappings = {
+	["zandalari troll"] = "zandalari",
+}
+
+local function getRaceIcon(race)
+	-- print(race)
+	race = raceMappings[race] or string.gsub(race, " ", "")
+	return "|A:raceicon-" .. race .. "-" .. (K.Sex == 3 and "female" or "male") .. ":13:13:0:0|a "
 end
 
 local function getSlotString()
@@ -154,6 +164,7 @@ local function OnEvent(_, event, arg1)
 	KkthnxUIDB.Gold[myRealm][myName][1] = GetMoney()
 	KkthnxUIDB.Gold[myRealm][myName][2] = K.Class
 	KkthnxUIDB.Gold[myRealm][myName][3] = K.Faction
+	KkthnxUIDB.Gold[myRealm][myName][4] = K.Race:lower()
 
 	oldMoney = newMoney
 end
@@ -214,9 +225,9 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 	if KkthnxUIDB.Gold[myRealm] then
 		for k, v in pairs(KkthnxUIDB.Gold[myRealm]) do
 			local name = Ambiguate(k .. "-" .. myRealm, "none")
-			local gold, class, faction = unpack(v)
+			local gold, class, faction, race = unpack(v)
 			local r, g, b = K.ColorClass(class)
-			GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+			GameTooltip:AddDoubleLine(getRaceIcon(race) .. getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
 			totalGold = totalGold + gold
 		end
 	end
@@ -225,11 +236,11 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 	for realm, data in pairs(KkthnxUIDB.Gold) do
 		if realm ~= myRealm then
 			for k, v in pairs(data) do
-				local gold, class, faction = unpack(v)
+				local gold, class, faction, race = unpack(v)
 				if isShiftKeyDown then -- show other realms while holding shift
 					local name = Ambiguate(k .. "-" .. realm, "none")
 					local r, g, b = K.ColorClass(class)
-					GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+					GameTooltip:AddDoubleLine(getRaceIcon(race) .. getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
 				end
 				totalGold = totalGold + gold
 			end

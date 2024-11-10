@@ -381,7 +381,7 @@ function Module:OnEnter()
 
 			local progressColor = (numEncounters == encounterProgress) and "ff0000" or "00ff00"
 			local progressStr = format(" |cff%s(%s/%s)|r", progressColor, encounterProgress, numEncounters)
-			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. progressStr .. " (" .. encounterProgress .. "/" .. numEncounters .. ")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. progressStr, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
