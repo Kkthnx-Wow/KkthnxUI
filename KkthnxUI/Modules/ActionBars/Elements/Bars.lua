@@ -153,7 +153,7 @@ function Module:UpdateButtonConfig(i)
 		}
 	end
 
-	self.buttonConfig.clickOnDown = true
+	self.buttonConfig.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
 	self.buttonConfig.showGrid = C["ActionBar"]["Grid"]
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 
@@ -208,13 +208,12 @@ function Module:UpdateButtonConfig(i)
 	hideElements.equipped = not C["ActionBar"]["EquipColor"]
 
 	-- Update button attributes and configuration based on CVAR values and button config
-	local lockBars = GetCVar("lockActionBars") == "1"
+	local lockBars = C["ActionBar"]["ButtonLock"]
 	for _, button in next, self.buttons do
 		self.buttonConfig.keyBoundTarget = button.bindName
 		button.keyBoundTarget = self.buttonConfig.keyBoundTarget
 
 		button:SetAttribute("buttonlock", lockBars)
-		button:SetAttribute("unlockedpreventdrag", not lockBars)
 		button:SetAttribute("checkmouseovercast", true)
 		button:SetAttribute("checkfocuscast", true)
 		button:SetAttribute("checkselfcast", true)
@@ -245,6 +244,8 @@ function Module:UpdateBarVisibility()
 end
 
 function Module:UpdateBarConfig()
+	SetCVar("ActionButtonUseKeyDown", C["ActionBar"]["KeyDown"] and 1 or 0)
+
 	for i = 1, 8 do
 		local frame = _G["KKUI_ActionBar" .. i]
 		if frame then

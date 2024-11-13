@@ -26,6 +26,8 @@ C["ActionBar"] = {
 	FadeMicroMenu = false,
 	ShowStance = true,
 	EquipColor = false,
+	KeyDown = true,
+	ButtonLock = true,
 	VehButtonSize = 34,
 
 	Bar1 = true,
