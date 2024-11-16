@@ -603,7 +603,7 @@ local function HelloWorld()
 	lr:SetFrameStrata("HIGH")
 
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff5C8BCFKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
-	K.CreateFontString(welcome, 13, "please take a minute to go through the turtoral!", "", false, "BOTTOM", 0, 110)
+	K.CreateFontString(welcome, 13, "please take a minute to go through the tutorial!", "", false, "BOTTOM", 0, 110)
 	K.CreateFontString(welcome, 13, "if you need help for commands type /khelp", "", false, "BOTTOM", 0, 90)
 
 	if KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete or K.isDeveloper then
