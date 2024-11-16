@@ -5,6 +5,24 @@ local Tracking = CreateFrame("Frame", "KKUI_Tracking", UIParent)
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
+do
+	local GetSpellInfo = GetSpellInfo
+	local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+	Module.GetSpellInfo = function(spell)
+		if not spell then
+			return
+		end
+		if GetSpellInfo then
+			return GetSpellInfo(spell)
+		else
+			local info = C_Spell_GetSpellInfo(spell)
+			if info then
+				return info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+			end
+		end
+	end
+end
+
 StaticPopupDialogs["TRACKING_ADD_PVE"] = {
 	text = "Which spell id would you like to add?",
 	button1 = ACCEPT,
@@ -12,7 +30,7 @@ StaticPopupDialogs["TRACKING_ADD_PVE"] = {
 	OnAccept = function(self)
 		local SpellID = tonumber(self.editBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE
-		local Name, _, Icon = GetSpellInfo(SpellID)
+		local Name, _, Icon = Module.GetSpellInfo(SpellID)
 		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
 		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
 		local PVETitle = "|CFF567AFF[PVE] |r"
@@ -45,7 +63,7 @@ StaticPopupDialogs["TRACKING_ADD_PVP"] = {
 	OnAccept = function(self)
 		local SpellID = tonumber(self.editBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP
-		local Name, _, Icon = GetSpellInfo(SpellID)
+		local Name, _, Icon = Module.GetSpellInfo(SpellID)
 		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
 		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
 		local PVPTitle = "|CFFFF5252[PVP] |r"
@@ -80,7 +98,7 @@ function Tracking:GetSpell(button, cat)
 		Count = Count + 1
 
 		if Count == ID then
-			local Name, _, IconPath = GetSpellInfo(SpellID)
+			local Name, _, IconPath = Module.GetSpellInfo(SpellID)
 
 			return SpellID, Name, IconPath
 		end

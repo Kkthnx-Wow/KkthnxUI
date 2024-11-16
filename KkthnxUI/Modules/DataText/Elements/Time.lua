@@ -90,6 +90,7 @@ local mapAreaPoiIDs = {
 local questlist = {
 	{ name = "Feast of Winter Veil", id = 6983 },
 	{ name = "Blingtron Daily Gift", id = 34774 },
+	{ name = "500 Timewarped Badges", id = 83285, texture = 6006158 }, -- Vanilla
 	{ name = "500 Timewarped Badges", id = 40168, texture = 1129674 }, -- TBC
 	{ name = "500 Timewarped Badges", id = 40173, texture = 1129686 }, -- WotLK
 	{ name = "500 Timewarped Badges", id = 40786, texture = 1304688 }, -- Cata

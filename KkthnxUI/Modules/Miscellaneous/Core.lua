@@ -52,17 +52,6 @@ function Module:RegisterMisc(name, func)
 	end
 end
 
--- Unregister Talent Event
-local function unregisterTalentEvent()
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
-	end
-end
-
 -- Enable Auto Chat Bubbles
 local function enableAutoBubbles()
 	if C["Misc"].AutoBubbles then
@@ -73,6 +62,11 @@ local function enableAutoBubbles()
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
 end
+
+-- Readycheck sound on master channel
+K:RegisterEvent("READY_CHECK", function()
+	PlaySound(SOUNDKIT.READY_CHECK, "master")
+end)
 
 -- Modify Delete Dialog
 local function modifyDeleteDialog()
@@ -130,23 +124,6 @@ local function modifyDeleteDialog()
 	end)
 end
 
--- Fix Addon Tooltip
-local function fixAddonTooltip()
-	local _AddonTooltip_Update = AddonTooltip_Update
-	function AddonTooltip_Update(owner)
-		if owner and owner:GetID() >= 1 then
-			_AddonTooltip_Update(owner)
-		end
-	end
-end
-
--- Fix Party Guide Promote
-local function fixPartyGuidePromote()
-	if not PROMOTE_GUIDE then
-		PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
-	end
-end
-
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
 	for name, func in next, KKUI_MISC_MODULE do
@@ -159,13 +136,12 @@ function Module:OnEnable()
 		"CreateBossBanner",
 		"CreateBossEmote",
 		"CreateCustomWaypoint",
-		"CreateDeathCounter",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
-		"CreateObjectiveSizeUpdate",
-		"CreateQuestSizeUpdate",
+		-- "CreateObjectiveSizeUpdate",
+		-- "CreateQuestSizeUpdate",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
@@ -191,11 +167,8 @@ function Module:OnEnable()
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
-	unregisterTalentEvent()
 	enableAutoBubbles()
 	modifyDeleteDialog()
-	fixAddonTooltip()
-	fixPartyGuidePromote()
 end
 
 -- BNToast Frame Mover Setup
@@ -462,18 +435,18 @@ function Module:CreateErrorFrameToggle()
 	end
 end
 
--- Create Quest Size Update
-function Module:CreateQuestSizeUpdate()
-	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
-	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
-	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
-end
+-- -- Create Quest Size Update
+-- function Module:CreateQuestSizeUpdate()
+-- 	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
+-- 	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
+-- 	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
+-- end
 
--- Create Objective Size Update
-function Module:CreateObjectiveSizeUpdate()
-	ObjectiveFont:SetFontObject(K.UIFont)
-	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
-end
+-- -- Create Objective Size Update
+-- function Module:CreateObjectiveSizeUpdate()
+-- 	ObjectiveFont:SetFontObject(K.UIFont)
+-- 	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
+-- end
 
 -- TradeFrame Hook
 function Module:CreateTradeTargetInfo()
@@ -549,84 +522,6 @@ do
 		end
 		_MerchantItemButton_OnModifiedClick(self, ...)
 	end
-end
-
--- Fix Collection Taint
-do
-	local done
-	local function fixCollectionTaint(event, addon)
-		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
-			local checkBox = WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
-			checkBox.Label:ClearAllPoints()
-			checkBox.Label:SetPoint("LEFT", checkBox, "RIGHT", 2, 1)
-			checkBox.Label:SetWidth(152)
-
-			CollectionsJournal:HookScript("OnShow", function()
-				if not done then
-					if InCombatLockdown() then
-						K:RegisterEvent("PLAYER_REGEN_ENABLED", fixCollectionTaint)
-					else
-						K.CreateMoverFrame(CollectionsJournal)
-					end
-					done = true
-				end
-			end)
-			K:UnregisterEvent(event, fixCollectionTaint)
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			K.CreateMoverFrame(CollectionsJournal)
-			K:UnregisterEvent(event, fixCollectionTaint)
-		end
-	end
-	K:RegisterEvent("ADDON_LOADED", fixCollectionTaint)
-end
-
--- Fix Raid Group Button Targeting
-do
-	local function fixRaidGroupButton()
-		for i = 1, 40 do
-			local bu = _G["RaidGroupButton" .. i]
-			if bu and bu.unit and not bu.clickFixed then
-				bu:SetAttribute("type", "target")
-				bu:SetAttribute("unit", bu.unit)
-				bu.clickFixed = true
-			end
-		end
-	end
-
-	local function setupfixRaidGroup(event, addon)
-		if event == "ADDON_LOADED" and addon == "Blizzard_RaidUI" then
-			if not InCombatLockdown() then
-				fixRaidGroupButton()
-			else
-				K:RegisterEvent("PLAYER_REGEN_ENABLED", setupfixRaidGroup)
-			end
-			K:UnregisterEvent(event, setupfixRaidGroup)
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			if RaidGroupButton1 and RaidGroupButton1:GetAttribute("type") ~= "target" then
-				fixRaidGroupButton()
-				K:UnregisterEvent(event, setupfixRaidGroup)
-			end
-		end
-	end
-	K:RegisterEvent("ADDON_LOADED", setupfixRaidGroup)
-end
-
--- Fix Guild News Hyperlink Error
-do
-	local function fixGuildNews(event, addon)
-		if addon ~= "Blizzard_GuildUI" then
-			return
-		end
-		local _GuildNewsButton_OnEnter = GuildNewsButton_OnEnter
-		function GuildNewsButton_OnEnter(self)
-			if not (self.newsInfo and self.newsInfo.whatText) then
-				return
-			end
-			_GuildNewsButton_OnEnter(self)
-		end
-		K:UnregisterEvent(event, fixGuildNews)
-	end
-	K:RegisterEvent("ADDON_LOADED", fixGuildNews)
 end
 
 -- Resurrect Sound on Request

@@ -422,7 +422,6 @@ C["Misc"] = {
 	MaxCameraZoom = 2.6,
 	MuteSounds = true,
 	NoTalkingHead = false,
-	DeathCounter = true,
 	ParagonEnable = false,
 	QuestTool = false,
 	QueueTimers = false,

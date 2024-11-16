@@ -43,7 +43,7 @@ local UnitThreatSituation = UnitThreatSituation
 local hooksecurefunc = hooksecurefunc
 
 -- Custom data
-local aksCacheData = {} -- Cache for data of abilities used by players
+local mdtCacheData = {} -- Cache for data of abilities used by players
 local customUnits = {} -- Custom unit data
 local groupRoles = {} -- Group roles for players
 local showPowerList = {} -- List of players who have their power displayed
@@ -598,55 +598,45 @@ function Module:UpdateClassIcon(self, unit)
 	end
 end
 
--- Dungeon progress, AngryKeystones required
+-- Dungeon progress, MDT required
 function Module:AddDungeonProgress(self)
 	if not C["Nameplate"].AKSProgress then
 		return
 	end
 
 	self.progressText = K.CreateFontString(self, 13, "", "", false, "LEFT", 0, 0)
+	self.progressText:ClearAllPoints()
 	self.progressText:SetPoint("LEFT", self, "RIGHT", 5, 0)
 end
 
 function Module:UpdateDungeonProgress(unit)
-	if not self.progressText or not AngryKeystones_Data then
+	if not self.progressText or not MDT then
 		return
 	end
-
 	if unit ~= self.unit then
 		return
 	end
-
 	self.progressText:SetText("")
 
 	local name, _, _, _, _, _, _, _, _, scenarioType = C_Scenario_GetInfo()
 	if scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE then
-		local npcID = self.npcID
-		local info = AngryKeystones_Data.progress[npcID]
-		if info then
-			local numCriteria = select(3, C_Scenario_GetStepInfo())
-			local total = aksCacheData[name]
+		local value = MDT:GetEnemyForces(self.npcID)
+		if value and value > 0 then
+			local total = mdtCacheData[name]
 			if not total then
+				local numCriteria = select(3, C_Scenario_GetStepInfo())
 				for criteriaIndex = 1, numCriteria do
 					local criteriaInfo = C_ScenarioInfo.GetCriteriaInfo(criteriaIndex)
 					if criteriaInfo and criteriaInfo.isWeightedProgress then
-						aksCacheData[name] = criteriaInfo.totalQuantity
-						total = aksCacheData[name]
+						mdtCacheData[name] = criteriaInfo.totalQuantity
+						total = mdtCacheData[name]
 						break
 					end
 				end
 			end
 
-			local value, valueCount
-			for amount, count in pairs(info) do
-				if not valueCount or count > valueCount or (count == valueCount and amount < value) then
-					value = amount
-					valueCount = count
-				end
-			end
-
-			if value and total then
-				self.progressText:SetText(string_format("+%.2f", value / total * 100))
+			if total then
+				self.progressText:SetText(format("+%.2f", value / total * 100))
 			end
 		end
 	end

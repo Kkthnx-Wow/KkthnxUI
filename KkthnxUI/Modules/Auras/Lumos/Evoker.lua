@@ -58,9 +58,9 @@ function Module:ChantLumos(self)
 			local hasBurst = GetUnitAura("player", 359618, "HELPFUL") --高亮精华迸发
 			if hasBurst then
 				K.ShowOverlayGlow(button3)
-				K.ShowOverlayGlow(button3)
+				K.ShowOverlayGlow(button4)
 			else
-				K.HideOverlayGlow(button4)
+				K.HideOverlayGlow(button3)
 				K.HideOverlayGlow(button4)
 			end
 		end
@@ -81,9 +81,9 @@ function Module:ChantLumos(self)
 			local hasBurst = GetUnitAura("player", 369299, "HELPFUL") --高亮精华迸发
 			if hasBurst then
 				K.ShowOverlayGlow(button2)
-				K.ShowOverlayGlow(button2)
+				K.ShowOverlayGlow(button3)
 			else
-				K.HideOverlayGlow(button3)
+				K.HideOverlayGlow(button2)
 				K.HideOverlayGlow(button3)
 			end
 		end

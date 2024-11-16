@@ -8,9 +8,11 @@ local Screenshot = Screenshot
 -- Achievement screenshot
 local ScreenShotFrame
 
-local function ScreenShotOnEvent(alreadyEarnedOnAccount)
-	print(alreadyEarnedOnAccount)
-	if alreadyEarnedOnAccount then
+local function ScreenShotOnEvent(achievementID, alreadyEarned)
+	print("achievementID", achievementID)
+	print("alreadyEarned", alreadyEarned)
+
+	if alreadyEarned then
 		return
 	end
 

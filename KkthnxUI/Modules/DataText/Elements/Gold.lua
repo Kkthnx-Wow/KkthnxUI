@@ -15,7 +15,6 @@ local C_Timer_NewTicker = C_Timer.NewTicker
 local C_WowTokenPublic_GetCurrentMarketPrice = C_WowTokenPublic.GetCurrentMarketPrice
 local C_WowTokenPublic_UpdateMarketPrice = C_WowTokenPublic.UpdateMarketPrice
 local GameTooltip = GameTooltip
-local GetAutoCompleteRealms = GetAutoCompleteRealms
 local GetMoney = GetMoney
 local IsControlKeyDown = IsControlKeyDown
 local NO = NO
@@ -25,6 +24,7 @@ local YES = YES
 
 -- Variables
 local slotString = BAGSLOTTEXT .. ": %s%d"
+local showGoldGap = 100 * 1e4
 local ticker
 local profit = 0
 local spent = 0
@@ -213,11 +213,13 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 	GameTooltip:AddLine(CHARACTER_BUTTON .. ":", 0.5, 0.7, 1)
 	if KkthnxUIDB.Gold[myRealm] then
 		for k, v in pairs(KkthnxUIDB.Gold[myRealm]) do
-			local name = Ambiguate(k .. "-" .. myRealm, "none")
 			local gold, class, faction = unpack(v)
-			local r, g, b = K.ColorClass(class)
-			GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
-			totalGold = totalGold + gold
+			local name = Ambiguate(k .. "-" .. myRealm, "none")
+			if gold > showGoldGap or UnitIsUnit(name, "player") then
+				local r, g, b = K.ColorClass(class)
+				GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+				totalGold = totalGold + gold
+			end
 		end
 	end
 
@@ -226,12 +228,14 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 		if realm ~= myRealm then
 			for k, v in pairs(data) do
 				local gold, class, faction = unpack(v)
-				if isShiftKeyDown then -- show other realms while holding shift
-					local name = Ambiguate(k .. "-" .. realm, "none")
-					local r, g, b = K.ColorClass(class)
-					GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+				if gold > showGoldGap then
+					if isShiftKeyDown then -- show other realms while holding shift
+						local name = Ambiguate(k .. "-" .. realm, "none")
+						local r, g, b = K.ColorClass(class)
+						GameTooltip:AddDoubleLine(getFactionIcon(faction) .. getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+					end
+					totalGold = totalGold + gold
 				end
-				totalGold = totalGold + gold
 			end
 		end
 	end

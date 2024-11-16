@@ -56,7 +56,7 @@ function Module:AddAutoAcceptButton()
 	local lastTime = 0
 	local function clickInviteButton(button)
 		if button.applicantID and button.InviteButton:IsEnabled() then
-			button.InviteButton:Click()
+			C_LFGList.InviteApplicant(button.applicantID)
 		end
 	end
 

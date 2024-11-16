@@ -397,7 +397,6 @@ local SwitchOnLeave = function(self)
 end
 
 local CreateSwitch = function(self, group, option, text, tooltip, hook)
-	-- print("group:", group, "option:", option)
 	local Value = C[group][option]
 
 	local Anchor = CreateFrame("Frame", nil, self)
@@ -440,7 +439,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 
 	Switch.Label = Switch:CreateFontString(nil, "OVERLAY")
 	Switch.Label:SetPoint("LEFT", Switch, "RIGHT", Spacing, 0)
-	Switch.Label:SetWidth(WidgetListWidth - SwitchWidth - (Spacing * 4))
+	Switch.Label:SetWidth(WidgetListWidth - SwitchWidth - 40, WidgetHeight)
 	Switch.Label:SetJustifyH("LEFT")
 	Switch.Label:SetFontObject(K.UIFont)
 	Switch.Label:SetText(text)

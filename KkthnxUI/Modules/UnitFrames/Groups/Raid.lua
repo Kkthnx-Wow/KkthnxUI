@@ -329,9 +329,6 @@ function Module:CreateRaid()
 		RaidDebuffs.cd:SetHideCountdownNumbers(true)
 		RaidDebuffs.cd:SetAlpha(0.7)
 
-		RaidDebuffs.onlyMatchSpellID = true
-		RaidDebuffs.showDispellableDebuff = true
-
 		local parentFrame = CreateFrame("Frame", nil, RaidDebuffs)
 		parentFrame:SetAllPoints()
 		parentFrame:SetFrameLevel(RaidDebuffs:GetFrameLevel() + 6)
@@ -344,9 +341,6 @@ function Module:CreateRaid()
 		RaidDebuffs.count:SetFont(select(1, _G.KkthnxUIFontOutline:GetFont()), 11, "OUTLINE")
 		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
 		RaidDebuffs.count:SetTextColor(1, 0.9, 0)
-
-		RaidDebuffs.forceShow = false
-		RaidDebuffs.ShowDispellableDebuff = true
 
 		self.RaidDebuffs = RaidDebuffs
 	end

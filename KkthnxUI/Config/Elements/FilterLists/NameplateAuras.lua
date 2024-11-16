@@ -1,6 +1,7 @@
 local C = KkthnxUI[2]
 
 C.NameplateWhiteList = {
+	[268756] = true, -- 望远镜饰品
 	-- Buffs
 	[642] = true, -- Divine Shield
 	[1022] = true, -- Hand of Protection
@@ -94,7 +95,7 @@ C.NameplateShowPowerList = {
 }
 
 C.NameplateTargetNPCs = {
-	[165251] = true, -- Sylvan Fox
+	-- [165251] = true, -- Sylvan Fox
 	[174773] = true, -- Spiteful Fiend
 }
 
@@ -188,7 +189,7 @@ C.MajorSpells = {
 	[381694] = true, -- Decaying Senses, Fernskin
 	[388060] = true, -- Stinking Breath, Fernskin
 	[383385] = true, -- Rotting Surge, Fernskin
-	[382172] = true, -- Necrotic Breath, Fernskin
+	[382712] = true, -- Necrotic Breath, Fernskin
 	[384899] = true, -- Bone Arrow Rain, Fernskin
 	[378282] = true, -- Molten Core, Nassarius
 	[383651] = true, -- Molten Legion, Nassarius

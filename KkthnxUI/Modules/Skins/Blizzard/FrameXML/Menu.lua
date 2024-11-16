@@ -22,6 +22,7 @@ table_insert(C.defaultThemes, function()
 			menuFrame.bg = backdrops[menuFrame]
 		else
 			menuFrame.bg = CreateFrame("Frame", nil, menuFrame, "BackdropTemplate")
+			menuFrame.bg:SetFrameLevel(menuFrame:GetFrameLevel())
 			menuFrame.bg:SetAllPoints(menuFrame)
 			menuFrame.bg:CreateBorder()
 			backdrops[menuFrame] = menuFrame.bg

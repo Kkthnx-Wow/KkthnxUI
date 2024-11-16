@@ -15,8 +15,13 @@ local list = {
 		{ AuraID = 371024, UnitID = "player" }, -- 元素强能药水
 		{ AuraID = 371028, UnitID = "player" }, -- 究极元素强能药水
 		-- 11.0 饰品
+		{ AuraID = 92099, UnitID = "player" }, -- 灰鳞的优雅
+		{ AuraID = 268769, UnitID = "player" }, -- 望远镜饰品
 		{ AuraID = 443531, UnitID = "player" }, -- 振奋之光
 		{ AuraID = 435493, UnitID = "player" }, -- 死亡之吻
+		{ AuraID = 455451, UnitID = "player" }, -- 迅芯烛台
+		{ AuraID = 449954, UnitID = "player" }, -- 奸邪发射机
+		{ AuraID = 449947, UnitID = "player", Text = NPE_JUMP }, -- 奸邪发射机，跳3下
 		-- 10.0 饰品
 		{ AuraID = 381476, UnitID = "player" }, -- 爆发烈焰
 		{ AuraID = 383941, UnitID = "player" }, -- 崩坏之力
@@ -230,6 +235,7 @@ local list = {
 		{ AuraID = 464748, UnitID = "player", Flash = true }, -- 束缚之网，流丝
 	},
 	["Warning"] = { -- 目标重要光环组
+		{ AuraID = 268756, UnitID = "target", Caster = "player" }, -- 望远镜饰品
 		{ AuraID = 355596, UnitID = "target", Flash = true }, -- 橙弓，哀痛箭
 		-- 大幻象
 		{ AuraID = 304975, UnitID = "target", Value = true }, -- 虚空哀嚎，吸收盾
@@ -237,6 +243,7 @@ local list = {
 		-- 大米
 		{ AuraID = 226510, UnitID = "target" }, -- 血池回血
 		{ AuraID = 343502, UnitID = "target" }, -- 鼓舞光环
+		{ AuraID = 462704, UnitID = "target" }, -- 碎裂精华，TWW S1
 		-- 5人
 		{ AuraID = 372988, UnitID = "target", Value = true }, -- 寒冰壁垒，红玉
 		{ AuraID = 391050, UnitID = "target", Value = true }, -- 暴风骤雨之盾，红玉
@@ -284,12 +291,16 @@ local list = {
 		{ AuraID = 321754, UnitID = "target", Value = true }, -- 通灵战潮，冰缚之盾
 		{ AuraID = 343470, UnitID = "target", Value = true }, -- 通灵战潮，碎骨之盾
 		{ AuraID = 328351, UnitID = "target", Flash = true }, -- 通灵战潮，染血长枪
+		{ AuraID = 273721, UnitID = "target", Flash = true }, -- 围攻，1号易伤
+		{ AuraID = 423588, UnitID = "target", Value = true }, -- 修道院，圣光屏障
 		-- S1
 		{ AuraID = 445409, UnitID = "target", Value = true }, -- 加固壳壁，斯卡莫拉克
 		-- Raids
 		{ AuraID = 440177, UnitID = "target", Flash = true }, -- 准备饕餮，噬灭者乌格拉克斯
 		{ AuraID = 450980, UnitID = "target", Value = true }, -- 存在瓦解，阿努巴拉什
 		{ AuraID = 451277, UnitID = "target", Value = true }, -- 尖刺风暴，阿努巴拉什
+		{ AuraID = 440179, UnitID = "target", Value = true }, -- 缠绕，阿努巴拉什
+		{ AuraID = 456245, UnitID = "target", Value = true }, -- 刺痛谵妄，阿努巴拉什
 		{ AuraID = 448488, UnitID = "target", Value = true }, -- 崇拜者的保护，尾王
 		-- PVP
 		{ AuraID = 498, UnitID = "target" }, -- 圣佑术
@@ -334,7 +345,7 @@ local list = {
 		{ AuraID = 228323, UnitID = "target", Value = true }, -- 克罗塔的护盾
 	},
 	["InternalCD"] = { -- 自定义内置冷却组
-		{ IntID = 450978, Duration = 15.4 }, -- 皎月风暴，猎人英雄天赋
+		{ IntID = 450978, Duration = 13.7 }, -- 皎月风暴，猎人英雄天赋
 		{ IntID = 114018, Duration = 15, OnSuccess = true, UnitID = "all" }, -- 帷幕
 		-- {IntID = 240447, Duration = 20},	-- 大米，践踏
 		-- {IntID = 316958, Duration = 30, OnSuccess = true, UnitID = "all"},	-- 红土
