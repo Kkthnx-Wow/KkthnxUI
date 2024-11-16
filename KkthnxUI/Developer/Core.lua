@@ -11,6 +11,6 @@ local function isDeveloper()
 end
 K.isDeveloper = isDeveloper
 
-if not K.isDeveloper() then
+if not K.isDeveloper then
 	return
 end

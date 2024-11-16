@@ -122,14 +122,12 @@ function Module:ForceDefaultCVars()
 	-- Apply default CVars
 	for _, cvar in pairs(defaultCVars) do
 		SetCVar(cvar[1], cvar[2])
-		-- print("SetCVar - Default: " .. cvar[1] .. " to " .. tostring(cvar[2]))
 	end
 
 	-- Apply combat-related CVars if not in combat
 	if not InCombatLockdown() then
 		for _, cvar in pairs(combatCVars) do
 			SetCVar(cvar[1], cvar[2])
-			-- print("SetCVar - Combat: " .. cvar[1] .. " to " .. tostring(cvar[2]))
 		end
 	else
 		print("Skipped setting combat CVars due to combat lockdown.")
@@ -139,7 +137,6 @@ function Module:ForceDefaultCVars()
 	if K.isDeveloper then
 		for _, cvar in pairs(developerCVars) do
 			SetCVar(cvar[1], cvar[2])
-			-- print("SetCVar - Developer: " .. cvar[1] .. " to " .. tostring(cvar[2]))
 		end
 	else
 		print("Skipped setting developer CVars as K.isDeveloper is not true.")
@@ -609,7 +606,7 @@ local function HelloWorld()
 	K.CreateFontString(welcome, 13, "please take a minute to go through the turtoral!", "", false, "BOTTOM", 0, 110)
 	K.CreateFontString(welcome, 13, "if you need help for commands type /khelp", "", false, "BOTTOM", 0, 90)
 
-	if KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete or K.isDeveloper then
 		local close = CreateFrame("Button", nil, welcome)
 		close:SetPoint("TOPRIGHT", 4, 4)
 		close:SetSize(32, 32)
@@ -620,7 +617,7 @@ local function HelloWorld()
 	end
 
 	local goTutor = CreateFrame("Button", nil, welcome)
-	goTutor:SetPoint("BOTTOM", 0, 10)
+	goTutor:SetPoint("BOTTOM", -58, 10)
 	goTutor:SetSize(110, 22)
 	goTutor:SkinButton()
 
@@ -632,6 +629,41 @@ local function HelloWorld()
 	goTutor:SetScript("OnClick", function()
 		welcome:Hide()
 		YesTutor()
+	end)
+
+	local goSkip = CreateFrame("Button", nil, welcome)
+	goSkip:SetPoint("BOTTOM", 58, 10)
+	goSkip:SetSize(110, 22)
+	goSkip:SkinButton()
+
+	goSkip.text = goSkip:CreateFontString(nil, "OVERLAY")
+	goSkip.text:SetFontObject(K.UIFont)
+	goSkip.text:SetPoint("CENTER", 0, -1)
+	goSkip.text:SetText(K.MyClassColor .. RENOWN_LEVEL_UP_SKIP_BUTTON .. "|r")
+
+	goSkip:SetScript("OnClick", function()
+		Module:ForceDefaultCVars()
+		ForceRaidFrame()
+		Module:ForceChatSettings()
+		K.SetupUIScale()
+		KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest or true
+		KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest = KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest or true
+		KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest or true
+		KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest = KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest or true
+		Module.ForceAddonSkins()
+		KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete or true
+		ReloadUI()
+	end)
+
+	goSkip:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Skip Installer", 1, 0.82, 0) -- Gold color for title
+		GameTooltip:AddLine("This will skip the installer and quickly apply the default settings for this character.", 1, 1, 1, true) -- White text with line break
+		GameTooltip:Show()
+	end)
+
+	goSkip:SetScript("OnLeave", function(self)
+		GameTooltip:Hide()
 	end)
 
 	local goTwitch = CreateFrame("Button", nil, welcome)
