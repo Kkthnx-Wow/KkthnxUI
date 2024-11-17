@@ -55,6 +55,72 @@ local KKUI_Changelog = {
 	-- },
 
 	{
+		Version = "[10.5.9] - 2024-11-17 - Patch 11.0.5",
+		General = "This update brings various performance improvements, bug fixes, and visual refinements to KkthnxUI. We've focused on optimizing code, enhancing functionality, and resolving reported issues for a smoother user experience.",
+
+		Sections = {
+			{
+				Header = "Performance Improvements",
+				Entries = {
+					"Started more caching for performance in various files.",
+					"Formatted all files for improved readability and consistency.",
+				},
+			},
+
+			{
+				Header = "Aura Watch and Nameplates",
+				Entries = {
+					"Updated various Aura Watch auras to ensure proper functionality.",
+					"Updated Nameplate auras.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes and Optimizations",
+				Entries = {
+					"Removed all Death Counter settings due to redundancy.",
+					"Fixed labels in the config menu overlapping the scrollbar.",
+					"Fixed typo in Lumos Evoker for improved clarity.",
+					"Fixed Auto Screenshot to stop if the achievement has already been earned.",
+					"Fixed Quick Join auto-invite button behavior.",
+					"Fixed dropdown menu in Delves not appearing on the correct frame level.",
+					"Fixed double progress text in time data text.",
+					"Fixed Coords functionality that was broken in recent builds.",
+					"Fixed Guild data text error caused by a new patch.",
+				},
+			},
+
+			{
+				Header = "Library Updates",
+				Entries = {
+					"Updated LibAnim to the latest version for enhanced animation support.",
+					"Updated LibDeflate to the latest version for improved compression and data handling.",
+				},
+			},
+
+			{
+				Header = "New Features and Enhancements",
+				Entries = {
+					"Added Extra Button range code for better user interaction with Extra Buttons.",
+					"Added action bar fader for smoother UI transitions.",
+					"Added MDT (Mythic Dungeon Tools) integration to Nameplate progress.",
+					"Added back professions page skinning for improved UI consistency.",
+					"Only show gold in data text if the amount is over 100 gold.",
+					"Added Instant Cast and Lock Action Bars functionality.",
+				},
+			},
+
+			{
+				Header = "Installer and Setup Fixes",
+				Entries = {
+					"Fixed typo in the installer for tutorial steps.",
+					"Added a 1-click skip button to speed up the installation process.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.8] - 2024-10-12 - Patch 11.2",
 		General = "This update brings improvements, bug fixes, and a more polished experience for KkthnxUI users. We've refined visuals, optimized performance, and added new features.",
 
