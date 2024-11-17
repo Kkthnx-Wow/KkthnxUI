@@ -32,7 +32,9 @@ local setItems, isUpdating
 
 local function initUpdater()
 	local function updateSets()
-		if isUpdating then return end
+		if isUpdating then
+			return
+		end
 		isUpdating = true
 
 		setItems = setItems or {}
@@ -44,7 +46,7 @@ local function initUpdater()
 				for _, location in pairs(locations) do
 					local _, bank, bags, _, slot, bag = EquipmentManager_UnpackLocation(location)
 					if (bank or bags) and slot and bag then
-						setItems[bag..":"..slot] = true
+						setItems[bag .. ":" .. slot] = true
 					end
 				end
 			end
@@ -63,6 +65,8 @@ local function initUpdater()
 end
 
 ItemKeys["isItemSet"] = function(item)
-	if not setItems then initUpdater() end
-	return setItems[item.bagId..":"..item.slotId]
+	if not setItems then
+		initUpdater()
+	end
+	return setItems[item.bagId .. ":" .. item.slotId]
 end

@@ -312,6 +312,24 @@ local function OnExpBarEnter(self)
 					GameTooltip:AddDoubleLine(reaction, current .. " / " .. currentMax .. " (" .. floor(current / currentMax * 100) .. "%)", 0.6, 0.8, 1, 1, 1, 1) -- Translate "reaction" if necessary
 				end
 			end
+
+			if factionID == 2465 then -- 荒猎团
+				local repInfo = C_GossipInfo_GetFriendshipReputation(2463) -- 玛拉斯缪斯
+				local rep, name, reaction, threshold, nextThreshold = repInfo.standing, repInfo.name, repInfo.reaction, repInfo.reactionThreshold, repInfo.nextThreshold
+				if nextThreshold and rep > 0 then
+					local current = rep - threshold
+					local currentMax = nextThreshold - threshold
+					GameTooltip:AddLine(" ")
+					GameTooltip:AddLine(name, 0, 0.6, 1)
+					GameTooltip:AddDoubleLine(reaction, current .. " / " .. currentMax .. " (" .. floor(current / currentMax * 100) .. "%)", 0.6, 0.8, 1, 1, 1, 1)
+				end
+			elseif factionID == 2574 then -- 梦境守望者
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(2649) -- 梦境注能
+				local q = currencyInfo.quantity
+				local m = currencyInfo.maxQuantity
+				local name = C_CurrencyInfo.GetCurrencyInfo(2777).name
+				GameTooltip:AddDoubleLine(name, q .. " / " .. m .. " (" .. floor(q / m * 100) .. "%)", 0.6, 0.8, 1, 1, 1, 1)
+			end
 		end
 	end
 
