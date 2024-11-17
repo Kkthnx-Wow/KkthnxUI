@@ -1,7 +1,15 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
-local tinsert = tinsert
+-- Cache global references
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local tinsert = _G.table.insert
+local RegisterStateDriver = _G.RegisterStateDriver
+local hooksecurefunc = _G.hooksecurefunc
+local IsUsableAction = _G.IsUsableAction
+
 local padding = 0
 
 function Module:CreateExtrabar()

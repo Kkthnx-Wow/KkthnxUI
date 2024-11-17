@@ -1,9 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Cooldown")
 
--- Importing required functions
-local pairs, format, floor, strfind = pairs, format, floor, strfind
-local GetTime, GetActionCooldown, tonumber = GetTime, GetActionCooldown, tonumber
+-- Localizing global functions and constants
+local _G = _G
+local pairs, format, floor, strfind = pairs, string.format, math.floor, string.find
+local GetTime, GetActionCooldown, tonumber = _G.GetTime, _G.GetActionCooldown, tonumber
 
 -- Constants for cooldown display
 local FONT_SIZE = 19

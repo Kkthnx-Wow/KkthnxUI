@@ -3,6 +3,13 @@ local Module = K:GetModule("ActionBar")
 
 -- Credit: ElvUI
 
+-- Localizing global functions and constants
+local _G = _G
+local pairs, ipairs, next = pairs, ipairs, next
+local UnitAffectingCombat, UnitExists, UnitHealth, UnitHealthMax = _G.UnitAffectingCombat, _G.UnitExists, _G.UnitHealth, _G.UnitHealthMax
+local UnitCastingInfo, UnitChannelInfo, UnitHasVehicleUI = _G.UnitCastingInfo, _G.UnitChannelInfo, _G.UnitHasVehicleUI
+local CreateFrame, C_Timer = _G.CreateFrame, _G.C_Timer
+
 local fadeParent
 Module.handledbuttons = {}
 

@@ -1,15 +1,19 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("ActionBar")
 
--- Global references for convenience and performance
+-- Cache global references
 local _G = _G
-local UIParent = UIParent
-local GetVehicleBarIndex = GetVehicleBarIndex
-local UnitExists = UnitExists
-local VehicleExit = VehicleExit
-local PetDismiss = PetDismiss
-local tinsert = table.insert
-local RegisterStateDriver = RegisterStateDriver
+local UIParent = _G.UIParent
+local GetVehicleBarIndex = _G.GetVehicleBarIndex
+local UnitExists = _G.UnitExists
+local VehicleExit = _G.VehicleExit
+local PetDismiss = _G.PetDismiss
+local tinsert = _G.table.insert
+local RegisterStateDriver = _G.RegisterStateDriver
+local ceil = _G.math.ceil
+local min = _G.math.min
+local select = _G.select
+local GetCVarBool = _G.GetCVarBool
 
 -- Layout constants
 local margin, padding = 6, 0

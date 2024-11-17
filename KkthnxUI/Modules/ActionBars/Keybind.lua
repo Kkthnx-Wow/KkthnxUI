@@ -1,29 +1,33 @@
 local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
-local C_SpellBook_GetSpellBookItemName = C_SpellBook.GetSpellBookItemName
-local CreateFrame = CreateFrame
-local GameTooltip = GameTooltip
-local GetBindingKey = GetBindingKey
-local GetBindingName = GetBindingName
-local GetMacroInfo = GetMacroInfo
-local InCombatLockdown = InCombatLockdown
-local IsAltKeyDown = IsAltKeyDown
-local IsControlKeyDown = IsControlKeyDown
-local IsShiftKeyDown = IsShiftKeyDown
-local LoadBindings = LoadBindings
-local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
-local NOT_BOUND = NOT_BOUND
-local PRESS_KEY_TO_BIND = PRESS_KEY_TO_BIND
-local SaveBindings = SaveBindings
-local SetBinding = SetBinding
-local SpellBook_GetSpellBookSlot = SpellBook_GetSpellBookSlot
-local UIErrorsFrame = UIErrorsFrame
-local format = format
-local hooksecurefunc = hooksecurefunc
-local strfind = strfind
-local strupper = strupper
-local tonumber = tonumber
+-- Cache global functions and constants
+local _G = _G
+local C_SpellBook_GetSpellBookItemName = _G.C_SpellBook.GetSpellBookItemName
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local GetBindingKey = _G.GetBindingKey
+local GetBindingName = _G.GetBindingName
+local GetMacroInfo = _G.GetMacroInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local LoadBindings = _G.LoadBindings
+local MAX_ACCOUNT_MACROS = _G.MAX_ACCOUNT_MACROS
+local NOT_BOUND = _G.NOT_BOUND
+local PRESS_KEY_TO_BIND = _G.PRESS_KEY_TO_BIND
+local SaveBindings = _G.SaveBindings
+local SetBinding = _G.SetBinding
+local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
+local UIErrorsFrame = _G.UIErrorsFrame
+local format = _G.format
+local hooksecurefunc = _G.hooksecurefunc
+local strfind = _G.strfind
+local strupper = _G.strupper
+local tonumber = _G.tonumber
+local Enum = _G.Enum
+local C_AddOns = _G.C_AddOns
 
 -- Button types
 local function hookActionButton(self)
@@ -148,7 +152,7 @@ function Module:Bind_Update(button, spellmacro)
 
 	if spellmacro == "SPELL" then
 		frame.id = SpellBook_GetSpellBookSlot(button)
-		frame.name = C_SpellBook.GetSpellBookItemName(frame.id, Enum.SpellBookSpellBank.Player)
+		frame.name = C_SpellBook_GetSpellBookItemName(frame.id, Enum.SpellBookSpellBank.Player)
 		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "MACRO" then
 		frame.id = button.selectionIndex or button:GetID()

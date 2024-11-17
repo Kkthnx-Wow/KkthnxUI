@@ -1,8 +1,14 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
--- Importing required functions and constants
+-- WoW API
+local CreateFrame = CreateFrame
+
+-- Lua functions
 local gsub = string.gsub
+local ipairs = ipairs
+
+-- Constants
 local KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR = KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR
 
 -- Processing key strings
