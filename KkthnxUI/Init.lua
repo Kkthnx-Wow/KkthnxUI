@@ -251,7 +251,7 @@ function K.SetupUIScale(init)
 
 	local scale = C["General"].UIScale
 	if init then
-		local pixel = 16
+		local pixel = 1
 		local ratio = 768 / K.ScreenHeight
 		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
 	elseif not InCombatLockdown() then

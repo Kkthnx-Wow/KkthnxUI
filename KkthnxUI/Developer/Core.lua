@@ -1,25 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Developer")
 
--- Benchmarking global vs. cached access in WoW Lua
-local _G = _G
-_G.fake1 = 42 -- Set up a global variable
-
--- Case 1: Direct global access
-local start_time = debugprofilestop()
-for i = 1, 1e7 do
-	local temp = _G.fake1
-end
-print("Global access:", debugprofilestop() - start_time, "ms")
-
--- Case 2: Cached access
-local fake1 = _G.fake1
-start_time = debugprofilestop()
-for i = 1, 1e7 do
-	local temp = fake1
-end
-print("Cached access:", debugprofilestop() - start_time, "ms")
-
 K.Devs = {
 	["Kkthnx-Area 52"] = true,
 	["Kkthnx-Valdrakken"] = true,
