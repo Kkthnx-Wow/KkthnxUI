@@ -174,33 +174,45 @@ function Module:ItemLevel_UpdateTraits(button, id, link)
 	end
 end
 
--- Define slots where enchantments are typically applied
-local enchantableSlots = {
-	[5] = true, -- Chest
-	[11] = true, -- Cloak
-	[12] = true, -- Weapon
-	[15] = true, -- Rings
-	[16] = true, -- Trinkets
-	[8] = true, -- Gloves
-	[9] = true, -- Wrist
-	[7] = true, -- Legs
-	[6] = true, -- Feet
+-- Define enchantable item types
+local IsEnchantableSlots = {
+	INVTYPE_CHEST = true,
+	INVTYPE_ROBE = true,
+	INVTYPE_LEGS = true,
+	INVTYPE_FEET = true,
+	INVTYPE_WRIST = true,
+	INVTYPE_FINGER = true,
+	INVTYPE_CLOAK = true,
+	INVTYPE_WEAPON = true,
+	INVTYPE_2HWEAPON = true,
+	INVTYPE_WEAPONMAINHAND = true,
+	INVTYPE_RANGED = true,
+	INVTYPE_RANGEDRIGHT = true,
+	INVTYPE_WEAPONOFFHAND = true,
 }
 
+-- Helper to handle offhand enchantability logic
+local function IsOffhandEnchantable(unit, slot)
+	local offHandItemLink = GetInventoryItemLink(unit, slot)
+	if offHandItemLink then
+		local itemEquipLoc = select(4, C_Item.GetItemInfoInstant(offHandItemLink))
+		return itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_SHIELD"
+	end
+	return false
+end
+
+-- Main function to check if a slot can be enchanted
 function Module:CanEnchantSlot(unit, slot)
-	-- Check if the slot is in the list of enchantable slots
-	if enchantableSlots[slot] then
-		return true
+	-- Handle offhand logic explicitly
+	if slot == INVSLOT_OFFHAND then
+		return IsOffhandEnchantable(unit, slot)
 	end
 
-	-- Special case for off-hand slot
-	if slot == 17 then
-		local offHandItemLink = GetInventoryItemLink(unit, slot)
-		if offHandItemLink then
-			local itemEquipLoc = select(4, GetItemInfoInstant(offHandItemLink))
-			-- Off-hand items that are not holdable or shields can typically be enchanted
-			return itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_SHIELD"
-		end
+	-- Check general enchantable slots
+	local itemLink = GetInventoryItemLink(unit, slot)
+	if itemLink then
+		local itemEquipLoc = select(4, C_Item.GetItemInfoInstant(itemLink))
+		return IsEnchantableSlots[itemEquipLoc] or false
 	end
 
 	return false
@@ -639,6 +651,10 @@ end
 
 function Module:CreateSlotItemLevel()
 	if not C["Misc"].ItemLevel then
+		return
+	end
+
+	if C_AddOns.IsAddOnLoaded("SimpleItemLevel") then
 		return
 	end
 
