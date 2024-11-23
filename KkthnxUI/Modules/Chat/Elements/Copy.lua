@@ -7,7 +7,6 @@ local string_gsub = string.gsub
 local table_concat = table.concat
 local tostring = tostring
 
-local AUCTION_CATEGORY_QUEST_ITEMS = AUCTION_CATEGORY_QUEST_ITEMS
 local BINDING_NAME_TOGGLECOMBATLOG = BINDING_NAME_TOGGLECOMBATLOG
 local CLOSE = CLOSE
 local COMBATLOGDISABLED = COMBATLOGDISABLED
@@ -15,19 +14,15 @@ local COMBATLOGENABLED = COMBATLOGENABLED
 local CreateFrame = CreateFrame
 local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local GameTooltip = GameTooltip
-local HEIRLOOMS = HEIRLOOMS
 local InCombatLockdown = InCombatLockdown
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local OPTIONS_MENU = OPTIONS_MENU
 local PlaySound = PlaySound
-local QUESTS_LABEL = QUESTS_LABEL
 local RELOADUI = RELOADUI
 local ReloadUI = ReloadUI
-local STATUS = STATUS
 local ScrollFrameTemplate_OnMouseWheel = ScrollFrameTemplate_OnMouseWheel
 local SlashCmdList = SlashCmdList
 local StaticPopup_Show = StaticPopup_Show
-local TASKS_COLON = TASKS_COLON
 local UIErrorsFrame = UIErrorsFrame
 local UIParent = UIParent
 
@@ -151,17 +146,6 @@ if C_AddOns_IsAddOnLoaded("Details") then
 
 	table.insert(menuList, { text = "", notClickable = true, notCheckable = true })
 end
-
--- Only add the Discord menu if a certain addon is loaded (replace "YourAddon" with the actual addon)
--- if IsAddOnLoaded("YourAddon") then
--- 	table.insert(menuList, {
--- 		text = L["Discord"],
--- 		notCheckable = true,
--- 		func = function()
--- 			StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, L["Discord URL"])
--- 		end,
--- 	})
--- end
 
 -- Adding the close option at the end
 table.insert(menuList, { text = "|CFFFF3333" .. CLOSE .. "|r", notCheckable = true, func = function() end })

@@ -15,19 +15,20 @@ local GetProfessionInfo = GetProfessionInfo
 local PlayerHasToy = PlayerHasToy
 
 -- Cache WoW C API functions
-local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
-local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes
-local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.SetOnlyShowSkillUpRecipes
-local C_TradeSkillUI_GetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMakeableRecipes
-local C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.SetOnlyShowMakeableRecipes
-local C_Item_GetItemCount = C_Item.GetItemCount
 local C_Item_GetItemCooldown = C_Item.GetItemCooldown
+local C_Item_GetItemCount = C_Item.GetItemCount
 local C_Item_GetItemIconByID = C_Item.GetItemIconByID
+local C_Item_GetItemNameByID = C_Item.GetItemNameByID
 local C_Spell_GetSpellBookItemInfo = C_SpellBook.GetSpellBookItemInfo
+local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown
 local C_Spell_GetSpellName = C_Spell.GetSpellName
 local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
-local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown
 local C_Spell_IsCurrentSpell = C_Spell.IsCurrentSpell
+local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
+local C_TradeSkillUI_GetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMakeableRecipes
+local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes
+local C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.SetOnlyShowMakeableRecipes
+local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.SetOnlyShowSkillUpRecipes
 
 local BOOKTYPE_PROFESSION = BOOKTYPE_PROFESSION or 0
 local RUNEFORGING_ID = 53428

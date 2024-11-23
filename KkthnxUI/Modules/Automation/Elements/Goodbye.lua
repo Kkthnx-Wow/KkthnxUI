@@ -1,50 +1,74 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
+-- Local references for global functions
+local math_random = math.random
+local IsInGroup = IsInGroup
+local SendChatMessage = SendChatMessage
+local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
+
 -- Random list of auto-thanks messages
 local AutoThanksList = {
-	L["Farewell friends, until we meet again."],
-	L["Goodbye and may your journey be filled with success."],
-	L["Goodbye and safe travels."],
-	L["I had a great time, thanks and take care."],
-	L["It was a pleasure playing with you all, farewell."],
-	L["It's been an honor, goodbye and happy questing."],
-	L["It's been real, goodbye and have a great day."],
-	L["Thanks for the adventure, farewell."],
-	L["Thanks for the good times, farewell and good luck."],
-	L["Thanks for the memories, farewell."],
-	"Appreciate the dungeon! Great job.",
-	"Appreciate the run! Well played.",
-	"Big thanks for the adventure. Well done.",
-	"Big thanks for the dungeon, team! Solid effort.",
-	"Cheers for the run! Thank you.",
-	"Shoutout for the teamwork. Much appreciated.",
-	"Thank you, everyone! Great run.",
-	"Thanks for the run! You all were fantastic.",
-	"Thanks! That was awesome.",
-	"Thanks! You all rocked it.",
+	"GG, everyone!",
+	"Thanks all!",
+	"Thanks, everyone :)",
+	"Appreciate it, all!",
+	"GG and thanks!",
+	"Solid run, thanks!",
+	"Cheers, everyone!",
+	"Thanks, y’all!",
+	"Awesome run, thanks!",
+	"GG, folks!",
+	"Thanks so much, everyone!",
+	"Good stuff, all!",
+	"Thanks a ton!",
+	"GG, that was fun!",
+	"Great run, thanks!",
+	"Thank you all!",
+	"Nice run, everyone!",
+	"GG, appreciate it!",
+	"Big thanks, all!",
+	"Thanks again, everyone!",
 }
 
+-- Send a goodbye message
 local function SendAutoGoodbyeMessage()
-	local messageIndex = math.random(#AutoThanksList)
-	local message = AutoThanksList[messageIndex]
+	if not AutoThanksList or #AutoThanksList == 0 then
+		return -- Exit if the list is nil or empty
+	end
 
+	-- Select a random message
+	local message = AutoThanksList[math_random(#AutoThanksList)]
+
+	-- Determine the chat channel
+	local channel
+	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		channel = "INSTANCE_CHAT"
+	elseif IsInGroup() then
+		channel = "PARTY"
+	else
+		channel = "SAY"
+	end
+
+	-- Send the message
 	if message then
-		local channel = IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or IsInGroup() and "PARTY" or "SAY"
-
 		SendChatMessage(message, channel)
 	end
 end
 
+-- Setup delayed goodbye message
 local function SetupAutoGoodbye()
-	K.Delay(math.random(2, 5), SendAutoGoodbyeMessage)
+	K.Delay(math_random(2, 5), SendAutoGoodbyeMessage)
 end
 
+-- Create or disable Auto Goodbye feature
 function Module:CreateAutoGoodbye()
 	if C["Automation"].AutoGoodbye then
+		-- Register events to trigger the goodbye message
 		K:RegisterEvent("LFG_COMPLETION_REWARD", SetupAutoGoodbye)
 		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", SetupAutoGoodbye)
 	else
+		-- Unregister events when the feature is disabled
 		K:UnregisterEvent("LFG_COMPLETION_REWARD", SetupAutoGoodbye)
 		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", SetupAutoGoodbye)
 	end

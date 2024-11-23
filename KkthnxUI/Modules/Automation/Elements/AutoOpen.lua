@@ -25,14 +25,23 @@ local function FrameClosed(frameType)
 end
 
 -- Handles auto-opening items based on conditions
-local function BagDelayedUpdate()
+local function BagDelayedUpdate(event)
 	if openFrames.bank or openFrames.mail or openFrames.merchant then
 		return
 	end
 
+	-- Handle combat lockdown
 	if InCombatLockdown() then
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
+		if event ~= "PLAYER_REGEN_ENABLED" then
+			-- Register the event only if it’s not already registered
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
+		end
 		return
+	end
+
+	-- Unregister PLAYER_REGEN_ENABLED after leaving combat
+	if event == "PLAYER_REGEN_ENABLED" then
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
 	end
 
 	-- Loop through bags and check for items to open

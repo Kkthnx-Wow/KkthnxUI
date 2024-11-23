@@ -1,4 +1,4 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
@@ -23,7 +23,7 @@ end
 
 function Module:SetupAutoKeystone()
 	if useKeystone() then
-		K.Print(L["Keystone used from bag"])
+		-- K.Print(L["Keystone used from bag"])
 	end
 end
 

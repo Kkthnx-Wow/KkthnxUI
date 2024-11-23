@@ -35,7 +35,7 @@ local localizedBrazierNames = {
 	itIT = "Braciere del Risveglio",
 }
 
-local function HandleAutoResurrect(event, arg1)
+local function HandleAutoResurrect(_, arg1)
 	local clientLocale = K.Client
 	-- Ignore resurrection requests from specific items
 	if localizedPylonNames[clientLocale] == arg1 or localizedBrazierNames[clientLocale] == arg1 then

@@ -360,7 +360,7 @@ local function CalculateAverageItemLevel(unit, fontstring)
 				table.insert(items, item)
 
 				-- Update mainhand and offhand equipment locations
-				local equipLoc = select(4, GetItemInfoInstant(itemLink or itemID))
+				local equipLoc = select(4, C_Item.GetItemInfoInstant(itemLink or itemID))
 				if slot == INVSLOT_MAINHAND then
 					mainhandEquipLoc = equipLoc
 				elseif slot == INVSLOT_OFFHAND then

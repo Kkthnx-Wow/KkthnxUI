@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
 -- Cache global references
-local _G = getfenv(0)
+local _G = _G
 local ipairs, tremove = ipairs, table.remove
 local CreateFrame, UIParent = CreateFrame, _G.UIParent
 local AlertFrame, GroupLootContainer = _G.AlertFrame, _G.GroupLootContainer

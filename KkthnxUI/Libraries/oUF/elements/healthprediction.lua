@@ -355,7 +355,7 @@ local function Disable(self)
 			element.overHealAbsorb:Hide()
 		end
 
-		if element.overAbsorbBar then -- KkthnxUI
+		if element.overAbsorbBar then -- NDui
 			element.overAbsorbBar:Hide()
 		end
 

@@ -210,7 +210,6 @@ function Module:CreateRollBar(name)
 	button.icon = button:CreateTexture(nil, "OVERLAY")
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(unpack(K.TexCoords))
-	-- button.bg = B.SetBD(button.icon)
 
 	button.stack = button:CreateFontString(nil, "OVERLAY")
 	button.stack:SetPoint("BOTTOMRIGHT", -1, 2)
@@ -310,7 +309,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 	bar.time = rollTime
 
 	bar.button.icon:SetTexture(texture)
-	bar.button.stack:SetText(count > 1 and count or "")
+	bar.button.stack:SetText(count > 1 and tostring(count) or "")
 	bar.button.ilvl:SetText(level or "")
 	bar.button.ilvl:SetTextColor(color.r, color.g, color.b)
 	bar.button.link = link
@@ -338,7 +337,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 
 	bar.pass.text:SetText("")
 
-	bar.fsbind:SetText(bop and "BoP" or "BoE")
+	bar.fsbind:SetText(bop and L["BoP"] or L["BoE"])
 	bar.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
 	bar.fsloot:SetText(name)
 	bar.status.elapsed = 1
@@ -354,8 +353,6 @@ function Module:LootRoll_Start(rollID, rollTime)
 			bar[rolltypes[rollType]].text:SetText(#cachedInfo[rollType])
 		end
 	end
-
-	K.Print("RollID: %d %s", rollID, link)
 end
 
 local function GetRollBarByID(rollID)
@@ -382,9 +379,11 @@ local rollStateToType = {
 function Module:LootRoll_UpdateDrops(encounterID, lootListID)
 	local dropInfo = C_LootHistory.GetSortedInfoForDrop(encounterID, lootListID)
 	local rollID = Module:LootRoll_GetRollID(encounterID, lootListID)
+
 	if rollID then
 		cachedRolls[rollID] = {}
-		if not dropInfo.allPassed then
+		-- Check if dropInfo is not nil
+		if dropInfo and not dropInfo.allPassed then
 			for _, roll in ipairs(dropInfo.rollInfos) do
 				local rollType = rollStateToType[roll.state]
 				if rollType then
