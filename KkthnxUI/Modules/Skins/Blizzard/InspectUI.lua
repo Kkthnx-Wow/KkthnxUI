@@ -6,8 +6,7 @@ C.themes["Blizzard_InspectUI"] = function()
 	end
 
 	local GetInventoryItemLink = GetInventoryItemLink
-	local HideUIPanel = HideUIPanel
-	local IsCosmeticItem = IsCosmeticItem
+	local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
 	local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
 	local UnitClass = UnitClass
 	local hooksecurefunc = hooksecurefunc
@@ -20,6 +19,9 @@ C.themes["Blizzard_InspectUI"] = function()
 		InspectPaperDollItemsFrame.InspectTalents:SetPoint("TOPRIGHT", InspectFrame, "BOTTOMRIGHT", 0, -1)
 	end
 
+	InspectModelFrame:DisableDrawLayer("BACKGROUND")
+	InspectModelFrame:DisableDrawLayer("BORDER")
+	InspectModelFrame:DisableDrawLayer("OVERLAY")
 	InspectModelFrame:StripTextures(true)
 
 	local equipmentSlots = {
@@ -68,7 +70,7 @@ C.themes["Blizzard_InspectUI"] = function()
 	local function UpdateCosmetic(self)
 		local unit = InspectFrame.unit
 		local itemLink = unit and GetInventoryItemLink(unit, self:GetID())
-		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+		self.IconOverlay:SetShown(itemLink and C_Item_IsCosmeticItem(itemLink))
 	end
 
 	hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
@@ -91,8 +93,9 @@ C.themes["Blizzard_InspectUI"] = function()
 	InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrameInset, "BOTTOMLEFT", 176, 5)
 	InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrameInset, "BOTTOMRIGHT", -176, 5)
 
-	InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 4, -4)
-	InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrameInset, -4, 4)
+	InspectModelFrame:SetSize(300, 360)
+	InspectModelFrame:ClearAllPoints()
+	InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 64, -3)
 
 	local function ApplyInspectFrameLayout()
 		local InspectFrame = InspectFrame

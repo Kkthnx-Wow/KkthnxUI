@@ -164,10 +164,32 @@ tinsert(C.defaultThemes, function()
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
 	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
 	CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
+	CharacterSecondaryHandSlot:ClearAllPoints()
 	CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 4, -4)
-	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, -4, 4)
+	CharacterModelScene:SetSize(300, 360)
+	CharacterModelScene:ClearAllPoints()
+	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 64, -3)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Mask:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Mask:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
+	CharacterModelScene.GearEnchantAnimation.FrameFX.Mask:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
+
+	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:ClearAllPoints()
+	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 2, -2)
+	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -2, 2)
 
 	hooksecurefunc(CharacterFrame, "UpdateSize", function()
 		if CharacterFrame.activeSubframe == "PaperDollFrame" then

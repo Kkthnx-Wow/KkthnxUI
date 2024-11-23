@@ -2,8 +2,8 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
 local pairs, strfind = pairs, strfind
-local UnitGUID, GetItemCount = UnitGUID, GetItemCount
-local GetActionInfo, GetSpellInfo, GetOverrideBarSkin = GetActionInfo, GetSpellInfo, GetOverrideBarSkin
+local UnitGUID, C_Item_GetItemCount = UnitGUID, C_Item.GetItemCount
+local GetActionInfo, C_Spell_GetSpellInfo, GetOverrideBarSkin = GetActionInfo, C_Spell.GetSpellInfo, GetOverrideBarSkin
 local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
 local C_GossipInfo_SelectOption, C_GossipInfo_GetNumOptions = C_GossipInfo.SelectOption, C_GossipInfo.GetNumOptions
 
@@ -55,7 +55,7 @@ function Module:QuestTool_SetGlow(msg)
 		for i = 1, 3 do
 			local button = _G["ActionButton" .. i]
 			local _, spellID = GetActionInfo(button.action)
-			local name = spellID and GetSpellInfo(spellID)
+			local name = spellID and C_Spell_GetSpellInfo(spellID)
 			if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
 				K.ShowOverlayGlow(button)
 			else
@@ -128,7 +128,7 @@ function Module:QuestTool()
 			if npcID == 174498 then
 				C_GossipInfo_SelectOption(3)
 			elseif npcID == 174371 then
-				if GetItemCount(183961) > 0 and C_GossipInfo_GetNumOptions() == 5 then
+				if C_Item_GetItemCount(183961) > 0 and C_GossipInfo_GetNumOptions() == 5 then
 					C_GossipInfo_SelectOption(firstStep and 2 or 5)
 					firstStep = not firstStep
 				end

@@ -7,7 +7,6 @@ local GetNumLootItems = GetNumLootItems
 local GetTime = GetTime
 local IsModifiedClick = IsModifiedClick
 local LootSlot = LootSlot
-local SlashCmdList = SlashCmdList
 
 local lootDelay = 0
 

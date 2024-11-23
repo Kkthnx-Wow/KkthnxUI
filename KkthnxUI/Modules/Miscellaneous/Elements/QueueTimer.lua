@@ -121,12 +121,12 @@ function Module:SetupPvPQueueTimer()
 end
 
 function Module:CreateQueueTimers()
-	if not C["Misc"].QueueTimers then
-		return
-	end
+	-- if not C["Misc"].QueueTimers then
+	-- 	return
+	-- end
 
-	Module:SetupPvEQueueTimer() -- PvE
-	Module:SetupPvPQueueTimer() -- PvP
+	-- Module:SetupPvEQueueTimer() -- PvE
+	-- Module:SetupPvPQueueTimer() -- PvP
 end
 
-Module:RegisterMisc("QueueTimer", Module.CreateQueueTimers)
+-- Module:RegisterMisc("QueueTimer", Module.CreateQueueTimers)
