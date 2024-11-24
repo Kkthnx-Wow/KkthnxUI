@@ -18,6 +18,7 @@ local IsPartyLFG = IsPartyLFG
 local COOLDOWN_DURATION = 30
 local lastKeystoneMessageTime = 0
 local lastKeystoneLinkTime = 0
+local keystoneCache = {}
 
 -- Helper function to get keystone link
 local function getKeystoneLink()
@@ -40,55 +41,49 @@ local function sendKeystoneLink(channel)
 end
 
 -- Main function to handle keystone announcements
-function Module:Keystone(event)
-	local currentTime = GetTime()
-	if currentTime - lastKeystoneMessageTime < COOLDOWN_DURATION then
-		return
-	end
-	lastKeystoneMessageTime = currentTime
-
+function Module.Keystone(event)
 	local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
 	local keystoneLevel = C_MythicPlus_GetOwnedKeystoneLevel()
 
-	if Module.keystoneCache.mapID ~= mapID or Module.keystoneCache.keystoneLevel ~= keystoneLevel then
-		Module.keystoneCache.mapID = mapID
-		Module.keystoneCache.keystoneLevel = keystoneLevel
+	if event == "PLAYER_ENTERING_WORLD" then
+		keystoneCache.mapID = mapID
+		keystoneCache.keystoneLevel = keystoneLevel
+	elseif event == "CHALLENGE_MODE_COMPLETED" or event == "ITEM_CHANGED" then
+		if keystoneCache.mapID ~= mapID or keystoneCache.keystoneLevel ~= keystoneLevel then
+			keystoneCache.mapID = mapID
+			keystoneCache.keystoneLevel = keystoneLevel
 
-		local link = getKeystoneLink()
-		if link then
-			local message = string.gsub("My new keystone is %keystone%.", "%%keystone%%", link)
-			K.Delay(1, function()
-				if IsPartyLFG() then
-					SendChatMessage(message, "INSTANCE_CHAT")
-				elseif IsInGroup() then
-					SendChatMessage(message, "PARTY")
-				end
-			end)
+			local link = getKeystoneLink()
+			if link then
+				local message = string.gsub("My new keystone is %keystone%.", "%%keystone%%", link)
+				K.Delay(1, function()
+					if IsPartyLFG() then
+						SendChatMessage(message, "INSTANCE_CHAT")
+					elseif IsInGroup() then
+						SendChatMessage(message, "PARTY")
+					end
+				end)
+			end
 		end
 	end
 end
 
--- Function to handle keystone link requests
-function Module:KeystoneLink(message, sender)
+function Module:KeystoneLink(channelType, _, text, sender)
 	local currentTime = GetTime()
+	if currentTime - lastKeystoneMessageTime < 1 then
+		return
+	end
+
 	if currentTime - lastKeystoneLinkTime < COOLDOWN_DURATION then
 		return
 	end
-	lastKeystoneLinkTime = currentTime
 
-	if strlower(sender) == "!keys" then
-		local channel
-		if message == "CHAT_MSG_PARTY" or message == "CHAT_MSG_PARTY_LEADER" then
-			channel = "PARTY"
-		elseif message == "CHAT_MSG_GUILD" then
-			channel = "GUILD"
-		elseif message == "CHAT_MSG_OFFICER" then
-			channel = "OFFICER"
-		end
-
-		if channel then
+	if strlower(text or "") == "!keys" then
+		if channelType then
+			lastKeystoneLinkTime = currentTime
+			lastKeystoneMessageTime = GetTime()
 			K.Delay(1, function()
-				sendKeystoneLink(channel)
+				sendKeystoneLink(channelType)
 			end)
 		end
 	end
@@ -96,27 +91,29 @@ end
 
 -- Function to set up the keystone announcement system
 function Module:CreateKeystoneAnnounce()
-	-- Check if MythicKeyReporter is loaded or if KeystoneAlert is disabled
 	if C_AddOns.IsAddOnLoaded("MythicKeyReporter") or not C["Announcements"].KeystoneAlert then
-		-- Unregister events if the feature is disabled
 		K:UnregisterEvent("CHAT_MSG_PARTY", Module.KeystoneLink)
 		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", Module.KeystoneLink)
 		K:UnregisterEvent("CHAT_MSG_GUILD", Module.KeystoneLink)
-		K:UnregisterEvent("CHAT_MSG_OFFICER", Module.KeystoneLink)
+
 		K:UnregisterEvent("ITEM_CHANGED", Module.Keystone)
 		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.Keystone)
 		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", Module.Keystone)
 		return
 	end
 
-	-- Initialize keystone cache
-	Module.keystoneCache = Module.keystoneCache or {}
+	K:RegisterEvent("CHAT_MSG_PARTY", function(...)
+		Module:KeystoneLink("PARTY", ...)
+	end)
 
-	-- Register events if the feature is enabled
-	K:RegisterEvent("CHAT_MSG_PARTY", Module.KeystoneLink)
-	K:RegisterEvent("CHAT_MSG_PARTY_LEADER", Module.KeystoneLink)
-	K:RegisterEvent("CHAT_MSG_GUILD", Module.KeystoneLink)
-	K:RegisterEvent("CHAT_MSG_OFFICER", Module.KeystoneLink)
+	K:RegisterEvent("CHAT_MSG_PARTY_LEADER", function(...)
+		Module:KeystoneLink("PARTY", ...)
+	end)
+
+	K:RegisterEvent("CHAT_MSG_GUILD", function(...)
+		Module:KeystoneLink("GUILD", ...)
+	end)
+
 	K:RegisterEvent("ITEM_CHANGED", Module.Keystone)
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.Keystone)
 	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.Keystone)

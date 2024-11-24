@@ -20,12 +20,10 @@ function Module:CreateMissingStats()
 	local statPanel = CreateFrame("Frame", nil, CharacterFrameInsetRight)
 	statPanel:SetSize(200, 350)
 	statPanel:SetPoint("TOP", 0, -5)
-
 	local scrollFrame = CreateFrame("ScrollFrame", nil, statPanel, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetAllPoints()
 	scrollFrame.ScrollBar:Hide()
 	scrollFrame.ScrollBar.Show = K.Noop
-
 	local stat = CreateFrame("Frame", nil, scrollFrame)
 	stat:SetSize(200, 1)
 	scrollFrame:SetScrollChild(stat)
@@ -134,5 +132,17 @@ function Module:CreateMissingStats()
 			statFrame.Value:SetFormattedText("%.2f%%", statFrame.numericValue)
 		end
 	end)
+
+	hooksecurefunc("PaperDollFrame_UpdateStats", function()
+		for statFrame in CharacterStatsPane.statsFramePool:EnumerateActive() do
+			if not statFrame.styled then
+				statFrame.Label:SetFontObject(Game11Font)
+				statFrame.Value:SetFontObject(Game11Font)
+
+				statFrame.styled = true
+			end
+		end
+	end)
 end
+
 Module:RegisterMisc("MissingStats", Module.CreateMissingStats)
