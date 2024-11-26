@@ -6,10 +6,11 @@ local function createProfileName(server, nickname)
 end
 
 local function KKUI_VerifyDatabase()
-	KkthnxUIDB = KkthnxUIDB or {}
+	local db = KkthnxUIDB or {}
+	KkthnxUIDB = db
 
-	local variables = KkthnxUIDB.Variables or {}
-	KkthnxUIDB.Variables = variables
+	local variables = db.Variables or {}
+	db.Variables = variables
 
 	local realmData = variables[K.Realm] or {}
 	variables[K.Realm] = realmData
@@ -17,7 +18,6 @@ local function KKUI_VerifyDatabase()
 	local charData = realmData[K.Name] or {}
 	realmData[K.Name] = charData
 
-	-- Initialize or update charData structure
 	charData.AuraWatchList = charData.AuraWatchList or { Switcher = {}, IgnoreSpells = {} }
 	charData.AuraWatchMover = charData.AuraWatchMover or {}
 	charData.AutoQuest = charData.AutoQuest or false
@@ -34,31 +34,28 @@ local function KKUI_VerifyDatabase()
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
 
-	-- Transfer favourite items logic
 	if charData.FavouriteItems then
-		charData.CustomItems = charData.CustomItems or {}
+		local customItems = charData.CustomItems
 		for itemID in pairs(charData.FavouriteItems) do
-			charData.CustomItems[itemID] = 1
+			customItems[itemID] = 1
 		end
 		charData.FavouriteItems = nil
 	end
 
-	-- Initialize Settings
-	local settings = KkthnxUIDB.Settings or {}
-	KkthnxUIDB.Settings = settings
+	local settings = db.Settings or {}
+	db.Settings = settings
 
 	local realmSettings = settings[K.Realm] or {}
 	settings[K.Realm] = realmSettings
 
 	realmSettings[K.Name] = realmSettings[K.Name] or {}
 
-	-- Initialize other structures
-	KkthnxUIDB.ChatHistory = KkthnxUIDB.ChatHistory or {}
-	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
-	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false
-	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
-	KkthnxUIDB.KeystoneInfo = KkthnxUIDB.KeystoneInfo or {}
-	KkthnxUIDB.DisabledAddOns = KkthnxUIDB.DisabledAddOns or {}
+	db.ChatHistory = db.ChatHistory or {}
+	db.Gold = db.Gold or {}
+	db.ShowSlots = db.ShowSlots or false
+	db.ChangeLog = db.ChangeLog or {}
+	db.KeystoneInfo = db.KeystoneInfo or {}
+	db.DisabledAddOns = db.DisabledAddOns or {}
 end
 
 local function KKUI_CreateDefaults()
@@ -77,22 +74,19 @@ local function KKUI_CreateDefaults()
 end
 
 local function KKUI_LoadCustomSettings()
-	local Settings = KkthnxUIDB.Settings[K.Realm] and KkthnxUIDB.Settings[K.Realm][K.Name]
-
-	if type(Settings) ~= "table" then
+	local settings = KkthnxUIDB.Settings[K.Realm] and KkthnxUIDB.Settings[K.Realm][K.Name]
+	if type(settings) ~= "table" then
 		return
 	end
 
-	for group, options in pairs(Settings or {}) do
-		local Count = 0
-
+	for group, options in pairs(settings) do
+		local count = 0
 		for option, value in pairs(options) do
 			if C[group] and C[group][option] ~= nil then
 				if C[group][option] == value then
-					Settings[group][option] = nil
+					options[option] = nil
 				else
-					Count = Count + 1
-
+					count = count + 1
 					if type(C[group][option]) == "table" and C[group][option].Options then
 						C[group][option].Value = value
 					else
@@ -102,28 +96,28 @@ local function KKUI_LoadCustomSettings()
 			end
 		end
 
-		if Count == 0 then
-			Settings[group] = nil
+		if count == 0 then
+			settings[group] = nil
 		end
 	end
 end
 
 local function KKUI_LoadProfiles()
-	local Profiles = C["General"].Profiles
-	local Menu = Profiles.Options
-	local GUISettings = KkthnxUIDB.Settings
+	local profiles = C["General"].Profiles
+	local menu = profiles.Options
+	local guiSettings = KkthnxUIDB.Settings
 
-	if not GUISettings then
+	if not guiSettings then
 		return
 	end
 
-	for Server, Table in pairs(GUISettings) do
-		for Nickname in pairs(Table) do
-			local ProfileName = createProfileName(Server, Nickname)
-			local MyProfileName = createProfileName(K.Realm, K.Name)
+	local myProfileName = createProfileName(K.Realm, K.Name)
 
-			if MyProfileName ~= ProfileName then
-				Menu[ProfileName] = ProfileName
+	for server, table in pairs(guiSettings) do
+		for nickname in pairs(table) do
+			local profileName = createProfileName(server, nickname)
+			if profileName ~= myProfileName then
+				menu[profileName] = profileName
 			end
 		end
 	end

@@ -289,6 +289,10 @@ end
 
 -- Bar mode
 local function BuildBAR(barWidth, iconSize)
+	if not barWidth or not iconSize or type(barWidth) ~= "number" or type(iconSize) ~= "number" then
+		return nil
+	end
+
 	local frame = CreateFrame("Frame", nil, K.PetBattleFrameHider)
 	frame:SetSize(iconSize, iconSize)
 	frame:CreateBorder()
@@ -436,13 +440,18 @@ function Module:AuraWatch_UpdateTimer()
 	end
 end
 
--- Update cooldown
 function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, id, charges)
 	local frames = FrameList[index]
-	local frame = frames[frames.Index]
-	if frame then
-		frame:Show()
+	if not frames then
+		return
 	end
+
+	local frame = frames[frames.Index]
+	if not frame then
+		return
+	end
+
+	frame:Show()
 
 	if frame.Icon then
 		frame.Icon:SetTexture(icon)
@@ -468,6 +477,7 @@ function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, i
 		frame.elapsed = 0
 		frame:SetScript("OnUpdate", Module.AuraWatch_UpdateTimer)
 	end
+
 	frame.type = type
 	frame.spellID = id
 
@@ -683,8 +693,15 @@ function Module:AuraWatch_SortBars()
 end
 
 function Module:AuraWatch_IntTimer(elapsed)
+	self.elapsed = self.elapsed or 0
+
+	if type(elapsed) ~= "number" then
+		return
+	end
+
 	self.elapsed = self.elapsed + elapsed
 	local timer = self.duration - self.elapsed
+
 	if timer < 0 then
 		self:SetScript("OnUpdate", nil)
 		self:Hide()
@@ -722,10 +739,15 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 		name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(itemID)
 		frame.type = 2
 		frame.spellID = itemID
-	else
+	elseif intID and type(intID) == "number" then
 		name, icon = C_Spell_GetSpellName(intID), C_Spell_GetSpellTexture(intID)
+		if not name or not icon then
+			return
+		end
 		frame.type = 1
 		frame.spellID = intID
+	else
+		return
 	end
 
 	if unitID:lower() == "all" then
@@ -958,6 +980,10 @@ function Module:AuraWatch_Centralize(force)
 end
 
 function Module:AuraWatch_OnUpdate(elapsed)
+	if type(elapsed) ~= "number" then
+		return
+	end
+
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
 		self.elapsed = 0
@@ -974,6 +1000,8 @@ function Module:AuraWatch_OnUpdate(elapsed)
 		Module:AuraWatch_Centralize()
 	end
 end
+
+-- Ensure the updater script is set correctly
 auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 -- Mover

@@ -3,6 +3,7 @@ local Module = K:NewModule("Developer")
 
 K.Devs = {
 	["Kkthnx-Area 52"] = true,
+	["Kkthnxbye-Area 52"] = true,
 	["Kkthnx-Valdrakken"] = true,
 }
 
@@ -13,6 +14,12 @@ K.isDeveloper = isDeveloper
 
 if not K.isDeveloper then
 	return
+end
+
+function K.AddToDevTool(data, name)
+	if DevTool then
+		DevTool:AddData(data, name)
+	end
 end
 
 local _G = _G

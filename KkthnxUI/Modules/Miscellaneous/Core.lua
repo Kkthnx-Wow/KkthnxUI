@@ -217,7 +217,7 @@ local function KKUI_ClickMinimapButton(_, btn)
 			return
 		end
 		K["GUI"]:Toggle()
-		PlaySound(SOUNDKIT_IG_MAINMENU_OPTION)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION, "SFX")
 	end
 end
 

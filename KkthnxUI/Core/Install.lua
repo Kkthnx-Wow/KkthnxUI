@@ -7,10 +7,8 @@ local Module = K:NewModule("Installer")
 -- Frame and UI Elements
 local CreateFrame = CreateFrame
 local UIParent = UIParent
-local UIErrorsFrame = UIErrorsFrame
 
 -- Chat Functions and Variables
-local ChangeChatColor = ChangeChatColor
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
@@ -21,7 +19,6 @@ local FCF_ResetChatWindows = FCF_ResetChatWindows
 local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
-local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 
 -- Game and System Settings
 local InCombatLockdown = InCombatLockdown

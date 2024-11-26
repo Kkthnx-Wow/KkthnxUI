@@ -30,21 +30,24 @@ local f
 local updater
 
 function K:Mover(text, value, anchor, width, height, isAuraWatch)
+	-- Ensure `self` is valid
+	if not self or type(self) ~= "table" then
+		return
+	end
+
 	local key = "Mover"
 	if isAuraWatch then
 		key = "AuraWatchMover"
 	end
 
 	local mover = CreateFrame("Button", "KKUI_Mover", UIParent)
-	mover:SetWidth(width or self:GetWidth())
-	mover:SetHeight(height or self:GetHeight())
+	mover:SetWidth(width or (self.GetWidth and self:GetWidth() or 50)) -- Default to 50 if self:GetWidth is unavailable
+	mover:SetHeight(height or (self.GetHeight and self:GetHeight() or 50)) -- Default to 50 if self:GetHeight is unavailable
 	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 38 / 255, 125 / 255, 206 / 255, 80 / 255 })
 	mover:Hide()
 
 	mover.text = K.CreateFontString(mover, 12, text, "")
 	mover.text:SetWordWrap(true)
-
-	-- print("KKUI_Mover" .. text)
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name][key][value] then
 		mover:SetPoint(unpack(anchor))
@@ -71,8 +74,13 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 		table.insert(MoverList, mover)
 	end
 
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", mover)
+	-- Validate `self` before setting points
+	if self.ClearAllPoints and self.SetPoint then
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", mover)
+	else
+		error("K:Mover: 'self' does not have valid frame methods (ClearAllPoints, SetPoint).")
+	end
 
 	return mover
 end

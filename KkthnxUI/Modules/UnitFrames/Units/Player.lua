@@ -42,6 +42,10 @@ function Module:CreatePlayer()
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
+	if not self then
+		return
+	end
+
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetFrameStrata(self:GetFrameStrata())
 	Overlay:SetFrameLevel(5)
