@@ -15,6 +15,7 @@ for i = 1, 4 do
 	groupUnits["party" .. i] = true
 	groupUnits["partypet" .. i] = true
 end
+
 for i = 1, 40 do
 	groupUnits["raid" .. i] = true
 	groupUnits["raidpet" .. i] = true
