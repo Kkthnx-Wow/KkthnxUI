@@ -1,20 +1,9 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+local _G = _G
+
 local tinsert = table.insert
 local pairs = pairs
-
-local trackers = {
-	_G.ScenarioObjectiveTracker,
-	_G.UIWidgetObjectiveTracker,
-	_G.CampaignQuestObjectiveTracker,
-	_G.QuestObjectiveTracker,
-	_G.AdventureObjectiveTracker,
-	_G.AchievementObjectiveTracker,
-	_G.MonthlyActivitiesObjectiveTracker,
-	_G.ProfessionsRecipeTracker,
-	_G.BonusObjectiveTracker,
-	_G.WorldQuestObjectiveTracker,
-}
 
 local function SkinOjectiveTrackerHeaders(header)
 	if header and header.Background then
@@ -59,7 +48,8 @@ local function HandleTimers(tracker, key)
 	end
 end
 
-tinsert(C.defaultThemes, function()
+-- tinsert(C.defaultThemes, function()
+C.themes["Blizzard_ObjectiveTracker"] = function()
 	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
 		return
 	end
@@ -79,9 +69,22 @@ tinsert(C.defaultThemes, function()
 		end
 	end
 
+	local trackers = {
+		_G.ScenarioObjectiveTracker,
+		_G.UIWidgetObjectiveTracker,
+		_G.CampaignQuestObjectiveTracker,
+		_G.QuestObjectiveTracker,
+		_G.AdventureObjectiveTracker,
+		_G.AchievementObjectiveTracker,
+		_G.MonthlyActivitiesObjectiveTracker,
+		_G.ProfessionsRecipeTracker,
+		_G.BonusObjectiveTracker,
+		_G.WorldQuestObjectiveTracker,
+	}
+
 	for _, tracker in pairs(trackers) do
 		SkinOjectiveTrackerHeaders(tracker.Header)
 		hooksecurefunc(tracker, "GetProgressBar", HandleProgressBar)
 		hooksecurefunc(tracker, "GetTimerBar", HandleTimers)
 	end
-end)
+end
