@@ -121,7 +121,7 @@ function Module:SetupCVars()
 		nameplateOverlapH = 0.8, -- Controls the horizontal overlap of nameplates. A lower value means nameplates will be more spaced out horizontally.
 		nameplateSelectedAlpha = 1, -- Sets the transparency level for the selected nameplate (the one currently targeted). A value of 1 means fully opaque.
 		showQuestTrackingTooltips = 1, -- Enables (1) or disables (0) the display of quest-related information in tooltips.
-		nameplateSelectedScale = 1.1, -- Determines the scale of the selected nameplate. A value greater than 1 enlarges the nameplate.
+		nameplateSelectedScale = C["Nameplate"].SelectedScale, -- Determines the scale of the selected nameplate. A value greater than 1 enlarges the nameplate.
 		nameplateLargerScale = 1.1, -- Adjusts the scale of larger nameplates, such as for bosses or important enemies. Default is 1 (normal size).
 		nameplateGlobalScale = 1, -- Sets the overall scale for all nameplates. Default is 1 (normal size).
 		NamePlateHorizontalScale = 1,

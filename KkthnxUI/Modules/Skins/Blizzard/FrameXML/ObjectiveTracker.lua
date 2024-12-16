@@ -48,7 +48,6 @@ local function HandleTimers(tracker, key)
 	end
 end
 
--- tinsert(C.defaultThemes, function()
 C.themes["Blizzard_ObjectiveTracker"] = function()
 	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
 		return

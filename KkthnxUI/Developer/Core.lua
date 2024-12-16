@@ -140,6 +140,7 @@ do
 	ChatFilter.blockedPatterns = {
 		"^%s goes into a frenzy!$",
 		"^%s attempts to run away in fear!$",
+		"^%s collapses but the broken body rises again!$",
 	}
 
 	-- Check if a message matches any of the blocked patterns
