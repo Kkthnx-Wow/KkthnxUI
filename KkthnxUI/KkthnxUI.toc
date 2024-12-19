@@ -1,8 +1,8 @@
-## Interface: 110005
+## Interface: 110007
 ## Name: KkthnxUI
 ## Title: |cff5C8BCFKkthnxUI|r
 ## Notes: Empty toc for Curseforge
 ## Author: Josh "Kkthnx" Russell
-## Version: 10.5.9
+## Version: 10.6.0
 ## IconTexture: Interface\AddOns\KkthnxUI\Media\KkthnxUI_Spell_Icon
 ## X-Support: TWW

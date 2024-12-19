@@ -92,7 +92,9 @@ local function CheckPlayerHealth()
 
 	playerNearDeath, lastPlayerAlertTime = HandleHealthAlert("player", ALERT_THRESHOLD, RECOVERY_THRESHOLD, playerNearDeath, lastPlayerAlertTime, function(health)
 		debugLog("Player health is low at %.1f%%", health)
-		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
+		local playerName = K.Name or "Player"
+		local alertMessage = L["The health for %s is low!"] or "The health for %s is low!"
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(alertMessage, playerName))
 		DoEmote("healme")
 	end)
 end
@@ -110,9 +112,11 @@ local function CheckPetHealth()
 
 	petNearDeath, lastPetAlertTime = HandleHealthAlert("pet", ALERT_THRESHOLD, RECOVERY_THRESHOLD, petNearDeath, lastPetAlertTime, function(health)
 		debugLog("Pet health is low at %.1f%%", health)
-		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
+		local petName = UnitName("pet") or "Pet"
+		local alertMessage = L["The health for %s is low!"] or "The health for %s is low!"
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(alertMessage, petName))
 	end, function()
-		PlaySound(211593) -- Spell_PetBattle_Health_Buff
+		PlaySound(211593)
 	end)
 end
 

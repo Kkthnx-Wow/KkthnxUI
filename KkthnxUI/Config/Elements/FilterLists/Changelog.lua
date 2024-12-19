@@ -55,6 +55,61 @@ local KKUI_Changelog = {
 	-- },
 
 	{
+		Version = "[10.6.0] - 2024-12-19 - Patch 11.0.7 - Siren Isle",
+		General = "This update introduces key fixes, optimizations, and new features for KkthnxUI. We’ve focused on improving performance, enhancing the user experience, and resolving reported issues to ensure a smoother, more reliable interface.",
+
+		Sections = {
+			{
+				Header = "Performance Improvements",
+				Entries = {
+					"Updated our loading process to prevent nil values.",
+					"Started to add checks to many functions and code for better error handling and stability.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes and Optimizations",
+				Entries = {
+					"Fixed an error in QuickJoin.lua to prevent unexpected behavior.",
+					"Fixed health announce module from throwing nil value if pet name was nil.",
+					"Fixed nameplateSelectedScale CVar to ensure proper scaling on nameplates.",
+					"Belt will no longer bug you about not having a belt enchant, reducing unnecessary alerts.",
+					"Fixed keystone announce module to ensure proper announcement functionality.",
+				},
+			},
+
+			{
+				Header = "Nameplates and Aura Watch",
+				Entries = {
+					"Updated Nameplate and Aura Watch auras to ensure proper display and tracking.",
+					"Updated interrupt module to avoid announcing certain spells, reducing spam in chat.",
+				},
+			},
+
+			{
+				Header = "Library Updates",
+				Entries = {
+					"Updated oUF to the latest version for improved unit frame handling and functionality.",
+				},
+			},
+
+			{
+				Header = "New Features and Enhancements",
+				Entries = {
+					"Testing a chat filter to block pointless monster spam, leading to a cleaner chat experience.",
+				},
+			},
+
+			{
+				Header = "Action Bar Improvements",
+				Entries = {
+					"Updated action bar code for better responsiveness and overall performance.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.5.9] - 2024-11-17 - Patch 11.0.5",
 		General = "This update brings various performance improvements, bug fixes, and visual refinements to KkthnxUI. We've focused on optimizing code, enhancing functionality, and resolving reported issues for a smoother user experience.",
 
