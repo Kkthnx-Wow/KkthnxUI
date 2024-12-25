@@ -57,11 +57,13 @@ local LastActiveDropdown
 local LastActiveWindow
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
+-- Headers for the credits section
 local headers = {
 	"CREDITS",
 	"",
 }
 
+-- Names for the credits section
 local names = {
 	{ text = "Aftermathh" },
 	{ text = "Alteredcross", class = "ROGUE" },
@@ -95,10 +97,11 @@ local names = {
 	{ text = "siweia" },
 }
 
+-- Function to create credit lines
 local function createCreditLines(headers, names)
 	local lines = {}
-	for _, text in ipairs(headers) do
-		table.insert(lines, { type = "header", text = text })
+	for _, header in ipairs(headers) do
+		table.insert(lines, { type = "header", text = header })
 	end
 	for _, name in ipairs(names) do
 		table.insert(lines, { type = "name", text = name.text, class = name.class, color = name.color })
@@ -106,6 +109,7 @@ local function createCreditLines(headers, names)
 	return lines
 end
 
+-- Generate the credit lines
 local CreditLines = createCreditLines(headers, names)
 
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
@@ -120,29 +124,12 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
+		local SelectedServer, SelectedNickname = strsplit("-", MySelectedProfile)
 
 		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[SelectedServer][SelectedNickname]
 		KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[SelectedServer][SelectedNickname]
 
-		_G.ReloadUI()
-	end,
-}
-
-StaticPopupDialogs["KKUI_DELETE_PROFILE"] = {
-	text = "Are you sure you want to delete the selected profile? This action cannot be undone!",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
-
-		-- Remove profile data from the database
-		KkthnxUIDB.Variables[SelectedServer][SelectedNickname] = nil
-		KkthnxUIDB.Settings[SelectedServer][SelectedNickname] = nil
-
-		-- Ensure to update profiles and reload UI
-		K.LoadProfiles()
-		_G.ReloadUI()
+		ReloadUI()
 	end,
 }
 
@@ -1690,6 +1677,7 @@ end
 
 local CreditLineHeight = 20
 
+-- Function to set up credits
 local function SetUpCredits(frame)
 	frame.Lines = {}
 
@@ -1732,7 +1720,8 @@ local function SetUpCredits(frame)
 	frame:SetHeight(#frame.Lines * CreditLineHeight)
 end
 
-local ShowCreditFrame = function()
+-- Function to show the credit frame
+local function ShowCreditFrame()
 	local Window = GUI:GetWindow(LastActiveWindow)
 
 	Window:Hide()
@@ -1741,7 +1730,8 @@ local ShowCreditFrame = function()
 	_G.KKUI_Credits.Move:Play()
 end
 
-local HideCreditFrame = function()
+-- Function to hide the credit frame
+local function HideCreditFrame()
 	_G.KKUI_Credits:Hide()
 	_G.KKUI_Credits.Move:Stop()
 
@@ -1751,7 +1741,8 @@ local HideCreditFrame = function()
 	Window.Button.Selected:Show()
 end
 
-local ToggleCreditsFrame = function()
+-- Function to toggle the credit frame
+local function ToggleCreditsFrame()
 	if _G.KKUI_Credits:IsShown() then
 		HideCreditFrame()
 	else
@@ -2242,22 +2233,17 @@ GUI.PLAYER_REGEN_ENABLED = function(self)
 	end
 end
 
-GUI.SetProfile = function(self, btn)
+GUI.SetProfile = function(self)
 	local Dropdown = self:GetParent()
 	local Profile = Dropdown.Current:GetText()
+	local MyProfileName = K.Realm .. "-" .. K.Name
 
 	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
 		MySelectedProfile = Profile
 
-		-- Check for SHIFT
-		if IsShiftKeyDown() then
-			-- Open the deletion confirmation popup
-			_G.StaticPopup_Show("KKUI_DELETE_PROFILE")
-		else
-			-- Regular profile switch
-			GUI:Toggle()
-			_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
-		end
+		GUI:Toggle()
+
+		_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
 	end
 end
 

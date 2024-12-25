@@ -26,11 +26,12 @@ end
 do
 	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
 
-	K.UIFrameHider = CreateFrame("Frame")
+	K.UIFrameHider = CreateFrame("Frame", nil, UIParent)
+	K.UIFrameHider:SetPoint("BOTTOM")
+	K.UIFrameHider:SetSize(1, 1)
 	K.UIFrameHider:Hide()
 
 	K.PetBattleFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	K.PetBattleFrameHider:SetAllPoints()
 	K.PetBattleFrameHider:SetFrameStrata("LOW")
 	RegisterStateDriver(K.PetBattleFrameHider, "visibility", "[petbattle] hide; show")
 end

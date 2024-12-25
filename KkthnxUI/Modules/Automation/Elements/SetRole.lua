@@ -16,7 +16,7 @@ local lastRoleChangeTime = 0
 local ROLE_CHANGE_THRESHOLD = 2
 
 -- Function to change the player's role
-local function changePlayerRole(role)
+local function ChangePlayerRole(role)
 	local currentTime = GetTime()
 	if (currentTime - lastRoleChangeTime > ROLE_CHANGE_THRESHOLD) and UnitGroupRolesAssigned("player") ~= role then
 		UnitSetRole("player", role)
@@ -24,16 +24,21 @@ local function changePlayerRole(role)
 	end
 end
 
+-- Function to determine if auto role setup should run
+local function ShouldSetupAutoRole()
+	return K.Level >= 10 and not InCombatLockdown() and IsInGroup() and not IsPartyLFG()
+end
+
 -- Setup auto role function
 function Module:SetupAutoRole()
-	if K.Level < 10 or InCombatLockdown() or not IsInGroup() or IsPartyLFG() then
+	if not ShouldSetupAutoRole() then
 		return
 	end
 
 	local spec = GetSpecialization()
 	if spec then
 		local role = GetSpecializationRole(spec)
-		changePlayerRole(role)
+		ChangePlayerRole(role)
 	end
 end
 

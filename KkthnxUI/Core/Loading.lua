@@ -1,13 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local KKUI_AddonLoader = CreateFrame("Frame")
 
-local function createProfileName(server, nickname)
-	if not server or not nickname then
-		return "Unknown-Unknown"
-	end
-	return table.concat({ server, nickname }, "-")
-end
-
 local function KKUI_VerifyDatabase()
 	KkthnxUIDB = KkthnxUIDB or {}
 	KkthnxUIDB.Variables = KkthnxUIDB.Variables or {}
@@ -93,20 +86,26 @@ local function KKUI_LoadCustomSettings()
 end
 
 local function KKUI_LoadProfiles()
-	local profiles = C["General"].Profiles
-	local menu = profiles.Options
-	local guiSettings = KkthnxUIDB.Settings
+	local Profiles = C["General"].Profiles
+	local Menu = Profiles.Options
+	local Data = KkthnxUIDB.Variables
+	local GUISettings = KkthnxUIDB.Settings
+	local Nickname = K.Name
+	local Server = K.Realm
 
-	if not guiSettings then
+	if not GUISettings then
 		return
 	end
 
-	local myProfileName = createProfileName(K.Realm, K.Name)
-	for server, table in pairs(guiSettings) do
-		for nickname in pairs(table) do
-			local profileName = createProfileName(server, nickname)
-			if profileName ~= myProfileName then
-				menu[profileName] = profileName
+	for Index, Table in pairs(GUISettings) do
+		local Server = Index
+
+		for Nickname, Settings in pairs(Table) do
+			local ProfileName = Server .. "-" .. Nickname
+			local MyProfileName = K.Realm .. "-" .. K.Name
+
+			if MyProfileName ~= ProfileName then
+				Menu[ProfileName] = ProfileName
 			end
 		end
 	end
@@ -124,7 +123,7 @@ local function KKUI_OnEvent(_, event, addonName)
 	if event == "ADDON_LOADED" and addonName == "KkthnxUI" then
 		KKUI_VerifyDatabase()
 		KKUI_LoadVariables()
-		K.SetupUIScale(true)
+		K:SetupUIScale(true)
 		KKUI_AddonLoader:UnregisterEvent("ADDON_LOADED")
 	end
 end

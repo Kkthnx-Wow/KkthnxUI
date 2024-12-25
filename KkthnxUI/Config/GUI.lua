@@ -190,10 +190,6 @@ local function ResetDetails()
 	K:GetModule("Skins"):ResetDetailsAnchor(true)
 end
 
-local function UpdateBlipTextures()
-	K:GetModule("Minimap"):UpdateBlipTexture()
-end
-
 local function UpdateTotemBar()
 	if not C["Auras"].Totems then
 		return
@@ -377,6 +373,10 @@ local function UpdateGroupLoot()
 	K:GetModule("Loot"):UpdateLootRollFrames()
 end
 
+local function UpdateYClassColors()
+	K:GetModule("Miscellaneous"):UpdateyClassColors()
+end
+
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -539,7 +539,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoReward", L["Auto Select Quest Rewards Best Value"], "Automatically selects the highest value quest reward.")
 
 	Window:CreateSection("Miscellaneous Options")
-	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"], "Automatically collapses the objective tracker when entering an instance.")
+	-- Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"], "Automatically collapses the objective tracker when entering an instance.")
 	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion"], "Automatically says 'Goodbye' to the group when the dungeon is completed.")
 	Window:CreateSwitch("Automation", "AutoKeystone", newFeatureIcon .. L["Auto Place Mythic Keystones"], "Automatically places your highest available Mythic Keystone in the dungeon keystone slot.")
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"], "Automatically opens items in your inventory that contain loot.")
@@ -636,7 +636,6 @@ local AuraWatch = function(self)
 	Window:CreateSwitch("AuraWatch", "Enable", enableTextColor .. L["Enable AuraWatch"])
 	Window:CreateSwitch("AuraWatch", "ClickThrough", L["Disable AuraWatch Tooltip (ClickThrough)"], "If enabled, the icon would be uninteractable, you can't select or mouseover them.")
 	Window:CreateSwitch("AuraWatch", "DeprecatedAuras", L["Track Auras From Previous Expansions"])
-	Window:CreateSwitch("AuraWatch", "QuakeRing", L["Alert On M+ Quake"])
 	Window:CreateSlider("AuraWatch", "IconScale", L["AuraWatch IconScale"], 0.8, 2, 0.1)
 end
 
@@ -771,10 +770,6 @@ local Minimap = function(self)
 	Window:CreateSection("Recycle Bin")
 	Window:CreateDropdown("Minimap", "RecycleBinPosition", L["Set RecycleBin Positon"])
 
-	-- Blip Section
-	Window:CreateSection("Blip")
-	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
-
 	-- Location Section
 	Window:CreateSection("Location")
 	Window:CreateDropdown("Minimap", "LocationText", L["Location Text Style"])
@@ -797,6 +792,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
+	Window:CreateSwitch("Misc", "YClassColors", "Enable ClassColors", "Toggle the display of class colors in the guild roster, friends list, and Who frame.", UpdateYClassColors)
 
 	Window:CreateSection("Camera")
 	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 2.6, 0.1, nil, UpdateMaxZoomLevel)

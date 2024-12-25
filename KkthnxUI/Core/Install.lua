@@ -507,7 +507,7 @@ local function YesTutor()
 			PlaySound(21968)
 		elseif currentPage == 3 then
 			StopSound(21968)
-			K.SetupUIScale()
+			K:SetupUIScale()
 			ShowFakeAchievement("Achievement Earned", "You have successfully applied the UIScale Settings.")
 			PlaySound(21968)
 		elseif currentPage == 4 then
@@ -642,7 +642,7 @@ local function HelloWorld()
 		Module:ForceDefaultCVars()
 		ForceRaidFrame()
 		Module:ForceChatSettings()
-		K.SetupUIScale()
+		K:SetupUIScale()
 		KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest or true
 		KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest = KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest or true
 		KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest or true

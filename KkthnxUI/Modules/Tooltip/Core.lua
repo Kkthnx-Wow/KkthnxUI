@@ -323,7 +323,7 @@ function Module:ReskinStatusBar()
 	self.StatusBar:SetPoint("BOTTOMLEFT", self.bg, "TOPLEFT", 0, 6)
 	self.StatusBar:SetPoint("BOTTOMRIGHT", self.bg, "TOPRIGHT", -0, 6)
 	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	self.StatusBar:SetHeight(11)
+	self.StatusBar:SetHeight(12)
 	self.StatusBar:CreateBorder()
 end
 

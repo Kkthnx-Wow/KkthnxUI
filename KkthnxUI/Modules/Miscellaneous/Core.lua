@@ -133,6 +133,7 @@ function Module:OnEnable()
 	end
 
 	local loadMiscModules = {
+		"CreateAlreadyKnown",
 		"CreateBossBanner",
 		"CreateBossEmote",
 		"CreateCustomWaypoint",
@@ -140,12 +141,13 @@ function Module:OnEnable()
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
-		-- "CreateObjectiveSizeUpdate",
-		-- "CreateQuestSizeUpdate",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
+		"UpdateyClassColors",
 		"UpdateMaxCameraZoom",
+		-- "CreateObjectiveSizeUpdate",
+		-- "CreateQuestSizeUpdate",
 	}
 
 	for _, funcName in ipairs(loadMiscModules) do

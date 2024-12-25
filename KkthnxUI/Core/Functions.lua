@@ -285,12 +285,9 @@ end
 -- Other Utility Functions
 do
 	function K.TogglePanel(frame)
-		-- check if the frame is currently shown
 		if frame:IsShown() then
-			-- if the frame is shown, hide it
 			frame:Hide()
 		else
-			-- if the frame is not shown, show it
 			frame:Show()
 		end
 	end
@@ -305,12 +302,19 @@ do
 			return false
 		end
 
-		-- Perform the check
 		return K.AddOns[string_lower(addon)] or false
 	end
 
 	function K.GetAddOnVersion(addon)
 		return K.AddOnVersion[string_lower(addon)] or nil
+	end
+
+	function K.GetAddOnEnableState(addon, character)
+		return C_AddOns.GetAddOnEnableState(addon, character)
+	end
+
+	function K.IsAddOnEnabled(addon)
+		return K.GetAddOnEnableState(addon, K.Name) == 2
 	end
 
 	local function CreateClosure(func, data)

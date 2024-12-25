@@ -465,21 +465,21 @@ function Module:CreatePlayer()
 
 		local two = CreateFrame("StatusBar", nil, bar)
 		two:SetStatusBarTexture(UnitframeTexture)
-		two:SetStatusBarColor(0.8, 0.8, 0.8)
+		two:SetStatusBarColor(0.20, 0.60, 0.80) -- Light blue color
 		two:CreateBorder()
 		two:Hide()
 		two:SetAllPoints()
 
 		local main = CreateFrame("StatusBar", nil, bar)
 		main:SetStatusBarTexture(UnitframeTexture)
-		main:SetStatusBarColor(0.8, 0.8, 0.8)
+		main:SetStatusBarColor(0.20, 0.80, 0.20) -- Light green color
 		main:CreateBorder()
 		main:Hide()
 		main:SetAllPoints()
 
 		local off = CreateFrame("StatusBar", nil, bar)
 		off:SetStatusBarTexture(UnitframeTexture)
-		off:SetStatusBarColor(0.8, 0.8, 0.8)
+		off:SetStatusBarColor(0.80, 0.20, 0.20) -- Light red color
 		off:CreateBorder()
 		off:Hide()
 		if C["Unitframe"].OffOnTop then

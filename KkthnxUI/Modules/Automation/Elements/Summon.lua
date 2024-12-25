@@ -10,10 +10,13 @@ local UnitAffectingCombat = UnitAffectingCombat
 local format = string.format
 
 -- Automatically accept a summon after a 10 second delay
-local function AutoAcceptSummon()
-	-- If the player is in combat, do nothing
+local function AutoAcceptSummon(event)
+	-- If the player is in combat, register for PLAYER_REGEN_ENABLED to retry after combat ends
 	if UnitAffectingCombat("player") then
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", AutoAcceptSummon)
 		return
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", AutoAcceptSummon)
 	end
 
 	-- Retrieve the summoner's name and location
