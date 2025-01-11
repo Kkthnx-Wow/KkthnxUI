@@ -119,26 +119,26 @@ local function ConvertTable()
 	local auraWatchList = C.AuraWatchList[K.Class]
 	for _, v in pairs(auraWatchList) do
 		if v.Name == "Special Aura" then
-			InsertData(2, v.List)
+			InsertData(1, v.List)
 		elseif v.Name == "Focus Aura" then
-			InsertData(5, v.List)
+			InsertData(3, v.List)
 		elseif v.Name == "Spell Cooldown" then
-			InsertData(6, v.List)
+			InsertData(4, v.List)
 		end
 	end
 
 	local allAuras = C.AuraWatchList["ALL"]
 	for i, v in pairs(allAuras) do
 		if v.Name == "Enchant Aura" then
-			InsertData(7, v.List)
+			InsertData(5, v.List)
 		elseif v.Name == "Raid Buff" then
-			InsertData(8, v.List)
+			InsertData(6, v.List)
 		elseif v.Name == "Raid Debuff" then
-			InsertData(9, v.List)
+			InsertData(7, v.List)
 		elseif v.Name == "Warning" then
-			InsertData(4, v.List)
+			InsertData(2, v.List)
 		elseif v.Name == "InternalCD" then
-			InsertData(10, v.List)
+			InsertData(8, v.List)
 			IntCD = v
 			table_remove(allAuras, i)
 		end

@@ -86,10 +86,15 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 end
 
 function Module:CalculateMoverPoints(mover, trimX, trimY)
-	local screenWidth = K.Round(UIParent:GetRight())
-	local screenHeight = K.Round(UIParent:GetTop())
-	local screenCenter = K.Round(UIParent:GetCenter(), nil)
+	local screenWidth = K.Round(UIParent:GetRight() or 0)
+	local screenHeight = K.Round(UIParent:GetTop() or 0)
+	local screenCenter = K.Round(UIParent:GetCenter() or 0)
 	local x, y = mover:GetCenter()
+
+	-- Validate x and y
+	if not x or not y then
+		return 0, 0, "CENTER" -- Fallback values
+	end
 
 	local LEFT = screenWidth / 3
 	local RIGHT = screenWidth * 2 / 3

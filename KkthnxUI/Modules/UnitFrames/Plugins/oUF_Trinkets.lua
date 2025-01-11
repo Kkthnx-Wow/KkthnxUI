@@ -35,9 +35,10 @@ local Update = function(self, event, ...)
 		local unit, spellID = ...
 
 		if self.unit == unit then
-			local _, _, spellTexture = GetSpellInfo(spellID)
-
-			self.Trinket.Icon:SetTexture(spellTexture)
+			local spellInfo = C_Spell.GetSpellInfo(spellID)
+			if spellInfo then
+				self.Trinket.Icon:SetTexture(spellInfo.originalIconID)
+			end
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		CooldownFrame_Set(self.Trinket.cooldownFrame, 1, 1, 1)
