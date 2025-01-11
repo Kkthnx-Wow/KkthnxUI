@@ -120,13 +120,15 @@ local function KKUI_LoadVariables()
 end
 
 local function KKUI_OnEvent(_, event, addonName)
-	if event == "ADDON_LOADED" and addonName == "KkthnxUI" then
+	if event == "ADDON_LOADED" or event == "PLAYER_ENTERING_WORLD" and addonName == "KkthnxUI" then
 		KKUI_VerifyDatabase()
 		KKUI_LoadVariables()
 		K:SetupUIScale(true)
 		KKUI_AddonLoader:UnregisterEvent("ADDON_LOADED")
+		KKUI_AddonLoader:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end
 
 KKUI_AddonLoader:RegisterEvent("ADDON_LOADED")
+KKUI_AddonLoader:RegisterEvent("PLAYER_ENTERING_WORLD")
 KKUI_AddonLoader:SetScript("OnEvent", KKUI_OnEvent)
