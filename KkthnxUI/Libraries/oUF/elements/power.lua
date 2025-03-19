@@ -221,8 +221,7 @@ local function Update(self, event, unit)
 	end
 
 	local cur, max = UnitPower(unit, displayType), UnitPowerMax(unit, displayType)
-	min = min or 0 -- ensure we always have a minimum value to avoid errors
-	element:SetMinMaxValues(min, max)
+	element:SetMinMaxValues(min or 0, max)
 
 	if UnitIsConnected(unit) then
 		element:SetValue(cur)
@@ -279,8 +278,12 @@ local function SetColorDisconnected(element, state, isForced)
 		element.colorDisconnected = state
 		if state then
 			element.__owner:RegisterEvent("UNIT_CONNECTION", ColorPath)
+			element.__owner:RegisterEvent("PARTY_MEMBER_ENABLE", ColorPath)
+			element.__owner:RegisterEvent("PARTY_MEMBER_DISABLE", ColorPath)
 		else
 			element.__owner:UnregisterEvent("UNIT_CONNECTION", ColorPath)
+			element.__owner:UnregisterEvent("PARTY_MEMBER_ENABLE", ColorPath)
+			element.__owner:UnregisterEvent("PARTY_MEMBER_DISABLE", ColorPath)
 		end
 	end
 end

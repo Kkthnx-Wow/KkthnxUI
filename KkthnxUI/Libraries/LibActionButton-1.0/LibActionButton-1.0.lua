@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-KkthnxUI"
-local MINOR_VERSION = 119
+local MINOR_VERSION = 120
 
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -210,7 +210,7 @@ function lib:CreateButton(id, name, header, config)
 		KeyBound = LibStub("LibKeyBound-1.0", true)
 	end
 
-	local button = setmetatable(CreateFrame("CheckButton", name, header, "SecureActionButtonTemplate, ActionButtonTemplate"), Generic_MT)
+	local button = setmetatable(CreateFrame("CheckButton", name, header, "ActionButtonTemplate, SecureActionButtonTemplate"), Generic_MT)
 	button:RegisterForDrag("LeftButton", "RightButton")
 	if WoWRetail then
 		button:RegisterForClicks("AnyDown", "AnyUp")
@@ -257,8 +257,6 @@ function lib:CreateButton(id, name, header, config)
 
 	-- nil out inherited functions from the flyout mixin, we override these in a metatable
 	if UseCustomFlyout then
-		button.popup = CreateFrame("Frame")
-		button.popup.AttachToButton = function() end
 		button.GetPopupDirection = nil
 		button.IsPopupOpen = nil
 	end
@@ -1005,8 +1003,6 @@ if UseCustomFlyout then
 				local button = lib:CreateButton(i, "LABFlyoutButton" .. i, lib.flyoutHandler, nil)
 				button:SetScale(0.8)
 				button:Hide()
-				button.popup = CreateFrame("Frame")
-				button.popup.AttachToButton = function() end
 
 				-- disable drag and drop
 				button:SetAttribute("LABdisableDragNDrop", true)
@@ -1711,7 +1707,7 @@ function Generic:UpdateAction(force)
 		Update(self)
 	end
 end
--- KkthnxUI: add quality border
+-- NDui: add quality border
 local function ClearProfessionQuality(self)
 	if self.ProfessionQuality then
 		self.ProfessionQuality:Hide()
