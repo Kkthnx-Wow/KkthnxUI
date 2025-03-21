@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local table_insert = table.insert
 local hooksecurefunc = hooksecurefunc
 
-local FRIEND_TEXTURE = "UI-ChatIcon-App"
+local FRIEND_TEXTURE = "UI-ChatIcon-ODIN"
 local QUEUE_TEXTURE = "groupfinder-eye-frame"
 local HOME_TEXTURE = "Interface\\Buttons\\UI-HomeButton"
 

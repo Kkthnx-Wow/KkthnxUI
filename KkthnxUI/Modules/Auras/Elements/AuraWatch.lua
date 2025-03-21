@@ -554,6 +554,7 @@ local replacedTexture = {
 	[378770] = 236174, -- Change (Killing Strike) to the Kill Shot icon
 	[389020] = 132330, -- Change (Bullet Storm) to the Multi-Shot icon
 	[378747] = 132176, -- Change (Frenzied Pack) to the Kill Command icon
+	[472640] = 461114, -- 猪突换成眼镜蛇射击
 }
 
 function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count, duration, expires, spellID, flash)
