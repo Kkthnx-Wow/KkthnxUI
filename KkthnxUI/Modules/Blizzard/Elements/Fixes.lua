@@ -1,29 +1,33 @@
 local K = KkthnxUI[1]
 
 -- Unregister talent event
-if PlayerTalentFrame then
-	PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-else
-	hooksecurefunc("TalentFrame_LoadUI", function()
+do
+	if PlayerTalentFrame then
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
 end
 
 -- Fix blizz bug in addon list
-local _AddonTooltip_Update = AddonTooltip_Update
-function AddonTooltip_Update(owner)
-	if not owner then
-		return
+do
+	local _AddonTooltip_Update = AddonTooltip_Update
+	function AddonTooltip_Update(owner)
+		if not owner then
+			return
+		end
+		if owner:GetID() < 1 then
+			return
+		end
+		_AddonTooltip_Update(owner)
 	end
-	if owner:GetID() < 1 then
-		return
-	end
-	_AddonTooltip_Update(owner)
 end
 
 -- Fix Drag Collections taint
 do
-	local done
+	local done = false
 	local function setupMisc(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
 			-- Fix undragable issue

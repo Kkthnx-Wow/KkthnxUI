@@ -474,6 +474,7 @@ function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, i
 	if frame.Statusbar then
 		frame.duration = duration
 		frame.start = start
+		frame.expires = nil
 		frame.elapsed = 0
 		frame:SetScript("OnUpdate", Module.AuraWatch_UpdateTimer)
 	end
