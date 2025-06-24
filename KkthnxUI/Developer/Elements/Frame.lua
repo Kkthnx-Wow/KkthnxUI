@@ -1,11 +1,16 @@
-local K = KkthnxUI[1]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local math_ceil = math.ceil
 local math_floor = math.floor
 local print = print
+local string_find = string.find
 local string_format = string.format
+local string_split = string.split
+local table_wipe = table.wipe
 local tostring = tostring
 
+local C_ChatInfo_RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
+local C_ChatInfo_SendAddonMessage = C_ChatInfo.SendAddonMessage
 local DESCRIPTION = DESCRIPTION
 local EJ_GetCurrentTier = EJ_GetCurrentTier
 local EJ_GetEncounterInfoByIndex = EJ_GetEncounterInfoByIndex
@@ -18,6 +23,8 @@ local GetScreenWidth = GetScreenWidth
 local GetSpellDescription = C_Spell.GetSpellDescription
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
+local IsInGuild = IsInGuild
+local IsInRaid = IsInRaid
 local MouseIsOver = MouseIsOver
 local NAME = NAME
 local SlashCmdList = SlashCmdList

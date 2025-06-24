@@ -13,6 +13,12 @@ local maxAddOns, infoTable = 12, {}
 
 local SystemDataText, SystemDataTextEntered
 
+-- Cache frequently used functions for better performance
+local GetFramerate = GetFramerate
+local floor = floor
+local format = format
+local GetTime = GetTime
+
 local function formatMemory(value)
 	return value > 1024 and string_format("%.1f mb", value / 1024) or string_format("%.0f kb", value)
 end
@@ -161,6 +167,11 @@ end
 local function OnUpdate(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
 	if self.timer > 1 then
+		-- Early exit if SystemDataText doesn't exist
+		if not SystemDataText or not SystemDataText.Text then
+			return
+		end
+
 		setFrameRate()
 		if SystemDataTextEntered then
 			OnEnter()

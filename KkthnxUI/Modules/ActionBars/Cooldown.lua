@@ -162,6 +162,11 @@ function Module:StartTimer(start, duration, modRate)
 			self:Hide()
 		end
 	end
+
+	-- Disable blizzard cooldown numbers
+	if self.SetHideCountdownNumbers then
+		self:SetHideCountdownNumbers(true)
+	end
 end
 
 function Module:HideCooldownNumbers()
@@ -189,7 +194,7 @@ end
 
 function Module:CooldownUpdate()
 	local button = self:GetParent()
-	local start, duration, modRate = GetActionCooldown(button.action)
+	local start, duration, _, modRate = GetActionCooldown(button.action)
 
 	if shouldUpdateTimer(self, start) then
 		Module.StartTimer(self, start, duration, modRate)
@@ -212,27 +217,27 @@ function Module:RegisterActionButton()
 	end
 end
 
+function Module:OnSetHideCountdownNumbers(hide)
+	local disable = not (hide or self.noCooldownCount or self:IsForbidden())
+	if disable then
+		self:SetHideCountdownNumbers(true)
+	end
+end
+
 function Module:OnEnable()
 	if not C["ActionBar"]["Cooldown"] then
 		return
 	end
 
-	-- Hook the SetCooldown function to start the timer
-	hooksecurefunc(getmetatable(ActionButton1Cooldown).__index, "SetCooldown", Module.StartTimer)
+	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
+	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
 
 	-- Hide cooldown numbers
+	hooksecurefunc(cooldownIndex, "SetHideCountdownNumbers", Module.OnSetHideCountdownNumbers)
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
 
 	-- Register for action bar cooldown updates
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
-
-	-- Register action button frames
-	if _G["ActionBarButtonEventsFrame"].frames then
-		for _, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do
-			Module.RegisterActionButton(frame)
-		end
-	end
-	hooksecurefunc(ActionBarButtonEventsFrameMixin, "RegisterFrame", Module.RegisterActionButton)
 
 	-- Hide default cooldown
 	SetCVar("countdownForCooldowns", 0)

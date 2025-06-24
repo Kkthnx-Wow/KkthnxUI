@@ -4,17 +4,19 @@ local bar_UpdateFrame = CreateFrame("Frame")
 -- ls_UI, lightspark
 
 local math_abs = math.abs
+local next = next
 
 local Lerp = Lerp
-local next = next
 
 local activeObjects = {}
 local handledObjects = {}
 
 local TARGET_FPS = 60
 local AMOUNT = 0.33
+local UPDATE_THROTTLE = 0.016 -- ~60 FPS throttle
 
-local function clamp(v, min, max)
+-- Cache frequently used functions
+local clamp = function(v, min, max)
 	min = min or 0
 	max = max or 1
 	v = tonumber(v)
@@ -36,7 +38,21 @@ local function isCloseEnough(new, target, range)
 	return true
 end
 
+-- Optimized OnUpdate with throttling and early exit
+local lastUpdate = 0
 local function onUpdate(_, elapsed)
+	lastUpdate = lastUpdate + elapsed
+	if lastUpdate < UPDATE_THROTTLE then
+		return
+	end
+	lastUpdate = 0
+
+	-- Early exit if no active objects
+	if not next(activeObjects) then
+		bar_UpdateFrame:SetScript("OnUpdate", nil)
+		return
+	end
+
 	for object, target in next, activeObjects do
 		local new = Lerp(object._value, target, clamp(AMOUNT * elapsed * TARGET_FPS))
 		if isCloseEnough(new, target, object._max - object._min) then
@@ -52,6 +68,11 @@ end
 local function bar_SetSmoothedValue(self, value)
 	self._value = self:GetValue()
 	activeObjects[self] = clamp(value, self._min, self._max)
+
+	-- Only start OnUpdate if not already running
+	if not bar_UpdateFrame:GetScript("OnUpdate") then
+		bar_UpdateFrame:SetScript("OnUpdate", onUpdate)
+	end
 end
 
 local function bar_SetSmoothedMinMaxValues(self, min, max)
@@ -80,6 +101,11 @@ local function bar_SetSmoothedMinMaxValues(self, min, max)
 end
 
 function K:SmoothBar(bar)
+	-- Prevent duplicate smoothing
+	if handledObjects[bar] then
+		return
+	end
+
 	bar._min, bar._max = bar:GetMinMaxValues()
 	bar._value = bar:GetValue()
 
@@ -89,18 +115,20 @@ function K:SmoothBar(bar)
 	bar.SetMinMaxValues = bar_SetSmoothedMinMaxValues
 
 	handledObjects[bar] = true
-
-	if not bar_UpdateFrame:GetScript("OnUpdate") then
-		bar_UpdateFrame:SetScript("OnUpdate", onUpdate)
-	end
 end
 
 function K:DesmoothBar(bar)
+	if not handledObjects[bar] then
+		return
+	end
+
+	-- Clean up active objects
 	if activeObjects[bar] then
 		bar:SetValue_(activeObjects[bar])
 		activeObjects[bar] = nil
 	end
 
+	-- Restore original methods
 	if bar.SetValue_ then
 		bar.SetValue = bar.SetValue_
 		bar.SetValue_ = nil
@@ -113,7 +141,8 @@ function K:DesmoothBar(bar)
 
 	handledObjects[bar] = nil
 
-	if not next(handledObjects) then
+	-- Stop OnUpdate if no more objects
+	if not next(handledObjects) and not next(activeObjects) then
 		bar_UpdateFrame:SetScript("OnUpdate", nil)
 	end
 end

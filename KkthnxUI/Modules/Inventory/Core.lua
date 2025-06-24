@@ -10,6 +10,7 @@ local string_match = string.match
 local table_wipe = table.wipe
 local unpack = unpack
 
+local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_NewItems_IsNewItem = C_NewItems.IsNewItem
@@ -34,9 +35,6 @@ local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
 local SortReagentBankBags = C_Container.SortReagentBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
-
-local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
-local CHAR_BANK_TYPE = Enum.BankType.Character or 1
 
 local deleteEnable
 local favouriteEnable
@@ -283,6 +281,16 @@ function Module:CreateBagTab(settings, columns)
 	bagTab.UpdateAnchor = updateBagBar
 	bagTab:UpdateAnchor()
 
+	local purchaseButton = CreateFrame("Button", "KKUI_BankPurchaseButton", bagTab, "InsecureActionButtonTemplate")
+	purchaseButton:SetSize(120, 22)
+	purchaseButton:SetPoint("TOP", bagTab, "BOTTOM", 0, -5)
+	K.CreateFontString(purchaseButton, 14, "", PURCHASE, "info")
+	purchaseButton:Hide()
+
+	purchaseButton:RegisterForClicks("AnyUp", "AnyDown")
+	purchaseButton:SetAttribute("type", "click")
+	purchaseButton:SetAttribute("clickbutton", _G.AccountBankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
+
 	self.BagBar = bagTab
 end
 
@@ -342,15 +350,17 @@ function Module:CreateReagentButton(f)
 
 	reagentButton:RegisterForClicks("AnyUp")
 	reagentButton:SetScript("OnClick", function(_, btn)
-		if not C_Bank.CanViewBank(CHAR_BANK_TYPE) then
-			return
-		end
-
 		if not IsReagentBankUnlocked() then
 			_G.StaticPopup_Show("CONFIRM_BUY_REAGENTBANK_TAB")
 		else
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 			BankFrame_ShowPanel("ReagentBankFrame") -- trigger context matching
+			_G.BankFrame.selectedTab = 2
+			_G.BankFrame.activeTabIndex = 2
+			f.reagent:Show()
+			f.bank:Hide()
+			f.accountbank:Hide()
+
 			if btn == "RightButton" then
 				_G.DepositReagentBank()
 			end
@@ -375,15 +385,16 @@ function Module:CreateAccountBankButton(f)
 
 	accountBankButton:RegisterForClicks("AnyUp")
 	accountBankButton:SetScript("OnClick", function(_, btn)
-		if not C_Bank.CanViewBank(ACCOUNT_BANK_TYPE) then
-			return
-		end
-
 		if AccountBankPanel:ShouldShowLockPrompt() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ACCOUNT_BANK_LOCKED_PROMPT)
 		else
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 			BankFrame_ShowPanel("AccountBankPanel") -- trigger context matching
+			BankFrame.selectedTab = 3
+			BankFrame.activeTabIndex = 3
+			f.reagent:Hide()
+			f.bank:Hide()
+			f.accountbank:Show()
 		end
 	end)
 	accountBankButton.title = ACCOUNT_BANK_PANEL_TITLE
@@ -437,12 +448,13 @@ function Module:CreateBankButton(f)
 	BankButton.Icon:SetAtlas("Banker")
 
 	BankButton:SetScript("OnClick", function()
-		if not C_Bank.CanViewBank(CHAR_BANK_TYPE) then
-			return
-		end
-
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 		BankFrame_ShowPanel("BankSlotsFrame") -- trigger context matching
+		_G.BankFrame.selectedTab = 1
+		_G.BankFrame.activeTabIndex = 1
+		f.reagent:Hide()
+		f.accountbank:Hide()
+		f.bank:Show()
 	end)
 
 	BankButton.title = BANK
@@ -1783,23 +1795,6 @@ function Module:OnEnable()
 	SetCVar("professionToolSlotsExampleShown", 1)
 	SetCVar("professionAccessorySlotsExampleShown", 1)
 
-	-- Bank frame paging
-	local bankNameIndex = {
-		["BankSlotsFrame"] = 1,
-		["ReagentBankFrame"] = 2,
-		["AccountBankPanel"] = 3,
-	}
-	hooksecurefunc("BankFrame_ShowPanel", function(sidePanelName)
-		local panelIndex = bankNameIndex[sidePanelName]
-		if panelIndex then
-			BankFrame.selectedTab = panelIndex
-			BankFrame.activeTabIndex = panelIndex
-			f.bank:SetShown(panelIndex == 1)
-			f.reagent:SetShown(panelIndex == 2)
-			f.accountbank:SetShown(panelIndex == 3)
-		end
-	end)
-
 	-- Delay updates for data jam
 	local updater = CreateFrame("Frame", nil, f.main)
 	updater:Hide()
@@ -1814,7 +1809,7 @@ function Module:OnEnable()
 
 	-- Event listener for GET_ITEM_INFO_RECEIVED
 	K:RegisterEvent("GET_ITEM_INFO_RECEIVED", function()
-		updater.delay = 1
+		updater.delay = 1.5
 		updater:Show()
 	end)
 end

@@ -52,6 +52,9 @@ local oUF = ns.oUF
 local runemap = { 1, 2, 3, 4, 5, 6 }
 local hasSortOrder = false
 
+-- Cache frequently used functions for better performance
+local GetTime = GetTime
+
 local function onUpdate(self, elapsed)
 	local duration = self.duration + elapsed
 	self.duration = duration

@@ -33,7 +33,7 @@ local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 local TEXTURE_ITEM_QUEST_BANG = TEXTURE_ITEM_QUEST_BANG
 local LOOT = LOOT
 
-local iconSize, lootFrame, lootFrameHolder = 38
+local iconSize, lootFrame, lootFrameHolder = 36
 
 local coinTextureIDs = {
 	[133784] = true,
@@ -146,7 +146,6 @@ local function CreateSlot(id)
 	count:SetJustifyH("RIGHT")
 	count:SetPoint("BOTTOMRIGHT", iconFrame, -2, 2)
 	count:SetFontObject(K.UIFontOutline)
-	count:SetFont(select(1, count:GetFont()), size / 2.5, select(3, count:GetFont()))
 	count:SetText(1)
 	slot.count = count
 
@@ -156,7 +155,6 @@ local function CreateSlot(id)
 	name:SetPoint("RIGHT", icon, "LEFT")
 	name:SetNonSpaceWrap(true)
 	name:SetFontObject(K.UIFontOutline)
-	name:SetFont(select(1, name:GetFont()), size / 2.5, select(3, name:GetFont()))
 	slot.name = name
 
 	local drop = slot:CreateTexture(nil, "ARTWORK")
@@ -337,8 +335,7 @@ function Module:OnEnable()
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
 	lootFrame.title:SetFontObject(K.UIFontOutline)
-	lootFrame.title:SetFont(select(1, lootFrame.title:GetFont()), 13, select(3, lootFrame.title:GetFont()))
-	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 5)
+	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 3)
 	lootFrame.slots = {}
 	lootFrame:SetScript("OnHide", FrameHide) -- mimic LootFrame_OnHide, mostly
 

@@ -40,6 +40,9 @@ local filteredStyle = {
 	["target"] = true,
 }
 
+-- Cache frequently used functions for better performance
+local K_FormatTime = K.FormatTime
+
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or not unit then
 		return
@@ -404,7 +407,7 @@ function Module.CustomFilter(element, unit, data)
 	end
 end
 
--- Post Update Runes
+-- Post Update Runes with optimized OnUpdate
 local function OnUpdateRunes(self, elapsed)
 	local duration = self.duration + elapsed
 	self.duration = duration
@@ -413,7 +416,7 @@ local function OnUpdateRunes(self, elapsed)
 	if self.timer then
 		local remain = self.runeDuration - duration
 		if remain > 0 then
-			self.timer:SetText(K.FormatTime(remain))
+			self.timer:SetText(K_FormatTime(remain))
 		else
 			self.timer:SetText(nil)
 		end

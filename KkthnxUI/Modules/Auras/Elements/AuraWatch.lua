@@ -119,26 +119,26 @@ local function ConvertTable()
 	local auraWatchList = C.AuraWatchList[K.Class]
 	for _, v in pairs(auraWatchList) do
 		if v.Name == "Special Aura" then
-			InsertData(1, v.List)
+			InsertData(2, v.List)
 		elseif v.Name == "Focus Aura" then
-			InsertData(3, v.List)
+			InsertData(5, v.List)
 		elseif v.Name == "Spell Cooldown" then
-			InsertData(4, v.List)
+			InsertData(6, v.List)
 		end
 	end
 
 	local allAuras = C.AuraWatchList["ALL"]
 	for i, v in pairs(allAuras) do
 		if v.Name == "Enchant Aura" then
-			InsertData(5, v.List)
-		elseif v.Name == "Raid Buff" then
-			InsertData(6, v.List)
-		elseif v.Name == "Raid Debuff" then
 			InsertData(7, v.List)
-		elseif v.Name == "Warning" then
-			InsertData(2, v.List)
-		elseif v.Name == "InternalCD" then
+		elseif v.Name == "Raid Buff" then
 			InsertData(8, v.List)
+		elseif v.Name == "Raid Debuff" then
+			InsertData(9, v.List)
+		elseif v.Name == "Warning" then
+			InsertData(4, v.List)
+		elseif v.Name == "InternalCD" then
+			InsertData(10, v.List)
 			IntCD = v
 			table_remove(allAuras, i)
 		end
@@ -289,10 +289,6 @@ end
 
 -- Bar mode
 local function BuildBAR(barWidth, iconSize)
-	if not barWidth or not iconSize or type(barWidth) ~= "number" or type(iconSize) ~= "number" then
-		return nil
-	end
-
 	local frame = CreateFrame("Frame", nil, K.PetBattleFrameHider)
 	frame:SetSize(iconSize, iconSize)
 	frame:CreateBorder()
@@ -440,18 +436,13 @@ function Module:AuraWatch_UpdateTimer()
 	end
 end
 
+-- Update cooldown
 function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, id, charges)
 	local frames = FrameList[index]
-	if not frames then
-		return
-	end
-
 	local frame = frames[frames.Index]
-	if not frame then
-		return
+	if frame then
+		frame:Show()
 	end
-
-	frame:Show()
 
 	if frame.Icon then
 		frame.Icon:SetTexture(icon)
@@ -474,11 +465,9 @@ function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, i
 	if frame.Statusbar then
 		frame.duration = duration
 		frame.start = start
-		frame.expires = nil
 		frame.elapsed = 0
 		frame:SetScript("OnUpdate", Module.AuraWatch_UpdateTimer)
 	end
-
 	frame.type = type
 	frame.spellID = id
 
@@ -554,7 +543,6 @@ local replacedTexture = {
 	[378770] = 236174, -- Change (Killing Strike) to the Kill Shot icon
 	[389020] = 132330, -- Change (Bullet Storm) to the Multi-Shot icon
 	[378747] = 132176, -- Change (Frenzied Pack) to the Kill Command icon
-	[472640] = 461114, -- 猪突换成眼镜蛇射击
 }
 
 function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count, duration, expires, spellID, flash)
@@ -695,15 +683,8 @@ function Module:AuraWatch_SortBars()
 end
 
 function Module:AuraWatch_IntTimer(elapsed)
-	self.elapsed = self.elapsed or 0
-
-	if type(elapsed) ~= "number" then
-		return
-	end
-
 	self.elapsed = self.elapsed + elapsed
 	local timer = self.duration - self.elapsed
-
 	if timer < 0 then
 		self:SetScript("OnUpdate", nil)
 		self:Hide()
@@ -741,15 +722,10 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 		name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(itemID)
 		frame.type = 2
 		frame.spellID = itemID
-	elseif intID and type(intID) == "number" then
+	else
 		name, icon = C_Spell_GetSpellName(intID), C_Spell_GetSpellTexture(intID)
-		if not name or not icon then
-			return
-		end
 		frame.type = 1
 		frame.spellID = intID
-	else
-		return
 	end
 
 	if unitID:lower() == "all" then
@@ -982,13 +958,15 @@ function Module:AuraWatch_Centralize(force)
 end
 
 function Module:AuraWatch_OnUpdate(elapsed)
-	if type(elapsed) ~= "number" then
-		return
-	end
-
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
 		self.elapsed = 0
+
+		-- Early exit if AuraWatch is disabled
+		if not C["AuraWatch"].Enable then
+			auraWatchUpdater:SetScript("OnUpdate", nil)
+			return
+		end
 
 		Module:AuraWatch_PreCleanup()
 		Module:AuraWatch_UpdateCD()
@@ -1002,8 +980,6 @@ function Module:AuraWatch_OnUpdate(elapsed)
 		Module:AuraWatch_Centralize()
 	end
 end
-
--- Ensure the updater script is set correctly
 auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 -- Mover

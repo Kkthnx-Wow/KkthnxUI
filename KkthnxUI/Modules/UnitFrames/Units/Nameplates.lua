@@ -60,10 +60,8 @@ local NPClassifies = {
 
 -- Specific NPCs to show
 local ShowTargetNPCs = {
-	-- [165251] = true,	-- 仙林狐狸
-	[40357] = true, -- 格瑞姆巴托火元素
-	[164702] = true, -- 食腐蛆虫
-	[174773] = true, -- 怨毒怪
+	[165251] = true, -- Fox of Xianlin
+	[174773] = true, -- Envious Monster
 }
 
 -- Init
@@ -123,7 +121,7 @@ function Module:SetupCVars()
 		nameplateOverlapH = 0.8, -- Controls the horizontal overlap of nameplates. A lower value means nameplates will be more spaced out horizontally.
 		nameplateSelectedAlpha = 1, -- Sets the transparency level for the selected nameplate (the one currently targeted). A value of 1 means fully opaque.
 		showQuestTrackingTooltips = 1, -- Enables (1) or disables (0) the display of quest-related information in tooltips.
-		nameplateSelectedScale = C["Nameplate"].SelectedScale, -- Determines the scale of the selected nameplate. A value greater than 1 enlarges the nameplate.
+		nameplateSelectedScale = 1.1, -- Determines the scale of the selected nameplate. A value greater than 1 enlarges the nameplate.
 		nameplateLargerScale = 1.1, -- Adjusts the scale of larger nameplates, such as for bosses or important enemies. Default is 1 (normal size).
 		nameplateGlobalScale = 1, -- Sets the overall scale for all nameplates. Default is 1 (normal size).
 		NamePlateHorizontalScale = 1,
@@ -895,6 +893,7 @@ function Module:CreatePlates()
 		local frameLevel = frame:GetFrameLevel()
 
 		local normalTexture = K.GetTexture(C["General"].Texture)
+		local bdTexture = K.MediaFolder .. "Textures\\bgTex"
 
 		-- Position and size
 		local myBar = CreateFrame("StatusBar", nil, frame)
@@ -919,7 +918,7 @@ function Module:CreatePlates()
 		absorbBar:SetPoint("TOP")
 		absorbBar:SetPoint("BOTTOM")
 		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
-		absorbBar:SetStatusBarTexture(normalTexture)
+		absorbBar:SetStatusBarTexture(bdTexture)
 		absorbBar:SetStatusBarColor(0.66, 1, 1)
 		absorbBar:SetFrameLevel(frameLevel)
 		absorbBar:SetAlpha(0.5)
@@ -932,7 +931,7 @@ function Module:CreatePlates()
 
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
-		overAbsorbBar:SetStatusBarTexture(normalTexture)
+		overAbsorbBar:SetStatusBarTexture(bdTexture)
 		overAbsorbBar:SetStatusBarColor(0.66, 1, 1)
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
@@ -948,7 +947,7 @@ function Module:CreatePlates()
 		healAbsorbBar:SetPoint("BOTTOM")
 		healAbsorbBar:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
 		healAbsorbBar:SetReverseFill(true)
-		healAbsorbBar:SetStatusBarTexture(normalTexture)
+		healAbsorbBar:SetStatusBarTexture(bdTexture)
 		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
@@ -996,8 +995,8 @@ function Module:CreatePlates()
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].NameplateClassPower then
-		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 8 + C["Nameplate"].PlateHeight)
-		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 8 + C["Nameplate"].PlateHeight)
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + C["Nameplate"].PlateHeight)
+		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6 + C["Nameplate"].PlateHeight)
 	else
 		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6)
 		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6)
@@ -1378,12 +1377,7 @@ function Module:CreatePlayerPlate()
 		self:Tag(self.Stagger.Value, "[monkstagger]")
 	end
 
-	if C["Nameplate"].ClassAuras then
-		local Lumos = K:GetModule("Auras")
-		if Lumos then
-			Lumos:CreateLumos(self)
-		end
-	end
+	-- Module:AvadaKedavra(self)
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()
@@ -1392,7 +1386,7 @@ function Module:CreatePlayerPlate()
 	Module:TogglePlatePower()
 
 	Module:CreateGCDTicker(self)
-	Module:UpdateTargetClassPower()
+	-- Module:UpdateTargetClassPower()
 	Module:TogglePlateVisibility()
 end
 
@@ -1461,7 +1455,7 @@ function Module:UpdateTargetClassPower()
 	if nameplate then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
-		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 24)
+		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 20)
 		bar:Show()
 	else
 		bar:Hide()

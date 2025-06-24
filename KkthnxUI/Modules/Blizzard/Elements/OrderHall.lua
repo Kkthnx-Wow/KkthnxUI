@@ -10,8 +10,8 @@ local C_Garrison_RequestClassSpecCategoryInfo = C_Garrison.RequestClassSpecCateg
 local GameTooltip = GameTooltip
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local IsShiftKeyDown = IsShiftKeyDown
-local LE_GARRISON_TYPE_7_0 = Enum.GarrisonType.Type_7_0_Garrison or Enum.GarrisonType.Type_7_0
-local LE_FOLLOWER_TYPE_GARRISON_7_0 = Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower or Enum.GarrisonFollowerType.FollowerType_7_0
+local LE_FOLLOWER_TYPE_GARRISON_7_0 = Enum.GarrisonFollowerType.FollowerType_7_0
+local LE_GARRISON_TYPE_7_0 = Enum.GarrisonType.Type_7_0
 local hooksecurefunc = hooksecurefunc
 
 function Module:OrderHall_CreateIcon()
@@ -48,27 +48,30 @@ function Module:OrderHall_CreateIcon()
 end
 
 function Module:OrderHall_Refresh()
+	-- Request class spec category info and get currency types
 	C_Garrison_RequestClassSpecCategoryInfo(LE_FOLLOWER_TYPE_GARRISON_7_0)
 	local currency = C_Garrison_GetCurrencyTypes(LE_GARRISON_TYPE_7_0)
+
+	-- Get currency info and set name, amount, and texture
 	local info = C_CurrencyInfo_GetCurrencyInfo(currency)
 	self.name = info.name
 	self.amount = info.quantity
 	self.texture = info.iconFileID
 
+	-- Get class spec category info and set category data
 	local categoryInfo = C_Garrison_GetClassSpecCategoryInfo(LE_FOLLOWER_TYPE_GARRISON_7_0)
 	for index, info in ipairs(categoryInfo) do
-		local category = self.Category
-		if not category[index] then
-			category[index] = {}
+		if not self.Category[index] then
+			self.Category[index] = {}
 		end
-
-		category[index].name = info.name
-		category[index].count = info.count
-		category[index].limit = info.limit
-		category[index].description = info.description
-		category[index].icon = info.icon
+		self.Category[index].name = info.name
+		self.Category[index].count = info.count
+		self.Category[index].limit = info.limit
+		self.Category[index].description = info.description
+		self.Category[index].icon = info.icon
 	end
 
+	-- Set the number of categories
 	self.numCategory = #categoryInfo
 end
 

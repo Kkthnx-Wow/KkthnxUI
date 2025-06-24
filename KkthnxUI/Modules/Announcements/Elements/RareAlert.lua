@@ -14,17 +14,14 @@ local date = date
 -- Cache for rare alerts and ignored zones
 local RareAlertCache = {}
 local isIgnoredZone = {
-	[1153] = true, -- 部落要塞
-	[1159] = true, -- 联盟要塞
-	[1803] = true, -- 涌泉海滩
-	[1876] = true, -- 部落激流堡
-	[1943] = true, -- 联盟激流堡
-	[2111] = true, -- 黑海岸前线
+	[1153] = true,
+	[1159] = true,
+	[1803] = true,
+	[1876] = true,
+	[1943] = true,
+	[2111] = true,
 }
-local isIgnoredIDs = {
-	[6149] = true, -- 奥妮克希亚龙蛋
-	[6699] = true, -- 错放的奇珍，地下堡
-}
+local isIgnoredIDs = { [5485] = true, [6149] = true }
 
 -- Helper function to determine if the vignette atlas is useful
 local function isUsefulAtlas(info)

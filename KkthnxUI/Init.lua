@@ -10,7 +10,6 @@ local string_lower = string.lower
 local tonumber = tonumber
 
 local BAG_ITEM_QUALITY_COLORS = BAG_ITEM_QUALITY_COLORS
-local BAG_ITEM_QUALITY_COLORS = BAG_ITEM_QUALITY_COLORS
 local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
 local COMBATLOG_OBJECT_AFFILIATION_PARTY = COMBATLOG_OBJECT_AFFILIATION_PARTY
 local COMBATLOG_OBJECT_AFFILIATION_RAID = COMBATLOG_OBJECT_AFFILIATION_RAID
@@ -28,13 +27,10 @@ local GetLocale = GetLocale
 local GetNumAddOns = C_AddOns.GetNumAddOns
 local GetPhysicalScreenSize = GetPhysicalScreenSize
 local GetRealmName = GetRealmName
-local InCombatLockdown = InCombatLockdown
 local LOCALIZED_CLASS_NAMES_FEMALE = LOCALIZED_CLASS_NAMES_FEMALE
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 local LibStub = LibStub
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local SetCVar = SetCVar
-local UIParent = UIParent
 local UnitClass = UnitClass
 local UnitFactionGroup = UnitFactionGroup
 local UnitGUID = UnitGUID
@@ -44,11 +40,11 @@ local UnitRace = UnitRace
 local UnitSex = UnitSex
 
 -- Create the Engine table and its sub-tables
-Engine[1] = {} -- K, Main functionality
-Engine[2] = {} -- C, Configuration
-Engine[3] = {} -- L, Localization
+Engine[1] = {} -- K, Main
+Engine[2] = {} -- C, Config
+Engine[3] = {} -- L, Locale
 
--- Assign the sub-tables to local variables K, C, and L for easier access
+-- Assign the sub-tables to variables K, C, and L
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
@@ -172,20 +168,12 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[Enum.ItemQuality.Poor] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 } -- This is the default color, but it's included here for completeness.
 
--- Update EventFrame Script for Reduced Taint Risk
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
-	local eventFuncs = events[event]
-	if eventFuncs then
-		for func in pairs(eventFuncs) do
-			local success, err
-			if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-				success, err = pcall(func, event, CombatLogGetCurrentEventInfo())
-			else
-				success, err = pcall(func, event, ...)
-			end
-			if not success then
-				print("Error in event handler for event:", event, "-", err)
-			end
+	for func in pairs(events[event]) do
+		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+			func(event, CombatLogGetCurrentEventInfo())
+		else
+			func(event, ...)
 		end
 	end
 end)
@@ -193,11 +181,6 @@ end)
 function K:RegisterEvent(event, func, unit1, unit2)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
-	end
-
-	-- Check if the event is already registered with the function
-	if events[event] and events[event][func] then
-		return
 	end
 
 	if not events[event] then
@@ -243,7 +226,6 @@ function K:UnregisterEvent(event, func)
 end
 
 function K:NewModule(name)
-	assert(type(name) == "string", "Module name must be a string.")
 	assert(not modules[name], ("Module '%s' already exists."):format(name))
 	local module = { name = name }
 	modules[name] = module
@@ -252,7 +234,6 @@ function K:NewModule(name)
 end
 
 function K:GetModule(name)
-	assert(type(name) == "string", "Module name must be a string.")
 	local module = modules[name]
 	assert(module, ("Cannot find module '%s'."):format(name))
 	return module
@@ -263,8 +244,7 @@ local function GetBestScale()
 	return K.Round(scale, 2)
 end
 
--- Function to set up UI scale
-function K:SetupUIScale(init)
+function K.SetupUIScale(init)
 	if C["General"].AutoScale then
 		C["General"].UIScale = GetBestScale()
 	end
@@ -279,21 +259,21 @@ function K:SetupUIScale(init)
 	end
 end
 
--- Function to update pixel scale
 local function UpdatePixelScale(event)
-	if isScaling or InCombatLockdown() then
-		-- Avoid taint during combat or recursive updates
+	if isScaling then
+		-- Do not update the pixel scale while it is already being updated
 		return
 	end
-
 	isScaling = true
 
 	if event == "UI_SCALE_CHANGED" then
-		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize() -- Ensure globals are updated
+		-- If the UI scale has changed, update the screen width and height
+		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 	end
 
-	K:SetupUIScale(true)
-	K:SetupUIScale()
+	-- Initialize and setup the UIScale
+	K.SetupUIScale(true)
+	K.SetupUIScale()
 
 	isScaling = false
 end
@@ -304,7 +284,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	SetCVar("ActionButtonUseKeyDown", 1)
 
 	-- Set up UI scaling
-	K:SetupUIScale()
+	K.SetupUIScale()
 
 	-- Register event for UI scale change
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
@@ -336,18 +316,15 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	end
 end)
 
--- Register event for player level up
+-- https://wowpedia.fandom.com/wiki/PLAYER_LEVEL_UP
 K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
--- Initialize AddOn information
 for i = 1, GetNumAddOns() do
-	local name, _, _, _, reason = GetAddOnInfo(i)
-	local lowerName = string.lower(name)
-	K.AddOns[lowerName] = GetAddOnEnableState(K.Name, name) == 2 and (not reason or reason ~= "DEMAND_LOADED")
-	K.AddOnVersion[lowerName] = C_AddOns.GetAddOnMetadata(name, "Version")
+	local Name, _, _, _, Reason = GetAddOnInfo(i)
+	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
+	K.AddOnVersion[string_lower(Name)] = C_AddOns_GetAddOnMetadata(Name, "Version")
 end
 
--- Expose the Engine globally
 _G.KkthnxUI = Engine

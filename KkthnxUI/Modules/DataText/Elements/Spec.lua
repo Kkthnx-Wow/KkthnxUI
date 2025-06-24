@@ -19,7 +19,7 @@ local currentSpecIndex, currentLootIndex, newMenu, numSpecs, numLocal
 
 local eventList = {
 	"PLAYER_ENTERING_WORLD",
-	"ACTIVE_TALENT_GROUP_CHANGED",
+	"ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
 	"PLAYER_LOOT_SPEC_UPDATED",
 }
 
@@ -43,7 +43,7 @@ local function OnEvent()
 end
 
 local pvpTalents
-local pvpIconTexture = C_CurrencyInfo.GetCurrencyInfo(104).iconFileID
+local pvpIconTexture = C_CurrencyInfo.GetCurrencyInfo(1792).iconFileID
 
 local function OnEnter()
 	if not currentSpecIndex or currentSpecIndex == 5 then
@@ -227,12 +227,12 @@ local function BuildSpecMenu()
 	numLocal = #newMenu
 
 	refreshDefaultLootSpec()
-	K:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", refreshDefaultLootSpec)
+	K:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", refreshDefaultLootSpec)
 
 	refreshAllTraits()
 	K:RegisterEvent("TRAIT_CONFIG_DELETED", refreshAllTraits)
 	K:RegisterEvent("TRAIT_CONFIG_UPDATED", refreshAllTraits)
-	K:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", refreshAllTraits)
+	K:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", refreshAllTraits)
 end
 
 local function OnMouseUp(self, btn)

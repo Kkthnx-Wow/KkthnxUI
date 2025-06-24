@@ -20,7 +20,6 @@ local list = {
 		{ AuraID = 443531, UnitID = "player" }, -- 振奋之光
 		{ AuraID = 435493, UnitID = "player" }, -- 死亡之吻
 		{ AuraID = 455451, UnitID = "player" }, -- 迅芯烛台
-		{ AuraID = 445560, UnitID = "player" }, -- 紫蛋
 		{ AuraID = 449954, UnitID = "player" }, -- 奸邪发射机
 		{ AuraID = 449947, UnitID = "player", Text = NPE_JUMP }, -- 奸邪发射机，跳3下
 		-- 10.0 饰品
@@ -114,6 +113,8 @@ local list = {
 		{ AuraID = 80353, UnitID = "player" }, -- 时间扭曲
 		{ AuraID = 264667, UnitID = "player" }, -- 原始狂怒
 		{ AuraID = 390386, UnitID = "player" }, -- 守护巨龙之怒，龙希尔
+		{ AuraID = 363534, UnitID = "player" }, -- 回溯，龙希尔
+		{ AuraID = 357170, UnitID = "player" }, -- 时间膨胀，龙希尔
 		{ AuraID = 178207, UnitID = "player" }, -- 狂怒战鼓
 		{ AuraID = 230935, UnitID = "player" }, -- 高山战鼓
 		{ AuraID = 256740, UnitID = "player" }, -- 漩涡战鼓
@@ -121,7 +122,6 @@ local list = {
 		{ AuraID = 102364, UnitID = "player" }, -- 青铜龙的祝福
 		{ AuraID = 292686, UnitID = "player" }, -- 制皮鼓
 		{ AuraID = 381301, UnitID = "player" }, -- 野性皮革战鼓
-		{ AuraID = 466904, UnitID = "player" }, -- 鹞鹰尖啸，射击
 		-- 团队增益或减伤
 		{ AuraID = 1022, UnitID = "player" }, -- 保护祝福
 		{ AuraID = 6940, UnitID = "player" }, -- 牺牲祝福
@@ -152,8 +152,6 @@ local list = {
 		{ AuraID = 238698, UnitID = "player" }, -- 吸血光环
 		{ AuraID = 209426, UnitID = "player" }, -- 幻影打击
 		{ AuraID = 374227, UnitID = "player" }, -- 微风
-		{ AuraID = 363534, UnitID = "player" }, -- 回溯，龙希尔
-		{ AuraID = 357170, UnitID = "player" }, -- 时间膨胀，龙希尔
 		{ AuraID = 114018, UnitID = "player", Flash = true }, -- 帷幕
 		{ AuraID = 115834, UnitID = "player", Flash = true },
 	},
@@ -233,12 +231,6 @@ local list = {
 		{ AuraID = 345323, UnitID = "player", Flash = true }, -- 通灵战潮，勇士之赐
 		{ AuraID = 320366, UnitID = "player", Flash = true }, -- 通灵战潮，防腐剂
 		{ AuraID = 325027, UnitID = "player", Flash = true }, -- 仙林，荆棘爆发
-		-- S2
-		{ AuraID = 291937, UnitID = "player", Flash = true }, -- 车间，垃圾掩体
-		{ AuraID = 259533, UnitID = "player", Flash = true }, -- 艾泽里特催化剂，暴富
-		{ AuraID = 333299, UnitID = "player" }, -- 伤逝剧场，荒芜诅咒
-		{ AuraID = 319637, UnitID = "player" }, -- 伤逝剧场，魂魄归体
-		{ AuraID = 330725, UnitID = "player", Flash = true }, -- 伤逝剧场，暗影易伤
 		-- Raids
 		{ AuraID = 464748, UnitID = "player", Flash = true }, -- 束缚之网，流丝
 	},
@@ -301,15 +293,8 @@ local list = {
 		{ AuraID = 328351, UnitID = "target", Flash = true }, -- 通灵战潮，染血长枪
 		{ AuraID = 273721, UnitID = "target", Flash = true }, -- 围攻，1号易伤
 		{ AuraID = 423588, UnitID = "target", Value = true }, -- 修道院，圣光屏障
-		{ AuraID = 423839, UnitID = "target", Value = true }, -- 风暴复仇，驭雷栖巢
-		{ AuraID = 445256, UnitID = "target", Value = true }, -- 虚空壳壁，驭雷栖巢
 		-- S1
 		{ AuraID = 445409, UnitID = "target", Value = true }, -- 加固壳壁，斯卡莫拉克
-		-- S2
-		{ AuraID = 320293, UnitID = "target", Value = true }, -- 伤逝剧场，融入死亡
-		{ AuraID = 331275, UnitID = "target", Flash = true }, -- 伤逝剧场，不灭护卫
-		{ AuraID = 256493, UnitID = "target" }, -- 炽燃的艾泽里特，矿区1
-		{ AuraID = 271867, UnitID = "target" }, -- 氪金致胜，矿区1
 		-- Raids
 		{ AuraID = 440177, UnitID = "target", Flash = true }, -- 准备饕餮，噬灭者乌格拉克斯
 		{ AuraID = 450980, UnitID = "target", Value = true }, -- 存在瓦解，阿努巴拉什

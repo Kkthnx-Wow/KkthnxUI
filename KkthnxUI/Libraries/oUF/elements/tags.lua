@@ -599,19 +599,29 @@ eventFrame:SetScript("OnEvent", function(self, event, unit)
 	end
 end)
 
+-- Cache frequently used functions for better performance
+local table_wipe = table.wipe
+local next = next
+
 local eventTimer = 0
 local eventTimerThreshold = 0.1
 
 eventFrame:SetScript("OnUpdate", function(self, elapsed)
 	eventTimer = eventTimer + elapsed
 	if eventTimer >= eventTimerThreshold then
+		-- Early exit if no strings to update
+		if not next(stringsToUpdate) then
+			eventTimer = 0
+			return
+		end
+
 		for fs in next, stringsToUpdate do
 			if fs:IsVisible() then
 				fs:UpdateTag()
 			end
 		end
 
-		table.wipe(stringsToUpdate)
+		table_wipe(stringsToUpdate)
 
 		eventTimer = 0
 	end
@@ -629,6 +639,12 @@ local function enableTimer(timer)
 		frame = CreateFrame("Frame")
 		frame:SetScript("OnUpdate", function(self, elapsed)
 			if total >= timer then
+				-- Early exit if no strings to update
+				if not next(strings) then
+					total = 0
+					return
+				end
+
 				for fs in next, strings do
 					if fs.parent:IsShown() and unitExists(fs.parent.unit) then
 						fs:UpdateTag()

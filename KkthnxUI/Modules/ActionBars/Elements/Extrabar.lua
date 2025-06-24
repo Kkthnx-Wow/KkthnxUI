@@ -22,16 +22,19 @@ function Module:CreateExtrabar()
 	frame:SetHeight(size + 2 * padding)
 	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 294, 100 })
 
+	ExtraAbilityContainer:SetScript("OnShow", nil)
+	ExtraAbilityContainer:SetScript("OnUpdate", nil)
+	ExtraAbilityContainer.OnUpdate = nil -- remove BaseLayoutMixin.OnUpdate
+	ExtraAbilityContainer.IsLayoutFrame = nil -- dont let it get readded
+	ExtraAbilityContainer:KillEditMode()
+
 	ExtraActionBarFrame:EnableMouse(false)
 	ExtraActionBarFrame:ClearAllPoints()
 	ExtraActionBarFrame:SetPoint("CENTER", frame)
-	ExtraActionBarFrame.ignoreFramePositionManager = true
 
-	hooksecurefunc(ExtraActionBarFrame, "SetParent", function(self, parent)
-		if parent == ExtraAbilityContainer then
-			self:SetParent(frame)
-		end
-	end)
+	ExtraActionBarFrame.ignoreInLayout = true
+	ExtraActionBarFrame:SetIgnoreParentScale(true)
+	ExtraActionBarFrame:SetScale(UIParent:GetScale())
 
 	local button = ExtraActionButton1
 	tinsert(buttonList, button)
@@ -50,24 +53,22 @@ function Module:CreateExtrabar()
 	ZoneAbilityFrame:SetParent(zoneFrame)
 	ZoneAbilityFrame:ClearAllPoints()
 	ZoneAbilityFrame:SetPoint("CENTER", zoneFrame)
-	ZoneAbilityFrame.ignoreFramePositionManager = true
+	ZoneAbilityFrame.ignoreInLayout = true
 	ZoneAbilityFrame.Style:SetAlpha(0)
 
 	hooksecurefunc(ZoneAbilityFrame, "UpdateDisplayedZoneAbilities", function(self)
 		for spellButton in self.SpellButtonContainer:EnumerateActive() do
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
-				spellButton:SetPushedTexture(0)
+				spellButton:SetPushedTexture(0) -- force it to gain a texture
 				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
 				spellButton:GetHighlightTexture():SetAllPoints()
 				spellButton.Icon:SetAllPoints()
-				spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
-
+				spellButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				local bg = CreateFrame("Frame", nil, spellButton, "BackdropTemplate")
 				bg:SetAllPoints(spellButton)
 				bg:SetFrameLevel(spellButton:GetFrameLevel())
 				bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 1, 1, 1 })
-
 				spellButton.styled = true
 			end
 		end

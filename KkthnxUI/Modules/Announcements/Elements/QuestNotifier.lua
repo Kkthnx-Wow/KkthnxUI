@@ -107,11 +107,6 @@ local questMatchPatterns = {
 
 -- Find quest progress based on UI message
 function Module:FindQuestProgress(_, message)
-	-- Validate configurations and input
-	if not message then
-		return
-	end
-
 	if not C["Announcements"].QuestProgress or C["Announcements"].OnlyCompleteRing then
 		return
 	end
@@ -120,14 +115,13 @@ function Module:FindQuestProgress(_, message)
 		if match(message, pattern) then
 			local _, _, _, current, maximum = find(message, "(.*)[:]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
 			current, maximum = tonumber(current), tonumber(maximum)
-			if current and maximum then
-				if maximum >= 10 and mod(current, floor(maximum / 5)) == 0 then
-					SendQuestMessage(message)
-				elseif maximum < 10 then
+			if current and maximum and maximum >= 10 then
+				if mod(current, floor(maximum / 5)) == 0 then
 					SendQuestMessage(message)
 				end
+			else
+				SendQuestMessage(message)
 			end
-
 			break
 		end
 	end

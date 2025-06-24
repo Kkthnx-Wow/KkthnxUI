@@ -12,6 +12,7 @@ local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local CombatLogClearEntries = CombatLogClearEntries
 local DoReadyCheck = DoReadyCheck
 local GetContainerItemLink = GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots
 local GetItemInfo = GetItemInfo
 local PlaySound = PlaySound
 local UIErrorsFrame = UIErrorsFrame

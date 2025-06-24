@@ -24,10 +24,19 @@ local function formatCoords()
 	return string_format("%.1f, %.1f", coordX * 100, coordY * 100)
 end
 
+-- Cache frequently used functions for better performance
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local K_GetPlayerMapPos = K.GetPlayerMapPos
+
 local function OnUpdate(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local x, y = K.GetPlayerMapPos(C_Map.GetBestMapForUnit("player"))
+		-- Early exit if CoordsDataText doesn't exist
+		if not CoordsDataText or not CoordsDataText.Text then
+			return
+		end
+
+		local x, y = K_GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
 		if x then
 			coordX, coordY = x, y
 			CoordsDataText.Text:SetText(formatCoords())

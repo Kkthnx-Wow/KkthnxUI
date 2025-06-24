@@ -201,7 +201,7 @@ local function UpdatePips(element, numStages)
 end
 
 --[[ Override: Castbar:ShouldShow(unit)
-Handles check for which unit the castbar should show for. 
+Handles check for which unit the castbar should show for.
 Defaults to the object unit.
 
 * self - the Castbar widget
@@ -467,6 +467,9 @@ local function CastInterruptible(self, event, unit)
 		return element:PostCastInterruptible(unit)
 	end
 end
+
+-- Cache frequently used functions for better performance
+local resetAttributes = resetAttributes
 
 local function onUpdate(self, elapsed)
 	if self.casting or self.channeling or self.empowering then

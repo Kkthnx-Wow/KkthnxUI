@@ -134,12 +134,18 @@ local function updateTimerFormat(color, hour, minute)
 	end
 end
 
--- Declare onUpdateTimer as a local variable
-local onUpdateTimer = onUpdateTimer or 3
+-- Declare onUpdateTimer as a local variable with better throttling
+local onUpdateTimer = 0
+local UPDATE_INTERVAL = 5 -- Update every 5 seconds instead of variable timing
 
 local function OnUpdate(_, elapsed)
 	onUpdateTimer = onUpdateTimer + elapsed
-	if onUpdateTimer > 5 then
+	if onUpdateTimer > UPDATE_INTERVAL then
+		-- Early exit if TimeDataText doesn't exist
+		if not TimeDataText or not TimeDataText.Text then
+			return
+		end
+
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
 		local hour, minute
 		if GetCVarBool("timeMgrUseLocalTime") then
@@ -244,9 +250,7 @@ local delveList = {
 	{ uiMapID = 2214, delveID = 7788 }, -- The Dread Pit
 	{ uiMapID = 2255, delveID = 7790 }, -- The Spiral Weave
 	{ uiMapID = 2255, delveID = 7784 }, -- Tak-Rethan Abyss
-	{ uiMapID = 2255, delveID = 7786 }, -- The Underkeep
-	{ uiMapID = 2346, delveID = 8246 },
-	{ uiMapID = 2214, delveID = 8181 },
+	{ uiMapID = 2255, delveID = 7786 }, -- TThe Underkeep
 }
 
 -- Elemental invasion

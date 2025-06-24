@@ -42,10 +42,6 @@ function Module:CreatePlayer()
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
-	if not self then
-		return
-	end
-
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetFrameStrata(self:GetFrameStrata())
 	Overlay:SetFrameLevel(5)
@@ -260,6 +256,7 @@ function Module:CreatePlayer()
 		local frameLevel = frame:GetFrameLevel()
 
 		local normalTexture = K.GetTexture(C["General"].Texture)
+		local bdTexture = K.MediaFolder .. "Textures\\bgTex"
 
 		-- Position and size
 		local myBar = CreateFrame("StatusBar", nil, frame)
@@ -284,7 +281,7 @@ function Module:CreatePlayer()
 		absorbBar:SetPoint("TOP")
 		absorbBar:SetPoint("BOTTOM")
 		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
-		absorbBar:SetStatusBarTexture(normalTexture)
+		absorbBar:SetStatusBarTexture(bdTexture)
 		absorbBar:SetStatusBarColor(0.66, 1, 1)
 		absorbBar:SetFrameLevel(frameLevel)
 		absorbBar:SetAlpha(0.5)
@@ -297,7 +294,7 @@ function Module:CreatePlayer()
 
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
-		overAbsorbBar:SetStatusBarTexture(normalTexture)
+		overAbsorbBar:SetStatusBarTexture(bdTexture)
 		overAbsorbBar:SetStatusBarColor(0.66, 1, 1)
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
@@ -313,7 +310,7 @@ function Module:CreatePlayer()
 		healAbsorbBar:SetPoint("BOTTOM")
 		healAbsorbBar:SetPoint("RIGHT", Health:GetStatusBarTexture())
 		healAbsorbBar:SetReverseFill(true)
-		healAbsorbBar:SetStatusBarTexture(normalTexture)
+		healAbsorbBar:SetStatusBarTexture(bdTexture)
 		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
@@ -465,21 +462,21 @@ function Module:CreatePlayer()
 
 		local two = CreateFrame("StatusBar", nil, bar)
 		two:SetStatusBarTexture(UnitframeTexture)
-		two:SetStatusBarColor(0.20, 0.60, 0.80) -- Light blue color
+		two:SetStatusBarColor(0.8, 0.8, 0.8)
 		two:CreateBorder()
 		two:Hide()
 		two:SetAllPoints()
 
 		local main = CreateFrame("StatusBar", nil, bar)
 		main:SetStatusBarTexture(UnitframeTexture)
-		main:SetStatusBarColor(0.20, 0.80, 0.20) -- Light green color
+		main:SetStatusBarColor(0.8, 0.8, 0.8)
 		main:CreateBorder()
 		main:Hide()
 		main:SetAllPoints()
 
 		local off = CreateFrame("StatusBar", nil, bar)
 		off:SetStatusBarTexture(UnitframeTexture)
-		off:SetStatusBarColor(0.80, 0.20, 0.20) -- Light red color
+		off:SetStatusBarColor(0.8, 0.8, 0.8)
 		off:CreateBorder()
 		off:Hide()
 		if C["Unitframe"].OffOnTop then

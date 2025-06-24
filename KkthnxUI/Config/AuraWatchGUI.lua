@@ -585,14 +585,14 @@ local function CreatePanel()
 		tabs[i]:SetSize(130, 28)
 		tabs[i]:CreateBorder()
 		local label = K.CreateFontString(tabs[i], 15, group, "", "system", "LEFT", 10, 0)
-		if i == 8 then
+		if i == 10 then
 			label:SetTextColor(0, 0.8, 0.3)
 		end
 		tabs[i].Page = createPage(group)
 		tabs[i].List = AW_CreateScroll(tabs[i].Page, 575, 200, L["AuraWatch List"])
 
 		local Option = {}
-		if i < 8 then
+		if i < 10 then
 			for _, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]) do
 				AddAura(tabs[i].List.child, i, v)
 			end
@@ -638,7 +638,7 @@ local function CreatePanel()
 					end
 				end)
 			end
-		elseif i == 8 then
+		elseif i == 10 then
 			for _, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) do
 				AddInternal(tabs[i].List.child, i, v)
 			end
@@ -655,7 +655,7 @@ local function CreatePanel()
 		clear.text = K.CreateFontString(clear, 12, KEY_NUMLOCK_MAC, "", true)
 		clear:SetPoint("TOPRIGHT", -100, -90)
 		clear:SetScript("OnClick", function()
-			if i < 8 then
+			if i < 10 then
 				for j = 2, 12 do
 					AW_ClearEdit(Option[j])
 				end
@@ -673,7 +673,7 @@ local function CreatePanel()
 		add.text = K.CreateFontString(add, 12, ADD, "", true)
 		add:SetPoint("TOPRIGHT", -30, -90)
 		add:SetScript("OnClick", function()
-			if i < 8 then
+			if i < 10 then
 				local typeID, spellID, unitID, slotID, totemID = Option[1].Text:GetText(), tonumber(Option[2]:GetText()), Option[3].Text:GetText()
 				for i = 1, #Option[11].options do
 					if Option[11].options[i].selected then
@@ -716,7 +716,7 @@ local function CreatePanel()
 				for i = 2, 12 do
 					AW_ClearEdit(Option[i])
 				end
-			elseif i == 8 then
+			elseif i == 10 then
 				local intID, duration, trigger, unit, itemID = tonumber(Option[13]:GetText()), tonumber(Option[14]:GetText()), Option[15].Text:GetText(), Option[16].Text:GetText(), tonumber(Option[17]:GetText())
 				if not intID or not duration or not trigger or not unit then
 					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incomplete Input"])
@@ -775,4 +775,4 @@ SlashCmdList["KKUI_AWCONFIG"] = function()
 	CreatePanel()
 end
 SLASH_KKUI_AWCONFIG1 = "/kkaurawatch"
-SLASH_KKUI_AWCONFIG1 = "/kkaw"
+SLASH_KKUI_AWCONFIG2 = "/kkaw"

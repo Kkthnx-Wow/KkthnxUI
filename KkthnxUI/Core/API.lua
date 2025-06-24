@@ -26,12 +26,11 @@ end
 do
 	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
 
-	K.UIFrameHider = CreateFrame("Frame", nil, UIParent)
-	K.UIFrameHider:SetPoint("BOTTOM")
-	K.UIFrameHider:SetSize(1, 1)
+	K.UIFrameHider = CreateFrame("Frame")
 	K.UIFrameHider:Hide()
 
 	K.PetBattleFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	K.PetBattleFrameHider:SetAllPoints()
 	K.PetBattleFrameHider:SetFrameStrata("LOW")
 	RegisterStateDriver(K.PetBattleFrameHider, "visibility", "[petbattle] hide; show")
 end
@@ -196,12 +195,17 @@ end
 
 -- Kill Function
 local function Kill(object)
+	-- Check if the object has an "UnregisterAllEvents" method
 	if object.UnregisterAllEvents then
+		-- Unregister all events for the object
 		object:UnregisterAllEvents()
+		-- Set the object's parent to K.UIFrameHider (likely a hidden frame used for hiding objects)
 		object:SetParent(K.UIFrameHider)
 	else
+		-- If the object does not have an "UnregisterAllEvents" method, set its "Show" method to its "Hide" method
 		object.Show = object.Hide
 	end
+	-- Hide the object
 	object:Hide()
 end
 
@@ -539,45 +543,65 @@ local function SkinScrollBar(self)
 	K.ReskinArrow(down, "down")
 end
 
+local function KillEditMode(object)
+	object.HighlightSystem = K.Noop
+	object.ClearHighlight = K.Noop
+end
+
 -- Add API Function
 local function addapi(object)
 	local mt = getmetatable(object).__index
 
-	if not mt.CreateBorder then
+	if not object.CreateBorder then
 		mt.CreateBorder = CreateBorder
 	end
-	if not mt.CreateBackdrop then
+
+	if not object.CreateBackdrop then
 		mt.CreateBackdrop = CreateBackdrop
 	end
-	if not mt.CreateShadow then
+
+	if not object.CreateShadow then
 		mt.CreateShadow = CreateShadow
 	end
-	if not mt.Kill then
+
+	if not object.Kill then
 		mt.Kill = Kill
 	end
-	if not mt.SkinButton then
+
+	if not object.SkinButton then
 		mt.SkinButton = SkinButton
 	end
-	if not mt.StripTextures then
+
+	if not object.StripTextures then
 		mt.StripTextures = StripTextures
 	end
-	if not mt.StyleButton then
+
+	if not object.StyleButton then
 		mt.StyleButton = StyleButton
 	end
-	if not mt.SkinCloseButton then
+
+	if not object.SkinCloseButton then
 		mt.SkinCloseButton = SkinCloseButton
 	end
-	if not mt.SkinCheckBox then
+
+	if not object.SkinCheckBox then
 		mt.SkinCheckBox = SkinCheckBox
 	end
-	if not mt.SkinEditBox then
+
+	if not object.SkinEditBox then
 		mt.SkinEditBox = SkinEditBox
 	end
-	if not mt.SkinScrollBar then
+
+	if not object.SkinScrollBar then
 		mt.SkinScrollBar = SkinScrollBar
 	end
-	if not mt.HideBackdrop then
+
+	if not object.HideBackdrop then
 		mt.HideBackdrop = HideBackdrop
+	end
+
+	if not object.KillEditMode then
+		mt.KillEditMode = KillEditMode
 	end
 end
 
@@ -591,9 +615,10 @@ addapi(object:CreateMaskTexture())
 
 object = EnumerateFrames()
 while object do
-	if not object:IsForbidden() and not handled[object:GetObjectType()] then
+	local objType = object:GetObjectType()
+	if not object:IsForbidden() and not handled[objType] then
 		addapi(object)
-		handled[object:GetObjectType()] = true
+		handled[objType] = true
 	end
 
 	object = EnumerateFrames(object)

@@ -37,23 +37,15 @@ local function AddBankTabSettingsToTooltip(tooltip, depositFlags)
 end
 
 local function UpdateTooltip(self, id)
-	if not AccountBankPanel.purchasedBankTabData then
-		return
-	end
-
 	local data = AccountBankPanel.purchasedBankTabData[id]
 	if not data then
 		return
 	end
 
-	if not data then
-		GameTooltip:AddLine("You need to disable the addon and use the default bank frame to purchase additional tabs.", 1, 0, 0, 1)
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR)
-		AddBankTabSettingsToTooltip(GameTooltip, data.depositFlags)
-		GameTooltip_AddInstructionLine(GameTooltip, BANK_TAB_TOOLTIP_CLICK_INSTRUCTION)
-	end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR)
+	AddBankTabSettingsToTooltip(GameTooltip, data.depositFlags)
+	GameTooltip_AddInstructionLine(GameTooltip, BANK_TAB_TOOLTIP_CLICK_INSTRUCTION)
 	GameTooltip:Show()
 end
 
@@ -152,29 +144,25 @@ function BagTab:UpdateButton()
 end
 
 function BagTab:OnClick(btn)
-	if not AccountBankPanel.purchasedBankTabData then
-		return
-	end
-
 	local currentTabID = self:GetID()
 	local data = AccountBankPanel.purchasedBankTabData[currentTabID]
 	if not data then
-		-- StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, { bankType = ACCOUNT_BANK_TYPE })
-	else
-		if btn == "LeftButton" then
-			self.bar.buttons[currentTabID]:UpdateButton()
-		else -- right button
-			local menu = AccountBankPanel.TabSettingsMenu
-			if menu then
-				if menu:IsShown() then
-					menu:Hide()
-				end
-				menu:SetParent(UIParent)
-				menu:ClearAllPoints()
-				menu:SetPoint("CENTER", 0, 100)
-				menu:EnableMouse(true)
-				menu:TriggerEvent(BankPanelTabSettingsMenuMixin.Event.OpenTabSettingsRequested, self.bagId)
+		return
+	end
+
+	if btn == "LeftButton" then
+		self.bar.buttons[currentTabID]:UpdateButton()
+	else -- right button
+		local menu = AccountBankPanel.TabSettingsMenu
+		if menu then
+			if menu:IsShown() then
+				menu:Hide()
 			end
+			menu:SetParent(UIParent)
+			menu:ClearAllPoints()
+			menu:SetPoint("CENTER", 0, 100)
+			menu:EnableMouse(true)
+			menu:TriggerEvent(BankPanelTabSettingsMenuMixin.Event.OpenTabSettingsRequested, self.bagId)
 		end
 	end
 end
@@ -208,10 +196,6 @@ cargBags:RegisterPlugin("BagTab", function(self, bags)
 	end
 
 	hooksecurefunc(AccountBankPanel, "RefreshBankTabs", function(self)
-		if not AccountBankPanel.purchasedBankTabData then
-			return
-		end
-
 		for index, data in pairs(self.purchasedBankTabData) do
 			bar.buttons[index].Icon:SetTexture(data.icon)
 		end

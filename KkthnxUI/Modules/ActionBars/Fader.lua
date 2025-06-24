@@ -208,10 +208,6 @@ function Module:UpdateFaderState()
 end
 
 function Module:SetupFlyoutButton(button)
-	if not button then
-		return
-	end
-
 	button:HookScript("OnEnter", Module.FlyoutButton_OnEnter)
 	button:HookScript("OnLeave", Module.FlyoutButton_OnLeave)
 end

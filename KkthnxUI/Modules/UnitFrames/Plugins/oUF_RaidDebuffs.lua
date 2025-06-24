@@ -311,7 +311,7 @@ end
 
 -- After each write to the cache the display also needs to be updated.
 -- Struncture of the cache is: table<auraInstanceID, aura<priority, AuraData>>
-cacheWrite = function(self, unit, auraInstanceID, priority, AuraData)
+local function cacheWrite(self, unit, auraInstanceID, priority, AuraData)
 	local debuffCache = self.RaidDebuffs.debuffCache
 
 	if not priority or not AuraData then

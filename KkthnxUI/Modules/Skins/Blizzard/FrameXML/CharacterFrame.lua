@@ -51,7 +51,6 @@ local function updateIconBorderColor(slot, r, g, b)
 	if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
 		r, g, b = 1, 1, 1
 	end
-
 	if slot.KKUI_Border then
 		slot.KKUI_Border:SetVertexColor(r, g, b)
 	end

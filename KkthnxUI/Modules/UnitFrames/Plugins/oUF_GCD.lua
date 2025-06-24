@@ -1,4 +1,4 @@
--- Based on oUF_GCD(by ALZA)
+--	Based on oUF_GCD(by ALZA)
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
@@ -26,22 +26,15 @@ end
 
 local function Update(self)
 	local bar = self.GCD
-	local spellCooldownInfo = C_Spell.GetSpellCooldown(61304)
-	if spellCooldownInfo then
-		local start, dur = spellCooldownInfo.startTime, spellCooldownInfo.duration
-		if dur and dur > 0 and dur <= 2 then
-			bar:Show()
-			usingspell = 1
-			starttime, duration = start, dur
-		elseif usingspell == 1 and dur == 0 then
-			bar:Hide()
-			usingspell = 0
-		end
+	local start, dur = C_Spell.GetSpellCooldown(61304)
+	if dur and dur > 0 and dur <= 2 then
+		bar:Show()
+		usingspell = 1
+		starttime, duration = start, dur
+	elseif usingspell == 1 and dur == 0 then
+		bar:Hide()
+		usingspell = 0
 	end
-end
-
-local function ForceUpdate(element)
-	return Update(element.__owner)
 end
 
 local function Enable(self)
@@ -63,7 +56,7 @@ local function Enable(self)
 		element:SetScript("OnShow", OnShow)
 		element:SetScript("OnHide", OnHide)
 
-		self:RegisterEvent("SPELL_UPDATE_COOLDOWN", Update, true)
+		self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Update, true)
 
 		return true
 	end
@@ -74,7 +67,7 @@ local function Disable(self)
 	if element then
 		element:Hide()
 
-		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN", Update)
+		self:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Update)
 	end
 end
 
