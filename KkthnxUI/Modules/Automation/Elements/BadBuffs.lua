@@ -7,13 +7,28 @@ local C_UnitAuras_GetBuffDataByIndex = C_UnitAuras.GetBuffDataByIndex
 local C_Spell_GetSpellLink = C_Spell.GetSpellLink
 
 -- Function to check for bad buffs and remove them
-local function CheckAndRemoveBadBuffs(event)
+local function CheckAndRemoveBadBuffs(event, unit)
+	-- Early exit if feature is disabled
+	if not C["Automation"].NoBadBuffs then
+		return
+	end
+
+	-- Only process player unit
+	if unit and unit ~= "player" then
+		return
+	end
+
 	-- Early exit if in combat, register for PLAYER_REGEN_ENABLED to retry after combat ends
 	if InCombatLockdown() then
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", CheckAndRemoveBadBuffs)
 		return
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED", CheckAndRemoveBadBuffs)
+	end
+
+	-- Check if bad buffs table exists
+	if not C.CheckBadBuffs then
+		return
 	end
 
 	-- Loop through buffs on the player

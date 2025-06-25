@@ -44,6 +44,26 @@ local IntCD = {}
 local myTable = {}
 local cooldownTable = {}
 
+-- Frame pooling for better memory management (DISABLED - causing errors)
+-- local framePool = {}
+-- local function GetFrameFromPool(frameType, ...)
+-- 	if frameType == "ICON" then
+-- 		return BuildICON(...)
+-- 	elseif frameType == "BAR" then
+-- 		return BuildBAR(...)
+-- 	end
+-- 	return nil
+-- end
+
+-- local function ReturnFrameToPool(frame)
+-- 	-- Temporarily disabled to fix error
+-- 	-- if frame and framePool then
+-- 	-- 	frame:Hide()
+-- 	-- 	frame:SetScript("OnUpdate", nil)
+-- 	-- 	table_insert(framePool, frame)
+-- 	-- end
+-- end
+
 -- Data conversion
 local function DataAnalyze(v)
 	local newTable = {}
@@ -76,12 +96,16 @@ local function RecycleTable(t)
 		return
 	end
 
-	for k in pairs(t) do
-		t[k] = nil
+	-- Use table.clear if available (Lua 5.4+), otherwise clear manually
+	if table.clear then
+		table.clear(t)
+	else
+		for k in pairs(t) do
+			t[k] = nil
+		end
 	end
 
-	-- Set table to nil to ensure proper garbage collection
-	return nil
+	return t -- Return the same table instead of nil for reuse
 end
 
 local function InsertData(index, target)
@@ -163,19 +187,13 @@ local function BuildAuraList()
 end
 
 local function BuildUnitIDTable()
-	local existingUnits = {}
-	for _, v in pairs(UnitIDTable) do
-		if v then
-			existingUnits[v] = true
-		end
-	end
+	UnitIDTable = RecycleTable(UnitIDTable) or {}
 
 	for _, VALUE in pairs(AuraList) do
 		if VALUE.List then
 			for _, value in pairs(VALUE.List) do
-				if value.UnitID and not existingUnits[value.UnitID] then
-					existingUnits[value.UnitID] = true
-					table_insert(UnitIDTable, value.UnitID)
+				if value.UnitID then
+					UnitIDTable[value.UnitID] = true
 				end
 			end
 		end
@@ -183,8 +201,7 @@ local function BuildUnitIDTable()
 end
 
 local function BuildCooldownTable()
-	cooldownTable = RecycleTable(cooldownTable)
-	cooldownTable = {}
+	cooldownTable = RecycleTable(cooldownTable) or {}
 
 	for KEY, VALUE in pairs(AuraList) do
 		if VALUE.List then
@@ -193,7 +210,6 @@ local function BuildCooldownTable()
 					if not cooldownTable[KEY] then
 						cooldownTable[KEY] = {}
 					end
-
 					cooldownTable[KEY][spellID] = true
 				end
 			end
@@ -403,21 +419,13 @@ end
 
 -- Add proper cleanup function for global tables
 local function CleanupGlobalTables()
-	-- Properly free all global tables
-	AuraList = RecycleTable(AuraList)
-	FrameList = RecycleTable(FrameList)
-	UnitIDTable = RecycleTable(UnitIDTable)
-	IntTable = RecycleTable(IntTable)
-	IntCD = RecycleTable(IntCD)
-	cooldownTable = RecycleTable(cooldownTable)
-
-	-- Reinitialize as empty tables
-	AuraList = {}
-	FrameList = {}
-	UnitIDTable = {}
-	IntTable = {}
-	IntCD = {}
-	cooldownTable = {}
+	-- Properly clear all global tables for reuse
+	AuraList = RecycleTable(AuraList) or {}
+	FrameList = RecycleTable(FrameList) or {}
+	UnitIDTable = RecycleTable(UnitIDTable) or {}
+	IntTable = RecycleTable(IntTable) or {}
+	IntCD = RecycleTable(IntCD) or {}
+	cooldownTable = RecycleTable(cooldownTable) or {}
 end
 
 local function InitSetup()
@@ -684,14 +692,21 @@ end
 
 function Module:UpdateAuraWatchByFilter(unit, filter, inCombat)
 	local index = 1
+	local auraData
 
 	while true do
-		local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+		auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
 		if not auraData then
 			break
 		end
-		Module:AuraWatch_UpdateAura(unit, index, filter, auraData.name, auraData.icon, auraData.applications, auraData.duration, auraData.expirationTime, auraData.sourceUnit, auraData.spellId, (auraData.points[1] == 0 and tonumber(auraData.points[2]) or tonumber(auraData.points[1])), inCombat)
 
+		-- Extract aura data once to avoid multiple function calls
+		local name, icon, count, duration, expires, caster, spellID = auraData.name, auraData.icon, auraData.applications, auraData.duration, auraData.expirationTime, auraData.sourceUnit, auraData.spellId
+
+		-- Calculate number value once
+		local number = (auraData.points[1] == 0 and tonumber(auraData.points[2]) or tonumber(auraData.points[1]))
+
+		Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, duration, expires, caster, spellID, number, inCombat)
 		index = index + 1
 	end
 end
@@ -852,6 +867,8 @@ function Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceF
 end
 
 local cache = {}
+local cacheSize = 0
+local maxCacheSize = 666
 
 function Module:AuraWatch_UpdateInt(event, ...)
 	if not IntCD.List then
@@ -888,11 +905,14 @@ function Module:AuraWatch_UpdateInt(event, ...)
 			Module:AuraWatch_SetupInt(value.IntID, value.ItemID, value.Duration, value.UnitID, guid, name)
 
 			cache[timestamp] = spellID
+			cacheSize = cacheSize + 1
 		end
 
-		if #cache > 666 then
+		-- Clear cache when it gets too large
+		if cacheSize > maxCacheSize then
 			RecycleTable(cache)
 			cache = {}
+			cacheSize = 0
 		end
 	end
 end
@@ -911,6 +931,7 @@ function Module:AuraWatch_Cleanup()
 				frame:SetScript("OnUpdate", nil)
 			end
 
+			-- Batch texture and text operations
 			if frame.Icon then
 				frame.Icon:SetTexture(nil)
 			end
@@ -952,6 +973,7 @@ function Module:AuraWatch_PostCleanup()
 				frame:SetScript("OnUpdate", nil)
 			end
 
+			-- Batch texture and text operations
 			if frame.Icon then
 				frame.Icon:SetTexture(nil)
 			end
@@ -974,6 +996,7 @@ end
 -- Event
 function Module.AuraWatch_OnEvent(event, ...)
 	if not C["AuraWatch"].Enable then
+		K:UnregisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
@@ -986,10 +1009,24 @@ function Module.AuraWatch_OnEvent(event, ...)
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 		end
 		K:UnregisterEvent(event, Module.AuraWatch_OnEvent)
+	elseif event == "UNIT_AURA" then
+		local unit = ...
+		if not UnitIDTable[unit] then
+			return
+		end
+		Module:AuraWatch_PreCleanup()
+		Module:AuraWatch_UpdateCD()
+		local inCombat = InCombatLockdown()
+		for unitID in pairs(UnitIDTable) do
+			Module:UpdateAuraWatch(unitID, inCombat)
+		end
+		Module:AuraWatch_PostCleanup()
+		Module:AuraWatch_Centralize()
 	else
 		Module:AuraWatch_UpdateInt(event, ...)
 	end
 end
+K:RegisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
 K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
 K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
 K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
@@ -1025,8 +1062,8 @@ function Module:AuraWatch_OnUpdate(elapsed)
 		Module:AuraWatch_UpdateCD()
 
 		local inCombat = InCombatLockdown()
-		for _, value in pairs(UnitIDTable) do
-			Module:UpdateAuraWatch(value, inCombat)
+		for unit in pairs(UnitIDTable) do
+			Module:UpdateAuraWatch(unit, inCombat)
 		end
 
 		Module:AuraWatch_PostCleanup()
@@ -1035,7 +1072,7 @@ function Module:AuraWatch_OnUpdate(elapsed)
 end
 
 -- Ensure the updater script is set correctly
-auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
+--auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 -- Mover
 SlashCmdList.AuraWatch = function(msg)
@@ -1107,7 +1144,7 @@ SlashCmdList.AuraWatch = function(msg)
 		for _, value in pairs(FrameList) do
 			value[1].MoveHandle:Hide()
 		end
-		auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
+		--auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 		if IntCD.MoveHandle then
 			IntCD.MoveHandle:Hide()
@@ -1118,5 +1155,21 @@ SlashCmdList.AuraWatch = function(msg)
 			end
 			RecycleTable(IntTable)
 		end
+	end
+end
+
+-- Performance monitoring (optional - can be disabled)
+local performanceMode = false
+local updateCount = 0
+local lastUpdateTime = 0
+
+local function LogPerformance(operation, startTime)
+	if not performanceMode then
+		return
+	end
+
+	local elapsed = GetTime() - startTime
+	if elapsed > 0.016 then -- Log if taking more than 16ms (60fps threshold)
+		K.Print(string.format("AuraWatch %s took %.3fms", operation, elapsed * 1000))
 	end
 end

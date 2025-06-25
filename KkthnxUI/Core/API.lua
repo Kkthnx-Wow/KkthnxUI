@@ -66,26 +66,56 @@ local function CreateBorder(bFrame, ...)
 		return nil, "Invalid frame provided"
 	end
 
+	-- Return early if border already exists
+	if bFrame.KKUI_Border then
+		return bFrame
+	end
+
+	-- Additional check for other border-related properties that might indicate it's already been processed
+	if bFrame.KKUI_Background or bFrame.KKUI_Backdrop then
+		return bFrame
+	end
+
+	-- Check if we're being called with no arguments (which might indicate a loop)
+	local argCount = select("#", ...)
+	if argCount == 0 then
+		-- Add a small delay to prevent infinite loops
+		if bFrame._lastCreateBorderCall and (GetTime() - bFrame._lastCreateBorderCall) < 0.1 then
+			return bFrame
+		end
+		bFrame._lastCreateBorderCall = GetTime()
+	end
+
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 	local General, Media = C.General, C.Media
 	local BorderValue = General.BorderStyle.Value or "KkthnxUI"
-	local BorderSize = bSize or (BorderValue == "KkthnxUI" and 12 or 10)
+	local BorderSize = bSize or K.BorderSize or (BorderValue == "KkthnxUI" and 12 or 10)
 
-	if not bFrame.KKUI_Border then
-		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
-		local BorderOffset = bOffset or -4
-		local BorderColor = bColor or Media.Borders.ColorBorder
-
-		local kkui_border = K.CreateBorder(bFrame, bSubLevel or "OVERLAY", bLayer or 1)
-		kkui_border:SetSize(BorderSize)
-		kkui_border:SetTexture(BorderTexture)
-		kkui_border:SetOffset(BorderOffset)
-
-		local r, g, b = unpack(General.ColorTextures and General.TexturesColor or BorderColor)
-		kkui_border:SetVertexColor(r, g, b)
-
-		bFrame.KKUI_Border = kkui_border
+	-- Create border with correct parameter order (drawLayer, drawSubLevel)
+	-- Use K.CreateBorder directly to avoid recursion
+	local kkui_border = K.CreateBorder(bFrame, bSubLevel or "OVERLAY", bLayer or 1)
+	if not kkui_border then
+		return nil, "Failed to create border"
 	end
+
+	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
+	local BorderOffset = bOffset or -4
+	local BorderColor = bColor or Media.Borders.ColorBorder
+
+	kkui_border:SetSize(BorderSize)
+	kkui_border:SetTexture(BorderTexture)
+	kkui_border:SetOffset(BorderOffset)
+
+	-- Safe color unpacking with fallback
+	local colorToUse = (General.ColorTextures and General.TexturesColor) or BorderColor
+	if colorToUse and type(colorToUse) == "table" then
+		local r, g, b = unpack(colorToUse)
+		kkui_border:SetVertexColor(r or 1, g or 1, b or 1)
+	else
+		kkui_border:SetVertexColor(1, 1, 1) -- Default white
+	end
+
+	bFrame.KKUI_Border = kkui_border
 
 	if not bFrame.KKUI_Background then
 		local BackgroundTexture = bgTexture or Media.Textures.White8x8Texture

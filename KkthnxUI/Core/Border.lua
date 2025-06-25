@@ -16,10 +16,13 @@ local borderSections = {
 	{ name = "RIGHT", coord = { 0.125, 0.25, 0, 1 } },
 }
 
-local borderStyle = C["General"].BorderStyle.Value
+local borderStyle = C["General"].BorderStyle.Value or "KkthnxUI"
 local borderSizeKkthnx = 12
 local borderSizeDefault = 10
 local getBorderSize = (borderStyle == "KkthnxUI") and borderSizeKkthnx or borderSizeDefault
+
+-- Export border size for use in API.lua to maintain consistency
+K.BorderSize = getBorderSize
 
 local function getTile(border, w, h)
 	local borderSize = getBorderSize
@@ -140,9 +143,14 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	local border = setmetatable({}, { __index = Module })
 	border.__parent = self
 
+	-- Ensure drawLayer is a string and drawSubLevel is a number
+	-- The API passes: bSubLevel (string) as drawLayer, bLayer (number) as drawSubLevel
+	local layer = type(drawLayer) == "string" and drawLayer or "OVERLAY"
+	local subLevel = type(drawSubLevel) == "number" and drawSubLevel or 1
+
 	for i = 1, #borderSections do
 		local section = borderSections[i]
-		border[section.name] = self:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)
+		border[section.name] = self:CreateTexture(nil, layer, nil, subLevel)
 		border[section.name]:SetTexCoord(unpack(section.coord))
 	end
 

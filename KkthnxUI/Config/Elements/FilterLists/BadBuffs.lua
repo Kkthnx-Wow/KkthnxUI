@@ -3,7 +3,16 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 
 local function SpellName(id)
-	local name = C_Spell_GetSpellInfo(id)
+	local spellInfo = C_Spell_GetSpellInfo(id)
+	local name
+
+	-- Handle both old API (string) and new API (table)
+	if type(spellInfo) == "table" then
+		name = spellInfo.name
+	else
+		name = spellInfo
+	end
+
 	if name then
 		return name
 	else
@@ -34,4 +43,5 @@ C.CheckBadBuffs = {
 	[SpellName(261477)] = true,
 	[SpellName(354550)] = true,
 	[SpellName(354481)] = true,
+	[SpellName(279997)] = true, -- DEBUG
 }
