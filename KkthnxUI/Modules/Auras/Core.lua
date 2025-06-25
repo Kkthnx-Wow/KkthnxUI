@@ -195,6 +195,8 @@ function Module:UpdateTempEnchant(button, index)
 		button.expiration = nil
 		button.timeLeft = nil
 		button.timer:SetText("")
+		-- Ensure OnUpdate script is removed when no enchantment
+		button:SetScript("OnUpdate", nil)
 	end
 end
 

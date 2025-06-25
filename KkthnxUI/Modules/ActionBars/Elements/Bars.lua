@@ -3,49 +3,49 @@ local Module = K:NewModule("ActionBar")
 
 -- Cache global references
 local _G = _G
-local UIParent = _G.UIParent
-local GetVehicleBarIndex = _G.GetVehicleBarIndex
-local UnitExists = _G.UnitExists
-local VehicleExit = _G.VehicleExit
-local PetDismiss = _G.PetDismiss
-local tinsert = _G.table.insert
-local RegisterStateDriver = _G.RegisterStateDriver
-local ceil = _G.math.ceil
-local min = _G.math.min
-local select = _G.select
-local GetCVarBool = _G.GetCVarBool
+
+local UIParent = UIParent
+local GetVehicleBarIndex = GetVehicleBarIndex
+local UnitExists = UnitExists
+local VehicleExit = VehicleExit
+local PetDismiss = PetDismiss
+local tinsert = table.insert
+local RegisterStateDriver = RegisterStateDriver
+local ceil = math.ceil
+local min = math.min
+local select = select
+local GetCVarBool = GetCVarBool
 
 -- Layout constants
 local margin, padding = 6, 0
 
 function Module:UpdateAllSize()
-	-- check if action bar feature is enabled
 	if not C["ActionBar"].Enable then
 		return
 	end
 
-	-- update size of action bars
-	local actionBars = { "Bar1", "Bar2", "Bar3", "Bar4", "Bar5", "Bar6", "Bar7", "Bar8", "BarPet" }
-	for _, bar in ipairs(actionBars) do
-		Module:UpdateActionSize(bar)
-	end
-
-	-- update stance bar
+	Module:UpdateActionSize("Bar1")
+	Module:UpdateActionSize("Bar2")
+	Module:UpdateActionSize("Bar3")
+	Module:UpdateActionSize("Bar4")
+	Module:UpdateActionSize("Bar5")
+	Module:UpdateActionSize("Bar6")
+	Module:UpdateActionSize("Bar7")
+	Module:UpdateActionSize("Bar8")
+	Module:UpdateActionSize("BarPet")
 	Module:UpdateStanceBar()
-
-	-- update vehicle button
 	Module:UpdateVehicleButton()
 end
 
 function Module:UpdateFontSize(button, fontSize)
-	-- Table containing elements of the button that need to have their font size updated
-	local buttonElements = { "Name", "Count", "HotKey" }
-	for _, element in ipairs(buttonElements) do
-		-- Set font object
-		button[element]:SetFontObject(K.UIFontOutline)
-		-- Set font family, size, and style
-		button[element]:SetFont(select(1, button[element]:GetFont()), fontSize, select(3, button[element]:GetFont()))
-	end
+	button.Name:SetFontObject(K.UIFontOutline)
+	button.Name:SetFont(select(1, button.Name:GetFont()), fontSize, select(3, button.Name:GetFont()))
+
+	button.Count:SetFontObject(K.UIFontOutline)
+	button.Count:SetFont(select(1, button.Count:GetFont()), fontSize, select(3, button.Count:GetFont()))
+
+	button.HotKey:SetFontObject(K.UIFontOutline)
+	button.HotKey:SetFont(select(1, button.HotKey:GetFont()), fontSize, select(3, button.HotKey:GetFont()))
 end
 
 function Module:UpdateActionSize(name)
@@ -63,28 +63,21 @@ function Module:UpdateActionSize(name)
 	end
 
 	if num == 0 then
-		-- Setting the number of columns and rows for the frame
 		local column = 3
 		local rows = 2
 
-		-- Setting the width and height of the frame, the mover, and the child
 		frame:SetWidth(3 * size + (column - 1) * margin + 2 * padding)
 		frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
 		frame.mover:SetSize(frame:GetSize())
 		frame.child:SetSize(frame:GetSize())
 		frame.child.mover:SetSize(frame:GetSize())
-
-		-- Enabling the child mover
 		frame.child.mover.isDisable = false
 
-		-- Loop through all buttons in the frame
 		for i = 1, 12 do
 			local button = frame.buttons[i]
-			-- Set the size of the button
 			button:SetSize(size, size)
-			-- Clear any existing points on the button
 			button:ClearAllPoints()
-			-- Position the button based on its index in the loop
+
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, -padding)
 			elseif i == 7 then
@@ -94,9 +87,8 @@ function Module:UpdateActionSize(name)
 			else
 				button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
 			end
-			-- Show the button
+
 			button:Show()
-			-- Update the font size of the button
 			Module:UpdateFontSize(button, fontSize)
 		end
 	else
@@ -104,6 +96,7 @@ function Module:UpdateActionSize(name)
 			local button = frame.buttons[i]
 			button:SetSize(size, size)
 			button:ClearAllPoints()
+
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, -padding)
 			elseif mod(i - 1, perRow) == 0 then
@@ -111,6 +104,7 @@ function Module:UpdateActionSize(name)
 			else
 				button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
 			end
+
 			button:Show()
 			Module:UpdateFontSize(button, fontSize)
 		end
@@ -128,13 +122,13 @@ function Module:UpdateActionSize(name)
 		frame:SetWidth(column * size + (column - 1) * margin + 2 * padding)
 		frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
 		frame.mover:SetSize(frame:GetSize())
+
 		if frame.child then
 			frame.child.mover.isDisable = true
 		end
 	end
 end
 
--- Update the button configuration for action bars
 local directions = { "UP", "DOWN", "LEFT", "RIGHT" }
 function Module:UpdateButtonConfig(i)
 	if not self.buttonConfig then
@@ -158,61 +152,45 @@ function Module:UpdateButtonConfig(i)
 	end
 
 	self.buttonConfig.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
-	self.buttonConfig.showGrid = C["ActionBar"]["Grid"]
+	self.buttonConfig.showGrid = C["ActionBar"].Grid
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 
 	local hotkey = self.buttonConfig.text.hotkey
 	hotkey.font.font = K.UIFont
 	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	hotkey.font.flags = K.UIFontStyle
-
 	hotkey.position.anchor = "TOPRIGHT"
 	hotkey.position.relAnchor = false
 	hotkey.position.offsetX = 0
 	hotkey.position.offsetY = -2
 	hotkey.justifyH = "RIGHT"
 
-	-- Initialize the count text configuration
 	local count = self.buttonConfig.text.count
-	local fontConfig = count.font
-	local positionConfig = count.position
-
-	-- Set the font style for the count text
-	fontConfig.font = K.UIFont
-	fontConfig.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	fontConfig.flags = K.UIFontStyle
-
-	-- Set the position of the count text
-	positionConfig.anchor = "BOTTOMRIGHT"
-	positionConfig.relAnchor = false
-	positionConfig.offsetX = 2
-	positionConfig.offsetY = 0
+	count.font.font = K.UIFont
+	count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	count.font.flags = K.UIFontStyle
+	count.position.anchor = "BOTTOMRIGHT"
+	count.position.relAnchor = false
+	count.position.offsetX = 2
+	count.position.offsetY = 0
 	count.justifyH = "RIGHT"
 
-	-- Initialize the macro text configuration
 	local macro = self.buttonConfig.text.macro
-	local fontConfig = macro.font
-	local positionConfig = macro.position
-
-	-- Set the font style for the macro text
-	fontConfig.font = K.UIFont
-	fontConfig.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	fontConfig.flags = K.UIFontStyle
-
-	-- Set the position of the macro text
-	positionConfig.anchor = "BOTTOM"
-	positionConfig.relAnchor = false
-	positionConfig.offsetX = 0
-	positionConfig.offsetY = 0
+	macro.font.font = K.UIFont
+	macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	macro.font.flags = K.UIFontStyle
+	macro.position.anchor = "BOTTOM"
+	macro.position.relAnchor = false
+	macro.position.offsetX = 0
+	macro.position.offsetY = 0
 	macro.justifyH = "CENTER"
 
 	local hideElements = self.buttonConfig.hideElements
-	hideElements.hotkey = not C["ActionBar"]["Hotkeys"]
-	hideElements.macro = not C["ActionBar"]["Macro"]
-	hideElements.equipped = not C["ActionBar"]["EquipColor"]
+	hideElements.hotkey = not C["ActionBar"].Hotkeys
+	hideElements.macro = not C["ActionBar"].Macro
+	hideElements.equipped = not C["ActionBar"].EquipColor
 
-	-- Update button attributes and configuration based on CVAR values and button config
-	local lockBars = C["ActionBar"]["ButtonLock"]
+	local lockBars = C["ActionBar"].ButtonLock
 	for _, button in next, self.buttons do
 		self.buttonConfig.keyBoundTarget = button.bindName
 		button.keyBoundTarget = self.buttonConfig.keyBoundTarget
@@ -222,12 +200,10 @@ function Module:UpdateButtonConfig(i)
 		button:SetAttribute("checkfocuscast", true)
 		button:SetAttribute("checkselfcast", true)
 
-		-- Update the config for the button
 		button:UpdateConfig(self.buttonConfig)
 	end
 end
 
--- Update action bar visibility and configuration based on settings
 local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
@@ -248,7 +224,7 @@ function Module:UpdateBarVisibility()
 end
 
 function Module:UpdateBarConfig()
-	SetCVar("ActionButtonUseKeyDown", C["ActionBar"]["KeyDown"] and 1 or 0)
+	SetCVar("ActionButtonUseKeyDown", C["ActionBar"].KeyDown and 1 or 0)
 
 	for i = 1, 8 do
 		local frame = _G["KKUI_ActionBar" .. i]
@@ -381,6 +357,7 @@ function Module:CreateBars()
 		Module:UpdateBarConfig()
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED", delayUpdate)
 	end
+
 	K:RegisterEvent("CVAR_UPDATE", function(_, var)
 		if var == "lockActionBars" then
 			if InCombatLockdown() then
@@ -400,7 +377,7 @@ function Module:OnEnable()
 		return
 	end
 
-	if not C["ActionBar"]["Enable"] then
+	if not C["ActionBar"].Enable then
 		return
 	end
 

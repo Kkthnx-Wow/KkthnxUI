@@ -66,6 +66,10 @@ function Module:SetHyperLinkID(link)
 		return
 	end
 
+	if not link then
+		return
+	end
+
 	local linkType, id = strmatch(link, "^(%a+):(%d+)")
 	if not linkType or not id then
 		return

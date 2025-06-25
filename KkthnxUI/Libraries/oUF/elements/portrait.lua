@@ -40,9 +40,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local function Update(self, event, unit)
-	if not unit or not UnitIsUnit(self.unit, unit) then
-		return
-	end
+	if(not unit or not UnitIsUnit(self.unit, unit)) then return end
 
 	local element = self.Portrait
 
@@ -52,16 +50,14 @@ local function Update(self, event, unit)
 	* self - the Portrait element
 	* unit - the unit for which the update has been triggered (string)
 	--]]
-	if element.PreUpdate then
-		element:PreUpdate(unit)
-	end
+	if(element.PreUpdate) then element:PreUpdate(unit) end
 
 	local guid = UnitGUID(unit)
 	local isAvailable = UnitIsConnected(unit) and UnitIsVisible(unit)
-	local hasStateChanged = event ~= "OnUpdate" or element.guid ~= guid or element.state ~= isAvailable
-	if hasStateChanged then
-		if element:IsObjectType("PlayerModel") then
-			if not isAvailable then
+	local hasStateChanged = event ~= 'OnUpdate' or element.guid ~= guid or element.state ~= isAvailable
+	if(hasStateChanged) then
+		if(element:IsObjectType('PlayerModel')) then
+			if(not isAvailable) then
 				element:SetCamDistanceScale(0.25)
 				element:SetPortraitZoom(0)
 				element:SetPosition(0, 0, 0.25)
@@ -75,9 +71,15 @@ local function Update(self, event, unit)
 				element:SetUnit(unit)
 			end
 		else
-			local class = element.showClass and UnitClassBase(unit)
-			if class then
-				element:SetAtlas("classicon-" .. class)
+			local class, _
+			if(element.showClass) then
+				-- BUG: UnitClassBase can't be trusted
+				--      https://github.com/Stanzilla/WoWUIBugs/issues/621
+				_, class = UnitClass(unit)
+			end
+
+			if(class) then
+				element:SetAtlas('classicon-' .. class)
 			else
 				SetPortraitTexture(element, unit)
 			end
@@ -94,7 +96,7 @@ local function Update(self, event, unit)
 	* unit            - the unit for which the update has been triggered (string)
 	* hasStateChanged - indicates whether the state has changed since the last update (boolean)
 	--]]
-	if element.PostUpdate then
+	if(element.PostUpdate) then
 		return element:PostUpdate(unit, hasStateChanged)
 	end
 end
@@ -107,32 +109,30 @@ local function Path(self, ...)
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
 	--]]
-	return (self.Portrait.Override or Update)(self, ...)
+	return (self.Portrait.Override or Update) (self, ...)
 end
 
 local function ForceUpdate(element)
-	return Path(element.__owner, "ForceUpdate", element.__owner.unit)
+	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
 local function Enable(self, unit)
 	local element = self.Portrait
-	if element then
+	if(element) then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent("UNIT_MODEL_CHANGED", Path)
-		self:RegisterEvent("UNIT_PORTRAIT_UPDATE", Path)
-		self:RegisterEvent("PORTRAITS_UPDATED", Path, true)
-		self:RegisterEvent("UNIT_CONNECTION", Path)
+		self:RegisterEvent('UNIT_MODEL_CHANGED', Path)
+		self:RegisterEvent('UNIT_PORTRAIT_UPDATE', Path)
+		self:RegisterEvent('PORTRAITS_UPDATED', Path, true)
+		self:RegisterEvent('UNIT_CONNECTION', Path)
 
 		-- The quest log uses PARTY_MEMBER_{ENABLE,DISABLE} to handle updating of
 		-- party members overlapping quests. This will probably be enough to handle
 		-- model updating.
-		--
-		-- DISABLE isn't used as it fires when we most likely don't have the
-		-- information we want.
-		if unit == "party" then
-			self:RegisterEvent("PARTY_MEMBER_ENABLE", Path)
+		if(unit == 'party' or unit == 'target') then
+			self:RegisterEvent('PARTY_MEMBER_ENABLE', Path)
+			self:RegisterEvent('PARTY_MEMBER_DISABLE', Path)
 		end
 
 		element:Show()
@@ -143,15 +143,16 @@ end
 
 local function Disable(self)
 	local element = self.Portrait
-	if element then
+	if(element) then
 		element:Hide()
 
-		self:UnregisterEvent("UNIT_MODEL_CHANGED", Path)
-		self:UnregisterEvent("UNIT_PORTRAIT_UPDATE", Path)
-		self:UnregisterEvent("PORTRAITS_UPDATED", Path)
-		self:UnregisterEvent("PARTY_MEMBER_ENABLE", Path)
-		self:UnregisterEvent("UNIT_CONNECTION", Path)
+		self:UnregisterEvent('UNIT_MODEL_CHANGED', Path)
+		self:UnregisterEvent('UNIT_PORTRAIT_UPDATE', Path)
+		self:UnregisterEvent('PORTRAITS_UPDATED', Path)
+		self:UnregisterEvent('PARTY_MEMBER_ENABLE', Path)
+		self:UnregisterEvent('PARTY_MEMBER_DISABLE', Path)
+		self:UnregisterEvent('UNIT_CONNECTION', Path)
 	end
 end
 
-oUF:AddElement("Portrait", Path, Enable, Disable)
+oUF:AddElement('Portrait', Path, Enable, Disable)

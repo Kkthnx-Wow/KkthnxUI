@@ -7,9 +7,11 @@ local tinsert, strsplit, format = table.insert, string.split, string.format
 local IsInGroup, IsInRaid, IsInInstance = IsInGroup, IsInRaid, IsInInstance
 local UnitIsGroupLeader, UnitIsGroupAssistant = UnitIsGroupLeader, UnitIsGroupAssistant
 local IsPartyLFG, IsLFGComplete, HasLFGRestrictions = IsPartyLFG, IsLFGComplete, HasLFGRestrictions
-local GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget = GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget
+local GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget =
+	GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget
 local GetTime, SendChatMessage, C_AddOns_IsAddOnLoaded = GetTime, SendChatMessage, C_AddOns.IsAddOnLoaded
-local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown
+local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown =
+	IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown
 local UnitExists, UninviteUnit = UnitExists, UninviteUnit
 local DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus = DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus
 local LeaveParty = C_PartyInfo.LeaveParty
@@ -339,7 +341,14 @@ function Module:RaidTool_BuffChecker(parent)
 			NoBuff[numGroups] = {}
 		end
 
-		if #NoBuff[1] == 0 and #NoBuff[2] == 0 and #NoBuff[3] == 0 and #NoBuff[4] == 0 and #NoBuff[5] == 0 and #NoBuff[6] == 0 then
+		if
+			#NoBuff[1] == 0
+			and #NoBuff[2] == 0
+			and #NoBuff[3] == 0
+			and #NoBuff[4] == 0
+			and #NoBuff[5] == 0
+			and #NoBuff[6] == 0
+		then
 			sendMsg(L["All Buffs Ready"])
 		else
 			sendMsg(L["Raid Buff Checker"])
@@ -531,7 +540,11 @@ function Module:RaidTool_CreateMenu(parent)
 		{
 			ROLE_POLL,
 			function()
-				if IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
+				if
+					IsInGroup()
+					and not HasLFGRestrictions()
+					and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid()))
+				then
 					InitiateRolePoll()
 				else
 					UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_LEADER)
@@ -615,7 +628,12 @@ function Module:RaidTool_EasyMarker()
 
 	WorldFrame:HookScript("OnMouseDown", function(_, btn)
 		if btn == "LeftButton" and GetModifiedState() and UnitExists("mouseover") then
-			if not IsInGroup() or (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+			if
+				not IsInGroup()
+				or (IsInGroup() and not IsInRaid())
+				or UnitIsGroupLeader("player")
+				or UnitIsGroupAssistant("player")
+			then
 				local index = GetRaidTargetIndex("mouseover")
 				for i = 1, 8 do
 					local menu = menuList[i]
@@ -715,7 +733,7 @@ function Module:RaidTool_Misc()
 	-- UIWidget reanchor
 	if not UIWidgetTopCenterContainerFrame:IsMovable() then -- can be movable for some addons, eg BattleInfo
 		UIWidgetTopCenterContainerFrame:ClearAllPoints()
-		UIWidgetTopCenterContainerFrame:SetPoint("TOP", 0, -36)
+		UIWidgetTopCenterContainerFrame:SetPoint("TOP", 0, -46)
 	end
 end
 

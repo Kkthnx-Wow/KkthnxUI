@@ -46,13 +46,68 @@ local KKUI_Changelog = {
 	-- 		{
 	-- 			Header = "Version Bump",
 	-- 			Entries = {
-	-- 				"Bumped the version to 99.99.99 because we’re basically at UI enlightenment now.",
+	-- 				"Bumped the version to 99.99.99 because we're basically at UI enlightenment now.",
 	-- 				"Patch 42.0 confirmed to be the answer to life, the universe, and everything.",
 	-- 				"Increased the version number so that even future alien civilizations will know you're up-to-date.",
 	-- 			},
 	-- 		},
 	-- 	},
 	-- },
+
+	{
+		Version = "[10.6.0] - 2024-12-19 - Patch 11.0.7 - Siren Isle",
+		General = "This update introduces key fixes, optimizations, and new features for KkthnxUI. We've focused on improving performance, enhancing the user experience, and resolving reported issues to ensure a smoother, more reliable interface.",
+
+		Sections = {
+			{
+				Header = "Performance Improvements",
+				Entries = {
+					"Updated our loading process to prevent nil values.",
+					"Started to add checks to many functions and code for better error handling and stability.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes and Optimizations",
+				Entries = {
+					"Fixed an error in QuickJoin.lua to prevent unexpected behavior.",
+					"Fixed health announce module from throwing nil value if pet name was nil.",
+					"Fixed nameplateSelectedScale CVar to ensure proper scaling on nameplates.",
+					"Belt will no longer bug you about not having a belt enchant, reducing unnecessary alerts.",
+					"Fixed keystone announce module to ensure proper announcement functionality.",
+				},
+			},
+
+			{
+				Header = "Nameplates and Aura Watch",
+				Entries = {
+					"Updated Nameplate and Aura Watch auras to ensure proper display and tracking.",
+					"Updated interrupt module to avoid announcing certain spells, reducing spam in chat.",
+				},
+			},
+
+			{
+				Header = "Library Updates",
+				Entries = {
+					"Updated oUF to the latest version for improved unit frame handling and functionality.",
+				},
+			},
+
+			{
+				Header = "New Features and Enhancements",
+				Entries = {
+					"Testing a chat filter to block pointless monster spam, leading to a cleaner chat experience.",
+				},
+			},
+
+			{
+				Header = "Action Bar Improvements",
+				Entries = {
+					"Updated action bar code for better responsiveness and overall performance.",
+				},
+			},
+		},
+	},
 
 	{
 		Version = "[10.5.9] - 2024-11-17 - Patch 11.0.5",
@@ -80,7 +135,6 @@ local KKUI_Changelog = {
 				Entries = {
 					"Removed all Death Counter settings due to redundancy.",
 					"Fixed labels in the config menu overlapping the scrollbar.",
-					"Fixed typo in Lumos Evoker for improved clarity.",
 					"Fixed Auto Screenshot to stop if the achievement has already been earned.",
 					"Fixed Quick Join auto-invite button behavior.",
 					"Fixed dropdown menu in Delves not appearing on the correct frame level.",
@@ -174,7 +228,7 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.5.7] - 2024-09-18 - Patch 11.2",
-		General = "This update brings new aura adjustments, quality-of-life changes, and some bug fixes to ensure smoother gameplay. We’ve also made updates to key spells, buffs, and UI elements to keep your experience running smoothly.",
+		General = "This update brings new aura adjustments, quality-of-life changes, and some bug fixes to ensure smoother gameplay. We've also made updates to key spells, buffs, and UI elements to keep your experience running smoothly.",
 
 		Sections = {
 
@@ -238,7 +292,7 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.5.6] - 2024-09-08 - Patch 110002",
-		General = "This update is here to fix those annoying bugs and make your KkthnxUI experience even better. We’ve also added a few neat tricks and improvements—because who doesn’t like a bit of polish?",
+		General = "This update is here to fix those annoying bugs and make your KkthnxUI experience even better. We've also added a few neat tricks and improvements—because who doesn't like a bit of polish?",
 
 		Sections = {
 
@@ -261,28 +315,28 @@ local KKUI_Changelog = {
 				Header = "Warband Bank",
 				Entries = {
 					"Warband Bank got some love with various updates and improvements. It's less clunky, and you'll like it more now. Trust us.",
-					"Bags filter list updated: it’s now smart enough to include the Warband Bank. Because, really, how did we miss that?",
+					"Bags filter list updated: it's now smart enough to include the Warband Bank. Because, really, how did we miss that?",
 				},
 			},
 
 			{
 				Header = "SharedMedia Integration",
 				Entries = {
-					"Added support for SharedMedia—probably. Let’s be honest, we’re still testing this one, but go ahead and play around with it!",
+					"Added support for SharedMedia—probably. Let's be honest, we're still testing this one, but go ahead and play around with it!",
 				},
 			},
 
 			{
 				Header = "Installer Updates",
 				Entries = {
-					"Installer got a makeover! Now it’s smoother and less likely to throw a fit while setting up. It might even say ‘thank you’—who knows?",
+					"Installer got a makeover! Now it's smoother and less likely to throw a fit while setting up. It might even say 'thank you'—who knows?",
 				},
 			},
 
 			{
 				Header = "Micromenu Refactoring",
 				Entries = {
-					"We cleaned up the micromenu code, making it less of a tangled mess. Oh, and that annoying mouseover issue? Yeah, it’s gone. Bye-bye!",
+					"We cleaned up the micromenu code, making it less of a tangled mess. Oh, and that annoying mouseover issue? Yeah, it's gone. Bye-bye!",
 				},
 			},
 
@@ -650,7 +704,6 @@ local KKUI_Changelog = {
 					"[Datatext] Fixed friends throwing a nil value",
 					"[GroupLoot] Fixed all issues related to group loot",
 					"[Inventory] Fixed setitems to check for nil",
-					"[Lumos] Fixed lumos for personal resource display for all classes",
 					"[Skins] Fixed Details not checking for the proper default texture?",
 				},
 			},

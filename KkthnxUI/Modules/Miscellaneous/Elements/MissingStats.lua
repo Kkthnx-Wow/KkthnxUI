@@ -45,12 +45,38 @@ function Module:CreateMissingStats()
 				[4] = { stat = "STAMINA" },
 				[5] = { stat = "ARMOR" },
 				[6] = { stat = "STAGGER", hideAt = 0, roles = { Enum.LFGRole.Tank } },
-				[7] = { stat = "ATTACK_DAMAGE", primary = LE_UNIT_STAT_STRENGTH, roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage } },
-				[8] = { stat = "ATTACK_AP", hideAt = 0, primary = LE_UNIT_STAT_STRENGTH, roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage } },
-				[9] = { stat = "ATTACK_ATTACKSPEED", primary = LE_UNIT_STAT_STRENGTH, roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage } },
-				[10] = { stat = "ATTACK_DAMAGE", primary = LE_UNIT_STAT_AGILITY, roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage } },
-				[11] = { stat = "ATTACK_AP", hideAt = 0, primary = LE_UNIT_STAT_AGILITY, roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage } },
-				[12] = { stat = "ATTACK_ATTACKSPEED", primary = LE_UNIT_STAT_AGILITY, roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage } },
+				[7] = {
+					stat = "ATTACK_DAMAGE",
+					primary = LE_UNIT_STAT_STRENGTH,
+					roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage },
+				},
+				[8] = {
+					stat = "ATTACK_AP",
+					hideAt = 0,
+					primary = LE_UNIT_STAT_STRENGTH,
+					roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage },
+				},
+				[9] = {
+					stat = "ATTACK_ATTACKSPEED",
+					primary = LE_UNIT_STAT_STRENGTH,
+					roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage },
+				},
+				[10] = {
+					stat = "ATTACK_DAMAGE",
+					primary = LE_UNIT_STAT_AGILITY,
+					roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage },
+				},
+				[11] = {
+					stat = "ATTACK_AP",
+					hideAt = 0,
+					primary = LE_UNIT_STAT_AGILITY,
+					roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage },
+				},
+				[12] = {
+					stat = "ATTACK_ATTACKSPEED",
+					primary = LE_UNIT_STAT_AGILITY,
+					roles = { Enum.LFGRole.Tank, Enum.LFGRole.Damage },
+				},
 				[13] = { stat = "SPELLPOWER", hideAt = 0, primary = LE_UNIT_STAT_INTELLECT },
 				[14] = { stat = "MANAREGEN", hideAt = 0, primary = LE_UNIT_STAT_INTELLECT },
 				[15] = { stat = "ENERGY_REGEN", hideAt = 0, primary = LE_UNIT_STAT_AGILITY },
@@ -97,11 +123,7 @@ function Module:CreateMissingStats()
 		local displaySpeed = format("%.2f", speed)
 		if offhandSpeed then
 			offhandSpeed = format("%.2f", offhandSpeed)
-		end
-		if offhandSpeed then
-			displaySpeed = BreakUpLargeNumbers(displaySpeed) .. " / " .. offhandSpeed
-		else
-			displaySpeed = BreakUpLargeNumbers(displaySpeed)
+			displaySpeed = displaySpeed .. " / " .. offhandSpeed
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 

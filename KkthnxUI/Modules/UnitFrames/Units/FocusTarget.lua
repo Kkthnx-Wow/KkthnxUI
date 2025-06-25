@@ -161,7 +161,10 @@ function Module:CreateFocusTarget()
 		Override = Module.UpdateThreat,
 	}
 
-	self.Range = {
-		Override = Module.UpdateRange,
+	self.RangeFader = {
+		insideAlpha = 1,
+		outsideAlpha = 0.55,
+		MaxAlpha = 1,
+		MinAlpha = 0.3,
 	}
 end

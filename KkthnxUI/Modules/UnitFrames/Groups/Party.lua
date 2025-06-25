@@ -230,7 +230,6 @@ function Module:CreateParty()
 		local frameLevel = frame:GetFrameLevel()
 
 		local normalTexture = K.GetTexture(C["General"].Texture)
-		local bdTexture = K.MediaFolder .. "Textures\\bgTex"
 
 		-- Position and size
 		local myBar = CreateFrame("StatusBar", nil, frame)
@@ -255,7 +254,7 @@ function Module:CreateParty()
 		absorbBar:SetPoint("TOP")
 		absorbBar:SetPoint("BOTTOM")
 		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
-		absorbBar:SetStatusBarTexture(bdTexture)
+		absorbBar:SetStatusBarTexture(normalTexture)
 		absorbBar:SetStatusBarColor(0.66, 1, 1)
 		absorbBar:SetFrameLevel(frameLevel)
 		absorbBar:SetAlpha(0.5)
@@ -268,7 +267,7 @@ function Module:CreateParty()
 
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
-		overAbsorbBar:SetStatusBarTexture(bdTexture)
+		overAbsorbBar:SetStatusBarTexture(normalTexture)
 		overAbsorbBar:SetStatusBarColor(0.66, 1, 1)
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
@@ -284,7 +283,7 @@ function Module:CreateParty()
 		healAbsorbBar:SetPoint("BOTTOM")
 		healAbsorbBar:SetPoint("RIGHT", Health:GetStatusBarTexture())
 		healAbsorbBar:SetReverseFill(true)
-		healAbsorbBar:SetStatusBarTexture(bdTexture)
+		healAbsorbBar:SetStatusBarTexture(normalTexture)
 		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
@@ -434,8 +433,11 @@ function Module:CreateParty()
 		Override = Module.UpdateThreat,
 	}
 
-	local Range = {
-		Override = Module.UpdateRange,
+	self.RangeFader = {
+		insideAlpha = 1,
+		outsideAlpha = 0.55,
+		MaxAlpha = 1,
+		MinAlpha = 0.3,
 	}
 
 	self.Overlay = Overlay
@@ -452,5 +454,4 @@ function Module:CreateParty()
 	self.ResurrectIndicator = ResurrectIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-	self.Range = Range
 end

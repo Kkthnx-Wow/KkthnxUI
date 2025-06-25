@@ -191,9 +191,13 @@ function RebuildCharList()
 end
 
 local title
-local function OnEnter(self) -- We need self for the bags since we use this on the bags gold info
-	GameTooltip:SetOwner(self, "ANCHOR_NONE") -- Dont change from self, note above
-	GameTooltip:SetPoint(K.GetAnchors(self)) -- Dont change from self, note above
+local function OnEnter(self)
+	if not self then
+		return
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor .. CURRENCY)
@@ -254,7 +258,7 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
 	title = false
-	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2813) -- Tier charges
+	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(3116) -- Tier charges
 	if chargeInfo then
 		if not title then
 			GameTooltip:AddLine(" ")

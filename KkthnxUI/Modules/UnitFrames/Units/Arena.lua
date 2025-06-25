@@ -283,7 +283,10 @@ function Module:CreateArena()
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")
 
-	self.Range = {
-		Override = Module.UpdateRange,
+	self.RangeFader = {
+		insideAlpha = 1,
+		outsideAlpha = 0.55,
+		MaxAlpha = 1,
+		MinAlpha = 0.3,
 	}
 end

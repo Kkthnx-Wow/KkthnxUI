@@ -57,11 +57,13 @@ local LastActiveDropdown
 local LastActiveWindow
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
+-- Headers for the credits section
 local headers = {
 	"CREDITS",
 	"",
 }
 
+-- Names for the credits section
 local names = {
 	{ text = "Aftermathh" },
 	{ text = "Alteredcross", class = "ROGUE" },
@@ -95,10 +97,11 @@ local names = {
 	{ text = "siweia" },
 }
 
+-- Function to create credit lines
 local function createCreditLines(headers, names)
 	local lines = {}
-	for _, text in ipairs(headers) do
-		table.insert(lines, { type = "header", text = text })
+	for _, header in ipairs(headers) do
+		table.insert(lines, { type = "header", text = header })
 	end
 	for _, name in ipairs(names) do
 		table.insert(lines, { type = "name", text = name.text, class = name.class, color = name.color })
@@ -106,6 +109,7 @@ local function createCreditLines(headers, names)
 	return lines
 end
 
+-- Generate the credit lines
 local CreditLines = createCreditLines(headers, names)
 
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
@@ -120,29 +124,12 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
+		local SelectedServer, SelectedNickname = strsplit("-", MySelectedProfile)
 
 		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[SelectedServer][SelectedNickname]
 		KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[SelectedServer][SelectedNickname]
 
-		_G.ReloadUI()
-	end,
-}
-
-StaticPopupDialogs["KKUI_DELETE_PROFILE"] = {
-	text = "Are you sure you want to delete the selected profile? This action cannot be undone!",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
-
-		-- Remove profile data from the database
-		KkthnxUIDB.Variables[SelectedServer][SelectedNickname] = nil
-		KkthnxUIDB.Settings[SelectedServer][SelectedNickname] = nil
-
-		-- Ensure to update profiles and reload UI
-		K.LoadProfiles()
-		_G.ReloadUI()
+		ReloadUI()
 	end,
 }
 
@@ -1034,7 +1021,7 @@ local AddDropdownScrollBar = function(self)
 	self:SetHeight(((WidgetHeight + 6) * ListItemsToShow) - 0)
 end
 
-local CreateDropdown = function(self, group, option, text, custom, tooltip, hook)
+local CreateDropdown = function(self, group, option, text, tooltip, custom, hook)
 	local Value
 	local Selections = {}
 
@@ -1262,6 +1249,107 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		AddDropdownScrollBar(Dropdown.Menu)
 	else
 		Dropdown.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
+	end
+
+	-- Add Update method to refresh dropdown options
+	function Dropdown:Update()
+		-- Remove old menu items
+		for i = 1, #self.Menu do
+			self.Menu[i]:Hide()
+			self.Menu[i] = nil
+		end
+
+		-- Get the current options - handle both static and dynamic dropdowns
+		local Selections
+		if C[self.Group] and C[self.Group][self.Option] and C[self.Group][self.Option].Options then
+			Selections = C[self.Group][self.Option].Options
+		else
+			-- For dynamic dropdowns, we need to regenerate the options
+			if self.Group == "General" and self.Option == "DeleteProfiles" then
+				-- Call the function that populates DeleteProfiles
+				KKUI_LoadDeleteProfiles()
+				Selections = C[self.Group][self.Option].Options
+			elseif self.Group == "General" and self.Option == "Profiles" then
+				-- Call the function that populates Profiles
+				KKUI_LoadProfiles()
+				Selections = C[self.Group][self.Option].Options
+			end
+		end
+
+		if not Selections then
+			return -- No options to update
+		end
+
+		local Count = 0
+		local LastMenuItem
+
+		for k, v in PairsByKeys(Selections) do
+			Count = Count + 1
+
+			local MenuItem = CreateFrame("Frame", nil, self.Menu)
+			MenuItem:SetSize(DropdownWidth - 6, WidgetHeight)
+			MenuItem:CreateBorder()
+			MenuItem:SetScript("OnMouseUp", MenuItemOnMouseUp)
+			MenuItem:SetScript("OnEnter", MenuItemOnEnter)
+			MenuItem:SetScript("OnLeave", MenuItemOnLeave)
+			MenuItem.Key = k
+			MenuItem.Value = v
+			MenuItem.Group = self.Group
+			MenuItem.Option = self.Option
+			MenuItem.Parent = MenuItem:GetParent()
+			MenuItem.GrandParent = MenuItem:GetParent():GetParent()
+
+			MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
+			MenuItem.Highlight:SetAllPoints()
+			MenuItem.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
+			MenuItem.Highlight:SetAlpha(0)
+
+			MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
+			MenuItem.Texture:SetAllPoints()
+
+			MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
+			MenuItem.Selected:SetAllPoints()
+
+			MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
+			MenuItem.Selected:SetVertexColor(R, G, B)
+
+			MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
+			MenuItem.Text:SetPoint("LEFT", MenuItem, 5, 0)
+			MenuItem.Text:SetWidth((DropdownWidth + 3) - (Spacing * 2))
+			MenuItem.Text:SetFontObject(K.UIFont)
+			MenuItem.Text:SetJustifyH("LEFT")
+			MenuItem.Text:SetText(k)
+
+			if MenuItem.Value == self.Value then
+				MenuItem.Selected:Show()
+				self.Current:SetText(k)
+			else
+				MenuItem.Selected:Hide()
+			end
+
+			tinsert(self.Menu, MenuItem)
+
+			if LastMenuItem then
+				MenuItem:SetPoint("TOP", LastMenuItem, "BOTTOM", 0, -6)
+			else
+				MenuItem:SetPoint("TOP", self.Menu, 0, -3)
+			end
+
+			if Count > ListItemsToShow then
+				MenuItem:Hide()
+			end
+
+			LastMenuItem = MenuItem
+		end
+
+		if #self.Menu > ListItemsToShow then
+			AddDropdownScrollBar(self.Menu)
+		else
+			self.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
+		end
 	end
 
 	if self.Widgets then
@@ -1690,6 +1778,7 @@ end
 
 local CreditLineHeight = 20
 
+-- Function to set up credits
 local function SetUpCredits(frame)
 	frame.Lines = {}
 
@@ -1732,7 +1821,8 @@ local function SetUpCredits(frame)
 	frame:SetHeight(#frame.Lines * CreditLineHeight)
 end
 
-local ShowCreditFrame = function()
+-- Function to show the credit frame
+local function ShowCreditFrame()
 	local Window = GUI:GetWindow(LastActiveWindow)
 
 	Window:Hide()
@@ -1741,7 +1831,8 @@ local ShowCreditFrame = function()
 	_G.KKUI_Credits.Move:Play()
 end
 
-local HideCreditFrame = function()
+-- Function to hide the credit frame
+local function HideCreditFrame()
 	_G.KKUI_Credits:Hide()
 	_G.KKUI_Credits.Move:Stop()
 
@@ -1751,7 +1842,8 @@ local HideCreditFrame = function()
 	Window.Button.Selected:Show()
 end
 
-local ToggleCreditsFrame = function()
+-- Function to toggle the credit frame
+local function ToggleCreditsFrame()
 	if _G.KKUI_Credits:IsShown() then
 		HideCreditFrame()
 	else
@@ -2242,22 +2334,17 @@ GUI.PLAYER_REGEN_ENABLED = function(self)
 	end
 end
 
-GUI.SetProfile = function(self, btn)
+GUI.SetProfile = function(self)
 	local Dropdown = self:GetParent()
 	local Profile = Dropdown.Current:GetText()
+	local MyProfileName = K.Realm .. "-" .. K.Name
 
 	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
 		MySelectedProfile = Profile
 
-		-- Check for SHIFT
-		if IsShiftKeyDown() then
-			-- Open the deletion confirmation popup
-			_G.StaticPopup_Show("KKUI_DELETE_PROFILE")
-		else
-			-- Regular profile switch
-			GUI:Toggle()
-			_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
-		end
+		GUI:Toggle()
+
+		_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
 	end
 end
 

@@ -53,6 +53,7 @@ local list = {
 		{ AuraID = 407405, UnitID = "player" }, -- 弦之韵律
 		{ AuraID = 359844, UnitID = "player" }, -- 荒野的召唤
 		{ AuraID = 360952, UnitID = "player" }, -- 协同进攻
+		{ AuraID = 459859, UnitID = "player" }, -- 投弹手
 		{ AuraID = 388045, UnitID = "player", Flash = true }, -- 警戒
 		{ AuraID = 378770, UnitID = "player", Flash = true }, -- 夺命打击
 		{ AuraID = 378747, UnitID = "player", Flash = true }, -- 凶暴兽群
@@ -74,6 +75,7 @@ local list = {
 		{ AuraID = 199803, UnitID = "focus", Caster = "player" }, -- 精确瞄准
 	},
 	["Spell Cooldown"] = { -- 冷却计时组
+		{ AuraID = 471877, UnitID = "player" }, -- 猎群领袖之嚎
 		{ SlotID = 13 }, -- 饰品1
 		{ SlotID = 14 }, -- 饰品2
 		{ SpellID = 186265 }, -- 灵龟守护

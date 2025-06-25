@@ -8,12 +8,10 @@
    <Script file="LibActionButton-1.0\LibActionButton-1.0.lua" />
    <Script file="LibDeflate\LibDeflate.lua"/>
    <Script file="LibSerialize\LibSerialize.lua"/>
-   <Script file="LibRangeCheck-3.0\LibRangeCheck-3.0.lua"/>
    <Include file="cargBags\cargBags.xml"/>
    <Script file="Unfit-1.0\Unfit-1.0.lua"/>
    <Include file="oUF\oUF.xml"/>
    <Script file="LibBase64-1.0\LibBase64-1.0.lua" />
-   <Script file="LibShowUIPanel-1.0\LibShowUIPanel-1.0.lua"/>
    <Include file="UTF8\UTF8.xml" />
    <Script file="LibAnim\LibAnim.lua" />
    <Script file="LibChangelog\LibChangelog.lua" />

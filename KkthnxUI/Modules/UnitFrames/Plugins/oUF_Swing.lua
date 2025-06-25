@@ -10,8 +10,6 @@ local GetInventoryItemID = GetInventoryItemID
 local GetTime = GetTime
 local UnitAttackSpeed = UnitAttackSpeed
 local UnitRangedDamage = UnitRangedDamage
-local UnitCastingInfo = UnitCastingInfo
-local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 
 local meleeing, rangeing, lasthit
 local MainhandID = GetInventoryItemID("player", 16)
@@ -61,14 +59,12 @@ do
 	local checkelapsed = 0
 	local slamelapsed = 0
 	local slamtime = 0
-	local slam = C_Spell_GetSpellInfo(1464)
-	local CHECK_INTERVAL = 0.02 -- Throttle check interval
-
+	local slam = C_Spell.GetSpellInfo(1464)
 	function OnDurationUpdate(self, elapsed)
 		local now = GetTime()
 
 		if meleeing then
-			if checkelapsed > CHECK_INTERVAL then
+			if checkelapsed > 0.02 then
 				-- little hack for detecting melee stop
 				-- improve... dw sucks at this point -.-
 				if lasthit + self.speed + slamtime < now then

@@ -174,8 +174,11 @@ function Module:CreatePet()
 		Override = Module.UpdateThreat,
 	}
 
-	local Range = {
-		Override = Module.UpdateRange,
+	self.RangeFader = {
+		insideAlpha = 1,
+		outsideAlpha = 0.55,
+		MaxAlpha = 1,
+		MinAlpha = 0.3,
 	}
 
 	self.Overlay = Overlay
@@ -187,5 +190,4 @@ function Module:CreatePet()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-	self.Range = Range
 end

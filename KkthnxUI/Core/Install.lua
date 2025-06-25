@@ -7,10 +7,8 @@ local Module = K:NewModule("Installer")
 -- Frame and UI Elements
 local CreateFrame = CreateFrame
 local UIParent = UIParent
-local UIErrorsFrame = UIErrorsFrame
 
 -- Chat Functions and Variables
-local ChangeChatColor = ChangeChatColor
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
@@ -21,7 +19,6 @@ local FCF_ResetChatWindows = FCF_ResetChatWindows
 local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
-local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 
 -- Game and System Settings
 local InCombatLockdown = InCombatLockdown
@@ -510,7 +507,7 @@ local function YesTutor()
 			PlaySound(21968)
 		elseif currentPage == 3 then
 			StopSound(21968)
-			K.SetupUIScale()
+			K:SetupUIScale()
 			ShowFakeAchievement("Achievement Earned", "You have successfully applied the UIScale Settings.")
 			PlaySound(21968)
 		elseif currentPage == 4 then
@@ -645,7 +642,7 @@ local function HelloWorld()
 		Module:ForceDefaultCVars()
 		ForceRaidFrame()
 		Module:ForceChatSettings()
-		K.SetupUIScale()
+		K:SetupUIScale()
 		KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest or true
 		KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest = KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest or true
 		KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest or true

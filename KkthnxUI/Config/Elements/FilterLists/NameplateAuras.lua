@@ -57,6 +57,12 @@ C.NameplateBlackList = {
 }
 
 C.NameplateCustomUnits = {
+	-- Corruption
+	[162290] = true, -- 腐化的觅血鲨
+	[162247] = true, -- 腐化的狱卒
+	[162251] = true, -- 腐化的召唤师
+	[162245] = true, -- 腐化的折磨者
+	[162248] = true, -- 腐化的守护者
 	-- Nzoth vision
 	[153401] = true, -- K'xir Dominator
 	[157610] = true, -- K'xir Dominator

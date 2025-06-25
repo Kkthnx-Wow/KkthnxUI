@@ -60,10 +60,6 @@ end
 local function OnUpdate(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
 	if self.timer > 1 then
-		if not LatencyDataText or not LatencyDataText.Text then
-			return
-		end
-
 		SetLatency()
 		if LatencyDataTextEntered then
 			OnEnter()

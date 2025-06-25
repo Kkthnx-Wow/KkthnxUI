@@ -194,7 +194,7 @@ end
 
 function Module:CooldownUpdate()
 	local button = self:GetParent()
-	local start, duration, _, modRate = GetActionCooldown(button.action)
+	local start, duration, modRate = GetActionCooldown(button.action)
 
 	if shouldUpdateTimer(self, start) then
 		Module.StartTimer(self, start, duration, modRate)
@@ -231,14 +231,10 @@ function Module:OnEnable()
 
 	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
 	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
-
-	-- Hide cooldown numbers
 	hooksecurefunc(cooldownIndex, "SetHideCountdownNumbers", Module.OnSetHideCountdownNumbers)
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
-
-	-- Register for action bar cooldown updates
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
-	-- Hide default cooldown
+	-- Hide Default Cooldown
 	SetCVar("countdownForCooldowns", 0)
 end

@@ -1,17 +1,10 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
--- Pet action related functions and constants
-local GetPetActionInfo = GetPetActionInfo
-local GetPetActionSlotUsable = GetPetActionSlotUsable
-local IsPetAttackAction = IsPetAttackAction
-local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
-local PET_ACTION_HIGHLIGHT_MARKS = PET_ACTION_HIGHLIGHT_MARKS
-local SharedActionButton_RefreshSpellHighlight = SharedActionButton_RefreshSpellHighlight
-
--- Utility functions and layout constants
+local _G = _G
 local tinsert = tinsert
-local margin = 6 -- Margin used for UI element positioning
+
+local margin = 6
 
 local function hasPetActionHighlightMark(index)
 	return PET_ACTION_HIGHLIGHT_MARKS[index]
@@ -104,24 +97,17 @@ function Module:CreatePetbar()
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar][shapeshift] hide; [pet] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	-- Fix pet bar updating
-	local events = {
-		"UNIT_PET",
-		"UNIT_FLAGS",
-		"PET_UI_UPDATE",
-		"PET_BAR_UPDATE",
-		"PLAYER_CONTROL_LOST",
-		"PLAYER_CONTROL_GAINED",
-		"PLAYER_TARGET_CHANGED",
-		"PET_BAR_UPDATE_USABLE",
-		"PET_BAR_UPDATE_COOLDOWN",
-		"UPDATE_VEHICLE_ACTIONBAR",
-		"PLAYER_MOUNT_DISPLAY_CHANGED",
-		"PLAYER_FARSIGHT_FOCUS_CHANGED",
-	}
-
 	Module:PetBarOnEvent()
-	for _, event in ipairs(events) do
-		K:RegisterEvent(event, Module.PetBarOnEvent)
-	end
+	K:RegisterEvent("UNIT_PET", Module.PetBarOnEvent)
+	K:RegisterEvent("UNIT_FLAGS", Module.PetBarOnEvent)
+	K:RegisterEvent("PET_UI_UPDATE", Module.PetBarOnEvent)
+	K:RegisterEvent("PET_BAR_UPDATE", Module.PetBarOnEvent)
+	K:RegisterEvent("PLAYER_CONTROL_LOST", Module.PetBarOnEvent)
+	K:RegisterEvent("PLAYER_CONTROL_GAINED", Module.PetBarOnEvent)
+	K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PetBarOnEvent)
+	K:RegisterEvent("PET_BAR_UPDATE_USABLE", Module.PetBarOnEvent)
+	K:RegisterEvent("PET_BAR_UPDATE_COOLDOWN", Module.PetBarOnEvent)
+	K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", Module.PetBarOnEvent)
+	K:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", Module.PetBarOnEvent)
+	K:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", Module.PetBarOnEvent)
 end

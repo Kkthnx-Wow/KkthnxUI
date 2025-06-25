@@ -3,6 +3,8 @@ local oUF = K.oUF
 
 --	Based on oUF_Fader(by Slakah)
 
+local _G = _G
+
 local assert = assert
 local rawget = rawget
 local setmetatable = setmetatable
@@ -11,7 +13,7 @@ local string_gmatch = string.gmatch
 local string_match = string.match
 local type = type
 
-local GetZonePVPInfo = GetZonePVPInfo
+local C_PvP_GetZonePVPInfo = C_PvP.GetZonePVPInfo
 local IsInInstance = IsInInstance
 local UnitCanAttack = UnitCanAttack
 local UnitCastingInfo = UnitCastingInfo
@@ -122,7 +124,7 @@ local conditions = setmetatable({
 	end,
 
 	Arena = function(_, unit)
-		return unit and GetZonePVPInfo() == "arena"
+		return unit and C_PvP_GetZonePVPInfo() == "arena"
 	end,
 
 	Instance = function(_, unit)

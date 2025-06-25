@@ -40,9 +40,6 @@ local filteredStyle = {
 	["target"] = true,
 }
 
--- Cache frequently used functions for better performance
-local K_FormatTime = K.FormatTime
-
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or not unit then
 		return
@@ -407,7 +404,7 @@ function Module.CustomFilter(element, unit, data)
 	end
 end
 
--- Post Update Runes with optimized OnUpdate
+-- Post Update Runes
 local function OnUpdateRunes(self, elapsed)
 	local duration = self.duration + elapsed
 	self.duration = duration
@@ -416,7 +413,7 @@ local function OnUpdateRunes(self, elapsed)
 	if self.timer then
 		local remain = self.runeDuration - duration
 		if remain > 0 then
-			self.timer:SetText(K_FormatTime(remain))
+			self.timer:SetText(K.FormatTime(remain))
 		else
 			self.timer:SetText(nil)
 		end
@@ -691,7 +688,7 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Boss")
 
 		local Boss = {}
-		for i = 1, MAX_BOSS_FRAMES do
+		for i = 1, 10 do -- MAX_BOSS_FRAMES, 10 in 11.0?
 			Boss[i] = oUF:Spawn("boss" .. i, "oUF_Boss" .. i)
 			Boss[i]:SetSize(C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6)
 

@@ -10,8 +10,6 @@ local RAID = RAID
 local SAY = SAY
 local YELL = YELL
 
-local BlipMedia = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\"
-
 -- Actionbar
 C["ActionBar"] = {
 	Enable = true,
@@ -152,7 +150,7 @@ C["Announcements"] = {
 -- Automation
 C["Automation"] = {
 	AutoKeystone = false,
-	AutoCollapse = false,
+	-- AutoCollapse = false,
 	AutoDeclineDuels = false,
 	AutoDeclinePetDuels = false,
 	AutoGoodbye = false,
@@ -301,8 +299,6 @@ C["AuraWatch"] = {
 	ClickThrough = false,
 	IconScale = 1,
 	DeprecatedAuras = false,
-	QuakeRing = false,
-	InternalCD = {},
 }
 
 -- General
@@ -337,6 +333,9 @@ C["General"] = {
 		Value = 1,
 	},
 	Profiles = {
+		Options = {},
+	},
+	DeleteProfiles = {
 		Options = {},
 	},
 	GlowMode = {
@@ -385,20 +384,6 @@ C["Minimap"] = {
 		},
 		Value = "MOUSEOVER",
 	},
-	BlipTexture = {
-		Options = {
-			["Default"] = "Interface\\MiniMap\\ObjectIconsAtlas",
-			["Blank"] = BlipMedia .. "Blip-Blank",
-			["Blizzard Big R"] = BlipMedia .. "Blip-BlizzardBigR",
-			["Blizzard Big"] = BlipMedia .. "Blip-BlizzardBig",
-			["Charmed"] = BlipMedia .. "Blip-Charmed",
-			["Glass Spheres"] = BlipMedia .. "Blip-GlassSpheres",
-			["Nandini New"] = BlipMedia .. "Blip-Nandini-New",
-			["Nandini"] = BlipMedia .. "Blip-Nandini",
-			["SolidSpheres"] = BlipMedia .. "Blip-SolidSpheres",
-		},
-		Value = "Interface\\MiniMap\\ObjectIconsAtlas",
-	},
 }
 
 -- Miscellaneous
@@ -430,6 +415,7 @@ C["Misc"] = {
 	SlotDurability = false,
 	TradeTabs = false,
 	EasyMarking = false,
+	YClassColors = true,
 	EasyMarkKey = {
 		Options = {
 			["CTRL"] = 1,
@@ -460,7 +446,6 @@ C["Nameplate"] = {
 	AuraSize = 28,
 	CastTarget = false,
 	CastbarGlow = true,
-	ClassAuras = true,
 	ClassIcon = false,
 	ColoredTarget = true,
 	CustomColor = { 0, 0.8, 0.3 },
@@ -487,21 +472,21 @@ C["Nameplate"] = {
 	NameplateClassPower = true,
 	OffTankColor = { 0.2, 0.7, 0.5 },
 	PPGCDTicker = true,
-	HarmWidth = 190,
-	HarmHeight = 60,
+	PPPowerText = true,
+	HarmWidth = 200,
+	HarmHeight = 62,
 	EnemyThru = false,
 	FriendlyThru = false,
-	HelpWidth = 190,
-	HelpHeight = 60,
+	HelpWidth = 200,
+	HelpHeight = 62,
 	PPHeight = 10,
 	PPHideOOC = true,
 	PPIconSize = 32,
+	PPOnFire = false,
 	PPPHeight = 8,
-	PPPowerText = true,
-	PPWidth = 200,
 	PlateAuras = true,
-	PlateHeight = 16,
-	PlateWidth = 188,
+	PlateHeight = 18,
+	PlateWidth = 200,
 	PowerUnitList = "",
 	QuestIndicator = true,
 	SecureColor = { 1, 0, 1 },
@@ -534,7 +519,7 @@ C["Nameplate"] = {
 	},
 	TargetIndicatorTexture = {
 		Options = {
-			["Blue Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow2]],
+			["Blue Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow2:0|t"] = [[Interface\Addons\KkthnxUI\Media\Nameplates\BlueArrow2]],
 			["Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow]],
 			["Neon Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
 			["Neon Green Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonGreenArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonGreenArrow]],

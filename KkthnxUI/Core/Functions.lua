@@ -14,7 +14,6 @@ local tonumber = tonumber
 local type = type
 local unpack = unpack
 
-local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
 local CreateVector2D = CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = ENCHANTED_TOOLTIP_LINE
@@ -62,13 +61,17 @@ do
 	end
 
 	function K.Round(number, idp)
-		-- Set the default number of decimal places to 0 if none is specified
+		if type(number) ~= "number" then
+			return
+		end
+
+		if idp ~= nil and type(idp) ~= "number" then
+			return
+		end
+
 		idp = idp or 0
 		local mult = 10 ^ idp
-		-- Round the number to the specified number of decimal places
-		-- by first multiplying it by 10 to the power of idp,
-		-- then rounding it to the nearest whole number using math.floor,
-		-- and finally dividing it by 10 to the power of idp
+
 		return math.floor(number * mult + 0.5) / mult
 	end
 end
@@ -152,37 +155,37 @@ end
 
 -- Table-related Functions
 do
-	function K.CopyTable(source, target)
-		-- Loop through all key-value pairs in the source table
+	function K.CopyTable(source, target, seen)
+		target = target or {}
+		seen = seen or {}
+
+		if seen[source] then
+			return seen[source]
+		end
+
+		seen[source] = target
+
 		for key, value in pairs(source) do
-			-- If the value is a table, copy its contents recursively
 			if type(value) == "table" then
-				-- If there's no key in the target table, create it
-				if not target[key] then
-					target[key] = {}
-				end
-				-- Copy the contents of the sub-table
-				for k in pairs(value) do
-					target[key][k] = value[k]
-				end
+				target[key] = K.CopyTable(value, target[key] or {}, seen)
 			else
-				-- If the value is not a table, simply copy it
 				target[key] = value
 			end
 		end
+
+		return target
 	end
 
 	function K.SplitList(list, variable, cleanup)
-		-- Wipe the table if cleanup is true
+		variable = variable or ""
+
 		if cleanup then
-			table_wipe(list)
+			wipe(list)
 		end
 
-		for word in string.gmatch(variable, "%S+") do
-			-- Convert word to number if it is numeric
-			word = tonumber(word) or word
-			-- Add word to the list
-			table.insert(list, word)
+		for word in gmatch(variable, "%S+") do
+			word = tonumber(word) or word -- Convert to number if possible
+			list[word] = true
 		end
 	end
 end
@@ -282,12 +285,9 @@ end
 -- Other Utility Functions
 do
 	function K.TogglePanel(frame)
-		-- check if the frame is currently shown
 		if frame:IsShown() then
-			-- if the frame is shown, hide it
 			frame:Hide()
 		else
-			-- if the frame is not shown, show it
 			frame:Show()
 		end
 	end
@@ -298,11 +298,23 @@ do
 	end
 
 	function K.CheckAddOnState(addon)
+		if type(addon) ~= "string" then
+			return false
+		end
+
 		return K.AddOns[string_lower(addon)] or false
 	end
 
 	function K.GetAddOnVersion(addon)
 		return K.AddOnVersion[string_lower(addon)] or nil
+	end
+
+	function K.GetAddOnEnableState(addon, character)
+		return C_AddOns.GetAddOnEnableState(addon, character)
+	end
+
+	function K.IsAddOnEnabled(addon)
+		return K.GetAddOnEnableState(addon, K.Name) == 2
 	end
 
 	local function CreateClosure(func, data)
@@ -711,9 +723,17 @@ end
 do
 	function K.CreateMoverFrame(self, parent, saved)
 		local frame = parent or self
+		if not (frame and type(frame) == "table" and frame.SetMovable) then
+			return -- Exit if `frame` is invalid
+		end
+
 		frame:SetMovable(true)
 		frame:SetUserPlaced(true)
 		frame:SetClampedToScreen(true)
+
+		if not (self and type(self) == "table" and self.EnableMouse) then
+			return -- Exit if `self` is invalid
+		end
 
 		self:EnableMouse(true)
 		self:RegisterForDrag("LeftButton")
@@ -728,15 +748,25 @@ do
 			end
 
 			local orig, _, tar, x, y = frame:GetPoint()
-			KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = { orig, "UIParent", tar, x, y }
+			if KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
+				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] or {}
+				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = { orig, "UIParent", tar, x, y }
+			end
 		end)
 	end
 
 	function K.RestoreMoverFrame(self)
+		if not (self and type(self) == "table" and self.GetName) then
+			return -- Exit if `self` is invalid
+		end
+
 		local name = self:GetName()
-		if name and KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name] then
-			self:ClearAllPoints()
-			self:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]))
+		if name and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
+			local anchorData = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] and KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]
+			if anchorData then
+				self:ClearAllPoints()
+				self:SetPoint(unpack(anchorData))
+			end
 		end
 	end
 
@@ -776,6 +806,10 @@ end
 -- Interface Option Functions
 do
 	function K.HideInterfaceOption(self)
+		if not self then
+			return
+		end
+
 		self:SetAlpha(0)
 		self:SetScale(0.0001)
 	end
@@ -832,10 +866,7 @@ end
 
 -- Map Position and Money Formatting Functions
 do
-	-- Maps rectangles for storing positional information
 	local mapRects = {}
-
-	-- Temporary 2D vector for calculations
 	local tempVec2D = CreateVector2D(0, 0)
 	function K.GetPlayerMapPos(mapID)
 		if not mapID then
@@ -857,15 +888,18 @@ do
 
 			mapRect = { pos1, pos2 }
 			mapRect[2]:Subtract(mapRect[1])
-
 			mapRects[mapID] = mapRect
 		end
-		tempVec2D:Subtract(mapRect[1])
 
+		tempVec2D:Subtract(mapRect[1])
 		return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
 	end
 
 	function K.FormatMoney(amount)
+		if type(amount) ~= "number" then
+			return "Invalid amount" -- Handle non-numeric input gracefully
+		end
+
 		local coppername = "|cffeda55fc|r"
 		local goldname = "|cffffd700g|r"
 		local silvername = "|cffc7c7cfs|r"
@@ -876,8 +910,8 @@ do
 		local copper = math_floor(mod(value, 100))
 
 		if gold > 0 then
-		-- stylua: ignore
-		return string_format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
+			-- stylua: ignore
+			return string_format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
 		elseif silver > 0 then
 			return string_format("%d%s %02d%s", silver, silvername, copper, coppername)
 		else

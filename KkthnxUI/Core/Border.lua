@@ -22,7 +22,8 @@ local borderSizeDefault = 10
 local getBorderSize = (borderStyle == "KkthnxUI") and borderSizeKkthnx or borderSizeDefault
 
 local function getTile(border, w, h)
-	return (w + 2 * border.__offset) / getBorderSize
+	local borderSize = getBorderSize
+	return (w + 2 * border.__offset) / borderSize
 end
 
 local function setTextureCoordinates(border, tile)
@@ -34,6 +35,10 @@ end
 
 local function onSizeChanged(self, w, h)
 	local border = objectToWidgets[self]
+	if not border then
+		return
+	end
+
 	local tile = getTile(border, w, h)
 	setTextureCoordinates(border, tile)
 end
@@ -91,9 +96,8 @@ function Module:SetSize(size)
 end
 
 function Module:Hide()
-	local len = #borderSections
-	for i = 1, len do
-		self[borderSections[i].name]:Hide()
+	for _, section in ipairs(borderSections) do
+		self[section.name]:Hide()
 	end
 end
 
@@ -116,9 +120,8 @@ function Module:GetVertexColor()
 end
 
 function Module:SetVertexColor(r, g, b, a)
-	local len = #borderSections
-	for i = 1, len do
-		self[borderSections[i].name]:SetVertexColor(r, g, b, a)
+	for _, section in ipairs(borderSections) do
+		self[section.name]:SetVertexColor(r, g, b, a)
 	end
 end
 

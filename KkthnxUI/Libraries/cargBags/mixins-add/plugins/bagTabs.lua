@@ -37,6 +37,10 @@ local function AddBankTabSettingsToTooltip(tooltip, depositFlags)
 end
 
 local function UpdateTooltip(self, id)
+	if not AccountBankPanel.purchasedBankTabData then
+		return
+	end
+
 	local data = AccountBankPanel.purchasedBankTabData[id]
 	if not data then
 		return
@@ -144,6 +148,10 @@ function BagTab:UpdateButton()
 end
 
 function BagTab:OnClick(btn)
+	if not AccountBankPanel.purchasedBankTabData then
+		return
+	end
+
 	local currentTabID = self:GetID()
 	local data = AccountBankPanel.purchasedBankTabData[currentTabID]
 	if not data then
@@ -196,6 +204,10 @@ cargBags:RegisterPlugin("BagTab", function(self, bags)
 	end
 
 	hooksecurefunc(AccountBankPanel, "RefreshBankTabs", function(self)
+		if not AccountBankPanel.purchasedBankTabData then
+			return
+		end
+
 		for index, data in pairs(self.purchasedBankTabData) do
 			bar.buttons[index].Icon:SetTexture(data.icon)
 		end

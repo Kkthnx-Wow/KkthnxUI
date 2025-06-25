@@ -163,7 +163,6 @@
    <Include file="Skins\Blizzard\InspectUI.lua" />
    <Include file="Skins\Blizzard\ProfessionsBook.lua" />
    <Include file="Skins\Blizzard\QuestNavigation.lua" />
-   <Include file="Skins\Blizzard\TalkingHeadUI.lua" />
    <Include file="Skins\Blizzard\TradeSkillUI.lua" />
    <!-- Skins FrameXML -->
    <Include file="Skins\Blizzard\FrameXML\CharacterFrame.lua" />

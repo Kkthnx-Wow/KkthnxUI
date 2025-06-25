@@ -133,6 +133,7 @@ function Module:OnEnable()
 	end
 
 	local loadMiscModules = {
+		"CreateAlreadyKnown",
 		"CreateBossBanner",
 		"CreateBossEmote",
 		"CreateCustomWaypoint",
@@ -140,12 +141,13 @@ function Module:OnEnable()
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
-		-- "CreateObjectiveSizeUpdate",
-		-- "CreateQuestSizeUpdate",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
+		"UpdateyClassColors",
 		"UpdateMaxCameraZoom",
+		-- "CreateObjectiveSizeUpdate",
+		-- "CreateQuestSizeUpdate",
 	}
 
 	for _, funcName in ipairs(loadMiscModules) do
@@ -217,7 +219,7 @@ local function KKUI_ClickMinimapButton(_, btn)
 			return
 		end
 		K["GUI"]:Toggle()
-		PlaySound(SOUNDKIT_IG_MAINMENU_OPTION)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION, "SFX")
 	end
 end
 
@@ -539,46 +541,112 @@ function Module:CreateCustomWaypoint()
 		return
 	end
 
-	local pointString = K.InfoColor .. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
+	local debugMode = false
+	local pointString = K.InfoColor .. "|Hworldmap:%d:%d:%d|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
 
-	local function GetCorrectCoord(x)
-		x = tonumber(x)
-		if x then
-			if x > 100 then
-				return 100
-			elseif x < 0 then
-				return 0
-			end
-			return x
+	-- Debugging function
+	local function DebugPrint(...)
+		if debugMode then
+			print("|cFF00FF00[DEBUG]:|r", ...)
 		end
 	end
 
-	SlashCmdList["KKUI_CUSTOM_WAYPOINT"] = function(msg)
-		msg = gsub(msg, "(%d)[%.,] (%d)", "%1 %2")
-		local x, y, z = strmatch(msg, "(%S+)%s(%S+)(.*)")
-		if x and y then
-			local mapID = C_Map.GetBestMapForUnit("player")
-			if mapID then
-				local mapInfo = C_Map.GetMapInfo(mapID)
-				local mapName = mapInfo and mapInfo.name
-				if mapName then
-					x = GetCorrectCoord(x)
-					y = GetCorrectCoord(y)
-					if x and y then
-						print(format(pointString, mapID, x * 100, y * 100, mapName, x, y, z or ""))
-						C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
-						C_SuperTrack.SetSuperTrackedUserWaypoint(true)
-					else
-						print("Invalid waypoint format. Please enter the x and y coordinates in the format 'x y'.")
-					end
+	-- Ensures coordinates are valid and within bounds
+	local function GetCorrectCoord(coord)
+		DebugPrint("Validating coordinate:", coord)
+		coord = tonumber(coord)
+		if coord then
+			return math.max(0, math.min(100, coord))
+		end
+	end
+
+	-- Formats the clickable waypoint message
+	local function FormatClickableWaypoint(mapID, x, y, mapName, desc)
+		local descriptionPart = desc and (" " .. desc) or ""
+		local formatted = format(pointString, mapID, x * 100, y * 100, mapName, x, y, descriptionPart)
+		DebugPrint("Formatted clickable waypoint message:", formatted)
+		return formatted
+	end
+
+	-- Sets the waypoint and supertracks it
+	local function SetWaypoint(mapID, x, y, desc)
+		local mapName = C_Map.GetMapInfo(mapID) and C_Map.GetMapInfo(mapID).name or "Unknown"
+		DebugPrint("Setting waypoint - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
+
+		local message = FormatClickableWaypoint(mapID, x, y, mapName, desc)
+		print(message)
+
+		C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
+		C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+	end
+
+	-- Parses the input message for mapID, coordinates, and description
+	local function ParseInput(msg)
+		DebugPrint("Parsing input:", msg)
+
+		-- Match input with map ID format
+		local mapID, x, y, desc = msg:match("#(%d+)%s*([%d%.]+),?%s*([%d%.]+)%s*(.*)")
+		if not mapID then
+			-- Match input without map ID
+			x, y, desc = msg:match("([%d%.]+),?%s*([%d%.]+)%s*(.*)")
+			if x and y then
+				-- Default to player's current map
+				mapID = C_Map.GetBestMapForUnit("player")
+				if not mapID then
+					print("Unable to determine the current map. Please try again.")
+					DebugPrint("Failed to retrieve map ID")
+					return
 				end
 			end
+		end
+
+		if not x or not y then
+			print("Invalid input. Usage: /way [#<mapID>] <x>,<y> [description]")
+			DebugPrint("Input validation failed. MapID:", mapID, "X:", x, "Y:", y)
+			return
+		end
+
+		x = GetCorrectCoord(x)
+		y = GetCorrectCoord(y)
+		mapID = tonumber(mapID)
+
+		if not (x and y and mapID) then
+			print("Coordinates must be between 0 and 100, and mapID must be valid.")
+			DebugPrint("Coordinate validation failed. MapID:", mapID, "X:", x, "Y:", y)
+			return
+		end
+
+		DebugPrint("Parsed values - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
+		return mapID, x, y, desc
+	end
+
+	-- Handles slash command inputs
+	local function HandleSlashCommand(msg, command)
+		DebugPrint("Handling /" .. command .. " command with input:", msg)
+		local mapID, x, y, desc = ParseInput(msg)
+		if mapID then
+			SetWaypoint(mapID, x, y, desc)
 		else
-			print("Invalid waypoint format. Please enter the x and y coordinates in the format 'x y'.")
+			DebugPrint("Parsing failed for input:", msg)
 		end
 	end
-	SLASH_KKUI_CUSTOM_WAYPOINT1 = "/way"
-	SLASH_KKUI_CUSTOM_WAYPOINT2 = "/go"
+
+	-- Registers the /way and /go slash commands
+	local function RegisterSlashCommands()
+		DebugPrint("Registering /way and /go slash commands")
+
+		SlashCmdList["KKUI_WAY"] = function(msg)
+			HandleSlashCommand(msg, "way")
+		end
+		SLASH_KKUI_WAY1 = "/way"
+
+		SlashCmdList["KKUI_GO"] = function(msg)
+			HandleSlashCommand(msg, "go")
+		end
+		SLASH_KKUI_GO1 = "/go"
+	end
+
+	RegisterSlashCommands()
 end
 
 -- Update Max Camera Zoom

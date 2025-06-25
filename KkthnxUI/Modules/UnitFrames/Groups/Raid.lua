@@ -132,7 +132,6 @@ function Module:CreateRaid()
 		local frameLevel = frame:GetFrameLevel()
 
 		local normalTexture = K.GetTexture(C["General"].Texture)
-		local bdTexture = K.MediaFolder .. "Textures\\bgTex"
 
 		-- Position and size
 		local myBar = CreateFrame("StatusBar", nil, frame)
@@ -157,7 +156,7 @@ function Module:CreateRaid()
 		absorbBar:SetPoint("TOP")
 		absorbBar:SetPoint("BOTTOM")
 		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
-		absorbBar:SetStatusBarTexture(bdTexture)
+		absorbBar:SetStatusBarTexture(normalTexture)
 		absorbBar:SetStatusBarColor(0.66, 1, 1)
 		absorbBar:SetFrameLevel(frameLevel)
 		absorbBar:SetAlpha(0.5)
@@ -170,7 +169,7 @@ function Module:CreateRaid()
 
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
-		overAbsorbBar:SetStatusBarTexture(bdTexture)
+		overAbsorbBar:SetStatusBarTexture(normalTexture)
 		overAbsorbBar:SetStatusBarColor(0.66, 1, 1)
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
@@ -186,7 +185,7 @@ function Module:CreateRaid()
 		healAbsorbBar:SetPoint("BOTTOM")
 		healAbsorbBar:SetPoint("RIGHT", Health:GetStatusBarTexture())
 		healAbsorbBar:SetReverseFill(true)
-		healAbsorbBar:SetStatusBarTexture(bdTexture)
+		healAbsorbBar:SetStatusBarTexture(normalTexture)
 		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
@@ -305,7 +304,7 @@ function Module:CreateRaid()
 		local filter = C["Raid"].RaidBuffs.Value == "All" and "HELPFUL" or "HELPFUL|RAID"
 		local onlyShowPlayer = C["Raid"].RaidBuffs.Value == "Self"
 
-		local Buffs = CreateFrame("Frame", self:GetName() .. "Buffs", Health)
+		local Buffs = CreateFrame("Frame", string.format("%sBuffs", self:GetName()), Health)
 		Buffs:SetPoint("TOPLEFT", Health, "TOPLEFT", 2, -2)
 		Buffs:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -2, 2)
 		Buffs:SetHeight(16)
@@ -411,8 +410,11 @@ function Module:CreateRaid()
 		Override = UpdateRaidThreat,
 	}
 
-	self.Range = {
-		Override = Module.UpdateRange,
+	self.RangeFader = {
+		insideAlpha = 1,
+		outsideAlpha = 0.55,
+		MaxAlpha = 1,
+		MinAlpha = 0.3,
 	}
 
 	self.Health = Health

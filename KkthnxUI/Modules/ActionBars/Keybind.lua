@@ -256,13 +256,14 @@ function Module:Bind_Listener(key)
 	local alt = IsAltKeyDown() and "ALT-" or ""
 	local ctrl = IsControlKeyDown() and "CTRL-" or ""
 	local shift = IsShiftKeyDown() and "SHIFT-" or ""
+	local meta = IsMetaKeyDown() and "META-" or ""
 
 	if not frame.spellmacro or frame.spellmacro == "PET" or frame.spellmacro == "STANCE" then
-		SetBinding(alt .. ctrl .. shift .. key, frame.bindstring)
+		SetBinding(alt .. ctrl .. shift .. meta .. key, frame.bindstring)
 	else
-		SetBinding(alt .. ctrl .. shift .. key, frame.spellmacro .. " " .. frame.name)
+		SetBinding(alt .. ctrl .. shift .. meta .. key, frame.spellmacro .. " " .. frame.name)
 	end
-	K.Print((frame.tipName or frame.name) .. " |cff00ff00" .. L["Key Bound To"] .. "|r " .. alt .. ctrl .. shift .. key)
+	K.Print((frame.tipName or frame.name) .. " |cff00ff00" .. L["Key Bound To"] .. "|r " .. alt .. ctrl .. shift .. meta .. key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
 end
