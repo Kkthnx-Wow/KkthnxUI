@@ -1,7 +1,9 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Installer")
 
-local table_wipe = table.wipe
+local table_clear = table.clear
+local pairs = pairs
+local type = type
 
 local function ForceHekiliOptions()
 	if not C_AddOns.IsAddOnLoaded("Hekili") then
@@ -9,7 +11,7 @@ local function ForceHekiliOptions()
 	end
 
 	if HekiliDB then
-		table_wipe(HekiliDB)
+		table_clear(HekiliDB)
 	end
 
 	HekiliDB = {
@@ -185,7 +187,7 @@ local function ForceMaxDPSOptions()
 	end
 
 	if MaxDpsOptions then
-		table_wipe(MaxDpsOptions)
+		table_clear(MaxDpsOptions)
 	end
 
 	MaxDpsOptions = {
@@ -209,7 +211,7 @@ local function ForceDBMOptions()
 	end
 
 	if DBT_AllPersistentOptions then
-		table_wipe(DBT_AllPersistentOptions)
+		table_clear(DBT_AllPersistentOptions)
 	end
 
 	DBT_AllPersistentOptions = {
@@ -267,7 +269,7 @@ local function ForceCursorTrail()
 	end
 
 	if CursorTrail_PlayerConfig then
-		table_wipe(CursorTrail_PlayerConfig)
+		table_clear(CursorTrail_PlayerConfig)
 	end
 
 	CursorTrail_PlayerConfig = {

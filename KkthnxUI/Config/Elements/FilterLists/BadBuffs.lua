@@ -43,5 +43,5 @@ C.CheckBadBuffs = {
 	[SpellName(261477)] = true,
 	[SpellName(354550)] = true,
 	[SpellName(354481)] = true,
-	[SpellName(279997)] = true, -- DEBUG
+	-- [SpellName(279997)] = true, -- DEBUG
 }

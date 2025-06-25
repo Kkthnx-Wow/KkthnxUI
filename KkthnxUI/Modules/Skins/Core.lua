@@ -1,7 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Skins")
 
-local table_wipe = table.wipe
+local table_clear = table.clear
 
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
@@ -41,10 +41,10 @@ function Module:LoadDefaultSkins()
 	for _, defaultSkinFunction in pairs(C.defaultThemes) do
 		defaultSkinFunction()
 	end
-	table_wipe(C.defaultThemes)
+	table_clear(C.defaultThemes)
 
 	if not C["Skins"].BlizzardFrames then
-		table_wipe(C.themes)
+		table_clear(C.themes)
 	end
 
 	Module:LoadSkins(C.themes)

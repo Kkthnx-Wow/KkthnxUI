@@ -9,7 +9,10 @@ local string_format = string.format
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
-local table_wipe = table.wipe
+local table_insert = table.insert
+local table_remove = table.remove
+local table_sort = table.sort
+local table_clear = table.clear
 local tonumber = tonumber
 local type = type
 local unpack = unpack
@@ -180,7 +183,7 @@ do
 		variable = variable or ""
 
 		if cleanup then
-			wipe(list)
+			table_clear(list)
 		end
 
 		for word in gmatch(variable, "%S+") do
@@ -503,8 +506,8 @@ do
 				return
 			end
 
-			table_wipe(slotData.gems)
-			table_wipe(slotData.gemsColor)
+			table_clear(slotData.gems)
+			table_clear(slotData.gemsColor)
 			slotData.iLvl = nil
 			slotData.enchantText = nil
 

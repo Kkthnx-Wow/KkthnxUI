@@ -6,6 +6,7 @@ local select = select
 local string_find = string.find
 local table_insert = table.insert
 local table_remove = table.remove
+local table_clear = table.clear
 -- local table_wipe = table.wipe
 
 local C_Item_GetItemInfo = C_Item.GetItemInfo
@@ -91,26 +92,9 @@ local function DataAnalyze(v)
 	return newTable
 end
 
-local function RecycleTable(t)
-	if not t then
-		return
-	end
-
-	-- Use table.clear if available (Lua 5.4+), otherwise clear manually
-	if table.clear then
-		table.clear(t)
-	else
-		for k in pairs(t) do
-			t[k] = nil
-		end
-	end
-
-	return t -- Return the same table instead of nil for reuse
-end
-
 local function InsertData(index, target)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
-		RecycleTable(target)
+		table_clear(target)
 	end
 
 	for spellID, v in pairs(myTable[index]) do
@@ -125,7 +109,7 @@ end
 local function ConvertTable()
 	for i = 1, 10 do
 		if myTable[i] then
-			myTable[i] = RecycleTable(myTable[i])
+			table_clear(myTable[i])
 		end
 		myTable[i] = myTable[i] or {}
 
@@ -174,7 +158,6 @@ local function ConvertTable()
 end
 
 local function BuildAuraList()
-	AuraList = RecycleTable(AuraList)
 	AuraList = {}
 
 	AuraList = C.AuraWatchList["ALL"] or {}
@@ -183,11 +166,11 @@ local function BuildAuraList()
 		table_insert(AuraList, value)
 	end
 
-	C.AuraWatchList = RecycleTable(C.AuraWatchList)
+	C.AuraWatchList = {}
 end
 
 local function BuildUnitIDTable()
-	UnitIDTable = RecycleTable(UnitIDTable) or {}
+	UnitIDTable = {}
 
 	for _, VALUE in pairs(AuraList) do
 		if VALUE.List then
@@ -201,7 +184,7 @@ local function BuildUnitIDTable()
 end
 
 local function BuildCooldownTable()
-	cooldownTable = RecycleTable(cooldownTable) or {}
+	cooldownTable = {}
 
 	for KEY, VALUE in pairs(AuraList) do
 		if VALUE.List then
@@ -420,12 +403,12 @@ end
 -- Add proper cleanup function for global tables
 local function CleanupGlobalTables()
 	-- Properly clear all global tables for reuse
-	AuraList = RecycleTable(AuraList) or {}
-	FrameList = RecycleTable(FrameList) or {}
-	UnitIDTable = RecycleTable(UnitIDTable) or {}
-	IntTable = RecycleTable(IntTable) or {}
-	IntCD = RecycleTable(IntCD) or {}
-	cooldownTable = RecycleTable(cooldownTable) or {}
+	AuraList = {}
+	FrameList = {}
+	UnitIDTable = {}
+	IntTable = {}
+	IntCD = {}
+	cooldownTable = {}
 end
 
 local function InitSetup()
@@ -910,8 +893,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 
 		-- Clear cache when it gets too large
 		if cacheSize > maxCacheSize then
-			RecycleTable(cache)
-			cache = {}
+			table_clear(cache)
 			cacheSize = 0
 		end
 	end
@@ -1120,7 +1102,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			RecycleTable(IntTable)
+			table_clear(IntTable)
 
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
@@ -1153,7 +1135,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			RecycleTable(IntTable)
+			table_clear(IntTable)
 		end
 	end
 end

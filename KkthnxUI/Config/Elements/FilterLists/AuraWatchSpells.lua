@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("AurasTable")
 
 local string_format = string.format
-local table_wipe = table.wipe
+local table_clear = table.clear
 
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local UIParent = UIParent
@@ -37,7 +37,7 @@ function Module:AddNewAuraWatch(class, list)
 			if spellID then
 				local name = C_Spell_GetSpellInfo(spellID)
 				if not name then
-					table_wipe(v)
+					table.clear(v)
 					if K.isDeveloper then
 						K.Print(string_format("|cffFF0000Invalid spellID:|r '%s' %s", class, spellID))
 					end
@@ -81,7 +81,7 @@ function Module:AddDeprecatedGroup()
 		end
 	end
 
-	table_wipe(C.DeprecatedAuras)
+	table.clear(C.DeprecatedAuras)
 end
 
 function Module:OnEnable()

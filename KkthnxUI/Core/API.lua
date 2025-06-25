@@ -574,6 +574,173 @@ local function KillEditMode(object)
 	object.ClearHighlight = K.Noop
 end
 
+-- Improved table.clear function for Lua 5.1 compatibility
+do
+	-- Check if table.clear already exists (Lua 5.4+)
+	if not table.clear then
+		-- Create an optimized table.clear function for Lua 5.1
+		-- Using the most efficient method: direct pairs loop
+		function table.clear(t)
+			if not t or type(t) ~= "table" then
+				return
+			end
+
+			-- Use pairs to clear all keys efficiently
+			-- This is the fastest method in Lua 5.1
+			for k in pairs(t) do
+				t[k] = nil
+			end
+
+			return t
+		end
+	end
+
+	-- Enhanced table.clear with additional features
+	function K.ClearTable(t, deep)
+		if not t or type(t) ~= "table" then
+			return t
+		end
+
+		if deep then
+			-- Deep clear: recursively clear nested tables
+			for k, v in pairs(t) do
+				if type(v) == "table" then
+					K.ClearTable(v, true)
+				end
+				t[k] = nil
+			end
+		else
+			-- Shallow clear: use native table.clear
+			table.clear(t)
+		end
+
+		return t
+	end
+
+	-- Table recycling function for better memory management
+	-- Optimized for AuraWatch usage patterns
+	function K.RecycleTable(t)
+		if not t then
+			return {}
+		end
+
+		-- Clear the table and return it for reuse
+		-- This is more memory efficient than creating new tables
+		table.clear(t)
+		return t
+	end
+
+	-- Batch table clearing for multiple tables
+	-- Optimized for clearing multiple tables at once
+	function K.ClearTables(...)
+		local tables = { ... }
+		for i = 1, select("#", ...) do
+			local t = tables[i]
+			if t and type(t) == "table" then
+				table.clear(t)
+			end
+		end
+	end
+
+	-- Safe table clearing with error handling
+	function K.SafeClearTable(t)
+		if not t or type(t) ~= "table" then
+			return false, "Invalid table provided"
+		end
+
+		local success, err = pcall(table.clear, t)
+		if not success then
+			-- Fallback to manual clearing if pcall fails
+			for k in pairs(t) do
+				t[k] = nil
+			end
+		end
+
+		return true
+	end
+
+	-- Optimized table clearing for AuraWatch specifically
+	-- This function is designed for the specific patterns used in AuraWatch
+	function K.AuraWatchClearTable(t)
+		if not t then
+			return {}
+		end
+
+		-- For AuraWatch tables, we know they're typically small to medium size
+		-- and contain mostly string keys, so we optimize for this case
+		table.clear(t)
+		return t
+	end
+
+	-- Universal table utility function for consistent usage across the UI
+	-- This replaces table.wipe throughout the codebase
+	function K.ClearTableUniversal(t, options)
+		if not t or type(t) ~= "table" then
+			return t
+		end
+
+		options = options or {}
+		local deep = options.deep
+		local safe = options.safe
+		local returnTable = options.returnTable ~= false -- Default to true
+
+		if safe then
+			local success, err = pcall(table.clear, t)
+			if not success then
+				-- Fallback to manual clearing
+				for k in pairs(t) do
+					t[k] = nil
+				end
+			end
+		elseif deep then
+			-- Deep clear: recursively clear nested tables
+			for k, v in pairs(t) do
+				if type(v) == "table" then
+					K.ClearTableUniversal(v, { deep = true, safe = safe })
+				end
+				t[k] = nil
+			end
+		else
+			-- Standard clear
+			table.clear(t)
+		end
+
+		return returnTable and t or nil
+	end
+
+	-- Batch table operations for multiple tables
+	function K.BatchTableOperation(operation, ...)
+		local tables = { ... }
+		local results = {}
+
+		for i = 1, select("#", ...) do
+			local t = tables[i]
+			if t and type(t) == "table" then
+				if operation == "clear" then
+					table.clear(t)
+					results[i] = t
+				elseif operation == "count" then
+					local count = 0
+					for _ in pairs(t) do
+						count = count + 1
+					end
+					results[i] = count
+				elseif operation == "keys" then
+					local keys = {}
+					for k in pairs(t) do
+						table.insert(keys, k)
+					end
+					results[i] = keys
+				end
+			else
+				results[i] = nil
+			end
+		end
+
+		return unpack(results)
+	end
+end
+
 -- Add API Function
 local function addapi(object)
 	local mt = getmetatable(object).__index
