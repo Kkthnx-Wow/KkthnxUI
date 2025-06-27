@@ -1,7 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("DataText")
 
-local format, wipe, select, next = string.format, table.wipe, select, next
+local format, wipe, select, next = string.format, K.ClearTable, select, next
 local SPECIALIZATION, TALENTS_BUTTON, MAX_TALENT_TIERS = SPECIALIZATION, TALENTS_BUTTON, MAX_TALENT_TIERS
 local PVP_TALENTS, LOOT_SPECIALIZATION_DEFAULT = PVP_TALENTS, LOOT_SPECIALIZATION_DEFAULT
 local GetSpecialization, GetSpecializationInfo, GetLootSpecialization, GetSpecializationInfoByID = GetSpecialization, GetSpecializationInfo, GetLootSpecialization, GetSpecializationInfoByID

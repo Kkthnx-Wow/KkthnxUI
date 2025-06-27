@@ -66,20 +66,25 @@ local function FadeOutMicroMenu()
 	end
 end
 
-local function UpdateOnMouseOver(_, elapsed)
-	local KKUI_MenuBar = _G.KKUI_MenuBar
-	if not KKUI_MenuBar then
-		return
+-- Improved mouse detection using timer instead of OnUpdate
+local fadeTimer
+local function StartFadeTimer()
+	if fadeTimer then
+		fadeTimer:Cancel()
 	end
-
-	updateWatcher = updateWatcher + elapsed
-	if updateWatcher > 0.1 then
-		if not KKUI_MenuBar:IsMouseOver() then
+	fadeTimer = C_Timer.NewTimer(0.5, function()
+		local KKUI_MenuBar = _G.KKUI_MenuBar
+		if KKUI_MenuBar and not KKUI_MenuBar:IsMouseOver() then
 			KKUI_MenuBar.IsMouseOvered = nil
-			KKUI_MenuBar:SetScript("OnUpdate", nil)
 			FadeOutMicroMenu()
 		end
-		updateWatcher = 0
+	end)
+end
+
+local function StopFadeTimer()
+	if fadeTimer then
+		fadeTimer:Cancel()
+		fadeTimer = nil
 	end
 end
 
@@ -87,9 +92,13 @@ local function OnMicroButtonEnter()
 	local KKUI_MenuBar = _G.KKUI_MenuBar
 	if KKUI_MenuBar and not KKUI_MenuBar.IsMouseOvered then
 		KKUI_MenuBar.IsMouseOvered = true
-		KKUI_MenuBar:SetScript("OnUpdate", UpdateOnMouseOver)
+		StopFadeTimer()
 		K.UIFrameFadeIn(KKUI_MenuBar, 0.2, KKUI_MenuBar:GetAlpha(), 1)
 	end
+end
+
+local function OnMicroButtonLeave()
+	StartFadeTimer()
 end
 
 local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
@@ -119,6 +128,7 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 
 		if FadeMicroMenuEnabled then
 			button:HookScript("OnEnter", OnMicroButtonEnter)
+			button:HookScript("OnLeave", OnMicroButtonLeave)
 		end
 
 		button:SetHighlightTexture(0)
@@ -128,6 +138,11 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 	else
 		buttonFrame:SetScript("OnMouseUp", method)
 		K.AddTooltip(buttonFrame, "ANCHOR_RIGHT", tooltip)
+
+		if FadeMicroMenuEnabled then
+			buttonFrame:HookScript("OnEnter", OnMicroButtonEnter)
+			buttonFrame:HookScript("OnLeave", OnMicroButtonLeave)
+		end
 
 		local highlight = buttonFrame:CreateTexture(nil, "HIGHLIGHT")
 		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
@@ -139,6 +154,17 @@ end
 
 function Module:CreateMicroMenu()
 	if not C["ActionBar"].MicroMenu then
+		-- Clean up if feature is disabled
+		if _G.KKUI_MenuBar then
+			_G.KKUI_MenuBar:Hide()
+		end
+		CleanupMicroMenu()
+		return
+	end
+
+	-- Show existing frame if it exists
+	if _G.KKUI_MenuBar then
+		_G.KKUI_MenuBar:Show()
 		return
 	end
 
@@ -210,4 +236,18 @@ function Module:CreateMicroMenu()
 	if MicroMenu and MicroMenu.UpdateHelpTicketButtonAnchor then
 		MicroMenu.UpdateHelpTicketButtonAnchor = K.Noop
 	end
+
+	-- Add mouse enter/leave handlers for the entire menu bar
+	if FadeMicroMenuEnabled then
+		KKUI_MenuBar:EnableMouse(true)
+		KKUI_MenuBar:HookScript("OnEnter", OnMicroButtonEnter)
+		KKUI_MenuBar:HookScript("OnLeave", OnMicroButtonLeave)
+	end
+end
+
+-- Add cleanup function for when feature is disabled
+local function CleanupMicroMenu()
+	K.ClearTable(MicroButtons)
+	StopFadeTimer()
+	updateWatcher = 0
 end

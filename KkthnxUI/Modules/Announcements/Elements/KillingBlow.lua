@@ -64,7 +64,7 @@ local pvpEmotes = {
 local battlegroundOpponents = {}
 
 function Announcements:BuildBattlegroundOpponents()
-	table.wipe(battlegroundOpponents) -- Clear the battleground opponents list
+	K.ClearTable(battlegroundOpponents) -- Clear the battleground opponents list
 	for index = 1, GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = GetBattlefieldScore(index)
 		if (K.Faction == "Horde" and faction == 1) or (K.Faction == "Alliance" and faction == 0) then

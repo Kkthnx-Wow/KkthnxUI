@@ -81,7 +81,7 @@ function Module:RareAlert_Update(id)
 
 	-- Limit the size of the cache to prevent overflow
 	if #RareAlertCache > 666 then
-		table.wipe(RareAlertCache)
+		K.ClearTable(RareAlertCache)
 	end
 end
 
@@ -111,8 +111,8 @@ function Module:CreateRareAnnounce()
 		Module:RareAlert_CheckInstance()
 		K:RegisterEvent("UPDATE_INSTANCE_INFO", Module.RareAlert_CheckInstance)
 	else
-		-- Clear cache and unregister events if rare alerts are disabled
-		table.wipe(RareAlertCache)
+		-- Clear cache on zone change
+		K.ClearTable(RareAlertCache)
 		K:UnregisterEvent("VIGNETTE_MINIMAP_UPDATED", Module.RareAlert_Update)
 		K:UnregisterEvent("UPDATE_INSTANCE_INFO", Module.RareAlert_CheckInstance)
 	end

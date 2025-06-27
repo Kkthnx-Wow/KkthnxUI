@@ -1,7 +1,7 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
-local wipe, tinsert, tconcat = table.wipe, table.insert, table.concat
+local wipe, tinsert, tconcat = K.ClearTable, table.insert, table.concat
 local IsInGroup, IsInRaid, GetNumGroupMembers = IsInGroup, IsInRaid, GetNumGroupMembers
 local UnitExists, UnitIsUnit, UnitIsDeadOrGhost, UnitName = UnitExists, UnitIsUnit, UnitIsDeadOrGhost, UnitName
 

@@ -9,7 +9,7 @@ local find = string.find
 local format = string.format
 local gsub = string.gsub
 local match = string.match
-local wipe = table.wipe
+local wipe = K.ClearTable
 local tonumber = tonumber
 
 -- Cache WoW API functions and constants

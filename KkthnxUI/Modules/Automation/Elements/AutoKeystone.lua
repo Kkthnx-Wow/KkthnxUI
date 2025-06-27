@@ -1,29 +1,38 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
-local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
+-- Performance optimizations
+local ReagentClass, KeystoneClass = Enum.ItemClass.Reagent, Enum.ItemReagentSubclass.Keystone
+local GetContainerItemID, GetContainerNumSlots, GetItemInfo = C_Container.GetContainerItemID, C_Container.GetContainerNumSlots, C_Item.GetItemInfo
+local PickupContainerItem, GetCursorItem, SlotKeystone = C_Container.PickupContainerItem, C_Cursor.GetCursorItem, C_ChallengeMode.SlotKeystone
+local select = select
 
 local function isKeystone(itemID)
-	local class, subclass = select(6, C_Item.GetItemInfo(itemID))
-	return class == "Gem" and subclass == "Artifact Relic"
+	local class, subclass = select(12, GetItemInfo(itemID))
+	return class == ReagentClass and subclass == KeystoneClass
 end
 
 local function useKeystone()
-	for container = 0, NUM_BAG_SLOTS - 1 do
-		for slot = 1, C_Container.GetContainerNumSlots(container) do
-			local itemID = C_Container.GetContainerItemID(container, slot)
+	for bag = 0, NUM_BAG_FRAMES do
+		for slot = 1, GetContainerNumSlots(bag) do
+			local itemID = GetContainerItemID(bag, slot)
 			if itemID and isKeystone(itemID) then
-				C_Container.UseContainerItem(container, slot)
-				return true -- Keystone found and used, exit loop
+				PickupContainerItem(bag, slot)
+
+				-- Verify cursor has item before slotting
+				if GetCursorItem() then
+					SlotKeystone()
+					return true
+				end
 			end
 		end
 	end
-	return false -- No keystone found
+	return false
 end
 
 function Module:SetupAutoKeystone()
 	if useKeystone() then
-		-- K.Print(L["Keystone used from bag"])
+		K.Print(L["Keystone automatically placed"])
 	end
 end
 
@@ -32,6 +41,7 @@ function Module:LoadAutoKeystone(event, addon)
 		ChallengesKeystoneFrame:HookScript("OnShow", function()
 			self:SetupAutoKeystone()
 		end)
+
 		K:UnregisterEvent(event, self.LoadAutoKeystone)
 	end
 end

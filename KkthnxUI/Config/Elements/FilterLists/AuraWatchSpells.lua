@@ -37,7 +37,7 @@ function Module:AddNewAuraWatch(class, list)
 			if spellID then
 				local name = C_Spell_GetSpellInfo(spellID)
 				if not name then
-					table.clear(v)
+					K.ClearTable(v)
 					if K.isDeveloper then
 						K.Print(string_format("|cffFF0000Invalid spellID:|r '%s' %s", class, spellID))
 					end
@@ -81,7 +81,7 @@ function Module:AddDeprecatedGroup()
 		end
 	end
 
-	table.clear(C.DeprecatedAuras)
+	K.ClearTable(C.DeprecatedAuras)
 end
 
 function Module:OnEnable()

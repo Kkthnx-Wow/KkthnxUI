@@ -66,6 +66,43 @@ local ShowTargetNPCs = {
 	[174773] = true, -- 怨毒怪
 }
 
+-- Quest icon cache and throttle
+local questProgressCache = {}
+local questLogUpdateID = 0
+
+local function GetQuestLogUpdateID()
+	-- You can use GetTime() or a custom incrementing value if needed
+	return C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetNumQuestLogEntries() or 0
+end
+
+local function PulseQuestIcon(icon)
+	if not icon.pulse then
+		icon.pulse = icon:CreateAnimationGroup()
+		local pulse = icon.pulse:CreateAnimation("Alpha")
+		pulse:SetFromAlpha(1)
+		pulse:SetToAlpha(0.3)
+		pulse:SetDuration(0.15)
+		pulse:SetSmoothing("IN_OUT")
+		pulse:SetOrder(1)
+		local pulse2 = icon.pulse:CreateAnimation("Alpha")
+		pulse2:SetFromAlpha(0.3)
+		pulse2:SetToAlpha(1)
+		pulse2:SetDuration(0.15)
+		pulse2:SetSmoothing("IN_OUT")
+		pulse2:SetOrder(2)
+	end
+	icon.pulse:Play()
+end
+
+-- Quest type to atlas mapping
+local QUEST_TYPE_ATLAS = {
+	kill = "UI-HUD-MicroMenu-Questlog-Up",
+	progress = "adventureguide-microbutton-alert",
+	loot = "UI-HUD-MicroMenu-CharacterMicroButton-Up",
+	interact = "UI-HUD-MicroMenu-Achievement-Up",
+	complete = "UI-HUD-MicroMenu-Questlog-Up",
+}
+
 -- Init
 function Module:UpdatePlateCVars()
 	if InCombatLockdown() then
@@ -167,7 +204,7 @@ function Module:BlockAddons()
 end
 
 function Module:CreateUnitTable()
-	table_wipe(customUnits)
+	K.ClearTable(customUnits)
 	if not C["Nameplate"].CustomUnitColor then
 		return
 	end
@@ -177,7 +214,7 @@ function Module:CreateUnitTable()
 end
 
 function Module:CreatePowerUnitTable()
-	table_wipe(showPowerList)
+	K.ClearTable(showPowerList)
 	K.CopyTable(C.NameplateShowPowerList, showPowerList)
 	K.SplitList(showPowerList, C["Nameplate"].PowerUnitList)
 end
@@ -514,8 +551,52 @@ function Module:UpdateQuestUnit(_, unit)
 	end
 
 	unit = unit or self.unit
-	local startLooking, isLootQuest, questProgress -- FIXME: isLootQuest in old expansion
-	local prevDiff = 0
+	local guid = UnitGUID(unit)
+	if not guid then
+		return
+	end
+
+	local now = GetTime()
+	self._lastQuestUpdate = self._lastQuestUpdate or 0
+	self._lastQuestGUID = self._lastQuestGUID or nil
+	self._lastQuestLogID = self._lastQuestLogID or 0
+
+	local logID = questLogUpdateID
+	if logID == 0 then
+		logID = GetQuestLogUpdateID()
+	end
+
+	-- Throttle: only update every 0.2s or if GUID/log changed
+	if self._lastQuestGUID == guid and self._lastQuestLogID == logID and (now - self._lastQuestUpdate) < 0.2 then
+		local cache = questProgressCache[guid]
+		if cache then
+			self.questCount:SetText(cache.text or "")
+			if cache.atlas then
+				self.questIcon:SetAtlas(cache.atlas)
+			end
+			if cache.color then
+				self.questIcon:SetVertexColor(unpack(cache.color))
+			else
+				self.questIcon:SetVertexColor(1, 1, 1)
+			end
+			if cache.show then
+				self.questIcon:Show()
+			else
+				self.questIcon:Hide()
+			end
+			return
+		end
+	end
+
+	self._lastQuestUpdate = now
+	self._lastQuestGUID = guid
+	self._lastQuestLogID = logID
+
+	local questProgress, questType, questComplete, prevProgress = nil, nil, false, nil
+	local prevCache = questProgressCache[guid]
+	if prevCache then
+		prevProgress = prevCache.progress
+	end
 
 	local data = C_TooltipInfo.GetUnit(unit)
 	if data then
@@ -524,37 +605,88 @@ function Module:UpdateQuestUnit(_, unit)
 			if lineData.type == 8 then
 				local text = lineData.leftText -- progress string
 				if text then
-					local current, goal = strmatch(text, "(%d+)/(%d+)")
+					local current, goal = strmatch(text, "(%d+)%/(%d+)")
 					local progress = strmatch(text, "(%d+)%%")
+					local loot = strmatch(text, "(%d+)%s*/%s*(%d+)%s*%((.+)%)")
+					local interact = strmatch(text, "(Interact)")
 					if current and goal then
+						questType = "kill"
 						local diff = floor(goal - current)
-						if diff > prevDiff then
+						if diff > 0 then
 							questProgress = diff
-							prevDiff = diff
+						else
+							questProgress = 0
+							questComplete = true
 						end
-					elseif progress and prevDiff == 0 then
+					elseif progress then
+						questType = "progress"
 						if floor(100 - progress) > 0 then
-							questProgress = progress .. "%" -- lower priority on progress, keep looking
+							questProgress = progress .. "%"
+						else
+							questProgress = "100%"
+							questComplete = true
 						end
+					elseif loot then
+						questType = "loot"
+						questProgress = loot
+					elseif interact then
+						questType = "interact"
+						questProgress = "!"
 					end
 				end
 			end
 		end
 	end
 
+	local show, text, atlas, color = false, "", nil, { 1, 1, 1 }
 	if questProgress then
-		self.questCount:SetText(questProgress)
-		self.questIcon:SetAtlas("UI-HUD-MicroMenu-Questlog-Up")
+		-- Don't show quest indicator if quest is complete for this unit
+		if questComplete then
+			show = false
+			text = ""
+		else
+			show = true
+			text = tostring(questProgress)
+			atlas = QUEST_TYPE_ATLAS[questType] or "adventureguide-microbutton-alert"
+			if questType == "kill" or questType == "progress" then
+				color = { 1, 0.82, 0 }
+			elseif questType == "loot" then
+				color = { 0.5, 0.8, 1 }
+			elseif questType == "interact" then
+				color = { 1, 0.5, 0.5 }
+			else
+				color = { 1, 0.82, 0 }
+			end
+		end
+
+		if prevProgress and prevProgress ~= questProgress and not questComplete then
+			PulseQuestIcon(self.questIcon)
+		end
+	else
+		text = ""
+		atlas = "adventureguide-microbutton-alert"
+		color = { 1, 1, 1 }
+		show = false
+	end
+
+	self.questCount:SetText(text)
+	self.questIcon:SetAtlas(atlas)
+	self.questIcon:SetVertexColor(unpack(color))
+	if show then
 		self.questIcon:Show()
 	else
-		self.questCount:SetText("")
-		if isLootQuest then
-			self.questIcon:SetAtlas("adventureguide-microbutton-alert")
-			self.questIcon:Show()
-		else
-			self.questIcon:Hide()
-		end
+		self.questIcon:Hide()
 	end
+
+	questProgressCache[guid] = {
+		progress = questProgress,
+		text = text,
+		atlas = atlas,
+		color = color,
+		show = show,
+		questType = questType,
+		complete = questComplete,
+	}
 end
 
 function Module:AddQuestIcon(self)

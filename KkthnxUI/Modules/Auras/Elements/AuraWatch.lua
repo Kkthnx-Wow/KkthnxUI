@@ -94,7 +94,7 @@ end
 
 local function InsertData(index, target)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
-		table_clear(target)
+		K.ClearTable(target)
 	end
 
 	for spellID, v in pairs(myTable[index]) do
@@ -109,7 +109,7 @@ end
 local function ConvertTable()
 	for i = 1, 10 do
 		if myTable[i] then
-			table_clear(myTable[i])
+			K.ClearTable(myTable[i])
 		end
 		myTable[i] = myTable[i] or {}
 

@@ -75,7 +75,7 @@ local function CheckForBagReagent(name)
 end
 
 function Module:UpdateBagsAnchor(parent, bags)
-	table_wipe(anchorCache)
+	K.ClearTable(anchorCache)
 
 	local index = 1
 	local perRow = C["Inventory"].BagsPerRow
@@ -101,7 +101,7 @@ function Module:UpdateBagsAnchor(parent, bags)
 end
 
 function Module:UpdateBankAnchor(parent, bags)
-	table_wipe(anchorCache)
+	K.ClearTable(anchorCache)
 
 	local index = 1
 	local perRow = C["Inventory"].BankPerRow

@@ -956,9 +956,9 @@ end
 local DropdownScrollBarOnValueChanged = function(self)
 	local Value = K.Round(self:GetValue())
 	local Parent = self:GetParent()
-	Parent.Offset = Value
+	parent.Offset = Value
 
-	Parent:ScrollMenu()
+	parent:ScrollMenu()
 end
 
 local DropdownScrollBarOnMouseWheel = function(self, delta)
@@ -982,6 +982,9 @@ local AddDropdownScrollBar = function(self)
 	ScrollBar:EnableMouseWheel(true)
 	ScrollBar:SetScript("OnMouseWheel", DropdownScrollBarOnMouseWheel)
 	ScrollBar:SetScript("OnValueChanged", DropdownScrollBarOnValueChanged)
+
+	-- Ensure the scroll bar is always on top
+	ScrollBar:SetFrameLevel(self:GetFrameLevel() + 10)
 
 	self.ScrollBar = ScrollBar
 
@@ -1613,6 +1616,9 @@ local AddScrollBar = function(self)
 	ScrollBar:EnableMouseWheel(true)
 	ScrollBar:SetScript("OnMouseWheel", WindowScrollBarOnMouseWheel)
 	ScrollBar:SetScript("OnValueChanged", WindowScrollBarOnValueChanged)
+
+	-- Ensure the scroll bar is always on top
+	ScrollBar:SetFrameLevel(self:GetFrameLevel() + 10)
 
 	ScrollBar.Window = self
 
