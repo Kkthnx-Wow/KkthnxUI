@@ -5,6 +5,7 @@ local string_find, string_gsub = string.find, string.gsub
 local BetterDate = BetterDate
 local INTERFACE_ACTION_BLOCKED = INTERFACE_ACTION_BLOCKED
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_Timer = C_Timer
 
 local timestampFormat = {
 	[2] = "[%I:%M %p] ",
@@ -74,6 +75,7 @@ local function renameChatFrames()
 end
 
 local function renameChatStrings()
+	-- Apply chat string modifications immediately
 	_G.ERR_FRIEND_ONLINE_SS = string_gsub(_G.ERR_FRIEND_ONLINE_SS, "%]%|h", "]|h|cff00c957")
 	_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")
 

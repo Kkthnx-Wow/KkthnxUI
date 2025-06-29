@@ -6,6 +6,7 @@ K.Devs = {
 	["Chithick-Area 52"] = true,
 	["Kkthnxbye-Area 52"] = true,
 	["Kkthnx-Valdrakken"] = true,
+	["Kkthnx-TWW - Beta"] = true,
 }
 
 local function isDeveloper()

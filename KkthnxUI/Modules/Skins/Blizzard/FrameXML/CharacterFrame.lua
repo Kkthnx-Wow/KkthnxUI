@@ -162,6 +162,21 @@ tinsert(C.defaultThemes, function()
 		UpdateCosmetic(button)
 	end)
 
+	-- Restore PaperDollFrame_UpdateStats hook with conservative approach
+	-- Only hook if the function exists and we're not in combat
+	if not InCombatLockdown() then
+		hooksecurefunc("PaperDollFrame_UpdateStats", function()
+			-- Minimal intervention to prevent taint while maintaining functionality
+			if CharacterStatsPane and CharacterStatsPane.ItemLevelFrame then
+				local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
+				if CharItemLvLValue then
+					CharItemLvLValue:SetFontObject(K.UIFont)
+					CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
+				end
+			end
+		end)
+	end
+
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
 	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
 	CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
@@ -209,10 +224,6 @@ tinsert(C.defaultThemes, function()
 	if CharacterLevelText then
 		CharacterLevelText:SetFontObject(K.UIFont)
 	end
-
-	local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
-	CharItemLvLValue:SetFontObject(K.UIFont)
-	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
 	CharacterStatsPane.ClassBackground:ClearAllPoints()
 	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
@@ -268,9 +279,7 @@ tinsert(C.defaultThemes, function()
 			if child and not child.styled then
 				local repbar = child.Content and child.Content.ReputationBar
 				if repbar then
-					-- B.StripTextures(repbar)
 					repbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-					-- B.CreateBDFrame(repbar, 0.25)
 				end
 
 				child.styled = true

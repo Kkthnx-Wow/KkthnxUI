@@ -3,8 +3,10 @@ local Module = K:GetModule("Unitframes")
 
 -- Lua functions
 local math_rad = math.rad
+local floor = math.floor
 local pairs = pairs
 local string_format = string.format
+local strmatch = string.match
 local table_wipe = table.wipe
 local tonumber = tonumber
 local unpack = unpack
@@ -18,6 +20,7 @@ local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyC
 local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 local C_Scenario_GetInfo = C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = C_Scenario.GetStepInfo
+local C_TooltipInfo_GetUnit = C_TooltipInfo.GetUnit
 local CreateFrame = CreateFrame
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers
@@ -64,43 +67,6 @@ local ShowTargetNPCs = {
 	[40357] = true, -- 格瑞姆巴托火元素
 	[164702] = true, -- 食腐蛆虫
 	[174773] = true, -- 怨毒怪
-}
-
--- Quest icon cache and throttle
-local questProgressCache = {}
-local questLogUpdateID = 0
-
-local function GetQuestLogUpdateID()
-	-- You can use GetTime() or a custom incrementing value if needed
-	return C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetNumQuestLogEntries() or 0
-end
-
-local function PulseQuestIcon(icon)
-	if not icon.pulse then
-		icon.pulse = icon:CreateAnimationGroup()
-		local pulse = icon.pulse:CreateAnimation("Alpha")
-		pulse:SetFromAlpha(1)
-		pulse:SetToAlpha(0.3)
-		pulse:SetDuration(0.15)
-		pulse:SetSmoothing("IN_OUT")
-		pulse:SetOrder(1)
-		local pulse2 = icon.pulse:CreateAnimation("Alpha")
-		pulse2:SetFromAlpha(0.3)
-		pulse2:SetToAlpha(1)
-		pulse2:SetDuration(0.15)
-		pulse2:SetSmoothing("IN_OUT")
-		pulse2:SetOrder(2)
-	end
-	icon.pulse:Play()
-end
-
--- Quest type to atlas mapping
-local QUEST_TYPE_ATLAS = {
-	kill = "UI-HUD-MicroMenu-Questlog-Up",
-	progress = "adventureguide-microbutton-alert",
-	loot = "UI-HUD-MicroMenu-CharacterMicroButton-Up",
-	interact = "UI-HUD-MicroMenu-Achievement-Up",
-	complete = "UI-HUD-MicroMenu-Questlog-Up",
 }
 
 -- Init
@@ -525,17 +491,10 @@ end
 
 function Module:QuestIconCheck()
 	if not C["Nameplate"].QuestIndicator then
-		-- Unregister event if quest indicator is disabled
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 		return
 	end
 
 	CheckInstanceStatus()
-
-	-- Unregister existing event first to prevent duplicates
-	K:UnregisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
-
-	-- Register event
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
 
@@ -551,52 +510,8 @@ function Module:UpdateQuestUnit(_, unit)
 	end
 
 	unit = unit or self.unit
-	local guid = UnitGUID(unit)
-	if not guid then
-		return
-	end
-
-	local now = GetTime()
-	self._lastQuestUpdate = self._lastQuestUpdate or 0
-	self._lastQuestGUID = self._lastQuestGUID or nil
-	self._lastQuestLogID = self._lastQuestLogID or 0
-
-	local logID = questLogUpdateID
-	if logID == 0 then
-		logID = GetQuestLogUpdateID()
-	end
-
-	-- Throttle: only update every 0.2s or if GUID/log changed
-	if self._lastQuestGUID == guid and self._lastQuestLogID == logID and (now - self._lastQuestUpdate) < 0.2 then
-		local cache = questProgressCache[guid]
-		if cache then
-			self.questCount:SetText(cache.text or "")
-			if cache.atlas then
-				self.questIcon:SetAtlas(cache.atlas)
-			end
-			if cache.color then
-				self.questIcon:SetVertexColor(unpack(cache.color))
-			else
-				self.questIcon:SetVertexColor(1, 1, 1)
-			end
-			if cache.show then
-				self.questIcon:Show()
-			else
-				self.questIcon:Hide()
-			end
-			return
-		end
-	end
-
-	self._lastQuestUpdate = now
-	self._lastQuestGUID = guid
-	self._lastQuestLogID = logID
-
-	local questProgress, questType, questComplete, prevProgress = nil, nil, false, nil
-	local prevCache = questProgressCache[guid]
-	if prevCache then
-		prevProgress = prevCache.progress
-	end
+	local startLooking, isLootQuest, questProgress -- FIXME: isLootQuest in old expansion
+	local prevDiff = 0
 
 	local data = C_TooltipInfo.GetUnit(unit)
 	if data then
@@ -605,88 +520,37 @@ function Module:UpdateQuestUnit(_, unit)
 			if lineData.type == 8 then
 				local text = lineData.leftText -- progress string
 				if text then
-					local current, goal = strmatch(text, "(%d+)%/(%d+)")
+					local current, goal = strmatch(text, "(%d+)/(%d+)")
 					local progress = strmatch(text, "(%d+)%%")
-					local loot = strmatch(text, "(%d+)%s*/%s*(%d+)%s*%((.+)%)")
-					local interact = strmatch(text, "(Interact)")
 					if current and goal then
-						questType = "kill"
 						local diff = floor(goal - current)
-						if diff > 0 then
+						if diff > prevDiff then
 							questProgress = diff
-						else
-							questProgress = 0
-							questComplete = true
+							prevDiff = diff
 						end
-					elseif progress then
-						questType = "progress"
+					elseif progress and prevDiff == 0 then
 						if floor(100 - progress) > 0 then
-							questProgress = progress .. "%"
-						else
-							questProgress = "100%"
-							questComplete = true
+							questProgress = progress .. "%" -- lower priority on progress, keep looking
 						end
-					elseif loot then
-						questType = "loot"
-						questProgress = loot
-					elseif interact then
-						questType = "interact"
-						questProgress = "!"
 					end
 				end
 			end
 		end
 	end
 
-	local show, text, atlas, color = false, "", nil, { 1, 1, 1 }
 	if questProgress then
-		-- Don't show quest indicator if quest is complete for this unit
-		if questComplete then
-			show = false
-			text = ""
-		else
-			show = true
-			text = tostring(questProgress)
-			atlas = QUEST_TYPE_ATLAS[questType] or "adventureguide-microbutton-alert"
-			if questType == "kill" or questType == "progress" then
-				color = { 1, 0.82, 0 }
-			elseif questType == "loot" then
-				color = { 0.5, 0.8, 1 }
-			elseif questType == "interact" then
-				color = { 1, 0.5, 0.5 }
-			else
-				color = { 1, 0.82, 0 }
-			end
-		end
-
-		if prevProgress and prevProgress ~= questProgress and not questComplete then
-			PulseQuestIcon(self.questIcon)
-		end
-	else
-		text = ""
-		atlas = "adventureguide-microbutton-alert"
-		color = { 1, 1, 1 }
-		show = false
-	end
-
-	self.questCount:SetText(text)
-	self.questIcon:SetAtlas(atlas)
-	self.questIcon:SetVertexColor(unpack(color))
-	if show then
+		self.questCount:SetText(questProgress)
+		self.questIcon:SetAtlas("UI-HUD-MicroMenu-Questlog-Up")
 		self.questIcon:Show()
 	else
-		self.questIcon:Hide()
+		self.questCount:SetText("")
+		if isLootQuest then
+			self.questIcon:SetAtlas("adventureguide-microbutton-alert")
+			self.questIcon:Show()
+		else
+			self.questIcon:Hide()
+		end
 	end
-
-	questProgressCache[guid] = {
-		progress = questProgress,
-		text = text,
-		atlas = atlas,
-		color = color,
-		show = show,
-		questType = questType,
-		complete = questComplete,
-	}
 end
 
 function Module:AddQuestIcon(self)
@@ -946,6 +810,7 @@ function Module:CreatePlates()
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
 	self.nameText:SetPoint("BOTTOMRIGHT", self.levelText, "TOPRIGHT", -21, 4)
+	self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
 	self.npcTitle:ClearAllPoints()
@@ -1223,31 +1088,13 @@ function Module:UpdateNameplateAuras()
 end
 
 function Module:UpdateNameplateSize()
-	-- local plateHeight = C["Nameplate"].PlateHeight
-	-- local nameTextSize = C["Nameplate"].NameTextSize
-	-- local iconSize = plateHeight * 2 + 3
-
-	-- self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
-
-	--self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
 	if self.plateType == "NameOnly" then
 		self:Tag(self.nameText, "[nprare][color][name] [nplevel]")
 		self.npcTitle:UpdateTag()
 	else
 		self:Tag(self.nameText, "[nprare][name]")
+		self.healthValue:UpdateTag()
 	end
-
-	-- self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
-	-- self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
-
-	-- self.Castbar.Icon:SetSize(iconSize, iconSize)
-	-- self.Castbar:SetHeight(plateHeight)
-	-- self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	-- self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	-- self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
-
-	-- self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
-	-- self.healthValue:UpdateTag()
 
 	self.nameText:UpdateTag()
 end
@@ -1290,17 +1137,13 @@ function Module:UpdatePlateByType()
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
 
-	-- name:SetShown(not self.widgetsOnly)
-	-- name:ClearAllPoints()
 	if self.widgetsOnly then
 		name:Hide()
 	else
 		name:Show()
-		-- name:UpdateTag()
+		name:UpdateTag()
 		name:ClearAllPoints()
 	end
-	-- self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
-	-- self.npcTitle:UpdateTag()
 	raidtarget:ClearAllPoints()
 
 	if self.isSoftTarget then

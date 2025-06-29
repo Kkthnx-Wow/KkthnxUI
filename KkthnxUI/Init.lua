@@ -183,7 +183,10 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 				success, err = pcall(func, event, ...)
 			end
 			if not success then
-				print("Error in event handler for event:", event, "-", err)
+				-- Only log errors in debug mode to avoid spam
+				if K.Debug then
+					print("|cFF00FF00KkthnxUI:|r Error in event handler for event:", event, "-", err)
+				end
 			end
 		end
 	end

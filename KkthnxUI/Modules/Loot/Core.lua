@@ -47,6 +47,7 @@ local coinTextureIDs = {
 local function SlotEnter(slot)
 	local id = slot:GetID()
 	if LootSlotHasItem(id) then
+		-- Only protect the tooltip operations that can cause taint
 		GameTooltip:SetOwner(slot, "ANCHOR_RIGHT")
 		GameTooltip:SetLootItem(id)
 		CursorUpdate(slot)
