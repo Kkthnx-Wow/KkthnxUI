@@ -91,11 +91,11 @@ local function isItemInBagReagent(item)
 end
 
 local function isItemInBank(item)
-	return item.bagId == -1 or (item.bagId > 5 and item.bagId < 13)
+	return (item.bagId > 5 and item.bagId < 12)
 end
 
 local function isItemInAccountBank(item)
-	return item.bagId > 12 and item.bagId < 18
+	return item.bagId > 11 and item.bagId < 17
 end
 
 local function isItemJunk(item)
@@ -172,12 +172,16 @@ function Module:IsPetTrashCurrency(itemID)
 	return C["Inventory"].PetTrash and petTrashCurrenies[itemID]
 end
 
+local toyBlackList = {
+	[167698] = true, -- 隐秘之鱼护目镜
+}
+
 local function isItemCollection(item)
 	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterCollection then
 		return
 	end
 
-	return item.id and C_ToyBox_GetToyInfo(item.id) or isMountOrPet(item)
+	return item.id and C_ToyBox_GetToyInfo(item.id) and not toyBlackList[item.id] or isMountOrPet(item)
 end
 
 local function isItemCustom(item, index)
@@ -196,7 +200,7 @@ local function isEmptySlot(item)
 		return
 	end
 
-	return Module.initComplete and not item.texture and emptyBags[Module.BagsType[item.bagId]]
+	return Module.initComplete and not item.texture
 end
 
 local function isTradeGoods(item)
@@ -322,9 +326,6 @@ function Module:GetFilters()
 		return isItemInBank(item) and isItemLowerLevel(item)
 	end
 
-	filters.onlyReagent = function(item)
-		return item.bagId == -3 and not isEmptySlot(item)
-	end -- reagent bank
 	filters.onlyBagReagent = function(item)
 		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (hasReagentBagEquipped() and isItemInBag(item) and isTradeGoods(item))
 	end -- reagent bagslot

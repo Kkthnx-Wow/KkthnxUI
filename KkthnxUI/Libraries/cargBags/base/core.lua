@@ -19,6 +19,7 @@
 	class-generation, helper-functions and the Blizzard-replacement.
 ]]
 local parent, ns = ...
+ns.isNewPatch = select(4, GetBuildInfo()) >= 110200 -- 11.2.0
 local global = C_AddOns.GetAddOnMetadata(parent, "X-cargBags")
 
 --- @class table
@@ -144,7 +145,7 @@ cargBags:SetScript("OnEvent", function(self, event)
 		self.atBank = true
 
 		if impl:IsShown() then
-			impl:OnEvent("BAG_UPDATE")
+			-- impl:OnEvent("BAG_UPDATE") -- No need to update twice here, needs review
 		else
 			impl:Show()
 		end

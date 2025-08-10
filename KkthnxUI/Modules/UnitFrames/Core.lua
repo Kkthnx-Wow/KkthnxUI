@@ -450,18 +450,57 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 	local prevColor = element.prevColor
 	local thisColor
 
-	if not cur or cur == 0 then
-		thisColor = nil
-	else
-		thisColor = cur == max and 1 or 2
-		if not prevColor or prevColor ~= thisColor then
-			local r, g, b = 1, 0, 0
-			if thisColor == 2 then
-				local color = element.__owner.colors.power[powerType]
-				r, g, b = color[1], color[2], color[3]
+	-- Special handling for combo points with graduated colors
+	if powerType == "COMBO_POINTS" then
+		local comboColors = element.__owner.colors.power["COMBO_POINTS_GRADUATED"]
+		if comboColors and cur and cur > 0 then
+			-- Set individual colors for each active combo point bar
+			for i = 1, cur do
+				local bar = element[i]
+				local colorIndex = math.min(i, #comboColors)
+				local color = comboColors[colorIndex]
+				if color then
+					bar:SetStatusBarColor(color[1], color[2], color[3])
+				else
+					-- Fallback to first color if colorIndex is out of range
+					local fallbackColor = comboColors[1]
+					bar:SetStatusBarColor(fallbackColor[1], fallbackColor[2], fallbackColor[3])
+				end
 			end
-			SetStatusBarColor(element, r, g, b)
-			element.prevColor = thisColor
+			element.prevColor = cur -- Track current combo points for change detection
+			return -- Exit early since we handled combo points
+		else
+			-- Fallback to original logic if graduated colors not available
+			if not cur or cur == 0 then
+				thisColor = nil
+			else
+				thisColor = cur == max and 1 or 2
+				if not prevColor or prevColor ~= thisColor then
+					local r, g, b = 1, 0, 0
+					if thisColor == 2 then
+						local color = element.__owner.colors.power[powerType]
+						r, g, b = color[1], color[2], color[3]
+					end
+					SetStatusBarColor(element, r, g, b)
+					element.prevColor = thisColor
+				end
+			end
+		end
+	else
+		-- Original logic for non-combo point power types
+		if not cur or cur == 0 then
+			thisColor = nil
+		else
+			thisColor = cur == max and 1 or 2
+			if not prevColor or prevColor ~= thisColor then
+				local r, g, b = 1, 0, 0
+				if thisColor == 2 then
+					local color = element.__owner.colors.power[powerType]
+					r, g, b = color[1], color[2], color[3]
+				end
+				SetStatusBarColor(element, r, g, b)
+				element.prevColor = thisColor
+			end
 		end
 	end
 

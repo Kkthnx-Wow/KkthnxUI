@@ -18,7 +18,6 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local _, ns = ...
-local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -281,7 +280,6 @@ function Implementation:Init()
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", self, self.BAG_UPDATE_COOLDOWN)
 	self:RegisterEvent("ITEM_LOCK_CHANGED", self, self.ITEM_LOCK_CHANGED)
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED", self, self.PLAYERBANKSLOTS_CHANGED)
-	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED", self, self.PLAYERREAGENTBANKSLOTS_CHANGED)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self, self.UNIT_QUEST_LOG_CHANGED)
 	self:RegisterEvent("BAG_CLOSED", self, self.BAG_CLOSED)
 end
@@ -417,7 +415,7 @@ local closed
 function Implementation:UpdateBag(bagID)
 	local numSlots
 	if closed then
-		numSlots, closed = 0
+		numSlots, bagID = 0, closed
 	else
 		numSlots = GetContainerNumSlots(bagID)
 	end
@@ -443,20 +441,59 @@ end
 	@param slotID <number> [optional]
 	@callback Container:OnBagUpdate(bagID, slotID)
 ]]
+local isUpdating = false
+local bankUpdateQueue = {}
+local bankUpdateTimer
+local bankUpdateTimeGap = 0.1
 function Implementation:BAG_UPDATE(_, bagID, slotID)
 	if self.isSorting then
 		return
 	end
+
+	if isUpdating then
+		return
+	end
+	isUpdating = true
 
 	if bagID and slotID then
 		self:UpdateSlot(bagID, slotID)
 	elseif bagID then
 		self:UpdateBag(bagID)
 	else
-		for bagID = -3, 17 do
+		for bagID = 0, 5 do
 			self:UpdateBag(bagID)
 		end
+
+		local bankType = BankFrame.BankPanel.bankType
+		wipe(bankUpdateQueue)
+
+		if bankType == Enum.BankType.Character then
+			for bagID = 6, 11 do
+				tinsert(bankUpdateQueue, bagID)
+			end
+		elseif bankType == Enum.BankType.Account then
+			for bagID = 12, 16 do
+				tinsert(bankUpdateQueue, bagID)
+			end
+		end
+
+		if bankUpdateTimer then
+			bankUpdateTimer:Cancel()
+			bankUpdateTimer = nil
+		end
+
+		bankUpdateTimer = C_Timer.NewTicker(bankUpdateTimeGap, function()
+			if #bankUpdateQueue > 0 then
+				local nextBag = tremove(bankUpdateQueue, 1)
+				self:UpdateBag(nextBag)
+			else
+				bankUpdateTimer:Cancel()
+				bankUpdateTimer = nil
+			end
+		end)
 	end
+
+	isUpdating = false
 end
 
 --[[!
@@ -517,24 +554,6 @@ end
 	@param slotID <number> [optional]
 ]]
 function Implementation:PLAYERBANKSLOTS_CHANGED(event, bagID, slotID)
-	if bagID <= NUM_BANKGENERIC_SLOTS then
-		slotID = bagID
-		bagID = -1
-	else
-		bagID = bagID - NUM_BANKGENERIC_SLOTS
-	end
-
-	self:BAG_UPDATE(event, bagID, slotID)
-end
-
---[[!
-	Fired when reagent bank slots need to be updated
-	@param bagID <number>
-	@param slotID <number> [optional]
-]]
-function Implementation:PLAYERREAGENTBANKSLOTS_CHANGED(event, slotID)
-	local bagID = -3
-
 	self:BAG_UPDATE(event, bagID, slotID)
 end
 

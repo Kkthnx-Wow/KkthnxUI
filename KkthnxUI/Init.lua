@@ -93,6 +93,7 @@ K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemp
 -- WoW Info
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
+K.IsNewPatch = K.WowBuild >= 110200 -- Patch 11.2.0 or higher
 
 -- Color Info
 K.GreyColor = "|CFFC0C0C0" -- Soft gray

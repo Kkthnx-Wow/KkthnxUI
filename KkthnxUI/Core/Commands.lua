@@ -405,3 +405,13 @@ SlashCmdList["KKUI"] = function(input)
 	end
 end
 _G.SLASH_KKUI1 = "/kk"
+
+SlashCmdList.KKUI_PROFILE = function()
+	if K.ProfileGUI then
+		K.ProfileGUI:Toggle()
+	else
+		print("|cff669DFFKkthnxUI:|r ProfileGUI system not available.")
+	end
+end
+SLASH_KKUI_PROFILE1 = "/kprofile"
+SLASH_KKUI_PROFILE2 = "/kkthnxprofile"

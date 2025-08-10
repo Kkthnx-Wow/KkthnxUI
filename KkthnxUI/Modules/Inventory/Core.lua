@@ -26,17 +26,15 @@ local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsCosmeticItem = C_Item.IsCosmeticItem
-local IsReagentBankUnlocked = IsReagentBankUnlocked
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
-local SortReagentBankBags = C_Container.SortReagentBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
 
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
-local CHAR_BANK_TYPE = Enum.BankType.Character or 1
+local CHAR_BANK_TYPE = Enum.BankType.Character or 0
 
 local deleteEnable
 local favouriteEnable
@@ -273,8 +271,8 @@ function Module:CreateBagBar(settings, columns)
 	self.BagBar = bagBar
 end
 
-function Module:CreateBagTab(settings, columns)
-	local bagTab = self:SpawnPlugin("BagTab", settings.Bags)
+function Module:CreateBagTab(settings, columns, account)
+	local bagTab = self:SpawnPlugin("BagTab", settings.Bags, account)
 	bagTab:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
 	bagTab:CreateBorder()
 	bagTab.highlightFunction = highlightFunction
@@ -283,16 +281,18 @@ function Module:CreateBagTab(settings, columns)
 	bagTab.UpdateAnchor = updateBagBar
 	bagTab:UpdateAnchor()
 
-	local purchaseButton = CreateFrame("Button", "KKUI_BankPurchaseButton", bagTab, "InsecureActionButtonTemplate")
-	purchaseButton:SetSize(120, 22)
-	purchaseButton:SetPoint("TOP", bagTab, "BOTTOM", 0, -5)
-	K.CreateFontString(purchaseButton, 14, PURCHASE, "info")
-	purchaseButton:SkinButton()
-	purchaseButton:Hide()
+	if account then
+		local purchaseButton = CreateFrame("Button", "KKUI_BankPurchaseButton", bagTab, "InsecureActionButtonTemplate")
+		purchaseButton:SetSize(120, 22)
+		purchaseButton:SetPoint("TOP", bagTab, "BOTTOM", 0, -5)
+		K.CreateFontString(purchaseButton, 14, PURCHASE, "info")
+		purchaseButton:SkinButton()
+		purchaseButton:Hide()
 
-	purchaseButton:RegisterForClicks("AnyUp", "AnyDown")
-	purchaseButton:SetAttribute("type", "click")
-	purchaseButton:SetAttribute("clickbutton", _G.AccountBankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
+		purchaseButton:RegisterForClicks("AnyUp", "AnyDown")
+		purchaseButton:SetAttribute("type", "click")
+		purchaseButton:SetAttribute("clickbutton", _G.BankFrame.BankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
+	end
 
 	self.BagBar = bagTab
 end
@@ -301,18 +301,14 @@ local function CloseOrRestoreBags(self, btn)
 	if btn == "RightButton" then
 		local bag = self.__owner.main
 		local bank = self.__owner.bank
-		local reagent = self.__owner.reagent
 		local account = self.__owner.accountbank
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bag:GetName()] = nil
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bank:GetName()] = nil
-		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][reagent:GetName()] = nil
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][account:GetName()] = nil
 		bag:ClearAllPoints()
 		bag:SetPoint(unpack(bag.__anchor))
 		bank:ClearAllPoints()
 		bank:SetPoint(unpack(bank.__anchor))
-		reagent:ClearAllPoints()
-		reagent:SetPoint(unpack(bank.__anchor))
 		account:ClearAllPoints()
 		account:SetPoint(unpack(bank.__anchor))
 		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
@@ -340,39 +336,6 @@ function Module:CreateCloseButton(f)
 	return closeButton
 end
 
-function Module:CreateReagentButton(f)
-	local reagentButton = CreateFrame("Button", nil, self)
-	reagentButton:SetSize(18, 18)
-	reagentButton:CreateBorder()
-	reagentButton:StyleButton()
-
-	reagentButton.Icon = reagentButton:CreateTexture(nil, "ARTWORK")
-	reagentButton.Icon:SetAllPoints()
-	reagentButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	reagentButton.Icon:SetTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
-
-	reagentButton:RegisterForClicks("AnyUp")
-	reagentButton:SetScript("OnClick", function(_, btn)
-		if not C_Bank.CanViewBank(CHAR_BANK_TYPE) then
-			return
-		end
-
-		if not IsReagentBankUnlocked() then
-			_G.StaticPopup_Show("CONFIRM_BUY_REAGENTBANK_TAB")
-		else
-			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-			BankFrame_ShowPanel("ReagentBankFrame") -- trigger context matching
-			if btn == "RightButton" then
-				_G.DepositReagentBank()
-			end
-		end
-	end)
-	reagentButton.title = REAGENT_BANK
-	K.AddTooltip(reagentButton, "ANCHOR_TOP")
-
-	return reagentButton
-end
-
 function Module:CreateAccountBankButton(f)
 	local accountBankButton = CreateFrame("Button", nil, self)
 	accountBankButton:SetSize(18, 18)
@@ -390,11 +353,11 @@ function Module:CreateAccountBankButton(f)
 			return
 		end
 
-		if AccountBankPanel:ShouldShowLockPrompt() then
+		if BankFrame.BankPanel:ShouldShowLockPrompt() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ACCOUNT_BANK_LOCKED_PROMPT)
 		else
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-			BankFrame_ShowPanel("AccountBankPanel") -- trigger context matching
+			BankFrame.BankPanel:SetBankType(ACCOUNT_BANK_TYPE)
 		end
 	end)
 	accountBankButton.title = ACCOUNT_BANK_PANEL_TITLE
@@ -453,55 +416,13 @@ function Module:CreateBankButton(f)
 		end
 
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-		BankFrame_ShowPanel("BankSlotsFrame") -- trigger context matching
+		BankFrame.BankPanel:SetBankType(CHAR_BANK_TYPE)
 	end)
 
 	BankButton.title = BANK
 	K.AddTooltip(BankButton, "ANCHOR_TOP")
 
 	return BankButton
-end
-
-local function updateDepositButtonStatus(bu)
-	if KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit then
-		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
-	else
-		bu.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
-end
-
-function Module:AutoDeposit()
-	if KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit and not IsShiftKeyDown() then
-		DepositReagentBank()
-	end
-end
-
-function Module:CreateDepositButton()
-	local DepositButton = CreateFrame("Button", nil, self)
-	DepositButton:SetSize(18, 18)
-	DepositButton:CreateBorder()
-	DepositButton:StyleButton()
-
-	DepositButton.Icon = DepositButton:CreateTexture(nil, "ARTWORK")
-	DepositButton.Icon:SetAllPoints()
-	DepositButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	DepositButton.Icon:SetAtlas("GreenCross")
-
-	DepositButton:RegisterForClicks("AnyUp")
-	DepositButton:SetScript("OnClick", function(_, btn)
-		if btn == "RightButton" then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit = not KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit
-			updateDepositButtonStatus(DepositButton)
-		else
-			DepositReagentBank()
-		end
-	end)
-
-	DepositButton.title = REAGENTBANK_DEPOSIT
-	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor .. L["AutoDepositTip"])
-	updateDepositButtonStatus(DepositButton)
-
-	return DepositButton
 end
 
 local function updateAccountBankDeposit(bu)
@@ -542,6 +463,9 @@ end
 
 local function ToggleBackpacks(self)
 	local parent = self.__owner
+	if not parent.BagBar then
+		return
+	end
 	K.TogglePanel(parent.BagBar)
 	if parent.BagBar:IsShown() then
 		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
@@ -589,8 +513,6 @@ function Module:CreateSortButton(name)
 	sortButton:SetScript("OnClick", function()
 		if name == "Bank" then
 			SortBankBags()
-		elseif name == "Reagent" then
-			SortReagentBankBags()
 		elseif name == "Account" then
 			C_Container.SortAccountBankBags()
 		else
@@ -631,20 +553,11 @@ function Module:GetEmptySlot(name)
 			end
 		end
 	elseif name == "Bank" then
-		local slotID = Module:GetContainerEmptySlot(-1)
-		if slotID then
-			return -1, slotID
-		end
-		for bagID = 6, 12 do
+		for bagID = 6, 11 do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
-		end
-	elseif name == "Reagent" then
-		local slotID = Module:GetContainerEmptySlot(-3)
-		if slotID then
-			return -3, slotID
 		end
 	elseif name == "BagReagent" then
 		local slotID = Module:GetContainerEmptySlot(5)
@@ -652,7 +565,7 @@ function Module:GetEmptySlot(name)
 			return 5, slotID
 		end
 	elseif name == "Account" then
-		for bagID = 13, 17 do
+		for bagID = 12, 16 do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
@@ -671,7 +584,6 @@ end
 local freeSlotContainer = {
 	["Bag"] = true,
 	["Bank"] = true,
-	["Reagent"] = true,
 	["BagReagent"] = true,
 	["Account"] = true,
 }
@@ -812,7 +724,7 @@ StaticPopupDialogs["KKUI_RENAMECUSTOMGROUP"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		local index = Module.selectGroupIndex
-		local text = self.editBox:GetText()
+		local text = self.EditBox:GetText()
 		KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames[index] = text ~= "" and text or nil
 
 		Module.CustomMenu[index + 2].text = GetCustomGroupTitle(index)
@@ -1131,11 +1043,6 @@ function Module:OnEnable()
 	Module.Bags = Backpack
 	Module.BagsType = {}
 	Module.BagsType[0] = 0 -- Backpack
-	Module.BagsType[-1] = 0 -- Bank
-	Module.BagsType[-3] = 0 -- Reagent
-	for bagID = 13, 17 do
-		Module.BagsType[bagID] = 0 -- accountbank
-	end
 
 	local f = {}
 	local filters = Module:GetFilters()
@@ -1192,11 +1099,6 @@ function Module:OnEnable()
 		f.bank:SetFilter(filters.onlyBank, true)
 		f.bank:Hide()
 
-		f.reagent = MyContainer:New("Reagent", { Bags = "bankreagent", BagType = "Bank" })
-		f.reagent:SetFilter(filters.onlyReagent, true)
-		f.reagent:SetPoint(unpack(f.bank.__anchor))
-		f.reagent:Hide()
-
 		for i = 1, 5 do
 			AddNewContainer("Account", i, "AccountCustom" .. i, filters["accountCustom" .. i])
 		end
@@ -1222,20 +1124,15 @@ function Module:OnEnable()
 	local initBagType
 	function Backpack:OnBankOpened()
 		BankFrame:Show()
-		self:GetContainer("Bank"):Show()
 
 		if not initBagType then
-			Module:UpdateAllBags() -- Initialize bagType
 			Module:UpdateBagSize()
 			initBagType = true
 		end
 	end
 
 	function Backpack:OnBankClosed()
-		BankFrame.selectedTab = 1
-		BankFrame.activeTabIndex = 1
 		self:GetContainer("Bank"):Hide()
-		self:GetContainer("Reagent"):Hide()
 		self:GetContainer("Account"):Hide()
 	end
 
@@ -1654,21 +1551,15 @@ function Module:OnEnable()
 			buttons[6] = Module.CreateJunkButton(self)
 			buttons[7] = Module.CreateDeleteButton(self)
 		elseif name == "Bank" then
-			Module.CreateBagBar(self, settings, 7)
+			Module.CreateBagTab(self, settings, 6)
 			buttons[3] = Module.CreateBagToggle(self)
-			buttons[4] = Module.CreateReagentButton(self, f)
-			buttons[5] = Module.CreateAccountBankButton(self, f)
-		elseif name == "Reagent" then
-			buttons[3] = Module.CreateDepositButton(self)
-			buttons[4] = Module.CreateBankButton(self, f)
-			buttons[5] = Module.CreateAccountBankButton(self, f)
+			buttons[4] = Module.CreateAccountBankButton(self, f)
 		elseif name == "Account" then
-			Module.CreateBagTab(self, settings, 5)
-			buttons[3] = Module.CreateBagToggle(self, true)
+			Module.CreateBagTab(self, settings, 5, "account")
+			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateAccountBankDeposit(self)
 			buttons[5] = Module.CreateBankButton(self, f)
-			buttons[6] = Module.CreateReagentButton(self, f)
-			buttons[7] = Module.CreateAccountMoney(self)
+			buttons[6] = Module.CreateAccountMoney(self)
 		end
 
 		for i = 1, #buttons do
@@ -1765,7 +1656,6 @@ function Module:OnEnable()
 
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
 	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
-	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
 
 	-- Update DataText slots
 	if _G.KKUI_GoldDataText then
@@ -1797,23 +1687,12 @@ function Module:OnEnable()
 	SetCVar("professionAccessorySlotsExampleShown", 1)
 
 	-- Bank frame paging
-	local bankNameIndex = {
-		["BankSlotsFrame"] = 1,
-		["ReagentBankFrame"] = 2,
-		["AccountBankPanel"] = 3,
-	}
-	hooksecurefunc("BankFrame_ShowPanel", function(sidePanelName)
-		local panelIndex = bankNameIndex[sidePanelName]
-		if panelIndex then
-			BankFrame.selectedTab = panelIndex
-			BankFrame.activeTabIndex = panelIndex
-			f.bank:SetShown(panelIndex == 1)
-			f.reagent:SetShown(panelIndex == 2)
-			f.accountbank:SetShown(panelIndex == 3)
-
-			if _G["KKUI_BankPurchaseButton"] then
-				_G["KKUI_BankPurchaseButton"]:SetShown(panelIndex == 3 and C_Bank.CanPurchaseBankTab(ACCOUNT_BANK_TYPE))
-			end
+	hooksecurefunc(BankFrame.BankPanel, "SetBankType", function(self, bankType)
+		Module.Bags:GetContainer("Bank"):SetShown(bankType == CHAR_BANK_TYPE)
+		Module.Bags:GetContainer("Account"):SetShown(bankType == ACCOUNT_BANK_TYPE)
+		Module:UpdateAllBags()
+		if _G["KKUI_BankPurchaseButton"] then
+			_G["KKUI_BankPurchaseButton"]:SetShown(bankType == ACCOUNT_BANK_TYPE and C_Bank.CanPurchaseBankTab(ACCOUNT_BANK_TYPE))
 		end
 	end)
 

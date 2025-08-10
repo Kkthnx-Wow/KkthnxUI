@@ -12,6 +12,7 @@
    <Script file="Movers.lua"/>
    <Script file="Loading.lua"/>
    <Script file="GUI.lua"/>
-   <Script file="Profiles.lua"/>
+   <Script file="ExtraGUI.lua"/>
+   <Script file="ProfileGUI.lua"/>
    <Script file="AddOns.lua"/>
 </Ui>

@@ -499,41 +499,10 @@ C["Nameplate"] = {
 	TransColor = { 1, 0.8, 0 },
 	VerticalSpacing = 0.7,
 	AuraFilter = {
-		Options = {
-			["White & Black List"] = 1,
-			["List & Player"] = 2,
-			["List & Player & CCs"] = 3,
-		},
 		Value = 3,
 	},
-	TargetIndicator = {
-		Options = {
-			["Disable"] = 1,
-			["Top Arrow"] = 2,
-			["Right Arrow"] = 3,
-			["Border Glow"] = 4,
-			["Top Arrow + Glow"] = 5,
-			["Right Arrow + Glow"] = 6,
-		},
-		Value = 4,
-	},
-	TargetIndicatorTexture = {
-		Options = {
-			["Blue Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow2:0|t"] = [[Interface\Addons\KkthnxUI\Media\Nameplates\BlueArrow2]],
-			["Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow]],
-			["Neon Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
-			["Neon Green Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonGreenArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonGreenArrow]],
-			["Neon Pink Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPinkArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPinkArrow]],
-			["Neon Red Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonRedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonRedArrow]],
-			["Neon Purple Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPurpleArrow]],
-			["Purple Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\PurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\PurpleArrow]],
-			["Red Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow2.tga:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow2]],
-			["Red Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow]],
-			["Red Chevron Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow]],
-			["Red Chevron Arrow2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow2]],
-		},
-		Value = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
-	},
+	TargetIndicator = 4,
+	TargetIndicatorTexture = "Interface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow",
 }
 
 -- Skins
@@ -700,14 +669,14 @@ C["Unitframe"] = {
 		Value = "Class",
 	},
 	PortraitStyle = {
-		Options = {
-			["Overlay Portrait"] = "OverlayPortrait",
-			["3D Portraits"] = "ThreeDPortraits",
-			["Class Portraits"] = "ClassPortraits",
-			["New Class Portraits"] = "NewClassPortraits",
-			["Default Portraits"] = "DefaultPortraits",
-			["No Portraits"] = "NoPortraits",
-		},
+		-- Options = {
+		-- 	["Overlay Portrait"] = "OverlayPortrait",
+		-- 	["3D Portraits"] = "ThreeDPortraits",
+		-- 	["Class Portraits"] = "ClassPortraits",
+		-- 	["New Class Portraits"] = "NewClassPortraits",
+		-- 	["Default Portraits"] = "DefaultPortraits",
+		-- 	["No Portraits"] = "NoPortraits",
+		-- },
 		Value = "DefaultPortraits",
 	},
 }

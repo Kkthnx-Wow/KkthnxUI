@@ -385,7 +385,7 @@ function Module:UpdateTargetChange()
 	local element = self.TargetIndicator
 	local unit = self.unit
 
-	if C["Nameplate"].TargetIndicator.Value ~= 1 then
+	if C["Nameplate"].TargetIndicator ~= 1 then
 		local isTarget = UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player")
 		element:SetShown(isTarget)
 
@@ -405,7 +405,7 @@ function Module:UpdateTargetChange()
 end
 
 function Module:UpdateTargetIndicator()
-	local style = C["Nameplate"].TargetIndicator.Value
+	local style = C["Nameplate"].TargetIndicator
 	local element = self.TargetIndicator
 	local isNameOnly = self.plateType == "NameOnly"
 
@@ -438,7 +438,7 @@ function Module:AddTargetIndicator(self)
 	local function CreateArrow(parent, point, x, y, rotation)
 		local arrow = parent:CreateTexture(nil, "BACKGROUND", nil, -5)
 		arrow:SetSize(64, 64) -- 128 / 2 simplified
-		arrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
+		arrow:SetTexture(C["Nameplate"].TargetIndicatorTexture)
 		arrow:SetPoint(point, parent, point, x, y)
 		if rotation then
 			arrow:SetRotation(rotation)

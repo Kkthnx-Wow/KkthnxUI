@@ -1,2363 +1,3147 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
--- Sourced: Tukui (Tukz & Hydra)
--- Edited: KkthnxUI (Kkthnx)
+-- ============================================================================
+-- UTILITY FUNCTIONS
+-- ============================================================================
 
--- Lua Standard Library Functions
-local floor = floor
-local match = string.match
-local pairs = pairs
-local sort = table.sort
-local tinsert = table.insert
-local tremove = table.remove
-local type = type
-local unpack = unpack
+-- Utility functions for handling nested config paths
+local function SetValueByPath(table, path, value)
+	local keys = { strsplit(".", path) }
+	local current = table
 
--- WoW API Functions and Variables
+	for i = 1, #keys - 1 do
+		if not current[keys[i]] then
+			current[keys[i]] = {}
+		elseif type(current[keys[i]]) ~= "table" then
+			-- Handle case where we encounter a primitive value that needs to become a table
+			current[keys[i]] = {}
+		end
+		current = current[keys[i]]
+	end
+
+	current[keys[#keys]] = value
+end
+
+local function GetValueByPath(table, path)
+	local keys = { strsplit(".", path) }
+	local current = table
+
+	for i = 1, #keys do
+		if not current or type(current) ~= "table" or not current[keys[i]] then
+			return nil
+		end
+		current = current[keys[i]]
+	end
+
+	return current
+end
+
+-- ============================================================================
+-- KKTHNXUI NEW GUI SYSTEM DOCUMENTATION
+-- ============================================================================
+
+--[[
+REAL-TIME UPDATE HOOKS:
+Provide hook functions when creating widgets for real-time updates without UI reloads.
+
+Hook Function Signature:
+function hookFunction(newValue, oldValue, configPath)
+	-- Your real-time update code here
+end
+
+RELOAD SYSTEM:
+- Settings WITH hooks = no reload needed (real-time updates)
+- Settings WITHOUT hooks = reload prompt shown when GUI closes
+- Manual override with requiresReload=true parameter
+
+WIDGET CREATION:
+GUI:CreateSwitch(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+GUI:CreateSlider(section, configPath, text, min, max, step, tooltip, hookFunction, isNew, requiresReload)
+GUI:CreateDropdown(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+GUI:CreateColorPicker(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
+GUI:CreateCheckboxGroup(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+
+NEW TAG SYSTEM:
+Use IsNew constant to mark new features:
+- Category: GUI:AddCategory("ActionBars" .. IsNew, icon)
+- Widget: GUI:CreateSwitch(section, "path", "Feature" .. IsNew, tooltip, hook, true)
+
+HOOK UTILITIES:
+- GUI:RegisterHook(configPath, hookFunction)
+- GUI:UnregisterHook(configPath, hookFunction)
+- GUI:TriggerHooks(configPath, newValue, oldValue)
+
+RELOAD MANAGEMENT:
+- GUI:HasPendingReloads()
+- GUI:ClearReloadQueue()
+- GUI:ForceReloadPrompt()
+- GUI:CheckRequiresReload(configPath)
+]]
+
+-- ============================================================================
+-- MODULE INITIALIZATION
+-- ============================================================================
+
+-- Modern GUI System inspired by NDui, enhanced and redesigned for KkthnxUI
+local Module = K:NewModule("NewGUI")
+
+-- ============================================================================
+-- API DECLARATIONS
+-- ============================================================================
+
+-- Lua API
+local _G = _G
+local floor, max, min = math.floor, math.max, math.min
+local format, gsub = string.format, string.gsub
+local ipairs, pairs, type, unpack = ipairs, pairs, type, unpack
+local sort, tinsert, tremove = table.sort, table.insert, table.remove
+
+-- WoW API
 local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
 local UIParent = UIParent
 local StaticPopupDialogs = StaticPopupDialogs
 local SlashCmdList = SlashCmdList
-local YES = YES
-local NO = NO
-local INFO = INFO
-local OKAY = OKAY
+local ReloadUI = ReloadUI
 
--- Addon Specific Constants
-local BGColor = { 0.2, 0.2, 0.2 }
-local BrightColor = { 0.35, 0.35, 0.35 }
-local R, G, B = K.r, K.g, K.b
-local HeaderText = string.format("%s %s", K.Title .. K.SystemColor, SETTINGS .. "|r")
+-- WoW Constants
+local YES, NO, OKAY, CANCEL, RESET, SETTINGS = YES, NO, OKAY, CANCEL, RESET, SETTINGS
 
--- UI Dimensions and Spacing
-local WindowWidth = 620
-local Spacing = 7
-local LabelSpacing = 6
-local HeaderWidth = WindowWidth - (Spacing * 2)
-local HeaderHeight = 22
-local ButtonListWidth = 130
-local MenuButtonWidth = ButtonListWidth - (Spacing * 2)
-local MenuButtonHeight = 20
-local WidgetListWidth = (WindowWidth - ButtonListWidth) - (Spacing * 3) + 1
-local WidgetHeight = 20 -- All widgets are the same height
-local WidgetHighlightAlpha = 0.25
-local SwitchWidth = 46
-local EditBoxWidth = 134
-local ButtonWidth = 138
-local SliderWidth = 84
-local SliderEditBoxWidth = 46
-local DropdownWidth = 180
-local ListItemsToShow = 8
-local ColorButtonWidth = 110
+-- ============================================================================
+-- CONSTANTS
+-- ============================================================================
 
--- Miscellaneous
-local ColorPickerFrameCancel = K.Noop
-local LastActiveDropdown
-local LastActiveWindow
-local MySelectedProfile = K.Realm .. "-" .. K.Name
+-- NEW TAG SYSTEM (from NDui)
+local IsNew = "ISNEW"
 
--- Headers for the credits section
-local headers = {
-	"CREDITS",
-	"",
-}
+-- Panel Dimensions
+local PANEL_WIDTH = 880
+local PANEL_HEIGHT = 640
+local SIDEBAR_WIDTH = 200
+local CONTENT_WIDTH = PANEL_WIDTH - SIDEBAR_WIDTH - 40
+local SPACING = 8
+local WIDGET_HEIGHT = 28
+local HEADER_HEIGHT = 40
+local CATEGORY_HEIGHT = 32
 
--- Names for the credits section
-local names = {
-	{ text = "Aftermathh" },
-	{ text = "Alteredcross", class = "ROGUE" },
-	{ text = "Alza" },
-	{ text = "Azilroka", class = "SHAMAN" },
-	{ text = "Benik", color = "00c0fa" },
-	{ text = "Blazeflack" },
-	{ text = "Caellian" },
-	{ text = "Caith" },
-	{ text = "Cassamarra", class = "HUNTER" },
-	{ text = "Darth Predator" },
-	{ text = "Elv" },
-	{ text = "|cffe31c73Faffi|r|cfffc4796GS|r", class = "PRIEST" },
-	{ text = "Goldpaw", class = "DRUID" },
-	{ text = "Haleth" },
-	{ text = "Haste" },
-	{ text = "Hungtar" },
-	{ text = "Hydra" },
-	{ text = "Ishtara" },
-	{ text = "KkthnxUI Community" },
-	{ text = "LightSpark" },
-	{ text = "Magicnachos", class = "PRIEST" },
-	{ text = "Merathilis", class = "DRUID" },
-	{ text = "Nightcracker" },
-	{ text = "P3lim" },
-	{ text = "Palooza", class = "PRIEST" },
-	{ text = "Rav99", class = "DEMONHUNTER" },
-	{ text = "Roth" },
-	{ text = "Shestak" },
-	{ text = "Simpy" },
-	{ text = "siweia" },
-}
+-- Colors (use KkthnxUI's established color system)
+local ACCENT_COLOR = { 0.36, 0.55, 0.81 }
+local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
+local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
+local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
+local BORDER_COLOR = C["Media"].Borders.ColorBorder
+local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
+local HIGHLIGHT_COLOR = { 1, 1, 1, 0.1 }
 
--- Function to create credit lines
-local function createCreditLines(headers, names)
-	local lines = {}
-	for _, header in ipairs(headers) do
-		table.insert(lines, { type = "header", text = header })
-	end
-	for _, name in ipairs(names) do
-		table.insert(lines, { type = "name", text = name.text, class = name.class, color = name.color })
-	end
-	return lines
+-- ============================================================================
+-- HELPER FUNCTIONS
+-- ============================================================================
+
+-- Function to add NEW tag to widgets/categories
+local function AddNewTag(parent, anchor)
+	local tag = CreateFrame("Frame", nil, parent, "NewFeatureLabelTemplate")
+	tag:SetPoint("LEFT", anchor or parent, -29, 11)
+	tag:SetScale(0.85) -- Size down the NEW tag
+	tag:Show()
+	return tag
 end
 
--- Generate the credit lines
-local CreditLines = createCreditLines(headers, names)
+-- Helper function to check and strip NEW tags from names
+local function ProcessNewTag(name)
+	local cleanName, hasNewTag = gsub(name, IsNew, "")
+	return cleanName, (hasNewTag > 0)
+end
 
-local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
-GUI.Windows = {}
-GUI.Buttons = {}
-GUI.Queue = {}
-GUI.Widgets = {}
+-- ============================================================================
+-- RELOAD TRACKING SYSTEM
+-- ============================================================================
 
--- Create a KkthnxUI popup for profiles
-StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
-	text = "Are you sure you want to switch your profile? If you accept, this current profile will be erased and replaced the character you selected!",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		local SelectedServer, SelectedNickname = strsplit("-", MySelectedProfile)
-
-		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[SelectedServer][SelectedNickname]
-		KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[SelectedServer][SelectedNickname]
-
-		ReloadUI()
-	end,
+-- Settings without hooks require reload
+local ReloadTracker = {
+	PendingReloads = {}, -- Settings that have been changed and require reload
+	ReloadTimer = nil, -- Timer for delayed reload prompt
+	IsShowing = false, -- Prevent multiple popups
 }
 
-local SetValue = function(group, option, value)
-	-- Check if C[group][option] is a table, if it is set C[group][option].Value = value, otherwise set C[group][option] = value
-	if type(C[group][option]) == "table" then
-		C[group][option].Value = value
+-- Simple reload logic: only settings without hooks need reloads
+local function RequiresReload(configPath, hasHook, forceReload)
+	-- If explicitly forced
+	if forceReload then
+		return true
+	end
+
+	-- If no hook function provided, setting can't update in real-time
+	if not hasHook then
+		return true
+	end
+
+	-- Has hook = no reload needed (real-time updates work)
+	return false
+end
+
+-- Add a setting to reload queue
+local function AddToReloadQueue(configPath, settingName)
+	if not ReloadTracker.PendingReloads[configPath] then
+		ReloadTracker.PendingReloads[configPath] = settingName or configPath
+
+		-- Set up delayed reload prompt (only if not already showing)
+		if not ReloadTracker.IsShowing and not ReloadTracker.ReloadTimer then
+			ReloadTracker.ReloadTimer = C_Timer.NewTimer(3, function()
+				ReloadTracker:ShowReloadPrompt()
+			end)
+		end
+	end
+end
+
+-- Show reload prompt with details
+function ReloadTracker:ShowReloadPrompt()
+	if self.IsShowing then
+		return
+	end
+
+	if not next(self.PendingReloads) then
+		return
+	end
+
+	self.IsShowing = true
+	self.ReloadTimer = nil
+
+	-- Count how many settings need reload
+	local count = 0
+	for _ in pairs(self.PendingReloads) do
+		count = count + 1
+	end
+
+	local message
+	if count == 1 then
+		local _, settingName = next(self.PendingReloads)
+		message = format("The setting '%s' requires a UI reload to take effect.\n\nReload now?", settingName)
 	else
-		C[group][option] = value
+		message = format("%d settings have been changed that require a UI reload.\n\nReload now?", count)
 	end
 
-	-- Recursively initialize the KkthnxUIDB table
-	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
-	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
-	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
-	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
-
-	-- Initialize the group table
-	Settings[group] = Settings[group] or {}
-
-	-- Set the value of the option in the group
-	Settings[group][option] = value
+	-- Use our existing popup
+	StaticPopupDialogs["KKTHNXUI_RELOAD_UI"].text = message
+	StaticPopup_Show("KKTHNXUI_RELOAD_UI")
 end
 
-local TrimHex = function(s)
-	return string.match(s, "|c%x%x%x%x%x%x%x%x(.-)|r") or s
+-- Clear reload queue
+function ReloadTracker:ClearQueue()
+	self.PendingReloads = {}
+	self.IsShowing = false
+	if self.ReloadTimer then
+		self.ReloadTimer:Cancel()
+		self.ReloadTimer = nil
+	end
 end
 
-local AnchorOnEnter = function(self)
-	if not self.Tooltip or not string.match(self.Tooltip, "%S") then
-		return
-	end
-	if GameTooltip:IsForbidden() then
-		return
-	end
-
-	local info = "|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n"
-	local info_color = { 163 / 255, 211 / 255, 255 / 255 }
-
-	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self, "ANCHOR_NONE")
-	GameTooltip:SetPoint("TOPLEFT", "KKUI_GUI", "TOPRIGHT", -3, -5)
-	GameTooltip:AddLine(INFO)
-	GameTooltip:AddLine(info, unpack(info_color))
-	GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
-	GameTooltip:Show()
+-- Check if we have pending reloads
+function ReloadTracker:HasPendingReloads()
+	return next(self.PendingReloads) ~= nil
 end
 
-local AnchorOnLeave = function()
-	if GameTooltip:IsForbidden() then
-		return
+-- Only show reload prompt on GUI close if there are pending reloads
+function ReloadTracker:OnGUIClose()
+	if self:HasPendingReloads() and not self.IsShowing then
+		-- Show reload prompt when closing GUI if there are pending reloads
+		C_Timer.After(0.1, function()
+			self:ShowReloadPrompt()
+		end)
 	end
-
-	GameTooltip:Hide()
 end
 
-local function GetOrderedIndex(t)
-	local OrderedIndex = {}
+-- ============================================================================
+-- GUI FRAMEWORK CORE
+-- ============================================================================
 
-	for key in pairs(t) do
-		OrderedIndex[#OrderedIndex + 1] = key
+-- GUI Framework (attached to Module instead of global)
+Module.GUI = {
+	Frame = nil,
+	Sidebar = nil,
+	Content = nil,
+	Categories = {},
+	Widgets = {},
+	ActiveCategory = nil,
+	ScrollFrame = nil,
+	IsVisible = false,
+	-- REAL-TIME UPDATE HOOKS REGISTRY
+	UpdateHooks = {},
+}
+
+-- Convenience reference
+local GUI = Module.GUI
+
+-- ============================================================================
+-- REAL-TIME UPDATE HOOK SYSTEM
+-- ============================================================================
+
+local function RegisterUpdateHook(configPath, hookFunction)
+	if not GUI.UpdateHooks[configPath] then
+		GUI.UpdateHooks[configPath] = {}
+	end
+	tinsert(GUI.UpdateHooks[configPath], hookFunction)
+end
+
+local function ExecuteUpdateHooks(configPath, newValue, oldValue)
+	if GUI.UpdateHooks[configPath] then
+		for _, hookFunc in ipairs(GUI.UpdateHooks[configPath]) do
+			if type(hookFunc) == "function" then
+				local success, err = pcall(hookFunc, newValue, oldValue, configPath)
+				if not success then
+					-- Hook error will be handled silently or with K.Print if needed
+				end
+			end
+		end
+	end
+end
+
+-- ============================================================================
+-- CONFIGURATION FUNCTIONS
+-- ============================================================================
+
+-- Get configuration value by path
+local function GetConfigValue(configPath)
+	return GetValueByPath(C, configPath)
+end
+
+-- Get default value for a config path from K.Defaults
+local function GetDefaultValue(configPath)
+	-- First check if K.Defaults exists and has the path
+	if K.Defaults then
+		local defaultValue = GetValueByPath(K.Defaults, configPath)
+		if defaultValue ~= nil then
+			return defaultValue
+		end
 	end
 
-	table.sort(OrderedIndex, function(a, b)
-		return TrimHex(a) < TrimHex(b)
+	-- Fallback: If K.Defaults doesn't exist or doesn't have the path,
+	-- try to get from the original C table structure (may be current values though)
+	return GetValueByPath(C, configPath)
+end
+
+-- Forward declaration of SetConfigValue so ResetToDefault can call it
+local SetConfigValue
+
+-- Set configuration value with hook execution and reload tracking
+function SetConfigValue(configPath, value, requiresReload, settingName)
+	-- Get old value for hook comparison
+	local oldValue = GetValueByPath(C, configPath)
+
+	-- Set in runtime config
+	SetValueByPath(C, configPath, value)
+
+	-- Save to database (with safety check)
+	if KkthnxUIDB then
+		if not KkthnxUIDB.Settings then
+			KkthnxUIDB.Settings = {}
+		end
+		if not KkthnxUIDB.Settings[K.Realm] then
+			KkthnxUIDB.Settings[K.Realm] = {}
+		end
+		if not KkthnxUIDB.Settings[K.Realm][K.Name] then
+			KkthnxUIDB.Settings[K.Realm][K.Name] = {}
+		end
+
+		SetValueByPath(KkthnxUIDB.Settings[K.Realm][K.Name], configPath, value)
+	else
+		-- Database not yet available, settings will only be stored in runtime config
+		-- This is normal during initial loading
+	end
+
+	-- Execute real-time update hooks
+	if oldValue ~= value then
+		ExecuteUpdateHooks(configPath, value, oldValue)
+
+		-- Check for reload requirement (simple: no hook = needs reload)
+		local hasHook = GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] > 0
+		if RequiresReload(configPath, hasHook, requiresReload) then
+			AddToReloadQueue(configPath, settingName or configPath)
+		end
+	end
+end
+
+-- Reset setting to default value with improved feedback
+local function ResetToDefault(configPath, widget, settingName)
+	local defaultValue = GetDefaultValue(configPath)
+	if defaultValue == nil then
+		-- No default found, show warning
+		print("|cffff6b6bKkthnxUI:|r No default value found for " .. (settingName or configPath))
+		return false
+	end
+
+	local currentValue = GetConfigValue(configPath)
+	if currentValue == defaultValue then
+		-- Already at default, provide feedback
+		print("|cff669DFFKkthnxUI:|r " .. (settingName or configPath) .. " is already at default value")
+		return false
+	end
+
+	-- Set to default value
+	SetConfigValue(configPath, defaultValue, false, settingName)
+
+	-- Update widget display
+	if widget and widget.UpdateValue then
+		widget:UpdateValue()
+	end
+
+	-- Visual feedback - brief highlight
+	if widget then
+		local originalBg = widget.KKUI_Background or widget:GetChildren()[1]
+		if originalBg and originalBg.SetVertexColor then
+			-- Brief green flash to indicate reset
+			originalBg:SetVertexColor(0.3, 0.9, 0.3, 0.6)
+			C_Timer.After(0.2, function()
+				originalBg:SetVertexColor(WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+			end)
+		end
+	end
+
+	-- Audio feedback
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+
+	-- Console feedback
+	print("|cff669DFFKkthnxUI:|r Reset " .. (settingName or configPath) .. " to default")
+
+	return true
+end
+
+-- ============================================================================
+-- HELPER WIDGET FUNCTIONS
+-- ============================================================================
+
+-- Create colored background texture
+local function CreateColoredBackground(frame, r, g, b, a)
+	local bg = frame:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetTexture(C["Media"].Textures.White8x8Texture)
+	bg:SetVertexColor(r or 0, g or 0, b or 0, a or 0.8)
+	return bg
+end
+
+-- Create basic button widget
+local function CreateButton(parent, text, width, height, onClick)
+	local button = CreateFrame("Button", nil, parent)
+	button:SetSize(width or 120, height or WIDGET_HEIGHT)
+
+	-- Clean button background
+	local buttonBg = button:CreateTexture(nil, "BACKGROUND")
+	buttonBg:SetAllPoints()
+	buttonBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	buttonBg:SetVertexColor(0.15, 0.15, 0.15, 1)
+	button.KKUI_Background = buttonBg
+
+	-- Subtle border for depth
+	local buttonBorder = button:CreateTexture(nil, "BORDER")
+	buttonBorder:SetPoint("TOPLEFT", -1, 1)
+	buttonBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+	buttonBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+	buttonBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+	button.KKUI_Border = buttonBorder
+
+	-- Hover effects for clean design
+	button:SetScript("OnEnter", function(self)
+		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
+		self.KKUI_Border:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		if self.Text then
+			self.Text:SetTextColor(1, 1, 1, 1)
+		end
 	end)
 
-	return OrderedIndex
+	button:SetScript("OnLeave", function(self)
+		self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
+		self.KKUI_Border:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+		if self.Text then
+			self.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		end
+	end)
+
+	-- Click effect
+	button:SetScript("OnMouseDown", function(self)
+		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.6, ACCENT_COLOR[2] * 0.6, ACCENT_COLOR[3] * 0.6, 1)
+	end)
+
+	button:SetScript("OnMouseUp", function(self)
+		if self:IsMouseOver() then
+			self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
+		else
+			self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
+		end
+	end)
+
+	-- Button text
+	button.Text = button:CreateFontString(nil, "OVERLAY")
+	button.Text:SetFontObject(K.UIFont)
+	button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	button.Text:SetText(text)
+	button.Text:SetPoint("CENTER")
+
+	if onClick then
+		button:SetScript("OnClick", onClick)
+	end
+
+	return button
 end
 
-local function OrderedNext(t, state)
-	local OrderedIndex = GetOrderedIndex(t)
-	local Key
-	local NextIndex
+-- Enhanced Features Functions (moved here to be available when needed)
+local function CreateEnhancedTooltip(widget, title, description, warning)
+	widget:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(title, 1, 1, 1, 1, true)
 
-	if state == nil then
-		NextIndex = 1
+		if description then
+			GameTooltip:AddLine(description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+		end
+
+		if warning then
+			GameTooltip:AddLine(" ", 1, 1, 1)
+			GameTooltip:AddLine("|cffff6b6bWarning:|r " .. warning, 1, 1, 1, true)
+		end
+
+		-- Add reset to default information
+		GameTooltip:AddLine(" ", 1, 1, 1)
+		GameTooltip:AddLine("|cff00ff00Tip:|r Hold Ctrl to show reset button, then click to reset to default", 0.7, 0.7, 0.7, true)
+
+		GameTooltip:Show()
+	end)
+
+	widget:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+end
+
+local function CreateSearchBox(parent)
+	local searchFrame = CreateFrame("Frame", nil, parent)
+	searchFrame:SetSize(SIDEBAR_WIDTH - 20, 30)
+	searchFrame:SetPoint("TOP", 0, -10)
+
+	local searchBox = CreateFrame("EditBox", nil, searchFrame)
+	searchBox:SetAllPoints()
+	searchBox:SetFontObject(K.UIFont)
+	searchBox:SetAutoFocus(false)
+	searchBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+
+	-- CLEAN DESIGN: Subtle background instead of border
+	local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
+	searchBg:SetAllPoints()
+	searchBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	searchBg:SetVertexColor(0.1, 0.1, 0.1, 0.6)
+
+	local searchIcon = searchFrame:CreateTexture(nil, "ARTWORK")
+	searchIcon:SetAtlas("common-search-magnifyingglass")
+	searchIcon:SetSize(12, 12)
+	searchIcon:SetPoint("LEFT", 6, 0)
+	searchIcon:SetVertexColor(0.5, 0.5, 0.5, 1)
+
+	-- Placeholder text
+	local placeholderText = searchBox:CreateFontString(nil, "OVERLAY")
+	placeholderText:SetFontObject(K.UIFont)
+	placeholderText:SetTextColor(0.5, 0.5, 0.5, 1)
+	placeholderText:SetText(SEARCH)
+	placeholderText:SetPoint("LEFT", searchIcon, "RIGHT", 6, 0)
+
+	searchBox:SetScript("OnTextChanged", function(self)
+		local text = self:GetText()
+		if text == "" then
+			placeholderText:Show()
+			searchIcon:Show()
+		else
+			placeholderText:Hide()
+			searchIcon:Hide()
+		end
+		GUI:FilterCategories(text)
+	end)
+
+	searchBox:SetScript("OnEditFocusGained", function()
+		placeholderText:Hide()
+		searchIcon:Hide()
+		-- Add subtle glow effect on focus
+		searchBg:SetVertexColor(0.15, 0.15, 0.15, 0.8)
+	end)
+
+	searchBox:SetScript("OnEditFocusLost", function(self)
+		if self:GetText() == "" then
+			placeholderText:Show()
+			searchIcon:Show()
+		end
+		-- Return to normal
+		searchBg:SetVertexColor(0.1, 0.1, 0.1, 0.6)
+	end)
+
+	return searchBox
+end
+
+-- ============================================================================
+-- RESET TO DEFAULT SYSTEM
+-- ============================================================================
+
+-- Global Ctrl key checker for reset buttons (prevents conflicts with widget scripts)
+local CtrlChecker = CreateFrame("Frame")
+local resetButtons = {}
+
+CtrlChecker:SetScript("OnUpdate", function(self, elapsed)
+	for widget, resetButton in pairs(resetButtons) do
+		if widget:IsMouseOver() then
+			if IsControlKeyDown() then
+				if not resetButton:IsShown() then
+					resetButton:Show()
+				end
+			else
+				if resetButton:IsShown() then
+					resetButton:Hide()
+					GameTooltip:Hide()
+				end
+			end
+		else
+			if resetButton:IsShown() then
+				resetButton:Hide()
+				GameTooltip:Hide()
+			end
+		end
+	end
+end)
+
+-- NEW: Helper function to add reset-to-default functionality to widget labels
+local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	-- Create reset button with undo icon
+	local resetButton = CreateFrame("Button", nil, widget)
+	resetButton:SetSize(16, 16)
+
+	-- Check if there's a cogwheel icon and position accordingly
+	local baseXOffset = 5 -- Default offset from label
+
+	-- Check if ExtraGUI cogwheel exists for this config path
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		-- Position further right to avoid overlapping with cogwheel (26px wide + some spacing)
+		baseXOffset = 26
+	end
+
+	resetButton:SetPoint("LEFT", label, "RIGHT", baseXOffset, 0)
+	resetButton:Hide() -- Initially hidden
+
+	-- Undo icon
+	local undoIcon = resetButton:CreateTexture(nil, "ARTWORK")
+	undoIcon:SetAllPoints()
+	undoIcon:SetAlpha(0.7)
+
+	-- Try to set the atlas, with fallback
+	local success = pcall(function()
+		undoIcon:SetAtlas("common-icon-undo", true)
+		undoIcon:SetSize(16, 16)
+	end)
+
+	if not success then
+		-- Fallback to a texture if atlas fails
+		undoIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+		undoIcon:SetTexCoord(0, 1, 0, 1)
+	end
+
+	-- Hover effects for the reset button
+	resetButton:SetScript("OnEnter", function(self)
+		undoIcon:SetAlpha(1)
+		-- Show tooltip
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Reset to Default", 1, 1, 1, 1, true)
+		GameTooltip:AddLine("Click to reset this setting to its default value", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+		GameTooltip:Show()
+	end)
+
+	resetButton:SetScript("OnLeave", function(self)
+		undoIcon:SetAlpha(0.7)
+		GameTooltip:Hide()
+	end)
+
+	-- Click handler for reset
+	resetButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Store reference for showing/hiding
+	widget.ResetButton = resetButton
+
+	-- Register with global checker (no conflicts with widget scripts!)
+	resetButtons[widget] = resetButton
+
+	return resetButton
+end
+
+-- ============================================================================
+-- WIDGET CREATION FUNCTIONS
+-- ============================================================================
+
+-- Widget Creation Functions
+local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateFrame("Frame", nil, parent)
+	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
+	widget.ConfigPath = configPath
+
+	-- Background
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Store NEW tag information for category detection
+	widget.IsNew = showNewTag
+	widget.HasNewTag = showNewTag
+
+	-- Label
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText) -- Use clean text without NEW tag
+	label:SetPoint("LEFT", 8, 0)
+
+	-- Add reset-to-default functionality with undo icon
+	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- Switch Button
+	local switchButton = CreateFrame("Button", nil, widget)
+	switchButton:SetSize(40, 16)
+	switchButton:SetPoint("RIGHT", -8, 0)
+
+	-- Switch Background
+	local switchBg = switchButton:CreateTexture(nil, "BACKGROUND")
+	switchBg:SetAllPoints()
+	switchBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
+
+	-- Switch Thumb
+	local thumb = switchButton:CreateTexture(nil, "OVERLAY")
+	thumb:SetSize(14, 18)
+	thumb:SetTexture(C["Media"].Textures.White8x8Texture)
+	thumb:SetVertexColor(1, 1, 1, 1)
+
+	-- Tooltip functionality (now added)
+	if tooltip then
+		widget:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(cleanText, 1, 1, 1, 1, true)
+			GameTooltip:AddLine(tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+			GameTooltip:Show()
+		end)
+
+		widget:SetScript("OnLeave", function(self)
+			GameTooltip:Hide()
+		end)
+	end
+
+	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	if hookFunction and type(hookFunction) == "function" then
+		RegisterUpdateHook(configPath, hookFunction)
+		widget.HookFunction = hookFunction
+	end
+
+	-- Hover effect for switch
+	switchButton:SetScript("OnEnter", function(self)
+		if GetConfigValue(configPath) then
+			switchBg:SetVertexColor(ACCENT_COLOR[1] * 1.1, ACCENT_COLOR[2] * 1.1, ACCENT_COLOR[3] * 1.1, 1)
+		else
+			switchBg:SetVertexColor(0.4, 0.4, 0.4, 1)
+		end
+	end)
+
+	switchButton:SetScript("OnLeave", function(self)
+		local value = GetConfigValue(configPath)
+		if value then
+			switchBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		else
+			switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
+		end
+	end)
+
+	-- Update function
+	function widget:UpdateValue()
+		local value = GetConfigValue(self.ConfigPath)
+		if value then
+			switchBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+			thumb:ClearAllPoints()
+			thumb:SetPoint("RIGHT", switchButton, "RIGHT", -1, 0)
+			-- White text when enabled
+			label:SetTextColor(1, 1, 1, 1)
+		else
+			switchBg:SetVertexColor(0.3, 0.3, 0.3, 1)
+			thumb:ClearAllPoints()
+			thumb:SetPoint("LEFT", switchButton, "LEFT", 1, 0)
+			-- Grey text when disabled
+			label:SetTextColor(0.5, 0.5, 0.5, 1)
+		end
+	end
+
+	-- ENHANCED Click handler with immediate hook execution and reload tracking
+	switchButton:SetScript("OnClick", function()
+		local currentValue = GetConfigValue(configPath)
+		local newValue = not currentValue
+
+		-- SetConfigValue will now automatically trigger hooks and handle reload tracking
+		SetConfigValue(configPath, newValue, requiresReload, cleanText)
+		widget:UpdateValue()
+
+		-- Play feedback sound
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	end)
+
+	-- Add cogwheel icon if extra configuration exists
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		K.ExtraGUI:CreateCogwheelIcon(widget, configPath, cleanText)
+		-- No need to adjust switch position since cogwheel is next to label
 	else
-		for i = 1, #OrderedIndex do
-			if OrderedIndex[i] == state then
-				NextIndex = i + 1
+		if K.ExtraGUI then
+			-- ExtraGUI exists but no config for this path
+			-- This is normal, not all options have extra configs
+		else
+			-- ExtraGUI system not available (optional debug could use K.Print if needed)
+		end
+	end
+
+	-- Initialize
+	widget:UpdateValue()
+
+	return widget
+end
+
+local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateFrame("Frame", nil, parent)
+	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
+	widget.ConfigPath = configPath
+
+	-- Background
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Store NEW tag information for category detection
+	widget.IsNew = showNewTag
+	widget.HasNewTag = showNewTag
+
+	-- Label
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText) -- Use clean text without NEW tag
+	label:SetPoint("LEFT", 8, 0)
+
+	-- Make label clickable for reset functionality
+	local labelButton = CreateFrame("Button", nil, widget)
+	labelButton:SetAllPoints(label)
+	labelButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" and IsControlKeyDown() then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Add reset-to-default functionality with undo icon
+	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	if hookFunction and type(hookFunction) == "function" then
+		RegisterUpdateHook(configPath, hookFunction)
+		widget.HookFunction = hookFunction
+	end
+
+	-- Value Display
+	local valueText = widget:CreateFontString(nil, "OVERLAY")
+	valueText:SetFontObject(K.UIFont)
+	valueText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	valueText:SetPoint("RIGHT", -8, 0)
+
+	-- Custom Slider Container
+	local sliderContainer = CreateFrame("Frame", nil, widget)
+	sliderContainer:SetSize(120, 16)
+	sliderContainer:SetPoint("RIGHT", -50, 0)
+
+	-- Slider Track Background
+	local sliderTrack = sliderContainer:CreateTexture(nil, "BACKGROUND")
+	sliderTrack:SetAllPoints()
+	sliderTrack:SetTexture(C["Media"].Textures.White8x8Texture)
+	sliderTrack:SetVertexColor(0.2, 0.2, 0.2, 1)
+
+	-- Custom Thumb Frame (this fixes the movement issue)
+	local thumbFrame = CreateFrame("Frame", nil, sliderContainer)
+	thumbFrame:SetSize(12, 16)
+	thumbFrame:EnableMouse(true)
+
+	-- Thumb Texture
+	local thumbTexture = thumbFrame:CreateTexture(nil, "OVERLAY")
+	thumbTexture:SetAllPoints()
+	thumbTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+	thumbTexture:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+
+	-- Thumb Border for better visibility
+	local thumbBorder = thumbFrame:CreateTexture(nil, "BORDER")
+	thumbBorder:SetPoint("TOPLEFT", -1, 1)
+	thumbBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+	thumbBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+	thumbBorder:SetVertexColor(0.4, 0.4, 0.4, 0.8)
+
+	-- Store current value and state
+	local currentValue = minVal
+	local isDragging = false
+	local isUpdating = false
+
+	-- Function to calculate thumb position from value
+	local function UpdateThumbPosition(value)
+		if not value then
+			return
+		end
+
+		local percentage = (value - minVal) / (maxVal - minVal)
+		local maxThumbPos = sliderContainer:GetWidth() - thumbFrame:GetWidth()
+		local thumbPos = maxThumbPos * percentage
+
+		thumbFrame:ClearAllPoints()
+		thumbFrame:SetPoint("LEFT", sliderContainer, "LEFT", thumbPos, 0)
+	end
+
+	-- Function to calculate value from mouse position
+	local function GetValueFromPosition(x)
+		local containerLeft = sliderContainer:GetLeft()
+		local containerWidth = sliderContainer:GetWidth()
+		local thumbWidth = thumbFrame:GetWidth()
+
+		if not containerLeft then
+			return currentValue
+		end
+
+		local relativeX = x - containerLeft
+		local maxThumbPos = containerWidth - thumbWidth
+		local percentage = math.max(0, math.min(1, relativeX / maxThumbPos))
+
+		local rawValue = minVal + (maxVal - minVal) * percentage
+		return floor(rawValue / step + 0.5) * step
+	end
+
+	-- Enhanced Update function
+	function widget:UpdateValue()
+		if isUpdating then
+			return
+		end
+		isUpdating = true
+
+		local value = GetConfigValue(self.ConfigPath) or minVal
+
+		-- TYPE SAFETY: Handle non-numeric values
+		if type(value) == "boolean" then
+			-- Convert boolean to appropriate numeric value
+			value = value and maxVal or minVal
+		elseif type(value) ~= "number" then
+			-- For any other type, use the minimum value as default
+			value = minVal
+		end
+
+		-- Ensure value is within bounds
+		value = max(minVal, min(maxVal, value))
+
+		currentValue = value
+		valueText:SetText(tostring(value))
+		UpdateThumbPosition(value)
+
+		isUpdating = false
+	end
+
+	-- Enhanced hover effects
+	thumbFrame:SetScript("OnEnter", function(self)
+		thumbTexture:SetVertexColor(ACCENT_COLOR[1] * 1.2, ACCENT_COLOR[2] * 1.2, ACCENT_COLOR[3] * 1.2, 1)
+		thumbBorder:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
+	end)
+
+	thumbFrame:SetScript("OnLeave", function(self)
+		if not isDragging then
+			thumbTexture:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+			thumbBorder:SetVertexColor(0.4, 0.4, 0.4, 0.8)
+		end
+	end)
+
+	-- Drag functionality with real-time hook execution and reload tracking
+	thumbFrame:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" then
+			isDragging = true
+			local lastUpdate = 0
+			-- More efficient OnUpdate: throttled and with early exit conditions
+			self:SetScript("OnUpdate", function(self, elapsed)
+				if not isDragging then
+					self:SetScript("OnUpdate", nil)
+					return
+				end
+
+				-- Throttle updates to ~30fps instead of full framerate
+				lastUpdate = lastUpdate + elapsed
+				if lastUpdate < 0.033 then
+					return
+				end
+				lastUpdate = 0
+
+				local x = GetCursorPosition()
+				local scale = UIParent:GetEffectiveScale()
+				x = x / scale
+
+				local newValue = GetValueFromPosition(x)
+				if newValue ~= currentValue then
+					currentValue = newValue
+					valueText:SetText(tostring(newValue))
+					UpdateThumbPosition(newValue)
+
+					-- Save configuration with real-time hook execution and reload tracking
+					if not isUpdating then
+						SetConfigValue(configPath, newValue, requiresReload, cleanText)
+					end
+				end
+			end)
+		end
+	end)
+
+	thumbFrame:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" and isDragging then
+			isDragging = false
+			self:SetScript("OnUpdate", nil)
+
+			-- Final save and visual update with hook execution and reload tracking
+			SetConfigValue(configPath, currentValue, requiresReload, cleanText)
+			thumbTexture:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+			thumbBorder:SetVertexColor(0.4, 0.4, 0.4, 0.8)
+
+			-- Play feedback sound
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end
+	end)
+
+	-- Click on track to jump to position with hook execution and reload tracking
+	sliderContainer:EnableMouse(true)
+	sliderContainer:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" and not isDragging then
+			local x = GetCursorPosition()
+			local scale = UIParent:GetEffectiveScale()
+			x = x / scale
+
+			local newValue = GetValueFromPosition(x)
+			currentValue = newValue
+			valueText:SetText(tostring(newValue))
+			UpdateThumbPosition(newValue)
+			SetConfigValue(configPath, newValue, requiresReload, cleanText)
+
+			-- Play feedback sound
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end
+	end)
+
+	-- Mouse wheel support for fine adjustment with hook execution and reload tracking
+	sliderContainer:EnableMouseWheel(true)
+	sliderContainer:SetScript("OnMouseWheel", function(self, delta)
+		local newValue = currentValue + (step * delta)
+		newValue = max(minVal, min(maxVal, newValue))
+
+		if newValue ~= currentValue then
+			currentValue = newValue
+			valueText:SetText(tostring(newValue))
+			UpdateThumbPosition(newValue)
+			SetConfigValue(configPath, newValue, requiresReload, cleanText)
+
+			-- Play feedback sound
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end
+	end)
+
+	-- Tooltip support
+	if tooltip then
+		CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nTip: Use mouse wheel for fine adjustment!")
+	end
+
+	-- Add cogwheel icon if extra configuration exists
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		K.ExtraGUI:CreateCogwheelIcon(widget, configPath, cleanText)
+		-- No need to adjust value text position since cogwheel is next to label
+	else
+		if K.ExtraGUI then
+			-- ExtraGUI exists but no config for this path
+			-- This is normal, not all options have extra configs
+		else
+			-- ExtraGUI system not available (optional debug could use K.Print if needed)
+		end
+	end
+
+	-- Initialize
+	widget:UpdateValue()
+
+	-- Store references for external access
+	widget.Slider = sliderContainer
+	widget.Thumb = thumbFrame
+	widget.GetValue = function()
+		return currentValue
+	end
+	widget.SetValue = function(value)
+		currentValue = max(minVal, min(maxVal, value))
+		valueText:SetText(tostring(currentValue))
+		UpdateThumbPosition(currentValue)
+		SetConfigValue(configPath, currentValue, requiresReload, cleanText)
+	end
+
+	return widget
+end
+
+local function CreateDropdown(parent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateFrame("Frame", nil, parent)
+	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
+	widget.ConfigPath = configPath
+
+	-- Background
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Store NEW tag information for category detection
+	widget.IsNew = showNewTag
+	widget.HasNewTag = showNewTag
+
+	-- Label
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText) -- Use clean text without NEW tag
+	label:SetPoint("LEFT", 8, 0)
+
+	-- Make label clickable for reset functionality
+	local labelButton = CreateFrame("Button", nil, widget)
+	labelButton:SetAllPoints(label)
+	labelButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" and IsControlKeyDown() then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Add reset-to-default functionality with undo icon
+	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	if hookFunction and type(hookFunction) == "function" then
+		RegisterUpdateHook(configPath, hookFunction)
+		widget.HookFunction = hookFunction
+	end
+
+	-- Dropdown Button
+	local dropdown = CreateFrame("Button", nil, widget)
+	dropdown:SetSize(150, 18)
+	dropdown:SetPoint("RIGHT", -8, 0)
+
+	-- Dropdown Background
+	local dropdownBg = dropdown:CreateTexture(nil, "BACKGROUND")
+	dropdownBg:SetAllPoints()
+	dropdownBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	dropdownBg:SetVertexColor(0.15, 0.15, 0.15, 1)
+
+	-- Dropdown Text
+	local dropdownText = dropdown:CreateFontString(nil, "OVERLAY")
+	dropdownText:SetFontObject(K.UIFont)
+	dropdownText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	dropdownText:SetPoint("LEFT", 8, 0)
+	dropdownText:SetPoint("RIGHT", -25, 0) -- Leave space for arrow
+	dropdownText:SetJustifyH("LEFT")
+
+	-- Arrow Icon
+	local arrow = dropdown:CreateTexture(nil, "OVERLAY")
+	arrow:SetSize(18, 12)
+	arrow:SetPoint("RIGHT", -6, 0)
+
+	-- Set arrow to down position using atlas
+	local function SetArrowDown()
+		local success = pcall(function()
+			arrow:SetAtlas("minimal-scrollbar-small-arrow-bottom", true)
+			arrow:SetSize(18, 12)
+		end)
+		if not success then
+			-- Fallback to text if atlas fails
+			arrow = dropdown:CreateFontString(nil, "OVERLAY")
+			arrow:SetFontObject(K.UIFont)
+			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+			arrow:SetText("▼")
+			arrow:SetPoint("RIGHT", -6, 0)
+		end
+	end
+
+	local function SetArrowUp()
+		local success = pcall(function()
+			arrow:SetAtlas("minimal-scrollbar-small-arrow-top", true)
+			arrow:SetSize(18, 12)
+		end)
+		if not success then
+			-- Fallback to text if atlas fails
+			arrow = dropdown:CreateFontString(nil, "OVERLAY")
+			arrow:SetFontObject(K.UIFont)
+			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+			arrow:SetText("▲")
+			arrow:SetPoint("RIGHT", -6, 0)
+		end
+	end
+
+	-- Initialize arrow to down position
+	SetArrowDown()
+
+	-- Tooltip functionality (now added)
+	if tooltip then
+		widget:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(cleanText, 1, 1, 1, 1, true)
+			GameTooltip:AddLine(tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+			GameTooltip:Show()
+		end)
+
+		widget:SetScript("OnLeave", function(self)
+			GameTooltip:Hide()
+		end)
+	end
+
+	-- Menu state management
+	local isMenuOpen = false
+	local currentMenu = nil
+
+	-- Function to close menu
+	local function CloseMenu()
+		if currentMenu then
+			-- Cancel any active close timers
+			if currentMenu.closeTimer then
+				currentMenu.closeTimer:Cancel()
+				currentMenu.closeTimer = nil
+			end
+			currentMenu:Hide()
+			currentMenu = nil
+			isMenuOpen = false
+			SetArrowDown()
+		end
+	end
+
+	-- Function to open menu
+	local function OpenMenu()
+		if isMenuOpen then
+			CloseMenu()
+			return
+		end
+
+		-- Create dropdown menu
+		local menu = CreateFrame("Frame", nil, dropdown)
+		menu:SetSize(150, #options * 22 + 4) -- 2px padding top/bottom
+		menu:SetPoint("TOP", dropdown, "BOTTOM", 0, -2)
+		menu:SetFrameStrata("TOOLTIP")
+		menu:SetFrameLevel(dropdown:GetFrameLevel() + 50)
+
+		-- Menu background
+		local menuBg = menu:CreateTexture(nil, "BACKGROUND")
+		menuBg:SetAllPoints()
+		menuBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		menuBg:SetVertexColor(0.1, 0.1, 0.1, 0.95)
+
+		-- Menu border
+		local menuBorder = CreateFrame("Frame", nil, menu)
+		menuBorder:SetPoint("TOPLEFT", -1, 1)
+		menuBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+		menuBorder:SetFrameLevel(menu:GetFrameLevel() - 1)
+		local borderTexture = menuBorder:CreateTexture(nil, "BACKGROUND")
+		borderTexture:SetAllPoints()
+		borderTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+		borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+
+		-- Create option buttons
+		for i, option in ipairs(options) do
+			local optionButton = CreateFrame("Button", nil, menu)
+			optionButton:SetSize(148, 20)
+			optionButton:SetPoint("TOP", 0, -(i - 1) * 22 - 2)
+
+			-- Option background (for hover effect)
+			local optionBg = optionButton:CreateTexture(nil, "BACKGROUND")
+			optionBg:SetAllPoints()
+			optionBg:SetTexture(C["Media"].Textures.White8x8Texture)
+			optionBg:SetVertexColor(0, 0, 0, 0) -- Transparent by default
+
+			-- Option text
+			local optionText = optionButton:CreateFontString(nil, "OVERLAY")
+			optionText:SetFontObject(K.UIFont)
+			optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+			optionText:SetText(option.text)
+			optionText:SetPoint("LEFT", 8, 0)
+
+			-- Highlight current selection
+			local currentValue = GetConfigValue(configPath)
+			if option.value == currentValue then
+				optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+			end
+
+			-- Hover effects
+			optionButton:SetScript("OnEnter", function(self)
+				if option.value ~= currentValue then
+					optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.2)
+				end
+				optionText:SetTextColor(1, 1, 1, 1)
+			end)
+
+			optionButton:SetScript("OnLeave", function(self)
+				if option.value == currentValue then
+					optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+				else
+					optionBg:SetVertexColor(0, 0, 0, 0)
+				end
+				optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+			end)
+
+			-- Click handler with reload tracking
+			optionButton:SetScript("OnClick", function()
+				SetConfigValue(configPath, option.value, requiresReload, cleanText)
+				widget:UpdateValue()
+				CloseMenu()
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			end)
+		end
+
+		-- Set menu state
+		currentMenu = menu
+		isMenuOpen = true
+		SetArrowUp()
+
+		-- Immediate mouse detection without delay - check for gaps between dropdown and menu
+		local function IsMouseOverDropdownArea()
+			if MouseIsOver(dropdown) or MouseIsOver(menu) then
+				return true
+			end
+
+			-- Check if mouse is in the gap between dropdown and menu
+			local cursorX, cursorY = GetCursorPosition()
+			local scale = UIParent:GetEffectiveScale()
+			cursorX, cursorY = cursorX / scale, cursorY / scale
+
+			local dropdownLeft = dropdown:GetLeft()
+			local dropdownRight = dropdown:GetRight()
+			local dropdownBottom = dropdown:GetBottom()
+			local menuTop = menu:GetTop()
+
+			if dropdownLeft and dropdownRight and dropdownBottom and menuTop then
+				-- Check if cursor is in the vertical gap between dropdown and menu
+				if cursorX >= dropdownLeft and cursorX <= dropdownRight and cursorY <= dropdownBottom and cursorY >= menuTop then
+					return true
+				end
+			end
+
+			return false
+		end
+
+		-- Close menu when mouse is completely outside the dropdown area
+		local function checkAndCloseMenu()
+			if not IsMouseOverDropdownArea() then
+				CloseMenu()
+			else
+				-- Re-schedule the check if mouse is still over the area
+				if menu.closeTimer then
+					menu.closeTimer:Cancel()
+				end
+				menu.closeTimer = C_Timer.NewTimer(0.1, checkAndCloseMenu)
+			end
+		end
+
+		-- Store the timer on the menu for cleanup
+		menu.closeTimer = C_Timer.NewTimer(0.1, checkAndCloseMenu)
+	end
+
+	-- Hover effect for dropdown button
+	dropdown:SetScript("OnEnter", function(self)
+		dropdownBg:SetVertexColor(0.2, 0.2, 0.2, 1)
+		if arrow.SetVertexColor then
+			arrow:SetVertexColor(1, 1, 1, 1) -- For texture arrows
+		elseif arrow.SetTextColor then
+			arrow:SetTextColor(1, 1, 1, 1) -- For fallback text arrows
+		end
+	end)
+
+	dropdown:SetScript("OnLeave", function(self)
+		dropdownBg:SetVertexColor(0.15, 0.15, 0.15, 1)
+		if arrow.SetVertexColor then
+			arrow:SetVertexColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4]) -- For texture arrows
+		elseif arrow.SetTextColor then
+			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4]) -- For fallback text arrows
+		end
+	end)
+
+	-- Click handler for dropdown button
+	dropdown:SetScript("OnClick", function()
+		OpenMenu()
+	end)
+
+	-- Update function
+	function widget:UpdateValue()
+		local value = GetConfigValue(self.ConfigPath)
+		for _, option in ipairs(options) do
+			if option.value == value then
+				dropdownText:SetText(option.text)
+				return
+			end
+		end
+		dropdownText:SetText(options[1] and options[1].text or "Select...")
+	end
+
+	-- Close menu function for external use
+	function widget:CloseMenu()
+		CloseMenu()
+	end
+
+	-- Add cogwheel icon if extra configuration exists
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		K.ExtraGUI:CreateCogwheelIcon(widget, configPath, cleanText)
+		-- No need to adjust value text position since cogwheel is next to label
+	else
+		if K.ExtraGUI then
+			-- ExtraGUI exists but no config for this path
+			-- This is normal, not all options have extra configs
+		else
+			-- ExtraGUI system not available (optional debug could use K.Print if needed)
+		end
+	end
+
+	-- Initialize
+	widget:UpdateValue()
+
+	return widget
+end
+
+local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction, isNew)
+	local widget = CreateFrame("Frame", nil, parent)
+	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
+	widget.ConfigPath = configPath
+
+	-- Background
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Store NEW tag information for category detection
+	widget.IsNew = showNewTag
+	widget.HasNewTag = showNewTag
+
+	-- Label
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText) -- Use clean text without NEW tag
+	label:SetPoint("LEFT", 8, 0)
+
+	-- Make label clickable for reset functionality
+	local labelButton = CreateFrame("Button", nil, widget)
+	labelButton:SetAllPoints(label)
+	labelButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" and IsControlKeyDown() then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Add reset-to-default functionality with undo icon
+	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	if hookFunction and type(hookFunction) == "function" then
+		RegisterUpdateHook(configPath, hookFunction)
+		widget.HookFunction = hookFunction
+	end
+
+	-- Color Button
+	local colorButton = CreateFrame("Button", nil, widget)
+	colorButton:SetSize(30, 16)
+	colorButton:SetPoint("RIGHT", -8, 0)
+	-- CLEAN DESIGN: Modern color button with subtle background
+	local colorBg = colorButton:CreateTexture(nil, "BACKGROUND")
+	colorBg:SetAllPoints()
+	colorBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	colorBg:SetVertexColor(0.2, 0.2, 0.2, 1)
+
+	-- Color Display
+	local colorDisplay = colorButton:CreateTexture(nil, "OVERLAY")
+	colorDisplay:SetPoint("TOPLEFT", 2, -2)
+	colorDisplay:SetPoint("BOTTOMRIGHT", -2, 2)
+	colorDisplay:SetTexture(C["Media"].Textures.White8x8Texture)
+
+	-- Hover effect for color button
+	colorButton:SetScript("OnEnter", function(self)
+		colorBg:SetVertexColor(0.3, 0.3, 0.3, 1)
+	end)
+
+	colorButton:SetScript("OnLeave", function(self)
+		colorBg:SetVertexColor(0.2, 0.2, 0.2, 1)
+	end)
+
+	-- Update function
+	function widget:UpdateValue()
+		local value = GetConfigValue(self.ConfigPath)
+		if value and type(value) == "table" and #value >= 3 then
+			colorDisplay:SetVertexColor(value[1], value[2], value[3], value[4] or 1)
+		else
+			colorDisplay:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		end
+	end
+
+	-- ENHANCED Click handler with hook execution
+	colorButton:SetScript("OnClick", function()
+		local currentValue = GetConfigValue(configPath) or { ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1 }
+
+		-- Ensure we have valid color values
+		if not currentValue or type(currentValue) ~= "table" or #currentValue < 3 then
+			currentValue = { ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1 }
+		end
+
+		-- Open WoW's color picker
+		ColorPickerFrame:SetupColorPickerAndShow({
+			r = currentValue[1],
+			g = currentValue[2],
+			b = currentValue[3],
+			opacity = currentValue[4] or 1,
+			hasOpacity = true,
+			opacityFunc = function(opacity)
+				currentValue[4] = opacity
+				SetConfigValue(configPath, currentValue, false, cleanText)
+				widget:UpdateValue()
+			end,
+			swatchFunc = function()
+				local r, g, b = ColorPickerFrame:GetColorRGB()
+				currentValue[1] = r
+				currentValue[2] = g
+				currentValue[3] = b
+				SetConfigValue(configPath, currentValue, false, cleanText)
+				widget:UpdateValue()
+			end,
+			cancelFunc = function()
+				-- Restore original values if cancelled
+				SetConfigValue(configPath, currentValue, false, cleanText)
+				widget:UpdateValue()
+			end,
+		})
+
+		-- Play feedback sound
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	end)
+
+	-- Initialize
+	widget:UpdateValue()
+
+	return widget
+end
+
+-- Enhanced Widget Creation Functions
+
+-- Multi-Select Checkbox Group - ENHANCED with Modern Design and Hooks
+local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, hookFunction, isNew)
+	local widget = CreateFrame("Frame", nil, parent)
+
+	-- Calculate better spacing for flow
+	local cols = math.min(2, #options) -- Max 2 columns for better readability
+	local itemHeight = 32 -- Increased height for better spacing
+	local rows = math.ceil(#options / cols)
+	local totalHeight = 50 + (rows * itemHeight) + 10 -- Header + items + padding
+
+	widget:SetSize(CONTENT_WIDTH, totalHeight)
+	widget.ConfigPath = configPath
+
+	-- Background with rounded appearance
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Store NEW tag information for category detection
+	widget.IsNew = showNewTag
+	-- Label with better positioning
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText) -- Use clean text without NEW tag
+	label:SetPoint("TOPLEFT", 12, -12)
+
+	-- Make label clickable for reset functionality
+	local labelButton = CreateFrame("Button", nil, widget)
+	labelButton:SetAllPoints(label)
+	labelButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" and IsControlKeyDown() then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Add reset-to-default functionality with undo icon
+	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	if hookFunction and type(hookFunction) == "function" then
+		RegisterUpdateHook(configPath, hookFunction)
+		widget.HookFunction = hookFunction
+	end
+
+	local checkboxes = {}
+	local itemWidth = (CONTENT_WIDTH - 60) / cols -- Better spacing calculation
+
+	for i, option in ipairs(options) do
+		local row = math.floor((i - 1) / cols)
+		local col = (i - 1) % cols
+
+		-- Container for each checkbox item (for better flow)
+		local checkboxContainer = CreateFrame("Frame", nil, widget)
+		checkboxContainer:SetSize(itemWidth, itemHeight - 4)
+		checkboxContainer:SetPoint("TOPLEFT", 20 + col * (itemWidth + 10), -45 - row * itemHeight)
+
+		-- Modern Custom Checkbox
+		local checkbox = CreateFrame("Button", nil, checkboxContainer)
+		checkbox:SetSize(18, 18) -- Slightly larger for better touch
+		checkbox:SetPoint("LEFT", 0, 0)
+
+		-- Checkbox background (custom design)
+		local checkboxBg = checkbox:CreateTexture(nil, "BACKGROUND")
+		checkboxBg:SetAllPoints()
+		checkboxBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		checkboxBg:SetVertexColor(0.15, 0.15, 0.15, 1)
+
+		-- Checkbox border ring for modern look
+		local checkboxBorder = checkbox:CreateTexture(nil, "BORDER")
+		checkboxBorder:SetPoint("TOPLEFT", -1, 1)
+		checkboxBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+		checkboxBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+		checkboxBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+
+		-- Custom checkmark (hidden by default)
+		local checkMark = checkbox:CreateTexture(nil, "OVERLAY")
+		checkMark:SetSize(12, 12)
+		checkMark:SetPoint("CENTER", 0, 0)
+		checkMark:SetTexture(C["Media"].Textures.White8x8Texture)
+		checkMark:SetVertexColor(1, 1, 1, 0) -- Start invisible
+
+		-- Create checkmark pattern using multiple small textures for ✓ shape
+		local checkLine1 = checkbox:CreateTexture(nil, "OVERLAY", nil, 1)
+		checkLine1:SetSize(6, 2)
+		checkLine1:SetPoint("CENTER", -2, -1)
+		checkLine1:SetTexture(C["Media"].Textures.White8x8Texture)
+		checkLine1:SetVertexColor(1, 1, 1, 0)
+
+		local checkLine2 = checkbox:CreateTexture(nil, "OVERLAY", nil, 1)
+		checkLine2:SetSize(8, 2)
+		checkLine2:SetPoint("CENTER", 1, 1)
+		checkLine2:SetTexture(C["Media"].Textures.White8x8Texture)
+		checkLine2:SetVertexColor(1, 1, 1, 0)
+
+		-- Label for the checkbox with better positioning
+		local checkLabel = checkboxContainer:CreateFontString(nil, "OVERLAY")
+		checkLabel:SetFontObject(K.UIFont)
+		checkLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		checkLabel:SetText(option.text)
+		checkLabel:SetPoint("LEFT", checkbox, "RIGHT", 10, 0)
+		checkLabel:SetPoint("RIGHT", checkboxContainer, "RIGHT", -5, 0)
+		checkLabel:SetJustifyH("LEFT")
+		checkLabel:SetWordWrap(false)
+
+		-- Store references for animations
+		checkbox.Background = checkboxBg
+		checkbox.Border = checkboxBorder
+		checkbox.CheckMark = checkMark
+		checkbox.CheckLine1 = checkLine1
+		checkbox.CheckLine2 = checkLine2
+		checkbox.Label = checkLabel
+		checkbox.Container = checkboxContainer
+		checkbox.OptionValue = option.value
+		checkbox.IsChecked = false
+
+		-- Smooth hover animations
+		checkbox:SetScript("OnEnter", function(self)
+			-- Smooth hover effect
+			if not self.IsChecked then
+				self.Background:SetVertexColor(0.2, 0.2, 0.2, 1)
+				self.Border:SetVertexColor(ACCENT_COLOR[1] * 0.7, ACCENT_COLOR[2] * 0.7, ACCENT_COLOR[3] * 0.7, 1)
+			else
+				-- Enhance checked state on hover
+				self.Background:SetVertexColor(ACCENT_COLOR[1] * 1.1, ACCENT_COLOR[2] * 1.1, ACCENT_COLOR[3] * 1.1, 1)
+				self.Border:SetVertexColor(ACCENT_COLOR[1] * 1.2, ACCENT_COLOR[2] * 1.2, ACCENT_COLOR[3] * 1.2, 1)
+			end
+
+			-- Enhance label on hover
+			self.Label:SetTextColor(1, 1, 1, 1)
+		end)
+
+		checkbox:SetScript("OnLeave", function(self)
+			-- Return to normal state
+			if not self.IsChecked then
+				self.Background:SetVertexColor(0.15, 0.15, 0.15, 1)
+				self.Border:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+			else
+				self.Background:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+				self.Border:SetVertexColor(ACCENT_COLOR[1] * 1.1, ACCENT_COLOR[2] * 1.1, ACCENT_COLOR[3] * 1.1, 1)
+			end
+
+			-- Return label to normal
+			self.Label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		end)
+
+		-- Smooth check animation
+		local function AnimateCheck(self, isChecked)
+			if isChecked then
+				-- Animate to checked state
+				self.Background:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+				self.Border:SetVertexColor(ACCENT_COLOR[1] * 1.1, ACCENT_COLOR[2] * 1.1, ACCENT_COLOR[3] * 1.1, 1)
+
+				-- Animate checkmark appearance with staggered effect
+				C_Timer.After(0.05, function()
+					self.CheckLine1:SetVertexColor(1, 1, 1, 1)
+				end)
+				C_Timer.After(0.1, function()
+					self.CheckLine2:SetVertexColor(1, 1, 1, 1)
+				end)
+			else
+				-- Animate to unchecked state
+				self.Background:SetVertexColor(0.15, 0.15, 0.15, 1)
+				self.Border:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+				self.CheckLine1:SetVertexColor(1, 1, 1, 0)
+				self.CheckLine2:SetVertexColor(1, 1, 1, 0)
+			end
+			self.IsChecked = isChecked
+		end
+
+		checkbox.AnimateCheck = AnimateCheck
+
+		checkboxes[i] = checkbox
+	end
+
+	-- Enhanced update function with animations
+	function widget:UpdateValue()
+		local values = GetConfigValue(self.ConfigPath) or {}
+		for _, checkbox in ipairs(checkboxes) do
+			local isChecked = false
+			for _, value in ipairs(values) do
+				if value == checkbox.OptionValue then
+					isChecked = true
+					break
+				end
+			end
+			checkbox:AnimateCheck(isChecked)
+		end
+	end
+
+	-- ENHANCED click handlers with hook execution
+	for _, checkbox in ipairs(checkboxes) do
+		checkbox:SetScript("OnClick", function(self)
+			local values = GetConfigValue(configPath) or {}
+			local newValues = {}
+
+			-- Copy existing values except the one we're toggling
+			for _, value in ipairs(values) do
+				if value ~= self.OptionValue then
+					table.insert(newValues, value)
+				end
+			end
+
+			-- Add the value if checkbox is now checked
+			local willBeChecked = not self.IsChecked
+			if willBeChecked then
+				table.insert(newValues, self.OptionValue)
+			end
+
+			-- Immediate visual feedback with animation
+			self:AnimateCheck(willBeChecked)
+
+			-- Save the configuration - SetConfigValue will now trigger hooks
+			SetConfigValue(configPath, newValues)
+
+			-- Play feedback sound
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end)
+
+		-- Make the entire container clickable for better UX
+		checkbox.Container:EnableMouse(true)
+		checkbox.Container:SetScript("OnMouseUp", function()
+			checkbox:GetScript("OnClick")(checkbox)
+		end)
+
+		-- Add hover effect to the entire container
+		checkbox.Container:SetScript("OnEnter", function()
+			checkbox:GetScript("OnEnter")(checkbox)
+		end)
+
+		checkbox.Container:SetScript("OnLeave", function()
+			checkbox:GetScript("OnLeave")(checkbox)
+		end)
+	end
+
+	-- Initialize with smooth animations
+	widget:UpdateValue()
+
+	-- Add enhanced tooltip support if provided
+	if tooltip then
+		CreateEnhancedTooltip(widget, cleanText, tooltip)
+
+		-- Also add tooltips to individual checkbox containers for better UX
+		for i, checkbox in ipairs(checkboxes) do
+			local option = options[i] -- Get the corresponding option
+			CreateEnhancedTooltip(checkbox.Container, option.text, "Click to toggle this option.\n\nCurrent selection affects: " .. cleanText)
+		end
+	end
+
+	return widget
+end
+
+local function CreateTextInput(parent, configPath, text, placeholder, tooltip, hookFunction, isNew)
+	local widget = CreateFrame("Frame", nil, parent)
+	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
+	widget.ConfigPath = configPath
+
+	-- Background
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Store NEW tag information for category detection
+	widget.IsNew = showNewTag
+	widget.HasNewTag = showNewTag
+
+	-- Label
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText) -- Use clean text without NEW tag
+	label:SetPoint("LEFT", 8, 0)
+
+	-- Make label clickable for reset functionality
+	local labelButton = CreateFrame("Button", nil, widget)
+	labelButton:SetAllPoints(label)
+	labelButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" and IsControlKeyDown() then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Add reset-to-default functionality with undo icon
+	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	if hookFunction and type(hookFunction) == "function" then
+		RegisterUpdateHook(configPath, hookFunction)
+		widget.HookFunction = hookFunction
+	end
+
+	-- Text Input EditBox
+	local editBox = CreateFrame("EditBox", nil, widget)
+	editBox:SetSize(150, 16)
+	editBox:SetPoint("RIGHT", -8, 0)
+	editBox:SetFontObject(K.UIFont)
+	editBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	editBox:SetAutoFocus(false)
+
+	-- Input background
+	local inputBg = editBox:CreateTexture(nil, "BACKGROUND")
+	inputBg:SetAllPoints()
+	inputBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	inputBg:SetVertexColor(0.2, 0.2, 0.2, 1)
+
+	-- Placeholder text
+	if placeholder then
+		local placeholderText = editBox:CreateFontString(nil, "OVERLAY")
+		placeholderText:SetFontObject(K.UIFont)
+		placeholderText:SetTextColor(0.5, 0.5, 0.5, 1)
+		placeholderText:SetText(placeholder)
+		placeholderText:SetPoint("LEFT", editBox, "LEFT", 4, 0)
+
+		editBox:SetScript("OnTextChanged", function(self)
+			local text = self:GetText()
+			if text == "" then
+				placeholderText:Show()
+			else
+				placeholderText:Hide()
+			end
+		end)
+
+		editBox:SetScript("OnEditFocusGained", function()
+			placeholderText:Hide()
+		end)
+
+		editBox:SetScript("OnEditFocusLost", function(self)
+			if self:GetText() == "" then
+				placeholderText:Show()
+			end
+		end)
+	end
+
+	-- Update function
+	function widget:UpdateValue()
+		local value = GetConfigValue(self.ConfigPath) or ""
+		editBox:SetText(tostring(value))
+	end
+
+	-- Save on enter/focus lost
+	editBox:SetScript("OnEnterPressed", function(self)
+		SetConfigValue(configPath, self:GetText())
+		self:ClearFocus()
+	end)
+
+	editBox:SetScript("OnEditFocusLost", function(self)
+		SetConfigValue(configPath, self:GetText())
+	end)
+
+	-- Enhanced tooltip functionality
+	if tooltip then
+		CreateEnhancedTooltip(widget, cleanText, tooltip)
+	end
+
+	-- Initialize
+	widget:UpdateValue()
+
+	return widget
+end
+
+-- Category and Section Management
+local function CreateCategory(name, icon)
+	local cleanName, hasNewTag = ProcessNewTag(name)
+	local category = {
+		Name = cleanName,
+		Icon = icon,
+		Sections = {},
+		Widgets = {},
+		Frame = nil,
+		ScrollChild = nil,
+		HasNewTag = hasNewTag,
+	}
+
+	tinsert(GUI.Categories, category)
+	return category
+end
+
+local function CreateSection(category, name)
+	local section = {
+		Name = name,
+		Widgets = {},
+	}
+
+	tinsert(category.Sections, section)
+	return section
+end
+
+-- HOOK MANAGEMENT UTILITIES
+function GUI:RegisterHook(configPath, hookFunction)
+	RegisterUpdateHook(configPath, hookFunction)
+end
+
+function GUI:UnregisterHook(configPath, hookFunction)
+	if self.UpdateHooks[configPath] then
+		for i, func in ipairs(self.UpdateHooks[configPath]) do
+			if func == hookFunction then
+				tremove(self.UpdateHooks[configPath], i)
 				break
 			end
 		end
 	end
-
-	Key = OrderedIndex[NextIndex]
-
-	if Key then
-		-- print("Key: ", Key)
-		-- print("Value: ", t[Key])
-		return Key, t[Key]
-	else
-		-- print("Iteration ended")
-	end
 end
 
--- PairsByKeys function to iterate through the elements of a table in a specific order
-local function PairsByKeys(t)
-	-- Returns the iterator function and its initial state, so that it can be used with the for loop
-	return OrderedNext, t, nil
+function GUI:TriggerHooks(configPath, newValue, oldValue)
+	ExecuteUpdateHooks(configPath, newValue, oldValue)
 end
 
-local Reverse = function(value)
-	if value == true then
-		return false
-	else
-		return true
-	end
-end
-
--- Sections
--- CreateSection function to create a section of the user interface
-local function CreateSection(self, text, icon, fontObject)
-	-- Create the main frame
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
-	Anchor.IsSection = true
-
-	-- Create the child frame
-	local Section = CreateFrame("Frame", nil, Anchor)
-	Section:SetPoint("TOPLEFT", Anchor, 0, 0)
-	Section:SetPoint("BOTTOMRIGHT", Anchor, 0, 0)
-	Section:CreateBorder()
-
-	-- Create the label
-	Section.Label = Section:CreateFontString(nil, "OVERLAY")
-	Section.Label:SetPoint("CENTER", Section, LabelSpacing, 0)
-	Section.Label:SetWidth(WidgetListWidth - (Spacing * 4))
-	Section.Label:SetFontObject(fontObject or K.UIFont)
-	Section.Label:SetJustifyH("CENTER")
-	if icon then
-		Section.Icon = Section:CreateTexture(nil, "ARTWORK")
-		Section.Icon:SetSize(16, 16)
-		Section.Icon:SetPoint("RIGHT", Section.Label, "LEFT", -2, 0)
-		Section.Icon:SetTexture(icon)
-		Section.Label:SetPoint("LEFT", Section, "LEFT", 20, 0)
-	else
-		Section.Label:SetPoint("CENTER", Section, 0, 0)
-	end
-	Section.Label:SetText("|CFFFFCC66" .. text .. "|r")
-
-	-- Insert the created frame into the self.Widgets table
-	table.insert(self.Widgets, Anchor)
-
-	return Section
-end
-
-GUI.Widgets.CreateSection = CreateSection
-
--- Buttons
-local ButtonOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
-
-local ButtonOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
-end
-
-local ButtonOnMouseDown = function(self)
-	self.KKUI_Background:SetVertexColor(BGColor[1], BGColor[2], BGColor[3])
-end
-
-local ButtonOnMouseUp = function(self)
-	self.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
-end
-
-local CreateButton = function(self, midtext, text, tooltip, func)
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
-	Anchor:SetScript("OnEnter", AnchorOnEnter)
-	Anchor:SetScript("OnLeave", AnchorOnLeave)
-	Anchor.Tooltip = tooltip
-
-	local Button = CreateFrame("Frame", nil, Anchor)
-	Button:SetSize(ButtonWidth, WidgetHeight)
-	Button:SetPoint("LEFT", Anchor, 0, 0)
-	Button:CreateBorder()
-	Button:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Button:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Button:SetScript("OnEnter", ButtonOnEnter)
-	Button:SetScript("OnLeave", ButtonOnLeave)
-	Button:HookScript("OnMouseUp", func)
-
-	Button.Highlight = Button:CreateTexture(nil, "OVERLAY")
-	Button.Highlight:SetAllPoints()
-	Button.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Button.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Button.Highlight:SetAlpha(0)
-
-	Button.Middle = Button:CreateFontString(nil, "OVERLAY")
-	Button.Middle:SetPoint("CENTER", Button, 0, 0)
-	Button.Middle:SetWidth(WidgetListWidth - (Spacing * 4))
-	Button.Middle:SetFontObject(K.UIFont)
-	Button.Middle:SetJustifyH("CENTER")
-	Button.Middle:SetText(midtext)
-
-	Button.Label = Button:CreateFontString(nil, "OVERLAY")
-	Button.Label:SetPoint("LEFT", Button, "RIGHT", Spacing, 0)
-	Button.Label:SetWidth(WidgetListWidth - ButtonWidth - (Spacing * 4))
-	Button.Label:SetJustifyH("LEFT")
-	Button.Label:SetFontObject(K.UIFont)
-	Button.Label:SetText(text)
-
-	tinsert(self.Widgets, Anchor)
-
-	return Button
-end
-
-GUI.Widgets.CreateButton = CreateButton
-
--- Switches
-local SwitchOnMouseUp = function(self, button)
-	if self.Movement:IsPlaying() then
-		return
-	end
-
-	self.Thumb:ClearAllPoints()
-
-	if button == "RightButton" then
-		self.Value = Reverse(K.Defaults[self.Group][self.Option])
-	end
-
-	if self.Value then
-		self.Thumb:SetPoint("RIGHT", self, 0, 0)
-		self.Label:SetTextColor(123 / 255, 132 / 255, 137 / 255)
-		self.Movement:SetOffset(-26, 0)
-		self.Value = false
-	else
-		self.Thumb:SetPoint("LEFT", self, 0, 0)
-		self.Label:SetTextColor(1, 1, 1)
-		self.Movement:SetOffset(26, 0)
-		self.Value = true
-	end
-
-	self.Movement:Play()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-
-	SetValue(self.Group, self.Option, self.Value)
-
-	if self.Hook then
-		self.Hook(self.Value, self.Group)
-	end
-end
-
-local SwitchOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
-
-local SwitchOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
-end
-
-local CreateSwitch = function(self, group, option, text, tooltip, hook)
-	local Value = C[group][option]
-
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - SwitchWidth - Spacing, WidgetHeight)
-	Anchor:SetScript("OnEnter", AnchorOnEnter)
-	Anchor:SetScript("OnLeave", AnchorOnLeave)
-	Anchor.Tooltip = tooltip
-
-	local Switch = CreateFrame("Frame", nil, Anchor)
-	Switch:SetPoint("LEFT", Anchor, 0, 0)
-	Switch:SetSize(SwitchWidth, WidgetHeight)
-	Switch:CreateBorder()
-	Switch:SetScript("OnMouseUp", SwitchOnMouseUp)
-	Switch:SetScript("OnEnter", SwitchOnEnter)
-	Switch:SetScript("OnLeave", SwitchOnLeave)
-	Switch.Value = Value
-	Switch.Hook = hook
-	Switch.Group = group
-	Switch.Option = option
-
-	Switch.Highlight = Switch:CreateTexture(nil, "OVERLAY")
-	Switch.Highlight:SetAllPoints()
-	Switch.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Switch.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Switch.Highlight:SetAlpha(0)
-
-	Switch.Thumb = CreateFrame("Frame", nil, Switch)
-	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, { 123 / 255, 132 / 255, 137 / 255 })
-
-	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
-	Switch.Movement:SetDuration(0.1)
-	Switch.Movement:SetEasing("in-sinusoidal")
-
-	Switch.TrackTexture = Switch:CreateTexture(nil, "ARTWORK")
-	Switch.TrackTexture:SetPoint("TOPLEFT", Switch, 0, -1)
-	Switch.TrackTexture:SetPoint("BOTTOMRIGHT", Switch.Thumb, "BOTTOMLEFT", 0, 1)
-	Switch.TrackTexture:SetTexture(K.GetTexture(C["General"].Texture))
-	Switch.TrackTexture:SetVertexColor(R, G, B)
-
-	Switch.Label = Switch:CreateFontString(nil, "OVERLAY")
-	Switch.Label:SetPoint("LEFT", Switch, "RIGHT", Spacing, 0)
-	Switch.Label:SetWidth(WidgetListWidth - SwitchWidth - 40, WidgetHeight)
-	Switch.Label:SetJustifyH("LEFT")
-	Switch.Label:SetFontObject(K.UIFont)
-	Switch.Label:SetText(text)
-
-	if Value then
-		Switch.Thumb:SetPoint("RIGHT", Switch, 0, 0)
-		Switch.Label:SetTextColor(1, 1, 1)
-	else
-		Switch.Thumb:SetPoint("LEFT", Switch, 0, 0)
-		Switch.Label:SetTextColor(123 / 255, 132 / 255, 137 / 255)
-	end
-
-	tinsert(self.Widgets, Anchor)
-
-	return Switch
-end
-
-GUI.Widgets.CreateSwitch = CreateSwitch
-
-local EditBoxOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
-
-local EditBoxOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
-end
-
-local EditBoxOnEnterPressed = function(self)
-	local Value = self.Value and tonumber(self:GetText()) or tostring(self:GetText())
-
-	SetValue(self.Group, self.Option, Value)
-
-	if self.Hook then
-		self.Hook(self.Value, self.Group)
-	end
-
-	self:SetAutoFocus(false)
-	self:ClearFocus()
-end
-
-local EditBoxOnEscapePressed = function(self)
-	self:SetText(self.Value)
-
-	self:SetAutoFocus(false)
-	self:ClearFocus()
-end
-
-local CreateEditBox = function(self, group, option, text, tooltip, hook)
-	local Value = C[group][option]
-
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - EditBoxWidth - Spacing, WidgetHeight)
-	Anchor:SetScript("OnEnter", AnchorOnEnter)
-	Anchor:SetScript("OnLeave", AnchorOnLeave)
-	Anchor.Tooltip = tooltip
-
-	local EditBox = CreateFrame("Frame", nil, Anchor)
-	EditBox:SetPoint("LEFT", Anchor, 0, 0)
-	EditBox:SetSize(EditBoxWidth, WidgetHeight)
-	EditBox:CreateBorder()
-
-	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
-	EditBox.Highlight:SetAllPoints()
-	EditBox.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	EditBox.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	EditBox.Highlight:SetAlpha(0)
-
-	EditBox.Label = EditBox:CreateFontString(nil, "OVERLAY")
-	EditBox.Label:SetPoint("LEFT", EditBox, "RIGHT", LabelSpacing, 0)
-	EditBox.Label:SetWidth(WidgetListWidth - (EditBoxWidth + EditBoxWidth) - (Spacing * 5))
-	EditBox.Label:SetJustifyH("LEFT")
-	EditBox.Label:SetFontObject(K.UIFont)
-	EditBox.Label:SetText(text)
-
-	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
-	EditBox.Box:SetFontObject(K.UIFont)
-	EditBox.Box:SetPoint("TOPLEFT", EditBox, 0, 0)
-	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, 0, 0)
-	EditBox.Box:SetJustifyH("CENTER")
-	EditBox.Box:SetMaxLetters(999)
-	EditBox.Box:SetAutoFocus(false)
-	EditBox.Box:EnableKeyboard(true)
-	EditBox.Box:EnableMouse(true)
-	EditBox.Box:EnableMouseWheel(true)
-	EditBox.Box:SetText(Value)
-	EditBox.Box:SetScript("OnEnterPressed", EditBoxOnEnterPressed)
-	EditBox.Box:SetScript("OnEscapePressed", EditBoxOnEscapePressed)
-	EditBox.Box:SetScript("OnEnter", EditBoxOnEnter)
-	EditBox.Box:SetScript("OnLeave", EditBoxOnLeave)
-
-	EditBox.Box.Group = group
-	EditBox.Box.Option = option
-	EditBox.Box.Value = Value
-	EditBox.Box.Hook = hook
-	EditBox.Box.Parent = EditBox
-	EditBox.Box.Highlight = EditBox.Highlight
-
-	tinsert(self.Widgets, Anchor)
-
-	return EditBox
-end
-
-GUI.Widgets.CreateEditBox = CreateEditBox
-
--- Sliders
-local SliderHighlight = function(self, highlight)
-	self.Highlight:SetAlpha(highlight and WidgetHighlightAlpha or 0)
-end
-
-local SliderEditBoxOnEnter = function(self)
-	SliderHighlight(self, true)
-end
-
-local SliderEditBoxOnLeave = function(self)
-	SliderHighlight(self, false)
-end
-
-local SliderOnEnter = SliderEditBoxOnEnter
-local SliderOnLeave = SliderEditBoxOnLeave
-
-local function AdjustValue(value, step)
-	if step >= 1 then
-		return floor(value)
-	elseif step <= 0.01 then
-		return K.Round(value, 2)
-	else
-		return K.Round(value, 1)
-	end
-end
-
-local SliderOnValueChanged = function(self)
-	local Step = self.EditBox.StepValue
-	local Value = AdjustValue(self:GetValue(), self.EditBox.StepValue)
-
-	if Step >= 1 then
-		Value = floor(Value)
-	else
-		if Step <= 0.01 then
-			Value = K.Round(Value, 2)
+-- Sidebar Creation
+local function CreateSidebar(parent)
+	local sidebar = CreateFrame("Frame", nil, parent)
+	sidebar:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT)
+	sidebar:SetPoint("BOTTOMLEFT", 0, 0)
+	sidebar:SetWidth(SIDEBAR_WIDTH)
+
+	CreateColoredBackground(sidebar, SIDEBAR_COLOR[1], SIDEBAR_COLOR[2], SIDEBAR_COLOR[3], SIDEBAR_COLOR[4])
+
+	-- Create search box at top of sidebar
+	local searchBox = CreateSearchBox(sidebar)
+	GUI.SearchBox = searchBox -- Store reference for cleanup
+
+	-- Create scrollable area for categories
+	local categoryScrollFrame = CreateFrame("ScrollFrame", nil, sidebar)
+	categoryScrollFrame:SetPoint("TOPLEFT", 0, -55) -- Below search box
+	categoryScrollFrame:SetPoint("BOTTOMRIGHT", -5, 5) -- Leave room for scrollbar
+	categoryScrollFrame:EnableMouseWheel(true)
+
+	-- Add mouse wheel scrolling
+	categoryScrollFrame:SetScript("OnMouseWheel", function(self, delta)
+		local scrollStep = CATEGORY_HEIGHT + 2 -- Height of one category button plus spacing
+		local currentScroll = self:GetVerticalScroll()
+		local maxScroll = self:GetVerticalScrollRange()
+
+		if delta > 0 then
+			-- Scroll up
+			self:SetVerticalScroll(max(0, currentScroll - scrollStep))
 		else
-			Value = K.Round(Value, 1)
+			-- Scroll down
+			self:SetVerticalScroll(min(maxScroll, currentScroll + scrollStep))
 		end
-	end
-
-	self.EditBox.Value = Value
-	self.EditBox:SetText(Value)
-
-	SetValue(self.EditBox.Group, self.EditBox.Option, Value)
-
-	-- Play the sound after the user has stopped interacting with the slider for 0.2 seconds
-	if self.soundTimer then
-		self.soundTimer:Cancel()
-	end
-
-	self.soundTimer = C_Timer.NewTimer(0.2, function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
 
-	if self.Hook then
-		self.Hook(self.Value, self.Group)
-	end
+	local categoryScrollChild = CreateFrame("Frame", nil, categoryScrollFrame)
+	categoryScrollChild:SetWidth(SIDEBAR_WIDTH - 15) -- Account for scrollbar
+	categoryScrollFrame:SetScrollChild(categoryScrollChild)
+
+	GUI.Sidebar = sidebar
+	GUI.CategoryScrollFrame = categoryScrollFrame
+	GUI.CategoryScrollChild = categoryScrollChild
+	return sidebar
 end
 
-local SliderOnMouseWheel = function(self, delta)
-	local Step = self.EditBox.StepValue
-	local Value = AdjustValue(self.EditBox.Value + (delta < 0 and -Step or Step), Step)
+-- Content Area Creation
+local function CreateContent(parent)
+	local content = CreateFrame("Frame", nil, parent)
+	content:SetPoint("TOPRIGHT", 0, -HEADER_HEIGHT)
+	content:SetPoint("BOTTOMRIGHT", 0, 0)
+	content:SetPoint("TOPLEFT", SIDEBAR_WIDTH, -HEADER_HEIGHT)
 
-	if delta < 0 then
-		Value = Value - Step
-	else
-		Value = Value + Step
-	end
+	CreateColoredBackground(content, BG_COLOR[1], BG_COLOR[2], BG_COLOR[3], BG_COLOR[4])
 
-	if Step >= 1 then
-		Value = floor(Value)
-	else
-		if Step <= 0.01 then
-			Value = K.Round(Value, 2)
+	-- Create scroll frame for content
+	local scrollFrame = CreateFrame("ScrollFrame", nil, content)
+	scrollFrame:SetPoint("TOPLEFT", SPACING, -SPACING)
+	scrollFrame:SetPoint("BOTTOMRIGHT", -SPACING, SPACING)
+
+	-- Add mouse wheel scrolling
+	scrollFrame:EnableMouseWheel(true)
+	scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+		local scrollStep = 40
+		local currentScroll = self:GetVerticalScroll()
+		local maxScroll = self:GetVerticalScrollRange()
+
+		if delta > 0 then
+			-- Scroll up
+			self:SetVerticalScroll(max(0, currentScroll - scrollStep))
 		else
-			Value = K.Round(Value, 1)
+			-- Scroll down
+			self:SetVerticalScroll(min(maxScroll, currentScroll + scrollStep))
 		end
-	end
-
-	if Value < self.EditBox.MinValue then
-		Value = self.EditBox.MinValue
-	elseif Value > self.EditBox.MaxValue then
-		Value = self.EditBox.MaxValue
-	end
-
-	self.EditBox.Value = Value
-
-	self:SetValue(Value)
-	self.EditBox:SetText(Value)
-end
-
-local SliderEditBoxOnEnterPressed = function(self)
-	local value = tonumber(self:GetText())
-	if type(value) == "number" and value ~= self.Value then
-		self.Slider:SetValue(value)
-		SliderOnValueChanged(self.Slider)
-	end
-	self:ClearFocus()
-end
-
-local SliderEditBoxOnChar = function(self)
-	local value = tonumber(self:GetText())
-	if type(value) ~= "number" then
-		self:SetText(self.Value)
-	end
-end
-
-local SliderEditBoxOnMouseDown = function(self, button)
-	self:SetAutoFocus(button == "LeftButton")
-	if button == "RightButton" then
-		local defaultValue = K.Defaults[self.Group][self.Option]
-		self:SetText(defaultValue)
-		self.Slider:SetValue(defaultValue)
-		SliderOnValueChanged(self.Slider)
-	end
-end
-
-local SliderEditBoxOnEditFocusLost = function(self)
-	self:SetText(self.Value)
-end
-
-local SliderEditBoxOnMouseWheel = function(self, delta)
-	self:ClearFocus()
-	local change = (delta > 0 and 1 or -1) * self.StepValue
-	local newValue = math.max(self.MinValue, math.min(self.Value + change, self.MaxValue))
-	self:SetText(newValue)
-	self.Slider:SetValue(newValue)
-end
-
-local CreateSlider = function(self, group, option, text, minvalue, maxvalue, stepvalue, tooltip, hook)
-	local Value = C[group][option]
-
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
-	Anchor:SetScript("OnEnter", AnchorOnEnter)
-	Anchor:SetScript("OnLeave", AnchorOnLeave)
-	Anchor.Tooltip = tooltip
-
-	local EditBox = CreateFrame("Frame", nil, Anchor)
-	EditBox:SetPoint("LEFT", Anchor, 0, 0)
-	EditBox:SetSize(SliderEditBoxWidth, WidgetHeight)
-	EditBox:CreateBorder()
-
-	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
-	EditBox.Highlight:SetAllPoints()
-	EditBox.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	EditBox.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	EditBox.Highlight:SetAlpha(0)
-
-	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
-	EditBox.Box:SetFontObject(K.UIFont)
-	EditBox.Box:SetPoint("TOPLEFT", EditBox, 0, 0)
-	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, 0, 0)
-	EditBox.Box:SetJustifyH("CENTER")
-	EditBox.Box:SetMaxLetters(4)
-	EditBox.Box:SetAutoFocus(false)
-	EditBox.Box:EnableKeyboard(true)
-	EditBox.Box:EnableMouse(true)
-	EditBox.Box:EnableMouseWheel(true)
-	EditBox.Box:SetText(Value)
-	EditBox.Box:SetScript("OnMouseWheel", SliderEditBoxOnMouseWheel)
-	EditBox.Box:SetScript("OnMouseDown", SliderEditBoxOnMouseDown)
-	EditBox.Box:SetScript("OnEscapePressed", SliderEditBoxOnEnterPressed)
-	EditBox.Box:SetScript("OnEnterPressed", SliderEditBoxOnEnterPressed)
-	EditBox.Box:SetScript("OnEditFocusLost", SliderEditBoxOnEditFocusLost)
-	EditBox.Box:SetScript("OnChar", SliderEditBoxOnChar)
-	EditBox.Box:SetScript("OnEnter", SliderEditBoxOnEnter)
-	EditBox.Box:SetScript("OnLeave", SliderEditBoxOnLeave)
-	EditBox.Box.Group = group
-	EditBox.Box.Option = option
-	EditBox.Box.MinValue = minvalue
-	EditBox.Box.MaxValue = maxvalue
-	EditBox.Box.StepValue = stepvalue
-	EditBox.Box.Value = Value
-	EditBox.Box.Parent = EditBox
-	EditBox.Box.Highlight = EditBox.Highlight
-
-	local Slider = CreateFrame("Slider", nil, EditBox)
-	Slider:SetPoint("LEFT", EditBox, "RIGHT", Spacing, 0)
-	Slider:SetSize(SliderWidth, WidgetHeight)
-	Slider:SetThumbTexture(K.GetTexture(C["General"].Texture))
-	Slider:SetOrientation("HORIZONTAL")
-	Slider:SetValueStep(stepvalue)
-	Slider:CreateBorder()
-	Slider:SetMinMaxValues(minvalue, maxvalue)
-	Slider:SetValue(Value)
-	Slider:EnableMouseWheel(true)
-	Slider:SetScript("OnMouseWheel", SliderOnMouseWheel)
-	Slider:SetScript("OnValueChanged", SliderOnValueChanged)
-	Slider:SetScript("OnEnter", SliderOnEnter)
-	Slider:SetScript("OnLeave", SliderOnLeave)
-	Slider.EditBox = EditBox.Box
-	Slider.Hook = hook
-
-	Slider.Highlight = Slider:CreateTexture(nil, "OVERLAY")
-	Slider.Highlight:SetAllPoints()
-	Slider.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Slider.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Slider.Highlight:SetAlpha(0)
-
-	Slider.Label = Slider:CreateFontString(nil, "OVERLAY")
-	Slider.Label:SetPoint("LEFT", Slider, "RIGHT", LabelSpacing, 0)
-	Slider.Label:SetWidth(WidgetListWidth - (SliderWidth + SliderEditBoxWidth) - (Spacing * 5))
-	Slider.Label:SetJustifyH("LEFT")
-	Slider.Label:SetFontObject(K.UIFont)
-	Slider.Label:SetText(text)
-
-	local Thumb = Slider:GetThumbTexture()
-	Thumb:SetSize(8, WidgetHeight)
-	Thumb:SetTexture(K.GetTexture(C["General"].Texture))
-	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-
-	Thumb.Border = CreateFrame("Frame", nil, Slider)
-	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
-	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, { 123 / 255, 132 / 255, 137 / 255 })
-
-	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
-	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
-	Slider.Progress:SetPoint("BOTTOMRIGHT", Thumb, "BOTTOMLEFT", 0, 0)
-	Slider.Progress:SetTexture(K.GetTexture(C["General"].Texture))
-	Slider.Progress:SetVertexColor(R, G, B)
-
-	EditBox.Box.Slider = Slider
-
-	Slider:Show()
-
-	tinsert(self.Widgets, Anchor)
-
-	return EditBox
-end
-
-GUI.Widgets.CreateSlider = CreateSlider
-
--- Dropdown Menu
-local SetArrowUp = function(self)
-	self.ArrowDown.Fade:SetChange(0)
-	self.ArrowDown.Fade:SetEasing("out-sinusoidal")
-
-	self.ArrowUp.Fade:SetChange(1)
-	self.ArrowUp.Fade:SetEasing("in-sinusoidal")
-
-	self.ArrowDown.Fade:Play()
-	self.ArrowUp.Fade:Play()
-end
-
-local SetArrowDown = function(self)
-	self.ArrowUp.Fade:SetChange(0)
-	self.ArrowUp.Fade:SetEasing("out-sinusoidal")
-
-	self.ArrowDown.Fade:SetChange(1)
-	self.ArrowDown.Fade:SetEasing("in-sinusoidal")
-
-	self.ArrowUp.Fade:Play()
-	self.ArrowDown.Fade:Play()
-end
-
-local CloseLastDropdown = function(compare)
-	if LastActiveDropdown and LastActiveDropdown.Menu:IsShown() and (LastActiveDropdown ~= compare) then
-		if not LastActiveDropdown.Menu.FadeOut:IsPlaying() then
-			LastActiveDropdown.Menu.FadeOut:Play()
-			SetArrowDown(LastActiveDropdown)
-		end
-	end
-end
-
-local DropdownButtonOnMouseUp = function(self, button)
-	self.Parent.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
-
-	if button == "LeftButton" then
-		if self.Menu:IsVisible() then
-			self.Menu.FadeOut:Play()
-			SetArrowDown(self)
-		else
-			for i = 1, #self.Menu do
-				if self.Parent.Type then
-					if self.Menu[i].Key == self.Parent.Value then
-						self.Menu[i].Selected:Show()
-
-						if self.Parent.Type == "Texture" then
-							self.Menu[i].Selected:SetTexture(K.GetTexture(self.Parent.Value))
-						end
-					else
-						self.Menu[i].Selected:Hide()
-					end
-				else
-					if self.Menu[i].Value == self.Parent.Value then
-						self.Menu[i].Selected:Show()
-					else
-						self.Menu[i].Selected:Hide()
-					end
-				end
-			end
-
-			CloseLastDropdown(self)
-			self.Menu:Show()
-			self.Menu.FadeIn:Play()
-			SetArrowUp(self)
-		end
-
-		LastActiveDropdown = self
-	else
-		local Value = K.Defaults[self.Parent.Group][self.Parent.Option]
-
-		self.Parent.Value = Value
-
-		if self.Parent.Type == "Texture" then
-			if C["Media"].Statusbars[Value] then
-				self.Parent.Texture:SetTexture(K.GetTexture(Value))
-			elseif K.LibSharedMedia then
-				self.Parent.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", Value))
-			end
-		end
-
-		self.Parent.Current:SetText(self.Parent.Value)
-		SetValue(self.Parent.Group, self.Parent.Option, self.Parent.Value)
-	end
-end
-
-local DropdownButtonOnMouseDown = function(self)
-	local Red, Green, Blue = unpack(BrightColor)
-	self.Parent.Texture:SetVertexColor(Red * 0.85, Green * 0.85, Blue * 0.85)
-end
-
-local MenuItemOnMouseUp = function(self)
-	self.Parent.FadeOut:Play()
-	SetArrowDown(self.GrandParent.Button)
-
-	self.Highlight:SetAlpha(0)
-
-	if self.GrandParent.Type then
-		SetValue(self.Group, self.Option, self.Key)
-		self.GrandParent.Value = self.Key
-
-		if self.GrandParent.Type == "Texture" then
-			if C["Media"].Statusbars[self.Key] then
-				self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
-			elseif K.LibSharedMedia then
-				self.GrandParent.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", self.Key))
-			end
-		end
-	else
-		SetValue(self.Group, self.Option, self.Value)
-		self.GrandParent.Value = self.Value
-	end
-
-	if self.GrandParent.Hook then
-		self.GrandParent.Hook(self.Key, self.Group)
-	end
-
-	self.GrandParent.Current:SetText(self.Key)
-end
-
-local MenuItemOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
-
-local MenuItemOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
-end
-
-local DropdownButtonOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
-
-local DropdownButtonOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
-end
-
-local ScrollMenu = function(self)
-	local First = false
-
-	for i = 1, #self do
-		if (i >= self.Offset) and (i <= self.Offset + ListItemsToShow - 1) then
-			if not First then
-				self[i]:SetPoint("TOPLEFT", self, 3, -3)
-				First = true
-			else
-				self[i]:SetPoint("TOPLEFT", self[i - 1], "BOTTOMLEFT", 0, -6)
-			end
-
-			self[i]:Show()
-		else
-			self[i]:Hide()
-		end
-	end
-end
-
-local SetDropdownOffsetByDelta = function(self, delta)
-	if delta == 1 then -- up
-		self.Offset = self.Offset - 1
-
-		if self.Offset <= 1 then
-			self.Offset = 1
-		end
-	else -- down
-		self.Offset = self.Offset + 1
-
-		if self.Offset > (#self - (ListItemsToShow - 1)) then
-			self.Offset = self.Offset - 1
-		end
-	end
-end
-
-local DropdownOnMouseWheel = function(self, delta)
-	self:SetDropdownOffsetByDelta(delta)
-	self:ScrollMenu()
-	self.ScrollBar:SetValue(self.Offset)
-end
-
-local SetDropdownOffset = function(self, offset)
-	self.Offset = offset
-
-	if self.Offset <= 1 then
-		self.Offset = 1
-	elseif self.Offset > (#self - ListItemsToShow - 1) then
-		self.Offset = self.Offset - 1
-	end
-
-	self:ScrollMenu()
-end
-
-local DropdownScrollBarOnValueChanged = function(self)
-	local Value = K.Round(self:GetValue())
-	local Parent = self:GetParent()
-	parent.Offset = Value
-
-	parent:ScrollMenu()
-end
-
-local DropdownScrollBarOnMouseWheel = function(self, delta)
-	DropdownOnMouseWheel(self:GetParent(), delta)
-end
-
-local AddDropdownScrollBar = function(self)
-	local MaxValue = (#self - (ListItemsToShow - 1))
-	local Width = WidgetHeight / 2
-
-	local ScrollBar = CreateFrame("Slider", nil, self)
-	ScrollBar:SetPoint("TOPRIGHT", self, -Spacing, -Spacing)
-	ScrollBar:SetPoint("BOTTOMRIGHT", self, -Spacing, Spacing)
-	ScrollBar:SetWidth(Width)
-	ScrollBar:SetThumbTexture(K.GetTexture(C["General"].Texture))
-	ScrollBar:SetOrientation("VERTICAL")
-	ScrollBar:SetValueStep(1)
-	ScrollBar:CreateBorder()
-	ScrollBar:SetMinMaxValues(1, MaxValue)
-	ScrollBar:SetValue(1)
-	ScrollBar:EnableMouseWheel(true)
-	ScrollBar:SetScript("OnMouseWheel", DropdownScrollBarOnMouseWheel)
-	ScrollBar:SetScript("OnValueChanged", DropdownScrollBarOnValueChanged)
-
-	-- Ensure the scroll bar is always on top
-	ScrollBar:SetFrameLevel(self:GetFrameLevel() + 10)
-
-	self.ScrollBar = ScrollBar
-
-	local Thumb = ScrollBar:GetThumbTexture()
-	Thumb:SetSize(Width, WidgetHeight)
-	Thumb:SetTexture(K.GetTexture(C["General"].Texture))
-	Thumb:SetVertexColor(0, 0, 0)
-
-	ScrollBar.NewTexture = ScrollBar:CreateTexture(nil, "OVERLAY")
-	ScrollBar.NewTexture:SetPoint("TOPLEFT", Thumb, 0, 0)
-	ScrollBar.NewTexture:SetPoint("BOTTOMRIGHT", Thumb, 0, 0)
-	ScrollBar.NewTexture:SetTexture(K.GetTexture(C["General"].Texture))
-	ScrollBar.NewTexture:SetVertexColor(0, 0, 0)
-
-	ScrollBar.NewTexture2 = ScrollBar:CreateTexture(nil, "OVERLAY")
-	ScrollBar.NewTexture2:SetPoint("TOPLEFT", ScrollBar.NewTexture, 1, -1)
-	ScrollBar.NewTexture2:SetPoint("BOTTOMRIGHT", ScrollBar.NewTexture, -1, 1)
-	ScrollBar.NewTexture2:SetTexture(K.GetTexture(C["General"].Texture))
-	ScrollBar.NewTexture2:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
-
-	self:EnableMouseWheel(true)
-	self:SetScript("OnMouseWheel", DropdownOnMouseWheel)
-
-	self.ScrollMenu = ScrollMenu
-	self.SetDropdownOffset = SetDropdownOffset
-	self.SetDropdownOffsetByDelta = SetDropdownOffsetByDelta
-	self.ScrollBar = ScrollBar
-
-	self:SetDropdownOffset(1)
-
-	ScrollBar:Show()
-
-	for i = 1, #self do
-		self[i]:SetWidth((DropdownWidth - Width) - (Spacing * 3) + 2)
-	end
-
-	self:SetHeight(((WidgetHeight + 6) * ListItemsToShow) - 0)
-end
-
-local CreateDropdown = function(self, group, option, text, tooltip, custom, hook)
-	local Value
-	local Selections = {}
-
-	if custom then
-		Value = C[group][option]
-
-		if custom == "Texture" then
-			-- Start with your existing textures
-			for k, v in pairs(C["Media"].Statusbars) do
-				Selections[k] = v
-			end
-
-			-- Check if LibSharedMedia-3.0 is available
-			if K.LibSharedMedia then
-				-- Add textures from LibSharedMedia-3.0
-				local sharedMediaTextures = K.LibSharedMedia:List("statusbar")
-				for _, textureName in ipairs(sharedMediaTextures) do
-					Selections[textureName] = textureName
-				end
-			end
-		end
-	else
-		Value = C[group][option].Value
-		Selections = C[group][option].Options
-	end
-
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
-	Anchor:SetScript("OnEnter", AnchorOnEnter)
-	Anchor:SetScript("OnLeave", AnchorOnLeave)
-	Anchor.Tooltip = tooltip
-
-	local Dropdown = CreateFrame("Frame", nil, Anchor)
-	Dropdown:SetPoint("LEFT", Anchor, 0, 0)
-	Dropdown:SetSize(DropdownWidth, WidgetHeight)
-	Dropdown:CreateBorder()
-	Dropdown:SetFrameLevel(self:GetFrameLevel() + 4)
-	Dropdown.Values = Selections
-	Dropdown.Value = Value
-	Dropdown.Group = group
-	Dropdown.Option = option
-	Dropdown.Type = custom
-	Dropdown.Hook = hook
-
-	Dropdown.Texture = Dropdown:CreateTexture(nil, "ARTWORK")
-	Dropdown.Texture:SetAllPoints()
-	Dropdown.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
-
-	Dropdown.Button = CreateFrame("Frame", nil, Dropdown)
-	Dropdown.Button:SetSize(DropdownWidth, WidgetHeight)
-	Dropdown.Button:SetPoint("LEFT", Dropdown, 0, 0)
-	Dropdown.Button:SetScript("OnMouseUp", DropdownButtonOnMouseUp)
-	Dropdown.Button:SetScript("OnMouseDown", DropdownButtonOnMouseDown)
-	Dropdown.Button:SetScript("OnEnter", DropdownButtonOnEnter)
-	Dropdown.Button:SetScript("OnLeave", DropdownButtonOnLeave)
-
-	Dropdown.Button.Highlight = Dropdown:CreateTexture(nil, "ARTWORK")
-	Dropdown.Button.Highlight:SetAllPoints()
-	Dropdown.Button.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Dropdown.Button.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Dropdown.Button.Highlight:SetAlpha(0)
-
-	Dropdown.Current = Dropdown:CreateFontString(nil, "ARTWORK")
-	Dropdown.Current:SetPoint("LEFT", Dropdown, Spacing, 0)
-	Dropdown.Current:SetFontObject(K.UIFont)
-	Dropdown.Current:SetJustifyH("LEFT")
-	Dropdown.Current:SetWidth(DropdownWidth - 4)
-	Dropdown.Current:SetText(Value)
-
-	Dropdown.Label = Dropdown:CreateFontString(nil, "OVERLAY")
-	Dropdown.Label:SetPoint("LEFT", Dropdown, "RIGHT", LabelSpacing, 0)
-	Dropdown.Label:SetWidth(WidgetListWidth - DropdownWidth - (Spacing * 4))
-	Dropdown.Label:SetJustifyH("LEFT")
-	Dropdown.Label:SetFontObject(K.UIFont)
-	Dropdown.Label:SetJustifyH("LEFT")
-	Dropdown.Label:SetWidth(WidgetListWidth - DropdownWidth - (Spacing * 4))
-	Dropdown.Label:SetText(text)
-
-	Dropdown.ArrowAnchor = CreateFrame("Frame", nil, Dropdown)
-	Dropdown.ArrowAnchor:SetSize(WidgetHeight, WidgetHeight)
-	Dropdown.ArrowAnchor:SetPoint("RIGHT", Dropdown, 0, 0)
-
-	Dropdown.Button.ArrowDown = Dropdown.ArrowAnchor:CreateTexture(nil, "OVERLAY")
-	Dropdown.Button.ArrowDown:SetSize(16, 16)
-	Dropdown.Button.ArrowDown:SetPoint("CENTER", Dropdown.ArrowAnchor)
-	Dropdown.Button.ArrowDown:SetTexture(C["Media"].Textures.ArrowTexture)
-	Dropdown.Button.ArrowDown:SetRotation(rad(180))
-
-	Dropdown.Button.ArrowUp = Dropdown.ArrowAnchor:CreateTexture(nil, "OVERLAY")
-	Dropdown.Button.ArrowUp:SetSize(16, 16)
-	Dropdown.Button.ArrowUp:SetPoint("CENTER", Dropdown.ArrowAnchor)
-	Dropdown.Button.ArrowUp:SetTexture(C["Media"].Textures.ArrowTexture)
-	Dropdown.Button.ArrowUp:SetRotation(rad(0))
-	Dropdown.Button.ArrowUp:SetAlpha(0)
-
-	Dropdown.Button.ArrowDown.Fade = CreateAnimationGroup(Dropdown.Button.ArrowDown):CreateAnimation("Fade")
-	Dropdown.Button.ArrowDown.Fade:SetDuration(0.15)
-
-	Dropdown.Button.ArrowUp.Fade = CreateAnimationGroup(Dropdown.Button.ArrowUp):CreateAnimation("Fade")
-	Dropdown.Button.ArrowUp.Fade:SetDuration(0.15)
-
-	Dropdown.Menu = CreateFrame("Frame", nil, Dropdown)
-	Dropdown.Menu:SetPoint("TOP", Dropdown, "BOTTOM", 0, -6)
-	Dropdown.Menu:SetSize(DropdownWidth, 1)
-	Dropdown.Menu:CreateBorder()
-	Dropdown.Menu:SetFrameLevel(Dropdown.Menu:GetFrameLevel() + 2)
-	Dropdown.Menu:SetFrameStrata("DIALOG")
-	Dropdown.Menu:Hide()
-	Dropdown.Menu:SetAlpha(0)
-
-	Dropdown.Button.Menu = Dropdown.Menu
-	Dropdown.Button.Parent = Dropdown
-
-	Dropdown.Menu.Fade = CreateAnimationGroup(Dropdown.Menu)
-
-	Dropdown.Menu.FadeIn = Dropdown.Menu.Fade:CreateAnimation("Fade")
-	Dropdown.Menu.FadeIn:SetEasing("in-sinusoidal")
-	Dropdown.Menu.FadeIn:SetDuration(0.3)
-	Dropdown.Menu.FadeIn:SetChange(1)
-
-	Dropdown.Menu.FadeOut = Dropdown.Menu.Fade:CreateAnimation("Fade")
-	Dropdown.Menu.FadeOut:SetEasing("out-sinusoidal")
-	Dropdown.Menu.FadeOut:SetDuration(0.3)
-	Dropdown.Menu.FadeOut:SetChange(0)
-	Dropdown.Menu.FadeOut:SetScript("OnFinished", function(self)
-		self:GetParent():Hide()
 	end)
 
-	local Count = 0
-	local LastMenuItem
+	local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+	scrollChild:SetWidth(CONTENT_WIDTH)
+	scrollFrame:SetScrollChild(scrollChild)
 
-	for k, v in PairsByKeys(Selections) do
-		Count = Count + 1
+	GUI.Content = content
+	GUI.ScrollFrame = scrollFrame
+	GUI.ScrollChild = scrollChild
 
-		local MenuItem = CreateFrame("Frame", nil, Dropdown.Menu)
-		MenuItem:SetSize(DropdownWidth - 6, WidgetHeight)
-		MenuItem:CreateBorder()
-		MenuItem:SetScript("OnMouseUp", MenuItemOnMouseUp)
-		MenuItem:SetScript("OnEnter", MenuItemOnEnter)
-		MenuItem:SetScript("OnLeave", MenuItemOnLeave)
-		MenuItem.Key = k
-		MenuItem.Value = v
-		MenuItem.Group = group
-		MenuItem.Option = option
-		MenuItem.Parent = MenuItem:GetParent()
-		MenuItem.GrandParent = MenuItem:GetParent():GetParent()
-
-		MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
-		MenuItem.Highlight:SetAllPoints()
-		MenuItem.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-		MenuItem.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-		MenuItem.Highlight:SetAlpha(0)
-
-		MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
-		MenuItem.Texture:SetAllPoints()
-
-		MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
-		MenuItem.Selected:SetAllPoints()
-
-		if custom == "Texture" then
-			if C["Media"].Statusbars[k] then
-				MenuItem.Texture:SetTexture(K.GetTexture(k)) -- For existing textures
-				MenuItem.Selected:SetTexture(K.GetTexture(k)) -- For existing textures
-			elseif K.LibSharedMedia then
-				MenuItem.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", v)) -- For LibSharedMedia textures
-				MenuItem.Selected:SetTexture(K.LibSharedMedia:Fetch("statusbar", v)) -- For LibSharedMedia textures
-			end
-		else
-			MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
-			MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
-		end
-
-		MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
-		MenuItem.Selected:SetVertexColor(R, G, B)
-
-		MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
-		MenuItem.Text:SetPoint("LEFT", MenuItem, 5, 0)
-		MenuItem.Text:SetWidth((DropdownWidth + 3) - (Spacing * 2))
-		MenuItem.Text:SetFontObject(K.UIFont)
-		MenuItem.Text:SetJustifyH("LEFT")
-		MenuItem.Text:SetText(k)
-
-		if custom then
-			if MenuItem.Key == MenuItem.GrandParent.Value then
-				MenuItem.Selected:Show()
-				MenuItem.GrandParent.Current:SetText(k)
-			else
-				MenuItem.Selected:Hide()
-			end
-		else
-			if MenuItem.Value == MenuItem.GrandParent.Value then
-				MenuItem.Selected:Show()
-				MenuItem.GrandParent.Current:SetText(k)
-			else
-				MenuItem.Selected:Hide()
-			end
-		end
-
-		tinsert(Dropdown.Menu, MenuItem)
-
-		if LastMenuItem then
-			MenuItem:SetPoint("TOP", LastMenuItem, "BOTTOM", 0, -6)
-		else
-			MenuItem:SetPoint("TOP", Dropdown.Menu, 0, -3)
-		end
-
-		if Count > ListItemsToShow then
-			MenuItem:Hide()
-		end
-
-		LastMenuItem = MenuItem
-	end
-
-	if custom == "Texture" then
-		if C["Media"].Statusbars[Value] then
-			Dropdown.Texture:SetTexture(K.GetTexture(Value)) -- For custom textures
-		elseif K.LibSharedMedia then
-			Dropdown.Texture:SetTexture(K.LibSharedMedia:Fetch("statusbar", Value)) -- For LibSharedMedia textures
-		end
-	else
-		Dropdown.Texture:SetTexture(K.GetTexture(C["General"].Texture))
-	end
-
-	if #Dropdown.Menu > ListItemsToShow then
-		AddDropdownScrollBar(Dropdown.Menu)
-	else
-		Dropdown.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
-	end
-
-	-- Add Update method to refresh dropdown options
-	function Dropdown:Update()
-		-- Remove old menu items
-		for i = 1, #self.Menu do
-			self.Menu[i]:Hide()
-			self.Menu[i] = nil
-		end
-
-		-- Get the current options - handle both static and dynamic dropdowns
-		local Selections
-		if C[self.Group] and C[self.Group][self.Option] and C[self.Group][self.Option].Options then
-			Selections = C[self.Group][self.Option].Options
-		else
-			-- For dynamic dropdowns, we need to regenerate the options
-			if self.Group == "General" and self.Option == "DeleteProfiles" then
-				-- Call the function that populates DeleteProfiles
-				KKUI_LoadDeleteProfiles()
-				Selections = C[self.Group][self.Option].Options
-			elseif self.Group == "General" and self.Option == "Profiles" then
-				-- Call the function that populates Profiles
-				KKUI_LoadProfiles()
-				Selections = C[self.Group][self.Option].Options
-			end
-		end
-
-		if not Selections then
-			return -- No options to update
-		end
-
-		local Count = 0
-		local LastMenuItem
-
-		for k, v in PairsByKeys(Selections) do
-			Count = Count + 1
-
-			local MenuItem = CreateFrame("Frame", nil, self.Menu)
-			MenuItem:SetSize(DropdownWidth - 6, WidgetHeight)
-			MenuItem:CreateBorder()
-			MenuItem:SetScript("OnMouseUp", MenuItemOnMouseUp)
-			MenuItem:SetScript("OnEnter", MenuItemOnEnter)
-			MenuItem:SetScript("OnLeave", MenuItemOnLeave)
-			MenuItem.Key = k
-			MenuItem.Value = v
-			MenuItem.Group = self.Group
-			MenuItem.Option = self.Option
-			MenuItem.Parent = MenuItem:GetParent()
-			MenuItem.GrandParent = MenuItem:GetParent():GetParent()
-
-			MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
-			MenuItem.Highlight:SetAllPoints()
-			MenuItem.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-			MenuItem.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-			MenuItem.Highlight:SetAlpha(0)
-
-			MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
-			MenuItem.Texture:SetAllPoints()
-
-			MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
-			MenuItem.Selected:SetAllPoints()
-
-			MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
-			MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
-			MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
-			MenuItem.Selected:SetVertexColor(R, G, B)
-
-			MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
-			MenuItem.Text:SetPoint("LEFT", MenuItem, 5, 0)
-			MenuItem.Text:SetWidth((DropdownWidth + 3) - (Spacing * 2))
-			MenuItem.Text:SetFontObject(K.UIFont)
-			MenuItem.Text:SetJustifyH("LEFT")
-			MenuItem.Text:SetText(k)
-
-			if MenuItem.Value == self.Value then
-				MenuItem.Selected:Show()
-				self.Current:SetText(k)
-			else
-				MenuItem.Selected:Hide()
-			end
-
-			tinsert(self.Menu, MenuItem)
-
-			if LastMenuItem then
-				MenuItem:SetPoint("TOP", LastMenuItem, "BOTTOM", 0, -6)
-			else
-				MenuItem:SetPoint("TOP", self.Menu, 0, -3)
-			end
-
-			if Count > ListItemsToShow then
-				MenuItem:Hide()
-			end
-
-			LastMenuItem = MenuItem
-		end
-
-		if #self.Menu > ListItemsToShow then
-			AddDropdownScrollBar(self.Menu)
-		else
-			self.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
-		end
-	end
-
-	if self.Widgets then
-		tinsert(self.Widgets, Anchor)
-	end
-
-	return Dropdown
+	return content
 end
 
-GUI.Widgets.CreateDropdown = CreateDropdown
-
--- Color selection
-local ColorOnMouseUp = function(self, button)
-	local CPF = ColorPickerFrame
-
-	if CPF:IsShown() then
-		return
-	end
-
-	self:SetBackdropColor(BrightColor[1], BrightColor[2], BrightColor[3])
-
-	local CurrentR, CurrentG, CurrentB = unpack(self.Value)
-
-	if button == "LeftButton" then
-		local ShowColorPickerFrame = function(r, g, b, func, cancel)
-			HideUIPanel(CPF)
-			CPF.Button = self
-			CPF.swatchFunc = K.Noop
-
-			CPF.Content.ColorPicker:SetColorRGB(CurrentR, CurrentG, CurrentB)
-
-			CPF.Group = self.Group
-			CPF.Option = self.Option
-			CPF.OldR = CurrentR
-			CPF.OldG = CurrentG
-			CPF.OldB = CurrentB
-			CPF.previousValues = self.Value
-			CPF.func = func
-			CPF.opacityFunc = func
-			CPF.cancelFunc = cancel
-
-			ShowUIPanel(CPF)
-		end
-
-		local ColorPickerFunction = function(restore)
-			if restore ~= nil or self ~= CPF.Button then
-				return
-			end
-
-			local NewR, NewG, NewB = CPF:GetColorRGB()
-
-			NewR = K.Round(NewR, 3)
-			NewG = K.Round(NewG, 3)
-			NewB = K.Round(NewB, 3)
-
-			local NewValue = { NewR, NewG, NewB }
-
-			CPF.Button:GetParent().KKUI_Background:SetVertexColor(NewR, NewG, NewB)
-			CPF.Button.Value = NewValue
-
-			SetValue(CPF.Group, CPF.Option, NewValue)
-		end
-
-		ShowColorPickerFrame(CurrentR, CurrentG, CurrentB, ColorPickerFunction, ColorPickerFrameCancel)
-	else
-		local Value = K.Defaults[self.Group][self.Option]
-
-		self:GetParent().KKUI_Background:SetVertexColor(unpack(Value))
-		self.Value = Value
-
-		SetValue(self.Group, self.Option, Value)
-	end
-end
-
-local ColorOnMouseDown = function(self)
-	self.KKUI_Background:SetVertexColor(BGColor[1], BGColor[2], BGColor[3])
-end
-
-local ColorOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
-
-local ColorOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
-end
-
-local CreateColorSelection = function(self, group, option, text, tooltip)
-	local Value = C[group][option]
-	local CurrentR, CurrentG, CurrentB = unpack(Value)
-
-	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
-	Anchor:SetScript("OnEnter", AnchorOnEnter)
-	Anchor:SetScript("OnLeave", AnchorOnLeave)
-	Anchor.Tooltip = tooltip
-
-	local Swatch = CreateFrame("Frame", nil, Anchor)
-	Swatch:SetSize(WidgetHeight, WidgetHeight)
-	Swatch:SetPoint("LEFT", Anchor, 0, 0)
-	-- stylua: ignore
-	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, {CurrentR, CurrentG, CurrentB})
-
-	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
-	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)
-	Swatch.Select:SetPoint("LEFT", Swatch, "RIGHT", Spacing, 0)
-	Swatch.Select:CreateBorder()
-	Swatch.Select:SetScript("OnMouseDown", ColorOnMouseDown)
-	Swatch.Select:SetScript("OnMouseUp", ColorOnMouseUp)
-	Swatch.Select:SetScript("OnEnter", ColorOnEnter)
-	Swatch.Select:SetScript("OnLeave", ColorOnLeave)
-	Swatch.Select.Group = group
-	Swatch.Select.Option = option
-	Swatch.Select.Value = Value
-
-	Swatch.Select.Highlight = Swatch.Select:CreateTexture(nil, "OVERLAY")
-	Swatch.Select.Highlight:SetAllPoints()
-	Swatch.Select.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Swatch.Select.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Swatch.Select.Highlight:SetAlpha(0)
-
-	Swatch.Select.Label = Swatch.Select:CreateFontString(nil, "OVERLAY")
-	Swatch.Select.Label:SetPoint("CENTER", Swatch.Select, 0, 0)
-	Swatch.Select.Label:SetFontObject(K.UIFont)
-	Swatch.Select.Label:SetJustifyH("CENTER")
-	Swatch.Select.Label:SetWidth(ColorButtonWidth - 4)
-	Swatch.Select.Label:SetText("Select Color")
-
-	Swatch.Label = Swatch:CreateFontString(nil, "OVERLAY")
-	Swatch.Label:SetPoint("LEFT", Swatch.Select, "RIGHT", LabelSpacing, 0)
-	Swatch.Label:SetWidth(WidgetListWidth - (ColorButtonWidth + WidgetHeight) - (Spacing * 5))
-	Swatch.Label:SetJustifyH("LEFT")
-	Swatch.Label:SetFontObject(K.UIFont)
-	Swatch.Label:SetJustifyH("LEFT")
-	Swatch.Label:SetWidth(DropdownWidth - 4)
-	Swatch.Label:SetText(text)
-
-	tinsert(self.Widgets, Anchor)
-
-	return Swatch
-end
-
-GUI.Widgets.CreateColorSelection = CreateColorSelection
-
--- GUI functions
-GUI.AddWidgets = function(self, func)
-	if type(func) == "function" then
-		tinsert(self.Queue, func)
-	end
-end
-
-GUI.UnpackQueue = function(self)
-	while #self.Queue > 0 do
-		local functionToExecute = tremove(self.Queue, 1)
-		functionToExecute(self)
-	end
-end
-
-GUI.SortMenuButtons = function(self)
-	sort(self.Buttons, function(a, b)
-		return a.Name < b.Name
-	end)
-
-	for i, button in ipairs(self.Buttons) do
-		button:ClearAllPoints()
-
-		if i == 1 then
-			button:SetPoint("TOPLEFT", self.ButtonList, Spacing, -Spacing)
-		else
-			button:SetPoint("TOP", self.Buttons[i - 1], "BOTTOM", 0, -(Spacing - 1))
-		end
-	end
-end
-
-local SortWidgets = function(self)
-	for i, widget in ipairs(self.Widgets) do
-		widget:ClearAllPoints()
-
-		if i == 1 then
-			widget:SetPoint("TOPLEFT", self, Spacing, -Spacing)
-		else
-			widget:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
-		end
-	end
-
-	self.Sorted = true
-end
-
-local Scroll = function(self)
-	local firstWidgetSet = false
-	local parentWindowCount = self:GetParent().WindowCount - 1
-
-	for i = 1, #self.Widgets do
-		local widget = self.Widgets[i]
-		local inRange = (i >= self.Offset) and (i <= self.Offset + parentWindowCount)
-
-		if inRange then
-			if not firstWidgetSet then
-				widget:SetPoint("TOPLEFT", self, Spacing, -Spacing)
-				firstWidgetSet = true
-			else
-				widget:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
-			end
-			widget:Show()
-		else
-			widget:Hide()
-		end
-	end
-end
-
-local SetOffsetByDelta = function(self, delta)
-	local maxOffset = #self.Widgets - (self:GetParent().WindowCount - 1)
-
-	if delta == 1 then -- up
-		self.Offset = math.max(self.Offset - 1, 1)
-	else -- down
-		self.Offset = math.min(self.Offset + 1, maxOffset)
-	end
-end
-
-local WindowOnMouseWheel = function(self, delta)
-	self:SetOffsetByDelta(delta)
-	self:Scroll()
-	self.ScrollBar:SetValue(self.Offset)
-end
-
-local SetOffset = function(self, offset)
-	local maxOffset = #self.Widgets - self:GetParent().WindowCount - 1
-	self.Offset = math.max(1, math.min(offset, maxOffset))
-
-	self:Scroll()
-end
-
-local WindowScrollBarOnValueChanged = function(self)
-	local value = K.Round(self:GetValue())
-	local parent = self:GetParent()
-	parent.Offset = value
-
-	parent:Scroll()
-end
-
-local WindowScrollBarOnMouseWheel = function(self, delta)
-	WindowOnMouseWheel(self:GetParent(), delta)
-end
-
-local AddScrollBar = function(self)
-	local MaxValue = (#self.Widgets - (self:GetParent().WindowCount - 1))
-
-	-- Store texture in a local variable to avoid redundant calls
-	local texture = K.GetTexture(C["General"].Texture)
-
-	local ScrollBar = CreateFrame("Slider", nil, self)
-	ScrollBar:SetPoint("TOPRIGHT", self, -Spacing, -Spacing)
-	ScrollBar:SetPoint("BOTTOMRIGHT", self, -Spacing, Spacing)
-	ScrollBar:SetWidth(WidgetHeight)
-	ScrollBar:SetThumbTexture(texture)
-	ScrollBar:SetOrientation("VERTICAL")
-	ScrollBar:SetValueStep(1)
-	ScrollBar:CreateBorder()
-	ScrollBar:SetMinMaxValues(1, MaxValue)
-	ScrollBar:SetValue(1)
-	ScrollBar:EnableMouseWheel(true)
-	ScrollBar:SetScript("OnMouseWheel", WindowScrollBarOnMouseWheel)
-	ScrollBar:SetScript("OnValueChanged", WindowScrollBarOnValueChanged)
-
-	-- Ensure the scroll bar is always on top
-	ScrollBar:SetFrameLevel(self:GetFrameLevel() + 10)
-
-	ScrollBar.Window = self
-
-	local Thumb = ScrollBar:GetThumbTexture()
-	Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Thumb:SetTexture(texture)
-	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-
-	self:EnableMouseWheel(true)
-	self:SetScript("OnMouseWheel", WindowOnMouseWheel)
-
-	self.Scroll = Scroll
-	self.SetOffset = SetOffset
-	self.SetOffsetByDelta = SetOffsetByDelta
-	self.ScrollBar = ScrollBar
-
-	self:SetOffset(1)
-
-	ScrollBar:Show()
-
-	-- Optimize the loop by pre-calculating the width
-	local sectionWidth = (WidgetListWidth - WidgetHeight) - (Spacing * 3)
-	for i = 1, #self.Widgets do
-		local widget = self.Widgets[i]
-		if widget.IsSection then
-			widget:SetWidth(sectionWidth)
-		end
-	end
-end
-
-GUI.DisplayWindow = function(self, name)
-	if _G.KKUI_Credits and _G.KKUI_Credits:IsShown() then
-		_G.KKUI_Credits:Hide()
-		_G.KKUI_Credits.Move:Stop()
-
-		local Window = GUI:GetWindow(LastActiveWindow)
-
-		Window:Show()
-		Window.Button.Selected:Show()
-
-		return
-	end
-
-	for WindowName, Window in pairs(self.Windows) do
-		if WindowName ~= name then
-			Window:Hide()
-
-			if Window.Button.Selected:IsShown() then
-				Window.Button.Selected:Hide()
-			end
-		else
-			if not Window.Sorted then
-				SortWidgets(Window)
-
-				if #Window.Widgets > self.WindowCount then
-					AddScrollBar(Window)
-				end
-			end
-
-			Window:Show()
-			Window.Button.Selected:Show()
-
-			LastActiveWindow = WindowName
-		end
-	end
-
-	CloseLastDropdown()
-end
-
-local MenuButtonOnMouseUp = function(self)
-	self.Parent:DisplayWindow(self.Name)
-end
-
-local MenuButtonOnEnter = function(self)
-	self.Highlight:Show()
-end
-
-local MenuButtonOnLeave = function(self)
-	self.Highlight:Hide()
-end
-
-GUI.CreateWindow = function(self, name, default)
-	if self.Windows[name] then
-		return
-	end
-
-	self.WindowCount = self.WindowCount or 0
-
-	local Button = CreateFrame("Frame", nil, self.ButtonList)
-	Button:SetSize(MenuButtonWidth, MenuButtonHeight)
-	Button:CreateBorder()
-	Button:SetScript("OnMouseUp", MenuButtonOnMouseUp)
-	Button:SetScript("OnEnter", MenuButtonOnEnter)
-	Button:SetScript("OnLeave", MenuButtonOnLeave)
-	Button.Name = name
-	Button.Parent = self
-
-	Button.Highlight = Button:CreateTexture(nil, "OVERLAY")
-	Button.Highlight:SetAllPoints()
-	Button.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Button.Highlight:SetVertexColor(R, G, B, 0.3)
-	Button.Highlight:Hide()
-
-	Button.Selected = Button:CreateTexture(nil, "OVERLAY")
-	Button.Selected:SetPoint("TOPLEFT", Button, 1, -1)
-	Button.Selected:SetPoint("BOTTOMRIGHT", Button, -1, 1)
-	Button.Selected:SetTexture(K.GetTexture(C["General"].Texture))
-	Button.Selected:SetVertexColor(R * 0.7, G * 0.7, B * 0.7, 0.5)
-	Button.Selected:Hide()
-
-	Button.Label = Button:CreateFontString(nil, "OVERLAY")
-	Button.Label:SetPoint("CENTER", Button, 0, 0)
-	Button.Label:SetWidth(MenuButtonWidth - (Spacing * 2))
-	Button.Label:SetFontObject(K.UIFont)
-	Button.Label:SetText(name)
-
-	tinsert(self.Buttons, Button)
-
-	local Window = CreateFrame("Frame", nil, self)
-	Window:SetWidth(WidgetListWidth)
-	Window:SetPoint("TOPRIGHT", self.Header, "BOTTOMRIGHT", 0, -(Spacing - 1))
-	Window:SetPoint("BOTTOMRIGHT", self.Footer, "TOPRIGHT", 0, (Spacing - 1))
-	Window:CreateBorder()
-	Window.Button = Button
-	Window.Widgets = {}
-	Window.Offset = 0
-	Window:Hide()
-
-	self.Windows[name] = Window
-
-	for key, func in pairs(self.Widgets) do
-		Window[key] = func
-	end
-
-	if default then
-		self.DefaultWindow = name
-	end
-
-	self.WindowCount = self.WindowCount + 1
-
-	return Window
-end
-
-GUI.GetWindow = function(self, name)
-	if self.Windows[name] then
-		return self.Windows[name]
-	else
-		return self.Windows[self.DefaultWindow]
-	end
-end
-
-local CloseOnEnter = function(self)
-	self.Texture:SetVertexColor(1, 0.2, 0.2)
-end
-
-local CloseOnLeave = function(self)
-	self.Texture:SetVertexColor(1, 1, 1)
-end
-
-local CloseOnMouseUp = function()
-	GUI:Toggle()
-end
-
-local CreditLineHeight = 20
-
--- Function to set up credits
-local function SetUpCredits(frame)
-	frame.Lines = {}
-
-	for i, entry in ipairs(CreditLines) do
-		local Line = CreateFrame("Frame", nil, frame)
-		Line:SetSize(frame:GetWidth(), CreditLineHeight)
-
-		Line.Text = Line:CreateFontString(nil, "OVERLAY")
-		Line.Text:SetPoint("CENTER", Line, 0, 0)
-		Line.Text:SetFontObject(K.UIFont)
-		Line.Text:SetFont(select(1, Line.Text:GetFont()), 16, select(3, Line.Text:GetFont()))
-		Line.Text:SetJustifyH("CENTER")
-
-		if entry.type == "header" then
-			Line.Text:SetText(entry.text)
-			if entry.color then
-				Line.Text:SetTextColor(tonumber(entry.color:sub(1, 2), 16) / 255, tonumber(entry.color:sub(3, 4), 16) / 255, tonumber(entry.color:sub(5, 6), 16) / 255)
-			end
-		elseif entry.type == "name" then
-			if entry.class then
-				local classIconAndColor = K.GetClassIconAndColor(entry.class, 14)
-				Line.Text:SetText(classIconAndColor .. entry.text)
-			elseif entry.color then
-				Line.Text:SetTextColor(tonumber(entry.color:sub(1, 2), 16) / 255, tonumber(entry.color:sub(3, 4), 16) / 255, tonumber(entry.color:sub(5, 6), 16) / 255)
-				Line.Text:SetText(entry.text)
-			else
-				Line.Text:SetText(entry.text)
-			end
-		end
-
-		if i == 1 then
-			Line:SetPoint("TOP", frame, 0, -1)
-		else
-			Line:SetPoint("TOP", frame.Lines[i - 1], "BOTTOM", 0, 0)
-		end
-
-		table.insert(frame.Lines, Line)
-	end
-
-	frame:SetHeight(#frame.Lines * CreditLineHeight)
-end
-
--- Function to show the credit frame
-local function ShowCreditFrame()
-	local Window = GUI:GetWindow(LastActiveWindow)
-
-	Window:Hide()
-
-	_G.KKUI_Credits:Show()
-	_G.KKUI_Credits.Move:Play()
-end
-
--- Function to hide the credit frame
-local function HideCreditFrame()
-	_G.KKUI_Credits:Hide()
-	_G.KKUI_Credits.Move:Stop()
-
-	local Window = GUI:GetWindow(LastActiveWindow)
-
-	Window:Show()
-	Window.Button.Selected:Show()
-end
-
--- Function to toggle the credit frame
-local function ToggleCreditsFrame()
-	if _G.KKUI_Credits:IsShown() then
-		HideCreditFrame()
-	else
-		ShowCreditFrame()
-	end
-end
-
-local function CreateContactEditBox(parent, width, height)
-	local eb = CreateFrame("EditBox", nil, parent)
-	eb:SetSize(width, height)
-	eb:SetAutoFocus(false)
-	eb:SetTextInsets(5, 5, 0, 0)
-	eb:SetFontObject(K.UIFont)
-
-	eb.bg = CreateFrame("Frame", nil, eb)
-	eb.bg:SetAllPoints()
-	eb.bg:SetFrameLevel(eb:GetFrameLevel())
-	eb.bg:CreateBorder()
-
-	eb:SetScript("OnEscapePressed", function(self)
-		self:ClearFocus()
-	end)
-
-	eb:SetScript("OnEnterPressed", function(self)
-		self:ClearFocus()
-	end)
-
-	eb.Type = "EditBox"
-	return eb
-end
-
-local CreateContactBox = function(parent, text, url, index)
-	K.CreateFontString(parent, 14, text, "", "system", "TOP", 0, -50 - (index - 1) * 60)
-	local box = CreateContactEditBox(parent, 250, 24)
-	box:SetPoint("TOP", 0, -70 - (index - 1) * 60)
-	box.url = url
-	box:SetText(box.url)
-	box:HighlightText()
-
-	box:SetScript("OnTextChanged", function(self)
-		self:SetText(self.url)
-		self:HighlightText()
-	end)
-
-	box:SetScript("OnCursorChanged", function(self)
-		self:SetText(self.url)
-		self:HighlightText()
-	end)
-end
-
-local AddContactFrame = function()
-	if GUI.ContactFrame then
-		GUI.ContactFrame:Show()
-		return
-	end
-
-	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(300, 390)
+-- Main GUI Creation
+local function CreateMainFrame()
+	local frame = CreateFrame("Frame", "KkthnxUI_NewGUI", UIParent)
+	frame:SetSize(PANEL_WIDTH, PANEL_HEIGHT)
 	frame:SetPoint("CENTER")
-	frame:CreateBorder()
+	frame:EnableMouse(true)
+	frame:SetMovable(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:SetScript("OnDragStart", frame.StartMoving)
+	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+	frame:SetFrameStrata("HIGH")
+	frame:SetFrameLevel(100)
+	frame:Hide()
 
-	local frameLogo = frame:CreateTexture(nil, "OVERLAY")
-	frameLogo:SetSize(512, 256)
-	frameLogo:SetBlendMode("ADD")
-	frameLogo:SetAlpha(0.07)
-	frameLogo:SetTexture(C["Media"].Textures.LogoTexture)
-	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
+	-- Modern background with subtle shadow effect
+	local mainBg = frame:CreateTexture(nil, "BACKGROUND")
+	mainBg:SetAllPoints()
+	mainBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	mainBg:SetVertexColor(0.08, 0.08, 0.08, 0.95)
 
-	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)
-	local ll = CreateFrame("Frame", nil, frame)
-	ll:SetPoint("TOP", -40, -32)
-	K.CreateGF(ll, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
-	ll:SetFrameStrata("HIGH")
-	local lr = CreateFrame("Frame", nil, frame)
-	lr:SetPoint("TOP", 40, -32)
-	K.CreateGF(lr, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
-	lr:SetFrameStrata("HIGH")
+	-- Subtle shadow effect
+	local shadow = CreateFrame("Frame", nil, frame)
+	shadow:SetPoint("TOPLEFT", -8, 8)
+	shadow:SetPoint("BOTTOMRIGHT", 8, -8)
+	shadow:SetFrameLevel(frame:GetFrameLevel() - 1)
+	local shadowTexture = shadow:CreateTexture(nil, "BACKGROUND")
+	shadowTexture:SetAllPoints()
+	shadowTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+	shadowTexture:SetVertexColor(0, 0, 0, 0.4)
 
-	CreateContactBox(frame, "|CFFee653aCurse|r", "https://www.curseforge.com/members/kkthnxtv", 1)
-	CreateContactBox(frame, "|CFF666aa7WowInterface|r", "https://www.wowinterface.com/forums/member.php?action=getinfo&userid=303422", 2)
-	CreateContactBox(frame, "|CFFf6f8faGitHub|r", "https://github.com/Kkthnx-Wow/KkthnxUI", 3)
-	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/Rc9wcK9cAB", 4)
-	CreateContactBox(frame, "|CFF6441A4Twitch|r", "https://www.twitch.tv/kkthnxtv", 5)
+	-- Title Bar
+	local titleBar = CreateFrame("Frame", nil, frame)
+	titleBar:SetPoint("TOPLEFT", 0, 0)
+	titleBar:SetPoint("TOPRIGHT", 0, 0)
+	titleBar:SetHeight(HEADER_HEIGHT)
 
-	local back = CreateFrame("Button", nil, frame)
-	back:SetSize(120, 20)
-	back:SetPoint("BOTTOM", 0, 15)
-	back:SkinButton()
-	back.text = K.CreateFontString(back, 12, OKAY, "", true)
-	back:SetScript("OnClick", function()
-		frame:Hide()
-		if not GUI:IsShown() then -- Show our GUI again after they click the okay button (If our GUI isn't shown again by that time)
-			GUI:Toggle()
-		end
+	CreateColoredBackground(titleBar, ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3])
+
+	local title = titleBar:CreateFontString(nil, "OVERLAY")
+	title:SetFontObject(K.UIFont)
+	title:SetTextColor(1, 1, 1, 1)
+	title:SetText(format("%s %s - %s", K.Title, K.Version, "Configuration"))
+	title:SetPoint("LEFT", 15, 0)
+
+	-- Close Button
+	local closeButton = CreateFrame("Button", nil, titleBar)
+	closeButton:SetSize(32, 32)
+	closeButton:SetPoint("RIGHT", -4, 0)
+
+	local closeBg = closeButton:CreateTexture(nil, "BACKGROUND")
+	closeBg:SetAllPoints()
+	closeBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	closeBg:SetVertexColor(0, 0, 0, 0)
+
+	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
+	closeButton.Icon:SetSize(16, 16)
+	closeButton.Icon:SetPoint("CENTER")
+	closeButton.Icon:SetAtlas("uitools-icon-close")
+	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
+
+	closeButton:SetScript("OnClick", function()
+		GUI:Hide()
 	end)
 
-	GUI.ContactFrame = frame
-end
-
-GUI.Enable = function(self)
-	if self.Created then
-		return
-	end
-
-	-- Main Window
-	self:SetFrameStrata("DIALOG")
-	self:SetWidth(WindowWidth)
-	self:SetPoint("CENTER", UIParent, 0, 0)
-	self:SetAlpha(0)
-	K.CreateMoverFrame(self)
-	self:Hide()
-
-	-- Animation
-	self.Fade = CreateAnimationGroup(self)
-
-	self.FadeIn = self.Fade:CreateAnimation("Fade")
-	self.FadeIn:SetDuration(0.2)
-	self.FadeIn:SetChange(1)
-	self.FadeIn:SetEasing("in-sinusoidal")
-
-	self.FadeOut = self.Fade:CreateAnimation("Fade")
-	self.FadeOut:SetDuration(0.2)
-	self.FadeOut:SetChange(0)
-	self.FadeOut:SetEasing("out-sinusoidal")
-	self.FadeOut:SetScript("OnFinished", function(self)
-		self:GetParent():Hide()
-
-		if _G.KKUI_Credits:IsShown() then
-			HideCreditFrame()
-		end
+	closeButton:SetScript("OnEnter", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 1)
+		closeBg:SetVertexColor(1, 0.2, 0.2, 0.3)
 	end)
 
-	-- Header
-	self.Header = CreateFrame("Frame", nil, self)
-	self.Header:SetFrameStrata("DIALOG")
-	self.Header:SetSize(HeaderWidth, HeaderHeight)
-	self.Header:SetPoint("TOP", self, 0, -Spacing)
-	self.Header:CreateBorder()
-
-	self.Header.Label = self.Header:CreateFontString(nil, "OVERLAY")
-	self.Header.Label:SetPoint("CENTER", self.Header, 0, 0)
-	self.Header.Label:SetFontObject(K.UIFont)
-	self.Header.Label:SetFont(select(1, self.Header.Label:GetFont()), 16, select(3, self.Header.Label:GetFont()))
-	self.Header.Label:SetText(HeaderText)
-
-	-- Footer
-	self.Footer = CreateFrame("Frame", nil, self)
-	self.Footer:SetFrameStrata("DIALOG")
-	self.Footer:SetSize(HeaderWidth, HeaderHeight)
-	self.Footer:SetPoint("BOTTOM", self, 0, Spacing)
-
-	local FooterButtonWidth = ((HeaderWidth / 4) - Spacing) + 1
-
-	-- Apply button
-	local Apply = CreateFrame("Frame", nil, self.Footer)
-	Apply:SetSize(FooterButtonWidth + 3, HeaderHeight)
-	Apply:SetPoint("LEFT", self.Footer, 0, 0)
-	Apply:CreateBorder()
-	Apply:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Apply:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Apply:SetScript("OnEnter", ButtonOnEnter)
-	Apply:SetScript("OnLeave", ButtonOnLeave)
-	Apply:HookScript("OnMouseUp", function()
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-			return
-		end
-
-		if GUI:IsShown() then
-			GUI:Toggle()
-		end
-
-		StaticPopup_Show("KKUI_CHANGES_RELOAD")
+	closeButton:SetScript("OnLeave", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 0.8)
+		closeBg:SetVertexColor(0, 0, 0, 0)
 	end)
 
-	Apply.Highlight = Apply:CreateTexture(nil, "OVERLAY")
-	Apply.Highlight:SetAllPoints()
-	Apply.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Apply.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Apply.Highlight:SetAlpha(0)
+	-- Profile Manager Button
+	local profileButton = CreateFrame("Button", nil, titleBar)
+	profileButton:SetSize(32, 32)
+	profileButton:SetPoint("RIGHT", closeButton, "LEFT", -4, 0)
 
-	Apply.Middle = Apply:CreateFontString(nil, "OVERLAY")
-	Apply.Middle:SetPoint("CENTER", Apply, 0, 0)
-	Apply.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	Apply.Middle:SetFontObject(K.UIFont)
-	Apply.Middle:SetJustifyH("CENTER")
-	Apply.Middle:SetText("|CFF00CC4CApply|r")
+	local profileBg = profileButton:CreateTexture(nil, "BACKGROUND")
+	profileBg:SetAllPoints()
+	profileBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	profileBg:SetVertexColor(0, 0, 0, 0)
 
-	-- Reset button
-	local Reset = CreateFrame("Frame", nil, self.Footer)
-	Reset:SetSize(FooterButtonWidth - 1, HeaderHeight)
-	Reset:SetPoint("LEFT", Apply, "RIGHT", (Spacing - 1), 0)
-	Reset:CreateBorder()
-	Reset:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Reset:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Reset:SetScript("OnEnter", ButtonOnEnter)
-	Reset:SetScript("OnLeave", ButtonOnLeave)
-	Reset:HookScript("OnMouseUp", function()
-		_G.StaticPopup_Show("KKUI_RESET_DATA")
-	end)
+	profileButton.Icon = profileButton:CreateTexture(nil, "ARTWORK")
+	profileButton.Icon:SetSize(16, 16)
+	profileButton.Icon:SetPoint("CENTER")
+	profileButton.Icon:SetAtlas("communities-icon-addchannelplus")
+	profileButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
-	Reset.Highlight = Reset:CreateTexture(nil, "OVERLAY")
-	Reset.Highlight:SetAllPoints()
-	Reset.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Reset.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Reset.Highlight:SetAlpha(0)
-
-	Reset.Middle = Reset:CreateFontString(nil, "OVERLAY")
-	Reset.Middle:SetPoint("CENTER", Reset, 0, 0)
-	Reset.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	Reset.Middle:SetFontObject(K.UIFont)
-	Reset.Middle:SetJustifyH("CENTER")
-	Reset.Middle:SetText(K.SystemColor .. "Reset UI|r")
-
-	-- Move button
-	local Move = CreateFrame("Frame", nil, self.Footer)
-	Move:SetSize(FooterButtonWidth + 1, HeaderHeight)
-	Move:SetPoint("LEFT", Reset, "RIGHT", (Spacing - 1), 0)
-	Move:CreateBorder()
-	Move:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Move:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Move:SetScript("OnEnter", ButtonOnEnter)
-	Move:SetScript("OnLeave", ButtonOnLeave)
-	Move:HookScript("OnMouseUp", function(self)
-		self.state = not self.state
-		if self.state then
-			SlashCmdList["KKUI_MOVEUI"]()
+	profileButton:SetScript("OnClick", function()
+		if K.ProfileGUI then
+			K.ProfileGUI:Toggle()
 		else
-			SlashCmdList["KKUI_LOCKUI"]()
+			print("|cff669DFFKkthnxUI:|r ProfileGUI system not available.")
 		end
 	end)
 
-	Move.Highlight = Move:CreateTexture(nil, "OVERLAY")
-	Move.Highlight:SetAllPoints()
-	Move.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Move.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Move.Highlight:SetAlpha(0)
+	profileButton:SetScript("OnEnter", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 1)
+		profileBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
 
-	Move.Middle = Move:CreateFontString(nil, "OVERLAY")
-	Move.Middle:SetPoint("CENTER", Move, 0, 0)
-	Move.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	Move.Middle:SetFontObject(K.UIFont)
-	Move.Middle:SetJustifyH("CENTER")
-	Move.Middle:SetText(K.SystemColor .. "Toggle UI|r")
-
-	-- Credits button
-	local Credits = CreateFrame("Frame", nil, self.Footer)
-	Credits:SetSize(FooterButtonWidth + 2, HeaderHeight)
-	Credits:SetPoint("LEFT", Move, "RIGHT", (Spacing - 1), 0)
-	Credits:CreateBorder()
-	Credits:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Credits:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Credits:SetScript("OnEnter", ButtonOnEnter)
-	Credits:SetScript("OnLeave", ButtonOnLeave)
-	Credits:HookScript("OnMouseUp", ToggleCreditsFrame)
-
-	Credits.Highlight = Credits:CreateTexture(nil, "OVERLAY")
-	Credits.Highlight:SetAllPoints()
-	Credits.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Credits.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Credits.Highlight:SetAlpha(0)
-
-	Credits.Middle = Credits:CreateFontString(nil, "OVERLAY")
-	Credits.Middle:SetPoint("CENTER", Credits, 0, 0)
-	Credits.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	Credits.Middle:SetFontObject(K.UIFont)
-	Credits.Middle:SetJustifyH("CENTER")
-	Credits.Middle:SetText(K.InfoColor .. "Credits|r")
-
-	-- CVars button
-	local ResetCVars = CreateFrame("Frame", nil, self.Footer)
-	ResetCVars:SetSize(FooterButtonWidth + 3, HeaderHeight)
-	ResetCVars:SetPoint("LEFT", Apply, 0, -28)
-	ResetCVars:CreateBorder()
-	ResetCVars:SetScript("OnMouseDown", ButtonOnMouseDown)
-	ResetCVars:SetScript("OnMouseUp", ButtonOnMouseUp)
-	ResetCVars:SetScript("OnEnter", ButtonOnEnter)
-	ResetCVars:SetScript("OnLeave", ButtonOnLeave)
-	ResetCVars:HookScript("OnMouseUp", function()
-		_G.StaticPopup_Show("KKUI_RESET_CVARS")
+		-- Show tooltip
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+		GameTooltip:SetText("Profile Manager", 1, 1, 1, 1, true)
+		GameTooltip:AddLine("Advanced profile management system", 0.7, 0.7, 0.7)
+		GameTooltip:AddLine("Click to open profile manager", 0.5, 0.8, 1)
+		GameTooltip:Show()
 	end)
 
-	ResetCVars.Highlight = ResetCVars:CreateTexture(nil, "OVERLAY")
-	ResetCVars.Highlight:SetAllPoints()
-	ResetCVars.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	ResetCVars.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	ResetCVars.Highlight:SetAlpha(0)
-
-	ResetCVars.Middle = ResetCVars:CreateFontString(nil, "OVERLAY")
-	ResetCVars.Middle:SetPoint("CENTER", ResetCVars, 0, 0)
-	ResetCVars.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	ResetCVars.Middle:SetFontObject(K.UIFont)
-	ResetCVars.Middle:SetJustifyH("CENTER")
-	ResetCVars.Middle:SetText(K.SystemColor .. "Reset CVars|r")
-
-	-- Chat Button
-	local ResetChat = CreateFrame("Frame", nil, self.Footer)
-	ResetChat:SetSize(FooterButtonWidth - 1, HeaderHeight)
-	ResetChat:SetPoint("LEFT", Reset, 0, -28)
-	ResetChat:CreateBorder()
-	ResetChat:SetScript("OnMouseDown", ButtonOnMouseDown)
-	ResetChat:SetScript("OnMouseUp", ButtonOnMouseUp)
-	ResetChat:SetScript("OnEnter", ButtonOnEnter)
-	ResetChat:SetScript("OnLeave", ButtonOnLeave)
-	ResetChat:HookScript("OnMouseUp", function()
-		_G.StaticPopup_Show("KKUI_RESET_CHAT")
+	profileButton:SetScript("OnLeave", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 0.8)
+		profileBg:SetVertexColor(0, 0, 0, 0)
+		GameTooltip:Hide()
 	end)
 
-	ResetChat.Highlight = ResetChat:CreateTexture(nil, "OVERLAY")
-	ResetChat.Highlight:SetAllPoints()
-	ResetChat.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	ResetChat.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	ResetChat.Highlight:SetAlpha(0)
+	-- Create Sidebar
+	CreateSidebar(frame)
 
-	ResetChat.Middle = ResetChat:CreateFontString(nil, "OVERLAY")
-	ResetChat.Middle:SetPoint("CENTER", ResetChat, 0, 0)
-	ResetChat.Middle:SetWidth(FooterButtonWidth - Spacing)
-	ResetChat.Middle:SetFontObject(K.UIFont)
-	ResetChat.Middle:SetJustifyH("CENTER")
-	ResetChat.Middle:SetText(K.SystemColor .. "Reset Chat|r")
+	-- Create Content Area
+	CreateContent(frame)
 
-	-- Contact Button
-	local ContactMe = CreateFrame("Frame", nil, self.Footer)
-	ContactMe:SetSize(FooterButtonWidth, HeaderHeight)
-	ContactMe:SetPoint("LEFT", Move, 0, -28)
-	ContactMe:CreateBorder()
-	ContactMe:SetScript("OnMouseDown", ButtonOnMouseDown)
-	ContactMe:SetScript("OnMouseUp", ButtonOnMouseUp)
-	ContactMe:SetScript("OnEnter", ButtonOnEnter)
-	ContactMe:SetScript("OnLeave", ButtonOnLeave)
-	ContactMe:HookScript("OnMouseUp", function()
-		if GUI:IsShown() then
-			GUI:Toggle()
-		end
-		AddContactFrame()
-	end)
-
-	ContactMe.Highlight = ContactMe:CreateTexture(nil, "OVERLAY")
-	ContactMe.Highlight:SetAllPoints()
-	ContactMe.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	ContactMe.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	ContactMe.Highlight:SetAlpha(0)
-
-	ContactMe.Middle = ContactMe:CreateFontString(nil, "OVERLAY")
-	ContactMe.Middle:SetPoint("CENTER", ContactMe, 0, 0)
-	ContactMe.Middle:SetWidth(FooterButtonWidth - Spacing)
-	ContactMe.Middle:SetFontObject(K.UIFont)
-	ContactMe.Middle:SetJustifyH("CENTER")
-	ContactMe.Middle:SetText(K.SystemColor .. "Contact Me!|r")
-
-	-- Profiles button
-	local Profiles = CreateFrame("Frame", nil, self.Footer)
-	Profiles:SetSize(FooterButtonWidth + 2, HeaderHeight)
-	Profiles:SetPoint("LEFT", Credits, 0, -28)
-	Profiles:CreateBorder()
-	Profiles:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Profiles:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Profiles:SetScript("OnEnter", ButtonOnEnter)
-	Profiles:SetScript("OnLeave", ButtonOnLeave)
-	Profiles:HookScript("OnMouseUp", function()
-		if GUI:IsShown() then
-			GUI:Toggle()
-		end
-		K.Profiles:Toggle()
-	end)
-
-	Profiles.Highlight = Profiles:CreateTexture(nil, "OVERLAY")
-	Profiles.Highlight:SetAllPoints()
-	Profiles.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
-	Profiles.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
-	Profiles.Highlight:SetAlpha(0)
-
-	Profiles.Middle = Profiles:CreateFontString(nil, "OVERLAY")
-	Profiles.Middle:SetPoint("CENTER", Profiles, 0, 0)
-	Profiles.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	Profiles.Middle:SetFontObject(K.UIFont)
-	Profiles.Middle:SetJustifyH("CENTER")
-	Profiles.Middle:SetText(K.InfoColor .. "Profiles|r")
-
-	-- Button list
-	self.ButtonList = CreateFrame("Frame", nil, self)
-	self.ButtonList:SetWidth(ButtonListWidth)
-	self.ButtonList:SetPoint("BOTTOMLEFT", self, Spacing, Spacing)
-	self.ButtonList:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, -(Spacing - 1))
-	self.ButtonList:SetPoint("BOTTOMLEFT", self.Footer, "TOPLEFT", 0, (Spacing - 1))
-	self.ButtonList:CreateBorder()
-
-	-- Close
-	self.Close = CreateFrame("Frame", nil, self.Header)
-	self.Close:SetSize(HeaderHeight, HeaderHeight)
-	self.Close:SetPoint("RIGHT", self.Header, 0, 0)
-	self.Close:SetScript("OnEnter", CloseOnEnter)
-	self.Close:SetScript("OnLeave", CloseOnLeave)
-	self.Close:SetScript("OnMouseUp", CloseOnMouseUp)
-
-	self.Close.Texture = self.Close:CreateTexture(nil, "OVERLAY")
-	self.Close.Texture:SetPoint("CENTER", self.Close, 0, 0)
-	self.Close.Texture:SetSize(20, 20)
-	self.Close.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32")
-
-	self:UnpackQueue()
-
-	-- Set the frame height
-	local Height = (HeaderHeight * 2) + (Spacing + 2) + (self.WindowCount * MenuButtonHeight) + (self.WindowCount * Spacing)
-	self:SetHeight(Height)
-
-	if self.DefaultWindow then
-		self:DisplayWindow(self.DefaultWindow)
-	end
-
-	self:SortMenuButtons()
-
-	-- Create credits
-	local CreditFrame = CreateFrame("Frame", "KKUI_Credits", self)
-	CreditFrame:SetPoint("TOPRIGHT", self.Header, "BOTTOMRIGHT", 0, -(Spacing - 1))
-	CreditFrame:SetPoint("TOPLEFT", self.ButtonList, "TOPRIGHT", (Spacing - 1), 0)
-	CreditFrame:SetPoint("BOTTOMRIGHT", self.Footer, "TOPRIGHT", 0, (Spacing - 1))
-	CreditFrame:SetPoint("BOTTOMLEFT", self.ButtonList, "BOTTOMRIGHT", (Spacing - 1), 0)
-	CreditFrame:SetFrameStrata("DIALOG")
-	CreditFrame:CreateBorder()
-	CreditFrame:EnableMouse(true)
-	CreditFrame:EnableMouseWheel(true)
-	CreditFrame:Hide()
-
-	local CreditLogo = CreditFrame:CreateTexture(nil, "OVERLAY")
-	CreditLogo:SetSize(512, 256)
-	CreditLogo:SetBlendMode("ADD")
-	CreditLogo:SetAlpha(0.07)
-	CreditLogo:SetTexture(C["Media"].Textures.LogoTexture)
-	CreditLogo:SetPoint("CENTER", CreditFrame, "CENTER", 0, 0)
-
-	local ScrollFrame = CreateFrame("ScrollFrame", nil, CreditFrame)
-	ScrollFrame:SetPoint("TOPLEFT", CreditFrame, 1, -1)
-	ScrollFrame:SetPoint("BOTTOMRIGHT", CreditFrame, -1, 1)
-
-	local Scrollable = CreateFrame("Frame", nil, ScrollFrame)
-	Scrollable:SetSize(ScrollFrame:GetSize())
-
-	CreditFrame.Move = CreateAnimationGroup(Scrollable):CreateAnimation("Move")
-	CreditFrame.Move:SetDuration(24)
-	CreditFrame.Move:SetScript("OnFinished", function(self)
-		local Parent = self:GetParent()
-
-		Parent:ClearAllPoints()
-		Parent:SetPoint("TOP", ScrollFrame, "BOTTOM", 0, 0)
-
-		self:Play()
-	end)
-
-	ScrollFrame:SetScrollChild(Scrollable)
-
-	SetUpCredits(Scrollable)
-
-	CreditFrame.Move:SetOffset(0, (Scrollable:GetHeight() * 2))
-
-	Scrollable:ClearAllPoints()
-	Scrollable:SetPoint("TOP", ScrollFrame, "BOTTOM", 0, 0)
-
-	self.Created = true
+	GUI.Frame = frame
+	return frame
 end
 
-GUI.Toggle = function(self)
-	if InCombatLockdown() then
+-- Content Population
+local function PopulateContent(category)
+	if not category or not GUI.ScrollChild then
 		return
 	end
 
-	if self:IsShown() then
-		self.FadeOut:Play()
+	-- Clear existing content (including FontStrings)
+	for _, child in ipairs({ GUI.ScrollChild:GetChildren() }) do
+		child:Hide()
+		child:SetParent(nil)
+	end
+
+	-- Clear any FontStrings that might be directly attached to ScrollChild
+	for i = 1, GUI.ScrollChild:GetNumRegions() do
+		local region = select(i, GUI.ScrollChild:GetRegions())
+		if region and region:GetObjectType() == "FontString" then
+			region:SetText("")
+			region:Hide()
+		end
+	end
+
+	local yOffset = -15
+
+	-- Category title (create as frame child, not direct FontString)
+	local categoryTitleFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
+	categoryTitleFrame:SetSize(CONTENT_WIDTH - 30, 25)
+	categoryTitleFrame:SetPoint("TOPLEFT", 15, yOffset)
+
+	local categoryTitle = categoryTitleFrame:CreateFontString(nil, "OVERLAY")
+	categoryTitle:SetFontObject(K.UIFont)
+	categoryTitle:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+	categoryTitle:SetText(category.Name)
+	categoryTitle:SetPoint("TOPLEFT", 0, 0)
+	yOffset = yOffset - 40
+
+	-- Create sections with proper spacing
+	for sectionIndex, section in ipairs(category.Sections) do
+		-- Add extra spacing between sections (except first)
+		if sectionIndex > 1 then
+			yOffset = yOffset - 15
+		end
+
+		-- Section header frame with proper background
+		local sectionFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
+		sectionFrame:SetSize(CONTENT_WIDTH - 30, 30)
+		sectionFrame:SetPoint("TOPLEFT", 15, yOffset)
+
+		-- Section header background
+		local sectionBg = sectionFrame:CreateTexture(nil, "BACKGROUND")
+		sectionBg:SetAllPoints()
+		sectionBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		sectionBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+
+		-- Section title with proper positioning
+		local sectionTitle = sectionFrame:CreateFontString(nil, "OVERLAY")
+		sectionTitle:SetFontObject(K.UIFont)
+		sectionTitle:SetTextColor(0.9, 0.9, 0.9, 1)
+
+		-- Use clean section title text
+		sectionTitle:SetText(section.Name)
+		sectionTitle:SetPoint("LEFT", sectionFrame, "LEFT", 10, 0)
+
+		yOffset = yOffset - 40
+
+		-- Section widgets with consistent spacing
+		for widgetIndex, widget in ipairs(section.Widgets) do
+			widget:SetParent(GUI.ScrollChild)
+			widget:ClearAllPoints()
+			widget:SetPoint("TOPLEFT", 15, yOffset)
+
+			-- Update widget value to reflect current configuration state
+			if widget.UpdateValue then
+				widget:UpdateValue()
+			end
+
+			widget:Show()
+
+			-- Calculate proper spacing based on widget height
+			local widgetHeight = widget:GetHeight()
+			if widgetHeight == 0 then
+				widgetHeight = WIDGET_HEIGHT
+			end
+
+			yOffset = yOffset - (widgetHeight + 8)
+		end
+
+		-- Add spacing after last widget in section
+		yOffset = yOffset - 10
+	end
+
+	-- Set proper scroll child height with padding
+	local totalHeight = math.abs(yOffset) + 20
+	GUI.ScrollChild:SetHeight(totalHeight)
+
+	-- Reset scroll position to top
+	if GUI.ScrollFrame then
+		GUI.ScrollFrame:SetVerticalScroll(0)
+	end
+end
+
+-- Helper function to check if a category contains any widgets with NEW tags
+local function CategoryContainsNewWidgets(category)
+	for _, section in ipairs(category.Sections) do
+		for _, widget in ipairs(section.Widgets) do
+			-- Check if widget was created with isNew parameter or has NEW in text
+			if widget.IsNew or widget.HasNewTag then
+				return true
+			end
+			-- Also check if the widget's text contains the NEW tag
+			if widget.ConfigPath then
+				local regions = { widget:GetRegions() }
+				for _, region in ipairs(regions) do
+					if region and region:GetObjectType() == "FontString" then
+						local text = region:GetText()
+						if text and text:find("ISNEW") then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	return false
+end
+
+-- Category Button Creation - ENHANCED with automatic NEW tag detection
+local function CreateCategoryButton(category, index)
+	local button = CreateFrame("Button", nil, GUI.CategoryScrollChild or GUI.Sidebar)
+	button:SetSize(SIDEBAR_WIDTH - 20, CATEGORY_HEIGHT) -- Slightly smaller to account for scrollbar
+
+	-- Add extra spacing before Credits category to separate it visually
+	local extraSpacing = 0
+	if category.Name == "Credits" then
+		extraSpacing = 20 -- Add 20px extra spacing before Credits
+	end
+
+	button:SetPoint("TOP", 0, -(index - 1) * (CATEGORY_HEIGHT + 2) - 10 - extraSpacing) -- Simplified positioning with spacer
+
+	CreateColoredBackground(button, 0.08, 0.08, 0.08, 0.8)
+
+	-- Selection indicator
+	local selected = button:CreateTexture(nil, "OVERLAY")
+	selected:SetSize(3, CATEGORY_HEIGHT - 4)
+	selected:SetPoint("LEFT", 2, 0)
+	selected:SetTexture(C["Media"].Textures.White8x8Texture)
+	selected:Hide()
+	button.Selected = selected
+
+	-- Icon
+	local icon = button:CreateTexture(nil, "ARTWORK")
+	icon:SetSize(16, 16)
+	icon:SetPoint("LEFT", 15, 0)
+	icon:SetTexture(category.Icon)
+	icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+	-- Text
+	local text = button:CreateFontString(nil, "OVERLAY")
+	text:SetFontObject(K.UIFont)
+	text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	text:SetText(category.Name)
+	text:SetPoint("LEFT", icon, "RIGHT", 8, 0)
+
+	-- Add NEW tag if category has it manually OR contains new widgets
+	if category.HasNewTag or CategoryContainsNewWidgets(category) then
+		AddNewTag(button, text)
+	end
+
+	-- Hover effect
+	button.Highlight = button:CreateTexture(nil, "HIGHLIGHT")
+	button.Highlight:SetAllPoints()
+	button.Highlight:SetTexture(C["Media"].Textures.White8x8Texture)
+	button.Highlight:SetVertexColor(1, 1, 1, 0.1)
+
+	button:SetScript("OnClick", function()
+		GUI:ShowCategory(category)
+	end)
+
+	category.Button = button
+	return button
+end
+
+-- Function to refresh category NEW tags after widgets are loaded
+function GUI:RefreshCategoryNewTags()
+	for _, category in ipairs(self.Categories) do
+		if category.Button then
+			-- Remove existing NEW tag frame if it exists
+			if category.Button.NewTag then
+				category.Button.NewTag:Hide()
+				category.Button.NewTag = nil
+			end
+
+			-- Check if category should have NEW tag and add it
+			if category.HasNewTag or CategoryContainsNewWidgets(category) then
+				-- Find the text element in the button
+				local text = nil
+				for i = 1, category.Button:GetNumRegions() do
+					local region = select(i, category.Button:GetRegions())
+					if region and region:GetObjectType() == "FontString" then
+						text = region
+						break
+					end
+				end
+
+				if text then
+					category.Button.NewTag = AddNewTag(category.Button, text)
+				end
+			end
+		end
+	end
+end
+
+-- Enhanced GUI Functions
+function GUI:Initialize()
+	if self.Frame then
+		return self.Frame
+	end
+
+	-- Initialize ExtraGUI system
+	if K.ExtraGUI and K.ExtraGUI.Initialize then
+		K.ExtraGUI:Initialize()
+	end
+
+	CreateMainFrame()
+
+	-- Create category buttons in sidebar
+	for i, category in ipairs(self.Categories) do
+		CreateCategoryButton(category, i)
+	end
+
+	-- Set proper scroll height for category list
+	if self.CategoryScrollChild and #self.Categories > 0 then
+		local totalHeight = #self.Categories * (CATEGORY_HEIGHT + 2) + 20 -- Extra padding
+
+		-- Add extra space for Credits category spacer
+		for _, category in ipairs(self.Categories) do
+			if category.Name == "Credits" then
+				totalHeight = totalHeight + 20 -- Account for Credits spacer
+				break
+			end
+		end
+
+		self.CategoryScrollChild:SetHeight(totalHeight)
+		-- Category scroll height set properly
+	end
+
+	-- Create static popups
+	self:CreateStaticPopups()
+
+	-- Show first category by default
+	if #self.Categories > 0 then
+		self:ShowCategory(self.Categories[1])
+	end
+
+	-- Refresh category NEW tags after everything is loaded
+	C_Timer.After(0.1, function()
+		self:RefreshCategoryNewTags()
+	end)
+
+	self.IsInitialized = true
+	return self.Frame
+end
+
+-- Add Enable method for compatibility with Core/Loading.lua
+function GUI:Enable()
+	if not self.IsInitialized then
+		self:Initialize()
+	end
+	self.Enabled = true
+end
+
+function GUI:Show()
+	if not self.Frame then
+		self:Initialize()
+	end
+	self.Frame:Show()
+	self.IsVisible = true
+end
+
+function GUI:Hide()
+	-- Close ProfileGUI if it's open
+	if K.ProfileGUI and K.ProfileGUI.IsVisible then
+		K.ProfileGUI:Hide()
+	end
+
+	-- Cleanup active timers and handlers to prevent memory leaks
+	if self.Frame then
+		-- Clean up any active dropdown timers
+		for _, category in ipairs(self.Categories) do
+			for _, section in ipairs(category.Sections) do
+				for _, widget in ipairs(section.Widgets) do
+					if widget.CloseMenu then
+						widget:CloseMenu()
+					end
+					-- Clear any OnUpdate handlers that might still be running
+					if widget.Thumb then
+						widget.Thumb:SetScript("OnUpdate", nil)
+					end
+				end
+			end
+		end
+
+		-- Clear search box focus to prevent input capture
+		if self.SearchBox then
+			self.SearchBox:ClearFocus()
+		end
+
+		self.Frame:Hide()
+	end
+	self.IsVisible = false
+
+	-- Check for pending reloads when closing GUI
+	ReloadTracker:OnGUIClose()
+end
+
+function GUI:Toggle()
+	if self.IsVisible then
+		self:Hide()
 	else
 		self:Show()
-		self.FadeIn:Play()
 	end
 end
 
-GUI.PLAYER_REGEN_DISABLED = function(self)
-	if self:IsShown() then
-		self:SetAlpha(0)
-		self:Hide()
-		self.CombatClosed = true
+function GUI:ShowCategory(category)
+	-- Track current category for refresh functionality
+	self.CurrentCategory = category
+
+	-- Update button states
+	for _, cat in ipairs(self.Categories) do
+		if cat.Button then
+			if cat == category then
+				cat.Button.Selected:Show()
+				if cat.Button.KKUI_Background then
+					cat.Button.KKUI_Background:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.2)
+				end
+			else
+				cat.Button.Selected:Hide()
+				if cat.Button.KKUI_Background then
+					cat.Button.KKUI_Background:SetVertexColor(0.08, 0.08, 0.08, 0.8)
+				end
+			end
+		end
+	end
+
+	-- Populate content
+	PopulateContent(category)
+end
+
+function GUI:AddCategory(name, icon)
+	return CreateCategory(name, icon)
+end
+
+function GUI:AddSection(category, name)
+	return CreateSection(category, name)
+end
+
+function GUI:AddWidget(section, widget)
+	if section then
+		tinsert(section.Widgets, widget)
+	end
+	widget.ConfigPath = widget.ConfigPath
+end
+
+-- Widget Creation Methods - ENHANCED with Hook Support
+function GUI:CreateSwitch(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateSwitch(UIParent, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+	widget:Hide()
+	self:AddWidget(section, widget)
+
+	-- Add cogwheel icon if this configPath has extra configuration
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		local cogwheel = K.ExtraGUI:CreateCogwheelIcon(widget, configPath, text)
+		if cogwheel then
+			widget.Cogwheel = cogwheel
+		end
+	end
+
+	return widget
+end
+
+function GUI:CreateSlider(section, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateSlider(UIParent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+function GUI:CreateDropdown(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateDropdown(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+function GUI:CreateTextureDropdown(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+	-- TEMPORARY FALLBACK: Use regular dropdown with texture options until proper function is available
+	local textureOptions = {}
+
+	-- Get basic texture options from Media.lua
+	if K.GetAllStatusbarTextures then
+		textureOptions = K.GetAllStatusbarTextures()
+	else
+		-- Fallback texture options if function not available
+		textureOptions = {
+			{ text = "KkthnxUI", value = "KkthnxUI" },
+			{ text = "Flat", value = "Flat" },
+			{ text = "Clean", value = "Clean" },
+			{ text = "GoldpawUI", value = "GoldpawUI" },
+		}
+	end
+
+	-- Use regular dropdown widget as fallback
+	local widget = CreateDropdown(UIParent, configPath, text, textureOptions, tooltip, hookFunction, isNew, requiresReload)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+function GUI:CreateColorPicker(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateColorPicker(UIParent, configPath, text, tooltip, hookFunction, isNew)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+function GUI:CreateCheckboxGroup(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+function GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+-- Configuration access methods
+function GUI:GetConfigValue(configPath)
+	return GetConfigValue(configPath)
+end
+
+function GUI:SetConfigValue(configPath, value)
+	return SetConfigValue(configPath, value)
+end
+
+-- Enhanced functionality methods
+function GUI:FilterCategories(searchText)
+	if not searchText or searchText == "" then
+		for _, category in ipairs(self.Categories) do
+			if category.Button then
+				category.Button:Show()
+			end
+		end
+		return
+	end
+
+	searchText = searchText:lower()
+	local hasVisibleCategories = false
+
+	for _, category in ipairs(self.Categories) do
+		local shouldShow = false
+
+		if category.Name:lower():find(searchText) then
+			shouldShow = true
+		else
+			for _, section in ipairs(category.Sections) do
+				if section.Name:lower():find(searchText) then
+					shouldShow = true
+					break
+				end
+			end
+		end
+
+		if category.Button then
+			if shouldShow then
+				category.Button:Show()
+				hasVisibleCategories = true
+			else
+				category.Button:Hide()
+			end
+		end
+	end
+
+	if self.ActiveCategory and self.ActiveCategory.Button and not self.ActiveCategory.Button:IsShown() then
+		for _, category in ipairs(self.Categories) do
+			if category.Button and category.Button:IsShown() then
+				self:ShowCategory(category)
+				break
+			end
+		end
 	end
 end
 
-GUI.PLAYER_REGEN_ENABLED = function(self)
-	if self.CombatClosed then
-		self:Show()
-		self:SetAlpha(1)
-		self.CombatClosed = false
+function GUI:RefreshAllWidgets()
+	for _, category in ipairs(self.Categories) do
+		for _, section in ipairs(category.Sections) do
+			for _, widget in ipairs(section.Widgets) do
+				if widget.UpdateValue then
+					widget:UpdateValue()
+				end
+				if widget:IsShown() then
+					widget:Hide()
+					widget:Show()
+				end
+			end
+		end
+	end
+
+	if self.CurrentCategory then
+		PopulateContent(self.CurrentCategory)
 	end
 end
 
-GUI.SetProfile = function(self)
-	local Dropdown = self:GetParent()
-	local Profile = Dropdown.Current:GetText()
-	local MyProfileName = K.Realm .. "-" .. K.Name
+-- Create Static Popups for NewGUI System
+function GUI:CreateStaticPopups()
+	-- Profile switching confirmation
+	StaticPopupDialogs["KKTHNXUI_SWITCH_PROFILE"] = {
+		text = "Switch to profile: %s?\n\nThis will reload your UI.",
+		button1 = YES,
+		button2 = NO,
+		OnAccept = function()
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
 
-	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
-		MySelectedProfile = Profile
+	-- Profile reset confirmation
+	StaticPopupDialogs["KKTHNXUI_RESET_PROFILE"] = {
+		text = "Reset current profile to defaults?\n\nThis will reload your UI and cannot be undone.",
+		button1 = YES,
+		button2 = NO,
+		OnAccept = function()
+			GUI:ResetProfile()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
 
-		GUI:Toggle()
+	-- Settings import dialog
+	StaticPopupDialogs["KKTHNXUI_IMPORT_SETTINGS"] = {
+		text = "Paste your settings string below:",
+		button1 = "Import",
+		button2 = CANCEL,
+		hasEditBox = true,
+		editBoxWidth = 350,
+		OnAccept = function(self)
+			local text = self.editBox:GetText()
+			GUI:ImportSettings(text)
+		end,
+		OnShow = function(self)
+			self.editBox:SetFocus()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
 
-		_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
+	-- Settings export dialog
+	StaticPopupDialogs["KKTHNXUI_EXPORT_SETTINGS"] = {
+		text = "Copy your settings string below:",
+		button1 = OKAY,
+		hasEditBox = true,
+		editBoxWidth = 350,
+		OnShow = function(self)
+			self.editBox:SetText(GUI:GenerateExportString())
+			self.editBox:HighlightText()
+			self.editBox:SetFocus()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+
+	-- UI reload confirmation
+	StaticPopupDialogs["KKTHNXUI_NEW_GUI_RELOAD"] = {
+		text = "Changes have been made that require a UI reload.\n\nReload now?",
+		button1 = YES,
+		button2 = NO,
+		OnAccept = function()
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+
+	-- Automatic UI reload detection (Similar to NDUI)
+	StaticPopupDialogs["KKTHNXUI_RELOAD_UI"] = {
+		text = "Some settings you changed require a UI reload to take effect.\n\nWould you like to reload the UI now?",
+		button1 = "Reload Now",
+		button2 = "Later",
+		OnAccept = function()
+			ReloadTracker:ClearQueue() -- Clear before reload
+			ReloadUI()
+		end,
+		OnCancel = function()
+			-- User chose "Later" - clear the showing flag but keep pending reloads
+			ReloadTracker.IsShowing = false
+		end,
+		OnHide = function()
+			-- Reset showing flag when popup is hidden
+			ReloadTracker.IsShowing = false
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+end
+
+-- Placeholder functions for profile management
+function GUI:SwitchProfile(profileName)
+	print("|cff669DFFKkthnxUI:|r Switching to profile '" .. profileName .. "'...")
+	ReloadUI()
+end
+
+function GUI:ResetProfile()
+	print("|cff669DFFKkthnxUI:|r Resetting profile to defaults...")
+	ReloadUI()
+end
+
+function GUI:ImportSettings(settingsString)
+	print("|cff669DFFKkthnxUI:|r Settings import not yet fully implemented")
+end
+
+function GUI:GenerateExportString()
+	return "-- Export string generation not yet implemented"
+end
+
+-- Module OnEnable Function (required by KkthnxUI)
+function Module:OnEnable()
+	print("|cff669DFFKkthnxUI:|r NewGUI module enabled! Use /kgui to open configuration.")
+
+	-- Initialize the GUI system
+	self:InitializeGUI()
+
+	-- Note: ProfileGUI initialization is now handled in Loading.lua to ensure proper order
+	-- Removed duplicate initialization to prevent conflicts
+
+	-- Setup slash commands
+	self:SetupSlashCommands()
+
+	-- Initialize GUI if categories exist
+	if #self.GUI.Categories > 0 then
 	end
 end
 
-GUI:RegisterEvent("PLAYER_REGEN_DISABLED")
-GUI:RegisterEvent("PLAYER_REGEN_ENABLED")
-GUI:SetScript("OnEvent", function(self, event)
-	self[event](self, event)
-end)
+-- Add Enable method to Module for Core/Loading.lua compatibility
+function Module:Enable()
+	if self.GUI and self.GUI.Enable then
+		return self.GUI:Enable()
+	else
+		print("|cffff0000KkthnxUI Error:|r GUI Enable method not available!")
+	end
+end
 
-K.GUI = GUI
+function Module:InitializeGUI()
+	-- This method will be called to initialize the GUI framework
+	-- Load the NewGUIConfig.lua file to populate categories and settings
+
+	-- Initialize the GUI framework first
+	self.GUI:Initialize()
+end
+
+function Module:SetupSlashCommands()
+	-- Enhanced slash commands
+	SlashCmdList["KKTHNXUI_NEW_GUI"] = function(cmd)
+		local command = cmd:lower()
+
+		if command == "export" then
+			self.GUI:ExportSettings()
+		elseif command == "import" then
+			StaticPopup_Show("KKTHNXUI_IMPORT_SETTINGS")
+		elseif command == "refresh" then
+			self.GUI:RefreshAllWidgets()
+			print("All widget values refreshed!")
+		elseif command == "reload" then
+			StaticPopup_Show("KKTHNXUI_NEW_GUI_RELOAD")
+		elseif command == "reset" then
+			StaticPopup_Show("KKTHNXUI_RESET_PROFILE")
+		elseif command == "help" then
+			print("|cff669DFFKkthnxUI NewGUI Commands:|r")
+			print("/kgui - Open configuration panel")
+			print("/kgui help - Show this help")
+			print("/kgui export - Export settings")
+			print("/kgui import - Import settings")
+			print("/kgui reload - Reload UI")
+			print("/kgui reset - Reset current profile")
+			print("/kgui refresh - Refresh all widgets")
+		else
+			self.GUI:Toggle()
+		end
+	end
+
+	SLASH_KKTHNXUI_NEW_GUI1 = "/kgui"
+	SLASH_KKTHNXUI_NEW_GUI2 = "/config"
+end
+
+-- Export to global for compatibility
+K.NewGUI = Module.GUI
+_G.KkthnxUI_NewGUI = Module.GUI
+
+-- Export IsNew constant globally for use in config files
+K.IsNew = IsNew
+_G.IsNew = IsNew
+-- Export Module to K for access
+K.GUI = Module
+
+-- Credits Widget - Supports class icons and class colors
+local function CreateCredits(parent, creditsData, title)
+	local widget = CreateFrame("Frame", nil, parent)
+
+	-- Calculate total height based on credits data
+	local titleHeight = title and 40 or 0
+	local itemHeight = 28
+	local totalHeight = titleHeight + (#creditsData * itemHeight) + 30 -- extra padding
+
+	widget:SetSize(CONTENT_WIDTH, totalHeight)
+
+	-- Background
+	CreateColoredBackground(widget, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	local yOffset = -15
+
+	-- Title if provided
+	if title then
+		local titleLabel = widget:CreateFontString(nil, "OVERLAY")
+		titleLabel:SetFontObject(K.UIFontBold or K.UIFont)
+		titleLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		titleLabel:SetText(title)
+		titleLabel:SetPoint("TOPLEFT", 15, yOffset)
+		yOffset = yOffset - 35
+	end
+
+	-- Credits entries
+	for i, credit in ipairs(creditsData) do
+		local creditFrame = CreateFrame("Frame", nil, widget)
+		creditFrame:SetSize(CONTENT_WIDTH - 30, itemHeight - 2)
+		creditFrame:SetPoint("TOPLEFT", 15, yOffset)
+
+		-- Entry background with hover effect
+		local entryBg = creditFrame:CreateTexture(nil, "BACKGROUND")
+		entryBg:SetAllPoints()
+		entryBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		entryBg:SetVertexColor(0.08, 0.08, 0.08, 0.6)
+
+		-- Hover effect
+		creditFrame:EnableMouse(true)
+		creditFrame:SetScript("OnEnter", function(self)
+			entryBg:SetVertexColor(0.12, 0.12, 0.12, 0.8)
+		end)
+		creditFrame:SetScript("OnLeave", function(self)
+			entryBg:SetVertexColor(0.08, 0.08, 0.08, 0.6)
+		end)
+
+		local xOffset = 10
+
+		-- Class icon (if provided) - Fixed proper implementation
+		if credit.class and credit.class ~= "" then
+			local classIcon = creditFrame:CreateTexture(nil, "ARTWORK")
+			classIcon:SetSize(14, 14) -- Smaller size to prevent overlap
+			classIcon:SetPoint("LEFT", xOffset, 0)
+
+			-- Use the more reliable class icon texture instead of atlas
+			local classFile = credit.class:upper()
+
+			-- Use the standard class icon texture path
+			classIcon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+			classIcon:SetSize(14, 14) -- Ensure consistent size
+
+			-- Define class icon coordinates
+			local classCoords = {
+				["WARRIOR"] = { 0, 0.25, 0, 0.25 },
+				["MAGE"] = { 0.25, 0.49609375, 0, 0.25 },
+				["ROGUE"] = { 0.49609375, 0.7421875, 0, 0.25 },
+				["DRUID"] = { 0.7421875, 0.98828125, 0, 0.25 },
+				["HUNTER"] = { 0, 0.25, 0.25, 0.5 },
+				["SHAMAN"] = { 0.25, 0.49609375, 0.25, 0.5 },
+				["PRIEST"] = { 0.49609375, 0.7421875, 0.25, 0.5 },
+				["WARLOCK"] = { 0.7421875, 0.98828125, 0.25, 0.5 },
+				["PALADIN"] = { 0, 0.25, 0.5, 0.75 },
+				["DEATHKNIGHT"] = { 0.25, 0.49609375, 0.5, 0.75 },
+				["MONK"] = { 0.49609375, 0.7421875, 0.5, 0.75 },
+				["DEMONHUNTER"] = { 0.7421875, 0.98828125, 0.5, 0.75 },
+				["EVOKER"] = { 0, 0.25, 0.75, 1 },
+			}
+
+			local coords = classCoords[classFile]
+			if coords then
+				classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+			else
+				-- Use a default icon if class not recognized
+				classIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+				classIcon:SetTexCoord(0, 1, 0, 1)
+				classIcon:SetSize(14, 14) -- Maintain size for fallback icon
+			end
+
+			xOffset = xOffset + 18 -- Adjusted spacing for smaller icons
+		end
+
+		-- Name text with color support
+		local nameText = creditFrame:CreateFontString(nil, "OVERLAY")
+		nameText:SetFontObject(K.UIFont)
+		nameText:SetPoint("LEFT", xOffset, 0)
+
+		-- Determine text color and set text
+		if credit.color then
+			if type(credit.color) == "string" and credit.color:sub(1, 1) == "|" then
+				-- Color escape sequence like "|cffff0000"
+				nameText:SetText(credit.color .. credit.name .. "|r")
+			elseif type(credit.color) == "table" and #credit.color >= 3 then
+				-- RGB color table
+				nameText:SetText(credit.name)
+				nameText:SetTextColor(credit.color[1], credit.color[2], credit.color[3], credit.color[4] or 1)
+			elseif type(credit.color) == "string" and RAID_CLASS_COLORS[credit.color:upper()] then
+				-- Class color by name
+				local classColor = RAID_CLASS_COLORS[credit.color:upper()]
+				nameText:SetText(credit.name)
+				nameText:SetTextColor(classColor.r, classColor.g, classColor.b, 1)
+			else
+				-- Default white
+				nameText:SetText(credit.name)
+				nameText:SetTextColor(1, 1, 1, 1)
+			end
+		elseif credit.class and RAID_CLASS_COLORS[credit.class:upper()] then
+			-- Use class color from class field
+			local classColor = RAID_CLASS_COLORS[credit.class:upper()]
+			nameText:SetText(credit.name)
+			nameText:SetTextColor(classColor.r, classColor.g, classColor.b, 1)
+		else
+			-- Default white
+			nameText:SetText(credit.name)
+			nameText:SetTextColor(1, 1, 1, 1)
+		end
+
+		-- Check for atlas icon (for special entries like heart) - Position AFTER name text
+		if credit.atlas then
+			local atlasIcon = creditFrame:CreateTexture(nil, "ARTWORK")
+			atlasIcon:SetSize(14, 14)
+			atlasIcon:SetPoint("LEFT", nameText, "RIGHT", 5, 0) -- Position to the right of the name text
+			atlasIcon:SetAlpha(0.9) -- Set transparency to 90%
+
+			local success = pcall(function()
+				atlasIcon:SetAtlas(credit.atlas, true)
+				atlasIcon:SetSize(14, 14) -- Ensure size is maintained
+			end)
+
+			if not success then
+				-- Fallback to a default texture if atlas fails
+				atlasIcon:SetTexture("Interface\\Icons\\INV_Misc_Note_01")
+				atlasIcon:SetTexCoord(0, 1, 0, 1)
+			end
+		end
+
+		yOffset = yOffset - itemHeight
+	end
+
+	return widget
+end
+
+function GUI:CreateCredits(section, creditsData, title)
+	local widget = CreateCredits(UIParent, creditsData, title)
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+-- Helper functions for creating custom widgets in config files
+function GUI:CreateButton(parent, text, width, height, onClick)
+	return CreateButton(parent, text, width, height, onClick)
+end
+
+function GUI:CreateEnhancedTooltip(widget, title, description, warning)
+	return CreateEnhancedTooltip(widget, title, description, warning)
+end
+
+-- Custom button widget creation
+function GUI:CreateButtonWidget(section, configPath, text, buttonText, tooltip, onClick, isNew, requiresReload)
+	local widget = CreateFrame("Frame", nil, UIParent)
+	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT) -- Use proper constants
+	widget.ConfigPath = configPath
+
+	-- Background
+	local bg = widget:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetTexture(C["Media"].Textures.White8x8Texture)
+	bg:SetVertexColor(WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
+
+	-- Process NEW tag from text
+	local cleanText, hasNewTag = ProcessNewTag(text)
+	-- Use isNew parameter or detected NEW tag
+	local showNewTag = isNew or hasNewTag
+
+	-- Label
+	local label = widget:CreateFontString(nil, "OVERLAY")
+	label:SetFontObject(K.UIFont)
+	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	label:SetText(cleanText)
+	label:SetPoint("LEFT", 8, 0)
+
+	-- Add NEW tag if specified
+	if showNewTag then
+		AddNewTag(widget, label)
+	end
+
+	-- Enhanced onClick wrapper that handles reload tracking
+	local wrappedOnClick = function()
+		if onClick then
+			onClick()
+		end
+		-- If this button action requires reload, add it to queue
+		if requiresReload then
+			AddToReloadQueue(configPath, cleanText)
+		end
+	end
+
+	-- Button using the CreateButton helper
+	local button = CreateButton(widget, buttonText, 100, 20, wrappedOnClick)
+	button:SetPoint("RIGHT", -8, 0)
+
+	-- Enhanced tooltip
+	if tooltip then
+		CreateEnhancedTooltip(widget, cleanText, tooltip)
+	end
+
+	-- Hide initially and add to section
+	widget:Hide()
+	self:AddWidget(section, widget)
+	return widget
+end
+
+-- Helper methods for reload management
+function GUI:HasPendingReloads()
+	return ReloadTracker:HasPendingReloads()
+end
+
+function GUI:ClearReloadQueue()
+	ReloadTracker:ClearQueue()
+end
+
+function GUI:ForceReloadPrompt()
+	ReloadTracker:ShowReloadPrompt()
+end
+
+-- Check if a config path requires reload (simplified)
+function GUI:CheckRequiresReload(configPath)
+	local hasHook = self.UpdateHooks[configPath] and #self.UpdateHooks[configPath] > 0
+	return RequiresReload(configPath, hasHook, false)
+end

@@ -311,7 +311,7 @@ function Module:ClickGameMenu()
 		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 		return
 	end
-	K["GUI"]:Toggle()
+	K.NewGUI:Toggle()
 	HideUIPanel(GameMenuFrame)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 	if not InCombatLockdown() then
