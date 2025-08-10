@@ -53,7 +53,7 @@ local function getAlertChannel()
 		inRaid = false -- Arenas should not be considered raids
 	end
 
-	local alertChannel = C["Announcements"].AlertChannel.Value
+	local alertChannel = C["Announcements"].AlertChannel
 	if alertChannel == 1 then
 		return inPartyLFG and "INSTANCE_CHAT" or "PARTY"
 	elseif alertChannel == 2 then

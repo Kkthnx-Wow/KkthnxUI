@@ -147,8 +147,8 @@ local function CreateActionBarsCategory()
 	GUI:CreateSwitch(togglesSection, "ActionBar.Grid", L["Actionbar Grid"], L["Grid Desc"], UpdateActionbarHotkeys)
 	GUI:CreateSwitch(togglesSection, "ActionBar.Hotkeys", L["Enable Hotkey"], L["Hotkeys Desc"], UpdateActionbarHotkeys)
 	GUI:CreateSwitch(togglesSection, "ActionBar.Macro", L["Enable Macro"], L["Macro Desc"], UpdateActionbarHotkeys)
-	GUI:CreateSwitch(togglesSection, "ActionBar.KeyDown", L["Cast on Key Press"], L["Cast spells and abilities on key press, not key release"], UpdateActionbarHotkeys, true)
-	GUI:CreateSwitch(togglesSection, "ActionBar.ButtonLock", L["Lock Action Bars"], L["Keep your action bar layout locked in place to prevent accidental reordering. To move a spell or ability while locked, hold the Shift key."], UpdateActionbarHotkeys, true)
+	GUI:CreateSwitch(togglesSection, "ActionBar.KeyDown", L["Cast on Key Press"], L["Cast spells and abilities on key press, not key release"], UpdateActionbarHotkeys)
+	GUI:CreateSwitch(togglesSection, "ActionBar.ButtonLock", L["Lock Action Bars"], L["Keep your action bar layout locked in place to prevent accidental reordering. To move a spell or ability while locked, hold the Shift key."], UpdateActionbarHotkeys)
 	GUI:CreateSwitch(togglesSection, "ActionBar.Cooldown", L["Show Cooldowns"], L["Cooldown Desc"])
 	GUI:CreateSwitch(togglesSection, "ActionBar.MicroMenu", L["Enable MicroBar"], L["MicroMenu Desc"])
 	GUI:CreateSwitch(togglesSection, "ActionBar.FadeMicroMenu", L["Mouseover MicroBar"], L["FadeMicroMenu Desc"])
@@ -194,7 +194,7 @@ local function CreateAnnouncementsCategory()
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.KillingBlow", L["Show Your Killing Blow Info"], "Displays a notification when you land a killing blow.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.PvPEmote", L["Auto Emote On Your Killing Blow"], "Automatically performs an emote when you land a killing blow in PvP.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.HealthAlert", L["Announce When Low On Health"], "Alerts when your health drops below a critical threshold.")
-	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.KeystoneAlert", L["Announce When New Mythic Key Is Obtained"], L["Notifies you and your group when you receive a new Mythic+ keystone."], nil, true)
+	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.KeystoneAlert", L["Announce When New Mythic Key Is Obtained"], L["Notifies you and your group when you receive a new Mythic+ keystone."])
 
 	-- Interrupt Section
 	local interruptSection = GUI:AddSection(announcementsCategory, INTERRUPT)
@@ -207,11 +207,12 @@ local function CreateAnnouncementsCategory()
 
 	-- Alert Channel Dropdown Options
 	local alertChannelOptions = {
-		{ text = "Party", value = 1 },
-		{ text = "Party/Raid", value = 2 },
-		{ text = "Raid", value = 3 },
-		{ text = "Say", value = 4 },
-		{ text = "Yell", value = 5 },
+		{ text = PARTY, value = 1 },
+		{ text = PARTY .. " / " .. RAID, value = 2 },
+		{ text = RAID, value = 3 },
+		{ text = SAY, value = 4 },
+		{ text = YELL, value = 5 },
+		{ text = EMOTE, value = 6 },
 	}
 	GUI:CreateDropdown(interruptSection, "Announcements.AlertChannel", L["Announce Interrupts To Specified Chat Channel"], alertChannelOptions, "Select the chat channel where interrupt and dispel alerts will be sent.")
 
@@ -263,9 +264,9 @@ local function CreateArenaCategory()
 
 	-- Health Color Format Dropdown Options
 	local healthColorOptions = {
-		{ text = "Dark", value = "Dark" },
-		{ text = "Value", value = "Value" },
-		{ text = "Class", value = "Class" },
+		{ text = "Class", value = 1 },
+		{ text = "Dark", value = 2 },
+		{ text = "Value", value = 3 },
 	}
 	GUI:CreateDropdown(arenaColorsSection, "Arena.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how arena opponent health bars are colored", UpdateArenaFrames)
 end
@@ -450,7 +451,7 @@ local function CreateAutomationCategory()
 	end
 
 	GUI:CreateSwitch(miscSection, "Automation.AutoGoodbye", "Say Goodbye After Dungeon Completion", "Automatically says 'Goodbye' to the group when the dungeon is completed.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoKeystone", "Auto Place Mythic Keystones", "Automatically places your highest available Mythic Keystone in the dungeon keystone slot.", updateAutomationMisc, true)
+	GUI:CreateSwitch(miscSection, "Automation.AutoKeystone", "Auto Place Mythic Keystones", "Automatically places your highest available Mythic Keystone in the dungeon keystone slot.", updateAutomationMisc)
 	GUI:CreateSwitch(miscSection, "Automation.AutoOpenItems", "Auto Open Items In Your Inventory", "Automatically opens items in your inventory that contain loot.", updateAutomationMisc)
 	GUI:CreateSwitch(miscSection, "Automation.AutoRelease", "Auto Release in Battlegrounds & Arenas", "Automatically releases your spirit upon death in battlegrounds or arenas.", updateAutomationMisc)
 	GUI:CreateSwitch(miscSection, "Automation.AutoScreenshot", "Auto Screenshot Achievements", "Automatically takes a screenshot when you earn an achievement.", updateAutomationMisc)
@@ -496,9 +497,9 @@ local function CreateBossCategory()
 
 	-- Health Color Format Dropdown Options
 	local healthColorOptions = {
-		{ text = "Dark", value = "Dark" },
-		{ text = "Value", value = "Value" },
-		{ text = "Class", value = "Class" },
+		{ text = "Class", value = 1 },
+		{ text = "Dark", value = 2 },
+		{ text = "Value", value = 3 },
 	}
 	GUI:CreateDropdown(bossColorsSection, "Boss.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how boss frame health bars are colored", UpdateBossFrames)
 end
@@ -781,14 +782,14 @@ local function CreateInventoryCategory()
 
 	-- BAGS SECTION
 	local bagsSection = GUI:AddSection(inventoryCategory, "Bags")
-	GUI:CreateSwitch(bagsSection, "Inventory.BagsBindOnEquip", L["Display Bind Status"], L["BagsBindOnEquip Desc"], UpdateBagStatus, true)
+	GUI:CreateSwitch(bagsSection, "Inventory.BagsBindOnEquip", L["Display Bind Status"], L["BagsBindOnEquip Desc"], UpdateBagStatus)
 	GUI:CreateSwitch(bagsSection, "Inventory.BagsItemLevel", L["Display Item Level"], L["BagsItemLevel Desc"], UpdateBagStatus)
 	GUI:CreateSwitch(bagsSection, "Inventory.DeleteButton", L["Bags Delete Button"], "Shows a delete button for easy item deletion", UpdateInventorySettings)
 	GUI:CreateSwitch(bagsSection, "Inventory.ReverseSort", L["Reverse the Sorting"], L["ReverseSort Desc"], UpdateBagSortOrder)
 	GUI:CreateSwitch(bagsSection, "Inventory.ShowNewItem", L["Show New Item Glow"], "Highlights newly acquired items with a glow effect", UpdateInventorySettings)
 	GUI:CreateSwitch(bagsSection, "Inventory.UpgradeIcon", L["Show Upgrade Icon"], "Displays an icon on items that are upgrades for your character", UpdateInventorySettings)
 	GUI:CreateSlider(bagsSection, "Inventory.BagsPerRow", L["Bags Per Row"], 1, 20, 1, L["BagsPerRow Desc"], UpdateBagAnchor)
-	GUI:CreateSlider(bagsSection, "Inventory.iLvlToShow", "ItemLevel Threshold", 1, 800, 1, L["iLvlToShow Desc"], UpdateBagStatus, true)
+	GUI:CreateSlider(bagsSection, "Inventory.iLvlToShow", "ItemLevel Threshold", 1, 800, 1, L["iLvlToShow Desc"], UpdateBagStatus)
 
 	-- BANK SECTION
 	local bankSection = GUI:AddSection(inventoryCategory, BANK)
@@ -800,9 +801,9 @@ local function CreateInventoryCategory()
 
 	-- Auto Repair Dropdown Options
 	local autoRepairOptions = {
-		{ text = "Disabled", value = 0 },
-		{ text = "Use Own Funds", value = 1 },
-		{ text = "Use Guild Funds", value = 2 },
+		{ text = NONE, value = 0 },
+		{ text = GUILD, value = 1 },
+		{ text = PLAYER, value = 2 },
 	}
 	GUI:CreateDropdown(otherInventorySection, "Inventory.AutoRepair", L["Auto Repair Gear"], autoRepairOptions, "Choose how to automatically repair your gear", UpdateInventorySettings)
 
@@ -956,11 +957,11 @@ local function CreateMinimapCategory()
 	-- ========================================
 	local featuresSection = GUI:AddSection(minimapCategory, L["Features"])
 
-	GUI:CreateSwitch(featuresSection, "Minimap.EasyVolume", L["EasyVolume"], L["EasyVolumeTip"], UpdateEasyVolume, true)
+	GUI:CreateSwitch(featuresSection, "Minimap.EasyVolume", L["EasyVolume"], L["EasyVolumeTip"], UpdateEasyVolume)
 
-	GUI:CreateSwitch(featuresSection, "Minimap.MailPulse", L["Pulse Minimap Mail"], L["MailPulse Desc"], UpdateMailPulse, true)
+	GUI:CreateSwitch(featuresSection, "Minimap.MailPulse", L["Pulse Minimap Mail"], L["MailPulse Desc"], UpdateMailPulse)
 
-	GUI:CreateSwitch(featuresSection, "Minimap.QueueStatusText", L["QueueStatus"], "Show queue status text on the minimap", UpdateMinimapSettings, true)
+	GUI:CreateSwitch(featuresSection, "Minimap.QueueStatusText", L["QueueStatus"], "Show queue status text on the minimap", UpdateMinimapSettings)
 
 	GUI:CreateSwitch(featuresSection, "Minimap.ShowRecycleBin", L["Show Minimap Button Collector"], L["ShowRecycleBin Desc"], UpdateRecycleBin)
 
@@ -1072,7 +1073,7 @@ local function CreateMiscCategory()
 	-- ========================================
 	local cameraSection = GUI:AddSection(miscCategory, "Camera")
 
-	GUI:CreateSlider(cameraSection, "Misc.MaxCameraZoom", "Max Camera Zoom Level", 1, 2.6, 0.1, "Set the maximum camera zoom distance", UpdateMaxZoomLevel, true)
+	GUI:CreateSlider(cameraSection, "Misc.MaxCameraZoom", "Max Camera Zoom Level", 1, 2.6, 0.1, "Set the maximum camera zoom distance", UpdateMaxZoomLevel)
 
 	-- ========================================
 	-- TRADE SKILL SECTION
@@ -1154,7 +1155,7 @@ local function CreateMiscCategory()
 	-- you could use conditional visibility
 	GUI:CreateSwitch(miscellaneousSection, "Misc.GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"], "Shows gem and enchant information on character and inspect frames", UpdateMiscSettings)
 
-	GUI:CreateSwitch(miscellaneousSection, "Misc.QuickJoin", L["QuickJoin"], L["QuickJoinTip"], UpdateMiscSettings, true)
+	GUI:CreateSwitch(miscellaneousSection, "Misc.QuickJoin", L["QuickJoin"], L["QuickJoinTip"], UpdateMiscSettings)
 
 	GUI:CreateSwitch(miscellaneousSection, "Misc.ItemLevel", L["Show Character/Inspect ItemLevel Info"], "Displays item level information on character and inspect frames", UpdateMiscSettings)
 end
@@ -1422,9 +1423,9 @@ local function CreatePartyCategory()
 
 	-- Health Color Format Dropdown Options
 	local healthColorOptions = {
-		{ text = "Dark", value = "DARK" },
-		{ text = "Value", value = "VALUE" },
-		{ text = "Class", value = "CLASS" },
+		{ text = "Class", value = 1 },
+		{ text = "Dark", value = 2 },
+		{ text = "Value", value = 3 },
 	}
 
 	GUI:CreateDropdown(colorsPartySection, "Party.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on party frames", UpdatePartySettings)
@@ -1517,9 +1518,9 @@ local function CreateRaidCategory()
 
 	-- Health Color Format Dropdown Options
 	local healthColorOptions = {
-		{ text = "Dark", value = "Dark" },
-		{ text = "Value", value = "Value" },
-		{ text = "Class", value = "Class" },
+		{ text = "Class", value = 1 },
+		{ text = "Dark", value = 2 },
+		{ text = "Value", value = 3 },
 	}
 
 	GUI:CreateDropdown(colorsRaidSection, "Raid.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on raid frames", UpdateRaidSettings)
@@ -1675,7 +1676,7 @@ local function CreateSkinsCategory()
 
 	GUI:CreateSlider(fontTweaksSection, "Skins.QuestFontSize", "Adjust QuestFont Size", 10, 30, 1, "Adjust the font size for quest text and descriptions", UpdateQuestFontSize)
 
-	GUI:CreateSlider(fontTweaksSection, "Skins.ObjectiveFontSize", "Adjust ObjectiveFont Size", 10, 30, 1, "Adjust the font size for objective tracker text", UpdateObjectiveFontSize, true)
+	GUI:CreateSlider(fontTweaksSection, "Skins.ObjectiveFontSize", "Adjust ObjectiveFont Size", 10, 30, 1, "Adjust the font size for objective tracker text", UpdateObjectiveFontSize)
 end
 
 -- ====================================================
@@ -1913,8 +1914,8 @@ local function CreateUnitframeCategory()
 	GUI:CreateSwitch(targetUnitframeSection, "Unitframe.TargetDebuffs", L["Show Target Frame Debuffs"], "Display debuffs on the target frame", UpdateUnitframeSettings)
 
 	-- Target Frame Sizing
-	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, "Number of buff icons per row on target frame", UpdateTargetBuffs, true)
-	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, "Number of debuff icons per row on target frame", UpdateTargetDebuffs, true)
+	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, "Number of buff icons per row on target frame", UpdateTargetBuffs)
+	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, "Number of debuff icons per row on target frame", UpdateTargetDebuffs)
 	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetPowerHeight", "Target Power Bar Height", 10, 40, 1, "Height of the target power bar", UpdateUnitTargetSize)
 	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetHealthHeight", L["Target Frame Height"], 20, 75, 1, "Height of the target health bar", UpdateUnitTargetSize)
 	GUI:CreateSlider(targetUnitframeSection, "Unitframe.TargetHealthWidth", L["Target Frame Width"], 100, 300, 1, "Width of the target frame", UpdateUnitTargetSize)
@@ -1963,22 +1964,22 @@ local function CreateUnitframeCategory()
 
 	-- Health Color Format Dropdown Options
 	local healthColorOptions = {
-		{ text = "Dark", value = "Dark" },
-		{ text = "Value", value = "Value" },
-		{ text = "Class", value = "Class" },
+		{ text = "Class", value = 1 },
+		{ text = "Dark", value = 2 },
+		{ text = "Value", value = 3 },
 	}
 	GUI:CreateDropdown(miscUnitframeSection, "Unitframe.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored across all unitframes", UpdateUnitframeSettings)
 
 	-- Portrait Style Dropdown Options
 	local portraitStyleOptions = {
-		{ text = "Default Portraits", value = "DefaultPortraits" },
-		{ text = "Overlay Portrait", value = "OverlayPortrait" },
-		{ text = "3D Portraits", value = "ThreeDPortraits" },
-		{ text = "Class Portraits", value = "ClassPortraits" },
-		{ text = "New Class Portraits", value = "NewClassPortraits" },
-		{ text = "No Portraits", value = "NoPortraits" },
+		{ text = "No Portraits", value = 0 },
+		{ text = "Default Portraits", value = 1 },
+		{ text = "Class Portraits", value = 2 },
+		{ text = "New Class Portraits", value = 3 },
+		{ text = "Overlay Portrait", value = 4 },
+		{ text = "3D Portraits", value = 5 },
 	}
-	GUI:CreateDropdown(miscUnitframeSection, "Unitframe.PortraitStyle.Value", L["Unitframe Portrait Style"], portraitStyleOptions, "Choose the portrait style for unitframes. Note: 3D portraits may cause FPS drops", UpdateUnitframeSettings)
+	GUI:CreateDropdown(miscUnitframeSection, "Unitframe.PortraitStyle", L["Unitframe Portrait Style"], portraitStyleOptions, "Choose the portrait style for unitframes. Note: 3D portraits may cause FPS drops", UpdateUnitframeSettings)
 end
 
 -- WORLDMAP CATEGORY FUNCTION

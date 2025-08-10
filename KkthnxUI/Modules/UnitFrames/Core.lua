@@ -41,20 +41,20 @@ local filteredStyle = {
 }
 
 function Module:UpdateClassPortraits(unit)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or not unit then
+	if C["Unitframe"].PortraitStyle == 0 or not unit then
 		return
 	end
 
 	local _, unitClass = UnitClass(unit)
 
 	if unitClass then
-		local PortraitValue = C["Unitframe"].PortraitStyle.Value
+		local PortraitValue = C["Unitframe"].PortraitStyle
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
 
 		local texturePath
-		if PortraitValue == "ClassPortraits" and UnitIsPlayer(unit) then
+		if PortraitValue == 2 and UnitIsPlayer(unit) then
 			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES"
-		elseif PortraitValue == "NewClassPortraits" and UnitIsPlayer(unit) then
+		elseif PortraitValue == 3 and UnitIsPlayer(unit) then
 			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES"
 		end
 
@@ -93,15 +93,15 @@ function Module:UpdateThreat(_, unit)
 	local status = UnitThreatSituation(unit)
 
 	-- Get the portrait style, health frame, and portrait frame
-	local portraitStyle = C["Unitframe"].PortraitStyle.Value
+	local portraitStyle = C["Unitframe"].PortraitStyle
 	local health = self.Health
 	local portrait = self.Portrait
 
 	-- Determine the border object based on the portrait style
 	local borderObject
-	if portraitStyle == "ThreeDPortraits" then
+	if portraitStyle == 5 then
 		borderObject = portrait.KKUI_Border
-	elseif portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
+	elseif portraitStyle ~= 0 and portraitStyle ~= 4 then
 		borderObject = portrait.Border and portrait.Border.KKUI_Border
 	else
 		borderObject = health.KKUI_Border

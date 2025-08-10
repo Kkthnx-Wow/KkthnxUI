@@ -39,7 +39,7 @@ function autoRepair(override)
 	repairAllCost, canRepair = GetRepairAllCost()
 
 	if canRepair and repairAllCost > 0 then
-		if not override and C["Inventory"].AutoRepair.Value == 1 and IsInGuild() and CanGuildBankRepair() and GetGuildBankWithdrawMoney() >= repairAllCost then
+		if not override and C["Inventory"].AutoRepair == 1 and IsInGuild() and CanGuildBankRepair() and GetGuildBankWithdrawMoney() >= repairAllCost then
 			_G.RepairAllItems(true)
 		else
 			if myMoney > repairAllCost then
@@ -68,7 +68,7 @@ local function merchantClose()
 end
 
 local function merchantShow()
-	if IsShiftKeyDown() or C["Inventory"].AutoRepair.Value == 0 or not CanMerchantRepair() then
+	if IsShiftKeyDown() or C["Inventory"].AutoRepair == 0 or not CanMerchantRepair() then
 		return
 	end
 

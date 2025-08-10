@@ -24,11 +24,11 @@ function Module:CreatePartyPet()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
-	if C["Party"].HealthbarColor.Value == "Value" then
+	if C["Party"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
-	elseif C["Party"].HealthbarColor.Value == "Dark" then
+	elseif C["Party"].HealthbarColor == 2 then
 		self.Health.colorSmooth = false
 		self.Health.colorClass = false
 		self.Health.colorReaction = false

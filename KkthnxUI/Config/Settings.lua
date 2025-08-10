@@ -1,14 +1,6 @@
 local C = KkthnxUI[2]
 
 local DISABLE = DISABLE
-local EMOTE = EMOTE
-local GUILD = GUILD
-local NONE = NONE
-local PARTY = PARTY
-local PLAYER = PLAYER
-local RAID = RAID
-local SAY = SAY
-local YELL = YELL
 
 -- Actionbar
 C["ActionBar"] = {
@@ -134,17 +126,7 @@ C["Announcements"] = {
 	RareAlert = false,
 	ResetInstance = true,
 	SaySapped = false,
-	AlertChannel = {
-		Options = {
-			[EMOTE] = 6,
-			[PARTY .. " / " .. RAID] = 2,
-			[PARTY] = 1,
-			[RAID] = 3,
-			[SAY] = 4,
-			[YELL] = 5,
-		},
-		Value = 2,
-	},
+	AlertChannel = 2,
 }
 
 -- Automation
@@ -222,14 +204,7 @@ C["Inventory"] = {
 		},
 		Value = "DESCENDING",
 	},
-	AutoRepair = {
-		Options = {
-			[NONE] = 0,
-			[GUILD] = 1,
-			[PLAYER] = 2,
-		},
-		Value = 2,
-	},
+	AutoRepair = 2,
 }
 
 -- Buffs & Debuffs
@@ -331,12 +306,6 @@ C["General"] = {
 			["Full Digits"] = 3,
 		},
 		Value = 1,
-	},
-	Profiles = {
-		Options = {},
-	},
-	DeleteProfiles = {
-		Options = {},
 	},
 	GlowMode = {
 		Options = {
@@ -659,26 +628,8 @@ C["Unitframe"] = {
 	HideFocusTargetLevel = false,
 	HideFocusTargetName = false,
 	HideFocusTarget = false,
-
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
-	PortraitStyle = {
-		-- Options = {
-		-- 	["Overlay Portrait"] = "OverlayPortrait",
-		-- 	["3D Portraits"] = "ThreeDPortraits",
-		-- 	["Class Portraits"] = "ClassPortraits",
-		-- 	["New Class Portraits"] = "NewClassPortraits",
-		-- 	["Default Portraits"] = "DefaultPortraits",
-		-- 	["No Portraits"] = "NoPortraits",
-		-- },
-		Value = "DefaultPortraits",
-	},
+	HealthbarColor = 1,
+	PortraitStyle = 1,
 }
 
 C["Party"] = {
@@ -696,14 +647,7 @@ C["Party"] = {
 	ShowPlayer = true,
 	Smooth = false,
 	TargetHighlight = false,
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 }
 
 C["Boss"] = {
@@ -715,14 +659,7 @@ C["Boss"] = {
 	HealthWidth = 150,
 	PowerHeight = 12,
 	YOffset = 54,
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 }
 
 C["Arena"] = {
@@ -734,14 +671,7 @@ C["Arena"] = {
 	HealthWidth = 134,
 	PowerHeight = 10,
 	YOffset = 54,
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 }
 
 -- Raidframe
@@ -786,14 +716,7 @@ C["Raid"] = {
 	AuraTrackSpellTextures = true,
 	AuraTrackThickness = 5,
 
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 	HealthFormat = {
 		Options = {
 			["Disable HP"] = 1,

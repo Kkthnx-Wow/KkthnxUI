@@ -86,11 +86,11 @@ function Module:CreateRaid()
 	Health.colorDisconnected = true
 	Health.frequentUpdates = true
 
-	if C["Raid"].HealthbarColor.Value == "Value" then
+	if C["Raid"].HealthbarColor == 3 then
 		Health.colorSmooth = true
 		Health.colorClass = false
 		Health.colorReaction = false
-	elseif C["Raid"].HealthbarColor.Value == "Dark" then
+	elseif C["Raid"].HealthbarColor == 2 then
 		Health.colorSmooth = false
 		Health.colorClass = false
 		Health.colorReaction = false

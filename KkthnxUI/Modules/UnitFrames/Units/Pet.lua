@@ -11,7 +11,7 @@ function Module:CreatePet()
 	self.mystyle = "pet"
 
 	local petHeight = C["Unitframe"].PetHealthHeight
-	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
+	local petPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
@@ -34,11 +34,11 @@ function Module:CreatePet()
 	Health.colorDisconnected = true
 	Health.frequentUpdates = true
 
-	if C["Unitframe"].HealthbarColor.Value == "Value" then
+	if C["Unitframe"].HealthbarColor == 3 then
 		Health.colorSmooth = true
 		Health.colorClass = false
 		Health.colorReaction = false
-	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+	elseif C["Unitframe"].HealthbarColor == 2 then
 		Health.colorSmooth = false
 		Health.colorClass = false
 		Health.colorReaction = false
@@ -71,14 +71,14 @@ function Module:CreatePet()
 	Name:SetFontObject(K.UIFont)
 	Name:SetWordWrap(false)
 
-	if petPortraitStyle == "NoPortraits" or petPortraitStyle == "OverlayPortrait" then
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+	if petPortraitStyle == 0 or petPortraitStyle == 4 then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(Name, "[name] [fulllevel]")
 		else
 			self:Tag(Name, "[color][name] [fulllevel]")
 		end
 	else
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(Name, "[name]")
 		else
 			self:Tag(Name, "[color][name]")
@@ -86,16 +86,16 @@ function Module:CreatePet()
 	end
 	Name:SetShown(not C["Unitframe"].HidePetName)
 
-	if petPortraitStyle ~= "NoPortraits" then
+	if petPortraitStyle ~= 0 then
 		local Portrait
 
-		if petPortraitStyle == "OverlayPortrait" then
+		if petPortraitStyle == 4 then
 			Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-		elseif petPortraitStyle == "ThreeDPortraits" then
+		elseif petPortraitStyle == 5 then
 			Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
@@ -111,7 +111,7 @@ function Module:CreatePet()
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			if petPortraitStyle == "ClassPortraits" or petPortraitStyle == "NewClassPortraits" then
+			if petPortraitStyle == 2 or petPortraitStyle == 3 then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -121,7 +121,7 @@ function Module:CreatePet()
 
 	local Level = self:CreateFontString(nil, "OVERLAY")
 	Level:SetFontObject(K.UIFont)
-	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" and not C["Unitframe"].HidePetLevel then
+	if petPortraitStyle ~= 0 and petPortraitStyle ~= 4 and not C["Unitframe"].HidePetLevel then
 		Level:Show()
 	else
 		Level:Hide()
@@ -141,7 +141,7 @@ function Module:CreatePet()
 	Debuffs.iconsPerRow = 4
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" then
+	if petPortraitStyle ~= 0 and petPortraitStyle ~= 4 then
 		RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)

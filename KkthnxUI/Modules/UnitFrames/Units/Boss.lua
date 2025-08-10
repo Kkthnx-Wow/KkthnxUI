@@ -12,7 +12,7 @@ function Module:CreateBoss()
 
 	local bossWidth = C["Boss"].HealthWidth
 	local bossHeight = C["Boss"].HealthHeight
-	local bossPortraitStyle = C["Unitframe"].PortraitStyle.Value
+	local bossPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
@@ -37,11 +37,11 @@ function Module:CreateBoss()
 		K:SmoothBar(self.Health)
 	end
 
-	if C["Party"].HealthbarColor.Value == "Value" then
+	if C["Party"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
-	elseif C["Party"].HealthbarColor.Value == "Dark" then
+	elseif C["Party"].HealthbarColor == 2 then
 		self.Health.colorSmooth = false
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
@@ -78,30 +78,30 @@ function Module:CreateBoss()
 	self.Name:SetFontObject(K.UIFont)
 	self.Name:SetWidth(bossWidth)
 	self.Name:SetWordWrap(false)
-	if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+	if bossPortraitStyle == 0 or bossPortraitStyle == 4 then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(self.Name, "[name] [nplevel][afkdnd]")
 		else
 			self:Tag(self.Name, "[color][name] [nplevel][afkdnd]")
 		end
 	else
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(self.Name, "[name][afkdnd]")
 		else
 			self:Tag(self.Name, "[color][name][afkdnd]")
 		end
 	end
 
-	if bossPortraitStyle ~= "NoPortraits" then
+	if bossPortraitStyle ~= 0 then
 		local Portrait
 
-		if bossPortraitStyle == "OverlayPortrait" then
+		if bossPortraitStyle == 4 then
 			Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-		elseif bossPortraitStyle == "ThreeDPortraits" then
+		elseif bossPortraitStyle == 5 then
 			Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self.Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -117,7 +117,7 @@ function Module:CreateBoss()
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			if bossPortraitStyle == "ClassPortraits" or bossPortraitStyle == "NewClassPortraits" then
+			if bossPortraitStyle == 2 or bossPortraitStyle == 3 then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -126,7 +126,7 @@ function Module:CreateBoss()
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if bossPortraitStyle ~= "NoPortraits" and bossPortraitStyle ~= "OverlayPortrait" then
+	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
 		self.Level:Show()
 		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
 		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
@@ -231,7 +231,7 @@ function Module:CreateBoss()
 		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 
 		local relativeTo
-		if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
+		if bossPortraitStyle == 0 or bossPortraitStyle == 4 then
 			relativeTo = self.Health
 		else
 			relativeTo = self.Portrait
@@ -255,7 +255,7 @@ function Module:CreateBoss()
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if bossPortraitStyle ~= "NoPortraits" and bossPortraitStyle ~= "OverlayPortrait" then
+	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
@@ -264,7 +264,7 @@ function Module:CreateBoss()
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
-	if bossPortraitStyle ~= "NoPortraits" and bossPortraitStyle ~= "OverlayPortrait" then
+	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
 		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ResurrectIndicator:SetPoint("CENTER", self.Health)

@@ -37,7 +37,7 @@ function Module:CreatePlayer()
 
 	local playerWidth = C["Unitframe"].PlayerHealthWidth
 	local playerHeight = C["Unitframe"].PlayerHealthHeight
-	local playerPortraitStyle = C["Unitframe"].PortraitStyle.Value
+	local playerPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
@@ -68,11 +68,11 @@ function Module:CreatePlayer()
 		K:SmoothBar(Health)
 	end
 
-	if C["Unitframe"].HealthbarColor.Value == "Value" then
+	if C["Unitframe"].HealthbarColor == 3 then
 		Health.colorSmooth = true
 		Health.colorClass = false
 		Health.colorReaction = false
-	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+	elseif C["Unitframe"].HealthbarColor == 2 then
 		Health.colorSmooth = false
 		Health.colorClass = false
 		Health.colorReaction = false
@@ -108,16 +108,16 @@ function Module:CreatePlayer()
 	Power.Value:SetFont(select(1, Power.Value:GetFont()), 11, select(3, Power.Value:GetFont()))
 	self:Tag(Power.Value, "[power]")
 
-	if playerPortraitStyle ~= "NoPortraits" then
+	if playerPortraitStyle ~= 0 then
 		local Portrait
 
-		if playerPortraitStyle == "OverlayPortrait" then
+		if playerPortraitStyle == 4 then
 			Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-		elseif playerPortraitStyle == "ThreeDPortraits" then
+		elseif playerPortraitStyle == 5 then
 			Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
@@ -133,7 +133,7 @@ function Module:CreatePlayer()
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			if playerPortraitStyle == "ClassPortraits" or playerPortraitStyle == "NewClassPortraits" then
+			if playerPortraitStyle == 2 or playerPortraitStyle == 3 then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -358,7 +358,7 @@ function Module:CreatePlayer()
 	-- Level
 	if C["Unitframe"].ShowPlayerLevel then
 		local Level = self:CreateFontString(nil, "OVERLAY")
-		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+		if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 			Level:Show()
 			Level:SetPoint("TOP", self.Portrait, 0, 15)
 		else
@@ -392,7 +392,7 @@ function Module:CreatePlayer()
 		AdditionalPower.frequentUpdates = true
 		AdditionalPower:SetWidth(12)
 		AdditionalPower:SetOrientation("VERTICAL")
-		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+		if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 			AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
 			AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
 		else
@@ -507,7 +507,7 @@ function Module:CreatePlayer()
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	LeaderIndicator:SetSize(16, 16)
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+	if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 10)
 	else
 		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 10)
@@ -515,7 +515,7 @@ function Module:CreatePlayer()
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetSize(16, 16)
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+	if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 		AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	else
 		AssistantIndicator:SetPoint("TOPLEFT", Health, 0, 8)
@@ -524,7 +524,7 @@ function Module:CreatePlayer()
 	if C["Unitframe"].PvPIndicator then
 		local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		PvPIndicator:SetSize(30, 33)
-		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+		if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 			PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
 		else
 			PvPIndicator:SetPoint("RIGHT", Health, "LEFT", -2, 0)
@@ -541,7 +541,7 @@ function Module:CreatePlayer()
 	CombatIndicator:SetAlpha(0.7)
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+	if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 		RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
@@ -549,7 +549,7 @@ function Module:CreatePlayer()
 	RaidTargetIndicator:SetSize(16, 16)
 
 	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+	if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 		ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		ReadyCheckIndicator:SetPoint("CENTER", Health)
@@ -558,7 +558,7 @@ function Module:CreatePlayer()
 
 	local ResurrectIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	ResurrectIndicator:SetSize(44, 44)
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+	if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 		ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		ResurrectIndicator:SetPoint("CENTER", Health)
@@ -567,7 +567,7 @@ function Module:CreatePlayer()
 	do
 		local RestingIndicator = CreateFrame("Frame", "KKUI_RestingFrame", Overlay)
 		RestingIndicator:SetSize(5, 5)
-		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+		if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 			RestingIndicator:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", -2, 4)
 		else
 			RestingIndicator:SetPoint("TOPLEFT", Health, "TOPLEFT", -2, 4)
@@ -634,7 +634,7 @@ function Module:CreatePlayer()
 	end
 
 	local QuestSyncIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+	if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
 		QuestSyncIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -13)
 	else
 		QuestSyncIndicator:SetPoint("BOTTOM", Health, "BOTTOM", 0, -13)

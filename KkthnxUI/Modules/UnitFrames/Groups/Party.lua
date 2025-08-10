@@ -11,7 +11,7 @@ function Module:CreateParty()
 
 	local partyWidth = C["Party"].HealthWidth
 	local partyHeight = C["Party"].HealthHeight
-	local partyPortraitStyle = C["Unitframe"].PortraitStyle.Value
+	local partyPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
@@ -39,11 +39,11 @@ function Module:CreateParty()
 		K:SmoothBar(Health)
 	end
 
-	if C["Party"].HealthbarColor.Value == "Value" then
+	if C["Party"].HealthbarColor == 3 then
 		Health.colorSmooth = true
 		Health.colorClass = false
 		Health.colorReaction = false
-	elseif C["Party"].HealthbarColor.Value == "Dark" then
+	elseif C["Party"].HealthbarColor == 2 then
 		Health.colorSmooth = false
 		Health.colorClass = false
 		Health.colorReaction = false
@@ -80,30 +80,30 @@ function Module:CreateParty()
 	Name:SetWidth(partyWidth)
 	Name:SetWordWrap(false)
 	Name:SetFontObject(K.UIFont)
-	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+	if partyPortraitStyle == 0 or partyPortraitStyle == 4 then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(Name, "[lfdrole][name] [nplevel]")
 		else
 			self:Tag(Name, "[lfdrole][color][name] [nplevel]")
 		end
 	else
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(Name, "[lfdrole][name]")
 		else
 			self:Tag(Name, "[lfdrole][color][name]")
 		end
 	end
 
-	if partyPortraitStyle ~= "NoPortraits" then
+	if partyPortraitStyle ~= 0 then
 		local Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", self)
-		if partyPortraitStyle == "OverlayPortrait" then
+		if partyPortraitStyle == 4 then
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
 
 			self.Portrait = Portrait
-		elseif partyPortraitStyle == "ThreeDPortraits" then
+		elseif partyPortraitStyle == 5 then
 			local Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
@@ -111,7 +111,7 @@ function Module:CreateParty()
 			Portrait:CreateBorder()
 
 			self.Portrait = Portrait
-		elseif partyPortraitStyle ~= "ThreeDPortraits" and partyPortraitStyle ~= "OverlayPortrait" then
+		elseif partyPortraitStyle ~= 5 and partyPortraitStyle ~= 4 then
 			local Portrait = Health:CreateTexture("KKUI_PartyPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
@@ -123,14 +123,14 @@ function Module:CreateParty()
 
 			self.Portrait = Portrait
 
-			if partyPortraitStyle == "ClassPortraits" or partyPortraitStyle == "NewClassPortraits" then
+			if partyPortraitStyle == 2 or partyPortraitStyle == 3 then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
 	end
 
 	local Level = self:CreateFontString(nil, "OVERLAY")
-	if partyPortraitStyle ~= "NoPortraits" and partyPortraitStyle ~= "OverlayPortrait" then
+	if partyPortraitStyle ~= 0 and partyPortraitStyle ~= 4 then
 		Level:Show()
 		Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
 		Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
@@ -336,7 +336,7 @@ function Module:CreateParty()
 		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 		TargetHighlight:SetFrameLevel(6)
 
-		local relativeTo = (partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait") and Health or self.Portrait
+		local relativeTo = (partyPortraitStyle == 0 or partyPortraitStyle == 4) and Health or self.Portrait
 
 		TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
 		TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
@@ -359,7 +359,7 @@ function Module:CreateParty()
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	LeaderIndicator:SetSize(15, 15)
-	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
+	if partyPortraitStyle == 0 or partyPortraitStyle == 4 then
 		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 10)
 	else
 		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 10)
@@ -367,7 +367,7 @@ function Module:CreateParty()
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetSize(15, 15)
-	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
+	if partyPortraitStyle == 0 or partyPortraitStyle == 4 then
 		AssistantIndicator:SetPoint("TOPLEFT", Health, 0, 8)
 	else
 		AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
@@ -388,7 +388,7 @@ function Module:CreateParty()
 	SummonIndicator:SetPoint("LEFT", 2, 0)
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	if partyPortraitStyle ~= "NoPortraits" and partyPortraitStyle ~= "OverlayPortrait" then
+	if partyPortraitStyle ~= 0 and partyPortraitStyle ~= 4 then
 		RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
@@ -397,7 +397,7 @@ function Module:CreateParty()
 
 	local ResurrectIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	ResurrectIndicator:SetSize(28, 28)
-	if partyPortraitStyle ~= "NoPortraits" and partyPortraitStyle ~= "OverlayPortrait" then
+	if partyPortraitStyle ~= 0 and partyPortraitStyle ~= 4 then
 		ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		ResurrectIndicator:SetPoint("CENTER", Health)

@@ -12,7 +12,7 @@ function Module:CreateFocusTarget()
 
 	local focusTargetWidth = C["Unitframe"].FocusTargetHealthWidth
 	local focusTargetHeight = C["Unitframe"].FocusTargetHealthHeight
-	local focusTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
+	local focusTargetPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
@@ -33,11 +33,11 @@ function Module:CreateFocusTarget()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
-	if C["Unitframe"].HealthbarColor.Value == "Value" then
+	if C["Unitframe"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
-	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+	elseif C["Unitframe"].HealthbarColor == 2 then
 		self.Health.colorSmooth = false
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
@@ -70,14 +70,14 @@ function Module:CreateFocusTarget()
 	self.Name:SetFontObject(K.UIFont)
 	self.Name:SetWordWrap(false)
 
-	if focusTargetPortraitStyle == "NoPortraits" or focusTargetPortraitStyle == "OverlayPortrait" then
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+	if focusTargetPortraitStyle == 0 or focusTargetPortraitStyle == 4 then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
 		else
 			self:Tag(self.Name, "[color][name] [fulllevel][afkdnd]")
 		end
 	else
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(self.Name, "[name][afkdnd]")
 		else
 			self:Tag(self.Name, "[color][name][afkdnd]")
@@ -85,20 +85,20 @@ function Module:CreateFocusTarget()
 	end
 	self.Name:SetShown(not C["Unitframe"].HideFocusTargetName)
 
-	if focusTargetPortraitStyle ~= "NoPortraits" then
-		if focusTargetPortraitStyle == "OverlayPortrait" then
+	if focusTargetPortraitStyle ~= 0 then
+		if focusTargetPortraitStyle == 4 then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusTargetPortrait", self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			self.Portrait:SetAlpha(0.6)
-		elseif focusTargetPortraitStyle == "ThreeDPortraits" then
+		elseif focusTargetPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusTargetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-		elseif focusTargetPortraitStyle ~= "ThreeDPortraits" and focusTargetPortraitStyle ~= "OverlayPortrait" then
+		elseif focusTargetPortraitStyle ~= 5 and focusTargetPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture("KKUI_FocusTargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -108,7 +108,7 @@ function Module:CreateFocusTarget()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if focusTargetPortraitStyle == "ClassPortraits" or focusTargetPortraitStyle == "NewClassPortraits" then
+			if focusTargetPortraitStyle == 2 or focusTargetPortraitStyle == 3 then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -116,7 +116,7 @@ function Module:CreateFocusTarget()
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetFontObject(K.UIFont)
-	if focusTargetPortraitStyle ~= "NoPortraits" and focusTargetPortraitStyle ~= "OverlayPortrait" and not C["Unitframe"].HideFocusTargetLevel then
+	if focusTargetPortraitStyle ~= 0 and focusTargetPortraitStyle ~= 4 and not C["Unitframe"].HideFocusTargetLevel then
 		self.Level:Show()
 	else
 		self.Level:Hide()
@@ -141,7 +141,7 @@ function Module:CreateFocusTarget()
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if focusTargetPortraitStyle ~= "NoPortraits" and focusTargetPortraitStyle ~= "OverlayPortrait" then
+	if focusTargetPortraitStyle ~= 0 and focusTargetPortraitStyle ~= 4 then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)

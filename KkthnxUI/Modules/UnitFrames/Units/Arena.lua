@@ -12,7 +12,7 @@ function Module:CreateArena()
 
 	local arenaWidth = C["Arena"].HealthWidth
 	local arenaHeight = C["Arena"].HealthHeight
-	local arenaPortraitStyle = C["Unitframe"].PortraitStyle.Value
+	local arenaPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
@@ -37,11 +37,11 @@ function Module:CreateArena()
 		K:SmoothBar(self.Health)
 	end
 
-	if C["Arena"].HealthbarColor.Value == "Value" then
+	if C["Arena"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
-	elseif C["Arena"].HealthbarColor.Value == "Dark" then
+	elseif C["Arena"].HealthbarColor == 2 then
 		self.Health.colorSmooth = false
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
@@ -76,34 +76,34 @@ function Module:CreateArena()
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Name:SetFontObject(K.UIFont)
-	if arenaPortraitStyle == "NoPortraits" or arenaPortraitStyle == "OverlayPortrait" then
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+	if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(self.Name, "[name] [nplevel]")
 		else
 			self:Tag(self.Name, "[color][name] [nplevel]")
 		end
 	else
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
+		if C["Unitframe"].HealthbarColor == 1 then
 			self:Tag(self.Name, "[name]")
 		else
 			self:Tag(self.Name, "[color][name]")
 		end
 	end
 
-	if arenaPortraitStyle ~= "NoPortraits" then
-		if arenaPortraitStyle == "OverlayPortrait" then
+	if arenaPortraitStyle ~= 0 then
+		if arenaPortraitStyle == 4 then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			self.Portrait:SetAlpha(0.6)
-		elseif arenaPortraitStyle == "ThreeDPortraits" then
+		elseif arenaPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-		elseif arenaPortraitStyle ~= "ThreeDPortraits" and arenaPortraitStyle ~= "OverlayPortrait" then
+		elseif arenaPortraitStyle ~= 5 and arenaPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture("KKUI_ArenaPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -113,14 +113,14 @@ function Module:CreateArena()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if arenaPortraitStyle == "ClassPortraits" or arenaPortraitStyle == "NewClassPortraits" then
+			if arenaPortraitStyle == 2 or arenaPortraitStyle == 3 then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if arenaPortraitStyle ~= "NoPortraits" and arenaPortraitStyle ~= "OverlayPortrait" then
+	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
 		self.Level:Show()
 		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
 		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
@@ -175,7 +175,7 @@ function Module:CreateArena()
 		self.Castbar:CreateBorder()
 
 		self.Castbar:ClearAllPoints()
-		if arenaPortraitStyle == "NoPortraits" or arenaPortraitStyle == "OverlayPortrait" then
+		if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
 			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Arena"].CastbarIcon and 24, 6)
 			self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
 		else
@@ -233,7 +233,7 @@ function Module:CreateArena()
 		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 
 		local relativeTo
-		if arenaPortraitStyle == "NoPortraits" or arenaPortraitStyle == "OverlayPortrait" then
+		if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
 			relativeTo = self.Health
 		else
 			relativeTo = self.Portrait
@@ -256,7 +256,7 @@ function Module:CreateArena()
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if arenaPortraitStyle ~= "NoPortraits" and arenaPortraitStyle ~= "OverlayPortrait" then
+	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
@@ -265,7 +265,7 @@ function Module:CreateArena()
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
-	if arenaPortraitStyle ~= "NoPortraits" and arenaPortraitStyle ~= "OverlayPortrait" then
+	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
 		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
