@@ -425,11 +425,30 @@ function Module:CreateBankButton(f)
 	return BankButton
 end
 
+-- local function updateAccountBankDeposit(bu)
+-- 	if GetCVarBool("bankAutoDepositReagents") then
+-- 		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
+-- 	else
+-- 		K.SetBorderColor(bu.KKUI_Border)
+-- 	end
+-- end
+
 local function updateAccountBankDeposit(bu)
+	if not bu.DepositHighlight then
+		local DepositHighlight = CreateFrame("Frame", nil, bu, "BackdropTemplate")
+		DepositHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
+		DepositHighlight:SetFrameLevel(6)
+		DepositHighlight:SetPoint("TOPLEFT", bu, -5, 5)
+		DepositHighlight:SetPoint("BOTTOMRIGHT", bu, 5, -5)
+		DepositHighlight:SetBackdropBorderColor(1, 0.8, 0, 0.7)
+		DepositHighlight:Hide()
+		bu.DepositHighlight = DepositHighlight
+	end
+
 	if GetCVarBool("bankAutoDepositReagents") then
-		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
+		bu.DepositHighlight:Show()
 	else
-		K.SetBorderColor(bu.KKUI_Border)
+		bu.DepositHighlight:Hide()
 	end
 end
 
@@ -450,15 +469,41 @@ function Module:CreateAccountBankDeposit()
 			local isOn = GetCVarBool("bankAutoDepositReagents")
 			SetCVar("bankAutoDepositReagents", isOn and 0 or 1)
 			updateAccountBankDeposit(AccountBankDepositButton)
-		else
+		end
+	end)
+	AccountBankDepositButton:SetScript("OnDoubleClick", function(_, btn)
+		if btn == "LeftButton" then
 			C_Bank.AutoDepositItemsIntoBank(ACCOUNT_BANK_TYPE)
 		end
 	end)
 	AccountBankDepositButton.title = ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL
-	K.AddTooltip(AccountBankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nLeft-click to deposit warband items|n|nright-click to switch deposit modes.|n|nIf the button border is visible, items from your bags will also be deposited into your warband bank.")
+	K.AddTooltip(AccountBankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nDouble-click the green cross button to deposit Warband items; right-click to switch deposit mode.|n|nIf the button border is shown, reagents from your bags will also deposit into your Warband bank.")
 	updateAccountBankDeposit(AccountBankDepositButton)
 
 	return AccountBankDepositButton
+end
+
+function Module:CreateBankDeposit()
+	local BankDepositButton = CreateFrame("Button", nil, self)
+	BankDepositButton:SetSize(18, 18)
+	BankDepositButton:CreateBorder()
+	BankDepositButton:StyleButton()
+
+	BankDepositButton.Icon = BankDepositButton:CreateTexture(nil, "ARTWORK")
+	BankDepositButton.Icon:SetAllPoints()
+	BankDepositButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	BankDepositButton.Icon:SetAtlas("GreenCross")
+
+	BankDepositButton:RegisterForClicks("AnyUp")
+	BankDepositButton:SetScript("OnDoubleClick", function(_, btn)
+		if btn == "LeftButton" then
+			C_Bank.AutoDepositItemsIntoBank(CHAR_BANK_TYPE)
+		end
+	end)
+	BankDepositButton.title = CHARACTER_BANK_DEPOSIT_BUTTON_LABEL
+	K.AddTooltip(BankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nDouble-click the green cross button to deposit reagents.")
+
+	return BankDepositButton
 end
 
 local function ToggleBackpacks(self)
@@ -1553,7 +1598,8 @@ function Module:OnEnable()
 		elseif name == "Bank" then
 			Module.CreateBagTab(self, settings, 6)
 			buttons[3] = Module.CreateBagToggle(self)
-			buttons[4] = Module.CreateAccountBankButton(self, f)
+			buttons[4] = Module.CreateBankDeposit(self)
+			buttons[5] = Module.CreateAccountBankButton(self, f)
 		elseif name == "Account" then
 			Module.CreateBagTab(self, settings, 5, "account")
 			buttons[3] = Module.CreateBagToggle(self)

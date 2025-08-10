@@ -258,7 +258,7 @@ local function OnEnter(self)
 	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
 	title = false
-	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(3116) -- Tier charges
+	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(3269) -- Tier charges
 	if chargeInfo then
 		if not title then
 			GameTooltip:AddLine(" ")
