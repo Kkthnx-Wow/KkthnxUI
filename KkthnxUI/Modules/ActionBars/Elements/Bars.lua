@@ -154,6 +154,7 @@ function Module:UpdateButtonConfig(i)
 	self.buttonConfig.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
 	self.buttonConfig.showGrid = C["ActionBar"].Grid
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
+	self.buttonConfig.actionButtonUI = true -- rotation highlight
 
 	local hotkey = self.buttonConfig.text.hotkey
 	hotkey.font.font = K.UIFont

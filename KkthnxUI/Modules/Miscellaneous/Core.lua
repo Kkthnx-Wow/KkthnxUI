@@ -1,10 +1,7 @@
-local K = KkthnxUI[1]
-local C = KkthnxUI[2]
-local L = KkthnxUI[3]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
 -- Localizing Lua built-in functions
-local select = select
 local tonumber = tonumber
 local next = next
 local type = type
@@ -70,58 +67,13 @@ end)
 
 -- Modify Delete Dialog
 local function modifyDeleteDialog()
-	local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
-	local _, confirmationType = strsplit("@", confirmationText, 2)
+	local DELETE_ITEM = K.CopyTable(StaticPopupDialogs.DELETE_ITEM)
+	DELETE_ITEM.timeout = 5 -- also add a timeout
+	StaticPopupDialogs.DELETE_GOOD_ITEM = DELETE_ITEM
 
-	local function setHyperlinkHandlers(dialog)
-		dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
-		dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
-	end
-
-	setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
-	setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
-	setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
-
-	local deleteConfirmationFrame = CreateFrame("FRAME")
-	deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
-	deleteConfirmationFrame:SetScript("OnEvent", function()
-		local staticPopup = StaticPopup1
-		local editBox = StaticPopup1EditBox
-		local button = StaticPopup1Button1
-		local popupText = StaticPopup1Text
-
-		if editBox:IsShown() then
-			staticPopup:SetHeight(staticPopup:GetHeight() - 14)
-			editBox:Hide()
-			button:Enable()
-			local link = select(3, GetCursorInfo())
-
-			if link then
-				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
-				if linkType == "battlepet" then
-					local _, level, breedQuality = strsplit(":", linkOptions)
-					local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-					link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
-				end
-				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
-			end
-		else
-			staticPopup:SetHeight(staticPopup:GetHeight() + 40)
-			editBox:Hide()
-			button:Enable()
-			local link = select(3, GetCursorInfo())
-
-			if link then
-				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
-				if linkType == "battlepet" then
-					local _, level, breedQuality = strsplit(":", linkOptions)
-					local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-					link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
-				end
-				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
-			end
-		end
-	end)
+	local DELETE_QUEST_ITEM = K.CopyTable(StaticPopupDialogs.DELETE_QUEST_ITEM)
+	DELETE_QUEST_ITEM.timeout = 5 -- also add a timeout
+	StaticPopupDialogs.DELETE_GOOD_QUEST_ITEM = DELETE_QUEST_ITEM
 end
 
 -- Enable Module and Initialize Miscellaneous Modules

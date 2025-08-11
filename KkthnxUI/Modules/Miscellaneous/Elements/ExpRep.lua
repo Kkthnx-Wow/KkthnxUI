@@ -295,9 +295,9 @@ local function OnExpBarEnter(self)
 				local majorFactionData = C_MajorFactions_GetMajorFactionData(factionID)
 				currentStanding = (C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold) or majorFactionData.renownReputationEarned or 0
 				nextReactionThreshold = majorFactionData.renownLevelThreshold
-				GameTooltip:AddDoubleLine(RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel, string_format("%d / %d (%d%%)", RepGetValues(currentStanding, 0, nextReactionThreshold)), BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b, 1, 1, 1)
+				GameTooltip:AddDoubleLine(format(RENOWN_LEVEL_LABEL, majorFactionData.renownLevel), format("%d / %d (%d%%)", RepGetValues(currentStanding, 0, nextReactionThreshold)), BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b, 1, 1, 1)
 			elseif (isParagon or (reaction ~= _G.MAX_REPUTATION_REACTION)) and nextReactionThreshold ~= math.huge then
-				GameTooltip:AddDoubleLine(REPUTATION .. ":", string_format("%d / %d (%d%%)", RepGetValues(currentStanding, currentReactionThreshold, nextReactionThreshold)), 1, 1, 1)
+				GameTooltip:AddDoubleLine(REPUTATION .. ":", format("%d / %d (%d%%)", RepGetValues(currentStanding, currentReactionThreshold, nextReactionThreshold)), 1, 1, 1)
 			end
 
 			-- Check for specific faction

@@ -1169,6 +1169,7 @@ function Module:OnEnable()
 	local initBagType
 	function Backpack:OnBankOpened()
 		BankFrame:Show()
+		BankFrame.BankPanel:Show()
 
 		if not initBagType then
 			Module:UpdateBagSize()
@@ -1177,6 +1178,7 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnBankClosed()
+		BankFrame.BankPanel:Hide()
 		self:GetContainer("Bank"):Hide()
 		self:GetContainer("Account"):Hide()
 	end
@@ -1712,12 +1714,6 @@ function Module:OnEnable()
 			K.GoldButton_OnEvent()
 		end
 	end
-
-	-- Fixes
-	BankFrame.GetRight = function()
-		return f.bank:GetRight()
-	end
-	BankFrameItemButton_Update = K.Noop
 
 	local passedSystems = {
 		["TutorialReagentBag"] = true,

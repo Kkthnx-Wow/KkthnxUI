@@ -28,7 +28,7 @@ StaticPopupDialogs["TRACKING_ADD_PVE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		local SpellID = tonumber(self.editBox:GetText())
+		local SpellID = tonumber(self.EditBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE
 		local Name, _, Icon = Module.GetSpellInfo(SpellID)
 		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
@@ -61,7 +61,7 @@ StaticPopupDialogs["TRACKING_ADD_PVP"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		local SpellID = tonumber(self.editBox:GetText())
+		local SpellID = tonumber(self.EditBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP
 		local Name, _, Icon = Module.GetSpellInfo(SpellID)
 		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
