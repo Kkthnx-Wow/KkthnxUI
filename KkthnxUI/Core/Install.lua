@@ -484,9 +484,12 @@ local function YesTutor()
 				apply:ClearAllPoints()
 				if currentPage < 5 then
 					apply.text:SetText(APPLY)
+					apply:SetPoint("BOTTOMRIGHT", -10, 10) -- Reset position for Apply button
+					pass:Show() -- Ensure pass button is shown for pages < 5
 				else
 					apply:SetPoint("BOTTOM", 0, 10)
 					apply.text:SetText(COMPLETE)
+					pass:Hide() -- Hide pass button on final page
 				end
 				apply.text:SetTextColor(0, 1, 0) -- Set text color back to green
 				apply:Enable()
@@ -494,7 +497,6 @@ local function YesTutor()
 			end
 		end, countdownTime)
 
-		pass:Show()
 		if currentPage == 1 then
 			Module:ForceDefaultCVars()
 			ForceRaidFrame()
@@ -518,7 +520,6 @@ local function YesTutor()
 			KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest = KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest or true
 			Module.ForceAddonSkins()
 			ShowFakeAchievement("Achievement Earned", "You have successfully applied the relevant AddOn Settings.")
-			pass:Hide()
 			PlaySound(21968)
 		elseif currentPage == 5 then
 			Module:ForceDefaultCVars() -- Set these one more time

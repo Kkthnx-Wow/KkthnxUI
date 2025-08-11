@@ -185,13 +185,13 @@ oUF.Tags.Events["fulllevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_C
 oUF.Tags.Methods["raidhp"] = function(unit)
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
-	elseif C["Raid"].HealthFormat.Value == 2 then
+	elseif C["Raid"].HealthFormat == 2 then
 		local per = GetUnitHealthPerc(unit) or 0
 		return GetHealthColor(per)
-	elseif C["Raid"].HealthFormat.Value == 3 then
+	elseif C["Raid"].HealthFormat == 3 then
 		local cur = UnitHealth(unit)
 		return K.ShortValue(cur)
-	elseif C["Raid"].HealthFormat.Value == 4 then
+	elseif C["Raid"].HealthFormat == 4 then
 		local loss = UnitHealthMax(unit) - UnitHealth(unit)
 		if loss == 0 then
 			return

@@ -282,7 +282,7 @@ function Module:CreateRaid()
 	-- 	self.StatusIndicator = StatusIndicator
 	-- end
 
-	if C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
+	if C["Raid"].RaidBuffsStyle == 2 then
 		local AuraTrack = CreateFrame("Frame", nil, Health)
 		AuraTrack.Texture = RaidframeTexture
 		AuraTrack.Icons = C["Raid"].AuraTrackIcons
@@ -300,9 +300,9 @@ function Module:CreateRaid()
 		end
 
 		self.AuraTrack = AuraTrack
-	elseif C["Raid"].RaidBuffsStyle.Value == "Standard" then
-		local filter = C["Raid"].RaidBuffs.Value == "All" and "HELPFUL" or "HELPFUL|RAID"
-		local onlyShowPlayer = C["Raid"].RaidBuffs.Value == "Self"
+	elseif C["Raid"].RaidBuffsStyle == 1 then
+		local filter = C["Raid"].RaidBuffs == 3 and "HELPFUL" or "HELPFUL|RAID"
+		local onlyShowPlayer = C["Raid"].RaidBuffs == 2
 
 		local Buffs = CreateFrame("Frame", string.format("%sBuffs", self:GetName()), Health)
 		Buffs:SetPoint("TOPLEFT", Health, "TOPLEFT", 2, -2)

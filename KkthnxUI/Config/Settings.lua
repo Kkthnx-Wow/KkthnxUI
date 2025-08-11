@@ -516,24 +516,8 @@ C["Tooltip"] = {
 	ShowMount = false,
 	SpecLevelByShift = true,
 	TargetBy = true,
-	CursorMode = {
-		Options = {
-			[DISABLE] = 1,
-			["LEFT"] = 2,
-			["TOP"] = 3,
-			["RIGHT"] = 4,
-		},
-		Value = 1,
-	},
-	TipAnchor = {
-		Options = {
-			["TOPLEFT"] = 1,
-			["TOPRIGHT"] = 2,
-			["BOTTOMLEFT"] = 3,
-			["BOTTOMRIGHT"] = 4,
-		},
-		Value = 4,
-	},
+	CursorMode = 1,
+	TipAnchor = 4,
 }
 
 -- Unitframe
@@ -695,37 +679,14 @@ C["Raid"] = {
 	Smooth = false,
 	TargetHighlight = false,
 	Width = 70,
-	RaidBuffsStyle = {
-		Options = {
-			["Aura Track"] = "Aura Track",
-			["Standard"] = "Standard",
-			["None"] = "None",
-		},
-		Value = "Aura Track",
-	},
-	RaidBuffs = {
-		Options = {
-			["Only my buffs"] = "Self",
-			["Only castable buffs"] = "Castable",
-			["All buffs"] = "All",
-		},
-		Value = "Self",
-	},
+	RaidBuffsStyle = 2,
+	RaidBuffs = 1,
 	AuraTrack = true,
 	AuraTrackIcons = true,
 	AuraTrackSpellTextures = true,
 	AuraTrackThickness = 5,
-
 	HealthbarColor = 1,
-	HealthFormat = {
-		Options = {
-			["Disable HP"] = 1,
-			["Health Percentage"] = 2,
-			["Health Remaining"] = 3,
-			["Health Lost"] = 4,
-		},
-		Value = 1,
-	},
+	HealthFormat = 1,
 }
 
 -- Worldmap

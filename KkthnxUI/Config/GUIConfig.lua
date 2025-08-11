@@ -1475,40 +1475,25 @@ local function CreateRaidCategory()
 	-- GENERAL SECTION
 	-- ========================================
 	local generalRaidSection = GUI:AddSection(raidCategory, GENERAL)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.Enable", enableTextColor .. L["Enable Raidframes"], "Toggle the entire raid frame system on/off", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.HorizonRaid", L["Horizontal Raid Frames"], "Arrange raid frames horizontally instead of vertically", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.MainTankFrames", L["Show MainTank Frames"], "Display dedicated frames for main tanks", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.PowerBarShow", "Toggle The visibility Of All Power Bars", "Show or hide power bars on all raid frames", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.ManabarShow", L["Show Manabars"], "Display mana bars on raid frames", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.ReverseRaid", L["Reverse Raid Frame Growth"], "Reverse the direction raid frames grow from their anchor point", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.ShowHealPrediction", L["Show HealPrediction Statusbars"], "Show incoming heal predictions on raid frames", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.ShowNotHereTimer", L["Show Away/DND Status"], "Display away/DND status on raid member frames", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.ShowRaidSolo", "Show Raid Frames While Solo", "Display raid frames even when playing solo", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.ShowTeamIndex", L["Show Group Number Team Index"], "Display group numbers on raid frames", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.Smooth", L["Smooth Bar Transition"], "Enable smooth animations for raid frame bars", UpdateRaidSettings)
-
 	GUI:CreateSwitch(generalRaidSection, "Raid.TargetHighlight", L["Show Highlighted Target"], "Highlight the targeted raid member", UpdateRaidSettings)
 
 	-- ========================================
 	-- SIZES SECTION
 	-- ========================================
 	local sizesRaidSection = GUI:AddSection(raidCategory, L["Sizes"])
-
 	GUI:CreateSlider(sizesRaidSection, "Raid.Height", L["Raidframe Height"], 20, 100, 1, "Height of raid member frames", UpdateUnitRaidSize)
-
 	GUI:CreateSlider(sizesRaidSection, "Raid.NumGroups", L["Number Of Groups to Show"], 1, 8, 1, "Number of raid groups to display", UpdateRaidSettings)
-
 	GUI:CreateSlider(sizesRaidSection, "Raid.Width", L["Raidframe Width"], 20, 100, 1, "Width of raid member frames", UpdateUnitRaidSize)
 
 	-- ========================================
@@ -1527,14 +1512,11 @@ local function CreateRaidCategory()
 
 	-- Health Format Dropdown Options
 	local healthFormatOptions = {
-		{ text = "Disabled", value = "DISABLED" },
-		{ text = "Current", value = "CURRENT" },
-		{ text = "Percent", value = "PERCENT" },
-		{ text = "Current - Percent", value = "CURRENT_PERCENT" },
-		{ text = "Current | Max", value = "CURRENT_MAX" },
-		{ text = "Deficit", value = "DEFICIT" },
+		{ text = "Disable HP", value = 1 },
+		{ text = "Health Percentage", value = 2 },
+		{ text = "Health Remaining", value = 3 },
+		{ text = "Health Lost", value = 4 },
 	}
-
 	GUI:CreateDropdown(colorsRaidSection, "Raid.HealthFormat", L["Health Format"], healthFormatOptions, "Choose how health values are displayed on raid frames", UpdateRaidSettings)
 
 	-- ========================================
@@ -1544,39 +1526,31 @@ local function CreateRaidCategory()
 
 	-- Raid Buffs Style Dropdown Options
 	local raidBuffsStyleOptions = {
-		{ text = "Standard", value = "Standard" },
-		{ text = "Aura Track", value = "Aura Track" },
-		{ text = "Disabled", value = "Disabled" },
+		{ text = NONE, value = 0 },
+		{ text = "Standard", value = 1 },
+		{ text = "Aura Track", value = 2 },
 	}
-
 	GUI:CreateDropdown(raidBuffsSection, "Raid.RaidBuffsStyle", "Select the buff style you want to use", raidBuffsStyleOptions, "Choose the style for displaying buffs on raid frames", UpdateRaidBuffs)
 
 	-- Standard Buff Options (conditionally shown)
 	GUI:CreateDropdown(raidBuffsSection, "Raid.RaidBuffs", "Enable buffs display & filtering", {
-		{ text = "Disabled", value = "DISABLED" },
-		{ text = "Show All", value = "ALL" },
-		{ text = "Track Important", value = "IMPORTANT" },
-		{ text = "Personal Only", value = "PERSONAL" },
+		{ text = "Only my buffs", value = 1 },
+		{ text = "Only castable buffs", value = 2 },
+		{ text = "All buffs", value = 3 },
 	}, "Control which buffs are displayed on raid frames", UpdateRaidBuffs)
-
 	GUI:CreateSwitch(raidBuffsSection, "Raid.DesaturateBuffs", "Desaturate buffs that are not by me", "Gray out buffs that were not cast by you", UpdateRaidBuffs)
 
 	-- Aura Track Options (conditionally shown)
 	GUI:CreateSwitch(raidBuffsSection, "Raid.AuraTrack", "Enable auras tracking module for healer (replace buffs)", "Enable enhanced aura tracking designed for healers", UpdateRaidBuffs)
-
 	GUI:CreateSwitch(raidBuffsSection, "Raid.AuraTrackIcons", "Use squared icons instead of status bars", "Display aura tracking as icons rather than bars", UpdateRaidBuffs)
-
 	GUI:CreateSwitch(raidBuffsSection, "Raid.AuraTrackSpellTextures", "Display icons texture on aura squares instead of colored squares", "Show spell textures on aura tracking icons", UpdateRaidBuffs)
-
 	GUI:CreateSlider(raidBuffsSection, "Raid.AuraTrackThickness", "Thickness size of status bars in pixel", 2, 10, 1, "Thickness of aura tracking status bars", UpdateRaidBuffs)
 
 	-- ========================================
 	-- RAID DEBUFFS SECTION
 	-- ========================================
 	local raidDebuffsSection = GUI:AddSection(raidCategory, "Raid Debuffs")
-
 	GUI:CreateSwitch(raidDebuffsSection, "Raid.DebuffWatch", "Enable debuffs tracking (filtered auto by current gameplay (pvp or pve)", "Enable automatic debuff tracking based on content type", UpdateRaidDebuffs)
-
 	GUI:CreateSwitch(raidDebuffsSection, "Raid.DebuffWatchDefault", "We have already a debuff tracking list for pve and pvp, use it?", "Use the built-in debuff tracking lists for PvE and PvP content", UpdateRaidDebuffs)
 end
 
@@ -1632,36 +1606,23 @@ local function CreateSkinsCategory()
 	-- BLIZZARD SKINS SECTION
 	-- ========================================
 	local blizzardSkinsSection = GUI:AddSection(skinsCategory, "Blizzard Skins")
-
 	GUI:CreateSwitch(blizzardSkinsSection, "Skins.BlizzardFrames", L["Skin Some Blizzard Frames & Objects"], "Enable skinning of various Blizzard UI frames and objects", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(blizzardSkinsSection, "Skins.TalkingHeadBackdrop", L["TalkingHead Skin"], "Apply custom styling to the TalkingHead frame", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(blizzardSkinsSection, "Skins.ChatBubbles", L["ChatBubbles Skin"], "Apply custom styling to chat bubbles", UpdateSkinsSettings)
-
 	GUI:CreateSlider(blizzardSkinsSection, "Skins.ChatBubbleAlpha", L["ChatBubbles Background Alpha"], 0, 1, 0.1, "Controls the transparency of chat bubble backgrounds", UpdateChatBubble)
 
 	-- ========================================
 	-- ADDON SKINS SECTION
 	-- ========================================
 	local addonSkinsSection = GUI:AddSection(skinsCategory, "AddOn Skins")
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.Bartender4", L["Bartender4 Skin"], "Apply KkthnxUI styling to Bartender4 action bars", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.BigWigs", L["BigWigs Skin"], "Apply KkthnxUI styling to BigWigs boss mod frames", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.ButtonForge", L["ButtonForge Skin"], "Apply KkthnxUI styling to ButtonForge addon", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.ChocolateBar", L["ChocolateBar Skin"], "Apply KkthnxUI styling to ChocolateBar addon", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.DeadlyBossMods", L["Deadly Boss Mods Skin"], "Apply KkthnxUI styling to Deadly Boss Mods (DBM)", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.Details", L["Details Skin"], "Apply KkthnxUI styling to Details! damage meter", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.Dominos", L["Dominos Skin"], "Apply KkthnxUI styling to Dominos action bar addon", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.RareScanner", L["RareScanner Skin"], "Apply KkthnxUI styling to RareScanner addon", UpdateSkinsSettings)
-
 	GUI:CreateSwitch(addonSkinsSection, "Skins.WeakAuras", L["WeakAuras Skin"], "Apply KkthnxUI styling to WeakAuras addon", UpdateSkinsSettings)
 
 	-- Details Reset Button
@@ -1714,45 +1675,29 @@ local function CreateTooltipCategory()
 	-- GENERAL SECTION
 	-- ========================================
 	local generalTooltipSection = GUI:AddSection(tooltipCategory, GENERAL)
-
 	GUI:CreateSwitch(generalTooltipSection, "Tooltip.Enable", enableTextColor .. "Enable Tooltip", "Toggle the enhanced tooltip system on/off", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(generalTooltipSection, "Tooltip.CombatHide", L["Hide Tooltip in Combat"], "Hide tooltips during combat to reduce screen clutter", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(generalTooltipSection, "Tooltip.Icons", L["Item Icons"], "Show item icons in tooltips", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(generalTooltipSection, "Tooltip.ShowIDs", L["Show Tooltip IDs"], "Display spell, item, and NPC IDs in tooltips for debugging", UpdateTooltipSettings)
 
 	-- ========================================
 	-- APPEARANCE SECTION
 	-- ========================================
 	local appearanceTooltipSection = GUI:AddSection(tooltipCategory, "Appearance")
-
 	GUI:CreateSwitch(appearanceTooltipSection, "Tooltip.ClassColor", L["Quality Color Border"], "Color tooltip borders based on item quality or unit class", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(appearanceTooltipSection, "Tooltip.FactionIcon", L["Show Faction Icon"], "Display faction icons for players in tooltips", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(appearanceTooltipSection, "Tooltip.HideJunkGuild", L["Abbreviate Guild Names"], "Shorten long guild names in tooltips", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(appearanceTooltipSection, "Tooltip.HideRank", L["Hide Guild Rank"], "Hide guild rank information in player tooltips", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(appearanceTooltipSection, "Tooltip.HideRealm", L["Show realm name by SHIFT"], "Only show realm names when holding Shift key", UpdateTooltipSettings)
-
 	GUI:CreateSwitch(appearanceTooltipSection, "Tooltip.HideTitle", L["Hide Player Title"], "Hide player titles in tooltips", UpdateTooltipSettings)
 
 	-- Tooltip Anchor Dropdown Options
 	local tooltipAnchorOptions = {
-		{ text = "Top", value = "TOP" },
-		{ text = "Top Right", value = "TOPRIGHT" },
-		{ text = "Right", value = "RIGHT" },
-		{ text = "Bottom Right", value = "BOTTOMRIGHT" },
-		{ text = "Bottom", value = "BOTTOM" },
-		{ text = "Bottom Left", value = "BOTTOMLEFT" },
-		{ text = "Left", value = "LEFT" },
-		{ text = "Top Left", value = "TOPLEFT" },
-		{ text = "Cursor", value = "CURSOR" },
+		{ text = "TOPLEFT", value = 1 },
+		{ text = "TOPRIGHT", value = 2 },
+		{ text = "BOTTOMLEFT", value = 3 },
+		{ text = "BOTTOMRIGHT", value = 4 },
 	}
-
 	GUI:CreateDropdown(appearanceTooltipSection, "Tooltip.TipAnchor", "Tooltip Anchor", tooltipAnchorOptions, "Choose where tooltips are anchored on screen", UpdateTooltipAnchor)
 
 	-- ADVANCED SECTION
@@ -1763,12 +1708,11 @@ local function CreateTooltipCategory()
 
 	-- Follow Cursor Dropdown Options
 	local cursorModeOptions = {
-		{ text = "Disabled", value = "DISABLED" },
-		{ text = "Always", value = "ALWAYS" },
-		{ text = "Combat Only", value = "COMBAT" },
-		{ text = "Out of Combat", value = "NOCOMBAT" },
+		{ text = DISABLE, value = 1 },
+		{ text = "LEFT", value = 2 },
+		{ text = "TOP", value = 3 },
+		{ text = "RIGHT", value = 4 },
 	}
-
 	GUI:CreateDropdown(advancedTooltipSection, "Tooltip.CursorMode", L["Follow Cursor"], cursorModeOptions, "Control when tooltips follow the mouse cursor", UpdateTooltipCursor)
 
 	-- RAIDER.IO SECTION (conditional)

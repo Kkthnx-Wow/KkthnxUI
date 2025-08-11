@@ -386,14 +386,14 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 		return
 	end
 
-	local mode = C["Tooltip"].CursorMode.Value
+	local mode = C["Tooltip"].CursorMode
 	self:SetOwner(parent, cursorIndex[mode])
 	if mode == 1 then
 		if not mover then
 			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 38 }, 100, 100)
 		end
 		self:ClearAllPoints()
-		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor.Value], mover)
+		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor], mover)
 	end
 end
 
