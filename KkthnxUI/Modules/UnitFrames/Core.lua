@@ -395,7 +395,7 @@ function Module.CustomFilter(element, unit, data)
 			return true
 		else
 			-- Filter based on aura filter settings
-			local auraFilter = C["Nameplate"].AuraFilter.Value
+			local auraFilter = C["Nameplate"].AuraFilter
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
 		end
 	else

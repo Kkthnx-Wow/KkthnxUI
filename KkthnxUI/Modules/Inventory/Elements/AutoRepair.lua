@@ -68,7 +68,7 @@ local function merchantClose()
 end
 
 local function merchantShow()
-	if IsShiftKeyDown() or C["Inventory"].AutoRepair == 0 or not CanMerchantRepair() then
+	if IsShiftKeyDown() or C["Inventory"].AutoRepair == 3 or not CanMerchantRepair() then
 		return
 	end
 

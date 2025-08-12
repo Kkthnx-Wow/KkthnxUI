@@ -80,47 +80,22 @@ local function CreateActionBarsCategory()
 	-- ActionBar 4 Section
 	local bar4Section = GUI:AddSection(actionBarCategory, "ActionBar 4")
 	GUI:CreateSwitch(bar4Section, "ActionBar.Bar4", enableTextColor .. L["Enable ActionBar"] .. " 4", L["Bar4 Desc"], UpdateActionbar)
-	-- GUI:CreateSlider(bar4Section, "ActionBar.Bar4Size", L["Button Size"], 20, 80, 1, L["Bar4Size Desc"], UpdateActionBar4Scale)
-	-- GUI:CreateSlider(bar4Section, "ActionBar.Bar4PerRow", L["Button PerRow"], 1, 12, 1, L["Bar4PerRow Desc"], UpdateActionBar4Scale)
-	-- GUI:CreateSlider(bar4Section, "ActionBar.Bar4Num", L["Button Num"], 1, 12, 1, L["Bar4Num Desc"], UpdateActionBar4Scale)
-	-- GUI:CreateSlider(bar4Section, "ActionBar.Bar4Font", L["Button FontSize"], 8, 20, 1, L["Bar4Font Desc"], UpdateActionBar4Scale)
-	-- GUI:CreateSwitch(bar4Section, "ActionBar.Bar4Fade", L["Enable Fade for Bar 4"], L["Allows Bar 4 to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- ActionBar 5 Section
 	local bar5Section = GUI:AddSection(actionBarCategory, "ActionBar 5")
 	GUI:CreateSwitch(bar5Section, "ActionBar.Bar5", enableTextColor .. L["Enable ActionBar"] .. " 5", L["Bar5 Desc"], UpdateActionbar)
-	-- GUI:CreateSlider(bar5Section, "ActionBar.Bar5Size", L["Button Size"], 20, 80, 1, L["Bar5Size Desc"], UpdateActionBar5Scale)
-	-- GUI:CreateSlider(bar5Section, "ActionBar.Bar5PerRow", L["Button PerRow"], 1, 12, 1, L["Bar5PerRow Desc"], UpdateActionBar5Scale)
-	-- GUI:CreateSlider(bar5Section, "ActionBar.Bar5Num", L["Button Num"], 1, 12, 1, L["Bar5Num Desc"], UpdateActionBar5Scale)
-	-- GUI:CreateSlider(bar5Section, "ActionBar.Bar5Font", L["Button FontSize"], 8, 20, 1, L["Bar5Font Desc"], UpdateActionBar5Scale)
-	-- GUI:CreateSwitch(bar5Section, "ActionBar.Bar5Fade", L["Enable Fade for Bar 5"], L["Allows Bar 5 to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- ActionBar 6 Section
 	local bar6Section = GUI:AddSection(actionBarCategory, "ActionBar 6")
 	GUI:CreateSwitch(bar6Section, "ActionBar.Bar6", enableTextColor .. L["Enable ActionBar"] .. " 6", L["Bar6 Desc"], UpdateActionbar)
-	-- GUI:CreateSlider(bar6Section, "ActionBar.Bar6Size", L["Button Size"], 20, 80, 1, L["Bar6Size Desc"], UpdateActionBar6Scale)
-	-- GUI:CreateSlider(bar6Section, "ActionBar.Bar6PerRow", L["Button PerRow"], 1, 12, 1, L["Bar6PerRow Desc"], UpdateActionBar6Scale)
-	-- GUI:CreateSlider(bar6Section, "ActionBar.Bar6Num", L["Button Num"], 1, 12, 1, L["Bar6Num Desc"], UpdateActionBar6Scale)
-	-- GUI:CreateSlider(bar6Section, "ActionBar.Bar6Font", L["Button FontSize"], 8, 20, 1, L["Bar6Font Desc"], UpdateActionBar6Scale)
-	-- GUI:CreateSwitch(bar6Section, "ActionBar.Bar6Fade", L["Enable Fade for Bar 6"], L["Allows Bar 6 to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- ActionBar 7 Section
 	local bar7Section = GUI:AddSection(actionBarCategory, "ActionBar 7")
 	GUI:CreateSwitch(bar7Section, "ActionBar.Bar7", enableTextColor .. L["Enable ActionBar"] .. " 7", L["Bar7 Desc"], UpdateActionbar)
-	-- GUI:CreateSlider(bar7Section, "ActionBar.Bar7Size", L["Button Size"], 20, 80, 1, L["Bar7Size Desc"], UpdateActionBar7Scale)
-	-- GUI:CreateSlider(bar7Section, "ActionBar.Bar7PerRow", L["Button PerRow"], 1, 12, 1, L["Bar7PerRow Desc"], UpdateActionBar7Scale)
-	-- GUI:CreateSlider(bar7Section, "ActionBar.Bar7Num", L["Button Num"], 1, 12, 1, L["Bar7Num Desc"], UpdateActionBar7Scale)
-	-- GUI:CreateSlider(bar7Section, "ActionBar.Bar7Font", L["Button FontSize"], 8, 20, 1, L["Bar7Font Desc"], UpdateActionBar7Scale)
-	-- GUI:CreateSwitch(bar7Section, "ActionBar.Bar7Fade", L["Enable Fade for Bar 7"], L["Allows Bar 7 to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- ActionBar 8 Section
 	local bar8Section = GUI:AddSection(actionBarCategory, "ActionBar 8")
 	GUI:CreateSwitch(bar8Section, "ActionBar.Bar8", enableTextColor .. L["Enable ActionBar"] .. " 8", L["Bar8 Desc"], UpdateActionbar)
-	-- GUI:CreateSlider(bar8Section, "ActionBar.Bar8Size", L["Button Size"], 20, 80, 1, L["Bar8Size Desc"], UpdateActionBar8Scale)
-	-- GUI:CreateSlider(bar8Section, "ActionBar.Bar8PerRow", L["Button PerRow"], 1, 12, 1, L["Bar8PerRow Desc"], UpdateActionBar8Scale)
-	-- GUI:CreateSlider(bar8Section, "ActionBar.Bar8Num", L["Button Num"], 1, 12, 1, L["Bar8Num Desc"], UpdateActionBar8Scale)
-	-- GUI:CreateSlider(bar8Section, "ActionBar.Bar8Font", L["Button FontSize"], 8, 20, 1, L["Bar8Font Desc"], UpdateActionBar8Scale)
-	-- GUI:CreateSwitch(bar8Section, "ActionBar.Bar8Fade", L["Enable Fade for Bar 8"], L["Allows Bar 8 to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- Pet Bar Section
 	local petBarSection = GUI:AddSection(actionBarCategory, L["ActionBar Pet"])
@@ -249,7 +224,7 @@ local function CreateArenaCategory()
 	local generalArenaSection = GUI:AddSection(arenaCategory, GENERAL)
 	GUI:CreateSwitch(generalArenaSection, "Arena.Enable", enableTextColor .. L["Enable Arena"], "Toggle Arena Module On/Off", UpdateArenaFrames)
 	GUI:CreateSwitch(generalArenaSection, "Arena.Castbars", L["Show Castbars"], "Enable castbars for arena opponent frames", UpdateArenaFrames)
-	GUI:CreateSwitch(generalArenaSection, "Arena.CastbarIcon", "Show Castbars Icon", "Display icons on arena opponent castbars", UpdateArenaFrames)
+	GUI:CreateSwitch(generalArenaSection, "Arena.CastbarIcon", "Show Castbars Icon", "Display icons on arena opponent castbars")
 	GUI:CreateSwitch(generalArenaSection, "Arena.Smooth", L["Smooth Bar Transition"], "Enable smooth health and power bar animations", UpdateArenaFrames)
 
 	-- Sizes Section
@@ -555,11 +530,11 @@ local function CreateChatCategory()
 
 	-- Timestamp Format Dropdown Options
 	local timestampOptions = {
-		{ text = "Disabled", value = "NONE" },
-		{ text = "HH:MM", value = "%H:%M" },
-		{ text = "HH:MM:SS", value = "%H:%M:%S" },
-		{ text = "MM/DD HH:MM", value = "%m/%d %H:%M" },
-		{ text = "DD/MM HH:MM", value = "%d/%m %H:%M" },
+		{ text = "Disable", value = 1 },
+		{ text = "03:27 PM", value = 2 },
+		{ text = "03:27:32 PM", value = 3 },
+		{ text = "15:27", value = 4 },
+		{ text = "15:27:32", value = 5 },
 	}
 	GUI:CreateDropdown(appearanceChatSection, "Chat.TimestampFormat", L["Custom Chat Timestamps"], timestampOptions, L["TimestampFormat Desc"], UpdateChatSettings)
 
@@ -669,10 +644,10 @@ local function CreateGeneralCategory()
 
 	-- Button Glow Mode Dropdown
 	local glowModeOptions = {
-		{ text = "Default", value = "default" },
-		{ text = "Action Button Glow", value = "actionButton" },
-		{ text = "Pixel Glow", value = "pixel" },
-		{ text = "Auto Cast Shine", value = "autocast" },
+		{ text = "Pixel", value = 1 },
+		{ text = "Autocast", value = 2 },
+		{ text = "Action Button", value = 3 },
+		{ text = "Proc Glow", value = 4 },
 	}
 	GUI:CreateDropdown(generalGeneralSection, "General.GlowMode", L["Button Glow Mode"], glowModeOptions, L["GlowMode Desc"], UpdateGeneralSettings)
 
@@ -685,18 +660,17 @@ local function CreateGeneralCategory()
 		borderStyleOptions = {
 			{ text = "KkthnxUI", value = "KkthnxUI", description = "Default KkthnxUI border style" },
 			{ text = "AzeriteUI", value = "AzeriteUI", description = "Clean Azerite-inspired border" },
-			{ text = "KkthnxUI Blank", value = "KkthnxUI_Blank", description = "Minimal blank border style" },
 			{ text = "KkthnxUI Pixel", value = "KkthnxUI_Pixel", description = "Sharp pixel-perfect border" },
+			{ text = "KkthnxUI Blank", value = "KkthnxUI_Blank", description = "Minimal blank border style" },
 		}
 	end
-
-	GUI:CreateDropdown(generalGeneralSection, "General.BorderStyle", L["Border Style"], borderStyleOptions, "Choose the visual style for UI borders (requires reload)", UpdateGeneralSettings)
+	GUI:CreateDropdown(generalGeneralSection, "General.BorderStyle", L["Border Style"], borderStyleOptions, "Choose the visual style for UI borders")
 
 	-- Number Prefix Style Dropdown
 	local numberPrefixOptions = {
-		{ text = "Standard", value = "STANDARD" },
-		{ text = "Asian", value = "ASIAN" },
-		{ text = "Chinese", value = "CHINESE" },
+		{ text = "Standard: b/m/k", value = 1 },
+		{ text = "Asian: y/w", value = 2 },
+		{ text = "Full Digits", value = 3 },
 	}
 	GUI:CreateDropdown(generalGeneralSection, "General.NumberPrefixStyle", L["Number Prefix Style"], numberPrefixOptions, "Choose how large numbers are abbreviated", UpdateGeneralSettings)
 
@@ -714,9 +688,7 @@ local function CreateGeneralCategory()
 	-- COLORS SECTION
 	-- ========================================
 	local colorsSection = GUI:AddSection(generalCategory, COLORS)
-
 	GUI:CreateSwitch(colorsSection, "General.ColorTextures", L["Color 'Most' KkthnxUI Borders"], L["ColorTextures Desc"] .. " (requires reload)", UpdateTextureColors)
-
 	GUI:CreateColorPicker(colorsSection, "General.TexturesColor", L["Textures Color"], "Choose the color for KkthnxUI textures and borders (requires reload)", UpdateTextureColors)
 
 	-- ========================================
@@ -801,9 +773,9 @@ local function CreateInventoryCategory()
 
 	-- Auto Repair Dropdown Options
 	local autoRepairOptions = {
-		{ text = NONE, value = 0 },
 		{ text = GUILD, value = 1 },
 		{ text = PLAYER, value = 2 },
+		{ text = DISABLE, value = 3 },
 	}
 	GUI:CreateDropdown(otherInventorySection, "Inventory.AutoRepair", L["Auto Repair Gear"], autoRepairOptions, "Choose how to automatically repair your gear", UpdateInventorySettings)
 
@@ -826,15 +798,15 @@ local function CreateInventoryCategory()
 
 	-- Growth Direction Dropdown Options
 	local growthDirectionOptions = {
-		{ text = "Horizontal", value = "HORIZONTAL" },
-		{ text = "Vertical", value = "VERTICAL" },
+		{ text = "Horizontal", value = 1 },
+		{ text = "Vertical", value = 2 },
 	}
 	GUI:CreateDropdown(bagBarSection, "Inventory.GrowthDirection", L["Growth Direction"], growthDirectionOptions, L["GrowthDirection Desc"], UpdateInventorySettings)
 
 	-- Sort Direction Dropdown Options
 	local sortDirectionOptions = {
-		{ text = "Ascending", value = "ASCENDING" },
-		{ text = "Descending", value = "DESCENDING" },
+		{ text = "Ascending", value = 1 },
+		{ text = "Descending", value = 2 },
 	}
 	GUI:CreateDropdown(bagBarSection, "Inventory.SortDirection", L["Sort Direction"], sortDirectionOptions, "Choose the direction for sorting bag contents", UpdateInventorySettings)
 end
@@ -874,25 +846,20 @@ local function CreateLootCategory()
 	-- GENERAL SECTION
 	-- ========================================
 	local generalLootSection = GUI:AddSection(lootCategory, GENERAL)
-
 	GUI:CreateSwitch(generalLootSection, "Loot.Enable", enableTextColor .. L["Enable Loot"], L["Enable Desc"], UpdateLootSettings)
-
 	GUI:CreateSwitch(generalLootSection, "Loot.GroupLoot", enableTextColor .. L["Enable Group Loot"], L["GroupLoot Desc"], UpdateGroupLoot)
 
 	-- ========================================
 	-- AUTO-LOOTING SECTION
 	-- ========================================
 	local autoLootingSection = GUI:AddSection(lootCategory, L["Auto-Looting"])
-
 	GUI:CreateSwitch(autoLootingSection, "Loot.FastLoot", L["Faster Auto-Looting"], L["FastLoot Desc"], UpdateFastLoot)
 
 	-- ========================================
 	-- AUTO-CONFIRM SECTION
 	-- ========================================
 	local autoConfirmSection = GUI:AddSection(lootCategory, L["Auto-Confirm"])
-
 	GUI:CreateSwitch(autoConfirmSection, "Loot.AutoConfirm", L["Auto Confirm Loot Dialogs"], "Automatically confirms loot dialogs and prompts", UpdateLootSettings)
-
 	GUI:CreateSwitch(autoConfirmSection, "Loot.AutoGreed", L["Auto Greed Green Items"], L["AutoGreed Desc"], UpdateLootSettings)
 end
 
@@ -947,22 +914,16 @@ local function CreateMinimapCategory()
 	-- GENERAL SECTION
 	-- ========================================
 	local generalMinimapSection = GUI:AddSection(minimapCategory, GENERAL)
-
 	GUI:CreateSwitch(generalMinimapSection, "Minimap.Enable", enableTextColor .. L["Enable Minimap"], L["Enable Desc"], UpdateMinimapSettings)
-
 	GUI:CreateSwitch(generalMinimapSection, "Minimap.Calendar", L["Show Minimap Calendar"], L["If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option."], UpdateMinimapSettings)
 
 	-- ========================================
 	-- FEATURES SECTION
 	-- ========================================
 	local featuresSection = GUI:AddSection(minimapCategory, L["Features"])
-
 	GUI:CreateSwitch(featuresSection, "Minimap.EasyVolume", L["EasyVolume"], L["EasyVolumeTip"], UpdateEasyVolume)
-
 	GUI:CreateSwitch(featuresSection, "Minimap.MailPulse", L["Pulse Minimap Mail"], L["MailPulse Desc"], UpdateMailPulse)
-
 	GUI:CreateSwitch(featuresSection, "Minimap.QueueStatusText", L["QueueStatus"], "Show queue status text on the minimap", UpdateMinimapSettings)
-
 	GUI:CreateSwitch(featuresSection, "Minimap.ShowRecycleBin", L["Show Minimap Button Collector"], L["ShowRecycleBin Desc"], UpdateRecycleBin)
 
 	-- ========================================
@@ -972,16 +933,11 @@ local function CreateMinimapCategory()
 
 	-- RecycleBin Position Dropdown Options
 	local recycleBinPositionOptions = {
-		{ text = "Top", value = "TOP" },
-		{ text = "Top Right", value = "TOPRIGHT" },
-		{ text = "Right", value = "RIGHT" },
-		{ text = "Bottom Right", value = "BOTTOMRIGHT" },
-		{ text = "Bottom", value = "BOTTOM" },
-		{ text = "Bottom Left", value = "BOTTOMLEFT" },
-		{ text = "Left", value = "LEFT" },
-		{ text = "Top Left", value = "TOPLEFT" },
+		{ text = "BottomLeft", value = 1 },
+		{ text = "BottomRight", value = 2 },
+		{ text = "TopLeft", value = 3 },
+		{ text = "TopRight", value = 4 },
 	}
-
 	GUI:CreateDropdown(recycleBinSection, "Minimap.RecycleBinPosition", L["Set RecycleBin Positon"], recycleBinPositionOptions, L["RecycleBinPosition Desc"], UpdateRecycleBin)
 
 	-- ========================================
@@ -991,18 +947,16 @@ local function CreateMinimapCategory()
 
 	-- Location Text Style Dropdown Options
 	local locationTextOptions = {
-		{ text = "Hidden", value = "HIDE" },
-		{ text = "Simple", value = "SIMPLE" },
-		{ text = "Full", value = "FULL" },
+		{ text = "Always Display", value = 1 },
+		{ text = "Hide", value = 2 },
+		{ text = "Minimap Mouseover", value = 3 },
 	}
-
 	GUI:CreateDropdown(locationSection, "Minimap.LocationText", L["Location Text Style"], locationTextOptions, "Choose how location text is displayed on the minimap", UpdateMinimapSettings)
 
 	-- ========================================
 	-- SIZE SECTION
 	-- ========================================
 	local sizeSection = GUI:AddSection(minimapCategory, L["Size"])
-
 	GUI:CreateSlider(sizeSection, "Minimap.Size", L["Minimap Size"], 120, 300, 1, L["Size Desc"], UpdateMinimapSize)
 end
 
@@ -1049,66 +1003,57 @@ local function CreateMiscCategory()
 	-- GENERAL SECTION
 	-- ========================================
 	local generalMiscSection = GUI:AddSection(miscCategory, GENERAL)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.ColorPicker", L["Enhanced Color Picker"], "Enhances the default color picker with additional functionality", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.EasyMarking", L["EasyMarking by Ctrl + LeftClick"], "Allows quick marking of targets using Ctrl + Left Click", UpdateMiscSettings)
 
+	-- Location Text Style Dropdown Options
+	local easyMarkKeyOptions = {
+		{ text = "CTRL_KEY", value = 1 },
+		{ text = "ALT_KEY", value = 2 },
+		{ text = "SHIFT_KEY", value = 3 },
+		{ text = DISABLE, value = 4 },
+	}
+	GUI:CreateDropdown(generalMiscSection, "Misc.EasyMarkKey", "EasyMarking Key Modifier", easyMarkKeyOptions, "Put the tooltip info in...!", UpdateMiscSettings)
 	GUI:CreateSwitch(generalMiscSection, "Misc.HideBanner", L["Hide RaidBoss EmoteFrame"], "Hides the raid boss emote frame during encounters", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.HideBossEmote", L["Hide BossBanner"], "Hides the boss banner that appears during boss encounters", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.ImprovedStats", L["Display Character Frame Full Stats"], "Shows expanded character statistics in the character frame", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.NoTalkingHead", L["Remove And Hide The TalkingHead Frame"], "Completely removes the talking head frame from quest interactions", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"], "Displays helpful Wowhead links above the quest log frame", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.SlotDurability", L["Show Slot Durability %"], "Shows durability percentage on equipment slots", UpdateMiscSettings)
-
 	GUI:CreateSwitch(generalMiscSection, "Misc.YClassColors", "Enable ClassColors", "Toggle the display of class colors in the guild roster, friends list, and Who frame.", UpdateYClassColors)
 
 	-- ========================================
 	-- CAMERA SECTION
 	-- ========================================
 	local cameraSection = GUI:AddSection(miscCategory, "Camera")
-
 	GUI:CreateSlider(cameraSection, "Misc.MaxCameraZoom", "Max Camera Zoom Level", 1, 2.6, 0.1, "Set the maximum camera zoom distance", UpdateMaxZoomLevel)
 
 	-- ========================================
 	-- TRADE SKILL SECTION
 	-- ========================================
 	local tradeSkillSection = GUI:AddSection(miscCategory, "Trade Skill")
-
 	GUI:CreateSwitch(tradeSkillSection, "Misc.TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"], "Adds convenient tabs to the trade skill frame similar to the spellbook", UpdateMiscSettings)
 
 	-- ========================================
 	-- SOCIAL SECTION
 	-- ========================================
 	local socialSection = GUI:AddSection(miscCategory, "Social")
-
 	GUI:CreateSwitch(socialSection, "Misc.AFKCamera", L["AFK Camera"], "Enables automatic camera movement when you go AFK", UpdateMiscSettings)
-
 	GUI:CreateSwitch(socialSection, "Misc.EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"], "Enhances the friends and guild list with improved colors and information", UpdateMiscSettings)
-
 	GUI:CreateSwitch(socialSection, "Misc.MuteSounds", "Mute Various Annoying Sounds In-Game", "Mutes specific annoying sound effects in the game", UpdateMiscSettings)
-
 	GUI:CreateSwitch(socialSection, "Misc.ParagonEnable", L["Add Paragon Info on ReputationFrame"], L["ParagonReputationTip"], UpdateMiscSettings)
 
 	-- ========================================
 	-- MAIL SECTION
 	-- ========================================
 	local mailSection = GUI:AddSection(miscCategory, "Mail")
-
 	GUI:CreateSwitch(mailSection, "Misc.EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox", "Enhances the mailbox with features similar to the Postal addon", UpdateMiscSettings)
 
 	-- ========================================
 	-- QUESTING SECTION
 	-- ========================================
 	local questingSection = GUI:AddSection(miscCategory, "Questing")
-
 	GUI:CreateSwitch(questingSection, "Misc.ExpRep", "Display Exp/Rep Bar (Minimap)", "Shows experience and reputation bars near the minimap", UpdateMiscSettings)
-
 	GUI:CreateSwitch(questingSection, "Misc.QuestTool", "Add Tips For Some Quests And World Quests", "Provides helpful tips and information for quests and world quests", UpdateMiscSettings)
 
 	-- ========================================
@@ -1122,23 +1067,18 @@ local function CreateMiscCategory()
 	-- RAID TOOL SECTION
 	-- ========================================
 	local raidToolSection = GUI:AddSection(miscCategory, "Raid Tool")
-
 	GUI:CreateSwitch(raidToolSection, "Misc.RaidTool", L["Show Raid Utility Frame"], "Shows the raid utility frame with useful raid tools and information", UpdateMiscSettings)
-
 	GUI:CreateSwitch(raidToolSection, "Misc.RMRune", "RMRune - Add Info", "Adds additional information for Runic Power and similar resources", UpdateMiscSettings)
-
 	GUI:CreateTextInput(raidToolSection, "Misc.DBMCount", "DBMCount - Add Info", "Enter custom info...", "Configure custom DBM count information", UpdateMiscSettings)
-
 	GUI:CreateSlider(raidToolSection, "Misc.MarkerBarSize", "Marker Bar Size - Add Info", 20, 40, 1, "Size of the world marker bar buttons", UpdateMarkerGrid)
 
 	-- World Markers Bar Dropdown Options
 	local markerBarOptions = {
-		{ text = "Disabled", value = "DISABLED" },
-		{ text = "Always Show", value = "ALWAYS" },
-		{ text = "In Group Only", value = "GROUP" },
-		{ text = "In Raid Only", value = "RAID" },
+		{ text = "Grids", value = 1 },
+		{ text = "Horizontal", value = 2 },
+		{ text = "Vertical", value = 3 },
+		{ text = DISABLE, value = 4 },
 	}
-
 	GUI:CreateDropdown(raidToolSection, "Misc.ShowMarkerBar", L["World Markers Bar"], markerBarOptions, "Controls when the world markers bar is displayed", UpdateMarkerGrid)
 
 	-- ========================================
@@ -1146,17 +1086,15 @@ local function CreateMiscCategory()
 	-- ========================================
 	local miscellaneousSection = GUI:AddSection(miscCategory, "Miscellaneous")
 
-	-- Conditional widget for GemEnchantInfo (only show if ItemLevel is enabled)
-	local function shouldShowGemEnchantInfo()
-		return GetConfigValue("Misc.ItemLevel") == true
-	end
+	-- -- Conditional widget for GemEnchantInfo (only show if ItemLevel is enabled)
+	-- local function shouldShowGemEnchantInfo()
+	-- 	return GetConfigValue("Misc.ItemLevel") == true
+	-- end
 
 	-- We'll create this as a regular widget for now, but in a full implementation
 	-- you could use conditional visibility
 	GUI:CreateSwitch(miscellaneousSection, "Misc.GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"], "Shows gem and enchant information on character and inspect frames", UpdateMiscSettings)
-
 	GUI:CreateSwitch(miscellaneousSection, "Misc.QuickJoin", L["QuickJoin"], L["QuickJoinTip"], UpdateMiscSettings)
-
 	GUI:CreateSwitch(miscellaneousSection, "Misc.ItemLevel", L["Show Character/Inspect ItemLevel Info"], "Displays item level information on character and inspect frames", UpdateMiscSettings)
 end
 
@@ -1264,7 +1202,6 @@ local function CreateNameplateCategory()
 		{ text = "Red Chevron Arrow2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2:0|t", value = "Interface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2" },
 	}
 	GUI:CreateDropdown(generalNameplateSection, "Nameplate.TargetIndicatorTexture", "TargetIndicator Texture", targetIndicatorTextureOptions, "Choose the texture for target indicators", refreshNameplates)
-
 	GUI:CreateTextInput(generalNameplateSection, "Nameplate.CustomUnitList", L["Custom UnitColor List"], "Enter unit names...", L["CustomUnitTip"], UpdateCustomUnitList)
 	GUI:CreateTextInput(generalNameplateSection, "Nameplate.PowerUnitList", L["Custom PowerUnit List"], "Enter unit names...", L["CustomUnitTip"], UpdatePowerUnitList)
 
@@ -1286,7 +1223,6 @@ local function CreateNameplateCategory()
 	-- MISCELLANEOUS SECTION
 	-- ========================================
 	local miscellaneousNameplateSection = GUI:AddSection(nameplateCategory, "Miscellaneous")
-
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.AKSProgress", L["Show AngryKeystones Progress"], "Display AngryKeystones progress information on nameplates", refreshNameplates)
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.PlateAuras", "Target Nameplate Auras", "Show auras on target nameplates", refreshNameplates)
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.QuestIndicator", L["Quest Progress Indicator"], "Show quest progress indicators on nameplates", refreshNameplates)
@@ -1312,42 +1248,29 @@ local function CreateNameplateCategory()
 	-- PLAYER NAMEPLATE TOGGLES SECTION
 	-- ========================================
 	local playerTogglesSection = GUI:AddSection(nameplateCategory, "Player Nameplate Toggles")
-
 	GUI:CreateSwitch(playerTogglesSection, "Nameplate.ShowPlayerPlate", enableTextColor .. L["Enable Personal Resource"], "Show your personal resource nameplate", togglePlayerPlate)
-
 	GUI:CreateSwitch(playerTogglesSection, "Nameplate.PPGCDTicker", L["Enable GCD Ticker"], "Show global cooldown ticker on personal nameplate", refreshNameplates)
 	GUI:CreateSwitch(playerTogglesSection, "Nameplate.PPHideOOC", L["Only Visible in Combat"], "Only show personal nameplate during combat", refreshNameplates)
-
 	GUI:CreateSwitch(playerTogglesSection, "Nameplate.PPPowerText", L["Show Power Value"], "Display power values on personal nameplate", togglePlatePower)
 
 	-- ========================================
 	-- PLAYER NAMEPLATE VALUES SECTION
 	-- ========================================
 	local playerValuesSection = GUI:AddSection(nameplateCategory, "Player Nameplate Values")
-
 	GUI:CreateSlider(playerValuesSection, "Nameplate.PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1, "Height of class power and health bars on personal nameplate", refreshNameplates)
-
 	GUI:CreateSlider(playerValuesSection, "Nameplate.PPIconSize", L["PlayerPlate IconSize"], 20, 40, 1, "Size of icons on personal nameplate", refreshNameplates)
-
 	GUI:CreateSlider(playerValuesSection, "Nameplate.PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1, "Height of power bar on personal nameplate", refreshNameplates)
 
 	-- ========================================
 	-- COLORS SECTION
 	-- ========================================
 	local colorsNameplateSection = GUI:AddSection(nameplateCategory, COLORS)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.CustomColor", L["Custom Color"], "Color for custom units", refreshNameplates)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.InsecureColor", L["Insecure Color"], "Color for insecure threat level", refreshNameplates)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.OffTankColor", L["Off-Tank Color"], "Color for off-tank units", refreshNameplates)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.SecureColor", L["Secure Color"], "Color for secure threat level", refreshNameplates)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.TargetColor", "Selected Target Coloring", "Color for targeted nameplates", refreshNameplates)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.TargetIndicatorColor", L["TargetIndicator Color"], "Color for target indicators", refreshNameplates)
-
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.TransColor", L["Transition Color"], "Color for threat transition states", refreshNameplates)
 end
 
@@ -1379,55 +1302,39 @@ local function CreatePartyCategory()
 	-- GENERAL SECTION
 	-- ========================================
 	local generalPartySection = GUI:AddSection(partyCategory, GENERAL)
-
 	GUI:CreateSwitch(generalPartySection, "Party.Enable", enableTextColor .. L["Enable Party"], "Toggle the entire party frame system on/off", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.ShowBuffs", L["Show Party Buffs"], "Display buffs on party member frames", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.ShowHealPrediction", L["Show HealPrediction Statusbars"], "Show incoming heal predictions on party frames", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.ShowPartySolo", "Show Party Frames While Solo", "Display party frames even when playing solo", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.ShowPet", L["Show Party Pets"], "Display pet frames for party members", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.ShowPlayer", L["Show Player In Party"], "Include your own frame in the party display", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.Smooth", L["Smooth Bar Transition"], "Enable smooth animations for party frame bars", UpdatePartySettings)
-
 	GUI:CreateSwitch(generalPartySection, "Party.TargetHighlight", L["Show Highlighted Target"], "Highlight the targeted party member", UpdatePartySettings)
 
 	-- ========================================
 	-- PARTY CASTBARS SECTION
 	-- ========================================
 	local castbarsPartySection = GUI:AddSection(partyCategory, "Party Castbars")
-
 	GUI:CreateSwitch(castbarsPartySection, "Party.Castbars", L["Show Castbars"], "Display castbars on party member frames", UpdatePartySettings)
-
 	GUI:CreateSwitch(castbarsPartySection, "Party.CastbarIcon", L["Show Castbars"] .. " Icon", "Show spell icons on party member castbars", UpdatePartySettings)
 
 	-- ========================================
 	-- SIZES SECTION
 	-- ========================================
 	local sizesPartySection = GUI:AddSection(partyCategory, L["Sizes"])
-
 	GUI:CreateSlider(sizesPartySection, "Party.HealthHeight", "Party Frame Health Height", 20, 50, 1, "Height of health bars on party frames", UpdateUnitPartySize)
-
 	GUI:CreateSlider(sizesPartySection, "Party.HealthWidth", "Party Frame Health Width", 120, 180, 1, "Width of health bars on party frames", UpdateUnitPartySize)
-
 	GUI:CreateSlider(sizesPartySection, "Party.PowerHeight", "Party Frame Power Height", 10, 30, 1, "Height of power bars on party frames", UpdateUnitPartySize)
 
 	-- ========================================
 	-- COLORS SECTION
 	-- ========================================
 	local colorsPartySection = GUI:AddSection(partyCategory, COLORS)
-
-	-- Health Color Format Dropdown Options
-	local healthColorOptions = {
+	local healthColorOptions = { -- Health Color Format Dropdown Options
 		{ text = "Class", value = 1 },
 		{ text = "Dark", value = 2 },
 		{ text = "Value", value = 3 },
 	}
-
 	GUI:CreateDropdown(colorsPartySection, "Party.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on party frames", UpdatePartySettings)
 end
 
@@ -1507,7 +1414,6 @@ local function CreateRaidCategory()
 		{ text = "Dark", value = 2 },
 		{ text = "Value", value = 3 },
 	}
-
 	GUI:CreateDropdown(colorsRaidSection, "Raid.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on raid frames", UpdateRaidSettings)
 
 	-- Health Format Dropdown Options
@@ -1523,12 +1429,10 @@ local function CreateRaidCategory()
 	-- RAID BUFFS SECTION
 	-- ========================================
 	local raidBuffsSection = GUI:AddSection(raidCategory, "Raid Buffs")
-
-	-- Raid Buffs Style Dropdown Options
-	local raidBuffsStyleOptions = {
-		{ text = NONE, value = 0 },
+	local raidBuffsStyleOptions = { -- Raid Buffs Style Dropdown Options
 		{ text = "Standard", value = 1 },
 		{ text = "Aura Track", value = 2 },
+		{ text = "Disable", value = 3 },
 	}
 	GUI:CreateDropdown(raidBuffsSection, "Raid.RaidBuffsStyle", "Select the buff style you want to use", raidBuffsStyleOptions, "Choose the style for displaying buffs on raid frames", UpdateRaidBuffs)
 
@@ -1634,9 +1538,7 @@ local function CreateSkinsCategory()
 	-- FONT TWEAKS SECTION
 	-- ========================================
 	local fontTweaksSection = GUI:AddSection(skinsCategory, "Font Tweaks")
-
 	GUI:CreateSlider(fontTweaksSection, "Skins.QuestFontSize", "Adjust QuestFont Size", 10, 30, 1, "Adjust the font size for quest text and descriptions", UpdateQuestFontSize)
-
 	GUI:CreateSlider(fontTweaksSection, "Skins.ObjectiveFontSize", "Adjust ObjectiveFont Size", 10, 30, 1, "Adjust the font size for objective tracker text", UpdateObjectiveFontSize)
 end
 

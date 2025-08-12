@@ -190,20 +190,8 @@ C["Inventory"] = {
 	SpecialBagsColor = false,
 	UpgradeIcon = true,
 	iLvlToShow = 1,
-	GrowthDirection = {
-		Options = {
-			["Horizontal"] = "HORIZONTAL",
-			["Vertical"] = "VERTICAL",
-		},
-		Value = "HORIZONTAL",
-	},
-	SortDirection = {
-		Options = {
-			["Ascending"] = "ASCENDING",
-			["Descending"] = "DESCENDING",
-		},
-		Value = "DESCENDING",
-	},
+	GrowthDirection = 1,
+	SortDirection = 2,
 	AutoRepair = 2,
 }
 
@@ -240,16 +228,7 @@ C["Chat"] = {
 	Sticky = false,
 	WhisperColor = true,
 	Width = 400,
-	TimestampFormat = {
-		Options = {
-			["Disable"] = 1,
-			["03:27 PM"] = 2,
-			["03:27:32 PM"] = 3,
-			["15:27"] = 4,
-			["15:27:32"] = 5,
-		},
-		Value = 1,
-	},
+	TimestampFormat = 1,
 }
 
 -- Datatext
@@ -290,32 +269,9 @@ C["General"] = {
 	UseGlobal = false,
 	Texture = "KkthnxUI",
 	SmoothAmount = 0.25,
-	BorderStyle = {
-		Options = {
-			["KkthnxUI"] = "KkthnxUI",
-			["AzeriteUI"] = "AzeriteUI",
-			["KkthnxUI_Pixel"] = "KkthnxUI_Pixel",
-			["KkthnxUI_Blank"] = "KkthnxUI_Blank",
-		},
-		Value = "KkthnxUI",
-	},
-	NumberPrefixStyle = {
-		Options = {
-			["Standard: b/m/k"] = 1,
-			["Asian: y/w"] = 2,
-			["Full Digits"] = 3,
-		},
-		Value = 1,
-	},
-	GlowMode = {
-		Options = {
-			["Pixel"] = 1,
-			["Autocast"] = 2,
-			["Action Button"] = 3,
-			["Proc Glow"] = 4,
-		},
-		Value = 3,
-	},
+	BorderStyle = "KkthnxUI",
+	NumberPrefixStyle = 1,
+	GlowMode = 3,
 }
 
 -- Loot
@@ -336,23 +292,8 @@ C["Minimap"] = {
 	QueueStatusText = false,
 	ShowRecycleBin = true,
 	Size = 210,
-	RecycleBinPosition = {
-		Options = {
-			["BottomLeft"] = 1,
-			["BottomRight"] = 2,
-			["TopLeft"] = 3,
-			["TopRight"] = 4,
-		},
-		Value = "BottomLeft",
-	},
-	LocationText = {
-		Options = {
-			["Always Display"] = "SHOW",
-			["Hide"] = "Hide",
-			["Minimap Mouseover"] = "MOUSEOVER",
-		},
-		Value = "MOUSEOVER",
-	},
+	RecycleBinPosition = 1,
+	LocationText = 3,
 }
 
 -- Miscellaneous
@@ -385,24 +326,8 @@ C["Misc"] = {
 	TradeTabs = false,
 	EasyMarking = false,
 	YClassColors = true,
-	EasyMarkKey = {
-		Options = {
-			["CTRL"] = 1,
-			["ALT"] = 2,
-			["SHIFT"] = 3,
-			["DISABLE"] = 4,
-		},
-		Value = 1,
-	},
-	ShowMarkerBar = {
-		Options = {
-			["Grids"] = 1,
-			["Horizontal"] = 2,
-			["Vertical"] = 3,
-			["DISABLE"] = 4,
-		},
-		Value = 4,
-	},
+	EasyMarkKey = 1,
+	ShowMarkerBar = 4,
 }
 
 C["Nameplate"] = {
@@ -467,9 +392,7 @@ C["Nameplate"] = {
 	TargetIndicatorColor = { 1, 1, 0 },
 	TransColor = { 1, 0.8, 0 },
 	VerticalSpacing = 0.7,
-	AuraFilter = {
-		Value = 3,
-	},
+	AuraFilter = 3,
 	TargetIndicator = 4,
 	TargetIndicatorTexture = "Interface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow",
 }

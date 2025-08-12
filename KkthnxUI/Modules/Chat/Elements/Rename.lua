@@ -5,7 +5,6 @@ local string_find, string_gsub = string.find, string.gsub
 local BetterDate = BetterDate
 local INTERFACE_ACTION_BLOCKED = INTERFACE_ACTION_BLOCKED
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
-local C_Timer = C_Timer
 
 local timestampFormat = {
 	[2] = "[%I:%M %p] ",
@@ -16,7 +15,7 @@ local timestampFormat = {
 
 local IsDeveloper = K.isDeveloper
 local WhisperColorEnabled = C["Chat"].WhisperColor
-local TimestampFormat = C["Chat"].TimestampFormat.Value
+local TimestampFormat = C["Chat"].TimestampFormat
 
 local function GetCurrentTime()
 	local locTime = time()

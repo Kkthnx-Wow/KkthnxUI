@@ -601,7 +601,7 @@ function Module:RaidTool_EasyMarker()
 	end
 
 	local function GetModifiedState()
-		local index = C["Misc"].EasyMarkKey.Value
+		local index = C["Misc"].EasyMarkKey
 		if index == 1 then
 			return IsControlKeyDown()
 		elseif index == 2 then
@@ -688,7 +688,7 @@ function Module:RaidTool_UpdateGrid()
 	end
 
 	local size, margin = C["Misc"].MarkerBarSize, 6
-	local showType = C["Misc"].ShowMarkerBar.Value
+	local showType = C["Misc"].ShowMarkerBar
 	local perRow = markerTypeToRow[showType]
 
 	for i = 1, 9 do

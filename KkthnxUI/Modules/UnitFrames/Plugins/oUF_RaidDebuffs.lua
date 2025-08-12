@@ -345,7 +345,10 @@ end
 
 -- Reset cache and full scan when isFullUpdate.
 local function FullUpdate(self, unit)
-	K.ClearTable(self.RaidDebuffs.debuffCache)
+	local K = KkthnxUI[1]
+	if K then
+		K.ClearTable(self.RaidDebuffs.debuffCache)
+	end
 	HideElement(self, unit)
 
 	if ForEachAura then

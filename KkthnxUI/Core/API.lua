@@ -88,15 +88,7 @@ local function CreateBorder(bFrame, ...)
 
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 	local General, Media = C.General, C.Media
-
-	-- Handle the case where BorderStyle is a table with .Value property
-	local BorderValue
-	if type(General.BorderStyle) == "table" then
-		BorderValue = General.BorderStyle.Value or "KkthnxUI"
-	else
-		BorderValue = General.BorderStyle or "KkthnxUI"
-	end
-
+	local BorderValue = General.BorderStyle or "KkthnxUI"
 	local BorderSize = bSize or K.BorderSize or (BorderValue == "KkthnxUI" and 12 or 10)
 
 	-- Create border with correct parameter order (drawLayer, drawSubLevel)

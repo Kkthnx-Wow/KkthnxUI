@@ -37,7 +37,7 @@ local eventList = {
 }
 
 local function OnEvent()
-	if C["Minimap"].LocationText.Value == "HIDE" or not C["Minimap"].Enable then
+	if C["Minimap"].LocationText == 2 or not C["Minimap"].Enable then
 		return
 	end
 
@@ -63,7 +63,7 @@ function Module:CreateLocationDataText()
 	end
 
 	Minimap:HookScript("OnEnter", function()
-		if C["Minimap"].LocationText.Value ~= "MOUSEOVER" or not C["Minimap"].Enable then
+		if C["Minimap"].LocationText ~= 3 or not C["Minimap"].Enable then
 			return
 		end
 
@@ -71,7 +71,7 @@ function Module:CreateLocationDataText()
 	end)
 
 	Minimap:HookScript("OnLeave", function()
-		if C["Minimap"].LocationText.Value ~= "MOUSEOVER" or not C["Minimap"].Enable then
+		if C["Minimap"].LocationText ~= 3 or not C["Minimap"].Enable then
 			return
 		end
 
@@ -82,7 +82,7 @@ function Module:CreateLocationDataText()
 	LocationDataText:SetPoint("TOP", Minimap, "TOP", 0, -4)
 	LocationDataText:SetSize(Minimap:GetWidth(), 13)
 	LocationDataText:SetFrameLevel(Minimap:GetFrameLevel() + 2)
-	if C["Minimap"].LocationText.Value ~= "SHOW" or not C["Minimap"].Enable then
+	if C["Minimap"].LocationText ~= 1 or not C["Minimap"].Enable then
 		LocationDataText:Hide()
 	end
 

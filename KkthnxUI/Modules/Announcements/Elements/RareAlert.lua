@@ -59,7 +59,7 @@ function Module:RareAlert_Update(id)
 
 	-- Chat alert if enabled
 	if C["Announcements"].AlertInChat then
-		local currentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor .. "[" .. date("%H:%M:%S") .. "]" or ""
+		local currentTime = C["Chat"].TimestampFormat == 1 and K.GreyColor .. "[" .. date("%H:%M:%S") .. "]" or ""
 		local mapID = C_Map_GetBestMapForUnit("player")
 		local position = mapID and C_VignetteInfo_GetVignettePosition(info.vignetteGUID, mapID)
 		local nameString = vignetteName

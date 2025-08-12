@@ -111,7 +111,7 @@ local function ReskinDetails()
 	end
 
 	-- Numberize
-	local current = C["General"].NumberPrefixStyle.Value
+	local current = C["General"].NumberPrefixStyle
 	if current < 3 then
 		Details.numerical_system = current
 		Details:SelectNumericalSystem()

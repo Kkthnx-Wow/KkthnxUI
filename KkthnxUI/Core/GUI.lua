@@ -160,52 +160,70 @@ end
 -- Settings without hooks require reload
 local ReloadTracker = {
 	PendingReloads = {}, -- Settings that have been changed and require reload
-	ReloadTimer = nil, -- Timer for delayed reload prompt
 	IsShowing = false, -- Prevent multiple popups
+	DebugMode = false, -- Disable debug logging since system is working
 }
+
+-- Debug logging function
+local function DebugLog(message)
+	if ReloadTracker.DebugMode then
+		print("|cff669DFFKkthnxUI ReloadDebug:|r " .. message)
+	end
+end
 
 -- Simple reload logic: only settings without hooks need reloads
 local function RequiresReload(configPath, hasHook, forceReload)
+	DebugLog("RequiresReload check for: " .. configPath .. " (hasHook: " .. tostring(hasHook) .. ", forceReload: " .. tostring(forceReload) .. ")")
+
 	-- If explicitly forced
 	if forceReload then
+		DebugLog("Reload required: explicitly forced")
 		return true
 	end
 
 	-- If no hook function provided, setting can't update in real-time
 	if not hasHook then
+		DebugLog("Reload required: no hook available")
 		return true
 	end
 
 	-- Has hook = no reload needed (real-time updates work)
+	DebugLog("No reload needed: hook available for real-time updates")
 	return false
 end
 
 -- Add a setting to reload queue
 local function AddToReloadQueue(configPath, settingName)
+	DebugLog("Adding to reload queue: " .. configPath .. " (" .. (settingName or configPath) .. ")")
+
 	if not ReloadTracker.PendingReloads[configPath] then
 		ReloadTracker.PendingReloads[configPath] = settingName or configPath
 
-		-- Set up delayed reload prompt (only if not already showing)
-		if not ReloadTracker.IsShowing and not ReloadTracker.ReloadTimer then
-			ReloadTracker.ReloadTimer = C_Timer.NewTimer(3, function()
-				ReloadTracker:ShowReloadPrompt()
-			end)
+		-- Show reload prompt immediately (no delay)
+		if not ReloadTracker.IsShowing then
+			DebugLog("Showing reload prompt immediately")
+			ReloadTracker:ShowReloadPrompt()
 		end
+	else
+		DebugLog("Setting already in reload queue: " .. configPath)
 	end
 end
 
 -- Show reload prompt with details
 function ReloadTracker:ShowReloadPrompt()
+	DebugLog("ShowReloadPrompt called")
+
 	if self.IsShowing then
+		DebugLog("Reload prompt already showing, skipping")
 		return
 	end
 
 	if not next(self.PendingReloads) then
+		DebugLog("No pending reloads, skipping prompt")
 		return
 	end
 
 	self.IsShowing = true
-	self.ReloadTimer = nil
 
 	-- Count how many settings need reload
 	local count = 0
@@ -221,6 +239,8 @@ function ReloadTracker:ShowReloadPrompt()
 		message = format("%d settings have been changed that require a UI reload.\n\nReload now?", count)
 	end
 
+	DebugLog("Showing reload prompt: " .. message)
+
 	-- Use our existing popup
 	StaticPopupDialogs["KKTHNXUI_RELOAD_UI"].text = message
 	StaticPopup_Show("KKTHNXUI_RELOAD_UI")
@@ -228,26 +248,29 @@ end
 
 -- Clear reload queue
 function ReloadTracker:ClearQueue()
+	DebugLog("Clearing reload queue")
 	self.PendingReloads = {}
 	self.IsShowing = false
-	if self.ReloadTimer then
-		self.ReloadTimer:Cancel()
-		self.ReloadTimer = nil
-	end
 end
 
 -- Check if we have pending reloads
 function ReloadTracker:HasPendingReloads()
-	return next(self.PendingReloads) ~= nil
+	local hasReloads = next(self.PendingReloads) ~= nil
+	DebugLog("HasPendingReloads: " .. tostring(hasReloads))
+	return hasReloads
 end
 
 -- Only show reload prompt on GUI close if there are pending reloads
 function ReloadTracker:OnGUIClose()
+	DebugLog("OnGUIClose called")
 	if self:HasPendingReloads() and not self.IsShowing then
+		DebugLog("Showing reload prompt on GUI close")
 		-- Show reload prompt when closing GUI if there are pending reloads
 		C_Timer.After(0.1, function()
 			self:ShowReloadPrompt()
 		end)
+	else
+		DebugLog("No reload prompt needed on GUI close")
 	end
 end
 
@@ -267,6 +290,8 @@ Module.GUI = {
 	IsVisible = false,
 	-- REAL-TIME UPDATE HOOKS REGISTRY
 	UpdateHooks = {},
+	-- RELOAD TRACKER REFERENCE
+	ReloadTracker = ReloadTracker,
 }
 
 -- Convenience reference
@@ -277,22 +302,35 @@ local GUI = Module.GUI
 -- ============================================================================
 
 local function RegisterUpdateHook(configPath, hookFunction)
+	DebugLog("Registering hook for: " .. configPath .. " (function type: " .. type(hookFunction) .. ")")
+
 	if not GUI.UpdateHooks[configPath] then
 		GUI.UpdateHooks[configPath] = {}
 	end
 	tinsert(GUI.UpdateHooks[configPath], hookFunction)
+	DebugLog("Hook registered. Total hooks for " .. configPath .. ": " .. #GUI.UpdateHooks[configPath])
 end
 
 local function ExecuteUpdateHooks(configPath, newValue, oldValue)
+	DebugLog("Executing hooks for: " .. configPath .. " (new: " .. tostring(newValue) .. ", old: " .. tostring(oldValue) .. ")")
+
 	if GUI.UpdateHooks[configPath] then
-		for _, hookFunc in ipairs(GUI.UpdateHooks[configPath]) do
+		DebugLog("Found " .. #GUI.UpdateHooks[configPath] .. " hooks for " .. configPath)
+		for i, hookFunc in ipairs(GUI.UpdateHooks[configPath]) do
 			if type(hookFunc) == "function" then
+				DebugLog("Executing hook " .. i .. " for " .. configPath)
 				local success, err = pcall(hookFunc, newValue, oldValue, configPath)
 				if not success then
-					-- Hook error will be handled silently or with K.Print if needed
+					DebugLog("Hook " .. i .. " failed for " .. configPath .. ": " .. tostring(err))
+				else
+					DebugLog("Hook " .. i .. " executed successfully for " .. configPath)
 				end
+			else
+				DebugLog("Hook " .. i .. " is not a function for " .. configPath .. " (type: " .. type(hookFunc) .. ")")
 			end
 		end
+	else
+		DebugLog("No hooks found for: " .. configPath)
 	end
 end
 
@@ -325,8 +363,11 @@ local SetConfigValue
 
 -- Set configuration value with hook execution and reload tracking
 function SetConfigValue(configPath, value, requiresReload, settingName)
+	DebugLog("SetConfigValue called: " .. configPath .. " = " .. tostring(value) .. " (requiresReload: " .. tostring(requiresReload) .. ")")
+
 	-- Get old value for hook comparison
 	local oldValue = GetValueByPath(C, configPath)
+	DebugLog("Old value: " .. tostring(oldValue))
 
 	-- Set in runtime config
 	SetValueByPath(C, configPath, value)
@@ -347,17 +388,26 @@ function SetConfigValue(configPath, value, requiresReload, settingName)
 	else
 		-- Database not yet available, settings will only be stored in runtime config
 		-- This is normal during initial loading
+		DebugLog("Database not available, only storing in runtime config")
 	end
 
 	-- Execute real-time update hooks
 	if oldValue ~= value then
+		DebugLog("Value changed, executing hooks")
 		ExecuteUpdateHooks(configPath, value, oldValue)
 
 		-- Check for reload requirement (simple: no hook = needs reload)
 		local hasHook = GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] > 0
+		DebugLog("Hook check for " .. configPath .. ": " .. tostring(hasHook) .. " (hooks count: " .. (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] or 0) .. ")")
+
 		if RequiresReload(configPath, hasHook, requiresReload) then
+			DebugLog("Reload required for: " .. configPath)
 			AddToReloadQueue(configPath, settingName or configPath)
+		else
+			DebugLog("No reload required for: " .. configPath)
 		end
+	else
+		DebugLog("Value unchanged, skipping hook execution and reload check")
 	end
 end
 
@@ -736,9 +786,13 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 	end
 
 	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	DebugLog("CreateSwitch: Checking hook for " .. configPath .. " (hookFunction type: " .. type(hookFunction) .. ")")
 	if hookFunction and type(hookFunction) == "function" then
+		DebugLog("CreateSwitch: Registering hook for " .. configPath)
 		RegisterUpdateHook(configPath, hookFunction)
 		widget.HookFunction = hookFunction
+	else
+		DebugLog("CreateSwitch: No hook provided for " .. configPath)
 	end
 
 	-- Hover effect for switch
@@ -1422,7 +1476,7 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 	return widget
 end
 
-local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction, isNew)
+local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction, isNew, requiresReload)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
 	widget.ConfigPath = configPath
@@ -1522,7 +1576,7 @@ local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction
 			hasOpacity = true,
 			opacityFunc = function(opacity)
 				currentValue[4] = opacity
-				SetConfigValue(configPath, currentValue, false, cleanText)
+				SetConfigValue(configPath, currentValue, requiresReload, cleanText)
 				widget:UpdateValue()
 			end,
 			swatchFunc = function()
@@ -1530,12 +1584,12 @@ local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction
 				currentValue[1] = r
 				currentValue[2] = g
 				currentValue[3] = b
-				SetConfigValue(configPath, currentValue, false, cleanText)
+				SetConfigValue(configPath, currentValue, requiresReload, cleanText)
 				widget:UpdateValue()
 			end,
 			cancelFunc = function()
 				-- Restore original values if cancelled
-				SetConfigValue(configPath, currentValue, false, cleanText)
+				SetConfigValue(configPath, currentValue, requiresReload, cleanText)
 				widget:UpdateValue()
 			end,
 		})
@@ -1553,7 +1607,7 @@ end
 -- Enhanced Widget Creation Functions
 
 -- Multi-Select Checkbox Group - ENHANCED with Modern Design and Hooks
-local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, hookFunction, isNew)
+local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 	local widget = CreateFrame("Frame", nil, parent)
 
 	-- Calculate better spacing for flow
@@ -1773,7 +1827,7 @@ local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, h
 			self:AnimateCheck(willBeChecked)
 
 			-- Save the configuration - SetConfigValue will now trigger hooks
-			SetConfigValue(configPath, newValues)
+			SetConfigValue(configPath, newValues, requiresReload, cleanText)
 
 			-- Play feedback sound
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
@@ -1812,7 +1866,7 @@ local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, h
 	return widget
 end
 
-local function CreateTextInput(parent, configPath, text, placeholder, tooltip, hookFunction, isNew)
+local function CreateTextInput(parent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
 	widget.ConfigPath = configPath
@@ -1909,12 +1963,12 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 
 	-- Save on enter/focus lost
 	editBox:SetScript("OnEnterPressed", function(self)
-		SetConfigValue(configPath, self:GetText())
+		SetConfigValue(configPath, self:GetText(), requiresReload, cleanText)
 		self:ClearFocus()
 	end)
 
 	editBox:SetScript("OnEditFocusLost", function(self)
-		SetConfigValue(configPath, self:GetText())
+		SetConfigValue(configPath, self:GetText(), requiresReload, cleanText)
 	end)
 
 	-- Enhanced tooltip functionality
@@ -2399,12 +2453,18 @@ end
 
 -- Enhanced GUI Functions
 function GUI:Initialize()
+	DebugLog("GUI:Initialize() called")
+
 	if self.Frame then
+		DebugLog("GUI already initialized, returning existing frame")
 		return self.Frame
 	end
 
+	DebugLog("Initializing GUI system...")
+
 	-- Initialize ExtraGUI system
 	if K.ExtraGUI and K.ExtraGUI.Initialize then
+		DebugLog("Initializing ExtraGUI system")
 		K.ExtraGUI:Initialize()
 	end
 
@@ -2432,10 +2492,12 @@ function GUI:Initialize()
 	end
 
 	-- Create static popups
+	DebugLog("Creating static popups")
 	self:CreateStaticPopups()
 
 	-- Show first category by default
 	if #self.Categories > 0 then
+		DebugLog("Showing first category: " .. self.Categories[1].Name)
 		self:ShowCategory(self.Categories[1])
 	end
 
@@ -2445,6 +2507,7 @@ function GUI:Initialize()
 	end)
 
 	self.IsInitialized = true
+	DebugLog("GUI initialization complete")
 	return self.Frame
 end
 
@@ -2604,21 +2667,21 @@ function GUI:CreateTextureDropdown(section, configPath, text, tooltip, hookFunct
 end
 
 function GUI:CreateColorPicker(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
-	local widget = CreateColorPicker(UIParent, configPath, text, tooltip, hookFunction, isNew)
+	local widget = CreateColorPicker(UIParent, configPath, text, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
 end
 
 function GUI:CreateCheckboxGroup(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
-	local widget = CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew)
+	local widget = CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
 end
 
 function GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
-	local widget = CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew)
+	local widget = CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
@@ -2876,6 +2939,12 @@ function Module:SetupSlashCommands()
 			StaticPopup_Show("KKTHNXUI_NEW_GUI_RELOAD")
 		elseif command == "reset" then
 			StaticPopup_Show("KKTHNXUI_RESET_PROFILE")
+		elseif command == "test" then
+			self.GUI:TestReloadSystem()
+		elseif command == "testchange" then
+			self.GUI:TestSettingChange()
+		elseif command == "debug" then
+			self.GUI:DebugReloadSystem()
 		elseif command == "help" then
 			print("|cff669DFFKkthnxUI NewGUI Commands:|r")
 			print("/kgui - Open configuration panel")
@@ -2885,6 +2954,9 @@ function Module:SetupSlashCommands()
 			print("/kgui reload - Reload UI")
 			print("/kgui reset - Reset current profile")
 			print("/kgui refresh - Refresh all widgets")
+			print("/kgui test - Test reload system")
+			print("/kgui testchange - Test setting change")
+			print("/kgui debug - Debug reload system")
 		else
 			self.GUI:Toggle()
 		end
@@ -3144,4 +3216,68 @@ end
 function GUI:CheckRequiresReload(configPath)
 	local hasHook = self.UpdateHooks[configPath] and #self.UpdateHooks[configPath] > 0
 	return RequiresReload(configPath, hasHook, false)
+end
+
+-- Debug functions for testing the reload system
+function GUI:TestReloadSystem()
+	DebugLog("=== RELOAD SYSTEM TEST ===")
+
+	-- Test 1: Add a setting without hook
+	DebugLog("Test 1: Adding setting without hook")
+	AddToReloadQueue("test.setting.without.hook", "Test Setting Without Hook")
+
+	-- Test 2: Check if we have pending reloads
+	DebugLog("Test 2: Checking pending reloads")
+	local hasReloads = self:HasPendingReloads()
+	DebugLog("Has pending reloads: " .. tostring(hasReloads))
+
+	-- Test 3: Show reload prompt
+	DebugLog("Test 3: Showing reload prompt")
+	self:ForceReloadPrompt()
+
+	DebugLog("=== RELOAD SYSTEM TEST COMPLETE ===")
+end
+
+function GUI:TestSettingChange()
+	DebugLog("=== TESTING SETTING CHANGE ===")
+
+	-- Test setting change without hook (should require reload)
+	DebugLog("Testing setting change without hook")
+	SetConfigValue("test.setting.no.hook", true, false, "Test Setting No Hook")
+
+	-- Test setting change with hook (should not require reload)
+	DebugLog("Testing setting change with hook")
+	local testHook = function(newValue, oldValue, configPath)
+		DebugLog("Test hook executed: " .. configPath .. " = " .. tostring(newValue))
+	end
+
+	-- Register the hook first
+	RegisterUpdateHook("test.setting.with.hook", testHook)
+
+	-- Then change the setting
+	SetConfigValue("test.setting.with.hook", true, false, "Test Setting With Hook")
+
+	DebugLog("=== SETTING CHANGE TEST COMPLETE ===")
+end
+
+function GUI:DebugReloadSystem()
+	DebugLog("=== RELOAD SYSTEM DEBUG INFO ===")
+	DebugLog("Pending reloads count: " .. (next(ReloadTracker.PendingReloads) and "some" or "none"))
+
+	if next(ReloadTracker.PendingReloads) then
+		for configPath, settingName in pairs(ReloadTracker.PendingReloads) do
+			DebugLog("Pending reload: " .. configPath .. " (" .. settingName .. ")")
+		end
+	end
+
+	DebugLog("Is showing: " .. tostring(ReloadTracker.IsShowing))
+
+	DebugLog("Registered hooks count: " .. (next(GUI.UpdateHooks) and "some" or "none"))
+	if next(GUI.UpdateHooks) then
+		for configPath, hooks in pairs(GUI.UpdateHooks) do
+			DebugLog("Hooks for " .. configPath .. ": " .. #hooks)
+		end
+	end
+
+	DebugLog("=== RELOAD SYSTEM DEBUG INFO COMPLETE ===")
 end

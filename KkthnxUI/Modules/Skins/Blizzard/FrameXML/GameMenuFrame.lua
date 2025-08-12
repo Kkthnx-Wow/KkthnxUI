@@ -10,7 +10,7 @@ table_insert(C.defaultThemes, function()
 	if not C_AddOns.IsAddOnLoaded("ConsolePort_Menu") then
 		local GameMenuFrame = _G.GameMenuFrame
 		GameMenuFrame:StripTextures()
-		GameMenuFrame:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10 or nil)
+		GameMenuFrame:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10 or nil)
 
 		GameMenuFrame.Header:StripTextures()
 		GameMenuFrame.Header:ClearAllPoints()

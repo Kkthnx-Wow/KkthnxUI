@@ -54,16 +54,6 @@ local function KKUI_CreateDefaults()
 
 		for option, value in pairs(options) do
 			K.Defaults[group][option] = value
-
-			if type(C[group][option]) == "table" then
-				if C[group][option].Options then
-					K.Defaults[group][option] = value.Value
-				else
-					K.Defaults[group][option] = value
-				end
-			else
-				K.Defaults[group][option] = value
-			end
 		end
 	end
 end
@@ -81,16 +71,7 @@ local function KKUI_LoadCustomSettings()
 						Settings[group][option] = nil
 					else
 						Count = Count + 1
-
-						if type(C[group][option]) == "table" then
-							if C[group][option].Options then
-								C[group][option].Value = value
-							else
-								C[group][option] = value
-							end
-						else
-							C[group][option] = value
-						end
+						C[group][option] = value
 					end
 				end
 			end

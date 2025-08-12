@@ -16,7 +16,7 @@ local borderSections = {
 	{ name = "RIGHT", coord = { 0.125, 0.25, 0, 1 } },
 }
 
-local borderStyle = C["General"].BorderStyle.Value or "KkthnxUI"
+local borderStyle = C["General"].BorderStyle or "KkthnxUI"
 local borderSizeKkthnx = 12
 local borderSizeDefault = 10
 local getBorderSize = (borderStyle == "KkthnxUI") and borderSizeKkthnx or borderSizeDefault

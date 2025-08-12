@@ -35,7 +35,7 @@ do
 	end
 
 	function K.ShortValue(n)
-		local prefixStyle = C["General"].NumberPrefixStyle.Value
+		local prefixStyle = C["General"].NumberPrefixStyle
 		local abs_n = abs(n)
 		local suffix, div = "", 1
 

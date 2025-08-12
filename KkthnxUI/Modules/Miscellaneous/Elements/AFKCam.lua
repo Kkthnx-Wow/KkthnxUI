@@ -471,7 +471,7 @@ function Module:CreateAFKCam()
 
 	AFKMode.top = CreateFrame("Frame", nil, AFKMode)
 	AFKMode.top:SetFrameLevel(0)
-	AFKMode.top:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10)
+	AFKMode.top:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10)
 	AFKMode.top:SetPoint("TOP", AFKMode, "TOP", 0, 6)
 	AFKMode.top:SetSize(UIParent:GetWidth() + 12, 54)
 
@@ -479,7 +479,7 @@ function Module:CreateAFKCam()
 
 	AFKMode.bottom = CreateFrame("Frame", nil, AFKMode)
 	AFKMode.bottom:SetFrameLevel(0)
-	AFKMode.bottom:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10)
+	AFKMode.bottom:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10)
 	AFKMode.bottom:SetPoint("BOTTOM", AFKMode, "BOTTOM", 0, -K.Mult + 8)
 	AFKMode.bottom:SetWidth(GetScreenWidth() - 8)
 	AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 11))
