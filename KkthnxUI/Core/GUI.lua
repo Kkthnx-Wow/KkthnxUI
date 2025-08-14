@@ -570,6 +570,11 @@ local function CreateSearchBox(parent)
 	searchBox:SetFontObject(K.UIFont)
 	searchBox:SetAutoFocus(false)
 	searchBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	-- Keyboard handling improvements
+	searchBox:EnableKeyboard(true)
+	if searchBox.SetPropagateKeyboardInput then
+		searchBox:SetPropagateKeyboardInput(false)
+	end
 
 	-- CLEAN DESIGN: Subtle background instead of border
 	local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
@@ -600,6 +605,84 @@ local function CreateSearchBox(parent)
 			searchIcon:Hide()
 		end
 		GUI:FilterCategories(text)
+	end)
+
+	-- Helper: show first visible category
+	local function ShowFirstVisibleCategory()
+		for idx, category in ipairs(GUI.Categories) do
+			if category.Button and category.Button:IsShown() then
+				GUI:ShowCategory(category)
+				-- Scroll to it
+				if GUI.CategoryScrollFrame then
+					local step = CATEGORY_HEIGHT + 2
+					GUI.CategoryScrollFrame:SetVerticalScroll(math.max(0, (idx - 1) * step))
+				end
+				return
+			end
+		end
+	end
+
+	-- Helper: navigate visible categories by delta (-1 or +1)
+	local function NavigateCategory(delta)
+		local visible = {}
+		for i, cat in ipairs(GUI.Categories) do
+			if cat.Button and cat.Button:IsShown() then
+				table.insert(visible, { i = i, cat = cat })
+			end
+		end
+		if #visible == 0 then
+			return
+		end
+		local currentIdx = 1
+		if GUI.CurrentCategory then
+			for pos, item in ipairs(visible) do
+				if item.cat == GUI.CurrentCategory then
+					currentIdx = pos
+					break
+				end
+			end
+		end
+		local targetPos = currentIdx + delta
+		if targetPos < 1 then
+			targetPos = 1
+		end
+		if targetPos > #visible then
+			targetPos = #visible
+		end
+		local target = visible[targetPos]
+		if target then
+			GUI:ShowCategory(target.cat)
+			if GUI.CategoryScrollFrame then
+				local step = CATEGORY_HEIGHT + 2
+				GUI.CategoryScrollFrame:SetVerticalScroll(math.max(0, (target.i - 1) * step))
+			end
+		end
+	end
+
+	-- Enter selects first visible; Esc clears search and restores focus
+	searchBox:SetScript("OnEnterPressed", function(self)
+		ShowFirstVisibleCategory()
+		self:ClearFocus()
+	end)
+
+	searchBox:SetScript("OnEscapePressed", function(self)
+		self:SetText("")
+		placeholderText:Show()
+		searchIcon:Show()
+		GUI:FilterCategories("")
+		self:ClearFocus()
+	end)
+
+	-- Up/Down arrow navigation through visible categories
+	searchBox:SetScript("OnKeyDown", function(self, key)
+		if key == "UP" then
+			NavigateCategory(-1)
+			return
+		end
+		if key == "DOWN" then
+			NavigateCategory(1)
+			return
+		end
 	end)
 
 	searchBox:SetScript("OnEditFocusGained", function()
@@ -2768,7 +2851,8 @@ local function CreateCategoryButton(category, index)
 
 	button:SetPoint("TOP", 0, -(index - 1) * (CATEGORY_HEIGHT + 2) - 10 - extraSpacing) -- Simplified positioning with spacer
 
-	CreateColoredBackground(button, 0.08, 0.08, 0.08, 0.8)
+	local catBg = CreateColoredBackground(button, 0.08, 0.08, 0.08, 0.8)
+	button.KKUI_Background = catBg
 
 	-- Selection indicator
 	local selected = button:CreateTexture(nil, "OVERLAY")
@@ -2791,6 +2875,8 @@ local function CreateCategoryButton(category, index)
 	text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	text:SetText(category.Name)
 	text:SetPoint("LEFT", icon, "RIGHT", 8, 0)
+	button.Text = text
+	button.Icon = icon
 
 	-- Add NEW tag if category has it manually OR contains new widgets
 	if category.HasNewTag or CategoryContainsNewWidgets(category) then
@@ -2885,10 +2971,18 @@ function GUI:Initialize()
 	DebugLog("Creating static popups")
 	self:CreateStaticPopups()
 
-	-- Show first category by default
+	-- Show "General" category by default if available, else first
 	if #self.Categories > 0 then
-		DebugLog("Showing first category: " .. self.Categories[1].Name)
-		self:ShowCategory(self.Categories[1])
+		local target = nil
+		for _, cat in ipairs(self.Categories) do
+			if cat.Name == "General" then
+				target = cat
+				break
+			end
+		end
+		target = target or self.Categories[1]
+		DebugLog("Showing default category: " .. (target and target.Name or "nil"))
+		self:ShowCategory(target)
 	end
 
 	-- Refresh category NEW tags after everything is loaded
@@ -2978,8 +3072,9 @@ function GUI:ShowCategory(category)
 		if cat.Button then
 			if cat == category then
 				cat.Button.Selected:Show()
+				-- Subtle accent background to indicate selection
 				if cat.Button.KKUI_Background then
-					cat.Button.KKUI_Background:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.2)
+					cat.Button.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.2, ACCENT_COLOR[2] * 0.2, ACCENT_COLOR[3] * 0.2, 0.9)
 				end
 			else
 				cat.Button.Selected:Hide()
@@ -3100,6 +3195,17 @@ function GUI:FilterCategories(searchText)
 		for _, category in ipairs(self.Categories) do
 			if category.Button then
 				category.Button:Show()
+				-- Restore normal visuals
+				if category.Button.Text then
+					category.Button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+				end
+				if category.Button.Icon then
+					category.Button.Icon:SetVertexColor(1, 1, 1, 1)
+				end
+				if category.Button.KKUI_Background and self.ActiveCategory ~= category then
+					category.Button.KKUI_Background:SetVertexColor(0.08, 0.08, 0.08, 0.8)
+				end
+				category.Button:SetAlpha(1)
 			end
 		end
 		return
@@ -3123,11 +3229,30 @@ function GUI:FilterCategories(searchText)
 		end
 
 		if category.Button then
+			-- Keep all buttons shown, dim non-matching
+			category.Button:Show()
 			if shouldShow then
-				category.Button:Show()
 				hasVisibleCategories = true
+				category.Button:SetAlpha(1)
+				if category.Button.Text then
+					category.Button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+				end
+				if category.Button.Icon then
+					category.Button.Icon:SetVertexColor(1, 1, 1, 1)
+				end
+				-- Keep background as selection/non-selection color
 			else
-				category.Button:Hide()
+				category.Button:SetAlpha(0.45)
+				if category.Button.Text then
+					category.Button.Text:SetTextColor(0.6, 0.6, 0.6, 1)
+				end
+				if category.Button.Icon then
+					category.Button.Icon:SetVertexColor(0.7, 0.7, 0.7, 1)
+				end
+				-- If not the active category, also slightly dim background
+				if category.Button.KKUI_Background and self.ActiveCategory ~= category then
+					category.Button.KKUI_Background:SetVertexColor(0.06, 0.06, 0.06, 0.7)
+				end
 			end
 		end
 	end
