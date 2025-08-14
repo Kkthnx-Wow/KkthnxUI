@@ -629,7 +629,7 @@ end
 local CtrlChecker = CreateFrame("Frame")
 local resetButtons = {}
 
-CtrlChecker:SetScript("OnUpdate", function(self, elapsed)
+local function CtrlUpdate()
 	for widget, resetButton in pairs(resetButtons) do
 		if widget:IsMouseOver() then
 			if IsControlKeyDown() then
@@ -649,7 +649,10 @@ CtrlChecker:SetScript("OnUpdate", function(self, elapsed)
 			end
 		end
 	end
-end)
+end
+CtrlChecker.CtrlUpdate = CtrlUpdate
+-- Disabled by default; enabled while GUI is visible
+CtrlChecker:SetScript("OnUpdate", nil)
 
 -- NEW: Helper function to add reset-to-default functionality to widget labels
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
@@ -745,6 +748,31 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	label:SetText(cleanText) -- Use clean text without NEW tag
 	label:SetPoint("LEFT", 8, 0)
+	widget.DisplayText = cleanText
+	label:EnableMouse(true)
+	label:SetScript("OnMouseUp", function(_, btn)
+		if btn == "RightButton" and configPath then
+			StaticPopupDialogs["KKTHNXUI_COPY_PATH"].text = "Config Path:\n" .. configPath
+			StaticPopup_Show("KKTHNXUI_COPY_PATH", configPath)
+		end
+	end)
+	widget.DisplayText = cleanText
+	label:EnableMouse(true)
+	label:SetScript("OnMouseUp", function(_, btn)
+		if btn == "RightButton" and configPath then
+			StaticPopupDialogs["KKTHNXUI_COPY_PATH"].text = "Config Path:\n" .. configPath
+			StaticPopup_Show("KKTHNXUI_COPY_PATH", configPath)
+		end
+	end)
+	widget.DisplayText = cleanText
+	-- Right-click label to copy config path
+	label:EnableMouse(true)
+	label:SetScript("OnMouseUp", function(_, btn)
+		if btn == "RightButton" and configPath then
+			StaticPopupDialogs["KKTHNXUI_COPY_PATH"].text = "Config Path:\n" .. configPath
+			StaticPopup_Show("KKTHNXUI_COPY_PATH", configPath)
+		end
+	end)
 
 	-- Add reset-to-default functionality with undo icon
 	AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
@@ -828,6 +856,20 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 			thumb:SetPoint("LEFT", switchButton, "LEFT", 1, 0)
 			-- Grey text when disabled
 			label:SetTextColor(0.5, 0.5, 0.5, 1)
+		end
+		-- Modified indicator (default vs current)
+		if GetDefaultValue(self.ConfigPath) ~= value then
+			if not self.ModifiedDot then
+				local dot = widget:CreateTexture(nil, "OVERLAY")
+				dot:SetSize(6, 6)
+				dot:SetPoint("LEFT", label, "RIGHT", 4, 0)
+				dot:SetTexture(C["Media"].Textures.White8x8Texture)
+				dot:SetVertexColor(1, 0.6, 0.2, 1)
+				self.ModifiedDot = dot
+			end
+			self.ModifiedDot:Show()
+		elseif self.ModifiedDot then
+			self.ModifiedDot:Hide()
 		end
 	end
 
@@ -1198,7 +1240,7 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 
 	-- Dropdown Button
 	local dropdown = CreateFrame("Button", nil, widget)
-	dropdown:SetSize(150, 18)
+	dropdown:SetSize(180, 18)
 	dropdown:SetPoint("RIGHT", -8, 0)
 
 	-- Dropdown Background
@@ -1212,42 +1254,73 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 	dropdownText:SetFontObject(K.UIFont)
 	dropdownText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	dropdownText:SetPoint("LEFT", 8, 0)
-	dropdownText:SetPoint("RIGHT", -25, 0) -- Leave space for arrow
 	dropdownText:SetJustifyH("LEFT")
 
-	-- Arrow Icon
-	local arrow = dropdown:CreateTexture(nil, "OVERLAY")
-	arrow:SetSize(18, 12)
-	arrow:SetPoint("RIGHT", -6, 0)
+	-- Arrow Icon with safe fallback
+	local arrowTex = dropdown:CreateTexture(nil, "OVERLAY")
+	arrowTex:SetSize(18, 12)
+	arrowTex:SetPoint("RIGHT", -6, 0)
+	local arrowText
+
+	-- Optional preview swatch (used when options provide a texture/icon)
+	local preview = dropdown:CreateTexture(nil, "ARTWORK")
+	preview:SetSize(60, 10)
+	preview:SetPoint("RIGHT", arrowTex, "LEFT", -6, 0)
+	preview:SetTexture(C["Media"].Textures.White8x8Texture)
+	preview:SetVertexColor(0.25, 0.25, 0.25, 1)
+	preview:Hide()
+
+	-- Adjust text width depending on preview visibility
+	local function SetTextRightAnchor()
+		if preview:IsShown() then
+			dropdownText:ClearAllPoints()
+			dropdownText:SetPoint("LEFT", 8, 0)
+			dropdownText:SetPoint("RIGHT", preview, "LEFT", -6, 0)
+		else
+			dropdownText:ClearAllPoints()
+			dropdownText:SetPoint("LEFT", 8, 0)
+			dropdownText:SetPoint("RIGHT", arrowTex, "LEFT", -6, 0)
+		end
+	end
+	SetTextRightAnchor()
+
+	local function UseArrowText(char)
+		if not arrowText then
+			arrowText = dropdown:CreateFontString(nil, "OVERLAY")
+			arrowText:SetFontObject(K.UIFont)
+			arrowText:SetPoint("RIGHT", -6, 0)
+		end
+		arrowTex:Hide()
+		arrowText:Show()
+		arrowText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		arrowText:SetText(char)
+	end
+
+	local function UseArrowTexture(atlas)
+		arrowTex:Show()
+		if arrowText then
+			arrowText:Hide()
+		end
+		arrowTex:SetAtlas(atlas, true)
+		arrowTex:SetSize(18, 12)
+	end
 
 	-- Set arrow to down position using atlas
 	local function SetArrowDown()
 		local success = pcall(function()
-			arrow:SetAtlas("minimal-scrollbar-small-arrow-bottom", true)
-			arrow:SetSize(18, 12)
+			UseArrowTexture("minimal-scrollbar-small-arrow-bottom")
 		end)
 		if not success then
-			-- Fallback to text if atlas fails
-			arrow = dropdown:CreateFontString(nil, "OVERLAY")
-			arrow:SetFontObject(K.UIFont)
-			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			arrow:SetText("▼")
-			arrow:SetPoint("RIGHT", -6, 0)
+			UseArrowText("▼")
 		end
 	end
 
 	local function SetArrowUp()
 		local success = pcall(function()
-			arrow:SetAtlas("minimal-scrollbar-small-arrow-top", true)
-			arrow:SetSize(18, 12)
+			UseArrowTexture("minimal-scrollbar-small-arrow-top")
 		end)
 		if not success then
-			-- Fallback to text if atlas fails
-			arrow = dropdown:CreateFontString(nil, "OVERLAY")
-			arrow:SetFontObject(K.UIFont)
-			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			arrow:SetText("▲")
-			arrow:SetPoint("RIGHT", -6, 0)
+			UseArrowText("▲")
 		end
 	end
 
@@ -1271,20 +1344,24 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 	-- Menu state management
 	local isMenuOpen = false
 	local currentMenu = nil
+	local menuBlocker = nil
 
 	-- Function to close menu
 	local function CloseMenu()
 		if currentMenu then
-			-- Cancel any active close timers
 			if currentMenu.closeTimer then
 				currentMenu.closeTimer:Cancel()
 				currentMenu.closeTimer = nil
 			end
 			currentMenu:Hide()
 			currentMenu = nil
-			isMenuOpen = false
-			SetArrowDown()
 		end
+		if menuBlocker then
+			menuBlocker:Hide()
+			menuBlocker = nil
+		end
+		isMenuOpen = false
+		SetArrowDown()
 	end
 
 	-- Function to open menu
@@ -1294,12 +1371,19 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 			return
 		end
 
-		-- Create dropdown menu
-		local menu = CreateFrame("Frame", nil, dropdown)
-		menu:SetSize(150, #options * 22 + 4) -- 2px padding top/bottom
-		menu:SetPoint("TOP", dropdown, "BOTTOM", 0, -2)
+		-- Create dropdown menu on top-level to avoid clipping
+		local menu = CreateFrame("Frame", nil, UIParent)
+		local itemHeight = 22
+		local visibleCount = math.min(#options, 10)
+		local menuWidth = 220
+		local searchHeight = (#options > 10) and 24 or 0
+		local menuHeight = visibleCount * itemHeight + 4 + searchHeight
+		menu:SetSize(menuWidth, menuHeight)
+		-- Default position below; adjust later if off-screen
+		menu:SetPoint("TOPLEFT", dropdown, "BOTTOMLEFT", 0, -2)
 		menu:SetFrameStrata("TOOLTIP")
-		menu:SetFrameLevel(dropdown:GetFrameLevel() + 50)
+		menu:SetFrameLevel(1000)
+		menu:SetClampedToScreen(true)
 
 		-- Menu background
 		local menuBg = menu:CreateTexture(nil, "BACKGROUND")
@@ -1317,17 +1401,108 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 		borderTexture:SetTexture(C["Media"].Textures.White8x8Texture)
 		borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
 
+		-- Optional scroll frame when there are too many entries
+		local container = menu
+		local useScroll = #options > visibleCount
+		local scrollChild, scrollFrame
+		-- Optional search box for long lists
+		local searchBox
+		if #options > 10 then
+			local searchFrame = CreateFrame("Frame", nil, menu)
+			searchFrame:SetSize(menuWidth - 4, searchHeight)
+			searchFrame:SetPoint("TOPLEFT", 2, -2)
+			local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
+			searchBg:SetAllPoints()
+			searchBg:SetTexture(C["Media"].Textures.White8x8Texture)
+			searchBg:SetVertexColor(0.08, 0.08, 0.08, 1)
+			searchBox = CreateFrame("EditBox", nil, searchFrame)
+			searchBox:SetAllPoints()
+			searchBox:SetFontObject(K.UIFont)
+			searchBox:SetAutoFocus(true)
+			searchBox:SetTextColor(0.9, 0.9, 0.9, 1)
+			searchBox:SetJustifyH("LEFT")
+			searchBox:SetText("")
+			-- Forward navigation keys to the menu handler so arrow/enter work while typing
+			searchBox:EnableKeyboard(true)
+			if searchBox.SetPropagateKeyboardInput then
+				searchBox:SetPropagateKeyboardInput(false)
+			end
+			searchBox:SetScript("OnKeyDown", function(self, key)
+				if menu and menu:GetScript("OnKeyDown") then
+					menu:GetScript("OnKeyDown")(menu, key)
+				end
+			end)
+		end
+		if useScroll then
+			scrollFrame = CreateFrame("ScrollFrame", nil, menu)
+			scrollFrame:SetPoint("TOPLEFT", 2, -(2 + searchHeight))
+			scrollFrame:SetPoint("BOTTOMRIGHT", -2, 2)
+			scrollFrame:EnableMouseWheel(true)
+			scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+				local current = self:GetVerticalScroll()
+				local maxScroll = self:GetVerticalScrollRange()
+				local step = itemHeight
+				if delta > 0 then
+					self:SetVerticalScroll(math.max(0, current - step))
+				else
+					self:SetVerticalScroll(math.min(maxScroll, current + step))
+				end
+			end)
+
+			scrollChild = CreateFrame("Frame", nil, scrollFrame)
+			scrollChild:SetSize(menuWidth - 4, #options * itemHeight)
+			scrollFrame:SetScrollChild(scrollChild)
+			container = scrollChild
+		else
+			container = menu
+		end
+
+		-- Keep references for keyboard navigation and filtering
+		local optionButtons = {}
+		local function RepositionVisibleButtons()
+			local y = -2
+			local visibleCountLocal = 0
+			for _, btn in ipairs(optionButtons) do
+				if btn:IsShown() then
+					btn:ClearAllPoints()
+					btn:SetPoint("TOPLEFT", container, "TOPLEFT", 2, y)
+					y = y - itemHeight
+					visibleCountLocal = visibleCountLocal + 1
+				end
+			end
+			if scrollChild then
+				scrollChild:SetHeight(math.max(visibleCountLocal * itemHeight, visibleCount * itemHeight))
+			end
+		end
+
 		-- Create option buttons
 		for i, option in ipairs(options) do
-			local optionButton = CreateFrame("Button", nil, menu)
-			optionButton:SetSize(148, 20)
-			optionButton:SetPoint("TOP", 0, -(i - 1) * 22 - 2)
+			local parentForButton = container
+			local optionButton = CreateFrame("Button", nil, parentForButton)
+			optionButton:SetSize(menuWidth - 4, itemHeight - 2)
+			optionButton:SetPoint("TOPLEFT", 2, -(i - 1) * itemHeight - 2)
 
 			-- Option background (for hover effect)
 			local optionBg = optionButton:CreateTexture(nil, "BACKGROUND")
 			optionBg:SetAllPoints()
 			optionBg:SetTexture(C["Media"].Textures.White8x8Texture)
 			optionBg:SetVertexColor(0, 0, 0, 0) -- Transparent by default
+			optionButton.OptionBg = optionBg
+
+			-- Optional sample texture/icon preview
+			local sample
+			if option.texture then
+				sample = optionButton:CreateTexture(nil, "ARTWORK")
+				sample:SetSize(70, 8)
+				sample:SetPoint("RIGHT", optionButton, "RIGHT", -6, 0)
+				sample:SetTexture(option.texture)
+				sample:SetHorizTile(true)
+			elseif option.icon then
+				sample = optionButton:CreateTexture(nil, "ARTWORK")
+				sample:SetSize(14, 14)
+				sample:SetPoint("RIGHT", optionButton, "RIGHT", -6, 0)
+				sample:SetTexture(option.icon)
+			end
 
 			-- Option text
 			local optionText = optionButton:CreateFontString(nil, "OVERLAY")
@@ -1335,6 +1510,11 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 			optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 			optionText:SetText(option.text)
 			optionText:SetPoint("LEFT", 8, 0)
+			if sample then
+				optionText:SetPoint("RIGHT", sample, "LEFT", -8, 0)
+			else
+				optionText:SetPoint("RIGHT", optionButton, "RIGHT", -8, 0)
+			end
 
 			-- Highlight current selection
 			local currentValue = GetConfigValue(configPath)
@@ -1366,72 +1546,176 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 				CloseMenu()
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 			end)
+
+			-- Store references for filtering/navigation
+			optionButton.OptionValue = option.value
+			optionButton.OptionText = option.text:lower()
+			optionButton.OptionBg = optionBg
+			table.insert(optionButtons, optionButton)
 		end
+
+		-- Live filtering if search is present
+		if searchBox then
+			-- Debounced search to avoid relayout thrash on long lists
+			searchBox:SetScript("OnTextChanged", function(self)
+				local query = self:GetText():lower()
+				if menu._searchTimer then
+					menu._searchTimer:Cancel()
+				end
+				menu._searchTimer = C_Timer.NewTimer(0.12, function()
+					for _, btn in ipairs(optionButtons) do
+						local show = (query == "" or btn.OptionText:find(query, 1, true) ~= nil)
+						btn:SetShown(show)
+					end
+					RepositionVisibleButtons()
+				end)
+			end)
+		end
+
+		-- Keyboard navigation (Up/Down/Enter, Esc to close)
+		local function EnsureVisible(idx)
+			if not useScroll or not scrollFrame then
+				return
+			end
+			local btn = optionButtons[idx]
+			if not btn or not btn:IsShown() then
+				return
+			end
+			local offset = math.abs(select(5, btn:GetPoint(1)) or 0)
+			local current = scrollFrame:GetVerticalScroll()
+			local topVisible = current
+			local bottomVisible = current + visibleCount * itemHeight
+			if offset < topVisible then
+				scrollFrame:SetVerticalScroll(offset)
+			elseif offset + itemHeight > bottomVisible then
+				scrollFrame:SetVerticalScroll(offset - visibleCount * itemHeight + itemHeight)
+			end
+		end
+
+		local function SetHighlight(index)
+			for i, btn in ipairs(optionButtons) do
+				if btn:IsShown() then
+					local bg = btn.OptionBg or (btn.GetRegions and btn:GetRegions())
+					if bg and bg.SetVertexColor then
+						local isCurrent = (GetConfigValue(configPath) == btn.OptionValue)
+						if i == index then
+							bg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.25)
+							EnsureVisible(i)
+						else
+							if isCurrent then
+								bg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+							else
+								bg:SetVertexColor(0, 0, 0, 0)
+							end
+						end
+					end
+				end
+			end
+		end
+
+		local currentIndex = 1
+		-- Initialize currentIndex to first visible
+		for i, btn in ipairs(optionButtons) do
+			if btn:IsShown() then
+				currentIndex = i
+				break
+			end
+		end
+		SetHighlight(currentIndex)
+
+		menu:EnableKeyboard(true)
+		if menu.SetPropagateKeyboardInput then
+			menu:SetPropagateKeyboardInput(false)
+		end
+		menu:SetScript("OnKeyDown", function(self, key)
+			if key == "ESCAPE" then
+				CloseMenu()
+				return
+			end
+			if key == "UP" then
+				local i = currentIndex - 1
+				while i >= 1 and not optionButtons[i]:IsShown() do
+					i = i - 1
+				end
+				if i >= 1 then
+					currentIndex = i
+					SetHighlight(currentIndex)
+				end
+				return
+			end
+			if key == "DOWN" then
+				local i = currentIndex + 1
+				while i <= #optionButtons and not optionButtons[i]:IsShown() do
+					i = i + 1
+				end
+				if i <= #optionButtons then
+					currentIndex = i
+					SetHighlight(currentIndex)
+				end
+				return
+			end
+			if key == "ENTER" or key == "SPACE" then
+				local btn = optionButtons[currentIndex]
+				if btn and btn:IsShown() and btn:GetScript("OnClick") then
+					btn:GetScript("OnClick")(btn)
+				end
+				return
+			end
+		end)
 
 		-- Set menu state
 		currentMenu = menu
 		isMenuOpen = true
 		SetArrowUp()
 
-		-- Immediate mouse detection without delay - check for gaps between dropdown and menu
-		local function IsMouseOverDropdownArea()
-			if MouseIsOver(dropdown) or MouseIsOver(menu) then
-				return true
+		-- Create an invisible click-catcher to close the menu when clicking outside
+		menuBlocker = CreateFrame("Button", nil, UIParent)
+		menuBlocker:SetAllPoints(UIParent)
+		-- Ensure blocker is below the menu to allow menu interaction
+		menuBlocker:SetFrameStrata("TOOLTIP")
+		menuBlocker:SetFrameLevel(900)
+		menuBlocker:EnableMouse(true)
+		menuBlocker:SetScript("OnMouseDown", function()
+			CloseMenu()
+		end)
+		-- Ensure blocker is hidden when menu hides (safety)
+		menu:SetScript("OnHide", function()
+			if menuBlocker then
+				menuBlocker:Hide()
 			end
+		end)
 
-			-- Check if mouse is in the gap between dropdown and menu
-			local cursorX, cursorY = GetCursorPosition()
+		-- Reposition menu if it would go off-screen at bottom; open upwards instead
+		C_Timer.After(0, function()
+			if not menu or not menu:IsShown() then
+				return
+			end
 			local scale = UIParent:GetEffectiveScale()
-			cursorX, cursorY = cursorX / scale, cursorY / scale
-
-			local dropdownLeft = dropdown:GetLeft()
-			local dropdownRight = dropdown:GetRight()
-			local dropdownBottom = dropdown:GetBottom()
-			local menuTop = menu:GetTop()
-
-			if dropdownLeft and dropdownRight and dropdownBottom and menuTop then
-				-- Check if cursor is in the vertical gap between dropdown and menu
-				if cursorX >= dropdownLeft and cursorX <= dropdownRight and cursorY <= dropdownBottom and cursorY >= menuTop then
-					return true
-				end
+			local bottom = menu:GetBottom() or 0
+			local screenBottom = 0
+			if bottom * scale < screenBottom + 10 then
+				menu:ClearAllPoints()
+				menu:SetPoint("BOTTOMLEFT", dropdown, "TOPLEFT", 0, 2)
 			end
-
-			return false
-		end
-
-		-- Close menu when mouse is completely outside the dropdown area
-		local function checkAndCloseMenu()
-			if not IsMouseOverDropdownArea() then
-				CloseMenu()
-			else
-				-- Re-schedule the check if mouse is still over the area
-				if menu.closeTimer then
-					menu.closeTimer:Cancel()
-				end
-				menu.closeTimer = C_Timer.NewTimer(0.1, checkAndCloseMenu)
-			end
-		end
-
-		-- Store the timer on the menu for cleanup
-		menu.closeTimer = C_Timer.NewTimer(0.1, checkAndCloseMenu)
+		end)
 	end
 
 	-- Hover effect for dropdown button
 	dropdown:SetScript("OnEnter", function(self)
 		dropdownBg:SetVertexColor(0.2, 0.2, 0.2, 1)
-		if arrow.SetVertexColor then
-			arrow:SetVertexColor(1, 1, 1, 1) -- For texture arrows
-		elseif arrow.SetTextColor then
-			arrow:SetTextColor(1, 1, 1, 1) -- For fallback text arrows
+		if arrowTex and arrowTex:IsShown() and arrowTex.SetVertexColor then
+			arrowTex:SetVertexColor(1, 1, 1, 1)
+		elseif arrowText and arrowText:IsShown() and arrowText.SetTextColor then
+			arrowText:SetTextColor(1, 1, 1, 1)
 		end
 	end)
 
 	dropdown:SetScript("OnLeave", function(self)
 		dropdownBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-		if arrow.SetVertexColor then
-			arrow:SetVertexColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4]) -- For texture arrows
-		elseif arrow.SetTextColor then
-			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4]) -- For fallback text arrows
+		if arrowTex and arrowTex:IsShown() and arrowTex.SetVertexColor then
+			arrowTex:SetVertexColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		elseif arrowText and arrowText:IsShown() and arrowText.SetTextColor then
+			arrowText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		end
 	end)
 
@@ -1443,13 +1727,34 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 	-- Update function
 	function widget:UpdateValue()
 		local value = GetConfigValue(self.ConfigPath)
+		local found = false
 		for _, option in ipairs(options) do
 			if option.value == value then
 				dropdownText:SetText(option.text)
-				return
+				if option.texture then
+					preview:SetTexture(option.texture)
+					preview:Show()
+				elseif option.icon then
+					preview:SetTexture(option.icon)
+					preview:Show()
+				else
+					preview:Hide()
+				end
+				SetTextRightAnchor()
+				found = true
+				break
 			end
 		end
-		dropdownText:SetText(options[1] and options[1].text or "Select...")
+		if not found then
+			dropdownText:SetText(options[1] and options[1].text or "Select...")
+			if options[1] and options[1].texture then
+				preview:SetTexture(options[1].texture)
+				preview:Show()
+			else
+				preview:Hide()
+			end
+			SetTextRightAnchor()
+		end
 	end
 
 	-- Close menu function for external use
@@ -1916,7 +2221,8 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 	-- Text Input EditBox
 	local editBox = CreateFrame("EditBox", nil, widget)
 	editBox:SetSize(150, 16)
-	editBox:SetPoint("RIGHT", -8, 0)
+	-- Leave room for a checkmark apply button
+	editBox:SetPoint("RIGHT", -30, 0)
 	editBox:SetFontObject(K.UIFont)
 	editBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	editBox:SetAutoFocus(false)
@@ -1971,9 +2277,43 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 		SetConfigValue(configPath, self:GetText(), requiresReload, cleanText)
 	end)
 
+	-- ESC to reset to default value
+	editBox:SetScript("OnEscapePressed", function(self)
+		ResetToDefault(configPath, widget, cleanText)
+		self:ClearFocus()
+		widget:UpdateValue()
+	end)
+
+	-- Apply checkmark button
+	local applyButton = CreateFrame("Button", nil, widget)
+	applyButton:SetSize(16, 16)
+	applyButton:SetPoint("RIGHT", -8, 0)
+	local applyIcon = applyButton:CreateTexture(nil, "ARTWORK")
+	applyIcon:SetAllPoints()
+	local ok = pcall(function()
+		applyIcon:SetAtlas("common-icon-checkmark", true)
+	end)
+	if not ok then
+		applyIcon:SetTexture(C["Media"].Textures.White8x8Texture)
+		applyIcon:SetVertexColor(0.3, 0.9, 0.3, 1)
+	end
+	applyButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Apply", 1, 1, 1, 1, true)
+		GameTooltip:AddLine("Click to apply this value", 0.7, 0.7, 0.7, true)
+		GameTooltip:Show()
+	end)
+	applyButton:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+	applyButton:SetScript("OnClick", function()
+		SetConfigValue(configPath, editBox:GetText(), requiresReload, cleanText)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	end)
+
 	-- Enhanced tooltip functionality
 	if tooltip then
-		CreateEnhancedTooltip(widget, cleanText, tooltip)
+		CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nEnter to apply, Esc to reset to default, or click the checkmark to apply.")
 	end
 
 	-- Initialize
@@ -2201,7 +2541,7 @@ local function CreateMainFrame()
 	profileButton.Icon = profileButton:CreateTexture(nil, "ARTWORK")
 	profileButton.Icon:SetSize(16, 16)
 	profileButton.Icon:SetPoint("CENTER")
-	profileButton.Icon:SetAtlas("communities-icon-addchannelplus")
+	profileButton.Icon:SetAtlas("crosshair_directions_32")
 	profileButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	profileButton:SetScript("OnClick", function()
@@ -2227,6 +2567,56 @@ local function CreateMainFrame()
 	profileButton:SetScript("OnLeave", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 0.8)
 		profileBg:SetVertexColor(0, 0, 0, 0)
+		GameTooltip:Hide()
+	end)
+
+	-- Reload UI Button (left of profile button)
+	local reloadButton = CreateFrame("Button", nil, titleBar)
+	reloadButton:SetSize(32, 32)
+	reloadButton:SetPoint("RIGHT", profileButton, "LEFT", -4, 0)
+
+	local reloadBg = reloadButton:CreateTexture(nil, "BACKGROUND")
+	reloadBg:SetAllPoints()
+	reloadBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	reloadBg:SetVertexColor(0, 0, 0, 0)
+
+	reloadButton.Icon = reloadButton:CreateTexture(nil, "ARTWORK")
+	reloadButton.Icon:SetSize(16, 16)
+	reloadButton.Icon:SetPoint("CENTER")
+
+	-- Use the same atlas as reset controls for consistent styling
+	local okReloadIcon = pcall(function()
+		reloadButton.Icon:SetAtlas("common-icon-undo")
+	end)
+	if not okReloadIcon then
+		reloadButton.Icon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+		reloadButton.Icon:SetTexCoord(0, 1, 0, 1)
+	end
+	reloadButton.Icon:SetVertexColor(1, 1, 1, 0.8)
+
+	reloadButton:SetScript("OnClick", function()
+		-- Clear pending reloads and reload UI immediately
+		if ReloadTracker and ReloadTracker.ClearQueue then
+			ReloadTracker:ClearQueue()
+		end
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		ReloadUI()
+	end)
+
+	reloadButton:SetScript("OnEnter", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 1)
+		reloadBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+
+		-- Tooltip
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+		GameTooltip:SetText("Reload UI", 1, 1, 1, 1, true)
+		GameTooltip:AddLine("Apply changes immediately", 0.7, 0.7, 0.7)
+		GameTooltip:Show()
+	end)
+
+	reloadButton:SetScript("OnLeave", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 0.8)
+		reloadBg:SetVertexColor(0, 0, 0, 0)
 		GameTooltip:Hide()
 	end)
 
@@ -2525,6 +2915,10 @@ function GUI:Show()
 	end
 	self.Frame:Show()
 	self.IsVisible = true
+	-- Enable CtrlChecker updates only while GUI is visible
+	if CtrlChecker then
+		CtrlChecker:SetScript("OnUpdate", CtrlChecker.CtrlUpdate)
+	end
 end
 
 function GUI:Hide()
@@ -2558,6 +2952,10 @@ function GUI:Hide()
 		self.Frame:Hide()
 	end
 	self.IsVisible = false
+	-- Disable CtrlChecker when GUI is hidden
+	if CtrlChecker then
+		CtrlChecker:SetScript("OnUpdate", nil)
+	end
 
 	-- Check for pending reloads when closing GUI
 	ReloadTracker:OnGUIClose()
@@ -2867,6 +3265,16 @@ function GUI:CreateStaticPopups()
 		hideOnEscape = true,
 		preferredIndex = 3,
 	}
+
+	-- Simple copy path helper
+	StaticPopupDialogs["KKTHNXUI_COPY_PATH"] = {
+		text = "Config Path:\n%s",
+		button1 = OKAY,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
 end
 
 -- Placeholder functions for profile management
@@ -2975,6 +3383,339 @@ K.IsNew = IsNew
 _G.IsNew = IsNew
 -- Export Module to K for access
 K.GUI = Module
+
+-- Shared GUI helpers for reuse in ExtraGUI/ProfileGUI
+if not K.GUIHelpers then
+	K.GUIHelpers = {}
+end
+
+-- Unified dropdown menu helper (overlay, search, scroll, keyboard, previews)
+-- Usage:
+-- K.GUIHelpers.OpenDropdownMenu(anchorButton, {
+-- 	options = { {text=..., value=..., texture=..., icon=...}, ... },
+-- 	getValue = function() return currentValue end,
+-- 	onSelect = function(option) end,
+-- 	menuWidth = 220,
+-- 	visibleCount = 10,
+-- 	showSearchOver = 10,
+-- })
+function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
+	if not anchorButton or not args or not args.options then
+		return
+	end
+
+	-- Close existing helper menu if open
+	if K.GUIHelpers._menu and K.GUIHelpers._menu:IsShown() then
+		K.GUIHelpers._menu:Hide()
+		K.GUIHelpers._menu = nil
+	end
+	if K.GUIHelpers._blocker and K.GUIHelpers._blocker:IsShown() then
+		K.GUIHelpers._blocker:Hide()
+	end
+
+	local options = args.options
+	local getValue = args.getValue or function()
+		return nil
+	end
+	local onSelect = args.onSelect or function() end
+	local menuWidth = args.menuWidth or 220
+	local visibleCount = args.visibleCount or 10
+	local searchThreshold = args.showSearchOver or 10
+
+	local menu = CreateFrame("Frame", nil, UIParent)
+	local itemHeight = 22
+	local useSearch = #options > searchThreshold
+	local searchHeight = useSearch and 24 or 0
+	local menuHeight = math.min(#options, visibleCount) * itemHeight + 4 + searchHeight
+	menu:SetSize(menuWidth, menuHeight)
+	menu:SetPoint("TOPLEFT", anchorButton, "BOTTOMLEFT", 0, -2)
+	menu:SetFrameStrata("TOOLTIP")
+	menu:SetFrameLevel(1000)
+	menu:SetClampedToScreen(true)
+
+	local menuBg = menu:CreateTexture(nil, "BACKGROUND")
+	menuBg:SetAllPoints()
+	menuBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	menuBg:SetVertexColor(0.1, 0.1, 0.1, 0.95)
+
+	local menuBorder = CreateFrame("Frame", nil, menu)
+	menuBorder:SetPoint("TOPLEFT", -1, 1)
+	menuBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+	menuBorder:SetFrameLevel(menu:GetFrameLevel() - 1)
+	local borderTexture = menuBorder:CreateTexture(nil, "BACKGROUND")
+	borderTexture:SetAllPoints()
+	borderTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+	borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+
+	local container = menu
+	local scrollChild, scrollFrame
+	local searchBox
+	if useSearch then
+		local searchFrame = CreateFrame("Frame", nil, menu)
+		searchFrame:SetSize(menuWidth - 4, searchHeight)
+		searchFrame:SetPoint("TOPLEFT", 2, -2)
+		local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
+		searchBg:SetAllPoints()
+		searchBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		searchBg:SetVertexColor(0.08, 0.08, 0.08, 1)
+		searchBox = CreateFrame("EditBox", nil, searchFrame)
+		searchBox:SetAllPoints()
+		searchBox:SetFontObject(K.UIFont)
+		searchBox:SetAutoFocus(true)
+		searchBox:SetTextColor(0.9, 0.9, 0.9, 1)
+		searchBox:SetJustifyH("LEFT")
+		searchBox:SetText("")
+		searchBox:EnableKeyboard(true)
+		if searchBox.SetPropagateKeyboardInput then
+			searchBox:SetPropagateKeyboardInput(false)
+		end
+	end
+
+	if #options > visibleCount then
+		scrollFrame = CreateFrame("ScrollFrame", nil, menu)
+		scrollFrame:SetPoint("TOPLEFT", 2, -(2 + searchHeight))
+		scrollFrame:SetPoint("BOTTOMRIGHT", -2, 2)
+		scrollFrame:EnableMouseWheel(true)
+		scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+			local current = self:GetVerticalScroll()
+			local maxScroll = self:GetVerticalScrollRange()
+			local step = itemHeight
+			if delta > 0 then
+				self:SetVerticalScroll(math.max(0, current - step))
+			else
+				self:SetVerticalScroll(math.min(maxScroll, current + step))
+			end
+		end)
+
+		scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		scrollChild:SetSize(menuWidth - 4, #options * itemHeight)
+		scrollFrame:SetScrollChild(scrollChild)
+		container = scrollChild
+	end
+
+	local optionButtons = {}
+	local function RepositionVisibleButtons()
+		local y = -2
+		local visibleCountLocal = 0
+		for _, btn in ipairs(optionButtons) do
+			if btn:IsShown() then
+				btn:ClearAllPoints()
+				btn:SetPoint("TOPLEFT", container, "TOPLEFT", 2, y)
+				y = y - itemHeight
+				visibleCountLocal = visibleCountLocal + 1
+			end
+		end
+		if scrollChild then
+			scrollChild:SetHeight(math.max(visibleCountLocal * itemHeight, visibleCount * itemHeight))
+		end
+	end
+
+	for i, option in ipairs(options) do
+		local optionButton = CreateFrame("Button", nil, container)
+		optionButton:SetSize(menuWidth - 4, itemHeight - 2)
+		optionButton:SetPoint("TOPLEFT", 2, -(i - 1) * itemHeight - 2)
+
+		local optionBg = optionButton:CreateTexture(nil, "BACKGROUND")
+		optionBg:SetAllPoints()
+		optionBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		optionBg:SetVertexColor(0, 0, 0, 0)
+
+		local sample
+		if option.texture then
+			sample = optionButton:CreateTexture(nil, "ARTWORK")
+			sample:SetSize(70, 8)
+			sample:SetPoint("RIGHT", optionButton, "RIGHT", -6, 0)
+			sample:SetTexture(option.texture)
+			sample:SetHorizTile(true)
+		elseif option.icon then
+			sample = optionButton:CreateTexture(nil, "ARTWORK")
+			sample:SetSize(14, 14)
+			sample:SetPoint("RIGHT", optionButton, "RIGHT", -6, 0)
+			sample:SetTexture(option.icon)
+		end
+
+		local optionText = optionButton:CreateFontString(nil, "OVERLAY")
+		optionText:SetFontObject(K.UIFont)
+		optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		optionText:SetText(option.text)
+		optionText:SetPoint("LEFT", 8, 0)
+		if sample then
+			optionText:SetPoint("RIGHT", sample, "LEFT", -8, 0)
+		else
+			optionText:SetPoint("RIGHT", optionButton, "RIGHT", -8, 0)
+		end
+
+		local currentValue = getValue()
+		if option.value == currentValue then
+			optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+		end
+
+		optionButton:SetScript("OnEnter", function()
+			if option.value ~= getValue() then
+				optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.2)
+			end
+			optionText:SetTextColor(1, 1, 1, 1)
+		end)
+
+		optionButton:SetScript("OnLeave", function()
+			if option.value == getValue() then
+				optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+			else
+				optionBg:SetVertexColor(0, 0, 0, 0)
+			end
+			optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		end)
+
+		optionButton:SetScript("OnClick", function()
+			onSelect(option)
+			if K.GUIHelpers._blocker then
+				K.GUIHelpers._blocker:Hide()
+			end
+			menu:Hide()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end)
+
+		optionButton.OptionText = option.text:lower()
+		table.insert(optionButtons, optionButton)
+	end
+
+	if searchBox then
+		searchBox:SetScript("OnTextChanged", function(self)
+			local query = self:GetText():lower()
+			for _, btn in ipairs(optionButtons) do
+				local show = (query == "" or btn.OptionText:find(query, 1, true) ~= nil)
+				btn:SetShown(show)
+			end
+			RepositionVisibleButtons()
+		end)
+		searchBox:SetScript("OnKeyDown", function(self, key)
+			if menu and menu:GetScript("OnKeyDown") then
+				menu:GetScript("OnKeyDown")(menu, key)
+			end
+		end)
+	end
+
+	local function EnsureVisible(idx)
+		if not scrollFrame then
+			return
+		end
+		local btn = optionButtons[idx]
+		if not btn or not btn:IsShown() then
+			return
+		end
+		local offset = math.abs(select(5, btn:GetPoint(1)) or 0)
+		local current = scrollFrame:GetVerticalScroll()
+		local topVisible = current
+		local bottomVisible = current + visibleCount * itemHeight
+		if offset < topVisible then
+			scrollFrame:SetVerticalScroll(offset)
+		elseif offset + itemHeight > bottomVisible then
+			scrollFrame:SetVerticalScroll(offset - visibleCount * itemHeight + itemHeight)
+		end
+	end
+
+	local function SetHighlight(index)
+		for i, btn in ipairs(optionButtons) do
+			if btn:IsShown() then
+				if i == index then
+					btn:GetRegions():SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.25)
+					EnsureVisible(i)
+				else
+					btn:GetRegions():SetVertexColor(0, 0, 0, 0)
+				end
+			end
+		end
+	end
+
+	local currentIndex = 1
+	for i, btn in ipairs(optionButtons) do
+		if btn:IsShown() then
+			currentIndex = i
+			break
+		end
+	end
+	SetHighlight(currentIndex)
+
+	menu:EnableKeyboard(true)
+	if menu.SetPropagateKeyboardInput then
+		menu:SetPropagateKeyboardInput(false)
+	end
+	menu:SetScript("OnKeyDown", function(self, key)
+		if key == "ESCAPE" then
+			if K.GUIHelpers._blocker then
+				K.GUIHelpers._blocker:Hide()
+			end
+			self:Hide()
+			return
+		end
+		if key == "UP" then
+			local i = currentIndex - 1
+			while i >= 1 and (not optionButtons[i]:IsShown()) do
+				i = i - 1
+			end
+			if i >= 1 then
+				currentIndex = i
+				SetHighlight(currentIndex)
+			end
+			return
+		end
+		if key == "DOWN" then
+			local i = currentIndex + 1
+			while i <= #optionButtons and (not optionButtons[i]:IsShown()) do
+				i = i + 1
+			end
+			if i <= #optionButtons then
+				currentIndex = i
+				SetHighlight(currentIndex)
+			end
+			return
+		end
+		if key == "ENTER" or key == "SPACE" then
+			local btn = optionButtons[currentIndex]
+			if btn and btn:IsShown() and btn:GetScript("OnClick") then
+				btn:GetScript("OnClick")(btn)
+			end
+			return
+		end
+	end)
+
+	-- Outside click blocker
+	local blocker = K.GUIHelpers._blocker or CreateFrame("Button", nil, UIParent)
+	blocker:SetAllPoints(UIParent)
+	blocker:SetFrameStrata("TOOLTIP")
+	blocker:SetFrameLevel(900)
+	blocker:EnableMouse(true)
+	blocker:SetScript("OnMouseDown", function()
+		menu:Hide()
+	end)
+	blocker:Show()
+	K.GUIHelpers._blocker = blocker
+
+	menu:SetScript("OnHide", function()
+		if blocker then
+			blocker:Hide()
+		end
+		if menu == K.GUIHelpers._menu then
+			K.GUIHelpers._menu = nil
+		end
+	end)
+
+	-- Reposition upward if needed
+	C_Timer.After(0, function()
+		if not menu:IsShown() then
+			return
+		end
+		local scale = UIParent:GetEffectiveScale()
+		local bottom = menu:GetBottom() or 0
+		if bottom * scale < 10 then
+			menu:ClearAllPoints()
+			menu:SetPoint("BOTTOMLEFT", anchorButton, "TOPLEFT", 0, 2)
+		end
+	end)
+
+	menu:Show()
+	K.GUIHelpers._menu = menu
+end
 
 -- Credits Widget - Supports class icons and class colors
 local function CreateCredits(parent, creditsData, title)

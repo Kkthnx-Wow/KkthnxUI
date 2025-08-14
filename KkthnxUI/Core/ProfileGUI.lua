@@ -1576,7 +1576,7 @@ function ProfileGUI:ShowExportDialog()
 	end
 
 	-- Create dialog with main GUI styling
-	local dialog = CreateFrame("Frame", nil, UIParent)
+  local dialog = CreateFrame("Frame", nil, UIParent)
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
 	dialog:SetFrameStrata("TOOLTIP")
@@ -1641,10 +1641,17 @@ function ProfileGUI:ShowExportDialog()
 	closeButton.Icon:SetAtlas("uitools-icon-close")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
-	closeButton:SetScript("OnClick", function()
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
+  closeButton:SetScript("OnClick", function()
+    dialog:Hide()
+    dialog:SetParent(nil)
+  end)
+  dialog:EnableKeyboard(true)
+  if dialog.SetPropagateKeyboardInput then dialog:SetPropagateKeyboardInput(false) end
+  dialog:SetScript("OnKeyDown", function(self, key)
+    if key == "ESCAPE" then
+      self:Hide()
+    end
+  end)
 
 	closeButton:SetScript("OnEnter", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 1)
@@ -1755,7 +1762,7 @@ end
 -- Import Dialog - Enhanced with better styling
 function ProfileGUI:ShowImportDialog()
 	-- Create dialog with main GUI styling
-	local dialog = CreateFrame("Frame", nil, UIParent)
+  local dialog = CreateFrame("Frame", nil, UIParent)
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
 	dialog:SetFrameStrata("TOOLTIP")
@@ -1820,10 +1827,17 @@ function ProfileGUI:ShowImportDialog()
 	closeButton.Icon:SetAtlas("uitools-icon-close")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
-	closeButton:SetScript("OnClick", function()
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
+  closeButton:SetScript("OnClick", function()
+    dialog:Hide()
+    dialog:SetParent(nil)
+  end)
+  dialog:EnableKeyboard(true)
+  if dialog.SetPropagateKeyboardInput then dialog:SetPropagateKeyboardInput(false) end
+  dialog:SetScript("OnKeyDown", function(self, key)
+    if key == "ESCAPE" then
+      self:Hide()
+    end
+  end)
 
 	closeButton:SetScript("OnEnter", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 1)

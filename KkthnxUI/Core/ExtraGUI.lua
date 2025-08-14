@@ -487,21 +487,8 @@ function ExtraGUI:HookMainGUIClose()
 	end
 
 	-- Hook the main GUI's OnHide event
-	if mainGUI:GetScript("OnHide") then
-		-- Store the original OnHide handler
-		local originalOnHide = mainGUI:GetScript("OnHide")
-		mainGUI:SetScript("OnHide", function(...)
-			-- Call original handler first
-			originalOnHide(...)
-			-- Then close ExtraGUI
-			self:Hide()
-		end)
-	else
-		-- No existing OnHide handler, create one
-		mainGUI:SetScript("OnHide", function()
-			self:Hide()
-		end)
-	end
+    -- Hook without overriding existing handlers
+    mainGUI:HookScript("OnHide", function() self:Hide() end)
 
 	self.MainGUIHooked = true
 end
@@ -991,7 +978,7 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 
 	-- Dropdown Button
 	local dropdown = CreateFrame("Button", nil, widget)
-	dropdown:SetSize(120, 18) -- Smaller for extra panel
+	dropdown:SetSize(140, 18) -- Slightly wider; still compact for ExtraGUI
 	dropdown:SetPoint("RIGHT", -8, 0)
 
 	local dropdownBg = dropdown:CreateTexture(nil, "BACKGROUND")
@@ -1004,43 +991,52 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 	dropdownText:SetFontObject(K.UIFont)
 	dropdownText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	dropdownText:SetPoint("LEFT", 8, 0)
-	dropdownText:SetPoint("RIGHT", -20, 0)
 	dropdownText:SetJustifyH("LEFT")
 
-	-- Arrow Icon (try atlas first, fallback to text)
-	local arrow = dropdown:CreateTexture(nil, "OVERLAY")
+	-- Arrow Icon with safe fallback
+	local arrowTex = dropdown:CreateTexture(nil, "OVERLAY")
+	arrowTex:SetSize(18, 12)
+	arrowTex:SetPoint("RIGHT", -6, 0)
+	local arrowText
+
+	local function UseArrowText(char)
+		if not arrowText then
+			arrowText = dropdown:CreateFontString(nil, "OVERLAY")
+			arrowText:SetFontObject(K.UIFont)
+			arrowText:SetPoint("RIGHT", -6, 0)
+		end
+		arrowTex:Hide()
+		arrowText:Show()
+		arrowText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		arrowText:SetText(char)
+	end
+
+	local function UseArrowTexture(atlas)
+		arrowTex:Show()
+		if arrowText then
+			arrowText:Hide()
+		end
+		arrowTex:SetAtlas(atlas, true)
+		arrowTex:SetSize(18, 12)
+	end
+
 	local function SetArrowDown()
-		local success = pcall(function()
-			arrow:SetAtlas("minimal-scrollbar-small-arrow-bottom", true)
-			arrow:SetSize(18, 12)
-			arrow:SetPoint("RIGHT", -6, 0)
+		local ok = pcall(function()
+			UseArrowTexture("minimal-scrollbar-small-arrow-bottom")
 		end)
-		if not success then
-			-- Fallback to text if atlas fails
-			arrow = dropdown:CreateFontString(nil, "OVERLAY")
-			arrow:SetFontObject(K.UIFont)
-			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			arrow:SetText("▼")
-			arrow:SetPoint("RIGHT", -6, 0)
+		if not ok then
+			UseArrowText("▼")
 		end
 	end
-
 	local function SetArrowUp()
-		local success = pcall(function()
-			arrow:SetAtlas("minimal-scrollbar-small-arrow-top", true)
-			arrow:SetSize(18, 12)
+		local ok = pcall(function()
+			UseArrowTexture("minimal-scrollbar-small-arrow-top")
 		end)
-		if not success then
-			-- Fallback to text if atlas fails
-			arrow = dropdown:CreateFontString(nil, "OVERLAY")
-			arrow:SetFontObject(K.UIFont)
-			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			arrow:SetText("▲")
-			arrow:SetPoint("RIGHT", -6, 0)
+		if not ok then
+			UseArrowText("▲")
 		end
 	end
 
-	-- Initialize arrow to down position
 	SetArrowDown()
 
 	-- Tooltip functionality (now added)
@@ -1057,168 +1053,49 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 		end)
 	end
 
-	-- Menu state management
-	local isMenuOpen = false
-	local currentMenu = nil
-
-	-- Function to close menu
-	local function CloseMenu()
-		if currentMenu then
-			currentMenu:Hide()
-			currentMenu = nil
-			isMenuOpen = false
-			SetArrowDown()
-		end
-	end
-
-	-- Function to open menu
+	-- Menu state: open overlay menu via shared helper
 	local function OpenMenu()
-		if isMenuOpen then
-			CloseMenu()
-			return
-		end
-
-		-- Create dropdown menu
-		local menu = CreateFrame("Frame", nil, dropdown)
-		menu:SetSize(120, #options * 22 + 4) -- Match dropdown width
-		menu:SetPoint("TOP", dropdown, "BOTTOM", 0, -2)
-		menu:SetFrameStrata("TOOLTIP")
-		menu:SetFrameLevel(dropdown:GetFrameLevel() + 50)
-
-		-- Menu background
-		local menuBg = menu:CreateTexture(nil, "BACKGROUND")
-		menuBg:SetAllPoints()
-		menuBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		menuBg:SetVertexColor(0.1, 0.1, 0.1, 0.95)
-
-		-- Menu border
-		local menuBorder = CreateFrame("Frame", nil, menu)
-		menuBorder:SetPoint("TOPLEFT", -1, 1)
-		menuBorder:SetPoint("BOTTOMRIGHT", 1, -1)
-		menuBorder:SetFrameLevel(menu:GetFrameLevel() - 1)
-		local borderTexture = menuBorder:CreateTexture(nil, "BACKGROUND")
-		borderTexture:SetAllPoints()
-		borderTexture:SetTexture(C["Media"].Textures.White8x8Texture)
-		borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
-
-		-- Create option buttons
-		for i, option in ipairs(options) do
-			local optionButton = CreateFrame("Button", nil, menu)
-			optionButton:SetSize(118, 20) -- Slightly smaller to fit
-			optionButton:SetPoint("TOP", 0, -(i - 1) * 22 - 2)
-
-			-- Option background (for hover effect)
-			local optionBg = optionButton:CreateTexture(nil, "BACKGROUND")
-			optionBg:SetAllPoints()
-			optionBg:SetTexture(C["Media"].Textures.White8x8Texture)
-			optionBg:SetVertexColor(0, 0, 0, 0) -- Transparent by default
-
-			-- Option text
-			local optionText = optionButton:CreateFontString(nil, "OVERLAY")
-			optionText:SetFontObject(K.UIFont)
-			optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			optionText:SetText(option.text)
-			optionText:SetPoint("LEFT", 8, 0)
-
-			-- Highlight current selection
-			local currentValue = GetExtraConfigValue(configPath)
-			if option.value == currentValue then
-				optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
-			end
-
-			-- Hover effects
-			optionButton:SetScript("OnEnter", function(self)
-				if option.value ~= currentValue then
-					optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.2)
-				end
-				optionText:SetTextColor(1, 1, 1, 1)
-			end)
-
-			optionButton:SetScript("OnLeave", function(self)
-				if option.value == currentValue then
-					optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
-				else
-					optionBg:SetVertexColor(0, 0, 0, 0)
-				end
-				optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			end)
-
-			-- Click handler
-			optionButton:SetScript("OnClick", function()
+		K.GUIHelpers.OpenDropdownMenu(dropdown, {
+			options = options,
+			getValue = function()
+				return configPath and GetExtraConfigValue(configPath) or nil
+			end,
+			onSelect = function(option)
 				if configPath then
+					local prev = GetExtraConfigValue(configPath)
 					SetExtraConfigValue(configPath, option.value)
 					widget:UpdateValue()
+					if hookFunction and type(hookFunction) == "function" then
+						hookFunction(option.value, prev, configPath)
+					end
 				else
-					-- For dropdowns without config paths, just update display
 					dropdownText:SetText(option.text)
 				end
-
-				CloseMenu()
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-
-				-- Call hook function if provided
-				if hookFunction and type(hookFunction) == "function" then
-					hookFunction(option.value, currentValue, configPath)
-				end
-			end)
-		end
-
-		-- Set menu state
-		currentMenu = menu
-		isMenuOpen = true
+				SetArrowDown()
+			end,
+			menuWidth = 180,
+			visibleCount = 10,
+			showSearchOver = 10,
+		})
 		SetArrowUp()
-
-		-- Mouse detection to auto-close menu
-		local function IsMouseOverDropdownArea()
-			if MouseIsOver(dropdown) or MouseIsOver(menu) then
-				return true
-			end
-
-			-- Check if mouse is in the gap between dropdown and menu
-			local cursorX, cursorY = GetCursorPosition()
-			local scale = UIParent:GetEffectiveScale()
-			cursorX, cursorY = cursorX / scale, cursorY / scale
-
-			local dropdownLeft = dropdown:GetLeft()
-			local dropdownRight = dropdown:GetRight()
-			local dropdownBottom = dropdown:GetBottom()
-			local menuTop = menu:GetTop()
-
-			if dropdownLeft and dropdownRight and dropdownBottom and menuTop then
-				-- Check if cursor is in the vertical gap between dropdown and menu
-				if cursorX >= dropdownLeft and cursorX <= dropdownRight and cursorY <= dropdownBottom and cursorY >= menuTop then
-					return true
-				end
-			end
-
-			return false
-		end
-
-		-- Close menu when mouse is completely outside the dropdown area
-		menu:SetScript("OnUpdate", function(self, elapsed)
-			if not IsMouseOverDropdownArea() then
-				CloseMenu()
-				self:SetScript("OnUpdate", nil)
-			end
-		end)
 	end
 
 	-- Hover effect for dropdown button
 	dropdown:SetScript("OnEnter", function(self)
 		dropdownBg:SetVertexColor(0.2, 0.2, 0.2, 1)
-		if arrow.SetVertexColor then
-			arrow:SetVertexColor(1, 1, 1, 1) -- For texture arrows
-		elseif arrow.SetTextColor then
-			arrow:SetTextColor(1, 1, 1, 1) -- For fallback text arrows
+		if arrowTex and arrowTex.SetVertexColor then
+			arrowTex:SetVertexColor(1, 1, 1, 1)
+		elseif arrowText and arrowText.SetTextColor then
+			arrowText:SetTextColor(1, 1, 1, 1)
 		end
 	end)
 
 	dropdown:SetScript("OnLeave", function(self)
 		dropdownBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-		if arrow.SetVertexColor then
-			arrow:SetVertexColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4]) -- For texture arrows
-		elseif arrow.SetTextColor then
-			arrow:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4]) -- For fallback text arrows
+		if arrowTex and arrowTex.SetVertexColor then
+			arrowTex:SetVertexColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		elseif arrowText and arrowText.SetTextColor then
+			arrowText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		end
 	end)
 
@@ -1250,7 +1127,10 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 
 	-- Close menu function for external use
 	function widget:CloseMenu()
-		CloseMenu()
+		-- Use shared helper state if present
+		if K.GUIHelpers and K.GUIHelpers._menu then
+			K.GUIHelpers._menu:Hide()
+		end
 	end
 
 	-- Expose properties for external access
@@ -2313,7 +2193,7 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	-- Text Input EditBox
 	local editBox = CreateFrame("EditBox", nil, widget)
 	editBox:SetSize(120, 16) -- Smaller for extra panel
-	editBox:SetPoint("RIGHT", -8, 0)
+	editBox:SetPoint("RIGHT", -28, 0) -- Leave space for apply button
 	editBox:SetFontObject(K.UIFont)
 	editBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	editBox:SetAutoFocus(false)
@@ -2390,6 +2270,53 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 			hookFunction(newValue, widget.PreviousValue or "", configPath)
 		end
 		widget.PreviousValue = newValue
+	end)
+
+	-- ESC to reset to default for ExtraGUI: fallback to current saved value from C
+	editBox:SetScript("OnEscapePressed", function(self)
+		-- Prefer default if available; fallback to current stored value in C
+		if widget.ConfigPath then
+			local defaultValue
+			if K.Defaults then
+				defaultValue = GetValueByPath(K.Defaults, widget.ConfigPath)
+			end
+			local revertValue = defaultValue
+			if revertValue == nil then
+				revertValue = GetValueByPath(C, widget.ConfigPath)
+			end
+			if revertValue ~= nil then
+				editBox:SetText(tostring(revertValue))
+				SetExtraConfigValue(widget.ConfigPath, revertValue)
+			end
+		end
+		self:ClearFocus()
+	end)
+
+	-- Apply checkmark button
+	local applyButton = CreateFrame("Button", nil, widget)
+	applyButton:SetSize(16, 16)
+	applyButton:SetPoint("RIGHT", -8, 0)
+	local applyIcon = applyButton:CreateTexture(nil, "ARTWORK")
+	applyIcon:SetAllPoints()
+	local ok = pcall(function()
+		applyIcon:SetAtlas("common-icon-checkmark", true)
+	end)
+	if not ok then
+		applyIcon:SetTexture(C["Media"].Textures.White8x8Texture)
+		applyIcon:SetVertexColor(0.3, 0.9, 0.3, 1)
+	end
+	applyButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Apply", 1, 1, 1, 1, true)
+		GameTooltip:AddLine("Click to apply this value", 0.7, 0.7, 0.7, true)
+		GameTooltip:Show()
+	end)
+	applyButton:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+	applyButton:SetScript("OnClick", function()
+		SetExtraConfigValue(configPath, editBox:GetText())
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
 
 	-- Enhanced tooltip functionality
