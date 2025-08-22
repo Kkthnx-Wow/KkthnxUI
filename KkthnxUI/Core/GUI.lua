@@ -94,8 +94,8 @@ local Module = K:NewModule("NewGUI")
 local _G = _G
 local floor, max, min = math.floor, math.max, math.min
 local format, gsub = string.format, string.gsub
-local ipairs, pairs, type, unpack = ipairs, pairs, type, unpack
-local sort, tinsert, tremove = table.sort, table.insert, table.remove
+local ipairs, pairs, type = ipairs, pairs, type
+local tinsert, tremove = table.insert, table.remove
 
 -- WoW API
 local CreateFrame = CreateFrame
@@ -126,13 +126,11 @@ local HEADER_HEIGHT = 40
 local CATEGORY_HEIGHT = 32
 
 -- Colors (use KkthnxUI's established color system)
-local ACCENT_COLOR = { 0.36, 0.55, 0.81 }
+local ACCENT_COLOR = { K.r, K.g, K.b }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
 local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
-local BORDER_COLOR = C["Media"].Borders.ColorBorder
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
-local HIGHLIGHT_COLOR = { 1, 1, 1, 0.1 }
 
 -- ============================================================================
 -- HELPER FUNCTIONS
@@ -832,22 +830,6 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 	label:SetText(cleanText) -- Use clean text without NEW tag
 	label:SetPoint("LEFT", 8, 0)
 	widget.DisplayText = cleanText
-	label:EnableMouse(true)
-	label:SetScript("OnMouseUp", function(_, btn)
-		if btn == "RightButton" and configPath then
-			StaticPopupDialogs["KKTHNXUI_COPY_PATH"].text = "Config Path:\n" .. configPath
-			StaticPopup_Show("KKTHNXUI_COPY_PATH", configPath)
-		end
-	end)
-	widget.DisplayText = cleanText
-	label:EnableMouse(true)
-	label:SetScript("OnMouseUp", function(_, btn)
-		if btn == "RightButton" and configPath then
-			StaticPopupDialogs["KKTHNXUI_COPY_PATH"].text = "Config Path:\n" .. configPath
-			StaticPopup_Show("KKTHNXUI_COPY_PATH", configPath)
-		end
-	end)
-	widget.DisplayText = cleanText
 	-- Right-click label to copy config path
 	label:EnableMouse(true)
 	label:SetScript("OnMouseUp", function(_, btn)
@@ -1072,6 +1054,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 
 	-- Store current value and state
 	local currentValue = minVal
+	local committedValue = GetConfigValue(configPath) or minVal
 	local isDragging = false
 	local isUpdating = false
 
@@ -1129,6 +1112,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 		value = max(minVal, min(maxVal, value))
 
 		currentValue = value
+		committedValue = value
 		valueText:SetText(tostring(value))
 		UpdateThumbPosition(value)
 
@@ -1153,6 +1137,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 		if button == "LeftButton" then
 			isDragging = true
 			local lastUpdate = 0
+			local sinceLastCommit = 0
 			-- More efficient OnUpdate: throttled and with early exit conditions
 			self:SetScript("OnUpdate", function(self, elapsed)
 				if not isDragging then
@@ -1166,6 +1151,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 					return
 				end
 				lastUpdate = 0
+				sinceLastCommit = sinceLastCommit + elapsed
 
 				local x = GetCursorPosition()
 				local scale = UIParent:GetEffectiveScale()
@@ -1176,11 +1162,13 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 					currentValue = newValue
 					valueText:SetText(tostring(newValue))
 					UpdateThumbPosition(newValue)
+				end
 
-					-- Save configuration with real-time hook execution and reload tracking
-					if not isUpdating then
-						SetConfigValue(configPath, newValue, requiresReload, cleanText)
-					end
+				-- Coalesce config writes while dragging: commit at most ~8 times/sec
+				if not isUpdating and currentValue ~= committedValue and sinceLastCommit >= 0.12 then
+					SetConfigValue(configPath, currentValue, requiresReload, cleanText)
+					committedValue = currentValue
+					sinceLastCommit = 0
 				end
 			end)
 		end
@@ -1192,7 +1180,10 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 			self:SetScript("OnUpdate", nil)
 
 			-- Final save and visual update with hook execution and reload tracking
-			SetConfigValue(configPath, currentValue, requiresReload, cleanText)
+			if currentValue ~= committedValue then
+				SetConfigValue(configPath, currentValue, requiresReload, cleanText)
+				committedValue = currentValue
+			end
 			thumbTexture:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 			thumbBorder:SetVertexColor(0.4, 0.4, 0.4, 0.8)
 
@@ -1214,6 +1205,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 			valueText:SetText(tostring(newValue))
 			UpdateThumbPosition(newValue)
 			SetConfigValue(configPath, newValue, requiresReload, cleanText)
+			committedValue = newValue
 
 			-- Play feedback sound
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
@@ -1231,6 +1223,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 			valueText:SetText(tostring(newValue))
 			UpdateThumbPosition(newValue)
 			SetConfigValue(configPath, newValue, requiresReload, cleanText)
+			committedValue = newValue
 
 			-- Play feedback sound
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
@@ -2579,7 +2572,7 @@ local function CreateMainFrame()
 	title:SetFontObject(K.UIFont)
 	title:SetTextColor(1, 1, 1, 1)
 	title:SetText(format("%s %s - %s", K.Title, K.Version, "Configuration"))
-	title:SetPoint("LEFT", 15, 0)
+	title:SetPoint("CENTER", 0, -1)
 
 	-- Close Button
 	local closeButton = CreateFrame("Button", nil, titleBar)
@@ -2594,7 +2587,7 @@ local function CreateMainFrame()
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
 	closeButton.Icon:SetSize(16, 16)
 	closeButton.Icon:SetPoint("CENTER")
-	closeButton.Icon:SetAtlas("uitools-icon-close")
+	closeButton.Icon:SetAtlas("common-icon-redx")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	closeButton:SetScript("OnClick", function()
@@ -2624,7 +2617,7 @@ local function CreateMainFrame()
 	profileButton.Icon = profileButton:CreateTexture(nil, "ARTWORK")
 	profileButton.Icon:SetSize(16, 16)
 	profileButton.Icon:SetPoint("CENTER")
-	profileButton.Icon:SetAtlas("crosshair_directions_32")
+	profileButton.Icon:SetAtlas("Crosshair_trainer_32")
 	profileButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	profileButton:SetScript("OnClick", function()
@@ -2666,15 +2659,7 @@ local function CreateMainFrame()
 	reloadButton.Icon = reloadButton:CreateTexture(nil, "ARTWORK")
 	reloadButton.Icon:SetSize(16, 16)
 	reloadButton.Icon:SetPoint("CENTER")
-
-	-- Use the same atlas as reset controls for consistent styling
-	local okReloadIcon = pcall(function()
-		reloadButton.Icon:SetAtlas("common-icon-undo")
-	end)
-	if not okReloadIcon then
-		reloadButton.Icon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
-		reloadButton.Icon:SetTexCoord(0, 1, 0, 1)
-	end
+	reloadButton.Icon:SetAtlas("common-icon-undo")
 	reloadButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	reloadButton:SetScript("OnClick", function()
@@ -3514,6 +3499,59 @@ if not K.GUIHelpers then
 	K.GUIHelpers = {}
 end
 
+-- Lightweight object pool for dropdown option buttons to reduce GC and CPU
+if not K.GUIHelpers._optionButtonPool then
+	K.GUIHelpers._optionButtonPool = {}
+end
+
+local function AcquireOptionButton(parent, width, height)
+	local pool = K.GUIHelpers._optionButtonPool
+	local btn = table.remove(pool)
+	if not btn then
+		btn = CreateFrame("Button", nil, parent)
+		btn:SetSize(width, height)
+
+		local bg = btn:CreateTexture(nil, "BACKGROUND")
+		bg:SetAllPoints()
+		bg:SetTexture(C["Media"].Textures.White8x8Texture)
+		bg:SetVertexColor(0, 0, 0, 0)
+		btn._bg = bg
+
+		local sample = btn:CreateTexture(nil, "ARTWORK")
+		sample:SetPoint("RIGHT", btn, "RIGHT", -6, 0)
+		sample:Hide()
+		btn._sample = sample
+
+		local txt = btn:CreateFontString(nil, "OVERLAY")
+		txt:SetFontObject(K.UIFont)
+		txt:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		txt:SetPoint("LEFT", 8, 0)
+		txt:SetJustifyH("LEFT")
+		btn._text = txt
+	else
+		btn:SetParent(parent)
+		btn:ClearAllPoints()
+		btn:SetSize(width, height)
+		btn:Show()
+	end
+	return btn
+end
+
+local function ReleaseOptionButtons(buttons)
+	local pool = K.GUIHelpers._optionButtonPool
+	for _, btn in ipairs(buttons) do
+		btn:Hide()
+		btn:SetScript("OnEnter", nil)
+		btn:SetScript("OnLeave", nil)
+		btn:SetScript("OnClick", nil)
+		btn._text:SetText("")
+		btn._bg:SetVertexColor(0, 0, 0, 0)
+		btn._sample:SetTexture(nil)
+		btn._sample:Hide()
+		table.insert(pool, btn)
+	end
+end
+
 -- Unified dropdown menu helper (overlay, search, scroll, keyboard, previews)
 -- Usage:
 -- K.GUIHelpers.OpenDropdownMenu(anchorButton, {
@@ -3542,7 +3580,7 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 	local getValue = args.getValue or function()
 		return nil
 	end
-	local onSelect = args.onSelect or function() end
+	local onSelect = args.onSelect or function(_) end
 	local menuWidth = args.menuWidth or 220
 	local visibleCount = args.visibleCount or 10
 	local searchThreshold = args.showSearchOver or 10
@@ -3636,43 +3674,39 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 	end
 
 	for i, option in ipairs(options) do
-		local optionButton = CreateFrame("Button", nil, container)
-		optionButton:SetSize(menuWidth - 4, itemHeight - 2)
+		local optionButton = AcquireOptionButton(container, menuWidth - 4, itemHeight - 2)
 		optionButton:SetPoint("TOPLEFT", 2, -(i - 1) * itemHeight - 2)
 
-		local optionBg = optionButton:CreateTexture(nil, "BACKGROUND")
-		optionBg:SetAllPoints()
-		optionBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		optionBg:SetVertexColor(0, 0, 0, 0)
-
-		local sample
+		local sample = optionButton._sample
+		sample:Hide()
 		if option.texture then
-			sample = optionButton:CreateTexture(nil, "ARTWORK")
 			sample:SetSize(70, 8)
-			sample:SetPoint("RIGHT", optionButton, "RIGHT", -6, 0)
 			sample:SetTexture(option.texture)
 			sample:SetHorizTile(true)
+			sample:Show()
 		elseif option.icon then
-			sample = optionButton:CreateTexture(nil, "ARTWORK")
 			sample:SetSize(14, 14)
-			sample:SetPoint("RIGHT", optionButton, "RIGHT", -6, 0)
 			sample:SetTexture(option.icon)
+			sample:SetHorizTile(false)
+			sample:Show()
 		end
 
-		local optionText = optionButton:CreateFontString(nil, "OVERLAY")
-		optionText:SetFontObject(K.UIFont)
-		optionText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		local optionText = optionButton._text
 		optionText:SetText(option.text)
+		optionText:ClearAllPoints()
 		optionText:SetPoint("LEFT", 8, 0)
-		if sample then
+		if sample:IsShown() then
 			optionText:SetPoint("RIGHT", sample, "LEFT", -8, 0)
 		else
 			optionText:SetPoint("RIGHT", optionButton, "RIGHT", -8, 0)
 		end
 
+		local optionBg = optionButton._bg
 		local currentValue = getValue()
 		if option.value == currentValue then
 			optionBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+		else
+			optionBg:SetVertexColor(0, 0, 0, 0)
 		end
 
 		optionButton:SetScript("OnEnter", function()
@@ -3819,6 +3853,10 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 	menu:SetScript("OnHide", function()
 		if blocker then
 			blocker:Hide()
+		end
+		-- Release pooled option buttons for reuse
+		if optionButtons and #optionButtons > 0 then
+			ReleaseOptionButtons(optionButtons)
 		end
 		if menu == K.GUIHelpers._menu then
 			K.GUIHelpers._menu = nil

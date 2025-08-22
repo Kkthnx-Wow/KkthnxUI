@@ -2,7 +2,6 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("AurasTable")
 
 local string_format = string.format
-local table_clear = table.clear
 
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local UIParent = UIParent

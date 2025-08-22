@@ -24,21 +24,16 @@ profile management including:
 
 -- Lua API
 local _G = _G
-local floor, max, min = math.floor, math.max, math.min
-local format = string.format
-local ipairs, pairs, sort = ipairs, pairs, table.sort
-local type, unpack = type, unpack
+local ipairs, pairs = ipairs, pairs
+local type = type
 
 -- WoW API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local ReloadUI = ReloadUI
-local GetTime = GetTime
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local SetPortraitTexture = SetPortraitTexture
-local Ambiguate = Ambiguate
-local strsplit = strsplit
 
 -- ============================================================================
 -- UTILITY FUNCTIONS
@@ -64,11 +59,7 @@ end
 -- Profile System Configuration
 local PROFILE_VERSION = "2.0.0"
 local PROFILE_PREFIX = "KkthnxUI:Profile:"
-local MAX_PROFILES = 50
 local PROFILE_NAME_MAX_LENGTH = 32
-
--- Character Metadata System
-local CHARACTER_METADATA_VERSION = "1.0.0"
 
 -- ============================================================================
 -- UI CONSTANTS
@@ -84,7 +75,7 @@ local SPACING = 8
 local HEADER_HEIGHT = 40
 
 -- Colors (match main GUI design exactly)
-local ACCENT_COLOR = { 0.36, 0.55, 0.81 }
+local ACCENT_COLOR = { K.r, K.g, K.b }
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 local SUCCESS_COLOR = { 0.3, 0.9, 0.3 }
 local ERROR_COLOR = { 0.9, 0.3, 0.3 }
@@ -92,11 +83,8 @@ local WARNING_COLOR = { 0.9, 0.7, 0.2 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
 local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
-local BUTTON_BG = { 0.12, 0.12, 0.12, 1 }
 local BUTTON_HOVER = { 0.18, 0.18, 0.18, 1 }
 local SELECTED_BG = { 0.15, 0.15, 0.15, 0.9 }
-local BORDER_COLOR = C["Media"].Borders.ColorBorder
-local HIGHLIGHT_COLOR = { 1, 1, 1, 0.1 }
 
 -- ============================================================================
 -- PROFILEGUI MODULE CORE
@@ -1246,27 +1234,6 @@ function ProfileGUI:UpdateInfoPanel()
 		self.InfoElements.ModifiedLabel:SetPoint("TOPLEFT", 15, yOffset)
 		self.InfoElements.ModifiedLabel:Show()
 		yOffset = yOffset - 14
-	elseif self.InfoElements.ModifiedLabel then
-		self.InfoElements.ModifiedLabel:Hide()
-	end
-
-	-- Profile data size
-	local dataSize = self:GetProfileDataSize(profile.data)
-	if dataSize > 0 then
-		if not self.InfoElements.SizeLabel then
-			self.InfoElements.SizeLabel = self.InfoPanel:CreateFontString(nil, "OVERLAY")
-			self.InfoElements.SizeLabel:SetFontObject(K.UIFont)
-			self.InfoElements.SizeLabel:SetPoint("TOPLEFT", 15, 0)
-			self.InfoElements.SizeLabel:SetWidth(maxWidth)
-			self.InfoElements.SizeLabel:SetJustifyH("LEFT")
-		end
-		self.InfoElements.SizeLabel:SetTextColor(0.7, 0.7, 0.7, 1)
-		self.InfoElements.SizeLabel:SetText("  Settings: " .. dataSize .. " entries")
-		self.InfoElements.SizeLabel:SetPoint("TOPLEFT", 15, yOffset)
-		self.InfoElements.SizeLabel:Show()
-		yOffset = yOffset - 14
-	elseif self.InfoElements.SizeLabel then
-		self.InfoElements.SizeLabel:Hide()
 	end
 
 	-- Action hint
@@ -1576,7 +1543,7 @@ function ProfileGUI:ShowExportDialog()
 	end
 
 	-- Create dialog with main GUI styling
-  local dialog = CreateFrame("Frame", nil, UIParent)
+	local dialog = CreateFrame("Frame", nil, UIParent)
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
 	dialog:SetFrameStrata("TOOLTIP")
@@ -1641,17 +1608,19 @@ function ProfileGUI:ShowExportDialog()
 	closeButton.Icon:SetAtlas("uitools-icon-close")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
-  closeButton:SetScript("OnClick", function()
-    dialog:Hide()
-    dialog:SetParent(nil)
-  end)
-  dialog:EnableKeyboard(true)
-  if dialog.SetPropagateKeyboardInput then dialog:SetPropagateKeyboardInput(false) end
-  dialog:SetScript("OnKeyDown", function(self, key)
-    if key == "ESCAPE" then
-      self:Hide()
-    end
-  end)
+	closeButton:SetScript("OnClick", function()
+		dialog:Hide()
+		dialog:SetParent(nil)
+	end)
+	dialog:EnableKeyboard(true)
+	if dialog.SetPropagateKeyboardInput then
+		dialog:SetPropagateKeyboardInput(false)
+	end
+	dialog:SetScript("OnKeyDown", function(self, key)
+		if key == "ESCAPE" then
+			self:Hide()
+		end
+	end)
 
 	closeButton:SetScript("OnEnter", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 1)
@@ -1762,7 +1731,7 @@ end
 -- Import Dialog - Enhanced with better styling
 function ProfileGUI:ShowImportDialog()
 	-- Create dialog with main GUI styling
-  local dialog = CreateFrame("Frame", nil, UIParent)
+	local dialog = CreateFrame("Frame", nil, UIParent)
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
 	dialog:SetFrameStrata("TOOLTIP")
@@ -1827,17 +1796,19 @@ function ProfileGUI:ShowImportDialog()
 	closeButton.Icon:SetAtlas("uitools-icon-close")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
-  closeButton:SetScript("OnClick", function()
-    dialog:Hide()
-    dialog:SetParent(nil)
-  end)
-  dialog:EnableKeyboard(true)
-  if dialog.SetPropagateKeyboardInput then dialog:SetPropagateKeyboardInput(false) end
-  dialog:SetScript("OnKeyDown", function(self, key)
-    if key == "ESCAPE" then
-      self:Hide()
-    end
-  end)
+	closeButton:SetScript("OnClick", function()
+		dialog:Hide()
+		dialog:SetParent(nil)
+	end)
+	dialog:EnableKeyboard(true)
+	if dialog.SetPropagateKeyboardInput then
+		dialog:SetPropagateKeyboardInput(false)
+	end
+	dialog:SetScript("OnKeyDown", function(self, key)
+		if key == "ESCAPE" then
+			self:Hide()
+		end
+	end)
 
 	closeButton:SetScript("OnEnter", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 1)
@@ -2517,31 +2488,135 @@ function ProfileGUI:GetFactionFromGoldInfo(name, realm)
 	return "Unknown"
 end
 
--- Helper function to get profile size
+-- Returns (changedCount, totalCount). changedCount compares against K.Defaults if available.
 function ProfileGUI:GetProfileDataSize(profileData)
 	if not profileData then
-		return 0
+		return 0, 0
 	end
-
-	local function countTableEntries(t, depth)
+	-- Ignore metadata keys that are not user configuration
+	local META = {
+		LastModified = true,
+		CreatedAt = true,
+		CreatedBy = true,
+		ImportedAt = true,
+		ImportedBy = true,
+		ImportedFrom = true,
+		ResetAt = true,
+		ResetBy = true,
+		RenamedFrom = true,
+		RenamedAt = true,
+		LastSwitched = true,
+		SwitchedFrom = true,
+	}
+	local function countTotal(t, depth)
 		depth = depth or 0
-		if depth > 10 then
-			return 0 -- Prevent infinite recursion
+		if depth > 20 or type(t) ~= "table" then
+			return 0
 		end
-
 		local count = 0
-		if type(t) == "table" then
-			for k, v in pairs(t) do
+		for k, v in pairs(t) do
+			if not META[k] then
 				count = count + 1
 				if type(v) == "table" then
-					count = count + countTableEntries(v, depth + 1)
+					count = count + countTotal(v, depth + 1)
 				end
 			end
 		end
 		return count
 	end
+	local function countDiffs(curr, defaults, depth)
+		depth = depth or 0
+		if depth > 20 then
+			return 0
+		end
+		if type(curr) ~= "table" then
+			if curr ~= defaults then
+				return 1
+			else
+				return 0
+			end
+		end
+		local diffs = 0
+		for k, v in pairs(curr) do
+			if not META[k] then
+				local dv = (type(defaults) == "table") and defaults[k] or nil
+				if type(v) == "table" then
+					diffs = diffs + countDiffs(v, dv, depth + 1)
+				else
+					if v ~= dv then
+						diffs = diffs + 1
+					end
+				end
+			end
+		end
+		return diffs
+	end
+	local total = countTotal(profileData)
+	local changed = 0
+	if K.Defaults and type(K.Defaults) == "table" then
+		changed = countDiffs(profileData, K.Defaults)
+	else
+		local function countLeaves(t)
+			local c = 0
+			if type(t) == "table" then
+				for k, v in pairs(t) do
+					if not META[k] then
+						if type(v) == "table" then
+							c = c + countLeaves(v)
+						else
+							c = c + 1
+						end
+					end
+				end
+			end
+			return c
+		end
+		changed = countLeaves(profileData)
+	end
+	return changed, total
+end
 
-	return countTableEntries(profileData)
+-- Returns (enabledCount, disabledCount) by scanning booleans in the profile (ignoring metadata)
+function ProfileGUI:GetBooleanStats(profileData)
+	if not profileData then
+		return 0, 0
+	end
+	local META = {
+		LastModified = true,
+		CreatedAt = true,
+		CreatedBy = true,
+		ImportedAt = true,
+		ImportedBy = true,
+		ImportedFrom = true,
+		ResetAt = true,
+		ResetBy = true,
+		RenamedFrom = true,
+		RenamedAt = true,
+		LastSwitched = true,
+		SwitchedFrom = true,
+	}
+	local on, off = 0, 0
+	local function walk(t, depth)
+		depth = depth or 0
+		if depth > 20 or type(t) ~= "table" then
+			return
+		end
+		for k, v in pairs(t) do
+			if not META[k] then
+				if type(v) == "boolean" then
+					if v then
+						on = on + 1
+					else
+						off = off + 1
+					end
+				elseif type(v) == "table" then
+					walk(v, depth + 1)
+				end
+			end
+		end
+	end
+	walk(profileData, 0)
+	return on, off
 end
 
 -- Dialog Helper Functions

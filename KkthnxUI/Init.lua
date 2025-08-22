@@ -128,7 +128,6 @@ K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REA
 -- Tables
 local eventsFrame = CreateFrame("Frame")
 local events = {}
-local registeredEvents = {}
 local modules = {}
 local modulesQueue = {}
 
@@ -172,23 +171,12 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[Enum.ItemQuality.Poor] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 } -- This is the default color, but it's included here for completeness.
 
--- Update EventFrame Script for Reduced Taint Risk
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
-	local eventFuncs = events[event]
-	if eventFuncs then
-		for func in pairs(eventFuncs) do
-			local success, err
-			if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-				success, err = pcall(func, event, CombatLogGetCurrentEventInfo())
-			else
-				success, err = pcall(func, event, ...)
-			end
-			if not success then
-				-- Only log errors in debug mode to avoid spam
-				if K.Debug then
-					print("|cFF00FF00KkthnxUI:|r Error in event handler for event:", event, "-", err)
-				end
-			end
+	for func in pairs(events[event]) do
+		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+			func(event, CombatLogGetCurrentEventInfo())
+		else
+			func(event, ...)
 		end
 	end
 end)
@@ -197,12 +185,6 @@ function K:RegisterEvent(event, func, unit1, unit2)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
 	end
-
-	-- Check if the event is already registered with the function
-	if events[event] and events[event][func] then
-		return
-	end
-
 	if not events[event] then
 		events[event] = {}
 		if unit1 then
@@ -213,18 +195,12 @@ function K:RegisterEvent(event, func, unit1, unit2)
 	end
 
 	events[event][func] = true
-
-	if not registeredEvents[event] then
-		registeredEvents[event] = {}
-	end
-	table.insert(registeredEvents[event], func)
 end
 
 function K:UnregisterEvent(event, func)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
 	end
-
 	local funcs = events[event]
 	if funcs and funcs[func] then
 		funcs[func] = nil
@@ -234,31 +210,28 @@ function K:UnregisterEvent(event, func)
 			eventsFrame:UnregisterEvent(event)
 		end
 	end
-
-	if registeredEvents[event] then
-		for i, f in ipairs(registeredEvents[event]) do
-			if f == func then
-				table.remove(registeredEvents[event], i)
-				break
-			end
-		end
-	end
 end
 
 function K:NewModule(name)
-	assert(type(name) == "string", "Module name must be a string.")
-	assert(not modules[name], ("Module '%s' already exists."):format(name))
-	local module = { name = name }
+	if modules[name] then
+		print("Module <" .. name .. "> has been registered.")
+		return
+	end
+	local module = {}
+	module.name = name
 	modules[name] = module
-	table.insert(modulesQueue, module)
+
+	tinsert(modulesQueue, module)
 	return module
 end
 
 function K:GetModule(name)
-	assert(type(name) == "string", "Module name must be a string.")
-	local module = modules[name]
-	assert(module, ("Cannot find module '%s'."):format(name))
-	return module
+	if not modules[name] then
+		print("Module <" .. name .. "> does not exist.")
+		return
+	end
+
+	return modules[name]
 end
 
 local function GetBestScale()

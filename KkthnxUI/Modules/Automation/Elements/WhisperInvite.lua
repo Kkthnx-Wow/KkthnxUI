@@ -58,14 +58,14 @@ local function onChatWhisper(event, message, sender, _, _, _, _, _, _, _, _, _, 
 end
 
 -- Update the keyword for auto invite
-local function onUpdateAutoInviteKeyword()
+local function onUpdateInviteKeyword()
 	autoInviteKeyword = C["Automation"].WhisperInvite
 end
 
 -- Initialize the auto whisper invite feature
 function Module:CreateAutoWhisperInvite()
 	if C["Automation"].WhisperInvite then
-		onUpdateAutoInviteKeyword()
+		onUpdateInviteKeyword()
 		K:RegisterEvent("CHAT_MSG_WHISPER", onChatWhisper)
 		K:RegisterEvent("CHAT_MSG_BN_WHISPER", onChatWhisper)
 	else

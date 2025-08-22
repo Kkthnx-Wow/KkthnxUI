@@ -145,7 +145,7 @@ local SPACING = 8
 local HEADER_HEIGHT = 40
 
 -- Colors (use KkthnxUI's established color system)
-local ACCENT_COLOR = { 0.36, 0.55, 0.81 }
+local ACCENT_COLOR = { K.r, K.g, K.b }
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
@@ -487,8 +487,10 @@ function ExtraGUI:HookMainGUIClose()
 	end
 
 	-- Hook the main GUI's OnHide event
-    -- Hook without overriding existing handlers
-    mainGUI:HookScript("OnHide", function() self:Hide() end)
+	-- Hook without overriding existing handlers
+	mainGUI:HookScript("OnHide", function()
+		self:Hide()
+	end)
 
 	self.MainGUIHooked = true
 end

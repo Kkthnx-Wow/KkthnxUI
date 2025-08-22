@@ -150,22 +150,36 @@ function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allA
 	end
 end
 
-function Module:CreateHeader()
-	-- Register for mouse clicks and hook mouse enter/leave events
-	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", function()
+-- Elements
+local function UF_OnEnter(self)
+	if not self.disableTooltip then
 		UnitFrame_OnEnter(self)
-		if self.Highlight then
-			self.Highlight:Show()
-		end
-	end)
+	end
+	self.Highlight:Show()
+end
 
-	self:HookScript("OnLeave", function()
+local function UF_OnLeave(self)
+	if not self.disableTooltip then
 		UnitFrame_OnLeave(self)
-		if self.Highlight then
-			self.Highlight:Hide()
-		end
-	end)
+	end
+	self.Highlight:Hide()
+end
+
+function Module:UpdateClickState()
+	self:RegisterForClicks(self.onKeyDown and "AnyDown" or "AnyUp")
+	self.onKeyDown = nil
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateClickState, true)
+end
+
+function Module:CreateHeader(_, onKeyDown)
+	if InCombatLockdown() then
+		self.onKeyDown = onKeyDown
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateClickState, true)
+	else
+		self:RegisterForClicks(onKeyDown and "AnyDown" or "AnyUp")
+	end
+	self:HookScript("OnEnter", UF_OnEnter)
+	self:HookScript("OnLeave", UF_OnLeave)
 end
 
 function Module:ToggleCastBarLatency(frame)

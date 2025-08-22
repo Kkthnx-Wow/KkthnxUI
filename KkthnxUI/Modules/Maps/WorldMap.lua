@@ -5,13 +5,10 @@ local _G = _G
 
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local CreateFrame = CreateFrame
-local CreateFrame = CreateFrame
-local IsPlayerMoving = IsPlayerMoving
 local IsPlayerMoving = IsPlayerMoving
 local PLAYER = PLAYER
 local PlayerMovementFrameFader = PlayerMovementFrameFader
 local UIParent = UIParent
-local hooksecurefunc = hooksecurefunc
 local hooksecurefunc = hooksecurefunc
 
 local currentMapID, playerCoords, cursorCoords
@@ -168,14 +165,38 @@ function Module:EnableMapFading(frame)
 	fadeFrame:Show()
 end
 
-function Module:UpdateMapFade(minAlpha, maxAlpha, durationSec, fadePredicate) -- self is frame
-	if self:IsShown() and (self == _G.WorldMapFrame and fadePredicate ~= Module.MapShouldFade) then
-		-- blizzard spams code in OnUpdate and doesnt finish their functions, so we shut their fader down :L
-		PlayerMovementFrameFader.RemoveFrame(self)
+function Module.UpdateMapFade(...)
+	local a, b, c, d, e, f = ...
 
-		-- replacement function which is complete :3
+	-- Determine the frame arg (supports both function and method calls)
+	local frame
+	if type(a) == "table" and type(a.IsShown) == "function" and a ~= PlayerMovementFrameFader then
+		-- Called like AddDeferredFrame(frame, min, max, dur, predicate)
+		frame = a
+	elseif a == PlayerMovementFrameFader and type(b) == "table" and type(b.IsShown) == "function" then
+		-- Called as method: self, frame, min, max, dur, predicate
+		frame = b
+	elseif type(b) == "table" and type(b.IsShown) == "function" then
+		-- Fallback: sometimes hooks pass (something, frame, ...)
+		frame = b
+	else
+		return
+	end
+
+	-- Extract the predicate from the tail args if present
+	local fadePredicate
+	for i = 6, 1, -1 do
+		local v = select(i, ...)
+		if type(v) == "function" then
+			fadePredicate = v
+			break
+		end
+	end
+
+	if frame == _G.WorldMapFrame and frame:IsShown() and fadePredicate ~= Module.MapShouldFade then
+		PlayerMovementFrameFader.RemoveFrame(frame)
 		if C["WorldMap"].FadeWhenMoving then
-			Module:EnableMapFading(self)
+			Module:EnableMapFading(frame)
 		end
 	end
 end

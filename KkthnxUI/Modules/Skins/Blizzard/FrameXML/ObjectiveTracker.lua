@@ -7,7 +7,7 @@ local pairs = pairs
 
 local function SkinOjectiveTrackerHeaders(header)
 	if header and header.Background then
-		header.Background:SetAtlas(nil)
+		header.Background:Hide()
 	end
 end
 

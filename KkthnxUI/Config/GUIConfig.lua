@@ -149,14 +149,6 @@ end
 local function CreateAnnouncementsCategory()
 	local announcementsCategory = GUI:AddCategory("Announcements", "Interface\\Icons\\Ability_Warrior_BattleShout")
 
-	-- Hook Functions for Announcements
-	local function UpdateInterruptAlert()
-		local announcementModule = K:GetModule("Announcements")
-		if announcementModule and announcementModule.CreateInterruptAnnounce then
-			announcementModule:CreateInterruptAnnounce()
-		end
-	end
-
 	-- General Section
 	local generalAnnouncementsSection = GUI:AddSection(announcementsCategory, GENERAL)
 	GUI:CreateSwitch(generalAnnouncementsSection, "Announcements.ItemAlert", L["Announce Spells And Items"], "Alerts the group when specific spells or items are used.")
@@ -173,12 +165,12 @@ local function CreateAnnouncementsCategory()
 
 	-- Interrupt Section
 	local interruptSection = GUI:AddSection(announcementsCategory, INTERRUPT)
-	GUI:CreateSwitch(interruptSection, "Announcements.InterruptAlert", enableTextColor .. L["Announce Interrupts"], "Announces when you successfully interrupt a spell.", UpdateInterruptAlert)
-	GUI:CreateSwitch(interruptSection, "Announcements.DispellAlert", enableTextColor .. L["Announce Dispels"], "Announces when you successfully dispel an effect.", UpdateInterruptAlert)
-	GUI:CreateSwitch(interruptSection, "Announcements.BrokenAlert", enableTextColor .. L["Announce Broken Spells"], "Alerts the group when a spell is broken (e.g., crowd control spells).", UpdateInterruptAlert)
+	GUI:CreateSwitch(interruptSection, "Announcements.InterruptAlert", enableTextColor .. L["Announce Interrupts"], "Announces when you successfully interrupt a spell.")
+	GUI:CreateSwitch(interruptSection, "Announcements.DispellAlert", enableTextColor .. L["Announce Dispels"], "Announces when you successfully dispel an effect.")
+	GUI:CreateSwitch(interruptSection, "Announcements.BrokenAlert", enableTextColor .. L["Announce Broken Spells"], "Alerts the group when a spell is broken (e.g., crowd control spells).")
 	GUI:CreateSwitch(interruptSection, "Announcements.OwnInterrupt", L["Only Announce Own Interrupts"], "Limits interrupt announcements to only those you perform.")
 	GUI:CreateSwitch(interruptSection, "Announcements.OwnDispell", L["Only Announce Own Dispels"], "Limits dispel announcements to only those you perform.")
-	GUI:CreateSwitch(interruptSection, "Announcements.InstAlertOnly", L["Announce Only In Instances"], "Restricts announcements to dungeons, raids, and other instances.", UpdateInterruptAlert)
+	GUI:CreateSwitch(interruptSection, "Announcements.InstAlertOnly", L["Announce Only In Instances"], "Restricts announcements to dungeons, raids, and other instances.")
 
 	-- Alert Channel Dropdown Options
 	local alertChannelOptions = {
@@ -210,29 +202,19 @@ end
 local function CreateArenaCategory()
 	local arenaCategory = GUI:AddCategory("Arena", "Interface\\Icons\\Achievement_Arena_2v2_7")
 
-	-- Hook Functions for Arena
-	local function UpdateArenaFrames()
-		-- Arena frames don't have specific update functions in the modules
-		-- The changes will be applied on next UI reload or when frames refresh
-		local unitframeModule = K:GetModule("Unitframes")
-		if unitframeModule and unitframeModule.RefreshAllUnits then
-			unitframeModule:RefreshAllUnits()
-		end
-	end
-
 	-- General Section
 	local generalArenaSection = GUI:AddSection(arenaCategory, GENERAL)
-	GUI:CreateSwitch(generalArenaSection, "Arena.Enable", enableTextColor .. L["Enable Arena"], "Toggle Arena Module On/Off", UpdateArenaFrames)
-	GUI:CreateSwitch(generalArenaSection, "Arena.Castbars", L["Show Castbars"], "Enable castbars for arena opponent frames", UpdateArenaFrames)
+	GUI:CreateSwitch(generalArenaSection, "Arena.Enable", enableTextColor .. L["Enable Arena"], "Toggle Arena Module On/Off")
+	GUI:CreateSwitch(generalArenaSection, "Arena.Castbars", L["Show Castbars"], "Enable castbars for arena opponent frames")
 	GUI:CreateSwitch(generalArenaSection, "Arena.CastbarIcon", "Show Castbars Icon", "Display icons on arena opponent castbars")
-	GUI:CreateSwitch(generalArenaSection, "Arena.Smooth", L["Smooth Bar Transition"], "Enable smooth health and power bar animations", UpdateArenaFrames)
+	GUI:CreateSwitch(generalArenaSection, "Arena.Smooth", L["Smooth Bar Transition"], "Enable smooth health and power bar animations")
 
 	-- Sizes Section
 	local arenaSizesSection = GUI:AddSection(arenaCategory, L["Sizes"])
-	GUI:CreateSlider(arenaSizesSection, "Arena.HealthHeight", "Health Height", 20, 50, 1, "Height of arena opponent health bars", UpdateArenaFrames)
-	GUI:CreateSlider(arenaSizesSection, "Arena.HealthWidth", "Health Width", 120, 180, 1, "Width of arena opponent health bars", UpdateArenaFrames)
-	GUI:CreateSlider(arenaSizesSection, "Arena.PowerHeight", "Power Height", 10, 30, 1, "Height of arena opponent power bars", UpdateArenaFrames)
-	GUI:CreateSlider(arenaSizesSection, "Arena.YOffset", "Vertical Offset From One Another" .. K.GreyColor .. "(54)|r", 40, 60, 1, "Vertical spacing between arena opponent frames", UpdateArenaFrames)
+	GUI:CreateSlider(arenaSizesSection, "Arena.HealthHeight", "Health Height", 20, 50, 1, "Height of arena opponent health bars")
+	GUI:CreateSlider(arenaSizesSection, "Arena.HealthWidth", "Health Width", 120, 180, 1, "Width of arena opponent health bars")
+	GUI:CreateSlider(arenaSizesSection, "Arena.PowerHeight", "Power Height", 10, 30, 1, "Height of arena opponent power bars")
+	GUI:CreateSlider(arenaSizesSection, "Arena.YOffset", "Vertical Offset From One Another" .. K.GreyColor .. "(54)|r", 40, 60, 1, "Vertical spacing between arena opponent frames")
 
 	-- Colors Section
 	local arenaColorsSection = GUI:AddSection(arenaCategory, COLORS)
@@ -243,7 +225,7 @@ local function CreateArenaCategory()
 		{ text = "Dark", value = 2 },
 		{ text = "Value", value = 3 },
 	}
-	GUI:CreateDropdown(arenaColorsSection, "Arena.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how arena opponent health bars are colored", UpdateArenaFrames)
+	GUI:CreateDropdown(arenaColorsSection, "Arena.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how arena opponent health bars are colored")
 end
 
 --[[ ==============================================
@@ -251,16 +233,6 @@ end
 		============================================== ]]
 local function CreateAuraWatchCategory()
 	local auraWatchCategory = GUI:AddCategory("AuraWatch", "Interface\\Icons\\Spell_Shadow_BrainWash")
-
-	-- Hook Functions for AuraWatch
-	local function UpdateAuraWatchSettings()
-		-- AuraWatch settings typically require UI reload for major changes
-		-- But we can update some settings dynamically
-		local auraWatchModule = K:GetModule("Auras")
-		if auraWatchModule then
-			-- Settings updated silently, major changes may require UI reload
-		end
-	end
 
 	local function OpenAuraWatchGUI()
 		-- Open the AuraWatch configuration GUI
@@ -270,10 +242,10 @@ local function CreateAuraWatchCategory()
 
 	-- General Section
 	local generalAuraWatchSection = GUI:AddSection(auraWatchCategory, GENERAL)
-	GUI:CreateSwitch(generalAuraWatchSection, "AuraWatch.Enable", enableTextColor .. L["Enable AuraWatch"], L["Enable Desc"], UpdateAuraWatchSettings)
-	GUI:CreateSwitch(generalAuraWatchSection, "AuraWatch.ClickThrough", L["Disable AuraWatch Tooltip (ClickThrough)"], "If enabled, the icon would be uninteractable, you can't select or mouseover them.", UpdateAuraWatchSettings)
-	GUI:CreateSwitch(generalAuraWatchSection, "AuraWatch.DeprecatedAuras", L["Track Auras From Previous Expansions"], "Enable tracking of auras from previous expansions that may still be relevant.", UpdateAuraWatchSettings)
-	GUI:CreateSlider(generalAuraWatchSection, "AuraWatch.IconScale", L["AuraWatch IconScale"], 0.8, 2, 0.1, L["IconScale Desc"], UpdateAuraWatchSettings)
+	GUI:CreateSwitch(generalAuraWatchSection, "AuraWatch.Enable", enableTextColor .. L["Enable AuraWatch"], L["Enable Desc"])
+	GUI:CreateSwitch(generalAuraWatchSection, "AuraWatch.ClickThrough", L["Disable AuraWatch Tooltip (ClickThrough)"], "If enabled, the icon would be uninteractable, you can't select or mouseover them.")
+	GUI:CreateSwitch(generalAuraWatchSection, "AuraWatch.DeprecatedAuras", L["Track Auras From Previous Expansions"], "Enable tracking of auras from previous expansions that may still be relevant.")
+	GUI:CreateSlider(generalAuraWatchSection, "AuraWatch.IconScale", L["AuraWatch IconScale"], 0.8, 2, 0.1, L["IconScale Desc"])
 
 	-- Advanced Configuration Section
 	local advancedAuraWatchSection = GUI:AddSection(auraWatchCategory, "Advanced Configuration")
@@ -290,47 +262,26 @@ end
 local function CreateAurasCategory()
 	local aurasCategory = GUI:AddCategory("Auras", "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
 
-	-- Hook Functions for Auras
-	local function UpdateAurasSettings()
-		-- Auras settings typically apply immediately
-		local aurasModule = K:GetModule("Auras")
-		if aurasModule then
-			-- Settings updated silently
-		end
-	end
-
-	local function UpdateTotemBar()
-		if not C["Auras"].Totems then
-			return
-		end
-
-		local aurasModule = K:GetModule("Auras")
-		if aurasModule and aurasModule.TotemBar_Init then
-			aurasModule:TotemBar_Init()
-			-- TotemBar updated silently
-		end
-	end
-
 	-- General Section
 	local generalAurasSection = GUI:AddSection(aurasCategory, GENERAL)
-	GUI:CreateSwitch(generalAurasSection, "Auras.Enable", enableTextColor .. L["Enable Auras"], L["Enable Desc"], UpdateAurasSettings)
-	GUI:CreateSwitch(generalAurasSection, "Auras.HideBlizBuff", L["Hide The Default BuffFrame"], L["HideBlizBuff Desc"], UpdateAurasSettings)
-	GUI:CreateSwitch(generalAurasSection, "Auras.Reminder", L["Auras Reminder (Shout/Intellect/Poison)"], L["Reminder Desc"], UpdateAurasSettings)
-	GUI:CreateSwitch(generalAurasSection, "Auras.ReverseBuffs", L["Buffs Grow Right"], L["ReverseBuffs Desc"], UpdateAurasSettings)
-	GUI:CreateSwitch(generalAurasSection, "Auras.ReverseDebuffs", L["Debuffs Grow Right"], "Controls the direction debuff icons grow from their anchor point.", UpdateAurasSettings)
+	GUI:CreateSwitch(generalAurasSection, "Auras.Enable", enableTextColor .. L["Enable Auras"], L["Enable Desc"])
+	GUI:CreateSwitch(generalAurasSection, "Auras.HideBlizBuff", L["Hide The Default BuffFrame"], L["HideBlizBuff Desc"])
+	GUI:CreateSwitch(generalAurasSection, "Auras.Reminder", L["Auras Reminder (Shout/Intellect/Poison)"], L["Reminder Desc"])
+	GUI:CreateSwitch(generalAurasSection, "Auras.ReverseBuffs", L["Buffs Grow Right"], L["ReverseBuffs Desc"])
+	GUI:CreateSwitch(generalAurasSection, "Auras.ReverseDebuffs", L["Debuffs Grow Right"], "Controls the direction debuff icons grow from their anchor point.")
 
 	-- Sizes Section
 	local aurasSizesSection = GUI:AddSection(aurasCategory, L["Sizes"])
-	GUI:CreateSlider(aurasSizesSection, "Auras.BuffSize", L["Buff Icon Size"], 20, 40, 1, L["AuraSize Desc"], UpdateAurasSettings)
-	GUI:CreateSlider(aurasSizesSection, "Auras.BuffsPerRow", L["Buffs per Row"], 10, 20, 1, L["BuffsPerRow Desc"], UpdateAurasSettings)
-	GUI:CreateSlider(aurasSizesSection, "Auras.DebuffSize", L["DeBuff Icon Size"], 20, 40, 1, L["AuraSize Desc"], UpdateAurasSettings)
-	GUI:CreateSlider(aurasSizesSection, "Auras.DebuffsPerRow", L["DeBuffs per Row"], 10, 16, 1, L["DebuffsPerRow Desc"], UpdateAurasSettings)
+	GUI:CreateSlider(aurasSizesSection, "Auras.BuffSize", L["Buff Icon Size"], 20, 40, 1, L["AuraSize Desc"])
+	GUI:CreateSlider(aurasSizesSection, "Auras.BuffsPerRow", L["Buffs per Row"], 10, 20, 1, L["BuffsPerRow Desc"])
+	GUI:CreateSlider(aurasSizesSection, "Auras.DebuffSize", L["DeBuff Icon Size"], 20, 40, 1, L["AuraSize Desc"])
+	GUI:CreateSlider(aurasSizesSection, "Auras.DebuffsPerRow", L["DeBuffs per Row"], 10, 16, 1, L["DebuffsPerRow Desc"])
 
 	-- Totems Section (using TUTORIAL_TITLE47 which represents "Totems" in the old system)
 	local totemsSection = GUI:AddSection(aurasCategory, TUTORIAL_TITLE47 or "Totems")
-	GUI:CreateSwitch(totemsSection, "Auras.Totems", enableTextColor .. L["Enable TotemBar"], L["Totems Desc"], UpdateTotemBar)
-	GUI:CreateSwitch(totemsSection, "Auras.VerticalTotems", L["Vertical TotemBar"], L["VerticalTotems Desc"], UpdateTotemBar)
-	GUI:CreateSlider(totemsSection, "Auras.TotemSize", L["Totems IconSize"], 24, 60, 1, L["TotemSize Desc"], UpdateTotemBar)
+	GUI:CreateSwitch(totemsSection, "Auras.Totems", enableTextColor .. L["Enable TotemBar"], L["Totems Desc"])
+	GUI:CreateSwitch(totemsSection, "Auras.VerticalTotems", L["Vertical TotemBar"], L["VerticalTotems Desc"])
+	GUI:CreateSlider(totemsSection, "Auras.TotemSize", L["Totems IconSize"], 24, 60, 1, L["TotemSize Desc"])
 end
 
 -- ====================================================
@@ -345,95 +296,45 @@ local function CreateAutomationCategory()
 	-- ========================================
 	local inviteSection = GUI:AddSection(category, "Invite Management")
 
-	local function updateAutoInvite(newValue, oldValue, configPath)
-		if K.GetModule then
-			local automationModule = K:GetModule("Automation")
-			if automationModule and automationModule.UpdateAutoInvite then
-				automationModule:UpdateAutoInvite()
-			end
+	local function updateInviteKeyword()
+		local automationModule = K:GetModule("Automation")
+		if automationModule and automationModule.onUpdateInviteKeyword then
+			automationModule:onUpdateInviteKeyword()
 		end
 	end
 
-	GUI:CreateSwitch(inviteSection, "Automation.AutoInvite", "Accept Invites From Friends & Guild Members", "Automatically accepts group invitations from friends or guild members.", updateAutoInvite)
-	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclineDuels", "Decline PvP Duels", "Automatically declines all PvP duel requests.", updateAutoInvite)
-	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclinePetDuels", "Decline Pet Duels", "Automatically declines all pet battle duel requests.", updateAutoInvite)
-	GUI:CreateSwitch(inviteSection, "Automation.AutoPartySync", "Accept PartySync From Friends & Guild Members", "Automatically accepts Party Sync requests from friends or guild members.", updateAutoInvite)
-	GUI:CreateTextInput(inviteSection, "Automation.WhisperInvite", "Auto Accept Invite Keyword", "Enter keyword...", "Enter a keyword that will trigger automatic acceptance of invites sent via whispers.", updateAutoInvite)
+	GUI:CreateSwitch(inviteSection, "Automation.AutoInvite", "Accept Invites From Friends & Guild Members", "Automatically accepts group invitations from friends or guild members.")
+	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclineDuels", "Decline PvP Duels", "Automatically declines all PvP duel requests.")
+	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclinePetDuels", "Decline Pet Duels", "Automatically declines all pet battle duel requests.")
+	GUI:CreateSwitch(inviteSection, "Automation.AutoPartySync", "Accept PartySync From Friends & Guild Members", "Automatically accepts Party Sync requests from friends or guild members.")
+	GUI:CreateTextInput(inviteSection, "Automation.WhisperInvite", "Auto Accept Invite Keyword", "Enter keyword...", "Enter a keyword that will trigger automatic acceptance of invites sent via whispers.", updateInviteKeyword)
 
 	-- ========================================
 	-- AUTO-RESURRECT OPTIONS SECTION
 	-- ========================================
 	local resurrectSection = GUI:AddSection(category, "Auto-Resurrect Options")
-
-	local function updateAutoResurrect(newValue, oldValue, configPath)
-		if K.GetModule then
-			local automationModule = K:GetModule("Automation")
-			if automationModule and automationModule.UpdateAutoResurrect then
-				automationModule:UpdateAutoResurrect()
-			end
-		end
-	end
-
-	GUI:CreateSwitch(resurrectSection, "Automation.AutoResurrect", "Auto Accept Resurrect Requests", "Automatically accepts resurrection requests during combat or in dungeons.", updateAutoResurrect)
-	GUI:CreateSwitch(resurrectSection, "Automation.AutoResurrectThank", "Say 'Thank You' When Resurrected", "Sends a 'Thank you' message to the player who resurrects you.", updateAutoResurrect)
+	GUI:CreateSwitch(resurrectSection, "Automation.AutoResurrect", "Auto Accept Resurrect Requests", "Automatically accepts resurrection requests during combat or in dungeons.")
+	GUI:CreateSwitch(resurrectSection, "Automation.AutoResurrectThank", "Say 'Thank You' When Resurrected", "Sends a 'Thank you' message to the player who resurrects you.")
 
 	-- ========================================
 	-- AUTO-REWARD OPTIONS SECTION
 	-- ========================================
 	local rewardSection = GUI:AddSection(category, "Auto-Reward Options")
-
-	local function updateAutoReward(newValue, oldValue, configPath)
-		if K.GetModule then
-			local automationModule = K:GetModule("Automation")
-			if automationModule and automationModule.UpdateAutoReward then
-				automationModule:UpdateAutoReward()
-			end
-		end
-	end
-
-	GUI:CreateSwitch(rewardSection, "Automation.AutoReward", "Auto Select Quest Rewards Best Value", "Automatically selects the highest value quest reward.", updateAutoReward)
+	GUI:CreateSwitch(rewardSection, "Automation.AutoReward", "Auto Select Quest Rewards Best Value", "Automatically selects the highest value quest reward.")
 
 	-- ========================================
 	-- MISCELLANEOUS OPTIONS SECTION
 	-- ========================================
 	local miscSection = GUI:AddSection(category, "Miscellaneous Options")
-
-	local function updateAutomationMisc(newValue, oldValue, configPath)
-		if K.GetModule then
-			local automationModule = K:GetModule("Automation")
-			if automationModule then
-				if configPath:find("AutoGoodbye") and automationModule.UpdateAutoGoodbye then
-					automationModule:UpdateAutoGoodbye()
-				elseif configPath:find("AutoKeystone") and automationModule.UpdateAutoKeystone then
-					automationModule:UpdateAutoKeystone()
-				elseif configPath:find("AutoOpenItems") and automationModule.UpdateAutoOpenItems then
-					automationModule:UpdateAutoOpenItems()
-				elseif configPath:find("AutoRelease") and automationModule.UpdateAutoRelease then
-					automationModule:UpdateAutoRelease()
-				elseif configPath:find("AutoScreenshot") and automationModule.UpdateAutoScreenshot then
-					automationModule:UpdateAutoScreenshot()
-				elseif configPath:find("AutoSetRole") and automationModule.UpdateAutoSetRole then
-					automationModule:UpdateAutoSetRole()
-				elseif configPath:find("AutoSkipCinematic") and automationModule.UpdateAutoSkipCinematic then
-					automationModule:UpdateAutoSkipCinematic()
-				elseif configPath:find("AutoSummon") and automationModule.UpdateAutoSummon then
-					automationModule:UpdateAutoSummon()
-				elseif configPath:find("NoBadBuffs") and automationModule.UpdateNoBadBuffs then
-					automationModule:UpdateNoBadBuffs()
-				end
-			end
-		end
-	end
-
-	GUI:CreateSwitch(miscSection, "Automation.AutoGoodbye", "Say Goodbye After Dungeon Completion", "Automatically says 'Goodbye' to the group when the dungeon is completed.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoKeystone", "Auto Place Mythic Keystones", "Automatically places your highest available Mythic Keystone in the dungeon keystone slot.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoOpenItems", "Auto Open Items In Your Inventory", "Automatically opens items in your inventory that contain loot.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoRelease", "Auto Release in Battlegrounds & Arenas", "Automatically releases your spirit upon death in battlegrounds or arenas.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoScreenshot", "Auto Screenshot Achievements", "Automatically takes a screenshot when you earn an achievement.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoSetRole", "Auto Set Your Role In Groups", "Automatically sets your role based on your class and specialization.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoSkipCinematic", "Auto Skip All Cinematics/Movies", "Automatically skips cinematics and movies during gameplay.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.AutoSummon", "Auto Accept Summon Requests", "Automatically accepts summon requests from your group or raid.", updateAutomationMisc)
-	GUI:CreateSwitch(miscSection, "Automation.NoBadBuffs", "Automatically Remove Annoying Buffs", "Automatically removes unwanted or annoying buffs.", updateAutomationMisc)
+	GUI:CreateSwitch(miscSection, "Automation.AutoGoodbye", "Say Goodbye After Dungeon Completion", "Automatically says 'Goodbye' to the group when the dungeon is completed.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoKeystone", "Auto Place Mythic Keystones", "Automatically places your highest available Mythic Keystone in the dungeon keystone slot.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoOpenItems", "Auto Open Items In Your Inventory", "Automatically opens items in your inventory that contain loot.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoRelease", "Auto Release in Battlegrounds & Arenas", "Automatically releases your spirit upon death in battlegrounds or arenas.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoScreenshot", "Auto Screenshot Achievements", "Automatically takes a screenshot when you earn an achievement.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoSetRole", "Auto Set Your Role In Groups", "Automatically sets your role based on your class and specialization.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoSkipCinematic", "Auto Skip All Cinematics/Movies", "Automatically skips cinematics and movies during gameplay.")
+	GUI:CreateSwitch(miscSection, "Automation.AutoSummon", "Auto Accept Summon Requests", "Automatically accepts summon requests from your group or raid.")
+	GUI:CreateSwitch(miscSection, "Automation.NoBadBuffs", "Automatically Remove Annoying Buffs", "Automatically removes unwanted or annoying buffs.")
 end
 -- ====================================================
 -- BOSS CATEGORY
@@ -442,30 +343,19 @@ local function CreateBossCategory()
 	local bossIcon = "Interface\\Icons\\Achievement_boss_illidan"
 	local bossCategory = GUI:AddCategory("Boss", bossIcon)
 
-	-- Hook Functions for Boss
-	local function UpdateBossFrames()
-		-- Boss frames don't have specific update functions in the modules
-		-- The changes will be applied on next UI reload or when frames refresh
-		local unitframeModule = K:GetModule("Unitframes")
-		if unitframeModule and unitframeModule.RefreshAllUnits then
-			unitframeModule:RefreshAllUnits()
-			-- Boss frame settings updated silently
-		end
-	end
-
 	-- GENERAL SECTION
 	local generalBossSection = GUI:AddSection(bossCategory, GENERAL)
-	GUI:CreateSwitch(generalBossSection, "Boss.Enable", enableTextColor .. L["Enable Boss"], "Toggle Boss Module On/Off", UpdateBossFrames)
-	GUI:CreateSwitch(generalBossSection, "Boss.Castbars", L["Show Castbars"], "Enable castbars for boss frames", UpdateBossFrames)
-	GUI:CreateSwitch(generalBossSection, "Boss.CastbarIcon", "Show Castbars Icon", "Display icons on boss frame castbars", UpdateBossFrames)
-	GUI:CreateSwitch(generalBossSection, "Boss.Smooth", L["Smooth Bar Transition"], "Enable smooth health and power bar animations", UpdateBossFrames)
+	GUI:CreateSwitch(generalBossSection, "Boss.Enable", enableTextColor .. L["Enable Boss"], "Toggle Boss Module On/Off")
+	GUI:CreateSwitch(generalBossSection, "Boss.Castbars", L["Show Castbars"], "Enable castbars for boss frames")
+	GUI:CreateSwitch(generalBossSection, "Boss.CastbarIcon", "Show Castbars Icon", "Display icons on boss frame castbars")
+	GUI:CreateSwitch(generalBossSection, "Boss.Smooth", L["Smooth Bar Transition"], "Enable smooth health and power bar animations")
 
 	-- SIZES SECTION
 	local bossSizesSection = GUI:AddSection(bossCategory, L["Sizes"])
-	GUI:CreateSlider(bossSizesSection, "Boss.HealthHeight", "Health Height", 20, 50, 1, "Height of boss frame health bars", UpdateBossFrames)
-	GUI:CreateSlider(bossSizesSection, "Boss.HealthWidth", "Health Width", 120, 180, 1, "Width of boss frame health bars", UpdateBossFrames)
-	GUI:CreateSlider(bossSizesSection, "Boss.PowerHeight", "Power Height", 10, 30, 1, "Height of boss frame power bars", UpdateBossFrames)
-	GUI:CreateSlider(bossSizesSection, "Boss.YOffset", "Vertical Offset From One Another" .. K.GreyColor .. "(54)|r", 40, 60, 1, "Vertical spacing between boss frames", UpdateBossFrames)
+	GUI:CreateSlider(bossSizesSection, "Boss.HealthHeight", "Health Height", 20, 50, 1, "Height of boss frame health bars")
+	GUI:CreateSlider(bossSizesSection, "Boss.HealthWidth", "Health Width", 120, 180, 1, "Width of boss frame health bars")
+	GUI:CreateSlider(bossSizesSection, "Boss.PowerHeight", "Power Height", 10, 30, 1, "Height of boss frame power bars")
+	GUI:CreateSlider(bossSizesSection, "Boss.YOffset", "Vertical Offset From One Another" .. K.GreyColor .. "(54)|r", 40, 60, 1, "Vertical spacing between boss frames")
 
 	-- COLORS SECTION
 	local bossColorsSection = GUI:AddSection(bossCategory, COLORS)
@@ -476,7 +366,7 @@ local function CreateBossCategory()
 		{ text = "Dark", value = 2 },
 		{ text = "Value", value = 3 },
 	}
-	GUI:CreateDropdown(bossColorsSection, "Boss.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how boss frame health bars are colored", UpdateBossFrames)
+	GUI:CreateDropdown(bossColorsSection, "Boss.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how boss frame health bars are colored")
 end
 
 -- CHAT CATEGORY
@@ -487,17 +377,17 @@ local function CreateChatCategory()
 	-- Hook Functions for Chat
 	local function UpdateChatBackground()
 		local chatModule = K:GetModule("Chat")
-		if chatModule and chatModule.ToggleBackground then
-			chatModule:ToggleBackground()
+		if chatModule and chatModule.ToggleChatBackground then
+			chatModule:ToggleChatBackground()
 			-- Chat background updated silently
 		end
 	end
 
-	local function UpdateChatSticky()
+	-- Generic chat settings hook (no-op updater to avoid reload prompts)
+	local function UpdateChatSettings()
 		local chatModule = K:GetModule("Chat")
-		if chatModule and chatModule.UpdateStickyChannels then
-			chatModule:UpdateStickyChannels()
-			-- Chat sticky settings updated silently
+		if chatModule then
+			return
 		end
 	end
 
@@ -509,24 +399,17 @@ local function CreateChatCategory()
 		end
 	end
 
-	local function UpdateChatSettings()
-		local chatModule = K:GetModule("Chat")
-		if chatModule then
-			-- Chat settings updated silently
-		end
-	end
-
 	-- GENERAL SECTION
 	local generalChatSection = GUI:AddSection(chatCategory, GENERAL)
-	GUI:CreateSwitch(generalChatSection, "Chat.Enable", enableTextColor .. L["Enable Chat"], L["Enable Desc"], UpdateChatSettings)
-	GUI:CreateSwitch(generalChatSection, "Chat.Lock", L["Lock Chat"], L["Lock Desc"], UpdateChatSettings)
+	GUI:CreateSwitch(generalChatSection, "Chat.Enable", enableTextColor .. L["Enable Chat"], L["Enable Desc"])
+	GUI:CreateSwitch(generalChatSection, "Chat.Lock", L["Lock Chat"], L["Lock Desc"])
 	GUI:CreateSwitch(generalChatSection, "Chat.Background", L["Show Chat Background"], L["Background Desc"], UpdateChatBackground)
-	GUI:CreateSwitch(generalChatSection, "Chat.OldChatNames", L["Use Default Channel Names"], L["OldChatNames Desc"], UpdateChatSettings)
+	GUI:CreateSwitch(generalChatSection, "Chat.OldChatNames", L["Use Default Channel Names"], L["OldChatNames Desc"])
 
 	-- APPEARANCE SECTION
 	local appearanceChatSection = GUI:AddSection(chatCategory, L["Appearance"])
-	GUI:CreateSwitch(appearanceChatSection, "Chat.Emojis", L["Show Emojis In Chat"] .. " |TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t", L["Emojis Desc"], UpdateChatSettings)
-	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatItemLevel", L["Show ItemLevel on ChatFrames"], L["ChatItemLevel Desc"], UpdateChatSettings)
+	GUI:CreateSwitch(appearanceChatSection, "Chat.Emojis", L["Show Emojis In Chat"] .. " |TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t", L["Emojis Desc"])
+	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatItemLevel", L["Show ItemLevel on ChatFrames"], L["ChatItemLevel Desc"])
 
 	-- Timestamp Format Dropdown Options
 	local timestampOptions = {
@@ -540,21 +423,21 @@ local function CreateChatCategory()
 
 	-- BEHAVIOR SECTION
 	local behaviorChatSection = GUI:AddSection(chatCategory, L["Behavior"])
-	GUI:CreateSwitch(behaviorChatSection, "Chat.Freedom", L["Disable Chat Language Filter"], L["Freedom Desc"], UpdateChatSettings)
-	GUI:CreateSwitch(behaviorChatSection, "Chat.ChatMenu", L["Show Chat Menu Buttons"], L["ChatMenu Desc"], UpdateChatSettings)
-	GUI:CreateSwitch(behaviorChatSection, "Chat.Sticky", L["Stick On Channel If Whispering"], L["Sticky Desc"], UpdateChatSticky)
-	GUI:CreateSwitch(behaviorChatSection, "Chat.WhisperColor", L["Differ Whisper Colors"], "Use different colors for incoming and outgoing whispers", UpdateChatSettings)
+	GUI:CreateSwitch(behaviorChatSection, "Chat.Freedom", L["Disable Chat Language Filter"], L["Freedom Desc"])
+	GUI:CreateSwitch(behaviorChatSection, "Chat.ChatMenu", L["Show Chat Menu Buttons"], L["ChatMenu Desc"])
+	GUI:CreateSwitch(behaviorChatSection, "Chat.Sticky", L["Stick On Channel If Whispering"], L["Sticky Desc"])
+	GUI:CreateSwitch(behaviorChatSection, "Chat.WhisperColor", L["Differ Whisper Colors"], "Use different colors for incoming and outgoing whispers")
 
 	-- SIZES SECTION
 	local sizesChatSection = GUI:AddSection(chatCategory, L["Sizes"])
 	GUI:CreateSlider(sizesChatSection, "Chat.Height", L["Lock Chat Height"], 100, 500, 1, L["Height Desc"], UpdateChatSize)
 	GUI:CreateSlider(sizesChatSection, "Chat.Width", L["Lock Chat Width"], 200, 600, 1, L["Width Desc"], UpdateChatSize)
-	GUI:CreateSlider(sizesChatSection, "Chat.LogMax", L["Chat History Lines To Save"], 0, 500, 10, L["LogMax Desc"], UpdateChatSettings)
+	GUI:CreateSlider(sizesChatSection, "Chat.LogMax", L["Chat History Lines To Save"], 0, 500, 10, L["LogMax Desc"])
 
 	-- FADING SECTION
 	local fadingChatSection = GUI:AddSection(chatCategory, L["Fading"])
-	GUI:CreateSwitch(fadingChatSection, "Chat.Fading", L["Fade Chat Text"], "Enable automatic fading of chat messages after a set time", UpdateChatSettings)
-	GUI:CreateSlider(fadingChatSection, "Chat.FadingTimeVisible", L["Fading Chat Visible Time"], 5, 120, 1, L["FadingTimeVisible Desc"], UpdateChatSettings)
+	GUI:CreateSwitch(fadingChatSection, "Chat.Fading", L["Fade Chat Text"], "Enable automatic fading of chat messages after a set time")
+	GUI:CreateSlider(fadingChatSection, "Chat.FadingTimeVisible", L["Fading Chat Visible Time"], 5, 120, 1, L["FadingTimeVisible Desc"])
 end
 
 -- DATATEXT CATEGORY
@@ -562,42 +445,25 @@ local function CreateDataTextCategory()
 	local dataTextIcon = "Interface\\Icons\\Achievement_worldevent_childrensweek"
 	local dataTextCategory = GUI:AddCategory("DataText", dataTextIcon)
 
-	-- Hook Functions for DataText
-	local function UpdateDataTextSettings()
-		local dataTextModule = K:GetModule("DataText")
-		if dataTextModule then
-			print("|cff669DFFKkthnxUI:|r DataText settings updated!")
-			-- DataText modules typically refresh themselves automatically
-		end
-	end
-
-	local function UpdateDataTextColors()
-		local dataTextModule = K:GetModule("DataText")
-		if dataTextModule and dataTextModule.UpdateColors then
-			dataTextModule:UpdateColors()
-			print("|cff669DFFKkthnxUI:|r DataText colors updated!")
-		end
-	end
-
 	-- GENERAL SECTION
 	local generalDataTextSection = GUI:AddSection(dataTextCategory, GENERAL)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Coords", L["Enable Positon Coords"], L["Coords Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Friends", L["Enable Friends Info"], L["Friends Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Gold", L["Enable Currency Info"], L["Gold Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Guild", L["Enable Guild Info"], L["Guild Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Latency", L["Enable Latency Info"], L["Latency Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Location", L["Enable Minimap Location"], L["Location Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Spec", L["Enable Specialization Info"], L["Spec Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.System", L["Enable System Info"], L["System Desc"], UpdateDataTextSettings)
-	GUI:CreateSwitch(generalDataTextSection, "DataText.Time", L["Enable Minimap Time"], L["Time Desc"], UpdateDataTextSettings)
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Coords", L["Enable Positon Coords"], L["Coords Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Friends", L["Enable Friends Info"], L["Friends Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Gold", L["Enable Currency Info"], L["Gold Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Guild", L["Enable Guild Info"], L["Guild Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Latency", L["Enable Latency Info"], L["Latency Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Location", L["Enable Minimap Location"], L["Location Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Spec", L["Enable Specialization Info"], L["Spec Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.System", L["Enable System Info"], L["System Desc"])
+	GUI:CreateSwitch(generalDataTextSection, "DataText.Time", L["Enable Minimap Time"], L["Time Desc"])
 
 	-- ICON COLORS SECTION
 	local iconColorsSection = GUI:AddSection(dataTextCategory, L["Icon Colors"])
-	GUI:CreateColorPicker(iconColorsSection, "DataText.IconColor", L["Color The Icons"], L["IconColor Desc"], UpdateDataTextColors)
+	GUI:CreateColorPicker(iconColorsSection, "DataText.IconColor", L["Color The Icons"], L["IconColor Desc"])
 
 	-- TEXT TOGGLES SECTION
 	local textTogglesSection = GUI:AddSection(dataTextCategory, L["Text Toggles"])
-	GUI:CreateSwitch(textTogglesSection, "DataText.HideText", L["Hide Icon Text"], L["HideText Desc"], UpdateDataTextSettings)
+	GUI:CreateSwitch(textTogglesSection, "DataText.HideText", L["Hide Icon Text"], L["HideText Desc"])
 end
 
 -- GENERAL CATEGORY
@@ -969,14 +835,14 @@ local function CreateMiscCategory()
 
 	-- Hook Functions for Misc
 	local function UpdateMiscSettings()
-		local miscModule = K:GetModule("Misc")
+		local miscModule = K:GetModule("Miscellaneous")
 		if miscModule then
 			print("|cff669DFFKkthnxUI:|r Misc settings updated!")
 		end
 	end
 
 	local function UpdateYClassColors()
-		local miscModule = K:GetModule("Misc")
+		local miscModule = K:GetModule("Miscellaneous")
 		if miscModule and miscModule.UpdateYClassColors then
 			miscModule:UpdateYClassColors()
 			print("|cff669DFFKkthnxUI:|r Class colors updated!")
@@ -984,7 +850,7 @@ local function CreateMiscCategory()
 	end
 
 	local function UpdateMaxZoomLevel()
-		local miscModule = K:GetModule("Misc")
+		local miscModule = K:GetModule("Miscellaneous")
 		if miscModule and miscModule.UpdateMaxZoomLevel then
 			miscModule:UpdateMaxZoomLevel()
 			print("|cff669DFFKkthnxUI:|r Max camera zoom level updated!")
@@ -992,7 +858,7 @@ local function CreateMiscCategory()
 	end
 
 	local function UpdateMarkerGrid()
-		local miscModule = K:GetModule("Misc")
+		local miscModule = K:GetModule("Miscellaneous")
 		if miscModule and miscModule.UpdateMarkerGrid then
 			miscModule:UpdateMarkerGrid()
 			print("|cff669DFFKkthnxUI:|r Marker grid updated!")
@@ -1108,30 +974,30 @@ local function CreateNameplateCategory()
 	-- Hook Functions for Nameplate
 	local function refreshNameplates()
 		local nameplateModule = K:GetModule("Unitframes")
-		if nameplateModule and nameplateModule.RefreshNameplates then
-			nameplateModule:RefreshNameplates()
+		if nameplateModule and nameplateModule.UpdateNameplateSize then
+			nameplateModule:UpdateNameplateSize()
 			print("|cff669DFFKkthnxUI:|r Nameplates refreshed!")
 		end
 	end
 
 	local function UpdateCustomUnitList()
 		local nameplateModule = K:GetModule("Unitframes")
-		if nameplateModule and nameplateModule.UpdateCustomUnitList then
-			nameplateModule:UpdateCustomUnitList()
+		if nameplateModule and nameplateModule.CreateUnitTable then
+			nameplateModule:CreateUnitTable()
 			print("|cff669DFFKkthnxUI:|r Custom unit list updated!")
 		end
 	end
 
 	local function UpdatePowerUnitList()
-		local nameplateModule = K:GetModule("Nameplates")
-		if nameplateModule and nameplateModule.UpdatePowerUnitList then
-			nameplateModule:UpdatePowerUnitList()
+		local nameplateModule = K:GetModule("Unitframes")
+		if nameplateModule and nameplateModule.CreatePowerUnitTable then
+			nameplateModule:CreatePowerUnitTable()
 			print("|cff669DFFKkthnxUI:|r Power unit list updated!")
 		end
 	end
 
 	local function togglePlayerPlate()
-		local nameplateModule = K:GetModule("Nameplates")
+		local nameplateModule = K:GetModule("Unitframes")
 		if nameplateModule and nameplateModule.TogglePlayerPlate then
 			nameplateModule:TogglePlayerPlate()
 			print("|cff669DFFKkthnxUI:|r Player nameplate toggled!")
@@ -1139,7 +1005,7 @@ local function CreateNameplateCategory()
 	end
 
 	local function togglePlatePower()
-		local nameplateModule = K:GetModule("Nameplates")
+		local nameplateModule = K:GetModule("Unitframes")
 		if nameplateModule and nameplateModule.TogglePlatePower then
 			nameplateModule:TogglePlatePower()
 			print("|cff669DFFKkthnxUI:|r Player nameplate power toggled!")
@@ -1925,7 +1791,6 @@ local function CreateCreditsCategory()
 
 	if GUI.CreateCredits then
 		GUI:CreateCredits(specialSection, {
-			{ name = "Kkthnx", class = "HUNTER" },
 			{ name = "All Beta Testers", color = { 0.8, 0.8, 1, 1 } },
 			{ name = "Discord Community", color = { 0.4, 0.6, 1, 1 } },
 			{ name = "GitHub Contributors", color = { 0.2, 0.8, 0.2, 1 } },

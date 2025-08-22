@@ -35,7 +35,7 @@ table_insert(C.defaultThemes, function()
 	frame.TimeLeft.SecondsText:Hide()
 
 	-- Hook function to control LossOfControlFrame display
-	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
+	hooksecurefunc(LossOfControlFrame, "SetUpDisplay", function(self)
 		local icon = self.Icon
 		local abilityName = self.AbilityName
 		local animation = self.Anim
