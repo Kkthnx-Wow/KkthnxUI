@@ -158,7 +158,7 @@ function Module:CreateMicroMenu()
 		if _G.KKUI_MenuBar then
 			_G.KKUI_MenuBar:Hide()
 		end
-		CleanupMicroMenu()
+		self:CleanupMicroMenu()
 		return
 	end
 
@@ -246,7 +246,7 @@ function Module:CreateMicroMenu()
 end
 
 -- Add cleanup function for when feature is disabled
-local function CleanupMicroMenu()
+function Module:CleanupMicroMenu()
 	K.ClearTable(MicroButtons)
 	StopFadeTimer()
 	updateWatcher = 0
