@@ -980,7 +980,41 @@ local function CreateNameplateCategory()
 		end
 	end
 
-	local function UpdateCustomUnitList()
+	local function UpdateCustomUnitList(newValue, oldValue, path)
+		-- Treat this input as a buffer: merge tokens into the real list, then clear the buffer
+		local input = tostring(newValue or "")
+		-- normalize separators and trim
+		input = input:gsub(",", " ")
+		input = input:gsub("%s+", " ")
+		input = input:match("^%s*(.-)%s*$") or ""
+
+		if input ~= "" then
+			local existing = tostring(C["Nameplate"].CustomUnitList or "")
+			local set = {}
+			for w in string.gmatch(existing, "%S+") do
+				set[w] = true
+			end
+			for w in string.gmatch(input, "%S+") do
+				set[w] = true
+			end
+			local merged = {}
+			for w in pairs(set) do
+				table.insert(merged, w)
+			end
+			table.sort(merged)
+			local mergedStr = table.concat(merged, " ")
+
+			if K.GUI and K.GUI.GUI and K.GUI.GUI.SetConfigValue then
+				K.GUI.GUI:SetConfigValue("Nameplate.CustomUnitList", mergedStr)
+				-- Clear the buffer input field
+				if path then
+					K.GUI.GUI:SetConfigValue(path, "")
+				end
+			else
+				C["Nameplate"].CustomUnitList = mergedStr
+			end
+		end
+
 		local nameplateModule = K:GetModule("Unitframes")
 		if nameplateModule and nameplateModule.CreateUnitTable then
 			nameplateModule:CreateUnitTable()
@@ -988,7 +1022,41 @@ local function CreateNameplateCategory()
 		end
 	end
 
-	local function UpdatePowerUnitList()
+	local function UpdatePowerUnitList(newValue, oldValue, path)
+		-- Treat this input as a buffer: merge tokens into the real list, then clear the buffer
+		local input = tostring(newValue or "")
+		-- normalize separators and trim
+		input = input:gsub(",", " ")
+		input = input:gsub("%s+", " ")
+		input = input:match("^%s*(.-)%s*$") or ""
+
+		if input ~= "" then
+			local existing = tostring(C["Nameplate"].PowerUnitList or "")
+			local set = {}
+			for w in string.gmatch(existing, "%S+") do
+				set[w] = true
+			end
+			for w in string.gmatch(input, "%S+") do
+				set[w] = true
+			end
+			local merged = {}
+			for w in pairs(set) do
+				table.insert(merged, w)
+			end
+			table.sort(merged)
+			local mergedStr = table.concat(merged, " ")
+
+			if K.GUI and K.GUI.GUI and K.GUI.GUI.SetConfigValue then
+				K.GUI.GUI:SetConfigValue("Nameplate.PowerUnitList", mergedStr)
+				-- Clear the buffer input field
+				if path then
+					K.GUI.GUI:SetConfigValue(path, "")
+				end
+			else
+				C["Nameplate"].PowerUnitList = mergedStr
+			end
+		end
+
 		local nameplateModule = K:GetModule("Unitframes")
 		if nameplateModule and nameplateModule.CreatePowerUnitTable then
 			nameplateModule:CreatePowerUnitTable()
@@ -1068,8 +1136,9 @@ local function CreateNameplateCategory()
 		{ text = "Red Chevron Arrow2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2:0|t", value = "Interface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2" },
 	}
 	GUI:CreateDropdown(generalNameplateSection, "Nameplate.TargetIndicatorTexture", "TargetIndicator Texture", targetIndicatorTextureOptions, "Choose the texture for target indicators", refreshNameplates)
-	GUI:CreateTextInput(generalNameplateSection, "Nameplate.CustomUnitList", L["Custom UnitColor List"], "Enter unit names...", L["CustomUnitTip"], UpdateCustomUnitList)
-	GUI:CreateTextInput(generalNameplateSection, "Nameplate.PowerUnitList", L["Custom PowerUnit List"], "Enter unit names...", L["CustomUnitTip"], UpdatePowerUnitList)
+	-- Use buffer inputs so values clear after submission and are merged into the real lists
+	GUI:CreateTextInput(generalNameplateSection, "Nameplate.CustomUnitListInput", L["Custom UnitColor List"], "Enter unit names...", L["CustomUnitTip"], UpdateCustomUnitList)
+	GUI:CreateTextInput(generalNameplateSection, "Nameplate.PowerUnitListInput", L["Custom PowerUnit List"], "Enter unit names...", L["CustomUnitTip"], UpdatePowerUnitList)
 
 	-- ========================================
 	-- CASTBAR SECTION

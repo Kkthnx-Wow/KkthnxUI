@@ -11,6 +11,7 @@ function Module:OnEnable()
 		"CreateAutoInvite",
 		"CreateAutoKeystone",
 		"CreateAutoOpenItems",
+		"CreateAutoQuest",
 		"CreateAutoPartySyncAccept",
 		"CreateAutoRelease",
 		"CreateAutoResurrect",

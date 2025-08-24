@@ -331,6 +331,13 @@ function ExtraGUI:CreateFrame()
 	scrollChild:SetHeight(1)
 	scrollFrame:SetScrollChild(scrollChild)
 
+	-- Keep scroll child responsive on size changes
+	scrollFrame:SetScript("OnSizeChanged", function(self)
+		if self:GetWidth() and scrollChild then
+			scrollChild:SetWidth(math.max(1, self:GetWidth() - 10))
+		end
+	end)
+
 	-- Store references
 	self.Frame = frame
 	self.TitleBar = titleBar
@@ -1411,41 +1418,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Bar 8")
 
-	-- Example: Nameplate Auras extra config using widget system
-	self:RegisterExtraConfig("Nameplate.PlateAuras", function(parent)
-		local yOffset = -10
-
-		-- Player Auras Section
-		local playerAurasGroup = self:CreateCheckboxGroup(parent, "Nameplate.PlayerAuras", "Player Auras", {
-			{ text = "Show Player Buffs", value = "buffs" },
-			{ text = "Show Player Debuffs", value = "debuffs" },
-			{ text = "Show Player DoTs", value = "dots" },
-		}, "Configure which player auras to show")
-		playerAurasGroup:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - playerAurasGroup:GetHeight() - 10
-
-		-- Enemy Auras Section
-		local enemyAurasGroup = self:CreateCheckboxGroup(parent, "Nameplate.EnemyAuras", "Enemy Auras", {
-			{ text = "Show Enemy Buffs", value = "buffs" },
-			{ text = "Show Enemy Debuffs", value = "debuffs" },
-			{ text = "Hide Raid Debuffs", value = "hideraid" },
-		}, "Configure which enemy auras to show")
-		enemyAurasGroup:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - enemyAurasGroup:GetHeight() - 10
-
-		-- Aura Size Slider
-		local auraSizeSlider = self:CreateSlider(parent, "Nameplate.AuraSize", "Aura Size", 16, 32, 1, "Size of aura icons")
-		auraSizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Max Auras Slider
-		local maxAurasSlider = self:CreateSlider(parent, "Nameplate.MaxAuras", "Max Auras", 4, 12, 1, "Maximum number of auras to display")
-		maxAurasSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Nameplate Auras")
+	-- (Removed earlier simple Nameplate Auras registration to avoid duplicate key)
 
 	-- Example: Chat Extra Config using widget system
 	self:RegisterExtraConfig("Chat.General", function(parent)
@@ -1599,6 +1572,624 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Inventory Filters")
 
+	-- Provide a small cache for NPC names learned from nearby units
+	K.NPCNameCache = K.NPCNameCache or {}
+
+	-- Use K.GetNPCName (NDui-style) for async NPC name resolution
+	local function GetNPCNameByID(npcID, callback)
+		if not npcID then
+			return "Unknown"
+		end
+
+		if K.GetNPCName then
+			local name = K.GetNPCName(npcID, callback)
+			if name and name ~= "" and name ~= "..." then
+				return name
+			end
+		end
+
+		if K.NPCNameCache and K.NPCNameCache[npcID] then
+			return K.NPCNameCache[npcID]
+		end
+
+		return "Unknown"
+	end
+
+	-- Nameplate Custom Units (IDs) Manager
+	self:RegisterExtraConfig("Nameplate.CustomUnitList", function(parent)
+		local yOffset = -10
+		local contentWidth = GetExtraContentWidth()
+
+		-- Header
+		local header = parent:CreateFontString(nil, "OVERLAY")
+		header:SetFontObject(K.UIFont)
+		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		header:SetText("Custom Units by NPC ID")
+		header:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		-- Description
+		local desc = parent:CreateFontString(nil, "OVERLAY")
+		desc:SetFontObject(K.UIFont)
+		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		desc:SetJustifyH("LEFT")
+		desc:SetText("Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here.")
+		desc:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		-- Add ID input
+		local addInput = self:CreateTextInput(parent, nil, "Add NPC ID", "e.g. 174773", "Enter an NPC ID to add")
+		addInput:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Add button
+		local addButton = CreateFrame("Button", nil, parent)
+		addButton:SetSize(90, 24)
+		addButton:SetPoint("TOPLEFT", 0, yOffset)
+		local addBg = addButton:CreateTexture(nil, "BACKGROUND")
+		addBg:SetAllPoints()
+		addBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		addBg:SetVertexColor(0.2, 0.6, 0.2, 0.8)
+		local addLabel = addButton:CreateFontString(nil, "OVERLAY")
+		addLabel:SetFontObject(K.UIFont)
+		addLabel:SetTextColor(1, 1, 1, 1)
+		addLabel:SetText("Add")
+		addLabel:SetPoint("CENTER")
+		yOffset = yOffset - 35
+
+		-- List header
+		local listHeader = parent:CreateFontString(nil, "OVERLAY")
+		listHeader:SetFontObject(K.UIFont)
+		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		listHeader:SetText("Current IDs")
+		listHeader:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		-- List container
+		local listFrame = CreateFrame("Frame", nil, parent)
+		listFrame:SetPoint("TOPLEFT", 10, yOffset)
+		listFrame:SetSize(contentWidth - 20, 320)
+		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
+		listBg:SetAllPoints()
+		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+
+		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
+		scrollFrame:SetPoint("TOPLEFT", 5, -5)
+		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
+		scrollFrame:EnableMouseWheel(true)
+
+		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		scrollChild:SetWidth(contentWidth - 30)
+		scrollChild:SetHeight(1)
+		scrollFrame:SetScrollChild(scrollChild)
+
+		scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+			local step = 30
+			local cur = self:GetVerticalScroll()
+			local max = self:GetVerticalScrollRange()
+			self:SetVerticalScroll(math.max(0, math.min(max, cur - delta * step)))
+		end)
+
+		local rows = {}
+
+		local function parseConfigString()
+			local current = tostring(C["Nameplate"].CustomUnitList or "")
+			local numeric = {}
+			local nonNumeric = {}
+			for w in string.gmatch(current, "%S+") do
+				local id = tonumber(w)
+				if id then
+					numeric[id] = true
+				else
+					table.insert(nonNumeric, w)
+				end
+			end
+			return numeric, nonNumeric
+		end
+
+		local function saveNumericSet(numericSet, nonNumericList)
+			local ids = {}
+			for id in pairs(numericSet) do
+				table.insert(ids, id)
+			end
+			table.sort(ids)
+			local parts = {}
+			for _, t in ipairs(nonNumericList) do
+				table.insert(parts, tostring(t))
+			end
+			for _, id in ipairs(ids) do
+				table.insert(parts, tostring(id))
+			end
+			local newStr = table.concat(parts, " ")
+			-- Persist via config system so it saves to DB
+			SetExtraConfigValue("Nameplate.CustomUnitList", newStr)
+			local nameplateModule = K:GetModule("Unitframes")
+			if nameplateModule and nameplateModule.CreateUnitTable then
+				nameplateModule:CreateUnitTable()
+			end
+		end
+
+		local function getCombinedIds()
+			local combined = {}
+			-- defaults
+			for id in pairs(C.NameplateCustomUnits or {}) do
+				combined[id] = "default"
+			end
+			-- user numeric
+			local numeric = select(1, parseConfigString())
+			for id in pairs(numeric) do
+				combined[id] = combined[id] or "user"
+			end
+			local list = {}
+			for id, src in pairs(combined) do
+				table.insert(list, { id = id, source = src })
+			end
+			table.sort(list, function(a, b)
+				return a.id < b.id
+			end)
+			return list
+		end
+
+		local function trySetPortrait(texture, npcID)
+			texture:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-Small-Default")
+			local function checkUnit(u)
+				if UnitExists(u) then
+					local guid = UnitGUID(u)
+					local id = guid and K.GetNPCID(guid)
+					if id and id == npcID then
+						SetPortraitTexture(texture, u)
+						return true
+					end
+				end
+			end
+			-- Common direct tokens
+			local directUnits = { "target", "mouseover", "focus" }
+			for _, u in ipairs(directUnits) do
+				if checkUnit(u) then
+					return
+				end
+			end
+			-- Visible nameplates
+			for i = 1, 40 do
+				if checkUnit("nameplate" .. i) then
+					return
+				end
+			end
+			-- Boss units
+			for i = 1, 8 do
+				if checkUnit("boss" .. i) then
+					return
+				end
+			end
+		end
+
+		local function refreshRows()
+			for _, r in ipairs(rows) do
+				r:Hide()
+			end
+			wipe(rows)
+
+			local list = getCombinedIds()
+			local y = -5
+			for _, entry in ipairs(list) do
+				local row = CreateFrame("Frame", nil, scrollChild)
+				row:SetSize(contentWidth - 40, 28)
+				row:SetPoint("TOPLEFT", 10, y)
+
+				local bg = row:CreateTexture(nil, "BACKGROUND")
+				bg:SetAllPoints()
+				bg:SetTexture(C["Media"].Textures.White8x8Texture)
+				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
+
+				local portrait = row:CreateTexture(nil, "ARTWORK")
+				portrait:SetSize(22, 22)
+				portrait:SetPoint("LEFT", 6, 0)
+				trySetPortrait(portrait, entry.id)
+				row.Portrait = portrait
+				row.NpcID = entry.id
+				row.Portrait = portrait
+				row.NpcID = entry.id
+
+				local nameFS = row:CreateFontString(nil, "OVERLAY")
+				nameFS:SetFontObject(K.UIFont)
+				nameFS:SetTextColor(1, 1, 1, 1)
+				row.NameFS = nameFS
+				local function setNameText(nm)
+					if row.NameFS then
+						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", entry.id, entry.source == "default" and "  [Default]" or ""))
+					end
+				end
+				local creatureName = GetNPCNameByID(entry.id, setNameText)
+				setNameText(creatureName)
+				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
+
+				if entry.source ~= "default" then
+					local removeBtn = CreateFrame("Button", nil, row)
+					removeBtn:SetSize(22, 22)
+					removeBtn:SetPoint("RIGHT", -8, 0)
+					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
+					icon:SetAllPoints()
+					local ok = pcall(function()
+						icon:SetAtlas("common-icon-redx", true)
+					end)
+					if not ok then
+						icon:SetTexture(C["Media"].Textures.White8x8Texture)
+						icon:SetVertexColor(0.8, 0.2, 0.2, 1)
+					end
+					removeBtn:SetScript("OnClick", function()
+						local numeric, nonNumeric = parseConfigString()
+						numeric[entry.id] = nil
+						saveNumericSet(numeric, nonNumeric)
+						refreshRows()
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+					end)
+				end
+
+				table.insert(rows, row)
+				y = y - 30
+			end
+
+			scrollChild:SetHeight(math.abs(y) + 10)
+		end
+
+		-- Add button handler
+		addButton:SetScript("OnClick", function()
+			local inputText = ""
+			if addInput and addInput:GetChildren() then
+				for _, child in ipairs({ addInput:GetChildren() }) do
+					if child:GetObjectType() == "EditBox" then
+						inputText = child:GetText()
+						break
+					end
+				end
+			end
+			local id = tonumber(inputText)
+			if id and id > 0 then
+				local numeric, nonNumeric = parseConfigString()
+				numeric[id] = true
+				saveNumericSet(numeric, nonNumeric)
+				refreshRows()
+				-- clear input
+				if addInput and addInput:GetChildren() then
+					for _, child in ipairs({ addInput:GetChildren() }) do
+						if child:GetObjectType() == "EditBox" then
+							child:SetText("")
+							break
+						end
+					end
+				end
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			else
+				print("|cffff0000Invalid NPC ID. Enter a number.|r")
+			end
+		end)
+
+		-- Update portraits and learn names when units are visible
+		local events = CreateFrame("Frame", nil, parent)
+		events:RegisterEvent("PLAYER_TARGET_CHANGED")
+		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+		events:SetScript("OnEvent", function(_, _, unit)
+			if unit and UnitExists(unit) then
+				local guid = UnitGUID(unit)
+				local id = guid and K.GetNPCID(guid)
+				if id then
+					local n = UnitName(unit)
+					if n and n ~= "" then
+						K.NPCNameCache[id] = n
+					end
+				end
+			end
+			for _, row in ipairs(rows) do
+				if row.Portrait and row.NpcID then
+					trySetPortrait(row.Portrait, row.NpcID)
+				end
+				if row.NameFS then
+					local function setText(nm)
+						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, (C.NameplateCustomUnits and C.NameplateCustomUnits[row.NpcID]) and "  [Default]" or ""))
+					end
+					local nm = GetNPCNameByID(row.NpcID, setText)
+					setText(nm)
+				end
+			end
+		end)
+
+		refreshRows()
+		parent:SetHeight(math.abs(yOffset) + 20)
+	end, "Custom Units")
+
+	-- Nameplate Power Units (IDs) Manager
+	self:RegisterExtraConfig("Nameplate.PowerUnitList", function(parent)
+		local yOffset = -10
+		local contentWidth = GetExtraContentWidth()
+
+		local header = parent:CreateFontString(nil, "OVERLAY")
+		header:SetFontObject(K.UIFont)
+		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		header:SetText("Show Power for NPC IDs")
+		header:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local desc = parent:CreateFontString(nil, "OVERLAY")
+		desc:SetFontObject(K.UIFont)
+		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		desc:SetJustifyH("LEFT")
+		desc:SetText("Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here.")
+		desc:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local addInput = self:CreateTextInput(parent, nil, "Add NPC ID", "e.g. 114247", "Enter an NPC ID to add")
+		addInput:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local addButton = CreateFrame("Button", nil, parent)
+		addButton:SetSize(90, 24)
+		addButton:SetPoint("TOPLEFT", 0, yOffset)
+		local addBg = addButton:CreateTexture(nil, "BACKGROUND")
+		addBg:SetAllPoints()
+		addBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		addBg:SetVertexColor(0.2, 0.6, 0.2, 0.8)
+		local addLabel = addButton:CreateFontString(nil, "OVERLAY")
+		addLabel:SetFontObject(K.UIFont)
+		addLabel:SetTextColor(1, 1, 1, 1)
+		addLabel:SetText("Add")
+		addLabel:SetPoint("CENTER")
+		yOffset = yOffset - 35
+
+		local listHeader = parent:CreateFontString(nil, "OVERLAY")
+		listHeader:SetFontObject(K.UIFont)
+		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		listHeader:SetText("Current IDs")
+		listHeader:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local listFrame = CreateFrame("Frame", nil, parent)
+		listFrame:SetPoint("TOPLEFT", 10, yOffset)
+		listFrame:SetSize(contentWidth - 20, 320)
+		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
+		listBg:SetAllPoints()
+		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+
+		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
+		scrollFrame:SetPoint("TOPLEFT", 5, -5)
+		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
+		scrollFrame:EnableMouseWheel(true)
+
+		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		scrollChild:SetWidth(contentWidth - 30)
+		scrollChild:SetHeight(1)
+		scrollFrame:SetScrollChild(scrollChild)
+
+		scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+			local step = 30
+			local cur = self:GetVerticalScroll()
+			local max = self:GetVerticalScrollRange()
+			self:SetVerticalScroll(math.max(0, math.min(max, cur - delta * step)))
+		end)
+
+		local rows = {}
+
+		local function parseConfigString()
+			local current = tostring(C["Nameplate"].PowerUnitList or "")
+			local numeric = {}
+			local nonNumeric = {}
+			for w in string.gmatch(current, "%S+") do
+				local id = tonumber(w)
+				if id then
+					numeric[id] = true
+				else
+					table.insert(nonNumeric, w)
+				end
+			end
+			return numeric, nonNumeric
+		end
+
+		local function saveNumericSet(numericSet, nonNumericList)
+			local ids = {}
+			for id in pairs(numericSet) do
+				table.insert(ids, id)
+			end
+			table.sort(ids)
+			local parts = {}
+			for _, t in ipairs(nonNumericList) do
+				table.insert(parts, tostring(t))
+			end
+			for _, id in ipairs(ids) do
+				table.insert(parts, tostring(id))
+			end
+			local newStr = table.concat(parts, " ")
+			-- Persist via config system so it saves to DB
+			SetExtraConfigValue("Nameplate.PowerUnitList", newStr)
+			local nameplateModule = K:GetModule("Unitframes")
+			if nameplateModule and nameplateModule.CreatePowerUnitTable then
+				nameplateModule:CreatePowerUnitTable()
+			end
+		end
+
+		local function getCombinedIds()
+			local combined = {}
+			for id in pairs(C.NameplateShowPowerList or {}) do
+				combined[id] = "default"
+			end
+			local numeric = select(1, parseConfigString())
+			for id in pairs(numeric) do
+				combined[id] = combined[id] or "user"
+			end
+			local list = {}
+			for id, src in pairs(combined) do
+				table.insert(list, { id = id, source = src })
+			end
+			table.sort(list, function(a, b)
+				return a.id < b.id
+			end)
+			return list
+		end
+
+		local function trySetPortrait(texture, npcID)
+			texture:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-Small-Default")
+			local function checkUnit(u)
+				if UnitExists(u) then
+					local guid = UnitGUID(u)
+					local id = guid and K.GetNPCID(guid)
+					if id and id == npcID then
+						SetPortraitTexture(texture, u)
+						return true
+					end
+				end
+			end
+			-- Common direct tokens
+			local directUnits = { "target", "mouseover", "focus" }
+			for _, u in ipairs(directUnits) do
+				if checkUnit(u) then
+					return
+				end
+			end
+			-- Visible nameplates
+			for i = 1, 40 do
+				if checkUnit("nameplate" .. i) then
+					return
+				end
+			end
+			-- Boss units
+			for i = 1, 8 do
+				if checkUnit("boss" .. i) then
+					return
+				end
+			end
+		end
+
+		local function refreshRows()
+			for _, r in ipairs(rows) do
+				r:Hide()
+			end
+			wipe(rows)
+
+			local list = getCombinedIds()
+			local y = -5
+			for _, entry in ipairs(list) do
+				local row = CreateFrame("Frame", nil, scrollChild)
+				row:SetSize(contentWidth - 40, 28)
+				row:SetPoint("TOPLEFT", 10, y)
+
+				local bg = row:CreateTexture(nil, "BACKGROUND")
+				bg:SetAllPoints()
+				bg:SetTexture(C["Media"].Textures.White8x8Texture)
+				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
+
+				local portrait = row:CreateTexture(nil, "ARTWORK")
+				portrait:SetSize(22, 22)
+				portrait:SetPoint("LEFT", 6, 0)
+				trySetPortrait(portrait, entry.id)
+
+				local nameFS = row:CreateFontString(nil, "OVERLAY")
+				nameFS:SetFontObject(K.UIFont)
+				nameFS:SetTextColor(1, 1, 1, 1)
+				row.NameFS = nameFS
+				local function setNameText(nm)
+					if row.NameFS then
+						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", entry.id, entry.source == "default" and "  [Default]" or ""))
+					end
+				end
+				local creatureName = GetNPCNameByID(entry.id, setNameText)
+				setNameText(creatureName)
+				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
+
+				if entry.source ~= "default" then
+					local removeBtn = CreateFrame("Button", nil, row)
+					removeBtn:SetSize(22, 22)
+					removeBtn:SetPoint("RIGHT", -8, 0)
+					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
+					icon:SetAllPoints()
+					local ok = pcall(function()
+						icon:SetAtlas("common-icon-redx", true)
+					end)
+					if not ok then
+						icon:SetTexture(C["Media"].Textures.White8x8Texture)
+						icon:SetVertexColor(0.8, 0.2, 0.2, 1)
+					end
+					removeBtn:SetScript("OnClick", function()
+						local numeric, nonNumeric = parseConfigString()
+						numeric[entry.id] = nil
+						saveNumericSet(numeric, nonNumeric)
+						refreshRows()
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+					end)
+				end
+
+				table.insert(rows, row)
+				y = y - 30
+			end
+
+			scrollChild:SetHeight(math.abs(y) + 10)
+		end
+
+		addButton:SetScript("OnClick", function()
+			local inputText = ""
+			if addInput and addInput:GetChildren() then
+				for _, child in ipairs({ addInput:GetChildren() }) do
+					if child:GetObjectType() == "EditBox" then
+						inputText = child:GetText()
+						break
+					end
+				end
+			end
+			local id = tonumber(inputText)
+			if id and id > 0 then
+				local numeric, nonNumeric = parseConfigString()
+				numeric[id] = true
+				saveNumericSet(numeric, nonNumeric)
+				refreshRows()
+				if addInput and addInput:GetChildren() then
+					for _, child in ipairs({ addInput:GetChildren() }) do
+						if child:GetObjectType() == "EditBox" then
+							child:SetText("")
+							break
+						end
+					end
+				end
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			else
+				print("|cffff0000Invalid NPC ID. Enter a number.|r")
+			end
+		end)
+
+		local events = CreateFrame("Frame", nil, parent)
+		events:RegisterEvent("PLAYER_TARGET_CHANGED")
+		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+		events:SetScript("OnEvent", function(_, _, unit)
+			if unit and UnitExists(unit) then
+				local guid = UnitGUID(unit)
+				local id = guid and K.GetNPCID(guid)
+				if id then
+					local n = UnitName(unit)
+					if n and n ~= "" then
+						K.NPCNameCache[id] = n
+					end
+				end
+			end
+			for _, row in ipairs(rows) do
+				if row.Portrait and row.NpcID then
+					trySetPortrait(row.Portrait, row.NpcID)
+				end
+				if row.NameFS then
+					local function setText(nm)
+						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, (C.NameplateShowPowerList and C.NameplateShowPowerList[row.NpcID]) and "  [Default]" or ""))
+					end
+					local nm = GetNPCNameByID(row.NpcID, setText)
+					setText(nm)
+				end
+			end
+		end)
+
+		refreshRows()
+		parent:SetHeight(math.abs(yOffset) + 20)
+	end, "Power Units")
+
 	-- Nameplate Aura Management System
 	self:RegisterExtraConfig("Nameplate.PlateAuras", function(parent)
 		local yOffset = -10
@@ -1623,13 +2214,22 @@ function ExtraGUI:RegisterExampleConfigs()
 		local RefreshAuraList
 		local CreateAuraItem
 
-		-- Category Selection Header
-		local categoryLabel = parent:CreateFontString(nil, "OVERLAY")
+		-- Category Selection Header (match header styling)
+		local categoryHeader = CreateFrame("Frame", nil, parent)
+		categoryHeader:SetSize(contentWidth - 20, 30)
+		categoryHeader:SetPoint("TOPLEFT", 10, yOffset)
+
+		local headerBg = categoryHeader:CreateTexture(nil, "BACKGROUND")
+		headerBg:SetAllPoints()
+		headerBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		headerBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+
+		local categoryLabel = categoryHeader:CreateFontString(nil, "OVERLAY")
 		categoryLabel:SetFontObject(K.UIFont)
 		categoryLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 		categoryLabel:SetText("Aura Category:")
-		categoryLabel:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
+		categoryLabel:SetPoint("LEFT", categoryHeader, "LEFT", 10, 0)
+		yOffset = yOffset - 40
 
 		-- Category Dropdown
 		categoryDropdown = self:CreateDropdown(parent, nil, "Select Category", categories, "Choose which aura list to manage", function(newValue, oldValue, configPath)
@@ -2253,7 +2853,10 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	-- Save on enter/focus lost
 	editBox:SetScript("OnEnterPressed", function(self)
 		local newValue = self:GetText()
-		SetExtraConfigValue(configPath, newValue)
+		-- Only persist and trigger hooks when a configPath is provided
+		if configPath then
+			SetExtraConfigValue(configPath, newValue)
+		end
 		self:ClearFocus()
 
 		-- Call hook function if provided
@@ -2265,7 +2868,10 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 
 	editBox:SetScript("OnEditFocusLost", function(self)
 		local newValue = self:GetText()
-		SetExtraConfigValue(configPath, newValue)
+		-- Only persist and trigger hooks when a configPath is provided
+		if configPath then
+			SetExtraConfigValue(configPath, newValue)
+		end
 
 		-- Call hook function if provided
 		if hookFunction and type(hookFunction) == "function" then
@@ -2317,7 +2923,10 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		GameTooltip:Hide()
 	end)
 	applyButton:SetScript("OnClick", function()
-		SetExtraConfigValue(configPath, editBox:GetText())
+		-- Only persist when a configPath is provided
+		if configPath then
+			SetExtraConfigValue(configPath, editBox:GetText())
+		end
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
 

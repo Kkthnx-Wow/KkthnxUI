@@ -133,6 +133,15 @@ local modulesQueue = {}
 
 -- Variables
 local isScaling = false
+local pendingScaleApply = false
+
+-- Deferred scale application after combat
+local function ApplyScaleAfterCombat()
+	-- Unregister this one-shot handler and apply scale now that we're out of combat
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", ApplyScaleAfterCombat)
+	pendingScaleApply = false
+	K:SetupUIScale()
+end
 
 -- Functions
 function K.IsMyPet(flags)
@@ -250,15 +259,32 @@ function K:SetupUIScale(init)
 		local pixel = 1
 		local ratio = 768 / K.ScreenHeight
 		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
-	elseif not InCombatLockdown() then
+	else
+		if InCombatLockdown() then
+			-- Defer applying UIParent scale until after combat to avoid taint/mismatch
+			if not pendingScaleApply then
+				pendingScaleApply = true
+				K:RegisterEvent("PLAYER_REGEN_ENABLED", ApplyScaleAfterCombat)
+			end
+			return
+		end
+
 		UIParent:SetScale(scale)
 	end
 end
 
 -- Function to update pixel scale
 local function UpdatePixelScale(event)
-	if isScaling or InCombatLockdown() then
-		-- Avoid taint during combat or recursive updates
+	if isScaling then
+		return
+	end
+
+	-- If this fired during combat, schedule a safe apply when leaving combat
+	if InCombatLockdown() then
+		if not pendingScaleApply then
+			pendingScaleApply = true
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", ApplyScaleAfterCombat)
+		end
 		return
 	end
 

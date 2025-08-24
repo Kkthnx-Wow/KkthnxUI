@@ -2483,6 +2483,13 @@ local function CreateSidebar(parent)
 	categoryScrollChild:SetWidth(SIDEBAR_WIDTH - 15) -- Account for scrollbar
 	categoryScrollFrame:SetScrollChild(categoryScrollChild)
 
+	-- Keep child width responsive with frame size
+	categoryScrollFrame:SetScript("OnSizeChanged", function(self, w)
+		if w and categoryScrollChild then
+			categoryScrollChild:SetWidth(math.max(1, w - 15))
+		end
+	end)
+
 	GUI.Sidebar = sidebar
 	GUI.CategoryScrollFrame = categoryScrollFrame
 	GUI.CategoryScrollChild = categoryScrollChild
@@ -2520,8 +2527,16 @@ local function CreateContent(parent)
 	end)
 
 	local scrollChild = CreateFrame("Frame", nil, scrollFrame)
-	scrollChild:SetWidth(CONTENT_WIDTH)
+	-- Initialize width; will also update on size changes for responsiveness
+	scrollChild:SetWidth(scrollFrame:GetWidth())
 	scrollFrame:SetScrollChild(scrollChild)
+
+	-- Keep child width in sync with frame width
+	scrollFrame:SetScript("OnSizeChanged", function(self, w)
+		if w and scrollChild then
+			scrollChild:SetWidth(math.max(1, w))
+		end
+	end)
 
 	GUI.Content = content
 	GUI.ScrollFrame = scrollFrame
@@ -2587,7 +2602,7 @@ local function CreateMainFrame()
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
 	closeButton.Icon:SetSize(16, 16)
 	closeButton.Icon:SetPoint("CENTER")
-	closeButton.Icon:SetAtlas("common-icon-redx")
+	closeButton.Icon:SetAtlas("uitools-icon-close")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	closeButton:SetScript("OnClick", function()
@@ -2615,9 +2630,9 @@ local function CreateMainFrame()
 	profileBg:SetVertexColor(0, 0, 0, 0)
 
 	profileButton.Icon = profileButton:CreateTexture(nil, "ARTWORK")
-	profileButton.Icon:SetSize(16, 16)
+	profileButton.Icon:SetSize(20, 24.5)
 	profileButton.Icon:SetPoint("CENTER")
-	profileButton.Icon:SetAtlas("Crosshair_trainer_32")
+	profileButton.Icon:SetAtlas("UI-HUD-MicroMenu-SpellbookAbilities-Up")
 	profileButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	profileButton:SetScript("OnClick", function()
@@ -2657,9 +2672,9 @@ local function CreateMainFrame()
 	reloadBg:SetVertexColor(0, 0, 0, 0)
 
 	reloadButton.Icon = reloadButton:CreateTexture(nil, "ARTWORK")
-	reloadButton.Icon:SetSize(16, 16)
+	reloadButton.Icon:SetSize(18, 18)
 	reloadButton.Icon:SetPoint("CENTER")
-	reloadButton.Icon:SetAtlas("common-icon-undo")
+	reloadButton.Icon:SetAtlas("transmog-icon-revert")
 	reloadButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	reloadButton:SetScript("OnClick", function()
@@ -2721,46 +2736,60 @@ local function PopulateContent(category)
 
 	local yOffset = -15
 
-	-- Category title (create as frame child, not direct FontString)
+	-- Category title (match section header styling for uniformity)
 	local categoryTitleFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
-	categoryTitleFrame:SetSize(CONTENT_WIDTH - 30, 25)
+	categoryTitleFrame:SetSize(CONTENT_WIDTH - 30, 30)
 	categoryTitleFrame:SetPoint("TOPLEFT", 15, yOffset)
+
+	-- Background to match section headers
+	local categoryBg = categoryTitleFrame:CreateTexture(nil, "BACKGROUND")
+	categoryBg:SetAllPoints()
+	categoryBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	categoryBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
 
 	local categoryTitle = categoryTitleFrame:CreateFontString(nil, "OVERLAY")
 	categoryTitle:SetFontObject(K.UIFont)
 	categoryTitle:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 	categoryTitle:SetText(category.Name)
-	categoryTitle:SetPoint("TOPLEFT", 0, 0)
+	categoryTitle:SetPoint("LEFT", categoryTitleFrame, "LEFT", 10, 0)
 	yOffset = yOffset - 40
 
 	-- Create sections with proper spacing
+	local firstMatchesCategory = (category.Sections[1] and category.Sections[1].Name == category.Name)
 	for sectionIndex, section in ipairs(category.Sections) do
 		-- Add extra spacing between sections (except first)
 		if sectionIndex > 1 then
 			yOffset = yOffset - 15
 		end
 
-		-- Section header frame with proper background
-		local sectionFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
-		sectionFrame:SetSize(CONTENT_WIDTH - 30, 30)
-		sectionFrame:SetPoint("TOPLEFT", 15, yOffset)
+		local createdHeader = false
+		if not (sectionIndex == 1 and firstMatchesCategory) then
+			-- Section header frame with proper background
+			local sectionFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
+			sectionFrame:SetSize(CONTENT_WIDTH - 30, 30)
+			sectionFrame:SetPoint("TOPLEFT", 15, yOffset)
 
-		-- Section header background
-		local sectionBg = sectionFrame:CreateTexture(nil, "BACKGROUND")
-		sectionBg:SetAllPoints()
-		sectionBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		sectionBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+			-- Section header background
+			local sectionBg = sectionFrame:CreateTexture(nil, "BACKGROUND")
+			sectionBg:SetAllPoints()
+			sectionBg:SetTexture(C["Media"].Textures.White8x8Texture)
+			sectionBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
 
-		-- Section title with proper positioning
-		local sectionTitle = sectionFrame:CreateFontString(nil, "OVERLAY")
-		sectionTitle:SetFontObject(K.UIFont)
-		sectionTitle:SetTextColor(0.9, 0.9, 0.9, 1)
+			-- Section title with proper positioning
+			local sectionTitle = sectionFrame:CreateFontString(nil, "OVERLAY")
+			sectionTitle:SetFontObject(K.UIFont)
+			sectionTitle:SetTextColor(0.9, 0.9, 0.9, 1)
 
-		-- Use clean section title text
-		sectionTitle:SetText(section.Name)
-		sectionTitle:SetPoint("LEFT", sectionFrame, "LEFT", 10, 0)
+			-- Use clean section title text
+			sectionTitle:SetText(section.Name)
+			sectionTitle:SetPoint("LEFT", sectionFrame, "LEFT", 10, 0)
 
-		yOffset = yOffset - 40
+			yOffset = yOffset - 40
+			createdHeader = true
+		else
+			-- Skip duplicate header if first section matches category name
+			yOffset = yOffset - 10
+		end
 
 		-- Section widgets with consistent spacing
 		for widgetIndex, widget in ipairs(section.Widgets) do
@@ -3162,6 +3191,25 @@ function GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, ho
 	local widget = CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
+
+	-- Add cogwheel icon if this configPath has extra configuration
+	if K.ExtraGUI then
+		local extraPath = configPath
+		-- If this is a buffer input (e.g., ends with "Input"), map to the real config path
+		if type(extraPath) == "string" and not K.ExtraGUI:HasExtraConfig(extraPath) then
+			local stripped = extraPath:gsub("Input$", "")
+			if stripped ~= extraPath and K.ExtraGUI:HasExtraConfig(stripped) then
+				extraPath = stripped
+			end
+		end
+
+		if extraPath and K.ExtraGUI:HasExtraConfig(extraPath) then
+			local cogwheel = K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, text)
+			if cogwheel then
+				widget.Cogwheel = cogwheel
+			end
+		end
+	end
 	return widget
 end
 

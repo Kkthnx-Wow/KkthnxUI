@@ -51,7 +51,7 @@ function Implementation:New(name)
 		return error(("cargBags: Global '%s' for Implementation is already used!"):format(name))
 	end
 
-	local impl = setmetatable(CreateFrame("Button", name, UIParent), self.__index)
+	local impl = setmetatable(CreateFrame("Frame", name, UIParent), self.__index)
 	impl.name = name
 
 	impl:SetAllPoints()
@@ -346,7 +346,7 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	if info then
 		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
 
-		-- i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID) -- Still Broken!
+		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID) -- Still Broken!
 
 		i.cdStart, i.cdFinish, i.cdEnable = C_Container.GetContainerItemCooldown(bagID, slotID)
 
@@ -444,7 +444,7 @@ end
 local isUpdating = false
 local bankUpdateQueue = {}
 local bankUpdateTimer
-local bankUpdateTimeGap = 0.1
+local bankUpdateTimeGap = 0.05
 function Implementation:BAG_UPDATE(_, bagID, slotID)
 	if self.isSorting then
 		return

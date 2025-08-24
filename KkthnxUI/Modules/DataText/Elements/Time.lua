@@ -44,6 +44,9 @@ local TIMEMANAGER_TICKER_24HOUR = TIMEMANAGER_TICKER_24HOUR
 
 local TimeDataText
 
+local delvesKeys = { 91175, 91176, 91177, 91178 }
+local keyName = C_CurrencyInfo.GetCurrencyInfo(3028).name
+
 -- Data
 local region = GetCVar("portal")
 local legionZoneTime = {
@@ -242,11 +245,12 @@ local delveList = {
 	{ uiMapID = 2215, delveID = 7780 }, -- Mycomancer Cavern
 	{ uiMapID = 2214, delveID = 7782 }, -- The Waterworks
 	{ uiMapID = 2214, delveID = 7788 }, -- The Dread Pit
+	{ uiMapID = 2214, delveID = 8181 }, -- Excavation Site 9
 	{ uiMapID = 2255, delveID = 7790 }, -- The Spiral Weave
 	{ uiMapID = 2255, delveID = 7784 }, -- Tak-Rethan Abyss
 	{ uiMapID = 2255, delveID = 7786 }, -- The Underkeep
-	{ uiMapID = 2346, delveID = 8246 },
-	{ uiMapID = 2214, delveID = 8181 },
+	{ uiMapID = 2346, delveID = 8246 }, -- Sidestree Sluice
+	{ uiMapID = 2371, delveID = 8273 }, -- Archival Assault
 }
 
 -- Elemental invasion
@@ -397,6 +401,22 @@ function Module:OnEnter()
 				GameTooltip:AddDoubleLine((v.itemID and GetItemLink(v.itemID)) or (v.questName and QuestUtils_GetQuestName(v.id)) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
 		end
+	end
+
+	local currentKeys, maxKeys = 0, #delvesKeys
+	for _, questID in pairs(delvesKeys) do
+		if C_QuestLog_IsQuestFlaggedCompleted(questID) then
+			currentKeys = currentKeys + 1
+		end
+	end
+	if currentKeys > 0 then
+		addTitle(QUESTS_LABEL)
+		if currentKeys == maxKeys then
+			r, g, b = 1, 0, 0
+		else
+			r, g, b = 0, 1, 0
+		end
+		GameTooltip:AddDoubleLine(keyName, format("%d/%d", currentKeys, #delvesKeys), 1, 1, 1, r, g, b)
 	end
 
 	-- Delves

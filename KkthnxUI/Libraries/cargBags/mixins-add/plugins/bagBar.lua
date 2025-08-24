@@ -178,12 +178,11 @@ function BagButton:OnClick(btn)
 		if self.bar.isGlobal then
 			for _, container in pairs(container.implementation.contByID) do
 				container:SetFilter(self.filter, self.hidden)
-				container.implementation:OnEvent("BAG_UPDATE", self.bagId)
 			end
 		else
 			container:SetFilter(self.filter, self.hidden)
-			container.implementation:OnEvent("BAG_UPDATE", self.bagId)
 		end
+		container.implementation:OnEvent("BAG_UPDATE")
 	end
 end
 BagButton.OnReceiveDrag = BagButton.OnClick

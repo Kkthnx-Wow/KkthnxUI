@@ -12,6 +12,8 @@ local GetUnitPowerBarInfo = GetUnitPowerBarInfo
 local GetUnitPowerBarStrings = GetUnitPowerBarStrings
 local GameTooltip = GameTooltip
 local UIParent = UIParent
+local GameTooltip_SetDefaultAnchor = _G.GameTooltip_SetDefaultAnchor
+local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
 
 local AltPowerWidth = 250
 local AltPowerHeight = 20
@@ -34,7 +36,7 @@ local function onEnter(self)
 	end
 
 	GameTooltip:ClearAllPoints()
-	_G.GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 	updateTooltip(self)
 end
 
@@ -64,7 +66,7 @@ function Module:SetAltPowerBarText(text, name, value, max, percent)
 end
 
 function Module:PositionAltPowerBar()
-	local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
+	local holder = _G.AltPowerBarHolder or CreateFrame("Frame", "AltPowerBarHolder", UIParent)
 	holder:SetPoint("TOP", UIParent, "TOP", -1, -108)
 	holder:SetSize(128, 50)
 
@@ -80,13 +82,13 @@ function Module:PositionAltPowerBar()
 end
 
 function Module:UpdateAltPowerBarColors()
-	local bar = KKUI_AltPowerBar
+	local bar = _G.KKUI_AltPowerBar
 	local color = { r = 0.2, g = 0.4, b = 0.8 }
 	bar:SetStatusBarColor(color.r, color.g, color.b)
 end
 
 function Module:UpdateAltPowerBarSettings()
-	local bar = KKUI_AltPowerBar
+	local bar = _G.KKUI_AltPowerBar
 	bar:SetSize(AltPowerWidth, AltPowerHeight)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	bar.text:SetFontObject(K.UIFont)
@@ -97,15 +99,20 @@ function Module:UpdateAltPowerBarSettings()
 	Module:SetAltPowerBarText(bar.text, bar.powerName or "", bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0)
 end
 
-function Module:UpdateAltPowerBar()
+local function UpdateAltPowerBar(self, event, unit)
+	if event and event:find("^UNIT_") and unit ~= "player" then
+		return
+	end
+
+	-- Disable Blizzard's bar
 	_G.PlayerPowerBarAlt:UnregisterAllEvents()
 	_G.PlayerPowerBarAlt:Hide()
 
 	local barInfo = GetUnitPowerBarInfo("player")
 	local powerName, powerTooltip = GetUnitPowerBarStrings("player")
 	if barInfo then
-		local power = UnitPower("player", _G.ALTERNATE_POWER_INDEX)
-		local maxPower = UnitPowerMax("player", _G.ALTERNATE_POWER_INDEX) or 0
+		local power = UnitPower("player", ALTERNATE_POWER_INDEX) or 0
+		local maxPower = UnitPowerMax("player", ALTERNATE_POWER_INDEX) or 0
 		local perc = maxPower > 0 and math_floor(power / maxPower * 100) or 0
 
 		self.powerMaxValue = maxPower
@@ -114,9 +121,9 @@ function Module:UpdateAltPowerBar()
 		self.powerTooltip = powerTooltip
 		self.powerValue = power
 
-		self:Show()
-		self:SetMinMaxValues(barInfo.minPower, maxPower)
+		self:SetMinMaxValues(barInfo.minPower or 0, maxPower)
 		self:SetValue(power)
+		self:Show()
 
 		Module:SetAltPowerBarText(self.text, powerName or "", power or 0, maxPower, perc)
 	else
@@ -131,6 +138,10 @@ function Module:UpdateAltPowerBar()
 end
 
 function Module:SkinAltPowerBar()
+	if _G.KKUI_AltPowerBar then
+		return
+	end
+
 	local powerbar = CreateFrame("StatusBar", "KKUI_AltPowerBar", UIParent)
 	powerbar:CreateBorder()
 	powerbar:SetMinMaxValues(0, 200)
@@ -148,11 +159,11 @@ function Module:SkinAltPowerBar()
 	Module:UpdateAltPowerBarColors()
 
 	-- Event handling
-	powerbar:RegisterEvent("UNIT_POWER_UPDATE")
-	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
-	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
+	powerbar:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+	powerbar:RegisterUnitEvent("UNIT_POWER_BAR_SHOW", "player")
+	powerbar:RegisterUnitEvent("UNIT_POWER_BAR_HIDE", "player")
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
-	powerbar:SetScript("OnEvent", Module.UpdateAltPowerBar)
+	powerbar:SetScript("OnEvent", UpdateAltPowerBar)
 end
 
 function Module:CreateAltPowerbar()

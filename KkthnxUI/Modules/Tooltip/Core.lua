@@ -411,7 +411,9 @@ function Module:ReskinTooltip()
 
 	if not self.tipStyled then
 		self:HideBackdrop()
-		self:DisableDrawLayer("BACKGROUND")
+		if self.background then
+			self.background:Hide()
+		end
 		self.bg = CreateFrame("Frame", nil, self)
 		self.bg:ClearAllPoints()
 		self.bg:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -2)

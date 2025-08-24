@@ -276,6 +276,7 @@ function Module:CreateBagTab(settings, columns, account)
 	bagTab:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
 	bagTab:CreateBorder()
 	bagTab.highlightFunction = highlightFunction
+	bagTab.isGlobal = true
 	bagTab:Hide()
 	bagTab.columns = columns
 	bagTab.UpdateAnchor = updateBagBar

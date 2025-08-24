@@ -147,7 +147,7 @@ function Module:CreateInventoryBar()
 	if C["ActionBar"].MicroMenu then
 		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 40 }
 	else
-		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
+		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 50 }
 	end
 	bagBar:SetScript("OnEnter", Module.BagBar_OnEnter)
 	bagBar:SetScript("OnLeave", Module.BagBar_OnLeave)

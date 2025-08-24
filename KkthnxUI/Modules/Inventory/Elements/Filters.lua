@@ -114,7 +114,7 @@ local function isItemEquipSet(item)
 		return
 	end
 
-	return item.isItemSet
+	return item.isInSet
 end
 
 local function isAzeriteArmor(item)

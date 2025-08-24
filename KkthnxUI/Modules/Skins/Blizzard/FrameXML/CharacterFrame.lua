@@ -71,6 +71,9 @@ end
 
 local function styleEquipmentSlot(slotName)
 	local slot = _G[slotName]
+	if not slot or slot.KKUI_Styled then
+		return
+	end
 	local icon = slot.icon
 	local iconBorder = slot.IconBorder
 	local cooldown = slot.Cooldown or _G[slotName .. "Cooldown"]
@@ -118,10 +121,17 @@ local function styleEquipmentSlot(slotName)
 
 	hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
 	hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
+
+	slot.KKUI_Styled = true
 end
 
 tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
+	-- Prevent duplicate work and hooks
+	if CharacterFrame and CharacterFrame.KKUI_Skinned then
 		return
 	end
 
@@ -155,26 +165,91 @@ tinsert(C.defaultThemes, function()
 		styleEquipmentSlot(slotName)
 	end
 
-	hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-		if button.popoutButton then
-			colourPopout(button.popoutButton)
-		end
-		UpdateCosmetic(button)
-	end)
+	if not CharacterFrame or not CharacterFrame.KKUI_Hooks then
+		-- Hook to update popout color and cosmetics
+		hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
+			if button and button.popoutButton then
+				colourPopout(button.popoutButton)
+			end
+			if button then
+				UpdateCosmetic(button)
+			end
+		end)
 
-	-- Restore PaperDollFrame_UpdateStats hook with conservative approach
-	-- Only hook if the function exists and we're not in combat
-	if not InCombatLockdown() then
-		hooksecurefunc("PaperDollFrame_UpdateStats", function()
-			-- Minimal intervention to prevent taint while maintaining functionality
-			if CharacterStatsPane and CharacterStatsPane.ItemLevelFrame then
-				local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
-				if CharItemLvLValue then
-					CharItemLvLValue:SetFontObject(K.UIFont)
-					CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
+		-- Restore PaperDollFrame_UpdateStats hook with conservative approach
+		if not InCombatLockdown() then
+			hooksecurefunc("PaperDollFrame_UpdateStats", function()
+				if CharacterStatsPane and CharacterStatsPane.ItemLevelFrame then
+					local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
+					if CharItemLvLValue then
+						CharItemLvLValue:SetFontObject(K.UIFont)
+						CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
+					end
+				end
+			end)
+		end
+
+		-- Character frame sizing/background hooks
+		hooksecurefunc(CharacterFrame, "UpdateSize", function()
+			if CharacterFrame.activeSubframe == "PaperDollFrame" then
+				CharacterFrame:SetSize(640, 431)
+				CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
+				CharacterFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class)
+				CharacterFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+				CharacterFrame.Inset.Bg:SetHorizTile(false)
+				CharacterFrame.Inset.Bg:SetVertTile(false)
+				CharacterFrame.Background:Hide()
+			else
+				CharacterFrame.Background:Show()
+			end
+		end)
+
+		-- Sidebar tabs
+		local function StyleSidebarTab(tab)
+			if not tab.bg then
+				tab.bg = CreateFrame("Frame", nil, tab)
+				tab.bg:SetAllPoints(tab)
+				tab.bg:SetFrameLevel(tab:GetFrameLevel())
+				tab.bg:CreateBorder(nil, nil, nil, nil, nil, { 255 / 255, 223 / 255, 0 / 255 })
+				tab.Icon:SetAllPoints(tab.bg)
+				tab.Hider:SetAllPoints(tab.bg)
+				tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
+				tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
+				tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
+				tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
+				tab.TabBg:SetAlpha(0)
+			end
+			local region = select(1, tab:GetRegions())
+			if region and not tab.regionStyled then
+				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+				tab.regionStyled = true
+			end
+		end
+
+		local function StyleSidebarTabs()
+			local index = 1
+			local tab = _G["PaperDollSidebarTab" .. index]
+			while tab do
+				StyleSidebarTab(tab)
+				index = index + 1
+				tab = _G["PaperDollSidebarTab" .. index]
+			end
+		end
+
+		hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", StyleSidebarTabs)
+
+		-- Title pane scroll updates (idempotent within update)
+		hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
+			for i = 1, self.ScrollTarget:GetNumChildren() do
+				local child = select(i, self.ScrollTarget:GetChildren())
+				if not child.styled then
+					child:DisableDrawLayer("BACKGROUND")
+					child.styled = true
 				end
 			end
 		end)
+
+		CharacterFrame.KKUI_Hooks = true
 	end
 
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
@@ -207,20 +282,6 @@ tinsert(C.defaultThemes, function()
 	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 2, -2)
 	CharacterModelScene.GearEnchantAnimation.TopFrame.Frame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -2, 2)
 
-	hooksecurefunc(CharacterFrame, "UpdateSize", function()
-		if CharacterFrame.activeSubframe == "PaperDollFrame" then
-			CharacterFrame:SetSize(640, 431)
-			CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
-			CharacterFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class)
-			CharacterFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
-			CharacterFrame.Inset.Bg:SetHorizTile(false)
-			CharacterFrame.Inset.Bg:SetVertTile(false)
-			CharacterFrame.Background:Hide()
-		else
-			CharacterFrame.Background:Show()
-		end
-	end)
-
 	if CharacterLevelText then
 		CharacterLevelText:SetFontObject(K.UIFont)
 	end
@@ -230,61 +291,8 @@ tinsert(C.defaultThemes, function()
 	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
 	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 
-	local function StyleSidebarTab(tab)
-		if not tab.bg then
-			tab.bg = CreateFrame("Frame", nil, tab)
-			tab.bg:SetAllPoints(tab)
-			tab.bg:SetFrameLevel(tab:GetFrameLevel())
-			tab.bg:CreateBorder(nil, nil, nil, nil, nil, { 255 / 255, 223 / 255, 0 / 255 })
-			tab.Icon:SetAllPoints(tab.bg)
-			tab.Hider:SetAllPoints(tab.bg)
-			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
-			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
-			tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
-			tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
-			tab.TabBg:SetAlpha(0)
-		end
-		local region = select(1, tab:GetRegions())
-		if region and not tab.regionStyled then
-			region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-			tab.regionStyled = true
-		end
+	-- Mark as skinned
+	if CharacterFrame then
+		CharacterFrame.KKUI_Skinned = true
 	end
-
-	local function StyleSidebarTabs()
-		local index = 1
-		local tab = _G["PaperDollSidebarTab" .. index]
-		while tab do
-			StyleSidebarTab(tab)
-			index = index + 1
-			tab = _G["PaperDollSidebarTab" .. index]
-		end
-	end
-
-	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", StyleSidebarTabs)
-
-	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
-		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local child = select(i, self.ScrollTarget:GetChildren())
-			if not child.styled then
-				child:DisableDrawLayer("BACKGROUND")
-				child.styled = true
-			end
-		end
-	end)
-
-	local function updateReputationBars(self)
-		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local child = select(i, self.ScrollTarget:GetChildren())
-			if child and not child.styled then
-				local repbar = child.Content and child.Content.ReputationBar
-				if repbar then
-					repbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-				end
-
-				child.styled = true
-			end
-		end
-	end
-	-- hooksecurefunc(ReputationFrame.ScrollBox, "Update", updateReputationBars)
 end)

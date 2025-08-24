@@ -695,6 +695,13 @@ function ProfileGUI:CreateScrollFrame(parent, width, height)
 	scrollChild:SetHeight(1)
 	scrollFrame:SetScrollChild(scrollChild)
 
+	-- Keep child width in sync with frame width for responsive layouts
+	scrollFrame:SetScript("OnSizeChanged", function(self, w)
+		if self.Child and w then
+			self.Child:SetWidth(math.max(1, w - 20))
+		end
+	end)
+
 	-- Enable mouse wheel scrolling
 	scrollFrame:EnableMouseWheel(true)
 	scrollFrame:SetScript("OnMouseWheel", function(self, delta)
@@ -759,7 +766,8 @@ function ProfileGUI:RefreshProfileList()
 
 	-- Update scroll frame content height
 	local contentHeight = math.abs(yOffset) + 20
-	self.ProfileScrollFrame.Child:SetHeight(math.max(contentHeight, LIST_HEIGHT))
+	local frameHeight = self.ProfileScrollFrame:GetHeight() or LIST_HEIGHT
+	self.ProfileScrollFrame.Child:SetHeight(math.max(contentHeight, frameHeight))
 
 	-- Auto-select current profile if no selection
 	if not self.SelectedProfile and profiles then
@@ -1352,7 +1360,8 @@ function ProfileGUI:CreateMainFrame()
 	-- Left panel (Profile List)
 	local leftPanel = CreateFrame("Frame", nil, content)
 	leftPanel:SetPoint("TOPLEFT", SPACING, -SPACING)
-	leftPanel:SetSize(LIST_WIDTH, LIST_HEIGHT)
+	leftPanel:SetPoint("BOTTOMLEFT", SPACING, SPACING)
+	leftPanel:SetWidth(LIST_WIDTH)
 
 	CreateColoredBackground(leftPanel, SIDEBAR_COLOR[1], SIDEBAR_COLOR[2], SIDEBAR_COLOR[3], SIDEBAR_COLOR[4])
 
@@ -1364,8 +1373,10 @@ function ProfileGUI:CreateMainFrame()
 	listTitle:SetPoint("TOPLEFT", 12, -12)
 
 	-- Profile scroll frame
-	local profileScrollFrame = self:CreateScrollFrame(leftPanel, LIST_WIDTH - 20, LIST_HEIGHT - 40)
+	local profileScrollFrame = self:CreateScrollFrame(leftPanel, LIST_WIDTH - 20, LIST_HEIGHT - 46)
+	profileScrollFrame:ClearAllPoints()
 	profileScrollFrame:SetPoint("TOPLEFT", 10, -35)
+	profileScrollFrame:SetPoint("BOTTOMRIGHT", -10, 10)
 	self.ProfileScrollFrame = profileScrollFrame
 
 	-- Right panel (Info and Controls)
@@ -1379,14 +1390,14 @@ function ProfileGUI:CreateMainFrame()
 	local infoPanel = CreateFrame("Frame", nil, rightPanel)
 	infoPanel:SetPoint("TOPLEFT", 15, -15)
 	infoPanel:SetPoint("TOPRIGHT", -15, -15)
-	infoPanel:SetHeight(200) -- Increased from 160 to 200 to prevent overflow
+	infoPanel:SetHeight(178) -- Fixed height for info panel
 
 	CreateColoredBackground(infoPanel, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
 	self.InfoPanel = infoPanel
 
 	-- Control panel
 	local controlPanel = CreateFrame("Frame", nil, rightPanel)
-	controlPanel:SetPoint("TOPLEFT", infoPanel, "BOTTOMLEFT", 0, -SPACING)
+	controlPanel:SetPoint("TOPLEFT", infoPanel, "BOTTOMLEFT", 0, -SPACING - 10)
 	controlPanel:SetPoint("BOTTOMRIGHT", -15, 15)
 
 	CreateColoredBackground(controlPanel, WIDGET_BG[1], WIDGET_BG[2], WIDGET_BG[3], WIDGET_BG[4])
@@ -1427,12 +1438,12 @@ function ProfileGUI:CreateControlButtons(parent)
 	switchButton:SetPoint("TOPLEFT", 15, yOffset)
 	self.SwitchButton = switchButton
 
-	-- Export profile button
-	local exportButton = CreateButton(parent, "Export", buttonWidth, BUTTON_HEIGHT, function()
-		self:ShowExportDialog()
+	-- Reset profile button
+	local resetButton = CreateButton(parent, "Reset", buttonWidth, BUTTON_HEIGHT, function()
+		self:ShowResetConfirmation()
 	end)
-	exportButton:SetPoint("TOPLEFT", switchButton, "TOPRIGHT", SPACING, 0)
-	self.ExportButton = exportButton
+	resetButton:SetPoint("TOPLEFT", switchButton, "TOPRIGHT", SPACING, 0)
+	self.ResetButton = resetButton
 
 	yOffset = yOffset - (BUTTON_HEIGHT + SPACING)
 
@@ -1466,31 +1477,29 @@ function ProfileGUI:CreateControlButtons(parent)
 	deleteButton:SetPoint("TOPLEFT", renameButton, "TOPRIGHT", SPACING, 0)
 	self.DeleteButton = deleteButton
 
-	yOffset = yOffset - (BUTTON_HEIGHT + SPACING)
-
-	-- Reset profile button
-	local resetButton = CreateButton(parent, "Reset", buttonWidth, BUTTON_HEIGHT, function()
-		self:ShowResetConfirmation()
-	end)
-	resetButton:SetPoint("TOPLEFT", 15, yOffset)
-	self.ResetButton = resetButton
-
 	yOffset = yOffset - (BUTTON_HEIGHT + SPACING * 2)
 
 	-- Import section header
 	local importTitle = parent:CreateFontString(nil, "OVERLAY")
 	importTitle:SetFontObject(K.UIFont)
 	importTitle:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-	importTitle:SetText("Import Profile")
+	importTitle:SetText("Import or Export Profile")
 	importTitle:SetPoint("TOPLEFT", 15, yOffset)
 	yOffset = yOffset - 25
 
 	-- Import button
-	local importButton = CreateButton(parent, "Import Profile Code", buttonWidth * 2 + SPACING, BUTTON_HEIGHT, function()
+	local importButton = CreateButton(parent, "Import", buttonWidth, BUTTON_HEIGHT, function()
 		self:ShowImportDialog()
 	end)
 	importButton:SetPoint("TOPLEFT", 15, yOffset)
 	self.ImportButton = importButton
+
+	-- Export profile button
+	local exportButton = CreateButton(parent, "Export", buttonWidth, BUTTON_HEIGHT, function()
+		self:ShowExportDialog()
+	end)
+	exportButton:SetPoint("TOPLEFT", importButton, "TOPRIGHT", SPACING, 0)
+	self.ExportButton = exportButton
 end
 
 -- Status Message Functions
@@ -1544,6 +1553,7 @@ function ProfileGUI:ShowExportDialog()
 
 	-- Create dialog with main GUI styling
 	local dialog = CreateFrame("Frame", nil, UIParent)
+	dialog.__KKUI_ProfileGUI = true
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
 	dialog:SetFrameStrata("TOOLTIP")
@@ -1732,6 +1742,7 @@ end
 function ProfileGUI:ShowImportDialog()
 	-- Create dialog with main GUI styling
 	local dialog = CreateFrame("Frame", nil, UIParent)
+	dialog.__KKUI_ProfileGUI = true
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
 	dialog:SetFrameStrata("TOOLTIP")
@@ -2139,21 +2150,10 @@ function ProfileGUI:Hide()
 	-- Clean up any open dialogs
 	for i = 1, UIParent:GetNumChildren() do
 		local child = select(i, UIParent:GetChildren())
-		if child and child.GetFrameStrata and child.GetFrameLevel then
-			local success, strata = pcall(function()
-				return child:GetFrameStrata()
+		if child and child.__KKUI_ProfileGUI and child.Hide and child:IsShown() then
+			pcall(function()
+				child:Hide()
 			end)
-			local successLevel, level = pcall(function()
-				return child:GetFrameLevel()
-			end)
-
-			if success and successLevel and strata == "TOOLTIP" and level >= 120 then
-				if child:IsShown() and child.Hide then
-					pcall(function()
-						child:Hide()
-					end)
-				end
-			end
 		end
 	end
 end

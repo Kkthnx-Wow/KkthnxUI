@@ -121,26 +121,12 @@ StaticPopupDialogs["KKUI_CHANGES_RELOAD"] = {
 
 StaticPopupDialogs["SKIP_INSTALLER_CONFIRM"] = {
 	text = "Are you sure you want to skip the installer and proceed without reviewing its contents?",
-	button1 = "3", -- Initial text as countdown
-	button2 = "Cancel",
-	OnShow = function(self)
-		self.button1:Disable() -- Disable button
-		local timeLeft = 3
-		self.button1:SetText(timeLeft) -- Show only number
-		C_Timer.NewTicker(1, function()
-			timeLeft = timeLeft - 1
-			if timeLeft > 0 then
-				self.button1:SetText(timeLeft) -- Update countdown
-			else
-				self.button1:SetText("Confirm") -- Show Confirm
-				self.button1:Enable() -- Enable button
-			end
-		end, 3) -- Run 3 times (3 seconds)
-	end,
+	button1 = ACCEPT,
+	button2 = CANCEL,
 	OnAccept = function()
 		ReloadUI()
 	end,
-	hideOnEscape = true,
-	whileDead = 1,
+	hideOnEscape = false,
+	whileDead = 0,
 	preferredIndex = 3,
 }
