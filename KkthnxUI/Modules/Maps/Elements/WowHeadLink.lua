@@ -12,6 +12,10 @@ local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local setmetatable = setmetatable
 
+-- Internal singletons to avoid duplicate frames/hooks
+local _achievementEditBox
+local _questEditBox
+
 -- Wowhead URL Components
 local subDomain = (setmetatable({
 	ruRU = "ru",
@@ -35,6 +39,9 @@ local urlQuestIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:
 
 -- Achievement Frame Functionality
 local function InitializeAchievementLink()
+	if _achievementEditBox then
+		return
+	end
 	local achievementEditBox = CreateFrame("EditBox", nil, AchievementFrame)
 	achievementEditBox:ClearAllPoints()
 	achievementEditBox:SetPoint("BOTTOMRIGHT", -50, 1)
@@ -98,10 +105,15 @@ local function InitializeAchievementLink()
 		achievementEditBox:ClearFocus()
 		GameTooltip:Hide()
 	end)
+
+	_achievementEditBox = achievementEditBox
 end
 
 -- World Map Functionality
 local function InitializeQuestLink()
+	if _questEditBox then
+		return
+	end
 	local questEditBox = CreateFrame("EditBox", nil, WorldMapFrame.BorderFrame)
 	questEditBox:SetFrameLevel(501)
 	questEditBox:ClearAllPoints()
@@ -178,11 +190,22 @@ local function InitializeQuestLink()
 		GameTooltip:Hide()
 		SetQuestLink()
 	end)
+
+	_questEditBox = questEditBox
 end
 
 -- Main Function
 function Module:CreateWowHeadLinks()
 	if not C["Misc"].ShowWowHeadLinks or IsAddOnLoaded("Leatrix_Maps") then
+		-- If previously created, hide and unregister to avoid leaks
+		if _questEditBox then
+			_questEditBox:UnregisterEvent("SUPER_TRACKING_CHANGED")
+			_questEditBox:SetScript("OnEvent", nil)
+			_questEditBox:Hide()
+		end
+		if _achievementEditBox then
+			_achievementEditBox:Hide()
+		end
 		return
 	end
 
