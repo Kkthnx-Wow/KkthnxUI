@@ -13,16 +13,6 @@ local GetInventoryItemLink = GetInventoryItemLink
 local greyRGB = K.QualityColors[0].r
 
 -- Helper Functions
-local function colourPopout(self)
-	local glow = self:GetParent().IconBorder
-	local aR, aG, aB = glow:IsShown() and glow:GetVertexColor() or K.r, K.g, K.b
-	self.arrow:SetVertexColor(aR, aG, aB)
-end
-
-local function clearPopout(self)
-	self.arrow:SetVertexColor(1, 1, 1)
-end
-
 local function UpdateAzeriteItem(self)
 	if not self.styled then
 		self.AzeriteTexture:SetAlpha(0)
@@ -77,7 +67,6 @@ local function styleEquipmentSlot(slotName)
 	local icon = slot.icon
 	local iconBorder = slot.IconBorder
 	local cooldown = slot.Cooldown or _G[slotName .. "Cooldown"]
-	local popout = slot.popoutButton
 
 	slot:StripTextures()
 	slot:SetSize(36, 36)
@@ -101,23 +90,6 @@ local function styleEquipmentSlot(slotName)
 	hooksecurefunc(iconBorder, "SetShown", function(_, show)
 		iconBorderShown(slot, show)
 	end)
-
-	popout:SetNormalTexture("")
-	popout:SetHighlightTexture("")
-
-	local arrow = popout:CreateTexture(nil, "OVERLAY")
-	arrow:SetSize(16, 16)
-	if slot.verticalFlyout then
-		K.SetupArrow(arrow, "down")
-		arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
-	else
-		K.SetupArrow(arrow, "right")
-		arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
-	end
-	popout.arrow = arrow
-
-	popout:HookScript("OnEnter", clearPopout)
-	popout:HookScript("OnLeave", colourPopout)
 
 	hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
 	hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
@@ -168,9 +140,6 @@ tinsert(C.defaultThemes, function()
 	if not CharacterFrame or not CharacterFrame.KKUI_Hooks then
 		-- Hook to update popout color and cosmetics
 		hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-			if button and button.popoutButton then
-				colourPopout(button.popoutButton)
-			end
 			if button then
 				UpdateCosmetic(button)
 			end

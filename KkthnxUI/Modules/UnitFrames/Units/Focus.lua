@@ -110,6 +110,10 @@ function Module:CreateFocus()
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
+
+			if focusPortraitStyle == 5 then
+				Module:ApplyPortraitAlphaFix(self)
+			end
 		elseif focusPortraitStyle ~= 5 and focusPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture("KKUI_FocusPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)

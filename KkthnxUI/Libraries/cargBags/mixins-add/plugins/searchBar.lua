@@ -96,7 +96,7 @@ cargBags:RegisterPlugin("SearchBar", function(self, target)
 	self.Search = search
 
 	search.Clear = onEscape
-	search.DoSearch = search.doSearch
+	search.DoSearch = doSearch
 
 	local left = search:CreateTexture(nil, "BACKGROUND")
 	left:SetTexture("Interface\\Common\\Common-Input-Border")

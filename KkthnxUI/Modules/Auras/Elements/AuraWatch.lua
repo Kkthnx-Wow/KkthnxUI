@@ -7,9 +7,9 @@ local string_find = string.find
 local table_insert = table.insert
 local table_remove = table.remove
 local table_clear = table.clear
--- local table_wipe = table.wipe
 
 local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Item_GetItemCooldown = C_Item.GetItemCooldown
 local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
 local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown
 local C_Spell_GetSpellName = C_Spell.GetSpellName
@@ -20,6 +20,8 @@ local GetInventoryItemCooldown = GetInventoryItemCooldown
 local GetInventoryItemLink = GetInventoryItemLink
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetTime = GetTime
+local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+local GetItemInfoFromHyperlink = GetItemInfoFromHyperlink
 local GetTotemInfo = GetTotemInfo
 local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
@@ -44,26 +46,6 @@ local IntTable = {}
 local IntCD = {}
 local myTable = {}
 local cooldownTable = {}
-
--- Frame pooling for better memory management (DISABLED - causing errors)
--- local framePool = {}
--- local function GetFrameFromPool(frameType, ...)
--- 	if frameType == "ICON" then
--- 		return BuildICON(...)
--- 	elseif frameType == "BAR" then
--- 		return BuildBAR(...)
--- 	end
--- 	return nil
--- end
-
--- local function ReturnFrameToPool(frame)
--- 	-- Temporarily disabled to fix error
--- 	-- if frame and framePool then
--- 	-- 	frame:Hide()
--- 	-- 	frame:SetScript("OnUpdate", nil)
--- 	-- 	table_insert(framePool, frame)
--- 	-- end
--- end
 
 -- Data conversion
 local function DataAnalyze(v)
@@ -190,10 +172,12 @@ local function BuildCooldownTable()
 		if VALUE.List then
 			for spellID, value in pairs(VALUE.List) do
 				if (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
-					if not cooldownTable[KEY] then
-						cooldownTable[KEY] = {}
+					local bucket = cooldownTable[KEY]
+					if not bucket then
+						bucket = {}
+						cooldownTable[KEY] = bucket
 					end
-					cooldownTable[KEY][spellID] = true
+					bucket[spellID] = true
 				end
 			end
 		end
@@ -454,7 +438,9 @@ function Module:AuraWatch_UpdateTimer()
 		self.Statusbar.Spark:Show()
 	else
 		if self.Time then
-			self.Time:SetFormattedText("%d:%.2d", timer / 60, timer % 60)
+			local mins = math.floor(timer / 60)
+			local secs = math.floor(timer - mins * 60)
+			self.Time:SetFormattedText("%d:%02d", mins, secs)
 		end
 		self.Statusbar:SetMinMaxValues(0, self.duration)
 		self.Statusbar:SetValue(timer)
@@ -533,7 +519,7 @@ function Module:AuraWatch_UpdateCD()
 						Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, true, 1, value.SpellID)
 					end
 				elseif value.ItemID then
-					local start, duration = C_Item.GetItemCooldown(value.ItemID)
+					local start, duration = C_Item_GetItemCooldown(value.ItemID)
 					if start and duration > 3 then
 						local name, _, _, _, _, _, _, _, _, icon = C_Item_GetItemInfo(value.ItemID)
 						if group.Mode == "ICON" then
@@ -678,7 +664,7 @@ function Module:UpdateAuraWatchByFilter(unit, filter, inCombat)
 	local auraData
 
 	while true do
-		auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+		auraData = C_UnitAuras_GetAuraDataByIndex(unit, index, filter)
 		if not auraData then
 			break
 		end

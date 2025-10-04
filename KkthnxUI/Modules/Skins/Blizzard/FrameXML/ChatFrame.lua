@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local table_insert = table.insert
 local hooksecurefunc = hooksecurefunc
 
-local FRIEND_TEXTURE = "UI-ChatIcon-App"
+local FRIEND_TEXTURE = "Battlenet-ClientIcon-App"
 local QUEUE_TEXTURE = "groupfinder-eye-frame"
 local HOME_TEXTURE = "Interface\\Buttons\\UI-HomeButton"
 
@@ -21,8 +21,8 @@ local function SkinCloseButton(button, size)
 end
 
 local function SkinQuickJoinToastButton(button)
-	button:SetSize(28, 28)
-	button:SetHighlightTexture(0)
+	button:SetSize(32, 32)
+	--button:SetHighlightTexture(0)
 	button.FriendsButton:SetAtlas(FRIEND_TEXTURE)
 	button.QueueButton:SetAtlas(QUEUE_TEXTURE)
 	button.FriendCount:ClearAllPoints()

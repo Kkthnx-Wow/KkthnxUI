@@ -1,7 +1,6 @@
 ﻿local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Bags")
 
-local Unfit = K.LibUnfit
 local cargBags = K.cargBags
 
 local ceil = ceil
@@ -17,6 +16,9 @@ local C_NewItems_RemoveNewItem = C_NewItems.RemoveNewItem
 local C_Soulbinds_IsItemConduitByItemInfo = C_Soulbinds.IsItemConduitByItemInfo
 local ClearCursor = ClearCursor
 local CreateFrame = CreateFrame
+local UIParent = UIParent
+local GameTooltip = GameTooltip
+local ITEM_SCRAPABLE_NOT = ITEM_SCRAPABLE_NOT
 local DeleteCursorItem = DeleteCursorItem
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -26,11 +28,13 @@ local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsCosmeticItem = C_Item.IsCosmeticItem
+local IsReagentBankUnlocked = IsReagentBankUnlocked
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
+local SortReagentBankBags = C_Container.SortReagentBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
 
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
@@ -43,6 +47,68 @@ local customJunkEnable
 
 local sortCache = {}
 local toggleButtons = {}
+
+-- Reusable hidden tooltip for scanning item usability and other details
+local ScanTT = K.ScanTooltip
+
+local function IsTooltipLineRed(fontString)
+	if not fontString then
+		return
+	end
+	local r, g, b = fontString:GetTextColor()
+	return r and g and b and r >= 0.99 and g <= 0.2 and b <= 0.2
+end
+
+function Module:IsItemUnusableByTooltip(bagId, slotId)
+	if not bagId or not slotId then
+		return
+	end
+	if GameTooltip:IsForbidden() then
+		return
+	end
+	ScanTT:ClearLines()
+	ScanTT:SetBagItem(bagId, slotId)
+
+	local name = ScanTT:GetName()
+	local lines = ScanTT:NumLines() or 0
+	for i = 1, lines do
+		local leftFS = _G[name .. "TextLeft" .. i]
+		local rightFS = _G[name .. "TextRight" .. i]
+		local leftText = leftFS and leftFS:GetText()
+		-- Ignore red lines that relate to effect gating (Equip:/Use:) rather than equip restrictions
+		if leftText and leftText ~= ITEM_SCRAPABLE_NOT and IsTooltipLineRed(leftFS) then
+			local trimmed = leftText:gsub("^%s+", "")
+			if not (trimmed:find("^Equip:") or trimmed:find("^Use:")) then
+				return true
+			end
+		end
+		if rightFS and IsTooltipLineRed(rightFS) then
+			local rt = rightFS:GetText()
+			local trimmed = rt and rt:gsub("^%s+", "") or nil
+			if not (trimmed and (trimmed:find("^Equip:") or trimmed:find("^Use:"))) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+-- Simple cache to avoid repeated tooltip scans on the same item
+local unusableCache = {}
+function Module:IsItemUnusableByTooltipCached(item)
+	local link = item and item.link
+	local key = link or (item and (tostring(item.bagId) .. ":" .. tostring(item.slotId)))
+	if not key then
+		return
+	end
+	local cached = unusableCache[key]
+	if cached ~= nil then
+		return cached
+	end
+	local res = Module:IsItemUnusableByTooltip(item.bagId, item.slotId) or false
+	unusableCache[key] = res
+	return res
+end
 
 function Module:ReverseSort()
 	for bag = 0, 4 do
@@ -148,7 +214,7 @@ local BagSmartFilter = {
 		elseif text == "aoe" then
 			return item.bindOn == "accountequip"
 		else
-			return IsItemMatched(item.subType, text) or IsItemMatched(item.equipLoc, text) or IsItemMatched(item.name, text)
+			return IsItemMatched(item.subType, text) or IsItemMatched(item.equipLoc, text) or IsItemMatched(item.name, text) or IsItemMatched((item.expacID or 0) + 1, text)
 		end
 	end,
 
@@ -426,30 +492,11 @@ function Module:CreateBankButton(f)
 	return BankButton
 end
 
--- local function updateAccountBankDeposit(bu)
--- 	if GetCVarBool("bankAutoDepositReagents") then
--- 		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
--- 	else
--- 		K.SetBorderColor(bu.KKUI_Border)
--- 	end
--- end
-
 local function updateAccountBankDeposit(bu)
-	if not bu.DepositHighlight then
-		local DepositHighlight = CreateFrame("Frame", nil, bu, "BackdropTemplate")
-		DepositHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
-		DepositHighlight:SetFrameLevel(6)
-		DepositHighlight:SetPoint("TOPLEFT", bu, -5, 5)
-		DepositHighlight:SetPoint("BOTTOMRIGHT", bu, 5, -5)
-		DepositHighlight:SetBackdropBorderColor(1, 0.8, 0, 0.7)
-		DepositHighlight:Hide()
-		bu.DepositHighlight = DepositHighlight
-	end
-
 	if GetCVarBool("bankAutoDepositReagents") then
-		bu.DepositHighlight:Show()
+		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	else
-		bu.DepositHighlight:Hide()
+		K.SetBorderColor(bu.KKUI_Border)
 	end
 end
 
@@ -478,7 +525,7 @@ function Module:CreateAccountBankDeposit()
 		end
 	end)
 	AccountBankDepositButton.title = ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL
-	K.AddTooltip(AccountBankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nDouble-click the green cross button to deposit Warband items; right-click to switch deposit mode.|n|nIf the button border is shown, reagents from your bags will also deposit into your Warband bank.")
+	K.AddTooltip(AccountBankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nLeft-click to deposit warband items|n|nright-click to switch deposit modes.|n|nIf the button border is visible, items from your bags will also be deposited into your warband bank.")
 	updateAccountBankDeposit(AccountBankDepositButton)
 
 	return AccountBankDepositButton
@@ -502,16 +549,13 @@ function Module:CreateBankDeposit()
 		end
 	end)
 	BankDepositButton.title = CHARACTER_BANK_DEPOSIT_BUTTON_LABEL
-	K.AddTooltip(BankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nDouble-click the green cross button to deposit reagents.")
+	K.AddTooltip(BankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nDuoble click the left button to deposit reagents.")
 
 	return BankDepositButton
 end
 
 local function ToggleBackpacks(self)
 	local parent = self.__owner
-	if not parent.BagBar then
-		return
-	end
 	K.TogglePanel(parent.BagBar)
 	if parent.BagBar:IsShown() then
 		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
@@ -770,7 +814,7 @@ StaticPopupDialogs["KKUI_RENAMECUSTOMGROUP"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		local index = Module.selectGroupIndex
-		local text = self.EditBox:GetText()
+		local text = self.editBox:GetText()
 		KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames[index] = text ~= "" and text or nil
 
 		Module.CustomMenu[index + 2].text = GetCustomGroupTitle(index)
@@ -1106,11 +1150,12 @@ function Module:OnEnable()
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
 		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
-		AddNewContainer("Bag", 18, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 19, "Junk", filters.bagsJunk)
 		AddNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 10, "BagAOE", filters.bagAOE)
 		AddNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
-		AddNewContainer("Bag", 17, "BagLower", filters.bagLower)
+		AddNewContainer("Bag", 17, "BagLegacy", filters.bagLegacy)
+		AddNewContainer("Bag", 18, "BagLower", filters.bagLower)
 		AddNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 11, "BagCollection", filters.bagCollection)
 		AddNewContainer("Bag", 14, "BagStone", filters.bagStone)
@@ -1131,7 +1176,8 @@ function Module:OnEnable()
 		AddNewContainer("Bank", 9, "BankAOE", filters.bankAOE)
 		AddNewContainer("Bank", 6, "BankAzeriteItem", filters.bankAzeriteItem)
 		AddNewContainer("Bank", 10, "BankLegendary", filters.bankLegendary)
-		AddNewContainer("Bank", 16, "BankLower", filters.bankLower)
+		AddNewContainer("Bank", 16, "BankLegacy", filters.bankLegacy)
+		AddNewContainer("Bank", 17, "BankLower", filters.bankLower)
 		AddNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
 		AddNewContainer("Bank", 11, "BankCollection", filters.bankCollection)
 		AddNewContainer("Bank", 14, "BankConsumable", filters.bankConsumable)
@@ -1148,10 +1194,11 @@ function Module:OnEnable()
 		for i = 1, 5 do
 			AddNewContainer("Account", i, "AccountCustom" .. i, filters["accountCustom" .. i])
 		end
-		AddNewContainer("Account", 7, "AccountAOE", filters.accountAOE)
+		AddNewContainer("Account", 8, "AccountAOE", filters.accountAOE)
+		AddNewContainer("Account", 7, "AccountLegacy", filters.accountLegacy)
 		AddNewContainer("Account", 6, "AccountEquipment", filters.accountEquipment)
-		AddNewContainer("Account", 9, "AccountConsumable", filters.accountConsumable)
-		AddNewContainer("Account", 8, "AccountGoods", filters.accountGoods)
+		AddNewContainer("Account", 10, "AccountConsumable", filters.accountConsumable)
+		AddNewContainer("Account", 9, "AccountGoods", filters.accountGoods)
 
 		f.accountbank = MyContainer:New("Account", { Bags = "accountbank", BagType = "Account" })
 		f.accountbank:SetFilter(filters.accountbank, true)
@@ -1179,8 +1226,8 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnBankClosed()
-		BankFrame.BankPanel:Hide()
 		self:GetContainer("Bank"):Hide()
+		BankFrame.BankPanel:Hide()
 		self:GetContainer("Account"):Hide()
 	end
 
@@ -1194,6 +1241,8 @@ function Module:OnEnable()
 
 		self.Icon:SetAllPoints()
 		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		self.Icon:SetVertexColor(1, 1, 1)
+		self.__kkui_iconIsRed = false
 
 		self.Count:SetPoint("BOTTOMRIGHT", 1, 1)
 		self.Count:SetFontObject(K.UIFontOutline)
@@ -1231,12 +1280,6 @@ function Module:OnEnable()
 		self.bindType = K.CreateFontString(self, 12, "", "OUTLINE", false, "TOPLEFT", 1, -2)
 		self.bindType:SetFontObject(K.UIFontOutline)
 		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
-
-		self.usableTexture = self:CreateTexture(nil, "ARTWORK")
-		self.usableTexture:SetTexture(C["Media"].Textures.White8x8Texture)
-		self.usableTexture:SetAllPoints(self)
-		self.usableTexture:SetVertexColor(1, 0, 0)
-		self.usableTexture:SetBlendMode("MOD")
 
 		if showNewItem and not self.glowFrame then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
@@ -1356,11 +1399,25 @@ function Module:OnEnable()
 			end
 		end
 
-		-- Determine if we can use that item or not?
-		if (Unfit:IsItemUnusable(item.link) or item.minlevel and item.minlevel > K.Level) and not item.locked then
-			self.usableTexture:Show()
+		-- Determine if we can use that item or not via tooltip only (IsUsableItem is unreliable)
+		if C["Inventory"].ColorUnusableItems and not item.locked then
+			local unusable = Module:IsItemUnusableByTooltipCached(item)
+			if unusable then
+				if not self.__kkui_iconIsRed then
+					self.Icon:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b)
+					self.__kkui_iconIsRed = true
+				end
+			else
+				if self.__kkui_iconIsRed then
+					self.Icon:SetVertexColor(1, 1, 1)
+					self.__kkui_iconIsRed = false
+				end
+			end
 		else
-			self.usableTexture:Hide()
+			if self.__kkui_iconIsRed then
+				self.Icon:SetVertexColor(1, 1, 1)
+				self.__kkui_iconIsRed = false
+			end
 		end
 
 		self.IconOverlay:SetVertexColor(1, 1, 1)
@@ -1408,7 +1465,7 @@ function Module:OnEnable()
 		self.bindType:SetText("")
 		if showBindOnEquip then
 			local BoE, BoU = item.bindType == 2, item.bindType == 3
-			if not item.bound and (BoE or BoU) then
+			if item.quality > 1 and not item.bound and (BoE or BoU) then
 				local color = K.QualityColors[item.quality]
 				self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
 				self.bindType:SetTextColor(color.r, color.g, color.b)
@@ -1561,6 +1618,8 @@ function Module:OnEnable()
 			label = ITEM_ACCOUNTBOUND_UNTIL_EQUIP
 		elseif strmatch(name, "Lower") then
 			label = "Lower item level"
+		elseif strmatch(name, "Legacy") then
+			label = "Legacy items"
 		else
 			if name:match("Legendary$") then
 				label = LOOT_JOURNAL_LEGENDARIES
@@ -1637,6 +1696,11 @@ function Module:OnEnable()
 		if button.glowFrame then
 			button.glowFrame:SetSize(iconSize + 8, iconSize + 8)
 		end
+	end
+
+	-- Called from GUI hooks to refresh bag visuals when options change
+	function Module:UpdateBagStatus()
+		Module:UpdateAllBags()
 	end
 
 	function Module:UpdateBagSize()

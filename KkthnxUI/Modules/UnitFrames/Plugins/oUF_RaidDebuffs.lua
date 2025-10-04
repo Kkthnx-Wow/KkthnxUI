@@ -41,6 +41,7 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
+-- Localize globals for performance
 local IsPlayerSpell = _G.IsPlayerSpell
 local UnitCanAssist = _G.UnitCanAssist
 local GetTime = _G.GetTime
@@ -48,10 +49,29 @@ local playerClass = _G.UnitClassBase("player")
 local GetAuraDataByAuraInstanceID = _G.C_UnitAuras.GetAuraDataByAuraInstanceID
 local GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
 local ForEachAura = _G.AuraUtil.ForEachAura
-local NewTicker = _G.C_Timer.NewTicker
 local debuffColor = _G.DebuffTypeColor
+local pairs = pairs
+local ipairs = ipairs
 
+-- Timer throttle for text updates (seconds)
+local TIMER_THROTTLE = 0.1
+
+-- Small table pool for cache entries
 local cacheWrite
+local cachePool = {}
+local function acquireCacheEntry()
+	local t = cachePool[#cachePool]
+	if t then
+		cachePool[#cachePool] = nil
+		return t
+	end
+	return {}
+end
+local function releaseCacheEntry(t)
+	t.priority = nil
+	t.AuraData = nil
+	cachePool[#cachePool + 1] = t
+end
 
 -- Holds the dispel priority list.
 local priorityList = {
@@ -70,155 +90,59 @@ local dispelList = {
 }
 
 -- Class functions to update the dispel types which can be handled.
-local canDispel = {
-	DRUID = {
-		retail = function()
-			dispelList["Magic"] = IsPlayerSpell(88423) -- Nature's Cure
-			dispelList["Poison"] = IsPlayerSpell(392378) or IsPlayerSpell(2782) -- Improved Nature's Cure or Remove Corruption
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(392378) or IsPlayerSpell(2782) -- Improved Nature's Cure or Remove Corruption
-		end,
-		classic = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = IsPlayerSpell(8946) or IsPlayerSpell(2893) -- Cure Poison or Abolish Poison
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(2782) -- Remove Curse
-		end,
-		other = function()
-			dispelList["Magic"] = IsPlayerSpell(88423) -- Nature's Cure
-			dispelList["Poison"] = IsPlayerSpell(2782) -- Remove Corruption
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(2782) -- Remove Corruption
-		end,
-	},
-	MAGE = {
-		retail = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(475) -- Remove Curse
-		end,
-		classic = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(475) -- Remove Curse
-		end,
-		other = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(475) -- Remove Curse
-		end,
-	},
-	MONK = {
-		retail = function()
-			dispelList["Magic"] = IsPlayerSpell(115450) -- Detox
-			dispelList["Poison"] = IsPlayerSpell(388874) or IsPlayerSpell(218164) -- Improved Detox or Detox
-			dispelList["Disease"] = IsPlayerSpell(388874) or IsPlayerSpell(218164) -- Improved Detox or Detox
-			dispelList["Curse"] = false
-		end,
-		classic = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = false
-		end,
-		other = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = false
-		end,
-	},
-	PALADIN = {
-		retail = function()
-			dispelList["Magic"] = IsPlayerSpell(4987) -- Cleanse
-			dispelList["Poison"] = IsPlayerSpell(393024) or IsPlayerSpell(213644) -- Improved Cleanse or Cleanse Toxins
-			dispelList["Disease"] = IsPlayerSpell(393024) or IsPlayerSpell(213644) -- Improved Cleanse or Cleanse Toxins
-			dispelList["Curse"] = false
-		end,
-		classic = function()
-			dispelList["Magic"] = IsPlayerSpell(4987) -- Cleanse
-			dispelList["Poison"] = IsPlayerSpell(4987) or IsPlayerSpell(1152) -- Cleanse or Purify
-			dispelList["Disease"] = IsPlayerSpell(4987) or IsPlayerSpell(1152) -- Cleanse or Purify
-			dispelList["Curse"] = false
-		end,
-		other = function()
-			dispelList["Magic"] = IsPlayerSpell(53551) -- Sacred Cleansing
-			dispelList["Poison"] = IsPlayerSpell(4987) -- Cleanse
-			dispelList["Disease"] = IsPlayerSpell(4987) -- Cleanse
-			dispelList["Curse"] = false
-		end,
-	},
-	PRIEST = {
-		retail = function()
-			dispelList["Magic"] = IsPlayerSpell(527) or IsPlayerSpell(32375) -- Purify or Mass Dispel
-			dispelList["Poison"] = false
-			dispelList["Disease"] = IsPlayerSpell(390632) or IsPlayerSpell(213634) -- Improved Purify or Purify Disease
-			dispelList["Curse"] = false
-		end,
-		classic = function()
-			dispelList["Magic"] = IsPlayerSpell(988) -- Dispel Magic
-			dispelList["Poison"] = false
-			dispelList["Disease"] = IsPlayerSpell(528) or IsPlayerSpell(552) -- Cure Disease or Abolish Disease
-			dispelList["Curse"] = false
-		end,
-		other = function()
-			dispelList["Magic"] = IsPlayerSpell(527) and IsPlayerSpell(33167) or IsPlayerSpell(32375) -- Dispel Magic and Absolution or Mass Dispel
-			dispelList["Poison"] = false
-			dispelList["Disease"] = IsPlayerSpell(528) -- Cure Disease
-			dispelList["Curse"] = false
-		end,
-	},
-	SHAMAN = {
-		retail = function()
-			dispelList["Magic"] = IsPlayerSpell(77130) -- Purify Spirit
-			dispelList["Poison"] = IsPlayerSpell(383013) -- Poison Cleansing Totem
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(383016) or IsPlayerSpell(51886) -- Improved Purify Spirit or Cleanse Spirit
-		end,
-		classic = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = IsPlayerSpell(526) or IsPlayerSpell(8166) -- Cure Poison or Poison Cleansing Totem
-			dispelList["Disease"] = IsPlayerSpell(2870) or IsPlayerSpell(8170) -- Cure Disease or Disease Cleansing Totem
-			dispelList["Curse"] = false
-		end,
-		other = function()
-			dispelList["Magic"] = IsPlayerSpell(77130) -- Improved Cleanse Spirit
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = IsPlayerSpell(51886) -- Cleanse Spirit
-		end,
-	},
-	EVOKER = {
-		retail = function()
-			dispelList["Magic"] = IsPlayerSpell(360823) -- Naturalize
-			dispelList["Poison"] = IsPlayerSpell(360823) or IsPlayerSpell(365585) or IsPlayerSpell(374251) -- Naturalize or Expunge or Cauterizing Flame
-			dispelList["Disease"] = IsPlayerSpell(374251) -- Cauterizing Flame
-			dispelList["Curse"] = IsPlayerSpell(374251) -- Cauterizing Flame
-		end,
-		classic = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = false
-		end,
-		other = function()
-			dispelList["Magic"] = false
-			dispelList["Poison"] = false
-			dispelList["Disease"] = false
-			dispelList["Curse"] = false
-		end,
-	},
+local updateDispelCapabilitiesByClass = {
+	DRUID = function()
+		dispelList["Magic"] = IsPlayerSpell(88423) -- Nature's Cure
+		dispelList["Poison"] = IsPlayerSpell(392378) or IsPlayerSpell(2782) -- Improved Nature's Cure or Remove Corruption
+		dispelList["Disease"] = false
+		dispelList["Curse"] = IsPlayerSpell(392378) or IsPlayerSpell(2782) -- Improved Nature's Cure or Remove Corruption
+	end,
+	MAGE = function()
+		dispelList["Magic"] = false
+		dispelList["Poison"] = false
+		dispelList["Disease"] = false
+		dispelList["Curse"] = IsPlayerSpell(475) -- Remove Curse
+	end,
+	MONK = function()
+		dispelList["Magic"] = IsPlayerSpell(115450) -- Detox
+		dispelList["Poison"] = IsPlayerSpell(388874) or IsPlayerSpell(218164) -- Improved Detox or Detox
+		dispelList["Disease"] = IsPlayerSpell(388874) or IsPlayerSpell(218164) -- Improved Detox or Detox
+		dispelList["Curse"] = false
+	end,
+	PALADIN = function()
+		dispelList["Magic"] = IsPlayerSpell(4987) -- Cleanse
+		dispelList["Poison"] = IsPlayerSpell(393024) or IsPlayerSpell(213644) -- Improved Cleanse or Cleanse Toxins
+		dispelList["Disease"] = IsPlayerSpell(393024) or IsPlayerSpell(213644) -- Improved Cleanse or Cleanse Toxins
+		dispelList["Curse"] = false
+	end,
+	PRIEST = function()
+		dispelList["Magic"] = IsPlayerSpell(527) or IsPlayerSpell(32375) -- Purify or Mass Dispel
+		dispelList["Poison"] = false
+		dispelList["Disease"] = IsPlayerSpell(390632) or IsPlayerSpell(213634) -- Improved Purify or Purify Disease
+		dispelList["Curse"] = false
+	end,
+	SHAMAN = function()
+		dispelList["Magic"] = IsPlayerSpell(77130) -- Purify Spirit
+		dispelList["Poison"] = IsPlayerSpell(383013) -- Poison Cleansing Totem
+		dispelList["Disease"] = false
+		dispelList["Curse"] = IsPlayerSpell(383016) or IsPlayerSpell(51886) -- Improved Purify Spirit or Cleanse Spirit
+	end,
+	EVOKER = function()
+		dispelList["Magic"] = IsPlayerSpell(360823) -- Naturalize
+		dispelList["Poison"] = IsPlayerSpell(360823) or IsPlayerSpell(365585) or IsPlayerSpell(374251) -- Naturalize or Expunge or Cauterizing Flame
+		dispelList["Disease"] = IsPlayerSpell(374251) -- Cauterizing Flame
+		dispelList["Curse"] = IsPlayerSpell(374251) -- Cauterizing Flame
+	end,
 }
 
 -- Event handler for SPELLS_CHANGED.
 -- Only fires for a player frame.
 local function UpdateDispelList(self, event)
 	if event == "SPELLS_CHANGED" then
-		local project = (oUF.isRetail and "retail") or (oUF.isClassic and "classic") or "other"
-		canDispel[playerClass][project]()
+		local updater = updateDispelCapabilitiesByClass[playerClass]
+		if updater then
+			updater()
+		end
 	end
 end
 
@@ -230,6 +154,38 @@ local function timeFormat(time)
 		return "%d"
 	else
 		return ""
+	end
+end
+
+-- Throttled OnUpdate for remaining time text
+local function ElementOnUpdate(self, elapsed)
+	local accum = (self._accum or 0) + elapsed
+	if accum < TIMER_THROTTLE then
+		self._accum = accum
+		return
+	end
+	self._accum = 0
+
+	local expirationTime = self._expiresAt
+	local duration = self._duration
+	if not expirationTime or not duration or duration <= 0 then
+		self:SetScript("OnUpdate", nil)
+		if self.timer then
+			self.timer:SetText("")
+		end
+		return
+	end
+
+	local remaining = expirationTime - GetTime()
+	if remaining > 0 then
+		self.timer:SetFormattedText(timeFormat(remaining), remaining)
+	else
+		-- Aura expired; ensure cache is updated in absence of an event
+		self:SetScript("OnUpdate", nil)
+		self.timer:SetText("")
+		if cacheWrite and self.__owner and self.__unit and self._auraInstanceID then
+			cacheWrite(self.__owner, self.__unit, self._auraInstanceID, nil, nil)
+		end
 	end
 end
 
@@ -250,20 +206,11 @@ local function ShowElement(self, unit, auraInstanceID)
 	if duration and duration > 0 then
 		local start = expirationTime - duration
 		element.cd:SetCooldown(start, duration)
-
-		if element.ticker then
-			element.ticker:Cancel()
-		end
-		element.ticker = NewTicker(0.1, function(ticker)
-			local remaining = expirationTime - GetTime()
-			if remaining > 0 then
-				element.timer:SetFormattedText(timeFormat(remaining), remaining)
-			else
-				-- aura expired but we got no event for it
-				ticker:Cancel()
-				cacheWrite(self, unit, auraInstanceID, nil, nil)
-			end
-		end)
+		-- Store state for throttled OnUpdate updates
+		element._expiresAt = expirationTime
+		element._duration = duration
+		element._auraInstanceID = auraInstanceID
+		element:SetScript("OnUpdate", ElementOnUpdate)
 	end
 
 	if count and count > 1 then
@@ -276,9 +223,12 @@ local function HideElement(self, unit)
 	local element = self.RaidDebuffs
 	local color = debuffColor["none"]
 
-	if element.ticker then
-		element.ticker:Cancel()
-	end
+	-- Stop OnUpdate timer and clear state
+	element:SetScript("OnUpdate", nil)
+	element._accum = 0
+	element._expiresAt = nil
+	element._duration = nil
+	element._auraInstanceID = nil
 
 	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	element.cd:SetCooldown(0, 0)
@@ -315,12 +265,19 @@ cacheWrite = function(self, unit, auraInstanceID, priority, AuraData)
 	local debuffCache = self.RaidDebuffs.debuffCache
 
 	if not priority or not AuraData then
-		debuffCache[auraInstanceID] = nil
+		local old = debuffCache[auraInstanceID]
+		if old then
+			debuffCache[auraInstanceID] = nil
+			releaseCacheEntry(old)
+		end
 	else
-		debuffCache[auraInstanceID] = {
-			priority = priority,
-			AuraData = AuraData,
-		}
+		local entry = debuffCache[auraInstanceID]
+		if not entry then
+			entry = acquireCacheEntry()
+			debuffCache[auraInstanceID] = entry
+		end
+		entry.priority = priority
+		entry.AuraData = AuraData
 	end
 
 	SelectPrioDebuff(self, unit)
@@ -383,19 +340,24 @@ local function Update(self, event, unit, updateInfo)
 	end
 
 	if updateInfo.removedAuraInstanceIDs then
-		for _, auraInstanceID in pairs(updateInfo.removedAuraInstanceIDs) do
-			FilterAura(self, unit, auraInstanceID, nil)
+		local list = updateInfo.removedAuraInstanceIDs
+		for i = 1, #list do
+			FilterAura(self, unit, list[i], nil)
 		end
 	end
 
 	if updateInfo.updatedAuraInstanceIDs then
-		for _, auraInstanceID in pairs(updateInfo.updatedAuraInstanceIDs) do
+		local list = updateInfo.updatedAuraInstanceIDs
+		for i = 1, #list do
+			local auraInstanceID = list[i]
 			FilterAura(self, unit, auraInstanceID, GetAuraDataByAuraInstanceID(unit, auraInstanceID))
 		end
 	end
 
 	if updateInfo.addedAuras then
-		for _, AuraData in pairs(updateInfo.addedAuras) do
+		local list = updateInfo.addedAuras
+		for i = 1, #list do
+			local AuraData = list[i]
 			FilterAura(self, unit, AuraData.auraInstanceID, AuraData)
 		end
 	end
@@ -404,8 +366,10 @@ end
 local function Enable(self)
 	local element = self.RaidDebuffs
 
-	if element and canDispel[playerClass] then
+	if element and updateDispelCapabilitiesByClass[playerClass] then
 		element.debuffCache = {}
+		element.__owner = self
+		element.__unit = self.unit
 
 		element.font = element.font or NumberFontNormal
 		element.fontHeight = element.fontHeight or 12

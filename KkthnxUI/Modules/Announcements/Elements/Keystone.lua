@@ -1,136 +1,126 @@
-local K, C = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
--- Localize WoW API functions
+-- Lua/WoW API locals
+local gsub = string.gsub
 local strlower = string.lower
-local SendChatMessage = SendChatMessage
+local format = string.format
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Container_GetContainerItemID = C_Container.GetContainerItemID
+local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
 local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
 local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
 local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
 local IsInGroup = IsInGroup
 local IsPartyLFG = IsPartyLFG
+local SendChatMessage = SendChatMessage
+local NUM_BAG_SLOTS = NUM_BAG_SLOTS
+local ipairs = ipairs
 
--- Constants and variables
-local keystoneCache = {}
-local messageHistory = {}
-local messageInterval = 10
-local channelMapping = {
-	["CHAT_MSG_PARTY"] = "PARTY",
-	["CHAT_MSG_PARTY_LEADER"] = "PARTY",
-	["CHAT_MSG_GUILD"] = "GUILD",
-}
+-- Small cache table for last-known keystone
+local keystoneCache = { mapID = 0, level = 0 }
 
-local function CheckBeforeSend(text, channel)
-	local key = text .. "_" .. channel
-	for k, v in pairs(messageHistory) do
-		if time() > v + messageInterval then
-			messageHistory[k] = nil
-		end
-	end
-
-	if messageHistory[key] and time() < messageHistory[key] + messageInterval then
-		return false
-	end
-
-	messageHistory[key] = time()
-	return true
-end
-
-local function SendMessage(text, channel)
-	if CheckBeforeSend(text, channel) then
-		SendChatMessage(text, channel)
-	end
-end
-
--- Helper function to get keystone link
+-- Fast bag scan for keystone link
 local function GetKeystoneLink()
-	for bagIndex = 0, NUM_BAG_SLOTS do
-		for slotIndex = 1, C_Container_GetContainerNumSlots(bagIndex) do
-			local itemInfo = C_Container.GetContainerItemInfo(bagIndex, slotIndex)
-			if itemInfo and C_Item_IsItemKeystoneByID(itemInfo.itemID) then
-				return itemInfo.hyperlink
+	for bag = 0, NUM_BAG_SLOTS do
+		local numSlots = C_Container_GetContainerNumSlots(bag)
+		for slot = 1, numSlots do
+			local itemID = C_Container_GetContainerItemID(bag, slot)
+			if itemID and C_Item_IsItemKeystoneByID(itemID) then
+				return C_Container_GetContainerItemLink(bag, slot)
 			end
 		end
 	end
 end
 
--- Main function to handle keystone announcements
-local function GetNewKeystone(_, event)
+-- Decide channel: instance if LFG, else party
+local function SendToGroup(message)
+	if IsPartyLFG() then
+		SendChatMessage(message, "INSTANCE_CHAT")
+	elseif IsInGroup() then
+		SendChatMessage(message, "PARTY")
+	end
+end
+
+-- Announce when keystone changes after chest or item change
+function Module:AnnounceKeystone(event)
 	if not C["Announcements"].KeystoneAlert then
 		return
 	end
 
 	local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
-	local keystoneLevel = C_MythicPlus_GetOwnedKeystoneLevel()
+	local level = C_MythicPlus_GetOwnedKeystoneLevel()
 
 	if event == "PLAYER_ENTERING_WORLD" then
-		keystoneCache.mapID = mapID
-		keystoneCache.keystoneLevel = keystoneLevel
-	elseif event == "CHALLENGE_MODE_COMPLETED" or event == "ITEM_CHANGED" then
-		if keystoneCache.mapID ~= mapID or keystoneCache.keystoneLevel ~= keystoneLevel then
-			keystoneCache.mapID = mapID
-			keystoneCache.keystoneLevel = keystoneLevel
+		keystoneCache.mapID = mapID or 0
+		keystoneCache.level = level or 0
+		return
+	end
+
+	if event == "CHALLENGE_MODE_COMPLETED" or event == "ITEM_CHANGED" then
+		if (mapID or 0) ~= keystoneCache.mapID or (level or 0) ~= keystoneCache.level then
+			keystoneCache.mapID = mapID or 0
+			keystoneCache.level = level or 0
 
 			local link = GetKeystoneLink()
 			if link then
-				local message = string.gsub("My new keystone is %keystone%.", "%%keystone%%", link)
-				if IsPartyLFG() then
-					SendChatMessage(message, "INSTANCE_CHAT")
-				elseif IsInGroup() then
-					SendChatMessage(message, "PARTY")
-				end
+				-- Prefer a localized format string; fallback to template replacement
+				local template = L["My new keystone is %s"] or "My new keystone is %s"
+				local message = format(template, link)
+				SendToGroup(message)
 			end
 		end
 	end
 end
 
-local function SendKeystoneLink(_, channelType, text)
-	if not C["Announcements"].KeystoneAlert or strlower(text) ~= "!keys" then
+-- Respond to !keys in party/party leader/guild
+function Module:OnKeystoneQuery(event, text)
+	if not C["Announcements"].KeystoneAlert then
+		return
+	end
+	if not text or strlower(text) ~= "!keys" then
 		return
 	end
 
-	local channel = channelMapping[channelType]
-	if channel then
-		local link = GetKeystoneLink()
-		if link then
-			SendMessage(link, channel)
-		end
+	local link = GetKeystoneLink()
+	if not link then
+		return
+	end
+
+	if event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
+		SendChatMessage(link, "PARTY")
+	elseif event == "CHAT_MSG_GUILD" then
+		SendChatMessage(link, "GUILD")
 	end
 end
 
--- Function to set up the keystone announcement system
+-- Public setup toggler
 function Module:CreateKeystoneAnnounce()
-	if C_AddOns.IsAddOnLoaded("MythicKeyReporter") or not C["Announcements"].KeystoneAlert then
-		for _, event in ipairs({
-			"CHAT_MSG_PARTY",
-			"CHAT_MSG_PARTY_LEADER",
-			"CHAT_MSG_GUILD",
-			"ITEM_CHANGED",
-			"PLAYER_ENTERING_WORLD",
-			"CHALLENGE_MODE_COMPLETED",
-		}) do
-			K:UnregisterEvent(event, GetNewKeystone)
-		end
+	-- Avoid duplicates or conflicts
+	if C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("MythicKeyReporter") then
+		-- Ensure clean state
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", self.AnnounceKeystone)
+		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", self.AnnounceKeystone)
+		K:UnregisterEvent("ITEM_CHANGED", self.AnnounceKeystone)
+		K:UnregisterEvent("CHAT_MSG_PARTY", self.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", self.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_GUILD", self.OnKeystoneQuery)
 		return
 	end
 
-	K:RegisterEvent("CHAT_MSG_PARTY", function(...)
-		SendKeystoneLink("PARTY", ...)
-	end)
-	K:RegisterEvent("CHAT_MSG_PARTY_LEADER", function(...)
-		SendKeystoneLink("PARTY", ...)
-	end)
-	K:RegisterEvent("CHAT_MSG_GUILD", function(...)
-		SendKeystoneLink("GUILD", ...)
-	end)
-	K:RegisterEvent("ITEM_CHANGED", function()
-		K.Delay(0.5, GetNewKeystone)
-	end)
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-		K.Delay(2, GetNewKeystone)
-	end)
-	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", function()
-		K.Delay(2, GetNewKeystone)
-	end)
+	if C["Announcements"].KeystoneAlert then
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", self.AnnounceKeystone)
+		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", self.AnnounceKeystone)
+		K:RegisterEvent("ITEM_CHANGED", self.AnnounceKeystone)
+		K:RegisterEvent("CHAT_MSG_PARTY", self.OnKeystoneQuery)
+		K:RegisterEvent("CHAT_MSG_PARTY_LEADER", self.OnKeystoneQuery)
+		K:RegisterEvent("CHAT_MSG_GUILD", self.OnKeystoneQuery)
+	else
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", self.AnnounceKeystone)
+		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", self.AnnounceKeystone)
+		K:UnregisterEvent("ITEM_CHANGED", self.AnnounceKeystone)
+		K:UnregisterEvent("CHAT_MSG_PARTY", self.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", self.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_GUILD", self.OnKeystoneQuery)
+	end
 end

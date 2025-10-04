@@ -1,11 +1,9 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
--- ============================================================================
--- EXTRAGUI SYSTEM DOCUMENTATION
--- ============================================================================
+-- System Documentation
 
 --[[
-NDui-Style ExtraGUI System for KkthnxUI
+ExtraGUI System for KkthnxUI
 
 This system provides a side panel that appears to the right of the main GUI
 when users click cogwheel icons next to certain options. Features:
@@ -21,9 +19,7 @@ K.ExtraGUI:RegisterExtraConfig("Actionbar.MicroMenu", function(parent)
 end)
 ]]
 
--- ============================================================================
--- API DECLARATIONS
--- ============================================================================
+-- API Declarations
 
 -- Lua API
 local _G = _G
@@ -35,9 +31,7 @@ local ipairs, pairs, type = ipairs, pairs, type
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
--- ============================================================================
--- UTILITY FUNCTIONS
--- ============================================================================
+-- Utility Functions
 
 -- Helper function to get table keys
 local function tKeys(t)
@@ -90,9 +84,7 @@ local function GetValueByPath(table, path)
 	return current
 end
 
--- ============================================================================
--- CONFIGURATION FUNCTIONS
--- ============================================================================
+-- Configuration Functions
 
 -- Get extra configuration value by path
 local function GetExtraConfigValue(configPath)
@@ -133,9 +125,7 @@ local function SetExtraConfigValue(configPath, value)
 	return true
 end
 
--- ============================================================================
--- CONSTANTS
--- ============================================================================
+-- Constants
 
 -- Panel Dimensions (based on main GUI)
 local PANEL_WIDTH = 880
@@ -149,12 +139,13 @@ local ACCENT_COLOR = { K.r, K.g, K.b }
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
--- ============================================================================
--- HELPER FUNCTIONS
--- ============================================================================
+-- Helper Functions
 
 -- Create colored background texture
 local function CreateColoredBackground(frame, r, g, b, a)
+	if K and K.GUIHelpers and K.GUIHelpers.CreateColoredBackground then
+		return K.GUIHelpers.CreateColoredBackground(frame, r, g, b, a)
+	end
 	local bg = frame:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
 	bg:SetTexture(C["Media"].Textures.White8x8Texture)
@@ -162,7 +153,7 @@ local function CreateColoredBackground(frame, r, g, b, a)
 	return bg
 end
 
--- Create NDui-style gradient separator lines
+-- Create gradient separator lines
 local function CreateGradientSeparator(parent, yOffset)
 	local separator = CreateFrame("Frame", nil, parent)
 	separator:SetHeight(1)
@@ -179,9 +170,7 @@ local function CreateGradientSeparator(parent, yOffset)
 	return separator
 end
 
--- ============================================================================
--- EXTRAGUI MODULE CORE
--- ============================================================================
+-- ExtraGUI Module Core
 
 -- ExtraGUI Module
 local ExtraGUI = {
@@ -191,9 +180,7 @@ local ExtraGUI = {
 	IsInitialized = false,
 }
 
--- ============================================================================
--- CONFIGURATION REGISTRATION
--- ============================================================================
+-- Configuration Registration
 
 -- Register extra configuration for a specific option path
 function ExtraGUI:RegisterExtraConfig(configPath, createContentFunc, title)
@@ -217,9 +204,7 @@ function ExtraGUI:HasExtraConfig(configPath)
 	return self.ExtraConfigs[configPath] ~= nil
 end
 
--- ============================================================================
--- FRAME CREATION
--- ============================================================================
+-- Frame Creation
 
 -- Create the ExtraGUI side panel
 function ExtraGUI:CreateFrame()
@@ -265,7 +250,7 @@ function ExtraGUI:CreateFrame()
 	local title = titleBar:CreateFontString(nil, "OVERLAY")
 	title:SetFontObject(K.UIFont)
 	title:SetTextColor(1, 1, 1, 1)
-	title:SetText("Extra Configuration")
+	title:SetText(L["Extra Configuration"] or "Extra Configuration")
 	title:SetPoint("LEFT", 15, 0)
 
 	-- Close Button using atlas icon
@@ -312,19 +297,10 @@ function ExtraGUI:CreateFrame()
 	scrollFrame:SetPoint("TOPLEFT", SPACING, -SPACING)
 	scrollFrame:SetPoint("BOTTOMRIGHT", -SPACING, SPACING)
 
-	-- Enable mouse wheel scrolling
-	scrollFrame:EnableMouseWheel(true)
-	scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-		local scrollStep = 40
-		local currentScroll = self:GetVerticalScroll()
-		local maxScroll = self:GetVerticalScrollRange()
-
-		if delta > 0 then
-			self:SetVerticalScroll(max(0, currentScroll - scrollStep))
-		else
-			self:SetVerticalScroll(min(maxScroll, currentScroll + scrollStep))
-		end
-	end)
+	-- Mouse wheel scrolling
+	if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+		K.GUIHelpers.AttachSimpleScroll(scrollFrame, 40)
+	end
 
 	local scrollChild = CreateFrame("Frame", nil, scrollFrame)
 	scrollChild:SetWidth(scrollFrame:GetWidth() - 10)
@@ -350,9 +326,7 @@ function ExtraGUI:CreateFrame()
 	return frame
 end
 
--- ============================================================================
--- PANEL POSITIONING
--- ============================================================================
+-- Panel Positioning
 
 -- Position the extra panel relative to the main GUI
 function ExtraGUI:PositionPanel()
@@ -379,9 +353,7 @@ function ExtraGUI:PositionPanel()
 	self.Frame:SetSize(EXTRA_PANEL_WIDTH, mainGUI:GetHeight())
 end
 
--- ============================================================================
--- SHOW/HIDE FUNCTIONALITY
--- ============================================================================
+-- Show/Hide Functionality
 
 -- Show extra configuration for a specific config path
 function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
@@ -407,7 +379,7 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 
 	-- Update title bar only (remove duplicate titles)
 	local displayTitle = optionTitle or config.title
-	self.Title:SetText("Extra: " .. displayTitle)
+	self.Title:SetText(format(L["Extra: %s"] or "Extra: %s", displayTitle))
 
 	-- Start content layout with proper spacing
 	local yOffset = -20
@@ -528,9 +500,7 @@ function ExtraGUI:Toggle()
 	end
 end
 
--- ============================================================================
--- COGWHEEL ICON CREATION
--- ============================================================================
+-- Cogwheel Icon Creation
 
 -- Helper function to create cogwheel icon for main GUI widgets
 function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
@@ -613,8 +583,9 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 
 		-- Show tooltip
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText("Extra Configuration", 1, 1, 1, 1, true)
-		GameTooltip:AddLine("Click to open additional options for " .. (optionTitle or configPath), 0.7, 0.7, 0.7, true)
+		GameTooltip:SetText(L["Extra Configuration"] or "Extra Configuration", 1, 1, 1, 1, true)
+		local tipMsg = format(L["Click to open additional options for %s"] or "Click to open additional options for %s", (optionTitle or configPath))
+		GameTooltip:AddLine(tipMsg, 0.7, 0.7, 0.7, true)
 		GameTooltip:Show()
 	end)
 
@@ -651,25 +622,23 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	return cogwheel
 end
 
--- ============================================================================
--- MODULE INITIALIZATION
--- ============================================================================
+-- Module Initialization
 
 -- Initialize ExtraGUI
 function ExtraGUI:Enable()
-	if self.IsInitialized then
-		return
+	if self.IsInitialized or self._enabled then
+		return true
 	end
 
 	-- Register some example extra configurations
 	self:RegisterExampleConfigs()
 
 	self.IsInitialized = true
+	self._enabled = true
+	return true
 end
 
--- ============================================================================
--- WIDGET HELPER FUNCTIONS
--- ============================================================================
+-- Widget Helper Functions
 
 -- Helper function to get extra panel content width
 local function GetExtraContentWidth()
@@ -678,15 +647,21 @@ end
 
 -- Helper function to process NEW tags (same as main GUI)
 local function ProcessNewTag(name)
+	if K and K.GUIHelpers and K.GUIHelpers.ProcessNewTag then
+		return K.GUIHelpers.ProcessNewTag(name)
+	end
 	local cleanName, hasNewTag = string.gsub(name, "ISNEW", "")
 	return cleanName, (hasNewTag > 0)
 end
 
 -- Helper function to add NEW tags (same as main GUI)
 local function AddNewTag(parent, anchor)
+	if K and K.GUIHelpers and K.GUIHelpers.AddNewTag then
+		return K.GUIHelpers.AddNewTag(parent, anchor)
+	end
 	local tag = CreateFrame("Frame", nil, parent, "NewFeatureLabelTemplate")
 	tag:SetPoint("LEFT", anchor or parent, -29, 11)
-	tag:SetScale(0.85) -- Size down the NEW tag
+	tag:SetScale(0.85)
 	tag:Show()
 	return tag
 end
@@ -700,9 +675,7 @@ local function CreateColoredBackground(frame, r, g, b, a)
 	return bg
 end
 
--- ============================================================================
--- WIDGET CREATION FUNCTIONS
--- ============================================================================
+-- Widget Creation Functions
 -- These match the main GUI widget functions but are sized for the extra panel
 
 -- Switch Widget for ExtraGUI
@@ -746,18 +719,9 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 	thumb:SetTexture(C["Media"].Textures.White8x8Texture)
 	thumb:SetVertexColor(1, 1, 1, 1)
 
-	-- Tooltip functionality (now added)
-	if tooltip then
-		widget:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetText(cleanText, 1, 1, 1, 1, true)
-			GameTooltip:AddLine(tooltip, 0.7, 0.7, 0.7, true)
-			GameTooltip:Show()
-		end)
-
-		widget:SetScript("OnLeave", function(self)
-			GameTooltip:Hide()
-		end)
+	-- Tooltip
+	if tooltip and K and K.GUIHelpers and K.GUIHelpers.CreateEnhancedTooltip then
+		K.GUIHelpers.CreateEnhancedTooltip(widget, cleanText, tooltip)
 	end
 
 	-- Update function using proper config system
@@ -824,6 +788,15 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 	-- Initialize with debugging
 	widget:UpdateValue()
 	return widget
+end
+
+-- Declare dependency for an ExtraGUI widget on a parent config path
+-- Mirrors GUI:DependsOn, reusing shared helpers
+function ExtraGUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate)
+	if K and K.GUIHelpers and K.GUIHelpers.BindDependency then
+		return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate)
+	end
+	return childWidget
 end
 
 -- Slider Widget for ExtraGUI
@@ -1048,18 +1021,9 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 
 	SetArrowDown()
 
-	-- Tooltip functionality (now added)
-	if tooltip then
-		widget:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetText(cleanText, 1, 1, 1, 1, true)
-			GameTooltip:AddLine(tooltip, 0.7, 0.7, 0.7, true)
-			GameTooltip:Show()
-		end)
-
-		widget:SetScript("OnLeave", function(self)
-			GameTooltip:Hide()
-		end)
+	-- Tooltip
+	if tooltip and K and K.GUIHelpers and K.GUIHelpers.CreateEnhancedTooltip then
+		K.GUIHelpers.CreateEnhancedTooltip(widget, cleanText, tooltip)
 	end
 
 	-- Menu state: open overlay menu via shared helper
@@ -1078,7 +1042,12 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 						hookFunction(option.value, prev, configPath)
 					end
 				else
+					-- No config path means this is a transient dropdown (e.g., category switchers)
+					-- Still update the visible text and invoke the hook so callers can react.
 					dropdownText:SetText(option.text)
+					if hookFunction and type(hookFunction) == "function" then
+						hookFunction(option.value, nil, configPath)
+					end
 				end
 				SetArrowDown()
 			end,
@@ -1116,7 +1085,6 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 	-- Update function
 	function widget:UpdateValue()
 		if not self.ConfigPath then
-			-- If no config path, just show the first option
 			if options[1] then
 				dropdownText:SetText(options[1].text)
 			end
@@ -1124,14 +1092,17 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 		end
 
 		local value = GetExtraConfigValue(self.ConfigPath)
-
+		local matched = false
 		for _, option in ipairs(options) do
 			if option.value == value then
 				dropdownText:SetText(option.text)
-				return
+				matched = true
+				break
 			end
 		end
-		dropdownText:SetText(options[1] and options[1].text or "Select...")
+		if not matched then
+			dropdownText:SetText(options[1] and options[1].text or "Select...")
+		end
 	end
 
 	-- Close menu function for external use
@@ -1522,6 +1493,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		lowerSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
+		-- Filter Legacy Items Switch
+		local legacySwitch = self:CreateSwitch(parent, "Inventory.FilterLegacy", "Filter Legacy Items", "Filter legacy items", UpdateBagStatus)
+		legacySwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
 		-- Filter Primordial Stones Switch
 		local stoneSwitch = self:CreateSwitch(parent, "Inventory.FilterStone", "Filter Primordial Stones", "Filter primordial stones", UpdateBagStatus)
 		stoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
@@ -1547,6 +1523,7 @@ function ExtraGUI:RegisterExampleConfigs()
 			SetExtraConfigValue("Inventory.FilterCustom", true)
 			SetExtraConfigValue("Inventory.FilterLegendary", true)
 			SetExtraConfigValue("Inventory.FilterLower", true)
+			SetExtraConfigValue("Inventory.FilterLegacy", false)
 			SetExtraConfigValue("Inventory.FilterStone", true)
 
 			-- Update all widgets
@@ -1562,6 +1539,7 @@ function ExtraGUI:RegisterExampleConfigs()
 			customSwitch:UpdateValue()
 			legendarySwitch:UpdateValue()
 			lowerSwitch:UpdateValue()
+			legacySwitch:UpdateValue()
 			stoneSwitch:UpdateValue()
 			gatherEmptySwitch:UpdateValue()
 		end)
@@ -1604,7 +1582,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		local header = parent:CreateFontString(nil, "OVERLAY")
 		header:SetFontObject(K.UIFont)
 		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		header:SetText("Custom Units by NPC ID")
+		header:SetText(L["Custom Units by NPC ID"] or "Custom Units by NPC ID")
 		header:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
@@ -1613,35 +1591,41 @@ function ExtraGUI:RegisterExampleConfigs()
 		desc:SetFontObject(K.UIFont)
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
-		desc:SetText("Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here.")
+		desc:SetText(L["Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here."] or "Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here.")
 		desc:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
 		-- Add ID input
-		local addInput = self:CreateTextInput(parent, nil, "Add NPC ID", "e.g. 174773", "Enter an NPC ID to add")
+		local addInput = self:CreateTextInput(parent, nil, (L["Add NPC ID"] or "Add NPC ID"), format(L["e.g. %s"] or "e.g. %s", "174773"), (L["Enter an NPC ID to add"] or "Enter an NPC ID to add"))
 		addInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		-- Add button
-		local addButton = CreateFrame("Button", nil, parent)
-		addButton:SetSize(90, 24)
-		addButton:SetPoint("TOPLEFT", 0, yOffset)
-		local addBg = addButton:CreateTexture(nil, "BACKGROUND")
-		addBg:SetAllPoints()
-		addBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		addBg:SetVertexColor(0.2, 0.6, 0.2, 0.8)
-		local addLabel = addButton:CreateFontString(nil, "OVERLAY")
-		addLabel:SetFontObject(K.UIFont)
-		addLabel:SetTextColor(1, 1, 1, 1)
-		addLabel:SetText("Add")
-		addLabel:SetPoint("CENTER")
+		-- Add button (shared helper for consistent styling)
+		local addButton
+		if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+			addButton = K.GUIHelpers.CreateButton(parent, (L["Add"] or "Add"), 90, 24)
+			addButton:SetPoint("TOPLEFT", 0, yOffset)
+		else
+			addButton = CreateFrame("Button", nil, parent)
+			addButton:SetSize(90, 24)
+			addButton:SetPoint("TOPLEFT", 0, yOffset)
+			local addBg = addButton:CreateTexture(nil, "BACKGROUND")
+			addBg:SetAllPoints()
+			addBg:SetTexture(C["Media"].Textures.White8x8Texture)
+			addBg:SetVertexColor(0.2, 0.6, 0.2, 0.8)
+			local addLabel = addButton:CreateFontString(nil, "OVERLAY")
+			addLabel:SetFontObject(K.UIFont)
+			addLabel:SetTextColor(1, 1, 1, 1)
+			addLabel:SetText(L["Add"] or "Add")
+			addLabel:SetPoint("CENTER")
+		end
 		yOffset = yOffset - 35
 
 		-- List header
 		local listHeader = parent:CreateFontString(nil, "OVERLAY")
 		listHeader:SetFontObject(K.UIFont)
 		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listHeader:SetText("Current IDs")
+		listHeader:SetText(L["Current IDs"] or "Current IDs")
 		listHeader:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
@@ -1664,12 +1648,9 @@ function ExtraGUI:RegisterExampleConfigs()
 		scrollChild:SetHeight(1)
 		scrollFrame:SetScrollChild(scrollChild)
 
-		scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-			local step = 30
-			local cur = self:GetVerticalScroll()
-			local max = self:GetVerticalScrollRange()
-			self:SetVerticalScroll(math.max(0, math.min(max, cur - delta * step)))
-		end)
+		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+		end
 
 		local rows = {}
 
@@ -1732,13 +1713,16 @@ function ExtraGUI:RegisterExampleConfigs()
 		end
 
 		local function trySetPortrait(texture, npcID)
-			texture:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-Small-Default")
+			-- Default to question mark if we can't resolve a portrait
+			texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+			texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 			local function checkUnit(u)
 				if UnitExists(u) then
 					local guid = UnitGUID(u)
 					local id = guid and K.GetNPCID(guid)
 					if id and id == npcID then
 						SetPortraitTexture(texture, u)
+						texture:SetTexCoord(0, 1, 0, 1)
 						return true
 					end
 				end
@@ -1782,9 +1766,20 @@ function ExtraGUI:RegisterExampleConfigs()
 				bg:SetTexture(C["Media"].Textures.White8x8Texture)
 				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
 
-				local portrait = row:CreateTexture(nil, "ARTWORK")
-				portrait:SetSize(22, 22)
-				portrait:SetPoint("LEFT", 6, 0)
+				local portraitFrame = CreateFrame("Frame", nil, row)
+				portraitFrame:SetSize(24, 24)
+				portraitFrame:SetPoint("LEFT", 6, 0)
+				-- Match ProfileGUI portrait styling: background + subtle border + inset texture
+				CreateColoredBackground(portraitFrame, 0.12, 0.12, 0.12, 1)
+				local portraitBorder = portraitFrame:CreateTexture(nil, "BORDER")
+				portraitBorder:SetPoint("TOPLEFT", -1, 1)
+				portraitBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+				portraitBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+				portraitBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+
+				local portrait = portraitFrame:CreateTexture(nil, "ARTWORK")
+				portrait:SetPoint("TOPLEFT", 2, -2)
+				portrait:SetPoint("BOTTOMRIGHT", -2, 2)
 				trySetPortrait(portrait, entry.id)
 				row.Portrait = portrait
 				row.NpcID = entry.id
@@ -1802,12 +1797,18 @@ function ExtraGUI:RegisterExampleConfigs()
 				end
 				local creatureName = GetNPCNameByID(entry.id, setNameText)
 				setNameText(creatureName)
-				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
+				nameFS:SetPoint("LEFT", portraitFrame, "RIGHT", 8, 0)
 
 				if entry.source ~= "default" then
-					local removeBtn = CreateFrame("Button", nil, row)
-					removeBtn:SetSize(22, 22)
-					removeBtn:SetPoint("RIGHT", -8, 0)
+					local removeBtn
+					if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+						removeBtn = K.GUIHelpers.CreateButton(row, "", 22, 22)
+						removeBtn:SetPoint("RIGHT", -8, 0)
+					else
+						removeBtn = CreateFrame("Button", nil, row)
+						removeBtn:SetSize(22, 22)
+						removeBtn:SetPoint("RIGHT", -8, 0)
+					end
 					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
 					icon:SetAllPoints()
 					local ok = pcall(function()
@@ -1836,10 +1837,13 @@ function ExtraGUI:RegisterExampleConfigs()
 		-- Add button handler
 		addButton:SetScript("OnClick", function()
 			local inputText = ""
-			if addInput and addInput:GetChildren() then
+			if addInput and addInput.GetChildren then
 				for _, child in ipairs({ addInput:GetChildren() }) do
-					if child:GetObjectType() == "EditBox" then
-						inputText = child:GetText()
+					if child and child.GetObjectType and child:GetObjectType() == "EditBox" then
+						local eb = child
+						if eb and eb.GetText then
+							inputText = eb:GetText() or ""
+						end
 						break
 					end
 				end
@@ -1908,7 +1912,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		local header = parent:CreateFontString(nil, "OVERLAY")
 		header:SetFontObject(K.UIFont)
 		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		header:SetText("Show Power for NPC IDs")
+		header:SetText(L["Show Power for NPC IDs"] or "Show Power for NPC IDs")
 		header:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
@@ -1916,11 +1920,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		desc:SetFontObject(K.UIFont)
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
-		desc:SetText("Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here.")
+		desc:SetText(L["Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here."] or "Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here.")
 		desc:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
-		local addInput = self:CreateTextInput(parent, nil, "Add NPC ID", "e.g. 114247", "Enter an NPC ID to add")
+		local addInput = self:CreateTextInput(parent, nil, (L["Add NPC ID"] or "Add NPC ID"), format(L["e.g. %s"] or "e.g. %s", "114247"), (L["Enter an NPC ID to add"] or "Enter an NPC ID to add"))
 		addInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1934,14 +1938,14 @@ function ExtraGUI:RegisterExampleConfigs()
 		local addLabel = addButton:CreateFontString(nil, "OVERLAY")
 		addLabel:SetFontObject(K.UIFont)
 		addLabel:SetTextColor(1, 1, 1, 1)
-		addLabel:SetText("Add")
+		addLabel:SetText(L["Add"] or "Add")
 		addLabel:SetPoint("CENTER")
 		yOffset = yOffset - 35
 
 		local listHeader = parent:CreateFontString(nil, "OVERLAY")
 		listHeader:SetFontObject(K.UIFont)
 		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listHeader:SetText("Current IDs")
+		listHeader:SetText(L["Current IDs"] or "Current IDs")
 		listHeader:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
@@ -1963,12 +1967,9 @@ function ExtraGUI:RegisterExampleConfigs()
 		scrollChild:SetHeight(1)
 		scrollFrame:SetScrollChild(scrollChild)
 
-		scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-			local step = 30
-			local cur = self:GetVerticalScroll()
-			local max = self:GetVerticalScrollRange()
-			self:SetVerticalScroll(math.max(0, math.min(max, cur - delta * step)))
-		end)
+		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+		end
 
 		local rows = {}
 
@@ -2029,13 +2030,17 @@ function ExtraGUI:RegisterExampleConfigs()
 		end
 
 		local function trySetPortrait(texture, npcID)
-			texture:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-Small-Default")
+			-- Default to question mark icon (cropped) until a unit match is found
+			texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+			texture:SetVertexColor(1, 1, 1, 1)
+			texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 			local function checkUnit(u)
 				if UnitExists(u) then
 					local guid = UnitGUID(u)
 					local id = guid and K.GetNPCID(guid)
 					if id and id == npcID then
 						SetPortraitTexture(texture, u)
+						texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 						return true
 					end
 				end
@@ -2098,9 +2103,15 @@ function ExtraGUI:RegisterExampleConfigs()
 				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
 
 				if entry.source ~= "default" then
-					local removeBtn = CreateFrame("Button", nil, row)
-					removeBtn:SetSize(22, 22)
-					removeBtn:SetPoint("RIGHT", -8, 0)
+					local removeBtn
+					if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+						removeBtn = K.GUIHelpers.CreateButton(row, "", 22, 22)
+						removeBtn:SetPoint("RIGHT", -8, 0)
+					else
+						removeBtn = CreateFrame("Button", nil, row)
+						removeBtn:SetSize(22, 22)
+						removeBtn:SetPoint("RIGHT", -8, 0)
+					end
 					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
 					icon:SetAllPoints()
 					local ok = pcall(function()
@@ -2227,12 +2238,12 @@ function ExtraGUI:RegisterExampleConfigs()
 		local categoryLabel = categoryHeader:CreateFontString(nil, "OVERLAY")
 		categoryLabel:SetFontObject(K.UIFont)
 		categoryLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		categoryLabel:SetText("Aura Category:")
+		categoryLabel:SetText(L["Aura Category:"] or "Aura Category:")
 		categoryLabel:SetPoint("LEFT", categoryHeader, "LEFT", 10, 0)
 		yOffset = yOffset - 40
 
 		-- Category Dropdown
-		categoryDropdown = self:CreateDropdown(parent, nil, "Select Category", categories, "Choose which aura list to manage", function(newValue, oldValue, configPath)
+		categoryDropdown = self:CreateDropdown(parent, nil, (L["Select Category"] or "Select Category"), categories, (L["Choose which aura list to manage"] or "Choose which aura list to manage"), function(newValue, oldValue, configPath)
 			-- Handle category change
 			currentCategory = newValue
 			if RefreshAuraList then
@@ -2246,11 +2257,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		local searchLabel = parent:CreateFontString(nil, "OVERLAY")
 		searchLabel:SetFontObject(K.UIFont)
 		searchLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		searchLabel:SetText("Search Auras:")
+		searchLabel:SetText(L["Search Auras:"] or "Search Auras:")
 		searchLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 20
 
-		searchInput = self:CreateTextInput(parent, nil, "", "Search by Spell ID or Name", "Filter displayed auras")
+		searchInput = self:CreateTextInput(parent, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Filter displayed auras"] or "Filter displayed auras"))
 		searchInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2258,7 +2269,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		local addLabel = parent:CreateFontString(nil, "OVERLAY")
 		addLabel:SetFontObject(K.UIFont)
 		addLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		addLabel:SetText("Add New Spell ID:")
+		addLabel:SetText(L["Add New Spell ID:"] or "Add New Spell ID:")
 		addLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 20
 
@@ -2268,11 +2279,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		addContainer:SetPoint("TOPLEFT", 0, yOffset)
 
 		-- Create smaller text input to make room for button
-		addSpellInput = self:CreateTextInput(addContainer, nil, "", "Enter Spell ID", "Add a new spell to the current category", nil, false, contentWidth - 110)
+		addSpellInput = self:CreateTextInput(addContainer, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Add a new spell to the current category"] or "Add a new spell to the current category"), nil, false, contentWidth - 110)
 		addSpellInput:SetPoint("TOPLEFT", 0, 0)
 
 		-- Create the add button positioned to the right of the input
-		local addButton = self:CreateButton(addContainer, "Add Spell", 100, 28, function() end)
+		local addButton = self:CreateButton(addContainer, (L["Add Spell"] or "Add Spell"), 100, 28, function() end)
 		addButton:SetPoint("LEFT", addSpellInput, "RIGHT", 10, 0)
 
 		yOffset = yOffset - 35
@@ -2316,7 +2327,7 @@ function ExtraGUI:RegisterExampleConfigs()
 				-- Play success sound
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 			else
-				print("|cffff0000Invalid Spell ID. Please enter a valid number.|r")
+				print("|cffff0000" .. (L["Invalid Spell ID. Please enter a valid number."] or "Invalid Spell ID. Please enter a valid number.") .. "|r")
 			end
 		end
 
@@ -2327,7 +2338,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		local listLabel = parent:CreateFontString(nil, "OVERLAY")
 		listLabel:SetFontObject(K.UIFont)
 		listLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listLabel:SetText("Current Auras:")
+		listLabel:SetText(L["Current Auras:"] or "Current Auras:")
 		listLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
@@ -2354,17 +2365,9 @@ function ExtraGUI:RegisterExampleConfigs()
 		scrollFrame:SetScrollChild(scrollChild)
 
 		-- Mouse wheel scrolling
-		scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-			local scrollStep = 30
-			local currentScroll = self:GetVerticalScroll()
-			local maxScroll = self:GetVerticalScrollRange()
-
-			if delta > 0 then
-				self:SetVerticalScroll(max(0, currentScroll - scrollStep))
-			else
-				self:SetVerticalScroll(min(maxScroll, currentScroll + scrollStep))
-			end
-		end)
+		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+		end
 
 		-- Function to refresh the aura list
 		RefreshAuraList = function()
@@ -2511,8 +2514,8 @@ function ExtraGUI:RegisterExampleConfigs()
 			removeButton:SetScript("OnEnter", function(self)
 				removeBg:SetVertexColor(1, 0.2, 0.2, 1)
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Remove Aura", 1, 1, 1, 1, true)
-				GameTooltip:AddLine("Click to remove this aura from the list", 0.7, 0.7, 0.7, true)
+				GameTooltip:SetText(L["Remove Aura"] or "Remove Aura", 1, 1, 1, 1, true)
+				GameTooltip:AddLine(L["Click to remove this aura from the list"] or "Click to remove this aura from the list", 0.7, 0.7, 0.7, true)
 				GameTooltip:Show()
 			end)
 
@@ -2568,6 +2571,264 @@ function ExtraGUI:RegisterExampleConfigs()
 		-- Set parent height based on content
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Nameplate Auras")
+
+	-- Auto-Quest Ignore NPCs Manager
+	self:RegisterExtraConfig("Automation.AutoQuestIgnoreNPC", function(parent)
+		local yOffset = -10
+		local contentWidth = GetExtraContentWidth()
+
+		local header = parent:CreateFontString(nil, "OVERLAY")
+		header:SetFontObject(K.UIFont)
+		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		header:SetText("Ignored Quest NPCs (Per-Character)")
+		header:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local desc = parent:CreateFontString(nil, "OVERLAY")
+		desc:SetFontObject(K.UIFont)
+		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		desc:SetJustifyH("LEFT")
+		desc:SetText("Add NPC IDs to ignore for auto questing. Defaults are built-in; this list is per-character. Hold ALT and click NPC name in quest/gossip to toggle quickly.")
+		desc:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local addInput = self:CreateTextInput(parent, nil, "Add NPC ID", "e.g. 162804", "Enter an NPC ID to add")
+		addInput:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local addButton = self:CreateButton(parent, "Add", 90, 24, function() end)
+		addButton:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local listHeader = parent:CreateFontString(nil, "OVERLAY")
+		listHeader:SetFontObject(K.UIFont)
+		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		listHeader:SetText("Current IDs")
+		listHeader:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local listFrame = CreateFrame("Frame", nil, parent)
+		listFrame:SetPoint("TOPLEFT", 10, yOffset)
+		listFrame:SetSize(contentWidth - 20, 300)
+		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
+		listBg:SetAllPoints()
+		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+
+		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
+		scrollFrame:SetPoint("TOPLEFT", 5, -5)
+		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
+		scrollFrame:EnableMouseWheel(true)
+
+		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		scrollChild:SetWidth(contentWidth - 30)
+		scrollChild:SetHeight(1)
+		scrollFrame:SetScrollChild(scrollChild)
+
+		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+		end
+
+		local function getStore()
+			KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
+			KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC or {}
+			return KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC
+		end
+
+		local function trySetPortrait(texture, npcID)
+			-- Fallback to question mark icon (cropped)
+			texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+			texture:SetVertexColor(1, 1, 1, 1)
+			texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			local function checkUnit(u)
+				if UnitExists(u) then
+					local guid = UnitGUID(u)
+					local id = guid and K.GetNPCID(guid)
+					if id and id == npcID then
+						SetPortraitTexture(texture, u)
+						return true
+					end
+				end
+			end
+			local directUnits = { "target", "mouseover", "focus" }
+			for _, u in ipairs(directUnits) do
+				if checkUnit(u) then
+					return
+				end
+			end
+			for i = 1, 40 do
+				if checkUnit("nameplate" .. i) then
+					return
+				end
+			end
+			for i = 1, 8 do
+				if checkUnit("boss" .. i) then
+					return
+				end
+			end
+		end
+
+		local rows = {}
+		local function refresh()
+			for _, r in ipairs(rows) do
+				r:Hide()
+			end
+			wipe(rows)
+			local store = getStore()
+			local defaults = (C and C["AutoQuestData"] and C["AutoQuestData"].IgnoreQuestNPC) or {}
+			local combined = {}
+			for id in pairs(defaults) do
+				combined[tonumber(id) or id] = "default"
+			end
+			for id, v in pairs(store) do
+				if v then
+					local nid = tonumber(id) or id
+					combined[nid] = combined[nid] or "user"
+				end
+			end
+			local list = {}
+			for id, src in pairs(combined) do
+				table.insert(list, { id = tonumber(id) or id, source = src })
+			end
+			table.sort(list, function(a, b)
+				return (tonumber(a.id) or 0) < (tonumber(b.id) or 0)
+			end)
+			local y = -5
+			for _, entry in ipairs(list) do
+				local row = CreateFrame("Frame", nil, scrollChild)
+				row:SetSize(contentWidth - 40, 28)
+				row:SetPoint("TOPLEFT", 10, y)
+				local bg = row:CreateTexture(nil, "BACKGROUND")
+				bg:SetAllPoints()
+				bg:SetTexture(C["Media"].Textures.White8x8Texture)
+				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
+
+				local portrait = row:CreateTexture(nil, "ARTWORK")
+				portrait:SetSize(22, 22)
+				portrait:SetPoint("LEFT", 6, 0)
+				trySetPortrait(portrait, entry.id)
+				row.Portrait = portrait
+				row.NpcID = entry.id
+
+				local nameFS = row:CreateFontString(nil, "OVERLAY")
+				nameFS:SetFontObject(K.UIFont)
+				nameFS:SetTextColor(1, 1, 1, 1)
+				local tag = entry.source == "default" and "  [Default]" or ""
+				local function setNameText(nm)
+					nameFS:SetText(string.format("%s (ID: %s)%s", nm or "Unknown", tostring(entry.id), tag))
+				end
+				local creatureName = GetNPCNameByID and GetNPCNameByID(entry.id, setNameText) or nil
+				setNameText(creatureName)
+				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
+				row.NameFS = nameFS
+
+				if entry.source ~= "default" then
+					local removeBtn
+					if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+						removeBtn = K.GUIHelpers.CreateButton(row, "", 22, 22)
+						removeBtn:SetPoint("RIGHT", -8, 0)
+					else
+						removeBtn = CreateFrame("Button", nil, row)
+						removeBtn:SetSize(22, 22)
+						removeBtn:SetPoint("RIGHT", -8, 0)
+					end
+					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
+					icon:SetAllPoints()
+					local ok = pcall(function()
+						icon:SetAtlas("common-icon-redx", true)
+					end)
+					if not ok then
+						icon:SetTexture(C["Media"].Textures.White8x8Texture)
+						icon:SetVertexColor(0.8, 0.2, 0.2, 1)
+					end
+					removeBtn:SetScript("OnClick", function()
+						store[tostring(entry.id)] = nil
+						if K:GetModule("Automation") and K:GetModule("Automation").UpdateAutoQuestIgnoreList then
+							K:GetModule("Automation"):UpdateAutoQuestIgnoreList()
+						end
+						refresh()
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+					end)
+				end
+
+				table.insert(rows, row)
+				y = y - 30
+			end
+			scrollChild:SetHeight(math.abs(y) + 10)
+		end
+
+		addButton:SetScript("OnClick", function()
+			local inputText = ""
+			if addInput and addInput:GetChildren() then
+				for _, child in ipairs({ addInput:GetChildren() }) do
+					if child:GetObjectType() == "EditBox" then
+						inputText = child:GetText()
+						break
+					end
+				end
+			end
+			local id = tonumber(inputText)
+			if id and id > 0 then
+				local store = getStore()
+				store[tostring(id)] = true
+				if K:GetModule("Automation") and K:GetModule("Automation").UpdateAutoQuestIgnoreList then
+					K:GetModule("Automation"):UpdateAutoQuestIgnoreList()
+				end
+				refresh()
+				if addInput and addInput.GetChildren then
+					for _, child in ipairs({ addInput:GetChildren() }) do
+						if child and child.GetObjectType and child:GetObjectType() == "EditBox" then
+							local eb = child
+							if eb and eb.SetText then
+								eb:SetText("")
+							end
+							break
+						end
+					end
+				end
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			else
+				print("|cffff0000Invalid NPC ID. Enter a number.|r")
+			end
+		end)
+
+		-- Update portraits and learn names when units are visible
+		local events = CreateFrame("Frame", nil, parent)
+		events:RegisterEvent("PLAYER_TARGET_CHANGED")
+		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+		events:SetScript("OnEvent", function(_, _, unit)
+			if unit and UnitExists(unit) then
+				local guid = UnitGUID(unit)
+				local id = guid and K.GetNPCID(guid)
+				if id then
+					local n = UnitName(unit)
+					if n and n ~= "" then
+						K.NPCNameCache = K.NPCNameCache or {}
+						K.NPCNameCache[id] = n
+					end
+				end
+			end
+			for _, row in ipairs(rows) do
+				if row.Portrait and row.NpcID then
+					trySetPortrait(row.Portrait, row.NpcID)
+				end
+				if row.NpcID and row.NameFS then
+					local function setText(nm)
+						local tag = (C and C.AutoQuestData and C.AutoQuestData.IgnoreQuestNPC and C.AutoQuestData.IgnoreQuestNPC[row.NpcID]) and "  [Default]" or ""
+						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, tag))
+					end
+					local nm = GetNPCNameByID and GetNPCNameByID(row.NpcID, setText)
+					setText(nm)
+				end
+			end
+		end)
+
+		refresh()
+		parent:SetHeight(360)
+	end, "Auto-Quest Ignore NPCs")
 end
 
 -- Color Picker Widget for ExtraGUI
@@ -2915,8 +3176,8 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	end
 	applyButton:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText("Apply", 1, 1, 1, 1, true)
-		GameTooltip:AddLine("Click to apply this value", 0.7, 0.7, 0.7, true)
+		GameTooltip:SetText(L["Apply"] or "Apply", 1, 1, 1, 1, true)
+		GameTooltip:AddLine(L["Click to apply this value"] or "Click to apply this value", 0.7, 0.7, 0.7, true)
 		GameTooltip:Show()
 	end)
 	applyButton:SetScript("OnLeave", function()
@@ -2997,17 +3258,8 @@ function ExtraGUI:CreateButton(parent, text, width, height, onClick)
 	return button
 end
 
--- ============================================================================
--- MODULE EXPORTS
--- ============================================================================
+-- Module Exports
 
--- Export to global for access
+-- Export to global for use
 K.ExtraGUI = ExtraGUI
 _G.KkthnxUI_ExtraGUI = ExtraGUI
-
--- ============================================================================
--- INITIALIZATION
--- ============================================================================
-
--- Initialize immediately when the file loads
-ExtraGUI:Enable()

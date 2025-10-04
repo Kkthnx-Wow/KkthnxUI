@@ -3,7 +3,6 @@ local Module = K:GetModule("Announcements")
 
 -- Cache Lua functions and constants
 local floor = math.floor
-local mod = mod
 local pairs = pairs
 local find = string.find
 local format = string.format
@@ -47,6 +46,29 @@ local debugMode = false -- Indicates if debug mode is enabled
 local worldQuestCache = {} -- Cache for world quest IDs
 local completedQuests = {} -- Cache for completed quest IDs
 local initialCheckComplete = false -- Indicates if initial quest check is complete
+
+-- Throttle: announce every Nth progress (1 = every)
+local function GetProgressEveryNth()
+	local nth = C and C["Announcements"] and C["Announcements"].QuestProgressEveryNth or 1
+	nth = tonumber(nth) or 1
+	if nth < 1 then
+		nth = 1
+	end
+	return nth
+end
+
+local function ShouldAnnounceProgress()
+	local nth = GetProgressEveryNth()
+	if nth <= 1 then
+		return true
+	end
+	Module._questProgressCounter = (Module._questProgressCounter or 0) + 1
+	if Module._questProgressCounter >= nth then
+		Module._questProgressCounter = 0
+		return true
+	end
+	return false
+end
 
 -- Get the quest link or the quest name
 local function GetQuestLinkOrName(questID)
@@ -121,10 +143,17 @@ function Module:FindQuestProgress(_, message)
 			local _, _, _, current, maximum = find(message, "(.*)[:]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
 			current, maximum = tonumber(current), tonumber(maximum)
 			if current and maximum then
-				if maximum >= 10 and mod(current, floor(maximum / 5)) == 0 then
-					SendQuestMessage(message)
-				elseif maximum < 10 then
-					SendQuestMessage(message)
+				if maximum >= 10 then
+					local step = floor(maximum / 5)
+					if step > 0 and (current % step) == 0 then
+						if ShouldAnnounceProgress() then
+							SendQuestMessage(message)
+						end
+					end
+				else
+					if ShouldAnnounceProgress() then
+						SendQuestMessage(message)
+					end
 				end
 			end
 
@@ -152,7 +181,10 @@ function Module:HandleQuestAccept(questID)
 	if questLogIndex then
 		local questInfo = GetQuestInfo(questLogIndex)
 		if questInfo then
-			SendQuestMessage(GetQuestAcceptText(questID, questInfo.frequency == QUEST_FREQUENCY_DAILY))
+			local isWQ = IsWorldQuest(questID)
+			if not isWQ or (isWQ and (C["Announcements"].AnnounceWorldQuests ~= false)) then
+				SendQuestMessage(GetQuestAcceptText(questID, questInfo.frequency == QUEST_FREQUENCY_DAILY))
+			end
 		end
 	end
 end
@@ -175,7 +207,9 @@ end
 -- Handle world quest completion
 function Module:HandleWorldQuestCompletion(questID)
 	if IsWorldQuest(questID) and questID and not completedQuests[questID] then
-		SendQuestMessage(GetQuestCompleteText(questID))
+		if C["Announcements"].AnnounceWorldQuests ~= false then
+			SendQuestMessage(GetQuestCompleteText(questID))
+		end
 		completedQuests[questID] = true
 	end
 end

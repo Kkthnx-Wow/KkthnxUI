@@ -5,10 +5,9 @@ local Module = K:GetModule("Automation")
 local math_random = math.random
 local IsInGroup = IsInGroup
 local SendChatMessage = SendChatMessage
-local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
 
--- Random list of auto-thanks messages for different locales
-local AutoThanksMessages = {
+-- Random list of auto-goodbye messages for different locales
+local AutoGoodbyeMessages = {
 	enUS = {
 		"GG",
 		"GG :D",
@@ -143,52 +142,52 @@ local AutoThanksMessages = {
 	},
 }
 
--- Get the client's locale
 local locale = GetLocale()
+local AutoGoodbyeList = AutoGoodbyeMessages[locale] or AutoGoodbyeMessages["enUS"]
+local lastGoodbyeAt = 0
 
--- Select the appropriate auto-thanks list based on the locale
-local AutoThanksList = AutoThanksMessages[locale] or AutoThanksMessages["enUS"]
-
--- Send a goodbye message
 local function SendAutoGoodbyeMessage()
-	if not AutoThanksList or #AutoThanksList == 0 then
+	local _, instanceType = GetInstanceInfo()
+	if not instanceType or instanceType == "none" then
+		return -- Exit if not in an instance
+	end
+
+	local now = GetTime and GetTime() or 0
+	if now > 0 and (now - lastGoodbyeAt) < 8 then
+		return
+	end
+	if not AutoGoodbyeList or #AutoGoodbyeList == 0 then
 		return -- Exit if the list is nil or empty
 	end
 
-	-- Select a random message
-	local message = AutoThanksList[math_random(#AutoThanksList)]
+	local message = AutoGoodbyeList[math_random(#AutoGoodbyeList)]
 
-	-- Determine the chat channel
 	local channel
-	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-		channel = "INSTANCE_CHAT"
-	elseif IsInGroup() then
-		channel = "PARTY"
+	local inPartyLFG = IsPartyLFG() and not C_PartyInfo.IsPartyWalkIn()
+	if IsInGroup() then
+		channel = inPartyLFG and "INSTANCE_CHAT" or "PARTY"
 	else
 		return -- Exit if not in a party or instance group
 	end
 
-	-- Send the message
 	if message then
 		SendChatMessage(message, channel)
+		lastGoodbyeAt = now
 	end
 end
 
 -- Setup delayed goodbye message
 local function SetupAutoGoodbye()
 	local delay = math_random(2, 5)
-	print("Setting up auto goodbye with delay:", delay) -- Debugging information
 	C_Timer.After(delay, SendAutoGoodbyeMessage)
 end
 
 -- Create or disable Auto Goodbye feature
 function Module:CreateAutoGoodbye()
 	if C["Automation"].AutoGoodbye then
-		-- Register events to trigger the goodbye message
 		K:RegisterEvent("LFG_COMPLETION_REWARD", SetupAutoGoodbye)
 		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", SetupAutoGoodbye)
 	else
-		-- Unregister events when the feature is disabled
 		K:UnregisterEvent("LFG_COMPLETION_REWARD", SetupAutoGoodbye)
 		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", SetupAutoGoodbye)
 	end

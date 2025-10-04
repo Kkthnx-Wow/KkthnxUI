@@ -30,13 +30,17 @@ local _, ns = ...
 local cargBags = ns.cargBags
 local Container = cargBags.classes.Container
 local Implementation = cargBags.classes.Implementation
+local tonumber = tonumber
+local string_lower = string.lower
+local string_match = string.match
+local string_gmatch = string.gmatch
 
 local defaultFilters = {
 	n = function(i, arg)
-		return i.name and i.name:lower():match(arg)
+		return i.name and string_match(string_lower(i.name), arg)
 	end,
 	t = function(i, arg)
-		return (i.type and i.type:lower():match(arg)) or (i.subType and i.subType:lower():match(arg)) or (i.equipLoc and i.equipLoc:lower():match(arg))
+		return (i.type and string_match(string_lower(i.type), arg)) or (i.subType and string_match(string_lower(i.subType), arg)) or (i.equipLoc and string_match(string_lower(i.equipLoc), arg))
 	end,
 	b = function(i, arg)
 		return i.bindOn and i.bindOn:match(arg)
@@ -66,14 +70,14 @@ function Implementation:ParseTextFilter(text, filters, textFilters)
 	filters = filters or cargBags.classes.FilterSet:New()
 	textFilters = textFilters or defaultFilters
 
-	for match in text:gmatch("[^,;&]+") do
-		local mod, type, value = match:trim():match("^(!?)(.-)[:=]?([^:=]*)$")
+	for match in string_gmatch(text, "[^,;&]+") do
+		local mod, type, value = string_match(match:trim(), "^(!?)(.-)[:=]?([^:=]*)$")
 		mod = (mod == "!" and -1) or true
 		if value and type ~= "" and textFilters[type] then
-			filters:SetExtended(textFilters[type], value:lower(), mod)
+			filters:SetExtended(textFilters[type], string_lower(value), mod)
 		elseif value and type == "" and textFilters._default then
 			local name = textFilters._default
-			filters:SetExtended(textFilters[name], value:lower(), mod)
+			filters:SetExtended(textFilters[name], string_lower(value), mod)
 		end
 	end
 

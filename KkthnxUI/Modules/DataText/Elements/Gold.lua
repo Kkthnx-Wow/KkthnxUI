@@ -118,7 +118,7 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	if not ticker and not K.IsFirestorm then
+	if not ticker then
 		C_WowTokenPublic_UpdateMarketPrice()
 		ticker = C_Timer_NewTicker(60, UpdateMarketPrice)
 	end

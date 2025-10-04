@@ -4,17 +4,25 @@ local Module = K:GetModule("DataText")
 local table_sort = table.sort
 local string_format = string.format
 local select = select
+local math_min = math.min
+local math_max = math.max
+local wipe = wipe
 
 local Ambiguate = Ambiguate
+local C_ChatInfo = C_ChatInfo
+local TimerunningUtil = TimerunningUtil
 local CLASS_ABBR = CLASS_ABBR
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local C_GuildInfo_GuildRoster = C_GuildInfo.GuildRoster
 local C_PartyInfo_InviteUnit = C_PartyInfo.InviteUnit
 local C_PartyInfo_RequestInviteFromUnit = C_PartyInfo.RequestInviteFromUnit
+local GetDisplayedInviteType = GetDisplayedInviteType
 local ChatEdit_ActivateChat = ChatEdit_ActivateChat
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
 local ChatFrame_GetMobileEmbeddedTexture = ChatFrame_GetMobileEmbeddedTexture
 local ChatFrame_OpenChat = ChatFrame_OpenChat
+local FRIENDS_TEXTURE_AFK = FRIENDS_TEXTURE_AFK
+local FRIENDS_TEXTURE_DND = FRIENDS_TEXTURE_DND
 local GetGuildInfo = GetGuildInfo
 local GetGuildRosterInfo = GetGuildRosterInfo
 local GetNumGuildMembers = GetNumGuildMembers
@@ -38,6 +46,7 @@ local SendMailNameEditBox = SendMailNameEditBox
 local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
 local ZONE = ZONE
+local UNKNOWN = UNKNOWN
 
 local guildTable = {}
 local gName
@@ -47,6 +56,40 @@ local infoFrame
 local prevTime
 local r, g, b = K.r, K.g, K.b
 local GuildDataText
+local BUTTON_HEIGHT = 22
+local MAX_VISIBLE_ROWS = 16
+local BASE_EXTRA_HEIGHT = 175 -- header + footer padding based on current layout (495 - 320)
+local updateQueued
+
+local function GuildPanel_Resize(rowCount)
+	if not infoFrame or not infoFrame.scrollFrame then
+		return
+	end
+
+	rowCount = rowCount or 0
+	local visibleRows = math_min(rowCount, MAX_VISIBLE_ROWS)
+	local scrollHeight = math_max(visibleRows * BUTTON_HEIGHT, BUTTON_HEIGHT)
+
+	-- Resize scroll frame to content
+	infoFrame.scrollFrame:SetHeight(scrollHeight)
+	-- Resize the container to just fit the content + existing header/footer
+	infoFrame:SetHeight(BASE_EXTRA_HEIGHT + scrollHeight)
+
+	-- Toggle scrollbar visibility only when needed
+	local scrollBar = infoFrame.scrollFrame.scrollBar
+	if rowCount > MAX_VISIBLE_ROWS then
+		scrollBar:Show()
+	else
+		scrollBar:Hide()
+		scrollBar:SetValue(0)
+	end
+
+	-- Make sure hybrid scroll metrics are in a sane range
+	local numButtons = MAX_VISIBLE_ROWS + 1
+	infoFrame.scrollFrame.scrollChild:SetSize(infoFrame.scrollFrame:GetWidth(), numButtons * BUTTON_HEIGHT)
+	infoFrame.scrollFrame.scrollBar:SetMinMaxValues(0, numButtons * BUTTON_HEIGHT)
+	infoFrame.scrollFrame:UpdateScrollChildRect()
+end
 
 local function rosterButtonOnClick(self, button)
 	local index = self.index
@@ -144,8 +187,8 @@ end
 
 local function GuildPanel_CreateButton(parent, index)
 	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(305, 20)
-	button:SetPoint("TOPLEFT", 0, -(index - 1) * 20)
+	button:SetSize(305, BUTTON_HEIGHT)
+	button:SetPoint("TOPLEFT", 0, -(index - 1) * BUTTON_HEIGHT)
 
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
 	button.HL:SetAllPoints()
@@ -188,11 +231,15 @@ local function GuildPanel_UpdateButton(button)
 	button.level:SetText(levelcolor .. level)
 
 	local tcoords = CLASS_ICON_TCOORDS[class]
-	button.class:SetTexCoord(tcoords[1] + 0.022, tcoords[2] - 0.025, tcoords[3] + 0.022, tcoords[4] - 0.025)
+	if tcoords then
+		button.class:SetTexCoord(tcoords[1] + 0.022, tcoords[2] - 0.025, tcoords[3] + 0.022, tcoords[4] - 0.025)
+	else
+		button.class:SetTexCoord(0, 1, 0, 1)
+	end
 
 	local namecolor = K.RGBToHex(K.ColorClass(class))
-	local isTimerunning = guid and C_ChatInfo.IsTimerunningPlayer(guid)
-	local playerName = isTimerunning and TimerunningUtil.AddSmallIcon(name) or name
+	local isTimerunning = guid and C_ChatInfo and C_ChatInfo.IsTimerunningPlayer and C_ChatInfo.IsTimerunningPlayer(guid)
+	local playerName = (isTimerunning and TimerunningUtil and TimerunningUtil.AddSmallIcon and TimerunningUtil.AddSmallIcon(name)) or name
 	button.name:SetText(namecolor .. playerName .. status)
 
 	local zonecolor = K.GreyColor
@@ -240,12 +287,17 @@ local function GuildPanel_OnMouseWheel(self, delta)
 end
 
 local function sortRosters(a, b)
-	if a and b then
-		if C["DataText"].GuildSortOrder then
-			return a[C["DataText"].GuildSortBy] < b[C["DataText"].GuildSortBy]
-		else
-			return a[C["DataText"].GuildSortBy] > b[C["DataText"].GuildSortBy]
-		end
+	if not a or not b then
+		return false
+	end
+
+	local key = C["DataText"].GuildSortBy or 3 -- default to name column
+	local asc = C["DataText"].GuildSortOrder ~= false
+
+	if asc then
+		return a[key] < b[key]
+	else
+		return a[key] > b[key]
 	end
 end
 
@@ -262,9 +314,31 @@ end
 
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > 0.5 then
-		if not infoFrame:IsMouseOver() then
-			self:Hide()
+	if self.timer > 0.2 then
+		local over = false
+		if GuildDataText and MouseIsOver(GuildDataText) then
+			over = true
+		elseif infoFrame and MouseIsOver(infoFrame) then
+			over = true
+		elseif infoFrame and infoFrame.scrollFrame and infoFrame.scrollFrame.buttons then
+			for i = 1, #infoFrame.scrollFrame.buttons do
+				local btn = infoFrame.scrollFrame.buttons[i]
+				if btn and btn:IsShown() and MouseIsOver(btn) then
+					over = true
+					break
+				end
+			end
+		end
+
+		if not over then
+			GameTooltip:Hide()
+			if infoFrame then
+				infoFrame:Hide()
+				infoFrame:SetScript("OnUpdate", nil)
+			end
+			if GuildDataText then
+				GuildDataText:SetScript("OnUpdate", nil)
+			end
 			self:SetScript("OnUpdate", nil)
 		end
 
@@ -287,6 +361,18 @@ local function GuildPanel_Init()
 
 	infoFrame:SetScript("OnLeave", function(self)
 		self:SetScript("OnUpdate", isPanelCanHide)
+	end)
+
+	infoFrame:SetScript("OnShow", function(self)
+		self:SetScript("OnUpdate", isPanelCanHide)
+	end)
+
+	infoFrame:SetScript("OnHide", function(self)
+		GameTooltip:Hide()
+		self:SetScript("OnUpdate", nil)
+		if GuildDataText then
+			GuildDataText:SetScript("OnUpdate", nil)
+		end
 	end)
 
 	gName = K.CreateFontString(infoFrame, 14, GUILD, "", true, "TOPLEFT", 15, -10)
@@ -324,18 +410,19 @@ local function GuildPanel_Init()
 	K.CreateFontString(infoFrame, 12, copyInfo, "", false, "BOTTOMRIGHT", -15, 10)
 
 	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_GuildDataTextScrollFrame", infoFrame, "HybridScrollFrameTemplate")
-	scrollFrame:SetSize(305, 320)
+	scrollFrame:SetSize(305, MAX_VISIBLE_ROWS * BUTTON_HEIGHT)
 	scrollFrame:SetPoint("TOPLEFT", 7, -100)
 	infoFrame.scrollFrame = scrollFrame
 
 	local scrollBar = CreateFrame("Slider", "$parentScrollBar", scrollFrame, "HybridScrollBarTemplate")
-	scrollBar.doNotHide = true
+	-- Allow manual hide/show based on content size
+	scrollBar.doNotHide = false
 	scrollBar:SkinScrollBar()
 	scrollFrame.scrollBar = scrollBar
 
 	local scrollChild = scrollFrame.scrollChild
-	local numButtons = 16 + 1
-	local buttonHeight = 22
+	local numButtons = MAX_VISIBLE_ROWS + 1
+	local buttonHeight = BUTTON_HEIGHT
 	local buttons = scrollFrame.buttons or {}
 	for i = 1, numButtons do
 		buttons[i] = buttons[i] or GuildPanel_CreateButton(scrollChild, i)
@@ -350,6 +437,9 @@ local function GuildPanel_Init()
 	scrollFrame:UpdateScrollChildRect()
 	scrollBar:SetMinMaxValues(0, numButtons * buttonHeight)
 	scrollBar:SetValue(0)
+
+	-- Start compact; it will be resized on first refresh
+	GuildPanel_Resize(0)
 end
 
 K.Delay(5, function()
@@ -371,7 +461,8 @@ local function GuildPanel_Refresh()
 	local guildName, guildRank = GetGuildInfo("player")
 
 	gName:SetText("|cff0099ff<" .. (guildName or "") .. ">")
-	gOnline:SetText(string_format(K.InfoColor .. "%s:" .. " %d/%d", GUILD_ONLINE_LABEL, (allOnline or numOnline), total))
+	local onlineDisplay = (allOnline or numOnline) or 0
+	gOnline:SetText(string_format(K.InfoColor .. "%s:" .. " %d/%d", GUILD_ONLINE_LABEL, onlineDisplay, total or 0))
 	gRank:SetText(K.InfoColor .. RANK .. ": " .. (guildRank or ""))
 
 	-- Declare status variable as string
@@ -419,6 +510,9 @@ local function GuildPanel_Refresh()
 	end
 
 	infoFrame.numMembers = count
+
+	-- Resize to content for a compact look when few online
+	GuildPanel_Resize(count)
 end
 
 local eventList = {
@@ -434,12 +528,21 @@ local function OnEvent(_, event, arg1)
 
 	if IsInGuild() then
 		local _, numOnline, allOnline = GetNumGuildMembers()
-		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. (allOnline or numOnline)
+		local onlineDisplay = (allOnline or numOnline) or 0
+		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. onlineDisplay
 		GuildDataText.Text:SetText(message)
 
 		if infoFrame and infoFrame:IsShown() then
-			GuildPanel_Refresh()
-			GuildPanel_SortUpdate()
+			if not updateQueued then
+				updateQueued = true
+				K.Delay(0.05, function()
+					if infoFrame and infoFrame:IsShown() then
+						GuildPanel_Refresh()
+						GuildPanel_SortUpdate()
+					end
+					updateQueued = false
+				end)
+			end
 		end
 	else
 		GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. NO .. " " .. GUILD)
@@ -448,6 +551,20 @@ end
 
 local function OnEnter()
 	if not IsInGuild() then
+		return
+	end
+
+	-- Compact tooltip when nobody is online
+	local _, numOnline, allOnline = GetNumGuildMembers()
+	local onlineCount = (allOnline or numOnline) or 0
+	if onlineCount == 0 then
+		GameTooltip:SetOwner(GuildDataText, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(GuildDataText.Text))
+		GameTooltip:ClearLines()
+		GameTooltip:AddDoubleLine(GUILD, string_format("%s: %d/%s", GUILD_ONLINE_LABEL, 0, "0"), 0.4, 0.6, 1, 0.4, 0.6, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine((L and L["No Guild Online"]) or "No guild members online.", 1, 1, 1)
+		GameTooltip:Show()
 		return
 	end
 
@@ -462,20 +579,11 @@ local function OnLeave()
 		return
 	end
 
-	-- Check if mouse is over the infoFrame or any of its buttons
-	local mouseOverFrame = MouseIsOver(infoFrame)
-	if not mouseOverFrame then
-		for i, button in ipairs(infoFrame.scrollFrame.buttons) do
-			if MouseIsOver(button) then
-				mouseOverFrame = true
-				break
-			end
-		end
+	-- Start delayed hide watcher to allow moving between text and panel
+	if GuildDataText then
+		GuildDataText:SetScript("OnUpdate", isPanelCanHide)
 	end
-
-	if not mouseOverFrame then
-		infoFrame:Hide()
-	end
+	infoFrame:SetScript("OnUpdate", isPanelCanHide)
 end
 
 local function OnMouseUp(_, btn)

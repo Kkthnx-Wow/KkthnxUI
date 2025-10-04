@@ -1,19 +1,31 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
+-- Localize frequently used APIs and globals for performance (Lua 5.1)
+local select = select
+local format = string.format
+local ipairs = ipairs
+local unpack = unpack
+local GetGuildRosterInfo = GetGuildRosterInfo
+local FRIENDS_BUTTON_TYPE_WOW = FRIENDS_BUTTON_TYPE_WOW
+local FRIENDS_BUTTON_TYPE_BNET = FRIENDS_BUTTON_TYPE_BNET
+local BNET_CLIENT_WOW = BNET_CLIENT_WOW
+
+-- Cache K tables
+local ClassColors = K.ClassColors
+local ClassList = K.ClassList
+
 -- Cache some Blizzard API calls that may be used frequently
 local getRealZoneText = GetRealZoneText
-
-local format, ipairs, unpack = string.format, ipairs, unpack
 local C_FriendList_GetWhoInfo = C_FriendList.GetWhoInfo
 local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
 local C_BattleNet_GetFriendAccountInfo = C_BattleNet.GetFriendAccountInfo
 
 -- Returns a class-colored string or RGB values.
 local function classColor(class, showRGB)
-	local color = K.ClassColors[K.ClassList[class] or class]
+	local color = ClassColors[ClassList[class] or class]
 	if not color then
-		color = K.ClassColors["PRIEST"]
+		color = ClassColors["PRIEST"]
 	end
 	if showRGB then
 		return color.r, color.g, color.b
@@ -86,8 +98,9 @@ local function updateGuildView()
 	local buttons = GuildRosterContainer.buttons
 	for _, button in ipairs(buttons) do
 		if button:IsShown() and button.online and button.guildIndex then
-			local guildInfo = { GetGuildRosterInfo(button.guildIndex) }
-			updateGuildInfo(button, currentView, playerArea, unpack(guildInfo))
+			-- Avoid table allocation per row by reading only used fields
+			local _, rank, rankIndex, level, _, zone, _, _, _, _, _, _, _, _, _, repStanding = GetGuildRosterInfo(button.guildIndex)
+			updateGuildInfo(button, currentView, playerArea, rank, rankIndex, level, zone, repStanding)
 		end
 	end
 end
@@ -127,9 +140,8 @@ local function updateGuildUI(event, addon)
 	K:UnregisterEvent(event, updateGuildUI)
 end
 
--- Tweak WoW's default strings to show class names in place of levels
-local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
-FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%$d", "%$s")
+-- Build a local friends level template; avoid mutating Blizzard globals
+local FRIENDS_LEVEL_TEMPLATE_L = (FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s"):gsub("%$d", "%$s"))
 
 -- Updates a single friend-list button with class and zone colors.
 local function updateFriendButton(button, playerArea)
@@ -142,7 +154,7 @@ local function updateFriendButton(button, playerArea)
 	if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 		local info = C_FriendList_GetFriendInfoByIndex(button.id)
 		if info and info.connected then
-			nameText = classColor(info.className) .. info.name .. "|r, " .. format(FRIENDS_LEVEL_TEMPLATE, diffColor(info.level) .. info.level .. "|r", info.className)
+			nameText = classColor(info.className) .. info.name .. "|r, " .. format(FRIENDS_LEVEL_TEMPLATE_L, diffColor(info.level) .. info.level .. "|r", info.className)
 			infoText = applyZoneColor(info.area, info.area, playerArea)
 		end
 	-- BNET friend
@@ -178,13 +190,11 @@ local function UpdateFriendsList()
 
 	local playerArea = getRealZoneText()
 	if not playerArea then
-		print("Error: Unable to get the real zone text.")
 		return
 	end
 
 	local scrollTarget = FriendsListFrame.ScrollBox and FriendsListFrame.ScrollBox.ScrollTarget
 	if not scrollTarget then
-		print("Error: Unable to find the ScrollTarget.")
 		return
 	end
 
@@ -206,7 +216,7 @@ local currentType = "zone"
 
 local hooksInstalled = false
 
-function Module:UpdateyClassColors()
+function Module:UpdateYClassColors()
 	if not C["Misc"].YClassColors then
 		-- Remove event registrations
 		K:UnregisterEvent("ADDON_LOADED", updateGuildUI)
@@ -238,22 +248,21 @@ function Module:UpdateyClassColors()
 				end
 
 				local numChildren = self.ScrollTarget:GetNumChildren()
-				if numChildren then
-					for whoIndex = 1, numChildren do
-						local button = select(whoIndex, self.ScrollTarget:GetChildren())
-						local info = C_FriendList_GetWhoInfo(button.index)
-						if info then
-							local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
-							columnTable.zone = zone or ""
-							columnTable.guild = guild or ""
-							columnTable.race = race or ""
-							button.Name:SetTextColor(classColor(class, true))
-							button.Level:SetText(diffColor(level) .. level)
-							button.Variable:SetText(columnTable[currentType])
-						end
+				if not numChildren then
+					return
+				end
+				for whoIndex = 1, numChildren do
+					local button = select(whoIndex, self.ScrollTarget:GetChildren())
+					local info = C_FriendList_GetWhoInfo(button.index)
+					if info then
+						local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
+						columnTable.zone = zone or ""
+						columnTable.guild = guild or ""
+						columnTable.race = race or ""
+						button.Name:SetTextColor(classColor(class, true))
+						button.Level:SetText(diffColor(level) .. level)
+						button.Variable:SetText(columnTable[currentType])
 					end
-				else
-					print("Error: Unable to get the number of children.")
 				end
 			end)
 		end

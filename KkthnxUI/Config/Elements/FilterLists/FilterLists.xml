@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <Script file="AuraWatchSpells.lua" />
-   <Script file="AutoOpen.lua" />
    <Script file="AutoQuest.lua" />
    <Script file="BadBuffs.lua" />
    <Script file="Changelog.lua" />

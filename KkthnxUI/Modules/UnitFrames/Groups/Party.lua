@@ -95,24 +95,22 @@ function Module:CreateParty()
 	end
 
 	if partyPortraitStyle ~= 0 then
-		local Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", self)
+		local Portrait
+
 		if partyPortraitStyle == 4 then
+			Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-
-			self.Portrait = Portrait
 		elseif partyPortraitStyle == 5 then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", Health)
+			Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			Portrait:CreateBorder()
-
-			self.Portrait = Portrait
-		elseif partyPortraitStyle ~= 5 and partyPortraitStyle ~= 4 then
-			local Portrait = Health:CreateTexture("KKUI_PartyPortrait", "BACKGROUND", nil, 1)
+		else
+			Portrait = Health:CreateTexture("KKUI_PartyPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
@@ -121,11 +119,15 @@ function Module:CreateParty()
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			self.Portrait = Portrait
-
 			if partyPortraitStyle == 2 or partyPortraitStyle == 3 then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
+		end
+
+		self.Portrait = Portrait
+
+		if partyPortraitStyle == 5 then
+			Module:ApplyPortraitAlphaFix(self)
 		end
 	end
 

@@ -755,7 +755,7 @@ do
 						end
 						pendingNPCs[npcID] = nil
 					else
-						local name = B.GetNPCName(npcID, callbacks[npcID])
+						local name = K.GetNPCName(npcID, callbacks[npcID])
 						if name and name ~= loadingStr then
 							pendingNPCs[npcID] = nil
 						else

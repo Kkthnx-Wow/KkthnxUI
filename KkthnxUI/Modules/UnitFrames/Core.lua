@@ -7,6 +7,9 @@ local oUF = K.oUF
 local pairs = pairs
 local string_format = string.format
 local unpack = unpack
+local math_min = math.min
+local ceil = math.ceil
+local floor = math.floor
 
 -- WoW API
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
@@ -17,6 +20,7 @@ local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local UIParent = UIParent
+local RegisterStateDriver = RegisterStateDriver
 local UnitClass = UnitClass
 local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
@@ -39,6 +43,165 @@ local filteredStyle = {
 	["nameplate"] = true,
 	["target"] = true,
 }
+
+-- Header registry (NDui-like pattern)
+Module.headers = Module.headers or {}
+
+-- Visibility helpers (NDui-like, adapted to our config)
+function Module:GetPartyVisibility()
+	if not C["Party"].Enable then
+		return "hide"
+	end
+	-- If using raid layout for party, hide party header entirely
+	if C["Raid"].UseRaidForParty then
+		return "hide"
+	end
+	local vis = "[group:party] show;hide"
+	if C["Party"].ShowPartySolo then
+		vis = "[nogroup] show;" .. vis
+	end
+	return vis
+end
+
+function Module:GetRaidVisibility()
+	if not C["Raid"].Enable then
+		return "hide"
+	end
+	-- When using raid layout for party, show raid header for any group (party or raid)
+	if C["Raid"].UseRaidForParty then
+		return "[group] show;hide"
+	end
+	return "[group:raid] show;hide"
+end
+
+function Module:GetPartyPetVisibility()
+	if not C["Party"].Enable or not C["Party"].ShowPet then
+		return "hide"
+	end
+	-- If using raid layout for party, hide party-pet header too
+	if C["Raid"].UseRaidForParty then
+		return "hide"
+	end
+	return self:GetPartyVisibility()
+end
+
+function Module:ResetHeaderPoints(header)
+	for i = 1, header:GetNumChildren() do
+		local child = select(i, header:GetChildren())
+		if child and child.ClearAllPoints then
+			child:ClearAllPoints()
+		end
+	end
+end
+
+function Module:UpdateAllHeaders()
+	if not self.headers or #self.headers == 0 then
+		return
+	end
+	-- Avoid protected attribute changes in combat; defer until out of combat
+	if InCombatLockdown() then
+		self._pendingHeaderUpdate = true
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateAllHeaders)
+		return
+	elseif self._pendingHeaderUpdate then
+		self._pendingHeaderUpdate = nil
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateAllHeaders)
+	end
+
+	for _, header in pairs(self.headers) do
+		local vis
+		if header.groupType == "party" then
+			vis = self:GetPartyVisibility()
+		elseif header.groupType == "pet" then
+			vis = self:GetPartyPetVisibility()
+		elseif header.groupType == "raid" then
+			vis = self:GetRaidVisibility()
+		end
+
+		-- Apply only when visibility state actually changes to avoid taint churn
+		if vis and header.__lastVis ~= vis then
+			RegisterStateDriver(header, "visibility", vis)
+			header.__lastVis = vis
+		end
+	end
+end
+
+-- Centralized 3D portrait alpha fix (handles model and optional border)
+function Module:ApplyPortraitAlphaFix(frame)
+	if not frame then
+		return
+	end
+	if not frame.Portrait then
+		return
+	end
+	if not frame.Portrait.IsObjectType or not frame.Portrait:IsObjectType("PlayerModel") then
+		return
+	end
+
+	local portrait = frame.Portrait
+	portrait.__baseAlpha = portrait.__baseAlpha or (portrait:GetAlpha() or 1)
+	if portrait.SetIgnoreParentAlpha then
+		portrait:SetIgnoreParentAlpha(true)
+	end
+
+	-- Ensure our border (if present) also ignores parent alpha and is driven manually
+	local border = portrait.KKUI_Border
+	if border and border.SetIgnoreParentAlpha then
+		border:SetIgnoreParentAlpha(true)
+	end
+	-- Also handle a potential portrait background
+	local background = portrait.KKUI_Background
+	if background and background.SetIgnoreParentAlpha then
+		background:SetIgnoreParentAlpha(true)
+	end
+
+	-- Cache base alphas so we can restore intended alpha when scale returns to 1
+	if border and not border.__baseAlpha and border.GetAlpha then
+		border.__baseAlpha = border:GetAlpha() or 1
+	end
+	if background and not background.__baseAlpha then
+		local baseAlpha
+		if background.GetVertexColor then
+			local _r, _g, _b, a = background:GetVertexColor()
+			baseAlpha = a
+		end
+		background.__baseAlpha = baseAlpha or ((C["Media"] and C["Media"].Backdrops and C["Media"].Backdrops.ColorBackdrop and C["Media"].Backdrops.ColorBackdrop[4]) or 0.9)
+	end
+
+	if not frame.__portraitAlphaHooked then
+		frame.__portraitAlphaHooked = true
+		hooksecurefunc(frame, "SetAlpha", function(owner, value)
+			local p = owner.Portrait
+			if p and p.IsObjectType and p:IsObjectType("PlayerModel") then
+				local scale = (value or 1)
+				local alpha = scale * (p.__baseAlpha or 1)
+				if p.SetModelAlpha then
+					p:SetModelAlpha(alpha)
+				end
+				local b = p.KKUI_Border
+				if b and b.SetAlpha then
+					b:SetAlpha(scale * (b.__baseAlpha or 1))
+				end
+				local bg = p.KKUI_Background
+				if bg and bg.SetAlpha then
+					bg:SetAlpha(scale * (bg.__baseAlpha or 1))
+				end
+			end
+		end)
+	end
+
+	local scaleSeed = (frame:GetAlpha() or 1)
+	local seed = scaleSeed * (portrait.__baseAlpha or 1)
+	if portrait.SetModelAlpha then
+		portrait:SetModelAlpha(seed)
+	end
+	if border and border.SetAlpha then
+		border:SetAlpha(scaleSeed * (border.__baseAlpha or 1))
+	end
+	if background and background.SetAlpha then
+		background:SetAlpha(scaleSeed * (background.__baseAlpha or 1))
+	end
+end
 
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle == 0 or not unit then
@@ -120,6 +283,52 @@ end
 
 function Module:UpdatePhaseIcon(isPhased)
 	self:SetTexCoord(unpack(phaseIconTexCoords[isPhased == 2 and 2 or 1]))
+end
+
+-- Function that plays a sound when the target or focus changes
+local function CreateTargetSound(_, unit)
+	-- Check if the unit exists
+	if UnitExists(unit) then
+		local soundKit
+		-- Determine the sound kit based on the unit's relation to the player
+		if UnitIsEnemy("player", unit) then
+			soundKit = SOUNDKIT.IG_CREATURE_AGGRO_SELECT
+		elseif UnitIsFriend("player", unit) then
+			soundKit = SOUNDKIT.IG_CHARACTER_NPC_SELECT
+		else
+			soundKit = SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT
+		end
+		PlaySound(soundKit)
+	else
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
+	end
+end
+
+-- Function that plays a sound when the player changes their focus
+function Module:PLAYER_FOCUS_CHANGED()
+	CreateTargetSound(_, "focus")
+end
+
+-- Function that plays a sound when the player changes their target
+function Module:PLAYER_TARGET_CHANGED()
+	CreateTargetSound(_, "target")
+end
+
+function Module:UNIT_FACTION(unit)
+	if unit ~= "player" then
+		return
+	end
+
+	-- Check if player is in a PvP zone
+	local isPvP = not not (UnitIsPVPFreeForAll("player") or UnitIsPVP("player"))
+
+	-- Play sound if player enters a PvP zone and it has not been played yet
+	if isPvP and not lastPvPSound then
+		PlaySound(SOUNDKIT.IG_PVP_UPDATE)
+	end
+
+	-- Update lastPvPSound variable
+	lastPvPSound = isPvP
 end
 
 local showOverAbsorb = false
@@ -456,7 +665,8 @@ end
 
 local function SetStatusBarColor(element, r, g, b)
 	for i = 1, #element do
-		element[i]:SetStatusBarColor(r, g, b)
+		local bar = element[i]
+		bar:SetStatusBarColor(r, g, b)
 	end
 end
 
@@ -471,7 +681,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 			-- Set individual colors for each active combo point bar
 			for i = 1, cur do
 				local bar = element[i]
-				local colorIndex = math.min(i, #comboColors)
+				local colorIndex = math_min(i, #comboColors)
 				local color = comboColors[colorIndex]
 				if color then
 					bar:SetStatusBarColor(color[1], color[2], color[3])
@@ -650,6 +860,31 @@ function Module:UpdateTextScale()
 	end
 end
 
+-- Add direction/apply helper and init string factory
+local function CreateHeaderInit(width, height)
+	return string_format(
+		[[ 
+		self:SetWidth(%d)
+		self:SetHeight(%d)
+	]],
+		width,
+		height
+	)
+end
+
+-- Centralized Blizzard raid frame disable
+local function DisableBlizzardRaidFrames()
+	if CompactPartyFrame then
+		CompactPartyFrame:UnregisterAllEvents()
+	end
+	if _G.CompactRaidFrameManager_SetSetting then
+		_G.CompactRaidFrameManager_SetSetting("IsShown", "0")
+		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
+		_G.CompactRaidFrameManager:UnregisterAllEvents()
+		_G.CompactRaidFrameManager:SetParent(K.UIFrameHider)
+	end
+end
+
 function Module:CreateUnits()
 	local horizonRaid = C["Raid"].HorizonRaid
 	local numGroups = C["Raid"].NumGroups
@@ -784,9 +1019,9 @@ function Module:CreateUnits()
 
 		-- stylua: ignore
 		local party = oUF:SpawnHeader(
-			"oUF_Party", nil, "solo,party",
+			"oUF_Party", nil, nil,
 			"showPlayer", C["Party"].ShowPlayer,
-			"showSolo", C["Party"].ShowPartySolo,
+			"showSolo", true,
 			"showParty", true,
 			"showRaid", false,
 			"xoffset", partyXOffset,
@@ -797,13 +1032,16 @@ function Module:CreateUnits()
 			"sortMethod", "NAME",
 			"point", "BOTTOM",
 			"columnAnchorPoint", "LEFT",
-			"oUF-initialConfigFunction", ([[
+			"oUF-initialConfigFunction", string_format([[ 
 				self:SetWidth(%d)
 				self:SetHeight(%d)
-			]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
+			]], C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 		)
 
 		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 50, -300 }, partyMoverWidth, partyMoverHeight)
+		party.groupType = "party"
+		tinsert(Module.headers, party)
+		RegisterStateDriver(party, "visibility", Module:GetPartyVisibility())
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
@@ -817,24 +1055,25 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local partyPet = oUF:SpawnHeader(
-				"oUF_PartyPet", nil, "solo,party",
-				"showPlayer", true,
-				"showSolo", false,
+				"oUF_PartyPet", "SecureGroupPetHeaderTemplate", nil,
+				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
 				"xoffset", partypetXOffset,
 				"yOffset", partypetYOffset,
 				"point", "BOTTOM",
 				"columnAnchorPoint", "LEFT",
-				"oUF-initialConfigFunction", ([[
+				"oUF-initialConfigFunction", string_format([[ 
 					self:SetWidth(%d)
 					self:SetHeight(%d)
-					self:SetAttribute("unitsuffix", "pet")
-				]]):format(60, 34)
+				]], 60, 34)
 			)
 
 			local moverAnchor = { "TOPLEFT", partyMover, "TOPRIGHT", 6, -40 }
 			local petMover = K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
+			partyPet.groupType = "pet"
+			tinsert(Module.headers, partyPet)
+			RegisterStateDriver(partyPet, "visibility", Module:GetPartyPetVisibility())
 			partyPet:ClearAllPoints()
 			partyPet:SetPoint("TOPLEFT", petMover)
 		end
@@ -845,26 +1084,17 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Raid", Module.CreateRaid)
 		oUF:SetActiveStyle("Raid")
 
-		-- Hide Default RaidFrame
-		if CompactPartyFrame then
-			CompactPartyFrame:UnregisterAllEvents()
-		end
-
-		if _G.CompactRaidFrameManager_SetSetting then
-			_G.CompactRaidFrameManager_SetSetting("IsShown", "0")
-			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-			_G.CompactRaidFrameManager:UnregisterAllEvents()
-			_G.CompactRaidFrameManager:SetParent(K.UIFrameHider)
-		end
+		-- Hide Default RaidFrame via helper
+		DisableBlizzardRaidFrames()
 
 		local raidMover
 		-- stylua: ignore
 		local function CreateGroup(name, i)
 			local group = oUF:SpawnHeader(
-				name, nil, "solo,party,raid",
+				name, nil, nil,
 				"showPlayer", true,
-				"showSolo", not showPartyFrame and C["Raid"].ShowRaidSolo,
-				"showParty", not showPartyFrame,
+				"showSolo", true,
+				"showParty", true,
 				"showRaid", true,
 				"xOffset", 6,
 				"yOffset", -6,
@@ -877,10 +1107,7 @@ function Module:CreateUnits()
 				"columnSpacing", 5,
 				"point", horizonRaid and "LEFT" or "TOP",
 				"columnAnchorPoint", "LEFT",
-				"oUF-initialConfigFunction", ([[
-					self:SetWidth(%d)
-					self:SetHeight(%d)
-				]]):format(raidWidth, raidHeight)
+				"oUF-initialConfigFunction", CreateHeaderInit(raidWidth, raidHeight)
 			)
 
 			return group
@@ -902,6 +1129,9 @@ function Module:CreateUnits()
 		for i = 1, numGroups do
 			groups[i] = CreateGroup("oUF_Raid" .. i, i)
 			groups[i].index = i
+			groups[i].groupType = "raid"
+			tinsert(Module.headers, groups[i])
+			RegisterStateDriver(groups[i], "visibility", Module:GetRaidVisibility())
 
 			if i == 1 then
 				if horizonRaid then
@@ -953,12 +1183,12 @@ function Module:CreateUnits()
 				"yOffset", -6,
 				"groupFilter", "MAINTANK",
 				"point", horizonTankRaid and "LEFT" or "TOP",
-				"columnAnchworPoint", "LEFT",
+				"columnAnchorPoint", "LEFT",
 				"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
-				"oUF-initialConfigFunction", ([[
+				"oUF-initialConfigFunction", string_format([[ 
 					self:SetWidth(%d)
 					self:SetHeight(%d)
-				]]):format(raidTankWidth, raidTankHeight)
+				]], raidTankWidth, raidTankHeight)
 			)
 
 			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)
@@ -966,6 +1196,9 @@ function Module:CreateUnits()
 			raidtank:SetPoint("TOPLEFT", raidtankMover)
 		end
 	end
+
+	-- Apply header visibility once after creation
+	Module:UpdateAllHeaders()
 end
 
 function Module:UpdateRaidDebuffIndicator()
@@ -990,52 +1223,6 @@ function Module:UpdateRaidDebuffIndicator()
 			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP)
 		end
 	end
-end
-
--- Function that plays a sound when the target or focus changes
-local function CreateTargetSound(_, unit)
-	-- Check if the unit exists
-	if UnitExists(unit) then
-		local soundKit
-		-- Determine the sound kit based on the unit's relation to the player
-		if UnitIsEnemy("player", unit) then
-			soundKit = SOUNDKIT.IG_CREATURE_AGGRO_SELECT
-		elseif UnitIsFriend("player", unit) then
-			soundKit = SOUNDKIT.IG_CHARACTER_NPC_SELECT
-		else
-			soundKit = SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT
-		end
-		PlaySound(soundKit)
-	else
-		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
-	end
-end
-
--- Function that plays a sound when the player changes their focus
-function Module:PLAYER_FOCUS_CHANGED()
-	CreateTargetSound(_, "focus")
-end
-
--- Function that plays a sound when the player changes their target
-function Module:PLAYER_TARGET_CHANGED()
-	CreateTargetSound(_, "target")
-end
-
-function Module:UNIT_FACTION(unit)
-	if unit ~= "player" then
-		return
-	end
-
-	-- Check if player is in a PvP zone
-	local isPvP = not not (UnitIsPVPFreeForAll("player") or UnitIsPVP("player"))
-
-	-- Play sound if player enters a PvP zone and it has not been played yet
-	if isPvP and not lastPvPSound then
-		PlaySound(SOUNDKIT.IG_PVP_UPDATE)
-	end
-
-	-- Update lastPvPSound variable
-	lastPvPSound = isPvP
 end
 
 function Module:OnEnable()

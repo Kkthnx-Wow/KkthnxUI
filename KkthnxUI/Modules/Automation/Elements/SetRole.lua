@@ -38,7 +38,9 @@ function Module:SetupAutoRole()
 	local spec = GetSpecialization()
 	if spec then
 		local role = GetSpecializationRole(spec)
-		ChangePlayerRole(role)
+		if role and role ~= "NONE" then
+			ChangePlayerRole(role)
+		end
 	end
 end
 
@@ -47,11 +49,18 @@ function Module:CreateAutoSetRole()
 	if not C["Automation"].AutoSetRole then
 		K:UnregisterEvent("PLAYER_TALENT_UPDATE", self.SetupAutoRole)
 		K:UnregisterEvent("GROUP_ROSTER_UPDATE", self.SetupAutoRole)
+		if RolePollPopup and RolePollPopup.RegisterEvent then
+			RolePollPopup:RegisterEvent("ROLE_POLL_BEGIN")
+		end
 		return
 	end
 
 	K:RegisterEvent("PLAYER_TALENT_UPDATE", self.SetupAutoRole)
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.SetupAutoRole)
 
-	RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
+	if RolePollPopup and RolePollPopup.UnregisterEvent then
+		RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
+	end
+
+	self:SetupAutoRole()
 end

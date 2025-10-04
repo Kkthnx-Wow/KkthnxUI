@@ -1,5 +1,60 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local KKUI_AddonLoader = CreateFrame("Frame")
+local KKUI_ModulesEnabled = false
+local pcall = pcall
+local pairs = pairs
+local print = print
+local debugprofilestop = debugprofilestop
+
+local function KKUI_EnableModulesOnce()
+	local t0
+	if K.isDeveloper then
+		t0 = debugprofilestop()
+	end
+	if KKUI_ModulesEnabled then
+		return
+	end
+	KKUI_ModulesEnabled = true
+
+	-- 1) Main GUI
+	if K.GUI and K.GUI.GUI and K.GUI.GUI.Enable then
+		pcall(function()
+			K.GUI.GUI:Enable()
+		end)
+	elseif K.GUI and K.GUI.Enable then
+		pcall(function()
+			K.GUI:Enable()
+		end)
+	end
+
+	-- 2) ExtraGUI
+	if K.ExtraGUI and K.ExtraGUI.Enable then
+		local ok = pcall(function()
+			K.ExtraGUI:Enable()
+		end)
+		if ok and K.GUI and K.GUI.AttachExtraCogwheels then
+			pcall(function()
+				K.GUI:AttachExtraCogwheels()
+			end)
+		elseif ok and K.GUI and K.GUI.GUI and K.GUI.GUI.AttachExtraCogwheels then
+			pcall(function()
+				K.GUI.GUI:AttachExtraCogwheels()
+			end)
+		end
+	end
+
+	-- 3) ProfileGUI
+	if K.ProfileGUI and K.ProfileGUI.Enable then
+		pcall(function()
+			K.ProfileGUI:Enable()
+		end)
+	end
+
+	if K.isDeveloper and t0 then
+		local dt = debugprofilestop() - t0
+		K.Print(string.format("[KKUI_DEV] EnableModulesOnce %.3f ms", dt))
+	end
+end
 
 local function KKUI_VerifyDatabase()
 	KkthnxUIDB = KkthnxUIDB or {}
@@ -22,6 +77,7 @@ local function KKUI_VerifyDatabase()
 	charData.SplitCount = charData.SplitCount or 1
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
+	charData.QueueTimer = charData.QueueTimer or { PVEPopTime = {}, PVEQueuedTime = {} }
 
 	if charData.FavouriteItems then
 		local customItems = charData.CustomItems
@@ -61,6 +117,15 @@ end
 local function KKUI_LoadCustomSettings()
 	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
+	-- Migration: Automation.AutoSkipCinematic -> Automation.ConfirmCinematicSkip
+	if Settings and Settings.Automation then
+		local s = Settings.Automation
+		if s.AutoSkipCinematic ~= nil and Settings.Automation.ConfirmCinematicSkip == nil then
+			Settings.Automation.ConfirmCinematicSkip = s.AutoSkipCinematic
+			s.AutoSkipCinematic = nil
+		end
+	end
+
 	for group, options in pairs(Settings) do
 		if C[group] then
 			local Count = 0
@@ -89,40 +154,47 @@ end
 local function KKUI_LoadVariables()
 	KKUI_CreateDefaults()
 	KKUI_LoadCustomSettings()
-
-	-- ExtraGUI (provides additional config functionality)
-	if K.ExtraGUI then
-		-- K.ExtraGUI:Enable()
-	end
-
-	-- Main GUI system second (provides core configuration)
-	if K.NewGUI then
-		-- K.NewGUI:Enable()
-	end
-
-	-- ProfileGUI last (depends on main GUI being available)
-	if K.ProfileGUI then
-		-- K.ProfileGUI:Enable()
-	end
 end
 
 local function KKUI_OnEvent(_, event, addonName)
 	if event == "ADDON_LOADED" and addonName == "KkthnxUI" then
-		-- Add error handling to prevent crashes during loading
+		local t0
+		if K.isDeveloper then
+			t0 = debugprofilestop()
+		end
 		local success, err = pcall(function()
 			KKUI_VerifyDatabase()
 			KKUI_LoadVariables()
 			K:SetupUIScale(true)
+
+			-- Initialize subsystems once
+			KKUI_EnableModulesOnce()
 		end)
 
 		if not success then
 			print("|cffFF0000KkthnxUI ERROR:|r Critical error during loading: " .. tostring(err))
 			print("|cffFF0000KkthnxUI ERROR:|r Please check your installation and try again.")
+		elseif K.isDeveloper and t0 then
+			local dt = debugprofilestop() - t0
+			K.Print(string.format("[KKUI_DEV] ADDON_LOADED %.3f ms", dt))
 		end
+	elseif event == "PLAYER_LOGIN" then
+		-- Ensure subsystems are enabled exactly once
+		KKUI_EnableModulesOnce()
 
-		KKUI_AddonLoader:UnregisterEvent("ADDON_LOADED")
+		-- Use a wrapper to avoid passing a potentially nil function reference at load time
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+			if K.UpdateProfileTimestamp then
+				K.UpdateProfileTimestamp()
+			else
+				-- Soft log to help diagnose load-order issues; this will run once at PEW
+				print("|cffff9900KkthnxUI:|r UpdateProfileTimestamp not ready at PLAYER_ENTERING_WORLD")
+			end
+		end)
+		K:UnregisterEvent(event, KKUI_OnEvent)
 	end
 end
 
 KKUI_AddonLoader:RegisterEvent("ADDON_LOADED")
+KKUI_AddonLoader:RegisterEvent("PLAYER_LOGIN")
 KKUI_AddonLoader:SetScript("OnEvent", KKUI_OnEvent)

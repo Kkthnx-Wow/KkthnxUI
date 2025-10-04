@@ -3,6 +3,14 @@ local oUF = K.oUF
 
 -- By Tukz, for Tukui
 
+-- Localize frequently used APIs and utilities for performance
+local CreateFrame = CreateFrame
+local GetTime = GetTime
+local UnitAura = UnitAura
+local AuraUtil_UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
+local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+local math_floor = math.floor
+
 local Tracker = {
 	-- PRIEST
 	[194384] = { 1, 1, 0.66 }, -- Redeemer
@@ -70,36 +78,23 @@ local Tracker = {
 	[20707] = { 0.8, 0.4, 0.8 }, -- Soulstone
 }
 
-local UnitAura = UnitAura
-
 if not UnitAura then
 	UnitAura = function(unitToken, index, filter)
-		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
-
+		local auraData = C_UnitAuras_GetAuraDataByIndex and C_UnitAuras_GetAuraDataByIndex(unitToken, index, filter)
 		if not auraData then
 			return nil
 		end
-
-		return AuraUtil.UnpackAuraData(auraData)
+		return AuraUtil_UnpackAuraData and AuraUtil_UnpackAuraData(auraData)
 	end
 end
 
--- Declare a local function to handle the OnUpdate event
+-- Handle per-tick countdown updates; min/max is set when duration changes
 local function OnUpdate(self)
-	-- Get the current time
-	local currentTime = GetTime()
-
-	-- Calculate the time left by subtracting the current time from the expiration time
-	local timeLeft = self.Expiration - currentTime
-
-	-- Get the total duration of the timer
-	local totalDuration = self.Duration
-
-	-- Check if the self object has a SetMinMaxValues method
-	if self.SetMinMaxValues then
-		-- Set the minimum and maximum values for the timer bar
-		self:SetMinMaxValues(0, totalDuration)
-		-- Set the value of the timer bar based on the time left
+	local timeLeft = self.Expiration - GetTime()
+	if timeLeft < 0 then
+		timeLeft = 0
+	end
+	if self.SetValue then
 		self:SetValue(timeLeft)
 	end
 end
@@ -111,8 +106,11 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 		return
 	end
 
-	local PositionX = (id * AuraTrack.IconSize) - AuraTrack.IconSize + (AuraTrack.Spacing * id)
-	local r, g, b = unpack(Tracker[spellID])
+	local iconSize = AuraTrack.IconSize
+	local spacing = AuraTrack.Spacing
+	local PositionX = (id * iconSize) - iconSize + (spacing * id)
+	local color = Tracker[spellID]
+	local r, g, b = color[1], color[2], color[3]
 
 	if not AuraTrack.Auras[id] then
 		AuraTrack.Auras[id] = CreateFrame("Frame", nil, AuraTrack)
@@ -123,7 +121,7 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 		AuraTrack.Auras[id].Backdrop:SetPoint("TOPLEFT", AuraTrack.Auras[id], -1, 1)
 		AuraTrack.Auras[id].Backdrop:SetPoint("BOTTOMRIGHT", AuraTrack.Auras[id], 1, -1)
 
-		if AuraTrack.Auras[id].Backdrop.CreateShadow then
+		if AuraTrack.Auras[id].CreateShadow then
 			AuraTrack.Auras[id]:CreateShadow(true)
 		end
 
@@ -165,13 +163,15 @@ local function UpdateBar(self, _, spellID, _, id, expiration, duration)
 	local Orientation = self.Health:GetOrientation()
 	local Size = Orientation == "HORIZONTAL" and AuraTrack:GetHeight() or AuraTrack:GetWidth()
 
-	AuraTrack.MaxAuras = AuraTrack.MaxAuras or floor(Size / AuraTrack.Thickness)
+	local thickness = AuraTrack.Thickness
+	AuraTrack.MaxAuras = AuraTrack.MaxAuras or math_floor(Size / thickness)
 
 	if id > AuraTrack.MaxAuras then
 		return
 	end
 
-	local r, g, b = unpack(Tracker[spellID])
+	local color = Tracker[spellID]
+	local r, g, b = color[1], color[2], color[3]
 	local Position = (id * AuraTrack.Thickness) - AuraTrack.Thickness
 	local X = Orientation == "VERTICAL" and -Position or 0
 	local Y = Orientation == "HORIZONTAL" and -Position or 0
@@ -199,6 +199,7 @@ local function UpdateBar(self, _, spellID, _, id, expiration, duration)
 	AuraTrack.Auras[id].Backdrop:SetColorTexture(r * 0.2, g * 0.2, b * 0.2)
 
 	if expiration > 0 and duration > 0 then
+		AuraTrack.Auras[id]:SetMinMaxValues(0, duration)
 		AuraTrack.Auras[id]:SetScript("OnUpdate", OnUpdate)
 	else
 		AuraTrack.Auras[id]:SetScript("OnUpdate", nil)
@@ -214,23 +215,25 @@ local function Update(self, _, unit)
 		return
 	end
 
+	local AuraTrack = self.AuraTrack
 	local ID = 0
 
-	if self.AuraTrack:GetWidth() == 0 then
+	if AuraTrack:GetWidth() == 0 then
 		return
 	end
 
-	self.AuraTrack.MaxAuras = self.AuraTrack.MaxAuras or 4
-	self.AuraTrack.Spacing = self.AuraTrack.Spacing or 6
-	self.AuraTrack.IconSize = (self.AuraTrack:GetWidth() / self.AuraTrack.MaxAuras) - self.AuraTrack.Spacing - (self.AuraTrack.Spacing / self.AuraTrack.MaxAuras)
+	AuraTrack.MaxAuras = AuraTrack.MaxAuras or 4
+	AuraTrack.Spacing = AuraTrack.Spacing or 6
+	AuraTrack.IconSize = (AuraTrack:GetWidth() / AuraTrack.MaxAuras) - AuraTrack.Spacing - (AuraTrack.Spacing / AuraTrack.MaxAuras)
 
 	for i = 1, 40 do
 		local _, texture, count, _, duration, expiration, caster, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 
-		if self.AuraTrack.Tracker[spellID] and (caster == "player" or caster == "pet") then
+		local track = AuraTrack.Tracker[spellID]
+		if track and (caster == "player" or caster == "pet") then
 			ID = ID + 1
 
-			if self.AuraTrack.Icons then
+			if AuraTrack.Icons then
 				UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
 			else
 				UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
@@ -238,9 +241,9 @@ local function Update(self, _, unit)
 		end
 	end
 
-	for i = ID + 1, self.AuraTrack.MaxAuras do
-		if self.AuraTrack.Auras[i] and self.AuraTrack.Auras[i]:IsShown() then
-			self.AuraTrack.Auras[i]:Hide()
+	for i = ID + 1, AuraTrack.MaxAuras do
+		if AuraTrack.Auras[i] and AuraTrack.Auras[i]:IsShown() then
+			AuraTrack.Auras[i]:Hide()
 		end
 	end
 end

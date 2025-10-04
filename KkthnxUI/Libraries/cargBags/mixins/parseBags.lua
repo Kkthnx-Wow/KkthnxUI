@@ -30,6 +30,8 @@ DESCRIPTION
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
+local type = type
+local tonumber = tonumber
 
 local bagStrings = {
 	["backpack"] = { 0 },
@@ -42,13 +44,6 @@ local bagStrings = {
 	["keyring"] = { -2 },
 	["accountbank"] = { 12, 13, 14, 15, 16 },
 }
---[=[
--1 Character slots
-0-4 Backpack slots
-5 reagent slot
-6-11 Bank slots
-12-16 Account bank slots
-]=]
 cargBags.BagStrings = bagStrings
 
 --[[!
@@ -69,14 +64,18 @@ function cargBags:ParseBags(bags)
 	local min, max = bags:match("(%d+)-(%d+)")
 	if min then
 		local t = {}
-		for i = min, max do
+		local nmin, nmax = tonumber(min), tonumber(max)
+		for i = nmin, nmax do
 			t[#t + 1] = i
 		end
 		bagStrings[bags] = t
 		return t
-	elseif tonumber(bags) then
-		local t = { tonumber(bags) }
-		bagStrings[bags] = t
-		return t
+	else
+		local v = tonumber(bags)
+		if v then
+			local t = { v }
+			bagStrings[bags] = t
+			return t
+		end
 	end
 end

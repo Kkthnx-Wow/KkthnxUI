@@ -117,6 +117,10 @@ function Module:CreatePet()
 		end
 
 		self.Portrait = Portrait
+
+		if petPortraitStyle == 5 then
+			Module:ApplyPortraitAlphaFix(self)
+		end
 	end
 
 	local Level = self:CreateFontString(nil, "OVERLAY")

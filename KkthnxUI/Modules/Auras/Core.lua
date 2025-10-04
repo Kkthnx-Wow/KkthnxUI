@@ -6,6 +6,7 @@ local math_floor, string_format, select, tonumber, unpack = math.floor, string.f
 local CreateFrame, DebuffTypeColor, GameTooltip, GetInventoryItemQuality, GetInventoryItemTexture = CreateFrame, DebuffTypeColor, GameTooltip, GetInventoryItemQuality, GetInventoryItemTexture
 local GetTime, GetWeaponEnchantInfo, RegisterAttributeDriver, RegisterStateDriver, SecureHandlerSetFrameRef = GetTime, GetWeaponEnchantInfo, RegisterAttributeDriver, RegisterStateDriver, SecureHandlerSetFrameRef
 local UIParent, IsAltKeyDown, IsControlKeyDown = UIParent, IsAltKeyDown, IsControlKeyDown
+local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
 
 local day, hour, minute = 86400, 3600, 60
 
@@ -85,13 +86,15 @@ function Module:FormatAuraTime(s)
 	elseif s >= 10 * minute then
 		return string_format("%d" .. K.MyClassColor .. "m", s / minute), s % minute
 	elseif s >= minute then
-		return string_format("%d:%.2d", s / minute, s % minute), s - math_floor(s)
+		local m = math_floor(s / minute)
+		local sec = math_floor(s - m * minute)
+		return string_format("%d:%02d", m, sec), s - math_floor(s)
 	elseif s > 10 then
 		return string_format("%d" .. K.MyClassColor .. "s", s), s - math_floor(s)
 	elseif s > 5 then
-		return string_format("|cffffff00%.1f|r", s), s - string_format("%.1f", s)
+		return string_format("|cffffff00%.1f|r", s), s - (math_floor(s * 10) / 10)
 	else
-		return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
+		return string_format("|cffff0000%.1f|r", s), s - (math_floor(s * 10) / 10)
 	end
 end
 
@@ -133,7 +136,7 @@ end
 
 function Module:UpdateAuras(button, index)
 	local unit, filter = button.header:GetAttribute("unit"), button.filter
-	local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+	local auraData = C_UnitAuras_GetAuraDataByIndex(unit, index, filter)
 	if not auraData then
 		return
 	end
@@ -241,10 +244,12 @@ function Module:UpdateHeader(header)
 		end
 
 		child.count:SetFontObject(K.UIFontOutline)
-		child.count:SetFont(select(1, child.count:GetFont()), fontSize, select(3, child.count:GetFont()))
+		local countFont, _, countFlags = child.count:GetFont()
+		child.count:SetFont(countFont, fontSize, countFlags)
 
 		child.timer:SetFontObject(K.UIFontOutline)
-		child.timer:SetFont(select(1, child.timer:GetFont()), fontSize, select(3, child.timer:GetFont()))
+		local timerFont, _, timerFlags = child.timer:GetFont()
+		child.timer:SetFont(timerFont, fontSize, timerFlags)
 
 		-- Blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons
 		if index > (cfg.maxWraps * cfg.wrapAfter) and child:IsShown() then

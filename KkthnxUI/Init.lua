@@ -60,7 +60,6 @@ K.LibDeflate = LibStub("LibDeflate-KkthnxUI", true) or nil
 K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true) or nil
 K.LibSerialize = LibStub("LibSerialize-KkthnxUI", true) or nil
 K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true) or nil
-K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI", true) or nil
 K.cargBags = Engine and Engine.cargBags or nil
 K.oUF = Engine and Engine.oUF or nil
 
@@ -89,6 +88,8 @@ K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 -- UI Info
 K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
+K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", UIParent, "GameTooltipTemplate")
+K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 -- WoW Info
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
@@ -180,12 +181,28 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[Enum.ItemQuality.Poor] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 } -- This is the default color, but it's included here for completeness.
 
+local function SafeDispatch(func, event, ...)
+	local ok, err = pcall(func, event, ...)
+	if not ok then
+		print(string_format("|cffff0000KkthnxUI callback error:|r %s (event: %s)", tostring(err), tostring(event)))
+	end
+end
+
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
-	for func in pairs(events[event]) do
-		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			func(event, CombatLogGetCurrentEventInfo())
+	local funcs = events[event]
+	if not funcs then
+		return
+	end
+
+	for func in pairs(funcs) do
+		if type(func) == "function" then
+			if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+				SafeDispatch(func, event, CombatLogGetCurrentEventInfo())
+			else
+				SafeDispatch(func, event, ...)
+			end
 		else
-			func(event, ...)
+			print(string_format("|cffff9900KkthnxUI:|r skipped non-function handler for '%s' (%s)", tostring(event), tostring(func)))
 		end
 	end
 end)
@@ -201,6 +218,20 @@ function K:RegisterEvent(event, func, unit1, unit2)
 		else
 			eventsFrame:RegisterEvent(event)
 		end
+	end
+
+	-- Defensive guard: ensure 'func' is a valid key
+	if not func then
+		-- Add a concise debug to help identify bad registrations without hard erroring
+		print(string_format("|cffff0000KkthnxUI:RegisterEvent error:|r nil callback for event '%s'", tostring(event)))
+		return
+	end
+
+	-- Optional: warn if func is not callable; we store keys and call later, so just hint
+	if type(func) ~= "function" then
+		-- Allow non-function keys as we iterate keys later, but surface info for debugging
+		-- Using tostring on func to avoid indexing nil
+		print(string_format("|cffff9900KkthnxUI:RegisterEvent notice:|r non-function key registered for '%s' (%s)", tostring(event), tostring(func)))
 	end
 
 	events[event][func] = true

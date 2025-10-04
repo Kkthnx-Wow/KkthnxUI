@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
 local function skipOnKeyDown(self, key)
-	if not C["Automation"].AutoSkipCinematic then
+	if not C["Automation"].ConfirmCinematicSkip then
 		return
 	end
 	if key == "ESCAPE" then
@@ -13,7 +13,7 @@ local function skipOnKeyDown(self, key)
 end
 
 local function skipOnKeyUp(self, key)
-	if not C["Automation"].AutoSkipCinematic then
+	if not C["Automation"].ConfirmCinematicSkip then
 		return
 	end
 	if key == "SPACE" or key == "ESCAPE" or key == "ENTER" then

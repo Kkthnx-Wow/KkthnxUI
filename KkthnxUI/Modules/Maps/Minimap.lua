@@ -1,16 +1,28 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Minimap")
 
 local math_floor = math.floor
-local mod = mod
 local select = select
 local table_sort = table.sort
+local tinsert = tinsert
+local unpack = unpack
+local SOUNDKIT = SOUNDKIT
+local C_AddOns_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded
+local C_Garrison_HasGarrison = C_Garrison and C_Garrison.HasGarrison
+local ShowGarrisonLandingPage = ShowGarrisonLandingPage
+local UIParentLoadAddOn = UIParentLoadAddOn
+local ToggleFrame = ToggleFrame
+local CloseMenus = CloseMenus
+local CloseAllWindows = CloseAllWindows
+local PlaySound = PlaySound
+local ShowUIPanel = ShowUIPanel
+local HideUIPanel = HideUIPanel
+local ipairs = ipairs
 
 local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 local GetUnitName = GetUnitName
 local InCombatLockdown = InCombatLockdown
-local Minimap = Minimap
 local Minimap = Minimap
 local UnitClass = UnitClass
 local hooksecurefunc = hooksecurefunc
@@ -106,7 +118,7 @@ local menuList = {
 		icon = 134149,
 	},
 	{
-		text = "Calendar",
+		text = (L and L["Calendar"]) or "Calendar",
 		func = function()
 			_G.GameTimeFrame:Click()
 		end,
@@ -117,7 +129,7 @@ local menuList = {
 		text = _G.ENCOUNTER_JOURNAL,
 		microOffset = "EJMicroButton",
 		func = function()
-			if not C_AddOns.IsAddOnLoaded("Blizzard_EncounterJournal") then
+			if not (C_AddOns_IsAddOnLoaded and C_AddOns_IsAddOnLoaded("Blizzard_EncounterJournal")) then
 				UIParentLoadAddOn("Blizzard_EncounterJournal")
 			end
 			ToggleFrame(_G.EncounterJournal)
@@ -176,7 +188,7 @@ if C_StorePublic.IsEnabled and C_StorePublic.IsEnabled() then
 	})
 end
 
-sort(menuList, function(a, b)
+table_sort(menuList, function(a, b)
 	if a and b and a.text and b.text then
 		return a.text < b.text
 	end
@@ -190,10 +202,10 @@ tinsert(menuList, {
 		if not _G.GameMenuFrame:IsShown() then
 			CloseMenus()
 			CloseAllWindows()
-			PlaySound(850) --IG_MAINMENU_OPEN
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
 			ShowUIPanel(_G.GameMenuFrame)
 		else
-			PlaySound(854) --IG_MAINMENU_QUIT
+			PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
 			HideUIPanel(_G.GameMenuFrame)
 
 			MainMenuMicroButton:SetButtonState("NORMAL")
@@ -252,7 +264,7 @@ function Module:CreateStyle()
 		if event == "PLAYER_REGEN_DISABLED" then
 			borderColor = { 1, 0, 0, 0.8 }
 		elseif not InCombatLockdown() then
-			if C_Calendar.GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
+			if C_Calendar_GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
 				-- If there are pending calendar invites or minimap mail frame is shown, set border color to yellow
 				borderColor = { 1, 1, 0, 0.8 }
 			end
@@ -288,7 +300,7 @@ function Module:CreateStyle()
 end
 
 local function ToggleLandingPage(_, ...)
-	if not C_Garrison.HasGarrison(...) then
+	if not C_Garrison_HasGarrison(...) then
 		UIErrorsFrame:AddMessage(K.InfoColor .. CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE)
 		return
 	end
@@ -439,23 +451,20 @@ function Module:ReskinRegions()
 	end
 
 	local function updateMapAnchor(frame, _, _, newAnchor, _, _, force)
-		-- exit if the 'force' argument is passed in
 		if force then
 			return
 		end
 
-		-- check if the new position is different from the current position
-		local currentAnchor = { frame:GetPoint() }
-		if not (currentAnchor[1] == newAnchor and currentAnchor[2] == Minimap and currentAnchor[3] == "BOTTOM" and currentAnchor[4] == 0 and (C["DataText"].Time and currentAnchor[5] == 20 or currentAnchor[5] == 4)) then
-			-- reset the frame's position
+		local p, rel, rp, x, y = frame:GetPoint()
+		local wantY
+		if C["DataText"].Time then
+			wantY = 20
+		else
+			wantY = 4
+		end
+		if not (p == newAnchor and rel == Minimap and rp == "BOTTOM" and x == 0 and y == wantY) then
 			frame:ClearAllPoints()
-
-			-- set the frame's position based on the value of C["DataText"].Time
-			if C["DataText"].Time then
-				frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
-			else
-				frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
-			end
+			frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, wantY)
 		end
 	end
 
@@ -501,7 +510,7 @@ function Module:ReskinRegions()
 	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
 	inviteNotification:Hide()
 
-	K.CreateFontString(inviteNotification, 12, K.InfoColor .. "Pending Calendar Invite(s)!", "")
+	K.CreateFontString(inviteNotification, 12, K.InfoColor .. ((L and L["Pending Calendar Invite(s)!"]) or "Pending Calendar Invite(s)!"), "")
 
 	local function updateInviteVisibility()
 		inviteNotification:SetShown(C_Calendar_GetNumPendingInvites() > 0)
@@ -739,22 +748,22 @@ end
 function Module:HybridMinimapOnLoad(addon)
 	if addon == "Blizzard_HybridMinimap" then
 		Module:SetupHybridMinimap()
-		K:UnregisterEvent(self, Module.HybridMinimapOnLoad)
+		K:UnregisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)
 	end
 end
 
 function Module:QueueStatusTimeFormat(seconds)
-	local hours = math_floor(mod(seconds, 86400) / 3600)
+	local hours = math_floor((seconds % 86400) / 3600)
 	if hours > 0 then
 		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "h", hours)
 	end
 
-	local mins = math_floor(mod(seconds, 3600) / 60)
+	local mins = math_floor((seconds % 3600) / 60)
 	if mins > 0 then
 		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "m", mins)
 	end
 
-	local secs = math_floor(seconds, 60)
+	local secs = math_floor(seconds % 60)
 	if secs > 0 then
 		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "s", secs)
 	end
@@ -831,29 +840,6 @@ function Module:BlizzardACF()
 		frame:StripTextures()
 		frame:CreateBorder()
 	end
-end
-
--- Define the module and its offsets
-do
-	local meep = 12.125
-	Module.MICRO_OFFSETS = {
-		CharacterMicroButton = 0.07 / meep,
-		SpellbookMicroButton = 1.05 / meep,
-		ProfessionMicroButton = 1.05 / meep,
-		TalentMicroButton = 2.04 / meep,
-		PlayerSpellsMicroButton = 2.04 / meep,
-		AchievementMicroButton = 3.03 / meep,
-		QuestLogMicroButton = 4.02 / meep,
-		GuildMicroButton = 5.01 / meep, -- Retail
-		SocialsMicroButton = 5.01 / meep, -- Classic, use Guild button
-		LFDMicroButton = 6.00 / meep, -- Retail
-		LFGMicroButton = 6.00 / meep, -- Classic
-		EJMicroButton = 7.00 / meep,
-		CollectionsMicroButton = 8.00 / meep,
-		MainMenuMicroButton = 9 / meep, -- flip these
-		HelpMicroButton = 10 / meep, -- on classic
-		StoreMicroButton = 10.0 / meep,
-	}
 end
 
 function Module:OnEnable()

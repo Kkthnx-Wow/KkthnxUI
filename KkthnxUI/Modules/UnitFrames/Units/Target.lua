@@ -131,6 +131,10 @@ function Module:CreateTarget()
 		end
 
 		self.Portrait = Portrait
+
+		if targetPortraitStyle == 5 then
+			Module:ApplyPortraitAlphaFix(self)
+		end
 	end
 
 	if C["Unitframe"].TargetDebuffs then -- and C["Unitframe"].TargetDebuffsTop

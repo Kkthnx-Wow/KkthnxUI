@@ -33,10 +33,15 @@ CALLBACKS
 ]]
 
 local addon, ns = ...
+local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
 local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID
+local pairs = pairs
+local ipairs = ipairs
+local table_insert = table.insert
+local CreateFrame = CreateFrame
 local maxBagSlots = 5
 
 function Implementation:GetBagButtonClass()
@@ -182,7 +187,7 @@ function BagButton:OnClick(btn)
 		else
 			container:SetFilter(self.filter, self.hidden)
 		end
-		container.implementation:OnEvent("BAG_UPDATE")
+		container.implementation:OnEvent("BAG_UPDATE", self.bagId)
 	end
 end
 BagButton.OnReceiveDrag = BagButton.OnClick
@@ -239,7 +244,7 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 			local button = buttonClass:Create(bags[i])
 			button:SetParent(bar)
 			button.bar = bar
-			table.insert(bar.buttons, button)
+			table_insert(bar.buttons, button)
 		end
 	end
 

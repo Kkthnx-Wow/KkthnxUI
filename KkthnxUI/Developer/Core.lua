@@ -3,10 +3,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 K.Devs = {
 	["Kkthnx-Area 52"] = true,
-	["Chithick-Area 52"] = true,
-	["Kkthnxbye-Area 52"] = true,
-	["Kkthnx-Valdrakken"] = true,
-	["Kkthnx-TWW - Beta"] = true,
+	["Kkthnx-Dornogal"] = true,
 }
 
 local function isDeveloper()

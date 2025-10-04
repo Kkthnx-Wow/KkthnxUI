@@ -1,8 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- ============================================================================
--- PROFILEGUI SYSTEM DOCUMENTATION
--- ============================================================================
+-- System Documentation
 
 --[[
 Advanced ProfileGUI System for KkthnxUI
@@ -18,14 +16,21 @@ profile management including:
 - Modern UI design
 ]]
 
--- ============================================================================
--- API DECLARATIONS
--- ============================================================================
+-- API Declarations
 
 -- Lua API
 local _G = _G
 local ipairs, pairs = ipairs, pairs
 local type = type
+local select = select
+local tinsert = table.insert
+local time = time
+local date = date
+local UnitClass = UnitClass
+local UnitRace = UnitRace
+local UnitSex = UnitSex
+local UnitFactionGroup = UnitFactionGroup
+local debugprofilestop = debugprofilestop
 
 -- WoW API
 local CreateFrame = CreateFrame
@@ -35,9 +40,7 @@ local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local SetPortraitTexture = SetPortraitTexture
 
--- ============================================================================
--- UTILITY FUNCTIONS
--- ============================================================================
+-- Utility Functions
 
 -- String utility functions
 local function trim(str)
@@ -52,18 +55,14 @@ if not string.trim then
 	string.trim = trim
 end
 
--- ============================================================================
--- CONFIGURATION CONSTANTS
--- ============================================================================
+-- Configuration Constants
 
 -- Profile System Configuration
 local PROFILE_VERSION = "2.0.0"
 local PROFILE_PREFIX = "KkthnxUI:Profile:"
 local PROFILE_NAME_MAX_LENGTH = 32
 
--- ============================================================================
--- UI CONSTANTS
--- ============================================================================
+-- UI Constants
 
 -- Panel Dimensions (match main GUI proportions)
 local PANEL_WIDTH = 560
@@ -86,9 +85,7 @@ local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
 local BUTTON_HOVER = { 0.18, 0.18, 0.18, 1 }
 local SELECTED_BG = { 0.15, 0.15, 0.15, 0.9 }
 
--- ============================================================================
--- PROFILEGUI MODULE CORE
--- ============================================================================
+-- ProfileGUI Module Core
 
 -- ProfileGUI Main Object
 local ProfileGUI = {
@@ -100,9 +97,7 @@ local ProfileGUI = {
 	LastUpdate = 0,
 }
 
--- ============================================================================
--- HELPER FUNCTIONS
--- ============================================================================
+-- Helper Functions
 
 -- Create colored background texture (matching main GUI exactly)
 local function CreateColoredBackground(frame, r, g, b, a)
@@ -213,9 +208,7 @@ local function CreateEditBox(parent, width, height, multiline)
 	return editBox
 end
 
--- ============================================================================
--- PROFILE DATA MANAGEMENT
--- ============================================================================
+-- Profile Data Management
 
 -- Profile Data Management
 function ProfileGUI:GetCurrentProfileKey()
@@ -249,9 +242,7 @@ function ProfileGUI:GetAllProfiles()
 	return profiles
 end
 
--- ============================================================================
--- PROFILE VALIDATION
--- ============================================================================
+-- Profile Validation
 
 function ProfileGUI:ValidateProfileName(name)
 	if not name or type(name) ~= "string" then
@@ -299,9 +290,104 @@ function ProfileGUI:ValidateProfileData(data)
 	return true
 end
 
--- ============================================================================
--- PROFILE IMPORT/EXPORT
--- ============================================================================
+-- Profile Import/Export
+
+-- Prune settings by removing metadata keys and values equal to defaults
+local function KKUI_PruneSettingsByDefaults(currentTable, defaultTable)
+	local META = {
+		LastModified = true,
+		CreatedAt = true,
+		CreatedBy = true,
+		ImportedAt = true,
+		ImportedBy = true,
+		ImportedFrom = true,
+		ResetAt = true,
+		ResetBy = true,
+		RenamedFrom = true,
+		RenamedAt = true,
+		LastSwitched = true,
+		SwitchedFrom = true,
+	}
+
+	local function prune(curr, defs, depth)
+		depth = depth or 0
+		if depth > 20 or type(curr) ~= "table" then
+			return curr
+		end
+		local out = {}
+		for k, v in pairs(curr) do
+			if not META[k] then
+				local dv = (type(defs) == "table") and defs[k] or nil
+				if type(v) == "table" then
+					local pruned = prune(v, dv, depth + 1)
+					if type(pruned) == "table" then
+						local hasAny
+						for _ in pairs(pruned) do
+							hasAny = true
+							break
+						end
+						if hasAny then
+							out[k] = pruned
+						end
+					else
+						out[k] = pruned
+					end
+				else
+					if v ~= dv then
+						out[k] = v
+					end
+				end
+			end
+		end
+		return out
+	end
+
+	return prune(currentTable, defaultTable, 0)
+end
+
+-- Prune Variables by removing ephemeral keys and empty tables
+local function KKUI_PruneVariables(varsTable)
+	if type(varsTable) ~= "table" then
+		return {}
+	end
+	local DROP = {
+		TempAnchor = true,
+		InstallComplete = true,
+		DBMRequest = true,
+		MaxDpsRequest = true,
+		CursorTrailRequest = true,
+		HekiliRequest = true,
+		ResetDetails = true,
+	}
+	local function clean(t, depth)
+		depth = depth or 0
+		if depth > 20 or type(t) ~= "table" then
+			return t
+		end
+		local out = {}
+		for k, v in pairs(t) do
+			if not DROP[k] then
+				if type(v) == "table" then
+					local child = clean(v, depth + 1)
+					local hasAny
+					if type(child) == "table" then
+						for _ in pairs(child) do
+							hasAny = true
+							break
+						end
+					end
+					if hasAny then
+						out[k] = child
+					end
+				else
+					out[k] = v
+				end
+			end
+		end
+		return out
+	end
+	return clean(varsTable, 0)
+end
 
 function ProfileGUI:ExportProfile(profileKey)
 	local profiles = self:GetAllProfiles()
@@ -316,17 +402,23 @@ function ProfileGUI:ExportProfile(profileKey)
 		return nil, "Required libraries not available for export"
 	end
 
+	-- Snapshot settings and prune to only differences from defaults
+	local settingsSnapshot = K.CopyTable(KkthnxUIDB.Settings[profile.realm][profile.name] or {})
+	if K.Defaults and type(K.Defaults) == "table" then
+		settingsSnapshot = KKUI_PruneSettingsByDefaults(settingsSnapshot, K.Defaults)
+	end
+
+	-- Snapshot Variables
+	local variablesSnapshot = K.CopyTable(KkthnxUIDB.Variables[profile.realm] and KkthnxUIDB.Variables[profile.realm][profile.name] or {})
+
 	-- Prepare the export data structure
 	local exportData = {
 		Version = PROFILE_VERSION,
 		ExportedAt = time(),
 		ExportedBy = K.Name .. "@" .. K.Realm,
-		Settings = K.CopyTable(KkthnxUIDB.Settings[profile.realm][profile.name] or {}),
-		Variables = K.CopyTable(KkthnxUIDB.Variables[profile.realm] and KkthnxUIDB.Variables[profile.realm][profile.name] or {}),
+		Settings = settingsSnapshot,
+		Variables = variablesSnapshot,
 	}
-
-	-- Add metadata
-	exportData.Settings.LastModified = time()
 
 	-- Debug: Validate export data before serialization
 	if not exportData.Settings or type(exportData.Settings) ~= "table" then
@@ -402,6 +494,23 @@ function ProfileGUI:ImportProfile(profileString, applyToCurrent)
 		return false, "Failed to parse profile data"
 	end
 
+	-- If code matches current export exactly
+	local currentExport = (function()
+		local ok, out = pcall(function()
+			return self:ExportProfile(self:GetCurrentProfileKey())
+		end)
+		if ok then
+			return out
+		end
+		return nil
+	end)()
+	if applyToCurrent and type(currentExport) == "string" then
+		local pasted = profileString:trim()
+		if pasted == currentExport then
+			return false, "You are currently using this profile"
+		end
+	end
+
 	-- Validate data structure
 	if not data.Settings or type(data.Settings) ~= "table" then
 		return false, "Invalid profile data - missing or invalid settings"
@@ -424,6 +533,9 @@ function ProfileGUI:ImportProfile(profileString, applyToCurrent)
 		-- Deep copy the imported data to current character
 		KkthnxUIDB.Settings[K.Realm][currentProfileName] = K.CopyTable(data.Settings)
 		KkthnxUIDB.Variables[K.Realm][currentProfileName] = K.CopyTable(data.Variables or {})
+
+		-- Ensure installer is marked complete for the current character
+		KkthnxUIDB.Variables[K.Realm][currentProfileName].InstallComplete = true
 
 		-- Add import metadata
 		KkthnxUIDB.Settings[K.Realm][currentProfileName].ImportedAt = time()
@@ -450,6 +562,11 @@ function ProfileGUI:ImportProfile(profileString, applyToCurrent)
 		-- Deep copy the imported data
 		KkthnxUIDB.Settings[K.Realm][profileName] = K.CopyTable(data.Settings)
 		KkthnxUIDB.Variables[K.Realm][profileName] = K.CopyTable(data.Variables or {})
+
+		-- Mark imported profile as installed to skip tutorial on future activation
+		if KkthnxUIDB.Variables[K.Realm][profileName] then
+			KkthnxUIDB.Variables[K.Realm][profileName].InstallComplete = true
+		end
 
 		-- Add import metadata
 		KkthnxUIDB.Settings[K.Realm][profileName].ImportedAt = time()
@@ -633,6 +750,8 @@ function ProfileGUI:SwitchProfile(profileKey)
 			KkthnxUIDB.Variables[K.Realm] = {}
 		end
 		KkthnxUIDB.Variables[K.Realm][K.Name] = K.CopyTable(sourceVariables)
+		-- Ensure installer is marked complete after switching profiles
+		KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = true
 	end
 
 	-- Add switch metadata
@@ -677,11 +796,8 @@ function ProfileGUI:ResetProfile(profileKey)
 	return true, "Profile reset successfully"
 end
 
--- ============================================================================
--- UI CREATION FUNCTIONS
--- ============================================================================
+-- UI Creation
 
--- UI Creation Functions
 function ProfileGUI:CreateScrollFrame(parent, width, height)
 	local scrollFrame = CreateFrame("ScrollFrame", nil, parent)
 	scrollFrame:SetSize(width, height)
@@ -720,8 +836,12 @@ function ProfileGUI:CreateScrollFrame(parent, width, height)
 	return scrollFrame
 end
 
--- Profile List Management
+-- Profile List
 function ProfileGUI:RefreshProfileList()
+	local t0
+	if K.isDeveloper then
+		t0 = debugprofilestop()
+	end
 	if not self.ProfileScrollFrame or not self.ProfileScrollFrame.Child then
 		return
 	end
@@ -740,7 +860,7 @@ function ProfileGUI:RefreshProfileList()
 
 	-- Sort profiles by display name
 	for _, profile in pairs(profiles) do
-		table.insert(sortedProfiles, profile)
+		tinsert(sortedProfiles, profile)
 	end
 
 	table.sort(sortedProfiles, function(a, b)
@@ -774,6 +894,11 @@ function ProfileGUI:RefreshProfileList()
 		local currentKey = self:GetCurrentProfileKey()
 		if profiles[currentKey] then
 			self.SelectedProfile = currentKey
+		end
+
+		if K.isDeveloper and t0 then
+			local dt = debugprofilestop() - t0
+			K.Print(string.format("[KKUI_DEV] RefreshProfileList %.3f ms", dt))
 		end
 	end
 end
@@ -2363,25 +2488,25 @@ function ProfileGUI:GetRaceAtlasName(race, gender)
 	local raceMap = {
 		["Human"] = "human",
 		["Dwarf"] = "dwarf",
-		["NightElf"] = "nightelf",
+		["Night Elf"] = "nightelf",
 		["Gnome"] = "gnome",
 		["Draenei"] = "draenei",
 		["Worgen"] = "worgen",
-		["VoidElf"] = "voidelf",
-		["LightforgedDraenei"] = "lightforged",
-		["DarkIronDwarf"] = "darkirondwarf",
+		["Void Elf"] = "voidelf",
+		["Lightforged Draenei"] = "lightforged",
+		["Dark Iron Dwarf"] = "darkirondwarf",
 		["KulTiran"] = "kultiran",
 		["Mechagnome"] = "mechagnome",
 		["Orc"] = "orc",
 		["Undead"] = "undead",
 		["Tauren"] = "tauren",
 		["Troll"] = "troll",
-		["BloodElf"] = "bloodelf",
+		["Blood Elf"] = "bloodelf",
 		["Goblin"] = "goblin",
 		["Nightborne"] = "nightborne",
-		["HighmountainTauren"] = "highmountain",
-		["MagharOrc"] = "magharorc",
-		["ZandalariTroll"] = "zandalari",
+		["Highmountain Tauren"] = "highmountain",
+		["Maghar Orc"] = "magharorc",
+		["Zandalari Troll"] = "zandalari",
 		["Vulpera"] = "vulpera",
 		["Pandaren"] = "pandaren",
 		["Dracthyr"] = "dracthyr",
@@ -2813,6 +2938,11 @@ end
 
 -- Enable function for integration with Loading.lua
 function ProfileGUI:Enable()
+	-- Guard against double-enabling
+	if self._enabled then
+		return true
+	end
+
 	-- Ensure database integrity first
 	if not self:EnsureDatabaseIntegrity() then
 		print("|cffff0000KkthnxUI Error:|r ProfileGUI failed to initialize - database not available!")
@@ -2890,7 +3020,7 @@ function ProfileGUI:Enable()
 		end
 	end
 
-	print("|cff669DFFKkthnxUI:|r Enhanced Profile Manager loaded! Use |cff00ff00/profile|r to open.")
+	self._enabled = true
 	return true
 end
 
@@ -2983,9 +3113,5 @@ function ProfileGUI:MigrateProfileTimestamps()
 				migrated = migrated + 1
 			end
 		end
-	end
-
-	if migrated > 0 then
-		print("|cff669DFFKkthnxUI:|r Migrated " .. migrated .. " profiles to include LastModified timestamps.")
 	end
 end

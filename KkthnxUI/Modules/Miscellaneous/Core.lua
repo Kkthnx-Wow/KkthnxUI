@@ -8,6 +8,13 @@ local type = type
 local ipairs = ipairs
 local pcall = pcall
 local error = error
+local tostring = tostring
+local print = print
+local format = string.format
+local debugprofilestop = debugprofilestop
+
+-- Localizing math functions
+local atan2, cos, sin, max, min, sqrt = math.atan2, math.cos, math.sin, math.max, math.min, math.sqrt
 
 -- Localizing WoW API functions
 local CreateFrame = CreateFrame
@@ -15,6 +22,9 @@ local PlaySound = PlaySound
 local StaticPopup_Show = StaticPopup_Show
 local hooksecurefunc = hooksecurefunc
 local UIParent = UIParent
+local GetCursorPosition = GetCursorPosition
+local GetInstanceInfo = GetInstanceInfo
+local SetCVar = SetCVar
 local UnitXP = UnitXP
 local UnitXPMax = UnitXPMax
 local UnitGUID = UnitGUID
@@ -32,6 +42,11 @@ local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Item_GetItemQualityColor = C_Item.GetItemQualityColor
 local StaticPopupDialogs = StaticPopupDialogs
 local IsGuildMember = IsGuildMember
+local C_Map_GetMapInfo = C_Map.GetMapInfo
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local C_Map_SetUserWaypoint = C_Map.SetUserWaypoint
+local C_SuperTrack_SetSuperTrackedUserWaypoint = C_SuperTrack.SetSuperTrackedUserWaypoint
+local UiMapPoint_CreateFromCoordinates = UiMapPoint.CreateFromCoordinates
 
 -- Localizing WoW UI constants
 local FRIEND = FRIEND
@@ -41,6 +56,27 @@ local YES = YES
 
 -- Miscellaneous Module Registry
 local KKUI_MISC_MODULE = {}
+
+-- Lightweight profiling helpers (opt-in via C["General"].DebugProfiling)
+local kkuiProfileMarks = {}
+local function KKUI_ProfileStart(key)
+	if not (C and C["General"] and C["General"].DebugProfiling) then
+		return
+	end
+	kkuiProfileMarks[key] = debugprofilestop()
+end
+
+local function KKUI_ProfileEnd(key)
+	if not (C and C["General"] and C["General"].DebugProfiling) then
+		return
+	end
+	local startTime = kkuiProfileMarks[key]
+	if startTime then
+		local elapsed = debugprofilestop() - startTime
+		kkuiProfileMarks[key] = nil
+		print("|cFF99CCFFKkthnxUI|r:", key, format("%.2f ms", elapsed))
+	end
+end
 
 -- Register Miscellaneous Modules
 function Module:RegisterMisc(name, func)
@@ -62,7 +98,7 @@ end
 
 -- Readycheck sound on master channel
 K:RegisterEvent("READY_CHECK", function()
-	PlaySound(SOUNDKIT.READY_CHECK, "master")
+	PlaySound(SOUNDKIT.READY_CHECK, "Master")
 end)
 
 -- Modify Delete Dialog
@@ -78,6 +114,7 @@ end
 
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
+	KKUI_ProfileStart("Misc:OnEnable")
 	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
@@ -96,7 +133,7 @@ function Module:OnEnable()
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
-		"UpdateyClassColors",
+		"UpdateYClassColors",
 		"UpdateMaxCameraZoom",
 		-- "CreateObjectiveSizeUpdate",
 		-- "CreateQuestSizeUpdate",
@@ -123,6 +160,7 @@ function Module:OnEnable()
 
 	enableAutoBubbles()
 	modifyDeleteDialog()
+	KKUI_ProfileEnd("Misc:OnEnable")
 end
 
 -- BNToast Frame Mover Setup
@@ -141,13 +179,7 @@ local function KKUI_UpdateDragCursor(self)
 	px, py = px / scale, py / scale
 
 	local angle = atan2(py - my, px - mx)
-	local x, y, q = cos(angle), sin(angle), 1
-	if x < 0 then
-		q = q + 1
-	end
-	if y > 0 then
-		q = q + 2
-	end
+	local x, y = cos(angle), sin(angle)
 
 	local w = (Minimap:GetWidth() / 2) + 5
 	local h = (Minimap:GetHeight() / 2) + 5
@@ -266,9 +298,6 @@ function Module:ClickGameMenu()
 	K.NewGUI:Toggle()
 	HideUIPanel(GameMenuFrame)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	if not InCombatLockdown() then
-		HideUIPanel(GameMenuFrame)
-	end
 end
 
 function Module:CreateGUIGameMenuButton()
@@ -292,6 +321,9 @@ end
 function Module:CreateQuestXPPercent()
 	local playerCurrentXP = UnitXP("player")
 	local playerMaxXP = UnitXPMax("player")
+	if not playerMaxXP or playerMaxXP == 0 then
+		return
+	end
 	local questXP
 	local xpText
 	local xpFrame
@@ -522,14 +554,15 @@ function Module:CreateCustomWaypoint()
 
 	-- Sets the waypoint and supertracks it
 	local function SetWaypoint(mapID, x, y, desc)
-		local mapName = C_Map.GetMapInfo(mapID) and C_Map.GetMapInfo(mapID).name or "Unknown"
+		local info = C_Map_GetMapInfo(mapID)
+		local mapName = (info and info.name) or "Unknown"
 		DebugPrint("Setting waypoint - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
 
 		local message = FormatClickableWaypoint(mapID, x, y, mapName, desc)
 		print(message)
 
-		C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
-		C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+		C_Map_SetUserWaypoint(UiMapPoint_CreateFromCoordinates(mapID, x / 100, y / 100))
+		C_SuperTrack_SetSuperTrackedUserWaypoint(true)
 	end
 
 	-- Parses the input message for mapID, coordinates, and description
@@ -543,7 +576,7 @@ function Module:CreateCustomWaypoint()
 			x, y, desc = msg:match("([%d%.]+),?%s*([%d%.]+)%s*(.*)")
 			if x and y then
 				-- Default to player's current map
-				mapID = C_Map.GetBestMapForUnit("player")
+				mapID = C_Map_GetBestMapForUnit("player")
 				if not mapID then
 					print("Unable to determine the current map. Please try again.")
 					DebugPrint("Failed to retrieve map ID")
@@ -603,5 +636,7 @@ end
 
 -- Update Max Camera Zoom
 function Module:UpdateMaxCameraZoom()
-	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
+	local value = tonumber(C["Misc"].MaxCameraZoom) or 2.6
+	value = min(max(value, 1), 2.6)
+	SetCVar("cameraDistanceMaxZoomFactor", value)
 end

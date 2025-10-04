@@ -152,49 +152,12 @@ function Module:CreateWorldMapReveal()
 	bu:SetSize(24, 24)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 	bu.text = K.CreateFontString(bu, 12, "Map Reveal", "", "system", "LEFT", 24, 0)
+	K.AddTooltip(bu, "ANCHOR_BOTTOMLEFT", "Show unexplored areas on the world map (removes fog of war).|n|nWhen enabled, hidden tiles are revealed so the full map is visible.", "info", true)
 
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
 		hooksecurefunc(pin, "RefreshOverlays", Module.MapData_RefreshOverlays)
 		pin.overlayTexturePool.resetterFunc = Module.MapData_ResetTexturePool
 	end
-
-	function bu.UpdateTooltip(self)
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
-		GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 10)
-
-		local r, g, b = 0.2, 1.0, 0.2
-
-		if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap == true then
-			GameTooltip:AddLine(L["Reveal Enabled"])
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Reveal Enabled Desc"], r, g, b)
-		else
-			GameTooltip:AddLine(L["Reveal Disabled"])
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Reveal Disabled Desc"], r, g, b)
-		end
-
-		GameTooltip:Show()
-	end
-
-	bu:HookScript("OnEnter", function(self)
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
-		self:UpdateTooltip()
-	end)
-
-	bu:HookScript("OnLeave", function()
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
-		GameTooltip:Hide()
-	end)
 
 	bu:SetScript("OnClick", function(self)
 		KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = self:GetChecked()

@@ -110,7 +110,6 @@
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />
-   <Script file="Miscellaneous\Elements\ParagonRep.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QueueTimer.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
@@ -133,7 +132,6 @@
    <!-- Automation -->
    <Script file="Automation\Core.lua" />
    <Script file="Automation\Elements\AutoKeystone.lua" />
-   <Script file="Automation\Elements\AutoOpen.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />

@@ -26,13 +26,28 @@ function Module:CreateUIWidgets()
 	K.Mover(frame2, "UIWidgetPowerBar", "UIWidgetPowerBar", { "BOTTOM", UIParent, "BOTTOM", 0, 250 })
 
 	-- Hook the SetPoint method of UIWidgetPowerBarContainerFrame to make sure it's always positioned correctly
-	hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", function(self, _, parent)
-		if parent ~= frame2 then
-			self:ClearAllPoints()
-			self:SetPoint("CENTER", frame2)
-			if self:GetScale() ~= 0.8 then
-				self:SetScale(0.8)
-			end
+	local isUpdating = false
+	local WidgetPositionFrame = CreateFrame("Frame", "WidgetPositionFrame")
+
+	local function UpdateWidgetPosition()
+		if isUpdating or InCombatLockdown() or not UIWidgetPowerBarContainerFrame or not frame2 then
+			return
 		end
-	end)
+		local widget = UIWidgetPowerBarContainerFrame
+		local point, relativeTo, relativePoint, x, y = widget:GetPoint()
+		local scale = widget:GetScale()
+		if point ~= "CENTER" or relativeTo ~= frame2 or x ~= 0 or y ~= 0 or scale ~= 0.8 then
+			isUpdating = true
+			widget:ClearAllPoints()
+			widget:SetPoint("CENTER", frame2)
+			widget:SetScale(0.8)
+			isUpdating = false
+		else
+			WidgetPositionFrame:UnregisterEvent("UPDATE_UI_WIDGET")
+		end
+	end
+
+	hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", UpdateWidgetPosition)
+	WidgetPositionFrame:RegisterEvent("UPDATE_UI_WIDGET")
+	WidgetPositionFrame:SetScript("OnEvent", UpdateWidgetPosition)
 end

@@ -19,8 +19,13 @@
 	class-generation, helper-functions and the Blizzard-replacement.
 ]]
 local parent, ns = ...
-ns.isNewPatch = select(4, GetBuildInfo()) >= 110200 -- 11.2.0
 local global = C_AddOns.GetAddOnMetadata(parent, "X-cargBags")
+local floor = math.floor
+local pairs = pairs
+local select = select
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
+local IsLoggedIn = IsLoggedIn
 
 --- @class table
 --  @name cargBags

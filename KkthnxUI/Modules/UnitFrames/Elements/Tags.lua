@@ -33,7 +33,7 @@ local UnitReaction = UnitReaction
 local UnitStagger = UnitStagger
 
 -- Add scantip back, due to issue on ColorMixin
-local scanTip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
+local scanTip = K.ScanTooltip
 
 local function GetHealthColor(percentage)
 	local r, g, b

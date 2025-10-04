@@ -135,7 +135,7 @@ cargBags:RegisterScaffold("Default", function(self)
 	self.glowCoords = { 14 / 64, 50 / 64, 14 / 64, 50 / 64 } --! @property glowCoords <table> Indexed table of texCoords for the glow texture
 	self.bgTex = nil --! @property bgTex <string> Texture used as a background if no item is in the slot
 
-	self.CreateFrame = ItemButton_CreateFrame
+	-- self.CreateFrame is intentionally not set; ItemButtons are created via ItemButton:Create in base/itembutton.lua
 	self.Scaffold = ItemButton_Scaffold
 
 	self.ButtonUpdate = ItemButton_Update

@@ -7,6 +7,12 @@ local mod = mod
 local pairs = pairs
 local string_find = string.find
 local string_format = string.format
+local floor = floor
+local select = select
+local strmatch = strmatch
+local IsShiftKeyDown = IsShiftKeyDown
+local GetQuestResetTime = GetQuestResetTime
+local QuestUtils_GetQuestName = QuestUtils_GetQuestName
 local time = time
 local tonumber = tonumber
 
@@ -20,8 +26,13 @@ local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
 local C_Calendar_OpenCalendar = C_Calendar.OpenCalendar
 local C_Calendar_SetAbsMonth = C_Calendar.SetAbsMonth
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Map_GetMapInfo = C_Map.GetMapInfo
+local C_Map_GetAreaInfo = C_Map.GetAreaInfo
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
+local C_Spell_GetSpellName = C_Spell.GetSpellName
+local C_Texture_GetAtlasInfo = C_Texture.GetAtlasInfo
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local FULLDATE = FULLDATE
 local GameTime_GetGameTime = GameTime_GetGameTime
 local GameTime_GetLocalTime = GameTime_GetLocalTime
@@ -41,11 +52,14 @@ local RequestRaidInfo = RequestRaidInfo
 local SecondsToTime = SecondsToTime
 local TIMEMANAGER_TICKER_12HOUR = TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = TIMEMANAGER_TICKER_24HOUR
+local TIMEMANAGER_AM = TIMEMANAGER_AM
+local TIMEMANAGER_PM = TIMEMANAGER_PM
 
 local TimeDataText
 
 local delvesKeys = { 91175, 91176, 91177, 91178 }
-local keyName = C_CurrencyInfo.GetCurrencyInfo(3028).name
+local keyInfo = C_CurrencyInfo_GetCurrencyInfo(3028)
+local keyName = keyInfo and keyInfo.name or ""
 
 -- Data
 local region = GetCVar("portal")
@@ -91,29 +105,29 @@ local mapAreaPoiIDs = {
 }
 
 local questlist = {
-	{ name = "Feast of Winter Veil", id = 6983 },
-	{ name = "Blingtron Daily Gift", id = 34774 },
-	{ name = "500 Timewarped Badges", id = 83285, texture = 6006158 }, -- Vanilla
-	{ name = "500 Timewarped Badges", id = 40168, texture = 1129674 }, -- TBC
-	{ name = "500 Timewarped Badges", id = 40173, texture = 1129686 }, -- WotLK
-	{ name = "500 Timewarped Badges", id = 40786, texture = 1304688 }, -- Cata
-	{ name = "500 Timewarped Badges", id = 45563, texture = 1530590 }, -- MoP
-	{ name = "500 Timewarped Badges", id = 55499, texture = 1129683 }, -- WoD
-	{ name = "500 Timewarped Badges", id = 64710, texture = 1467047 }, -- Legion
-	{ name = C_Spell.GetSpellName(388945), id = 70866 }, -- SoDK
-	{ name = "", id = 70906, itemID = 200468 }, -- Grand hunt
-	{ name = "", id = 70893, questName = true }, -- Community feast
-	{ name = "", id = 79226, questName = true }, -- The big dig
-	{ name = "", id = 78319, questName = true }, -- The superbloom
+	{ name = L["Feast of Winter Veil"], id = 6983 },
+	{ name = L["Blingtron Daily Gift"], id = 34774 },
+	{ name = L["500 Timewarped Badges"], id = 83285, texture = 6006158, twBadge = true }, -- Vanilla
+	{ name = L["500 Timewarped Badges"], id = 40168, texture = 1129674, twBadge = true }, -- TBC
+	{ name = L["500 Timewarped Badges"], id = 40173, texture = 1129686, twBadge = true }, -- WotLK
+	{ name = L["500 Timewarped Badges"], id = 40786, texture = 1304688, twBadge = true }, -- Cata
+	{ name = L["500 Timewarped Badges"], id = 45563, texture = 1530590, twBadge = true }, -- MoP
+	{ name = L["500 Timewarped Badges"], id = 55499, texture = 1129683, twBadge = true }, -- WoD
+	{ name = L["500 Timewarped Badges"], id = 64710, texture = 1467047, twBadge = true }, -- Legion
+	{ name = C_Spell_GetSpellName(388945), id = 70866 }, -- SoDK
+	{ name = L["Grand Hunt"], id = 70906, itemID = 200468 }, -- Grand hunt
+	{ name = L["Community Feast"], id = 70893, questName = true }, -- Community feast
+	{ name = L["The Big Dig"], id = 79226, questName = true }, -- The big dig
+	{ name = L["The Superbloom"], id = 78319, questName = true }, -- The superbloom
 	{ name = "", id = 76586, questName = true }, -- 散步圣光
 	{ name = "", id = 82946, questName = true }, -- 蜡团
 	{ name = "", id = 83240, questName = true }, -- 剧场
-	{ name = C_Map.GetAreaInfo(15141), id = 83333 }, -- 觉醒主机
+	{ name = C_Map_GetAreaInfo(15141), id = 83333 }, -- 觉醒主机
 }
 
 local currentTime
 local function updateTime()
-	currentTime = currentTime or time()
+	currentTime = time()
 	-- print("currentTime updated:", currentTime) -- Debug output
 end
 
@@ -138,7 +152,7 @@ local function updateTimerFormat(color, hour, minute)
 end
 
 -- Declare onUpdateTimer as a local variable
-local onUpdateTimer = onUpdateTimer or 3
+local onUpdateTimer = 3
 
 local function OnUpdate(_, elapsed)
 	onUpdateTimer = onUpdateTimer + elapsed
@@ -158,11 +172,11 @@ end
 
 local isTimeWalker, walkerTexture
 local function checkTimeWalker(event)
-	local date = C_DateAndTime_GetCurrentCalendarTime()
-	C_Calendar_SetAbsMonth(date.month, date.year)
+	local calendarDate = C_DateAndTime_GetCurrentCalendarTime()
+	C_Calendar_SetAbsMonth(calendarDate.month, calendarDate.year)
 	C_Calendar_OpenCalendar()
 
-	local today = date.monthDay
+	local today = calendarDate.monthDay
 	local numEvents = C_Calendar_GetNumDayEvents(0, today)
 	if numEvents <= 0 then
 		return
@@ -197,7 +211,7 @@ local function getInvasionInfo(mapID)
 end
 
 local function CheckInvasion(index)
-	for _, mapID in pairs(invIndex[index].maps) do
+	for _, mapID in ipairs(invIndex[index].maps) do
 		local timeLeft, name = getInvasionInfo(mapID)
 		if timeLeft and timeLeft > 0 then
 			return timeLeft, name
@@ -290,7 +304,7 @@ local atlasCache = {}
 local function GetElementalType(element) -- 获取入侵类型图标
 	local str = atlasCache[element]
 	if not str then
-		local info = C_Texture.GetAtlasInfo("ElementalStorm-Lesser-" .. element)
+		local info = C_Texture_GetAtlasInfo("ElementalStorm-Lesser-" .. element)
 		if info then
 			str = K.GetTextureStrByAtlas(info, 16, 16)
 			atlasCache[element] = str
@@ -300,14 +314,14 @@ local function GetElementalType(element) -- 获取入侵类型图标
 end
 
 local function GetFormattedTimeLeft(timeLeft)
-	return format("%.2d:%.2d", timeLeft / 60, timeLeft % 60)
+	return string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60)
 end
 
 local itemCache = {}
 local function GetItemLink(itemID)
 	local link = itemCache[itemID]
 	if not link then
-		link = select(2, C_Item.GetItemInfo(itemID))
+		link = select(2, C_Item_GetItemInfo(itemID))
 		itemCache[itemID] = link
 	end
 	return link
@@ -363,7 +377,7 @@ function Module:OnEnter()
 	for i = 1, GetNumSavedInstances() do
 		local name, _, reset, diff, locked, extended, _, _, maxPlayers, diffName, numEncounters, encounterProgress = GetSavedInstanceInfo(i)
 		if (diff == 2 or diff == 23) and (locked or extended) and name then
-			addTitle("Saved Dungeon(s)")
+			addTitle(L["Saved Dungeon(s)"])
 			if extended then
 				r, g, b = 0.3, 1, 0.3
 			else
@@ -387,16 +401,16 @@ function Module:OnEnter()
 			end
 
 			local progressColor = (numEncounters == encounterProgress) and "ff0000" or "00ff00"
-			local progressStr = format(" |cff%s(%s/%s)|r", progressColor, encounterProgress, numEncounters)
+			local progressStr = string_format(" |cff%s(%s/%s)|r", progressColor, encounterProgress, numEncounters)
 			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. progressStr, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
 	-- Quests
 	title = false
-	for _, v in pairs(questlist) do
+	for _, v in ipairs(questlist) do
 		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
-			if v.name == "500 Timewarped Badges" and isTimeWalker and checkTexture(v.texture) or v.name ~= "500 Timewarped Badges" then
+			if (v.twBadge and isTimeWalker and checkTexture(v.texture)) or not v.twBadge then
 				addTitle(QUESTS_LABEL)
 				GameTooltip:AddDoubleLine((v.itemID and GetItemLink(v.itemID)) or (v.questName and QuestUtils_GetQuestName(v.id)) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
@@ -404,7 +418,7 @@ function Module:OnEnter()
 	end
 
 	local currentKeys, maxKeys = 0, #delvesKeys
-	for _, questID in pairs(delvesKeys) do
+	for _, questID in ipairs(delvesKeys) do
 		if C_QuestLog_IsQuestFlaggedCompleted(questID) then
 			currentKeys = currentKeys + 1
 		end
@@ -421,7 +435,7 @@ function Module:OnEnter()
 
 	-- Delves
 	title = false
-	for _, v in pairs(delveList) do
+	for _, v in ipairs(delveList) do
 		local delveInfo = C_AreaPoiInfo_GetAreaPOIInfo(v.uiMapID, v.delveID)
 		if delveInfo then
 			addTitle(delveInfo.description)
@@ -527,7 +541,7 @@ function Module:OnEnter()
 end
 
 local function OnLeave()
-	Module.Entered = true
+	Module.Entered = false
 	K.HideTooltip()
 	K:UnregisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end

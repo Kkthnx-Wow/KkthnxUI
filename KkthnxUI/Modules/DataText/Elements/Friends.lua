@@ -3,6 +3,8 @@ local Module = K:GetModule("DataText")
 
 local string_find = string.find
 local string_format = string.format
+local math_min = math.min
+local math_max = math.max
 local table_insert = table.insert
 local table_sort = table.sort
 local table_wipe = table.wipe
@@ -47,6 +49,10 @@ local r, g, b = K.r, K.g, K.b
 local infoFrame
 local updateRequest
 local prevTime
+local updateQueued
+local BUTTON_HEIGHT = 22
+local MAX_VISIBLE_ROWS = 20
+local BASE_EXTRA_HEIGHT = 95 -- header + footer padding based on current layout (495 - 400)
 local friendTable = {}
 local bnetTable = {}
 local activeZone = "|cff4cff4c"
@@ -56,6 +62,13 @@ local broadcastString = "|TInterface\\FriendsFrame\\BroadcastIcon:12|t %s (%s)"
 local onlineString = gsub(ERR_FRIEND_ONLINE_SS, ".+h", "")
 local offlineString = gsub(ERR_FRIEND_OFFLINE_S, "%%s", "")
 local FriendsDataText
+
+-- BNet_GetClientEmbeddedAtlas return incorrect texture for some clients
+local function GetClientLogo(client, size)
+	size = size or 0
+	local atlas = BNet_GetClientAtlas("Battlenet-ClientIcon-", client)
+	return CreateAtlasMarkup(atlas, size, size, 0, 0)
+end
 
 local menuList = {
 	[1] = {
@@ -187,14 +200,62 @@ end
 
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > 0.5 then -- Increased delay to 0.5 seconds
-		if not infoFrame:IsMouseOver() then
-			self:Hide()
+	if self.timer > 0.2 then
+		local over = false
+		if FriendsDataText and MouseIsOver(FriendsDataText) then
+			over = true
+		elseif infoFrame and MouseIsOver(infoFrame) then
+			over = true
+		elseif infoFrame and infoFrame.scrollFrame and infoFrame.scrollFrame.buttons then
+			for i = 1, #infoFrame.scrollFrame.buttons do
+				local btn = infoFrame.scrollFrame.buttons[i]
+				if btn and btn:IsShown() and MouseIsOver(btn) then
+					over = true
+					break
+				end
+			end
+		end
+
+		if not over then
+			GameTooltip:Hide()
+			if infoFrame then
+				infoFrame:Hide()
+				infoFrame:SetScript("OnUpdate", nil)
+			end
+			if FriendsDataText then
+				FriendsDataText:SetScript("OnUpdate", nil)
+			end
 			self:SetScript("OnUpdate", nil)
 		end
 
 		self.timer = 0
 	end
+end
+
+local function FriendsPanel_Resize(rowCount)
+	if not infoFrame or not infoFrame.scrollFrame then
+		return
+	end
+
+	rowCount = rowCount or 0
+	local visibleRows = math_min(rowCount, MAX_VISIBLE_ROWS)
+	local scrollHeight = math_max(visibleRows * BUTTON_HEIGHT, BUTTON_HEIGHT)
+
+	infoFrame.scrollFrame:SetHeight(scrollHeight)
+	infoFrame:SetHeight(BASE_EXTRA_HEIGHT + scrollHeight)
+
+	local scrollBar = infoFrame.scrollFrame.scrollBar
+	if rowCount > MAX_VISIBLE_ROWS then
+		scrollBar:Show()
+	else
+		scrollBar:Hide()
+		scrollBar:SetValue(0)
+	end
+
+	local numButtons = MAX_VISIBLE_ROWS + 1
+	infoFrame.scrollFrame.scrollChild:SetSize(infoFrame.scrollFrame:GetWidth(), numButtons * BUTTON_HEIGHT)
+	infoFrame.scrollFrame.scrollBar:SetMinMaxValues(0, numButtons * BUTTON_HEIGHT)
+	infoFrame.scrollFrame:UpdateScrollChildRect()
 end
 
 local function FriendsPanel_UpdateButton(button)
@@ -204,7 +265,7 @@ local function FriendsPanel_UpdateButton(button)
 	if index <= onlineFriends then
 		local name, level, class, area, status = unpack(friendTable[index])
 		button.status:SetTexture(status)
-		local zoneColor = GetRealZoneText() == area and activeZone or inactiveZone
+		local zoneColor = GetAreaText() == area and activeZone or inactiveZone
 		local levelColor = K.RGBToHex(GetQuestDifficultyColor(level))
 		local classColor = K.ClassColors[class] or levelColor
 		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
@@ -224,7 +285,7 @@ local function FriendsPanel_UpdateButton(button)
 		if client == BNET_CLIENT_WOW then
 			local color = K.ClassColors[class] or GetQuestDifficultyColor(1)
 			name = K.RGBToHex(color) .. charName
-			zoneColor = GetRealZoneText() == infoText and activeZone or inactiveZone
+			zoneColor = GetAreaText() == infoText and activeZone or inactiveZone
 		end
 		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
 		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
@@ -528,24 +589,34 @@ local function FriendsPanel_Init()
 	infoFrame:SetScript("OnLeave", function(self)
 		self:SetScript("OnUpdate", isPanelCanHide)
 	end)
+	infoFrame:SetScript("OnShow", function(self)
+		self:SetScript("OnUpdate", isPanelCanHide)
+	end)
+	infoFrame:SetScript("OnHide", function(self)
+		GameTooltip:Hide()
+		self:SetScript("OnUpdate", nil)
+		if FriendsDataText then
+			FriendsDataText:SetScript("OnUpdate", nil)
+		end
+	end)
 
 	K.CreateFontString(infoFrame, 14, "|cff0099ff" .. FRIENDS_LIST, "", nil, "TOPLEFT", 15, -10)
 	infoFrame.friendCountText = K.CreateFontString(infoFrame, 13, "-/-", "", nil, "TOPRIGHT", -15, -12)
 	infoFrame.friendCountText:SetTextColor(0, 0.6, 1)
 
 	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsDataTextScrollFrame", infoFrame, "HybridScrollFrameTemplate")
-	scrollFrame:SetSize(370, 400)
+	scrollFrame:SetSize(370, MAX_VISIBLE_ROWS * BUTTON_HEIGHT)
 	scrollFrame:SetPoint("TOPLEFT", 7, -35)
 	infoFrame.scrollFrame = scrollFrame
 
 	local scrollBar = CreateFrame("Slider", "$parentScrollBar", scrollFrame, "HybridScrollBarTemplate")
-	scrollBar.doNotHide = true
+	scrollBar.doNotHide = false
 	scrollBar:SkinScrollBar()
 	scrollFrame.scrollBar = scrollBar
 
 	local scrollChild = scrollFrame.scrollChild
-	local numButtons = 20 + 1
-	local buttonHeight = 22
+	local numButtons = MAX_VISIBLE_ROWS + 1
+	local buttonHeight = BUTTON_HEIGHT
 	local buttons = {}
 	for i = 1, numButtons do
 		buttons[i] = FriendsPanel_CreateButton(scrollChild, i)
@@ -566,6 +637,8 @@ local function FriendsPanel_Init()
 	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 26)
 	local invtInfo = K.InfoColor .. "ALT +" .. K.LeftButton .. L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
+
+	FriendsPanel_Resize(0)
 end
 
 local function FriendsPanel_Refresh()
@@ -581,6 +654,10 @@ local function FriendsPanel_Refresh()
 	Module.onlineBNet = onlineBNet
 	Module.totalOnline = totalOnline
 	Module.totalFriends = totalFriends
+
+	if infoFrame and infoFrame.scrollFrame then
+		FriendsPanel_Resize(totalOnline)
+	end
 end
 
 local function OnEnter()
@@ -648,7 +725,15 @@ local function OnEvent(event, arg1)
 
 	updateRequest = false
 	if infoFrame and infoFrame:IsShown() then
-		OnEnter()
+		if not updateQueued then
+			updateQueued = true
+			K.Delay(0.05, function()
+				if infoFrame and infoFrame:IsShown() then
+					OnEnter()
+				end
+				updateQueued = false
+			end)
+		end
 	end
 end
 
@@ -659,19 +744,10 @@ local function OnLeave()
 		return
 	end
 
-	-- Check if mouse is over the infoFrame or any of its buttons
-	local mouseOverFrame = MouseIsOver(infoFrame)
-	if not mouseOverFrame then
-		for i, button in ipairs(infoFrame.scrollFrame.buttons) do
-			if MouseIsOver(button) then
-				mouseOverFrame = true
-				break
-			end
-		end
+	if FriendsDataText then
+		FriendsDataText:SetScript("OnUpdate", isPanelCanHide)
 	end
-	if not mouseOverFrame then
-		infoFrame:Hide()
-	end
+	infoFrame:SetScript("OnUpdate", isPanelCanHide)
 end
 
 local function OnMouseUp(_, btn)

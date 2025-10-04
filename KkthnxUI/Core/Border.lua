@@ -135,6 +135,17 @@ function Module:SetAlpha(a)
 	end
 end
 
+function Module:SetIgnoreParentAlpha(ignore)
+	local len = #borderSections
+	for i = 1, len do
+		local section = borderSections[i]
+		local tex = self[section.name]
+		if tex and tex.SetIgnoreParentAlpha then
+			tex:SetIgnoreParentAlpha(ignore and true or false)
+		end
+	end
+end
+
 function Module:IsObjectType(t)
 	return t == "Border"
 end

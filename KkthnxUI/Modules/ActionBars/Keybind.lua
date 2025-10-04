@@ -99,7 +99,7 @@ function Module:Bind_Create()
 			for i = 1, #frame.bindings do
 				GameTooltip:AddDoubleLine(i, frame.bindings[i], 1, 1, 1, 0, 1, 0)
 			end
-			GameTooltip:AddLine("Press the escape key or right click to unbind this action.", 1, 0.8, 0, 1)
+			GameTooltip:AddLine(L["Press the escape key or right click to unbind this action."] or "Press the escape key or right click to unbind this action.", 1, 0.8, 0, 1)
 		end
 		GameTooltip:Show()
 	end)

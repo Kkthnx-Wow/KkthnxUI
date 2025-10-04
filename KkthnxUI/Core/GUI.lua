@@ -1,8 +1,7 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
--- ============================================================================
--- UTILITY FUNCTIONS
--- ============================================================================
+-- Utility Functions
+--
 
 -- Utility functions for handling nested config paths
 local function SetValueByPath(table, path, value)
@@ -36,12 +35,10 @@ local function GetValueByPath(table, path)
 	return current
 end
 
--- ============================================================================
--- KKTHNXUI NEW GUI SYSTEM DOCUMENTATION
--- ============================================================================
+-- System Documentation
 
 --[[
-REAL-TIME UPDATE HOOKS:
+Real-Time Update Hooks:
 Provide hook functions when creating widgets for real-time updates without UI reloads.
 
 Hook Function Signature:
@@ -49,12 +46,12 @@ function hookFunction(newValue, oldValue, configPath)
 	-- Your real-time update code here
 end
 
-RELOAD SYSTEM:
+Reload System:
 - Settings WITH hooks = no reload needed (real-time updates)
 - Settings WITHOUT hooks = reload prompt shown when GUI closes
 - Manual override with requiresReload=true parameter
 
-WIDGET CREATION:
+Widget Creation:
 GUI:CreateSwitch(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
 GUI:CreateSlider(section, configPath, text, min, max, step, tooltip, hookFunction, isNew, requiresReload)
 GUI:CreateDropdown(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
@@ -62,33 +59,29 @@ GUI:CreateColorPicker(section, configPath, text, tooltip, hookFunction, isNew, r
 GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
 GUI:CreateCheckboxGroup(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 
-NEW TAG SYSTEM:
+New Tag System:
 Use IsNew constant to mark new features:
 - Category: GUI:AddCategory("ActionBars" .. IsNew, icon)
 - Widget: GUI:CreateSwitch(section, "path", "Feature" .. IsNew, tooltip, hook, true)
 
-HOOK UTILITIES:
+Hook Utilities:
 - GUI:RegisterHook(configPath, hookFunction)
 - GUI:UnregisterHook(configPath, hookFunction)
 - GUI:TriggerHooks(configPath, newValue, oldValue)
 
-RELOAD MANAGEMENT:
+Reload Management:
 - GUI:HasPendingReloads()
 - GUI:ClearReloadQueue()
 - GUI:ForceReloadPrompt()
 - GUI:CheckRequiresReload(configPath)
 ]]
 
--- ============================================================================
--- MODULE INITIALIZATION
--- ============================================================================
+-- Module Initialization
 
 -- Modern GUI System inspired by NDui, enhanced and redesigned for KkthnxUI
 local Module = K:NewModule("NewGUI")
 
--- ============================================================================
--- API DECLARATIONS
--- ============================================================================
+-- API Declarations
 
 -- Lua API
 local _G = _G
@@ -108,11 +101,9 @@ local ReloadUI = ReloadUI
 -- WoW Constants
 local YES, NO, OKAY, CANCEL, RESET, SETTINGS = YES, NO, OKAY, CANCEL, RESET, SETTINGS
 
--- ============================================================================
--- CONSTANTS
--- ============================================================================
+-- Constants
 
--- NEW TAG SYSTEM (from NDui)
+-- New Tag System (from NDui)
 local IsNew = "ISNEW"
 
 -- Panel Dimensions
@@ -132,9 +123,7 @@ local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
 local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 
--- ============================================================================
--- HELPER FUNCTIONS
--- ============================================================================
+-- Helper Functions
 
 -- Function to add NEW tag to widgets/categories
 local function AddNewTag(parent, anchor)
@@ -151,9 +140,7 @@ local function ProcessNewTag(name)
 	return cleanName, (hasNewTag > 0)
 end
 
--- ============================================================================
--- RELOAD TRACKING SYSTEM
--- ============================================================================
+-- Reload Tracking System
 
 -- Settings without hooks require reload
 local ReloadTracker = {
@@ -272,9 +259,7 @@ function ReloadTracker:OnGUIClose()
 	end
 end
 
--- ============================================================================
--- GUI FRAMEWORK CORE
--- ============================================================================
+-- GUI Framework Core
 
 -- GUI Framework (attached to Module instead of global)
 Module.GUI = {
@@ -295,9 +280,7 @@ Module.GUI = {
 -- Convenience reference
 local GUI = Module.GUI
 
--- ============================================================================
--- REAL-TIME UPDATE HOOK SYSTEM
--- ============================================================================
+-- Real-Time Update Hook System
 
 local function RegisterUpdateHook(configPath, hookFunction)
 	DebugLog("Registering hook for: " .. configPath .. " (function type: " .. type(hookFunction) .. ")")
@@ -332,9 +315,7 @@ local function ExecuteUpdateHooks(configPath, newValue, oldValue)
 	end
 end
 
--- ============================================================================
--- CONFIGURATION FUNCTIONS
--- ============================================================================
+-- Configuration Functions
 
 -- Get configuration value by path
 local function GetConfigValue(configPath)
@@ -454,9 +435,7 @@ local function ResetToDefault(configPath, widget, settingName)
 	return true
 end
 
--- ============================================================================
--- HELPER WIDGET FUNCTIONS
--- ============================================================================
+-- Helper Widget Functions
 
 -- Create colored background texture
 local function CreateColoredBackground(frame, r, g, b, a)
@@ -574,7 +553,7 @@ local function CreateSearchBox(parent)
 		searchBox:SetPropagateKeyboardInput(false)
 	end
 
-	-- CLEAN DESIGN: Subtle background instead of border
+	-- Subtle background instead of border
 	local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
 	searchBg:SetAllPoints()
 	searchBg:SetTexture(C["Media"].Textures.White8x8Texture)
@@ -702,9 +681,7 @@ local function CreateSearchBox(parent)
 	return searchBox
 end
 
--- ============================================================================
--- RESET TO DEFAULT SYSTEM
--- ============================================================================
+-- Reset To Default System
 
 -- Global Ctrl key checker for reset buttons (prevents conflicts with widget scripts)
 local CtrlChecker = CreateFrame("Frame")
@@ -745,7 +722,21 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 	local baseXOffset = 5 -- Default offset from label
 
 	-- Check if ExtraGUI cogwheel exists for this config path
-	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+	local hasExtra = false
+	if K.ExtraGUI then
+		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(configPath) then
+			hasExtra = true
+		else
+			-- Also account for buffer inputs that end with "Input" and map to a real config path
+			if type(configPath) == "string" then
+				local stripped = configPath:gsub("Input$", "")
+				if stripped ~= configPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
+					hasExtra = true
+				end
+			end
+		end
+	end
+	if hasExtra then
 		-- Position further right to avoid overlapping with cogwheel (26px wide + some spacing)
 		baseXOffset = 26
 	end
@@ -801,9 +792,7 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 	return resetButton
 end
 
--- ============================================================================
--- WIDGET CREATION FUNCTIONS
--- ============================================================================
+-- Widget Creation Functions
 
 -- Widget Creation Functions
 local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isNew, requiresReload)
@@ -922,28 +911,14 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 			-- Grey text when disabled
 			label:SetTextColor(0.5, 0.5, 0.5, 1)
 		end
-		-- Modified indicator (default vs current)
-		if GetDefaultValue(self.ConfigPath) ~= value then
-			if not self.ModifiedDot then
-				local dot = widget:CreateTexture(nil, "OVERLAY")
-				dot:SetSize(6, 6)
-				dot:SetPoint("LEFT", label, "RIGHT", 4, 0)
-				dot:SetTexture(C["Media"].Textures.White8x8Texture)
-				dot:SetVertexColor(1, 0.6, 0.2, 1)
-				self.ModifiedDot = dot
-			end
-			self.ModifiedDot:Show()
-		elseif self.ModifiedDot then
-			self.ModifiedDot:Hide()
-		end
 	end
 
-	-- ENHANCED Click handler with immediate hook execution and reload tracking
+	-- Enhanced Click handler with immediate hook execution and reload tracking
 	switchButton:SetScript("OnClick", function()
 		local currentValue = GetConfigValue(configPath)
 		local newValue = not currentValue
 
-		-- SetConfigValue will now automatically trigger hooks and handle reload tracking
+		-- SetConfigValue will automatically trigger hooks and handle reload tracking
 		SetConfigValue(configPath, newValue, requiresReload, cleanText)
 		widget:UpdateValue()
 
@@ -952,15 +927,16 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 	end)
 
 	-- Add cogwheel icon if extra configuration exists
-	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
-		K.ExtraGUI:CreateCogwheelIcon(widget, configPath, cleanText)
-		-- No need to adjust switch position since cogwheel is next to label
-	else
-		if K.ExtraGUI then
-			-- ExtraGUI exists but no config for this path
-			-- This is normal, not all options have extra configs
-		else
-			-- ExtraGUI system not available (optional debug could use K.Print if needed)
+	local extraPath = configPath
+	if K.ExtraGUI then
+		if type(extraPath) == "string" and not (K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath)) then
+			local stripped = extraPath:gsub("Input$", "")
+			if stripped ~= extraPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
+				extraPath = stripped
+			end
+		end
+		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath) then
+			K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, cleanText)
 		end
 	end
 
@@ -1236,15 +1212,16 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 	end
 
 	-- Add cogwheel icon if extra configuration exists
-	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
-		K.ExtraGUI:CreateCogwheelIcon(widget, configPath, cleanText)
-		-- No need to adjust value text position since cogwheel is next to label
-	else
-		if K.ExtraGUI then
-			-- ExtraGUI exists but no config for this path
-			-- This is normal, not all options have extra configs
-		else
-			-- ExtraGUI system not available (optional debug could use K.Print if needed)
+	local extraPath = configPath
+	if K.ExtraGUI then
+		if type(extraPath) == "string" and not (K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath)) then
+			local stripped = extraPath:gsub("Input$", "")
+			if stripped ~= extraPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
+				extraPath = stripped
+			end
+		end
+		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath) then
+			K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, cleanText)
 		end
 	end
 
@@ -1822,7 +1799,11 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 			end
 		end
 		if not found then
-			dropdownText:SetText(options[1] and options[1].text or "Select...")
+			if options[1] and options[1].text then
+				dropdownText:SetText(options[1].text)
+			else
+				dropdownText:SetText("Select...")
+			end
 			if options[1] and options[1].texture then
 				preview:SetTexture(options[1].texture)
 				preview:Show()
@@ -1839,15 +1820,16 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 	end
 
 	-- Add cogwheel icon if extra configuration exists
-	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
-		K.ExtraGUI:CreateCogwheelIcon(widget, configPath, cleanText)
-		-- No need to adjust value text position since cogwheel is next to label
-	else
-		if K.ExtraGUI then
-			-- ExtraGUI exists but no config for this path
-			-- This is normal, not all options have extra configs
-		else
-			-- ExtraGUI system not available (optional debug could use K.Print if needed)
+	local extraPath = configPath
+	if K.ExtraGUI then
+		if type(extraPath) == "string" and not (K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath)) then
+			local stripped = extraPath:gsub("Input$", "")
+			if stripped ~= extraPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
+				extraPath = stripped
+			end
+		end
+		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath) then
+			K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, cleanText)
 		end
 	end
 
@@ -1898,7 +1880,7 @@ local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction
 		AddNewTag(widget, label)
 	end
 
-	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	-- Register hook function for real-time updates
 	if hookFunction and type(hookFunction) == "function" then
 		RegisterUpdateHook(configPath, hookFunction)
 		widget.HookFunction = hookFunction
@@ -1908,7 +1890,7 @@ local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction
 	local colorButton = CreateFrame("Button", nil, widget)
 	colorButton:SetSize(30, 16)
 	colorButton:SetPoint("RIGHT", -8, 0)
-	-- CLEAN DESIGN: Modern color button with subtle background
+	-- Modern color button with subtle background
 	local colorBg = colorButton:CreateTexture(nil, "BACKGROUND")
 	colorBg:SetAllPoints()
 	colorBg:SetTexture(C["Media"].Textures.White8x8Texture)
@@ -1939,7 +1921,7 @@ local function CreateColorPicker(parent, configPath, text, tooltip, hookFunction
 		end
 	end
 
-	-- ENHANCED Click handler with hook execution
+	-- Enhanced Click handler with hook execution
 	colorButton:SetScript("OnClick", function()
 		local currentValue = GetConfigValue(configPath) or { ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1 }
 
@@ -1987,7 +1969,7 @@ end
 
 -- Enhanced Widget Creation Functions
 
--- Multi-Select Checkbox Group - ENHANCED with Modern Design and Hooks
+-- Multi-Select Checkbox Group
 local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 	local widget = CreateFrame("Frame", nil, parent)
 
@@ -2288,7 +2270,7 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 		AddNewTag(widget, label)
 	end
 
-	-- REGISTER HOOK FUNCTION FOR REAL-TIME UPDATES
+	-- Register hook function for real-time updates
 	if hookFunction and type(hookFunction) == "function" then
 		RegisterUpdateHook(configPath, hookFunction)
 		widget.HookFunction = hookFunction
@@ -2345,12 +2327,14 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 
 	-- Save on enter/focus lost
 	editBox:SetScript("OnEnterPressed", function(self)
-		SetConfigValue(configPath, self:GetText(), requiresReload, cleanText)
+		local txt = self and self.GetText and self:GetText() or ""
+		SetConfigValue(configPath, txt, requiresReload, cleanText)
 		self:ClearFocus()
 	end)
 
 	editBox:SetScript("OnEditFocusLost", function(self)
-		SetConfigValue(configPath, self:GetText(), requiresReload, cleanText)
+		local txt = self and self.GetText and self:GetText() or ""
+		SetConfigValue(configPath, txt, requiresReload, cleanText)
 	end)
 
 	-- ESC to reset to default value
@@ -2383,7 +2367,8 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 		GameTooltip:Hide()
 	end)
 	applyButton:SetScript("OnClick", function()
-		SetConfigValue(configPath, editBox:GetText(), requiresReload, cleanText)
+		local txt = editBox and editBox.GetText and editBox:GetText() or ""
+		SetConfigValue(configPath, txt, requiresReload, cleanText)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
 
@@ -2852,7 +2837,7 @@ local function CategoryContainsNewWidgets(category)
 	return false
 end
 
--- Category Button Creation - ENHANCED with automatic NEW tag detection
+-- Category Button Creation - Enhanced with automatic NEW tag detection
 local function CreateCategoryButton(category, index)
 	local button = CreateFrame("Button", nil, GUI.CategoryScrollChild or GUI.Sidebar)
 	button:SetSize(SIDEBAR_WIDTH - 20, CATEGORY_HEIGHT) -- Slightly smaller to account for scrollbar
@@ -2892,7 +2877,7 @@ local function CreateCategoryButton(category, index)
 	button.Text = text
 	button.Icon = icon
 
-	-- Add NEW tag if category has it manually OR contains new widgets
+	-- Add NEW tag if category has it manually or contains new widgets
 	if category.HasNewTag or CategoryContainsNewWidgets(category) then
 		AddNewTag(button, text)
 	end
@@ -3101,6 +3086,26 @@ function GUI:ShowCategory(category)
 
 	-- Populate content
 	PopulateContent(category)
+
+	-- Ensure any widgets that should have ExtraGUI cogwheels get them attached
+	if self.AttachExtraCogwheels then
+		self:AttachExtraCogwheels()
+	end
+
+	-- Safety: re-evaluate dependency states for all widgets after population
+	if category and category.Widgets then
+		for _, widget in ipairs(category.Widgets) do
+			if widget and widget.ConfigPath then
+				-- Force dependency overlay creation/evaluation if bound
+				if K.GUIHelpers and K.GUIHelpers.SetWidgetEnabled then
+					-- NOP: actual dependency functions already hooked OnShow; simply ensure shown state
+					if widget:IsShown() and widget._disableOverlay and widget._disableOverlay:IsShown() then
+						-- keep overlay as-is
+					end
+				end
+			end
+		end
+	end
 end
 
 function GUI:AddCategory(name, icon)
@@ -3116,6 +3121,47 @@ function GUI:AddWidget(section, widget)
 		tinsert(section.Widgets, widget)
 	end
 	widget.ConfigPath = widget.ConfigPath
+end
+
+-- Attach missing ExtraGUI cogwheels for already-created widgets
+function GUI:AttachExtraCogwheels()
+	if not (K.ExtraGUI and K.ExtraGUI.HasExtraConfig and K.ExtraGUI.CreateCogwheelIcon) then
+		return
+	end
+	for _, category in ipairs(self.Categories) do
+		for _, section in ipairs(category.Sections) do
+			for _, widget in ipairs(section.Widgets) do
+				local cfg = widget and widget.ConfigPath
+				if cfg and not widget.Cogwheel then
+					local targetPath = cfg
+					-- Support buffer inputs that end with "Input" by mapping to the real config path
+					if type(targetPath) == "string" and not K.ExtraGUI:HasExtraConfig(targetPath) then
+						local stripped = targetPath:gsub("Input$", "")
+						if stripped ~= targetPath and K.ExtraGUI:HasExtraConfig(stripped) then
+							targetPath = stripped
+						end
+					end
+
+					if K.ExtraGUI:HasExtraConfig(targetPath) then
+						local title = widget.DisplayText
+						local cog = K.ExtraGUI:CreateCogwheelIcon(widget, targetPath, title)
+						if cog then
+							widget.Cogwheel = cog
+							-- If a reset button exists, nudge it right so it doesn't overlap the new cogwheel
+							if widget.ResetButton and widget.ResetButton:IsShown() == false then
+								-- Re-anchor just to be safe; keep the same anchor but add offset
+								local point, rel, relPoint, x, y = widget.ResetButton:GetPoint(1)
+								if point then
+									widget.ResetButton:ClearAllPoints()
+									widget.ResetButton:SetPoint(point, rel, relPoint, (x or 0) + 26, y or 0)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 -- Widget Creation Methods - ENHANCED with Hook Support
@@ -3456,10 +3502,7 @@ end
 
 -- Module OnEnable Function (required by KkthnxUI)
 function Module:OnEnable()
-	print("|cff669DFFKkthnxUI:|r NewGUI module enabled! Use /kgui to open configuration.")
-
-	-- Initialize the GUI system
-	self:InitializeGUI()
+	-- print("|cff669DFFKkthnxUI:|r NewGUI module enabled! Use /kgui to open configuration.")
 
 	-- Note: ProfileGUI initialization is now handled in Loading.lua to ensure proper order
 	-- Removed duplicate initialization to prevent conflicts
@@ -3485,8 +3528,10 @@ function Module:InitializeGUI()
 	-- This method will be called to initialize the GUI framework
 	-- Load the NewGUIConfig.lua file to populate categories and settings
 
-	-- Initialize the GUI framework first
-	self.GUI:Initialize()
+	-- Initialize the GUI framework only when called explicitly by Loading.lua
+	if not self.GUI.IsInitialized then
+		self.GUI:Initialize()
+	end
 end
 
 function Module:SetupSlashCommands()
@@ -3545,6 +3590,33 @@ K.GUI = Module
 -- Shared GUI helpers for reuse in ExtraGUI/ProfileGUI
 if not K.GUIHelpers then
 	K.GUIHelpers = {}
+end
+
+-- Expose commonly used helpers for reuse in ExtraGUI/ProfileGUI
+K.GUIHelpers.ProcessNewTag = K.GUIHelpers.ProcessNewTag or ProcessNewTag
+K.GUIHelpers.AddNewTag = K.GUIHelpers.AddNewTag or AddNewTag
+K.GUIHelpers.CreateColoredBackground = K.GUIHelpers.CreateColoredBackground or CreateColoredBackground
+K.GUIHelpers.CreateEnhancedTooltip = K.GUIHelpers.CreateEnhancedTooltip or CreateEnhancedTooltip
+K.GUIHelpers.CreateButton = K.GUIHelpers.CreateButton or CreateButton
+
+-- Simple scroll attach helper for consistent mousewheel behavior
+function K.GUIHelpers.AttachSimpleScroll(scrollFrame, step)
+	if not scrollFrame or type(scrollFrame.SetScript) ~= "function" then
+		return
+	end
+	local scrollStep = step or 30
+	scrollFrame:EnableMouseWheel(true)
+	scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+		local cur = self:GetVerticalScroll() or 0
+		local max = self:GetVerticalScrollRange() or 0
+		local newVal = cur - (delta * scrollStep)
+		if newVal < 0 then
+			newVal = 0
+		elseif newVal > max then
+			newVal = max
+		end
+		self:SetVerticalScroll(newVal)
+	end)
 end
 
 -- Lightweight object pool for dropdown option buttons to reduce GC and CPU
@@ -3926,6 +3998,142 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 
 	menu:Show()
 	K.GUIHelpers._menu = menu
+end
+
+-- Enable/disable a GUI widget with visual dimming and click blocking
+function K.GUIHelpers.SetWidgetEnabled(widget, enabled)
+	if not widget then
+		return
+	end
+
+	-- Lazy-create an overlay that blocks interaction when disabled
+	if not widget._disableOverlay then
+		local overlay = CreateFrame("Frame", nil, widget)
+		overlay:SetAllPoints()
+		overlay:SetFrameLevel(widget:GetFrameLevel() + 20)
+		overlay:EnableMouse(true)
+		overlay:Hide()
+
+		-- Soft dim background to reinforce disabled state
+		local dim = overlay:CreateTexture(nil, "BACKGROUND")
+		dim:SetAllPoints()
+		dim:SetTexture(C["Media"].Textures.White8x8Texture)
+		dim:SetVertexColor(0, 0, 0, 0.25)
+
+		widget._disableOverlay = overlay
+	end
+
+	if enabled then
+		widget:SetAlpha(1)
+		widget._disableOverlay:Hide()
+	else
+		widget:SetAlpha(0.5)
+		widget._disableOverlay:Show()
+	end
+end
+
+-- Bind a child widget's enabled state to a parent config path
+-- child is enabled only when predicate(newValue) returns true.
+-- By default, predicate checks equality with expectedValue (defaults to true).
+function K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate, friendlyName)
+	if not childWidget or not parentConfigPath then
+		return
+	end
+
+	local expected = expectedValue
+	if expected == nil then
+		expected = true
+	end
+
+	local function evaluate(val)
+		if type(predicate) == "function" then
+			local ok, res = pcall(predicate, val)
+			if ok then
+				return not not res
+			end
+			return false
+		end
+		return val == expected
+	end
+
+	local function update()
+		local current = GetValueByPath(C, parentConfigPath)
+		K.GUIHelpers.SetWidgetEnabled(childWidget, evaluate(current))
+	end
+
+	-- Add explanatory tooltip while disabled
+	if not childWidget._dependencyTooltipSetup then
+		childWidget._dependencyTooltipSetup = true
+		local function showWhyDisabled(self)
+			if not self:IsShown() then
+				return
+			end
+			local title = childWidget.DisplayText or "Option Disabled"
+			local expectedText
+			if type(expected) == "boolean" then
+				expectedText = expected and "enabled" or "disabled"
+			else
+				expectedText = tostring(expected)
+			end
+			local current = GetValueByPath(C, parentConfigPath)
+			if current == nil and K and K.Defaults then
+				local def = GetValueByPath(K.Defaults, parentConfigPath)
+				if def ~= nil then
+					current = def
+				end
+			end
+			local currentText
+			if type(current) == "boolean" then
+				currentText = current and "enabled" or "disabled"
+			else
+				currentText = tostring(current or "unset")
+			end
+			local targetName = friendlyName or parentConfigPath
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(title, 1, 1, 1, 1, true)
+			GameTooltip:AddLine("Requires " .. targetName .. " = " .. expectedText, 0.8, 0.8, 0.8, true)
+			GameTooltip:AddLine("Current: " .. currentText, 0.6, 0.6, 0.6, true)
+			GameTooltip:Show()
+		end
+		local function hideTooltip()
+			GameTooltip:Hide()
+		end
+		-- Ensure overlay exists so it blocks mouse and holds tooltip
+		K.GUIHelpers.SetWidgetEnabled(childWidget, true) -- create overlay if missing
+		if childWidget._disableOverlay then
+			childWidget._disableOverlay:SetScript("OnEnter", showWhyDisabled)
+			childWidget._disableOverlay:SetScript("OnLeave", hideTooltip)
+		end
+	end
+
+	-- Ensure we re-evaluate whenever the widget is shown (post layout/reload)
+	if not childWidget._dependencyOnShowHooked then
+		childWidget._dependencyOnShowHooked = true
+		childWidget:HookScript("OnShow", function()
+			update()
+		end)
+	end
+
+	-- Initial state
+	update()
+
+	-- Listen for parent changes via GUI hook system when available
+	if K.GUI and K.GUI.GUI and K.GUI.GUI.RegisterHook then
+		K.GUI.GUI:RegisterHook(parentConfigPath, function(newValue)
+			K.GUIHelpers.SetWidgetEnabled(childWidget, evaluate(newValue))
+		end)
+	elseif K.GUI and K.GUI.RegisterHook then
+		K.GUI:RegisterHook(parentConfigPath, function(newValue)
+			K.GUIHelpers.SetWidgetEnabled(childWidget, evaluate(newValue))
+		end)
+	end
+
+	return childWidget
+end
+
+-- Public method for modules/config to declare dependencies
+function GUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate)
+	return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate)
 end
 
 -- Credits Widget - Supports class icons and class colors

@@ -33,6 +33,7 @@ Uses class-specific spells for accurate range checking.
 
 local _, ns = ...
 local oUF = ns.oUF
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local _FRAMES = {}
 local OnRangeFrame
@@ -283,6 +284,16 @@ local function Update(self, event)
 	local element = self.RangeFader
 	local unit = self.unit
 
+	-- Respect user setting to disable range fading
+	if C and C["Unitframe"] and C["Unitframe"].Range == false then
+		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
+		self:SetAlpha(element.RangeAlpha)
+		if element.PostUpdate then
+			return element:PostUpdate(self, true)
+		end
+		return
+	end
+
 	if not unit then
 		unit = self.unit
 	end
@@ -352,6 +363,10 @@ end
 local function Enable(self)
 	local element = self.RangeFader
 	if element then
+		-- Respect user setting to disable range fading on unitframes
+		if C and C["Unitframe"] and C["Unitframe"].Range == false then
+			return false
+		end
 		element.__owner = self
 		element.insideAlpha = element.insideAlpha or 1
 		element.outsideAlpha = element.outsideAlpha or 0.55

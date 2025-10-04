@@ -75,6 +75,9 @@ function Module:TimerOnUpdate(elapsed)
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
 	else
+		if self.modRate == 0 then -- prevent divide by zero
+			self.modRate = 1
+		end
 		local passTime = GetTime() - self.start
 		local remain = passTime >= 0 and ((self.duration - passTime) / self.modRate) or self.duration
 		if remain > 0 then

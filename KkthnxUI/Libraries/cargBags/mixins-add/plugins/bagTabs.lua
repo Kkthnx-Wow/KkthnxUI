@@ -5,6 +5,10 @@
 local addon, ns = ...
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
+local pairs = pairs
+local ipairs = ipairs
+local CreateFrame = CreateFrame
+local UIParent = UIParent
 
 local BANK_TAB1 = Enum.BagIndex.CharacterBankTab_1 or 6
 local ACCOUNT_TAB1 = Enum.BagIndex.AccountBankTab_1 or 12
@@ -41,7 +45,6 @@ local function UpdateTooltip(self, id)
 	if not BankFrame.BankPanel.purchasedBankTabData then
 		return
 	end
-
 	local data = BankFrame.BankPanel.purchasedBankTabData[id]
 	if not data then
 		return
@@ -56,7 +59,7 @@ end
 
 function BagTab:Create(bagID, i, account)
 	local bagId = (account and ACCOUNT_TAB1 or BANK_TAB1) + i - 1
-	local name = addon .. "BagTab_ID" .. bagId
+	local name = addon .. "_BagTab_ID" .. bagId
 	local button = setmetatable(CreateFrame("Button", name, nil, "BackdropTemplate"), self.__index)
 	button.bagId = bagId
 	button:SetID(i)
@@ -136,7 +139,7 @@ function BagTab:UpdateButton()
 		else
 			container:SetFilter(self.filter, self.hidden)
 		end
-		container.implementation:OnEvent("BAG_UPDATE")
+		container.implementation:OnEvent("BAG_UPDATE", self.bagId)
 	end
 
 	if self.hidden then
@@ -213,8 +216,8 @@ cargBags:RegisterPlugin("BagTab", function(self, bags, account)
 			end
 
 			for _, data in pairs(self.purchasedBankTabData) do
-				if _G["NDuiBagTab_ID" .. data.ID] then
-					_G["NDuiBagTab_ID" .. data.ID].Icon:SetTexture(data.icon)
+				if _G["KKUI_BagTab_ID" .. data.ID] then
+					_G["KKUI_BagTab_ID" .. data.ID].Icon:SetTexture(data.icon)
 				end
 			end
 		end)

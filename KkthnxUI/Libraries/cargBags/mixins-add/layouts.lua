@@ -25,6 +25,11 @@ DEPENDENCIES
 ]]
 local _, ns = ...
 local layouts = ns.cargBags.classes.Container.layouts
+local ipairs = ipairs
+local math_min = math.min
+local math_ceil = math.ceil
+local cos = math.cos
+local sin = math.sin
 
 -- Debug flag for visual layout verification (set to true to enable)
 local DEBUG_LAYOUT = false
@@ -45,7 +50,7 @@ function layouts.grid(self, columns, spacing, xOffset, yOffset)
 
 			visibleIndex = visibleIndex + 1
 			local col = ((visibleIndex - 1) % columns) + 1
-			local row = math.ceil(visibleIndex / columns)
+			local row = math_ceil(visibleIndex / columns)
 			lastRow = row
 
 			local xPos = (col - 1) * (width + spacing)
@@ -71,7 +76,7 @@ function layouts.grid(self, columns, spacing, xOffset, yOffset)
 		return 0, 0
 	end
 
-	local usedCols = math.min(columns, visibleIndex)
+	local usedCols = math_min(columns, visibleIndex)
 	local usedRows = lastRow
 	return usedCols * (width + spacing) - spacing, usedRows * (height + spacing) - spacing
 end

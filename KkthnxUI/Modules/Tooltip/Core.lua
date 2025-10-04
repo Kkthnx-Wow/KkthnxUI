@@ -2,6 +2,8 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Tooltip")
 
 local strfind, format, strupper, strlen, pairs, unpack = string.find, string.format, string.upper, string.len, pairs, unpack
+local gsub = string.gsub
+local select = select
 local ICON_LIST = ICON_LIST
 local HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR
 local PVP, LEVEL, FACTION_HORDE, FACTION_ALLIANCE = PVP, LEVEL, FACTION_HORDE, FACTION_ALLIANCE
@@ -9,16 +11,22 @@ local YOU, TARGET, AFK, DND, DEAD, PLAYER_OFFLINE = YOU, TARGET, AFK, DND, DEAD,
 local FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL = FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL
 local LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL = LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL
 local UnitIsPVP, UnitFactionGroup, UnitRealmRelationship, UnitGUID = UnitIsPVP, UnitFactionGroup, UnitRealmRelationship, UnitGUID
+local UnitTokenFromGUID = UnitTokenFromGUID
 local UnitIsConnected, UnitIsDeadOrGhost, UnitIsAFK, UnitIsDND, UnitReaction = UnitIsConnected, UnitIsDeadOrGhost, UnitIsAFK, UnitIsDND, UnitReaction
+local UnitExists, UnitIsUnit, UnitInParty, UnitInRaid, IsInGroup = UnitExists, UnitIsUnit, UnitInParty, UnitInRaid, IsInGroup
 local InCombatLockdown, IsShiftKeyDown, GetMouseFocus, GetItemInfo = InCombatLockdown, IsShiftKeyDown, GetMouseFocus, GetItemInfo
 local GetCreatureDifficultyColor, UnitCreatureType, UnitClassification = GetCreatureDifficultyColor, UnitCreatureType, UnitClassification
 local UnitIsWildBattlePet, UnitIsBattlePetCompanion, UnitBattlePetLevel = UnitIsWildBattlePet, UnitIsBattlePetCompanion, UnitBattlePetLevel
 local UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel = UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel
+local UnitHealthMax = UnitHealthMax
 local GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild = GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild
 local C_PetBattles_GetNumAuras, C_PetBattles_GetAuraInfo = C_PetBattles.GetNumAuras, C_PetBattles.GetAuraInfo
-local C_ChallengeMode_GetDungeonScoreRarityColor = C_ChallengeMode.GetDungeonScoreRarityColor
-local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary
+local C_ChallengeMode_GetDungeonScoreRarityColor = C_ChallengeMode and C_ChallengeMode.GetDungeonScoreRarityColor
+local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = C_PlayerInfo and C_PlayerInfo.GetPlayerMythicPlusRatingSummary
 local GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet = GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet
+local C_Item_GetItemLinkByGUID = C_Item and C_Item.GetItemLinkByGUID
+local C_Item_GetItemInfo = C_Item and C_Item.GetItemInfo
+local debugprofilestop = debugprofilestop
 
 local classification = {
 	worldboss = format("|cffAF5050 %s|r", BOSS),
@@ -292,7 +300,8 @@ function Module:OnTooltipSetUnit()
 	if not isPlayer and isShiftKeyDown then
 		local npcID = K.GetNPCID(guid)
 		if npcID then
-			self:AddLine(format(npcIDstring, "NpcID:", npcID))
+			local label = L["NpcID:"] or "NpcID:"
+			self:AddLine(format(npcIDstring, label, npcID))
 		end
 	end
 
@@ -400,9 +409,8 @@ end
 -- Tooltip skin
 function Module:ReskinTooltip()
 	if not self then
-		if K.isDeveloper then
-			print("Unknown tooltip spotted.")
-		end
+		-- Silent guard to avoid spamming chat; leave a breadcrumb only for devs when debugging
+		-- if K.isDeveloper then print("Unknown tooltip spotted.") end
 		return
 	end
 	if self:IsForbidden() then
@@ -436,9 +444,9 @@ function Module:ReskinTooltip()
 
 	local data = self.GetTooltipData and self:GetTooltipData()
 	if data then
-		local link = data.guid and C_Item.GetItemLinkByGUID(data.guid) or data.hyperlink
+		local link = data.guid and C_Item_GetItemLinkByGUID(data.guid) or data.hyperlink
 		if link then
-			local quality = select(3, C_Item.GetItemInfo(link))
+			local quality = select(3, C_Item_GetItemInfo(link))
 			local color = K.QualityColors[quality or 1]
 			if color then
 				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)

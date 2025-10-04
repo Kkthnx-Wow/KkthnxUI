@@ -11,6 +11,18 @@
 ## X-Curse-Project-ID: 95528
 ## X-Wago-ID: lQNlqP6e
 
+## Category-enUS: Kkthnx's AddOns
+## Category-deDE: Kkthnx's AddOns
+## Category-esES: Kkthnx's AddOns
+## Category-esMX: Kkthnx's AddOns
+## Category-itIT: Kkthnx's AddOns
+## Category-frFR: Kkthnx's AddOns
+## Category-ptBR: Kkthnx's AddOns
+## Category-ruRU: Kkthnx's AddOns
+## Category-koKR: Kkthnx's AddOns
+## Category-zhCN: Kkthnx's AddOns
+## Category-zhTW: Kkthnx's AddOns
+
 # General taint fixes
 TaintLess.xml
 # Global Fonts

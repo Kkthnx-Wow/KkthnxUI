@@ -127,6 +127,8 @@ C["Announcements"] = {
 	ResetInstance = true,
 	SaySapped = false,
 	AlertChannel = 2,
+	QuestProgressEveryNth = 1,
+	AnnounceWorldQuests = false,
 }
 
 -- Automation
@@ -137,7 +139,6 @@ C["Automation"] = {
 	AutoDeclinePetDuels = false,
 	AutoGoodbye = false,
 	AutoInvite = false,
-	AutoOpenItems = false,
 	AutoPartySync = false,
 	AutoQuest = false,
 	AutoRelease = false,
@@ -146,7 +147,7 @@ C["Automation"] = {
 	AutoReward = false,
 	AutoScreenshot = false,
 	AutoSetRole = false,
-	AutoSkipCinematic = false,
+	ConfirmCinematicSkip = false,
 	AutoSummon = false,
 	NoBadBuffs = false,
 	WhisperInvite = "inv+",
@@ -178,6 +179,7 @@ C["Inventory"] = {
 	FilterJunk = true,
 	FilterLegendary = true,
 	FilterLower = true,
+	FilterLegacy = false,
 	FilterQuest = true,
 	FilterStone = true,
 	GatherEmpty = false,
@@ -193,6 +195,7 @@ C["Inventory"] = {
 	GrowthDirection = 1,
 	SortDirection = 2,
 	AutoRepair = 2,
+	ColorUnusableItems = true,
 }
 
 -- Buffs & Debuffs
@@ -317,9 +320,11 @@ C["Misc"] = {
 	MaxCameraZoom = 2.6,
 	MuteSounds = true,
 	NoTalkingHead = false,
-	ParagonEnable = false,
 	QuestTool = false,
 	QueueTimers = false,
+	QueueTimerAudio = true,
+	QueueTimerWarning = true,
+	QueueTimerHideOtherTimers = true,
 	QuickJoin = false,
 	ShowWowHeadLinks = false,
 	SlotDurability = false,
@@ -610,6 +615,7 @@ C["Raid"] = {
 	AuraTrackThickness = 5,
 	HealthbarColor = 1,
 	HealthFormat = 1,
+	UseRaidForParty = false,
 }
 
 -- Worldmap

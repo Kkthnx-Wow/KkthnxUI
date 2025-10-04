@@ -1,6 +1,8 @@
 local C = KkthnxUI[2]
 
+-- AutoQuest data lists: NPC ignores, gossip ignores, auto-selects, instance ignores, confirm skips, item and cash overrides
 C.AutoQuestData = {
+	-- NPCs to ignore for auto questing (do not auto-accept/turn-in)
 	IgnoreQuestNPC = {
 		[88570] = true, -- Fate-Twister Tiklal
 		[87391] = true, -- Fate-Twister Seress
@@ -34,6 +36,7 @@ C.AutoQuestData = {
 		[162804] = true, -- Ve'nari
 	},
 
+	-- Gossip NPCs to ignore (do not auto-select first quest option)
 	IgnoreGossipNPC = {
 		-- Bodyguards
 		[86945] = true, -- Aeda Brightdawn (Horde)
@@ -82,6 +85,7 @@ C.AutoQuestData = {
 		[184587] = true, -- Market, T'apiksh
 	},
 
+	-- Always auto-select the first option for these NPCs
 	AutoSelectFirstOptionList = {
 		[97004] = true, -- "Red" Jack Findle, Rogue Class Hall
 		[96782] = true, -- Lucian Trias, Rogue Class Hall
@@ -90,17 +94,20 @@ C.AutoQuestData = {
 		[167839] = true, -- Soul Residue, Tower Climb
 	},
 
+	-- Instances where auto gossip select should be disabled
 	IgnoreInstances = {
 		[1571] = true, -- Withered J'im
 		[1626] = true, -- Twisting Corridors
 	},
 
+	-- NPCs where we auto-confirm gossip prompts
 	SkipConfirmNPCs = {
 		[57850] = true, -- Teleportologist Fozlebub
 		[55382] = true, -- Darkmoon Faire Mystic Mage (Horde)
 		[54334] = true, -- Darkmoon Faire Mystic Mage (Alliance)
 	},
 
+	-- Item blacklists and overrides (ids or string keys mapped to item ids)
 	ItemBlacklist = {
 		-- Inscription weapons
 		[31690] = 79343, -- Inscribed Tiger Staff
@@ -157,6 +164,7 @@ C.AutoQuestData = {
 		[31664] = 88604, -- Nat's Fishing Journal
 	},
 
+	-- Currency item values override for reward selection
 	CashRewards = {
 		[45724] = 1e5, -- Champion's Purse
 		[64491] = 2e6, -- Royal Reward

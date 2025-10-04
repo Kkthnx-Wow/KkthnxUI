@@ -6,6 +6,8 @@ local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem
 local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
 local C_Item_IsAnimaItemByID = C_Item.IsAnimaItemByID
 local C_Item_GetItemSpell = C_Item.GetItemSpell
+local string_lower = string.lower
+local CURRENT_EXPANSION = LE_EXPANSION_WAR_WITHIN or 10 -- 11.0
 
 -- Custom filter lists
 local CustomFilterList = {
@@ -69,6 +71,10 @@ primordialStones[203703] = true -- 棱光碎片
 
 local emptyBags = { [0] = true, [11] = true }
 
+local toyBlackList = {
+	[167698] = true, -- 隐秘之鱼护目镜
+}
+
 -- Function Definitions
 local function hasReagentBagEquipped()
 	return ContainerFrame_GetContainerNumSlots(5) > 0
@@ -104,7 +110,10 @@ local function isItemJunk(item)
 	end
 
 	-- Optimized short-circuiting for database access
-	local isCustomJunk = KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] and KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]
+	local db = KkthnxUIDB and KkthnxUIDB.Variables
+	local realmDB = db and db[K.Realm]
+	local charDB = realmDB and realmDB[K.Name]
+	local isCustomJunk = charDB and charDB.CustomJunkList and charDB.CustomJunkList[item.id]
 
 	return (item.quality == Enum.ItemQuality.Poor or isCustomJunk) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
@@ -125,12 +134,26 @@ local function isAzeriteArmor(item)
 	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link)
 end
 
+local function CheckEquip(item)
+	return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl
+end
+
 local function isItemEquipment(item)
 	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterEquipment or not item.link or item.quality <= Enum.ItemQuality.Common then
 		return
 	end
 
-	return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl
+	return CheckEquip(item)
+end
+
+local function isItemLegacy(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+	if not C["Inventory"].FilterLegacy then
+		return
+	end
+	return CheckEquip(item) and item.expacID and item.expacID < CURRENT_EXPANSION
 end
 
 local function isItemLowerLevel(item)
@@ -142,7 +165,7 @@ local function isItemLowerLevel(item)
 		return
 	end
 
-	return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl and item.ilvl < C["Inventory"].iLvlToShow
+	return CheckEquip(item) and item.ilvl < C["Inventory"].iLvlToShow
 end
 
 local function isItemConsumable(item)
@@ -172,10 +195,6 @@ function Module:IsPetTrashCurrency(itemID)
 	return C["Inventory"].PetTrash and petTrashCurrenies[itemID]
 end
 
-local toyBlackList = {
-	[167698] = true, -- 隐秘之鱼护目镜
-}
-
 local function isItemCollection(item)
 	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterCollection then
 		return
@@ -190,7 +209,10 @@ local function isItemCustom(item, index)
 	end
 
 	-- Optimized short-circuiting for database access
-	local customIndex = KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] and KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]
+	local db = KkthnxUIDB and KkthnxUIDB.Variables
+	local realmDB = db and db[K.Realm]
+	local charDB = realmDB and realmDB[K.Name]
+	local customIndex = charDB and charDB.CustomItems and charDB.CustomItems[item.id]
 
 	return customIndex and customIndex == index
 end
@@ -288,6 +310,9 @@ function Module:GetFilters()
 	filters.bagLower = function(item)
 		return isItemInBag(item) and isItemLowerLevel(item)
 	end
+	filters.bagLegacy = function(item)
+		return isItemInBag(item) and isItemLegacy(item)
+	end
 
 	filters.onlyBank = function(item)
 		return isItemInBank(item) and not isEmptySlot(item)
@@ -325,6 +350,9 @@ function Module:GetFilters()
 	filters.bankLower = function(item)
 		return isItemInBank(item) and isItemLowerLevel(item)
 	end
+	filters.bankLegacy = function(item)
+		return isItemInBank(item) and isItemLegacy(item)
+	end
 
 	filters.onlyBagReagent = function(item)
 		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (hasReagentBagEquipped() and isItemInBag(item) and isTradeGoods(item))
@@ -344,6 +372,9 @@ function Module:GetFilters()
 	end
 	filters.accountAOE = function(item)
 		return isItemInAccountBank(item) and isWarboundUntilEquipped(item)
+	end
+	filters.accountLegacy = function(item)
+		return isItemInAccountBank(item) and isItemLegacy(item)
 	end
 
 	for i = 1, 5 do

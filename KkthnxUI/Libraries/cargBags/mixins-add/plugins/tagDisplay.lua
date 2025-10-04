@@ -41,10 +41,12 @@ CALLBACKS
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
+local B = ns[1]
 
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 
-local tagPool, tagEvents, object = {}, {}
+local tagPool, tagEvents = {}, {}
+local object
 local function tagger(tag, ...)
 	return object.tags[tag] and object.tags[tag](object, ...) or ""
 end
@@ -87,6 +89,7 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 	setTagString(plugin, tagString)
 
 	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
+	self.implementation:RegisterEvent("BAG_UPDATE_DELAYED", plugin, updater)
 	return plugin
 end)
 
@@ -100,9 +103,9 @@ end
 -- Tags
 local function GetNumFreeSlots(name)
 	if name == "Bag" then
-		local totalFree, freeSlots, bagFamily = 0
+		local totalFree = 0
 		for i = 0, 4 do -- reagent bank excluded
-			freeSlots, bagFamily = GetContainerNumFreeSlots(i)
+			local freeSlots, bagFamily = GetContainerNumFreeSlots(i)
 			if bagFamily == 0 then
 				totalFree = totalFree + freeSlots
 			end

@@ -6,11 +6,10 @@ local ChatFrame1 = ChatFrame1
 
 local entryEvent = 30
 local entryTime = 31
-local MAX_LOG_ENTRIES = C["Chat"].LogMax
-
 local chatHistory = {}
-local hasPrinted = false
+local hasRestored = false
 local isPrinting = false
+local eventsRegistered = false
 
 local EVENTS_TO_LOG = {
 	"CHAT_MSG_INSTANCE_CHAT",
@@ -29,27 +28,47 @@ local EVENTS_TO_LOG = {
 	"CHAT_MSG_YELL",
 }
 
+local function getMaxLogEntries()
+	local value = C and C["Chat"] and C["Chat"].LogMax
+	if type(value) == "number" then
+		if value < 0 then
+			return 0
+		end
+		return value
+	end
+	return 250
+end
+
 local function printChatHistory()
-	if isPrinting then
+	if isPrinting or hasRestored then
 		return
 	end
 
 	isPrinting = true
 
-	print("|cffbbbbbb    [Saved Chat History]|r")
-
-	for i = #chatHistory, 1, -1 do
-		local temp = chatHistory[i]
-		pcall(ChatFrame_MessageEventHandler, ChatFrame1, temp[entryEvent], unpack(temp))
+	if #chatHistory > 0 then
+		local addonName = K.Title or "KkthnxUI"
+		print(string.format("|cff99ccff[%s]|r |cffbbbbbbRestoring saved chat history|r |cff66ff66(%d)|r", addonName, #chatHistory))
+		for i = #chatHistory, 1, -1 do
+			local temp = chatHistory[i]
+			pcall(ChatFrame_MessageEventHandler, ChatFrame1, temp[entryEvent], unpack(temp))
+		end
+		print(string.format("|cff99ccff[%s]|r |cffbbbbbbEnd of saved chat history|r", addonName))
 	end
 
-	print("|cffbbbbbb    [End of Saved Chat History]|r")
-
 	isPrinting = false
-	hasPrinted = true
+	hasRestored = true
 end
 
 local function saveChatHistory(event, ...)
+	if getMaxLogEntries() == 0 then
+		return
+	end
+
+	if isPrinting then
+		return
+	end
+
 	local temp = { ... }
 	if not temp[1] then
 		return
@@ -60,30 +79,83 @@ local function saveChatHistory(event, ...)
 
 	table.insert(chatHistory, 1, temp)
 
-	while #chatHistory > MAX_LOG_ENTRIES do
+	local maxEntries = getMaxLogEntries()
+	while #chatHistory > maxEntries do
 		table.remove(chatHistory, #chatHistory)
 	end
+
+	KkthnxUIDB.ChatHistory = chatHistory
 end
 
-local function setupChatHistory(event, ...)
-	if event == "PLAYER_LOGIN" then
-		K:UnregisterEvent(event)
-		printChatHistory()
-	elseif hasPrinted then
-		saveChatHistory(event, ...)
+local function registerChatEvents()
+	if eventsRegistered then
+		return
 	end
+	for _, e in ipairs(EVENTS_TO_LOG) do
+		K:RegisterEvent(e, saveChatHistory)
+	end
+	eventsRegistered = true
 end
 
-function Module:CreateChatHistory()
-	if MAX_LOG_ENTRIES == 0 then
+local function unregisterChatEvents()
+	if not eventsRegistered then
+		return
+	end
+	for _, e in ipairs(EVENTS_TO_LOG) do
+		K:UnregisterEvent(e, saveChatHistory)
+	end
+	eventsRegistered = false
+end
+
+-- Clear saved chat history (DB + in-memory)
+function Module:ClearChatHistory()
+	if wipe then
+		wipe(chatHistory)
+	else
+		chatHistory = {}
+	end
+	KkthnxUIDB.ChatHistory = nil
+	hasRestored = false
+	print("|cff99ccff[KkthnxUI]|r Cleared saved chat history.")
+end
+
+-- Live update handler for GUI changes
+function Module:onLogMaxChanged(newValue)
+	local maxEntries = tonumber(newValue) or getMaxLogEntries()
+	if maxEntries <= 0 then
+		unregisterChatEvents()
+		if wipe then
+			wipe(chatHistory)
+		else
+			chatHistory = {}
+		end
+		KkthnxUIDB.ChatHistory = nil
 		return
 	end
 
-	chatHistory = KkthnxUIDB.ChatHistory or {}
+	registerChatEvents()
 
-	for _, event in ipairs(EVENTS_TO_LOG) do
-		K:RegisterEvent(event, setupChatHistory)
+	-- Trim history immediately if decreased
+	while #chatHistory > maxEntries do
+		table.remove(chatHistory, #chatHistory)
 	end
+	KkthnxUIDB.ChatHistory = chatHistory
+end
 
-	printChatHistory()
+function Module:CreateChatHistory()
+	local maxEntries = getMaxLogEntries()
+
+	if maxEntries ~= 0 then
+		chatHistory = KkthnxUIDB.ChatHistory or {}
+		registerChatEvents()
+		printChatHistory()
+	else
+		unregisterChatEvents()
+		if wipe then
+			wipe(chatHistory)
+		else
+			chatHistory = {}
+		end
+		KkthnxUIDB.ChatHistory = nil
+	end
 end

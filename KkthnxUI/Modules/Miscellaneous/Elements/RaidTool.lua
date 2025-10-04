@@ -3,18 +3,28 @@ local Module = K:GetModule("Miscellaneous")
 
 local next, pairs, mod, select = next, pairs, mod, select
 local tinsert, strsplit, format = table.insert, string.split, string.format
+local min, ceil = math.min, math.ceil
+local wipe = wipe
 
+-- Localize frequently used API calls for performance
 local IsInGroup, IsInRaid, IsInInstance = IsInGroup, IsInRaid, IsInInstance
 local UnitIsGroupLeader, UnitIsGroupAssistant = UnitIsGroupLeader, UnitIsGroupAssistant
 local IsPartyLFG, IsLFGComplete, HasLFGRestrictions = IsPartyLFG, IsLFGComplete, HasLFGRestrictions
 local GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget = GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget
 local GetTime, SendChatMessage, C_AddOns_IsAddOnLoaded = GetTime, SendChatMessage, C_AddOns.IsAddOnLoaded
 local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown
-local UnitExists, UninviteUnit = UnitExists, UninviteUnit
+local UnitExists, UninviteUnit, UnitName = UnitExists, UninviteUnit, UnitName
 local DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus = DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus
 local LeaveParty = C_PartyInfo.LeaveParty
 local ConvertToRaid = C_PartyInfo.ConvertToRaid
 local ConvertToParty = C_PartyInfo.ConvertToParty
+local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
+local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
+local C_Spell_GetSpellName = C_Spell.GetSpellName
+local C_UnitAuras_GetAuraDataBySpellName = C_UnitAuras.GetAuraDataBySpellName
+local ClearRaidMarker = ClearRaidMarker
+local ToggleFriendsFrame = ToggleFriendsFrame
+local C_AddOns_LoadAddOn = C_AddOns.LoadAddOn
 
 function Module:RaidTool_Visibility(frame)
 	if IsInGroup() then
@@ -30,6 +40,20 @@ function Module:RaidTool_Header()
 	frame:SetFrameLevel(2)
 	frame:SkinButton()
 	K.Mover(frame, "Raid Tool", "RaidManager", { "TOP", UIParent, "TOP", 0, -4 })
+
+	frame:HookScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine("Raid Tool", 0, 0.6, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. "Toggle Menu")
+		GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "Leave Group (double-click)")
+		if not (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
+			GameTooltip:AddLine("Leader or Assistant required for some actions", 1, 0.2, 0.2)
+		end
+		GameTooltip:Show()
+	end)
+	frame:HookScript("OnLeave", K.HideTooltip)
 
 	Module.RaidTool_Visibility(Module, frame)
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", function()
@@ -51,6 +75,9 @@ function Module:RaidTool_Header()
 				end
 
 				self.buttons[2].text:SetText(IsInRaid() and CONVERT_TO_PARTY or CONVERT_TO_RAID)
+				if menu.UpdateState then
+					menu:UpdateState()
+				end
 			end
 		end
 	end)
@@ -146,7 +173,7 @@ end
 function Module:RaidTool_UpdateRes(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local chargeInfo = C_Spell.GetSpellCharges(20484)
+		local chargeInfo = C_Spell_GetSpellCharges(20484)
 		local charges = chargeInfo and chargeInfo.currentCharges
 		local started = chargeInfo and chargeInfo.cooldownStartTime
 		local duration = chargeInfo and chargeInfo.cooldownDuration
@@ -184,7 +211,7 @@ function Module:RaidTool_CombatRes(parent)
 	res:SetPoint("LEFT", 5, 0)
 
 	res.Icon = res:CreateTexture(nil, "ARTWORK")
-	res.Icon:SetTexture(C_Spell.GetSpellTexture(20484))
+	res.Icon:SetTexture(C_Spell_GetSpellTexture(20484))
 	res.Icon:SetAllPoints()
 	res.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	res.__owner = parent
@@ -277,6 +304,40 @@ function Module:RaidTool_BuffChecker(parent)
 		NoBuff[i] = {}
 	end
 
+	-- Cache spell names for buff groups (invalidated on SPELLS_CHANGED/PLAYER_ENTERING_WORLD)
+	local spellNameCache = {}
+	local groupBuffNameCache = {}
+	local function getSpellName(spellID)
+		local name = spellNameCache[spellID]
+		if not name then
+			name = C_Spell_GetSpellName(spellID)
+			spellNameCache[spellID] = name
+		end
+		return name
+	end
+	local function getGroupBuffNames(index)
+		local names = groupBuffNameCache[index]
+		if not names then
+			names = {}
+			local buffTable = C.RaidUtilityBuffCheckList[index]
+			for k = 1, #buffTable do
+				names[k] = getSpellName(buffTable[k])
+			end
+			groupBuffNameCache[index] = names
+		end
+		return names
+	end
+	local function clearBuffCaches()
+		for k in pairs(spellNameCache) do
+			spellNameCache[k] = nil
+		end
+		for k in pairs(groupBuffNameCache) do
+			groupBuffNameCache[k] = nil
+		end
+	end
+	K:RegisterEvent("SPELLS_CHANGED", clearBuffCaches)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", clearBuffCaches)
+
 	local debugMode = false
 	local function sendMsg(text)
 		if debugMode then
@@ -286,6 +347,7 @@ function Module:RaidTool_BuffChecker(parent)
 		end
 	end
 
+	local chunkBuffer = {}
 	local function sendResult(i)
 		local count = #NoBuff[i]
 		if count > 0 then
@@ -294,15 +356,30 @@ function Module:RaidTool_BuffChecker(parent)
 			elseif count >= 5 and i > 2 then
 				sendMsg(L["Lack"] .. " " .. BuffName[i] .. ": " .. format(L["%s players"], count))
 			else
-				local str = L["Lack"] .. " " .. BuffName[i] .. ": "
+				local prefix = L["Lack"] .. " " .. BuffName[i] .. ": "
+				local currentLen = 0
+				local n = 0
 				for j = 1, count do
-					str = str .. NoBuff[i][j] .. (j < #NoBuff[i] and ", " or "")
-					if #str > 230 then
-						sendMsg(str)
-						str = ""
+					local name = NoBuff[i][j]
+					local addLen = #name + 2
+					if currentLen + addLen > 220 and n > 0 then
+						sendMsg(prefix .. table.concat(chunkBuffer, ", ", 1, n))
+						for x = 1, n do
+							chunkBuffer[x] = nil
+						end
+						n = 0
+						currentLen = 0
+					end
+					n = n + 1
+					chunkBuffer[n] = name
+					currentLen = currentLen + addLen
+				end
+				if n > 0 then
+					sendMsg(prefix .. table.concat(chunkBuffer, ", ", 1, n))
+					for x = 1, n do
+						chunkBuffer[x] = nil
 					end
 				end
-				sendMsg(str)
 			end
 		end
 	end
@@ -319,18 +396,18 @@ function Module:RaidTool_BuffChecker(parent)
 			if name and online and subgroup <= maxgroup and not isDead then
 				numPlayer = numPlayer + 1
 				for j = 1, numGroups do
-					local HasBuff
-					local buffTable = C.RaidUtilityBuffCheckList[j]
-					for k = 1, #buffTable do
-						local buffName = C_Spell.GetSpellName(buffTable[k])
-						if buffName and C_UnitAuras.GetAuraDataBySpellName(name, buffName) then
-							HasBuff = true
+					local hasBuff
+					local buffNames = getGroupBuffNames(j)
+					for k = 1, #buffNames do
+						local buffName = buffNames[k]
+						if buffName and C_UnitAuras_GetAuraDataBySpellName(name, buffName) then
+							hasBuff = true
 							break
 						end
 					end
-					if not HasBuff then
-						name = strsplit("-", name) -- remove realm name
-						tinsert(NoBuff[j], name)
+					if not hasBuff then
+						local short = strsplit("-", name)
+						tinsert(NoBuff[j], short)
 					end
 				end
 			end
@@ -359,9 +436,9 @@ function Module:RaidTool_BuffChecker(parent)
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine("Raid Tool", 0, 0.6, 1)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. "Check Status")
+		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. "Check raid buffs")
 		if potionCheck then
-			GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "MRT Potioncheck")
+			GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. L["MRT Potion Check"])
 		end
 		GameTooltip:Show()
 	end)
@@ -397,8 +474,10 @@ function Module:RaidTool_CountDown(parent)
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine("Raid Tool", 0, 0.6, 1)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. READY_CHECK)
-		GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "Count Down")
+		local isLeader = IsInGroup() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid()))
+		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. READY_CHECK .. (isLeader and "" or " |cffFF3333(" .. "Leader required" .. ")|r"))
+		local hasTimer = C_AddOns_IsAddOnLoaded("DBM-Core") or C_AddOns_IsAddOnLoaded("BigWigs")
+		GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "Pull Timer" .. (hasTimer and "" or " |cffFFCC00(" .. "DBM/BigWigs required" .. ")|r"))
 		GameTooltip:Show()
 	end)
 	frame:HookScript("OnLeave", K.HideTooltip)
@@ -421,16 +500,16 @@ function Module:RaidTool_CountDown(parent)
 			end
 		else
 			if IsInGroup() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
-				if C_AddOns.IsAddOnLoaded("DBM-Core") then
+				if C_AddOns_IsAddOnLoaded("DBM-Core") then
 					if reset then
 						SlashCmdList["DEADLYBOSSMODS"]("pull " .. "5")
 					else
 						SlashCmdList["DEADLYBOSSMODS"]("pull 0")
 					end
 					reset = not reset
-				elseif C_AddOns.IsAddOnLoaded("BigWigs") then
+				elseif C_AddOns_IsAddOnLoaded("BigWigs") then
 					if not SlashCmdList["BIGWIGSPULL"] then
-						C_AddOns.LoadAddOn("BigWigs_Plugins")
+						C_AddOns_LoadAddOn("BigWigs_Plugins")
 					end
 					if reset then
 						SlashCmdList["BIGWIGSPULL"]("5")
@@ -469,6 +548,40 @@ function Module:RaidTool_CreateMenu(parent)
 
 	frame:SetScript("OnLeave", function(self)
 		self:SetScript("OnUpdate", updateDelay)
+	end)
+
+	-- Update button enable/disable state dynamically
+	function frame:UpdateState()
+		if not parent.buttons then
+			return
+		end
+		local isLeader = UnitIsGroupLeader("player")
+		local isAssist = UnitIsGroupAssistant("player") and IsInRaid()
+		local leaderOrAssist = isLeader or isAssist
+		local lfg = HasLFGRestrictions()
+		local inRaid = IsInRaid()
+		local groupSizeOK = GetNumGroupMembers() <= 5
+		-- Disband
+		parent.buttons[1]:SetEnabled(isLeader)
+		-- Convert
+		local canConvert = isLeader and not lfg and (inRaid or groupSizeOK)
+		parent.buttons[2]:SetEnabled(canConvert)
+		parent.buttons[2].text:SetText(inRaid and CONVERT_TO_PARTY or CONVERT_TO_RAID)
+		-- Role poll
+		parent.buttons[3]:SetEnabled(leaderOrAssist and not lfg)
+	end
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", function()
+		if frame:IsShown() then
+			frame:UpdateState()
+		end
+	end)
+	K:RegisterEvent("PLAYER_FLAGS_CHANGED", function()
+		if frame:IsShown() then
+			frame:UpdateState()
+		end
+	end)
+	frame:HookScript("OnShow", function(self)
+		self:UpdateState()
 	end)
 
 	StaticPopupDialogs["Group_Disband"] = {
@@ -554,6 +667,23 @@ function Module:RaidTool_CreateMenu(parent)
 		bu[i].text = K.CreateFontString(bu[i], 12, j[1], "", true)
 		bu[i]:SetPoint(mod(i, 2) == 0 and "TOPRIGHT" or "TOPLEFT", mod(i, 2) == 0 and -6 or 6, i > 2 and -38 or -6)
 		bu[i]:SetScript("OnClick", j[2])
+		bu[i]:HookScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:ClearLines()
+			GameTooltip:AddLine("Raid Tool", 0, 0.6, 1)
+			GameTooltip:AddLine(" ")
+			if i == 1 then
+				GameTooltip:AddLine("Disband the current group", 1, 0.82, 0)
+			elseif i == 2 then
+				GameTooltip:AddLine("Convert between party and raid", 1, 0.82, 0)
+			elseif i == 3 then
+				GameTooltip:AddLine("Start a role poll", 1, 0.82, 0)
+			elseif i == 4 then
+				GameTooltip:AddLine("Open raid panel", 1, 0.82, 0)
+			end
+			GameTooltip:Show()
+		end)
+		bu[i]:HookScript("OnLeave", K.HideTooltip)
 	end
 
 	parent.menu = frame
@@ -666,8 +796,27 @@ function Module:RaidTool_WorldMarker()
 			button:SetAttribute("type", "macro")
 			button:SetAttribute("macrotext1", format("/wm %d", i))
 			button:SetAttribute("macrotext2", format("/cwm %d", i))
+			button:HookScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_TOP")
+				GameTooltip:ClearLines()
+				GameTooltip:AddLine("World Marker", 0, 0.6, 1)
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. "Place world marker")
+				GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "Clear this marker")
+				GameTooltip:Show()
+			end)
+			button:HookScript("OnLeave", K.HideTooltip)
 		else
 			button:SetScript("OnClick", ClearRaidMarker)
+			button:HookScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_TOP")
+				GameTooltip:ClearLines()
+				GameTooltip:AddLine("World Marker", 0, 0.6, 1)
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. "Clear all world markers")
+				GameTooltip:Show()
+			end)
+			button:HookScript("OnLeave", K.HideTooltip)
 		end
 		frame.buttons[i] = button
 	end

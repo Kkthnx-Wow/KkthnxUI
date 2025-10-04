@@ -18,9 +18,26 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local _, ns = ...
+local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local GetContainerItemInfo = C_Container.GetContainerItemInfo
+local GetContainerItemCooldown = C_Container.GetContainerItemCooldown
+local GetContainerItemQuestInfo = C_Container.GetContainerItemQuestInfo
+local GetItemInfo = C_Item.GetItemInfo
+local tinsert = tinsert
+local pairs = pairs
+local ipairs = ipairs
+local strmatch = strmatch
+local next = next
+local wipe = wipe
+local CreateFrame = CreateFrame
+local InCombatLockdown = InCombatLockdown
+local UIParent = UIParent
+local C_Bank = C_Bank
+local Enum = Enum
+local tonumber = tonumber
 
 --[[!
 	@class Implementation
@@ -51,12 +68,17 @@ function Implementation:New(name)
 		return error(("cargBags: Global '%s' for Implementation is already used!"):format(name))
 	end
 
-	local impl = setmetatable(CreateFrame("Frame", name, UIParent), self.__index)
+	local impl = setmetatable(CreateFrame("Button", name, UIParent), self.__index)
 	impl.name = name
 
 	impl:SetAllPoints()
 	impl:EnableMouse(nil)
 	impl:Hide()
+
+	impl._dirtyBags = {}
+	impl._dirtySlots = {}
+	impl._fullDirty = nil
+	impl._flushUpdater = nil
 
 	cargBags.SetScriptHandlers(impl, "OnEvent", "OnShow", "OnHide")
 
@@ -276,6 +298,7 @@ function Implementation:Init()
 	end
 
 	self:RegisterEvent("BAG_UPDATE", self, self.BAG_UPDATE)
+	self:RegisterEvent("BAG_UPDATE_DELAYED", self, self.BAG_UPDATE)
 	self:RegisterEvent("MERCHANT_SHOW", self, self.BAG_UPDATE)
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", self, self.BAG_UPDATE_COOLDOWN)
 	self:RegisterEvent("ITEM_LOCK_CHANGED", self, self.ITEM_LOCK_CHANGED)
@@ -342,19 +365,21 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.slotId = slotID
 
 	local texture, count, locked, quality, itemLink, noValue, itemID
-	local info = C_Container.GetContainerItemInfo(bagID, slotID)
+	local info = GetContainerItemInfo(bagID, slotID)
 	if info then
 		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
 
 		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID) -- Still Broken!
 
-		i.cdStart, i.cdFinish, i.cdEnable = C_Container.GetContainerItemCooldown(bagID, slotID)
+		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
 
-		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
-		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
+		local questInfo = GetContainerItemQuestInfo(bagID, slotID)
+		if questInfo then
+			i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
+		end
 
-		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID = C_Item.GetItemInfo(i.link)
-		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
+		local name, _, _, _, _, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = GetItemInfo(i.link)
+		i.name, i.type, i.subType, i.equipLoc, i.classID, i.subClassID, i.expacID, i.bindType = name, typeText, subTypeText, (equipLoc and _G[equipLoc]) or nil, classID, subClassID, expacID, bindType
 
 		if isItemHasLevel(i) then
 			i.ilvl = KkthnxUI and KkthnxUI[1].GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
@@ -441,59 +466,103 @@ end
 	@param slotID <number> [optional]
 	@callback Container:OnBagUpdate(bagID, slotID)
 ]]
-local isUpdating = false
-local bankUpdateQueue = {}
-local bankUpdateTimer
-local bankUpdateTimeGap = 0.05
-function Implementation:BAG_UPDATE(_, bagID, slotID)
+
+local function flushDirty(self)
+	-- Early-out if nothing to do
+	if not self._fullDirty and not next(self._dirtyBags) and not next(self._dirtySlots) then
+		return
+	end
+
+	if self._fullDirty then
+		if next(self.bagSizes) then
+			for bagKey in pairs(self.bagSizes) do
+				self:UpdateBag(bagKey)
+			end
+		else
+			for bagID = 0, 5 do
+				self:UpdateBag(bagID)
+			end
+		end
+	else
+		for bagID in pairs(self._dirtyBags) do
+			self:UpdateBag(bagID)
+		end
+		for bagID, slots in pairs(self._dirtySlots) do
+			for slotID in pairs(slots) do
+				self:UpdateSlot(bagID, slotID)
+			end
+		end
+	end
+
+	wipe(self._dirtyBags)
+	wipe(self._dirtySlots)
+	self._fullDirty = nil
+end
+
+function Implementation:BAG_UPDATE(event, bagID, slotID, ...)
 	if self.isSorting then
 		return
 	end
 
-	if isUpdating then
+	-- Coalesce updates: mark dirty on BAG_UPDATE, flush on next frame or when BAG_UPDATE_DELAYED fires
+	if event == "BAG_UPDATE" then
+		if bagID and slotID then
+			self._dirtySlots[bagID] = self._dirtySlots[bagID] or {}
+			self._dirtySlots[bagID][slotID] = true
+		elseif bagID then
+			self._dirtyBags[bagID] = true
+		else
+			self._fullDirty = true
+		end
+
+		if not self._flushUpdater then
+			self._flushUpdater = CreateFrame("Frame")
+			self._flushUpdater:Hide()
+			self._flushUpdater:SetScript("OnUpdate", function(f)
+				f:Hide()
+				self._flushScheduled = false
+				flushDirty(self)
+			end)
+		end
+		if not self._flushScheduled then
+			self._flushScheduled = true
+			self._flushUpdater:Show()
+		end
 		return
 	end
-	isUpdating = true
 
-	if bagID and slotID then
-		self:UpdateSlot(bagID, slotID)
-	elseif bagID then
-		self:UpdateBag(bagID)
+	-- Flush on delayed or other triggers
+	if event == "BAG_UPDATE_DELAYED" then
+		flushDirty(self)
 	else
-		for bagID = 0, 5 do
+		-- Backward compatibility for direct calls from other handlers
+		if bagID and slotID then
+			self:UpdateSlot(bagID, slotID)
+		elseif bagID then
 			self:UpdateBag(bagID)
-		end
-
-		local bankType = BankFrame.BankPanel.bankType
-		wipe(bankUpdateQueue)
-
-		if bankType == Enum.BankType.Character then
-			for bagID = 6, 11 do
-				tinsert(bankUpdateQueue, bagID)
-			end
-		elseif bankType == Enum.BankType.Account then
-			for bagID = 12, 16 do
-				tinsert(bankUpdateQueue, bagID)
-			end
-		end
-
-		if bankUpdateTimer then
-			bankUpdateTimer:Cancel()
-			bankUpdateTimer = nil
-		end
-
-		bankUpdateTimer = C_Timer.NewTicker(bankUpdateTimeGap, function()
-			if #bankUpdateQueue > 0 then
-				local nextBag = tremove(bankUpdateQueue, 1)
-				self:UpdateBag(nextBag)
+		else
+			if next(self.bagSizes) then
+				for bagKey in pairs(self.bagSizes) do
+					self:UpdateBag(bagKey)
+				end
 			else
-				bankUpdateTimer:Cancel()
-				bankUpdateTimer = nil
-			end
-		end)
-	end
+				for id = 0, 5 do
+					self:UpdateBag(id)
+				end
 
-	isUpdating = false
+				local bankType = BankFrame.BankPanel.bankType
+				if bankType == Enum.BankType.Character then
+					for bagID = 6, 11 do
+						self:UpdateBag(bagID)
+					end
+				elseif bankType == Enum.BankType.Account then
+					for bagID = 12, 16 do
+						self:UpdateBag(bagID)
+					end
+				end
+			end
+		end
+	end
 end
 
 --[[!

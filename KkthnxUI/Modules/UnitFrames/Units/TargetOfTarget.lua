@@ -112,6 +112,10 @@ function Module:CreateTargetOfTarget()
 		end
 
 		self.Portrait = Portrait
+
+		if targetOfTargetPortraitStyle == 5 then
+			Module:ApplyPortraitAlphaFix(self)
+		end
 	end
 
 	local Level = self:CreateFontString(nil, "OVERLAY")

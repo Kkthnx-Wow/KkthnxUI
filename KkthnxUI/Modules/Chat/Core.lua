@@ -604,6 +604,7 @@ function Module:OnEnable()
 		Module:UpdateChatSize()
 		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
 		hooksecurefunc(ChatFrame1, "SetPoint", updateChatAnchor)
+		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
 		FCF_SavePositionAndDimensions(ChatFrame1)
 	end
 

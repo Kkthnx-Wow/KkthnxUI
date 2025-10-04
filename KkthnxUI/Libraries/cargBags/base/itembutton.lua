@@ -44,6 +44,9 @@ local SplitContainerItem = C_Container.SplitContainerItem
 		This class serves as the basis for all itemSlots in a container
 ]]
 local ItemButton = cargBags:NewClass("ItemButton", nil, "ItemButton")
+local CreateFrame = CreateFrame
+local table_insert = table.insert
+local table_remove = table.remove
 
 --[[!
 	Gets a template name for the bagID
@@ -52,11 +55,7 @@ local ItemButton = cargBags:NewClass("ItemButton", nil, "ItemButton")
 ]]
 function ItemButton:GetTemplate(bagID)
 	bagID = bagID or self.bagId
-	return (bagID == BANK_CONTAINER and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "",
-		(bagID == BANK_CONTAINER and BankFrame)
-			or (bagID and _G["ContainerFrame" .. (bagID + 1)])
-			or (BANK_SLOTS[bagID] and BankFrame) -- combine in 11.2
-			or ""
+	return (bagID and "ContainerFrameItemButtonTemplate") or "", (BANK_SLOTS[bagID] and BankFrame.BankPanel) or (bagID and _G["ContainerFrame" .. (bagID + 1)]) or ""
 end
 
 local mt_gen_key = {
@@ -84,14 +83,17 @@ function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
 
 	local tpl, parent = self:GetTemplate(bagID)
-	local button = table.remove(self.recycled[tpl]) or self:Create(tpl, parent)
+	local button = table_remove(self.recycled[tpl]) or self:Create(tpl, parent)
 
 	button.bagId = bagID
 	button.slotId = slotID
 	button:SetID(slotID)
 	button:Show()
-	button:HookScript("OnEnter", button.ButtonOnEnter)
-	button:HookScript("OnLeave", button.ButtonOnLeave)
+	if not button._hooked then
+		button:HookScript("OnEnter", button.ButtonOnEnter)
+		button:HookScript("OnLeave", button.ButtonOnLeave)
+		button._hooked = true
+	end
 	if bagID == REAGENTBANK_CONTAINER then
 		button.GetInventorySlot = ReagentButtonInventorySlot
 		button.UpdateTooltip = BankFrameItemButton_OnEnter
@@ -114,12 +116,21 @@ end
 	@callback button:OnCreate(tpl)
 ]]
 
+local allButtons = {}
+local function GetButton(slot, name, tpl)
+	if not allButtons[slot] then
+		allButtons[slot] = CreateFrame("ItemButton", name, nil, tpl .. ", BackdropTemplate")
+	end
+	return allButtons[slot]
+end
+
 function ItemButton:Create(tpl, parent)
 	local impl = self.implementation
 	impl.numSlots = (impl.numSlots or 0) + 1
 	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
 
-	local button = setmetatable(CreateFrame("ItemButton", name, parent, tpl .. ", BackdropTemplate"), self.__index)
+	local button = setmetatable(GetButton(impl.numSlots, name, tpl), self.__index)
+	button:SetParent(parent or UIParent)
 
 	if button.Scaffold then
 		button:Scaffold(tpl)
@@ -146,6 +157,7 @@ function ItemButton:Create(tpl, parent)
 	end
 
 	button:RegisterForDrag("LeftButton") -- fix button drag in 9.0
+	button.UpdateTooltip = ContainerFrameItemButtonMixin.OnUpdate
 
 	return button
 end
@@ -155,7 +167,7 @@ end
 ]]
 function ItemButton:Free()
 	self:Hide()
-	table.insert(self.recycled[self:GetTemplate()], self)
+	table_insert(self.recycled[self:GetTemplate()], self)
 end
 
 --[[!
