@@ -348,10 +348,11 @@ oUF.Tags.Methods["lfdrole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
 	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" and role ~= "DAMAGER") then
 		if role == "HEALER" then
-			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:1:64:16:48:64:0:16|t"
+			return "|A:groupfinder-icon-role-micro-healer:16:16|a"
 		elseif role == "TANK" then
-			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0.5:64:16:32:48:0:16|t"
+			return "|A:groupfinder-icon-role-micro-tank:16:16|a"
 		end
+		-- return "|A:groupfinder-icon-role-micro-dps:16:16|a DPS"
 	end
 end
 oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

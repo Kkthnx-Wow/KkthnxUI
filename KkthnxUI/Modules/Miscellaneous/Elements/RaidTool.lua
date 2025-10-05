@@ -125,11 +125,11 @@ function Module:RaidTool_RoleCount(parent)
 	for i = 1, 3 do
 		role[i] = frame:CreateTexture(nil, "OVERLAY")
 		role[i]:SetPoint("LEFT", 36 * i - 27, 0)
-		role[i]:SetSize(14, 14)
+		role[i]:SetSize(16, 16)
 		K.ReskinSmallRole(role[i], roleIndex[i])
 		role[i].text = K.CreateFontString(frame, 13, "0", "")
 		role[i].text:ClearAllPoints()
-		role[i].text:SetPoint("CENTER", role[i], "RIGHT", 12, 0)
+		role[i].text:SetPoint("CENTER", role[i], "RIGHT", 8, 0)
 	end
 
 	local raidCounts = {
@@ -294,9 +294,10 @@ function Module:RaidTool_BuffChecker(parent)
 	frame:SkinButton()
 
 	local icon = frame:CreateTexture(nil, "ARTWORK")
-	icon:SetPoint("TOPLEFT", frame, 6, -6)
-	icon:SetPoint("BOTTOMRIGHT", frame, -6, 6)
-	icon:SetAtlas("lootroll-icon-checkmark")
+	icon:SetPoint("TOPLEFT", frame, 4, -4)
+	icon:SetPoint("BOTTOMRIGHT", frame, -4, 4)
+	icon:SetAtlas("UI-QuestTracker-Tracker-Check")
+	icon:SetDesaturated(true)
 
 	local BuffName = { L["Flask"], L["Food"], SPELL_STAT4_NAME, RAID_BUFF_2, RAID_BUFF_3, RUNES }
 	local NoBuff, numGroups, numPlayer = {}, 6, 0
@@ -465,9 +466,10 @@ function Module:RaidTool_CountDown(parent)
 	frame:SkinButton()
 
 	local icon = frame:CreateTexture(nil, "ARTWORK")
-	icon:SetPoint("TOPLEFT", frame, 6, -6)
-	icon:SetPoint("BOTTOMRIGHT", frame, -6, 6)
-	icon:SetAtlas("clock-icon", true)
+	icon:SetPoint("TOPLEFT", frame, 4, -4)
+	icon:SetPoint("BOTTOMRIGHT", frame, -4, 4)
+	icon:SetAtlas("Ping_Chat_Assist", true)
+	icon:SetDesaturated(true)
 
 	frame:HookScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")

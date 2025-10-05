@@ -47,6 +47,23 @@ local worldQuestCache = {} -- Cache for world quest IDs
 local completedQuests = {} -- Cache for completed quest IDs
 local initialCheckComplete = false -- Indicates if initial quest check is complete
 
+-- Ignored quests by ID (can be overridden by config C["Announcements"].IgnoredQuestIDs)
+local defaultIgnoredQuests = {
+	[72560] = true, -- Climbing quest (annoying)
+}
+
+local function IsQuestIgnored(questID)
+	if not questID then
+		return false
+	end
+	local cfg = C and C["Announcements"]
+	local list = cfg and cfg.IgnoredQuestIDs
+	if list and list[questID] then
+		return true
+	end
+	return defaultIgnoredQuests[questID] or false
+end
+
 -- Throttle: announce every Nth progress (1 = every)
 local function GetProgressEveryNth()
 	local nth = C and C["Announcements"] and C["Announcements"].QuestProgressEveryNth or 1
@@ -167,6 +184,9 @@ function Module:HandleQuestAccept(questID)
 	if not questID then
 		return
 	end
+	if IsQuestIgnored(questID) then
+		return
+	end
 	if IsWorldQuest(questID) and worldQuestCache[questID] then
 		return
 	end
@@ -193,12 +213,14 @@ end
 function Module:HandleQuestCompletion()
 	for i = 1, GetNumQuestLogEntries() do
 		local questID = GetQuestIDForLogIndex(i)
-		local isQuestComplete = questID and IsQuestComplete(questID)
-		if isQuestComplete and not completedQuests[questID] and not IsWorldQuest(questID) then
-			if initialCheckComplete then
-				SendQuestMessage(GetQuestCompleteText(questID))
+		if questID and not IsQuestIgnored(questID) then
+			local isQuestComplete = IsQuestComplete(questID)
+			if isQuestComplete and not completedQuests[questID] and not IsWorldQuest(questID) then
+				if initialCheckComplete then
+					SendQuestMessage(GetQuestCompleteText(questID))
+				end
+				completedQuests[questID] = true
 			end
-			completedQuests[questID] = true
 		end
 	end
 	initialCheckComplete = true
@@ -207,6 +229,9 @@ end
 -- Handle world quest completion
 function Module:HandleWorldQuestCompletion(questID)
 	if IsWorldQuest(questID) and questID and not completedQuests[questID] then
+		if IsQuestIgnored(questID) then
+			return
+		end
 		if C["Announcements"].AnnounceWorldQuests ~= false then
 			SendQuestMessage(GetQuestCompleteText(questID))
 		end

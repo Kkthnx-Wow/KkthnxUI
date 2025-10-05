@@ -147,6 +147,7 @@ do
 		"^%s attempts to run away in fear!$",
 		"^%s collapses but the broken body rises again!$",
 		"^%s becomes enraged!$",
+		"^%s The landwalkers are here! We will drive them back by salt and scale!$",
 	}
 
 	-- Check if a message matches any of the blocked patterns

@@ -4,6 +4,9 @@ local Module = K:NewModule("Loot")
 local tinsert = tinsert
 local next = next
 local max = max
+local ipairs = ipairs
+local string_format = string.format
+local debugprofilestop = debugprofilestop
 
 local CloseLoot = CloseLoot
 local CreateFrame = CreateFrame
@@ -23,6 +26,7 @@ local UnitIsDead = UnitIsDead
 local UnitIsFriend = UnitIsFriend
 local UnitName = UnitName
 local LootSlot = LootSlot
+local UIParent = UIParent
 
 local StaticPopup_Hide = StaticPopup_Hide
 local MasterLooterFrame_Show = MasterLooterFrame_Show
@@ -32,6 +36,13 @@ local hooksecurefunc = hooksecurefunc
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 local TEXTURE_ITEM_QUEST_BANG = TEXTURE_ITEM_QUEST_BANG
 local LOOT = LOOT
+
+-- Cache frequently used K helpers
+-- Avoid caching K helpers at file scope to prevent lifecycle issues
+
+-- Cache Blizzard frames
+local LootFrameRef = _G.LootFrame
+local MasterLooterFrameRef = _G.MasterLooterFrame
 
 local iconSize, lootFrame, lootFrameHolder = 38
 
@@ -201,6 +212,11 @@ function Module:LOOT_CLOSED()
 end
 
 function Module:LOOT_OPENED(_, autoloot)
+	local t0
+	if Module._lootProfile and Module._lootProfile.enabled then
+		t0 = debugprofilestop()
+	end
+
 	lootFrame:Show()
 
 	if not lootFrame:IsShown() then
@@ -307,10 +323,17 @@ function Module:LOOT_OPENED(_, autoloot)
 	local color = ITEM_QUALITY_COLORS[max_quality]
 	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, 0.8)
 	lootFrame:SetWidth(max(max_width + 60, lootFrame.title:GetStringWidth() + 5))
+
+	if Module._lootProfile and Module._lootProfile.enabled and t0 then
+		local dt = debugprofilestop() - t0
+		local p = Module._lootProfile
+		p.runs = p.runs + 1
+		p.totalMs = p.totalMs + dt
+	end
 end
 
 function Module:OPEN_MASTER_LOOT_LIST()
-	MasterLooterFrame_Show(_G.LootFrame.selectedLootButton)
+	MasterLooterFrame_Show(LootFrameRef.selectedLootButton)
 end
 
 function Module:UPDATE_MASTER_LOOT_LIST()
@@ -334,7 +357,9 @@ function Module:OnEnable()
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
 	lootFrame:CreateBorder()
-	lootFrame:SetFrameStrata(_G.LootFrame:GetFrameStrata())
+	if LootFrameRef then
+		lootFrame:SetFrameStrata(LootFrameRef:GetFrameStrata())
+	end
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
 	lootFrame.title:SetFontObject(K.UIFontOutline)
@@ -351,11 +376,15 @@ function Module:OnEnable()
 
 	K.Mover(lootFrameHolder, "LootFrame", "LootFrame", { "TOPLEFT", 418, -186 })
 
-	_G.LootFrame:UnregisterAllEvents()
+	if LootFrameRef then
+		LootFrameRef:UnregisterAllEvents()
+	end
 	tinsert(_G.UISpecialFrames, "KKUI_LootFrame")
 
 	-- fix blizzard setpoint connection bs
-	hooksecurefunc(_G.MasterLooterFrame, "Hide", _G.MasterLooterFrame.ClearAllPoints)
+	if MasterLooterFrameRef then
+		hooksecurefunc(MasterLooterFrameRef, "Hide", MasterLooterFrameRef.ClearAllPoints)
+	end
 
 	local loadLootModules = {
 		"CreateAutoConfirm",
@@ -372,5 +401,23 @@ function Module:OnEnable()
 				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
 			end
 		end
+	end
+end
+
+-- Lightweight profiling management
+function Module:LootProfileSetEnabled(enabled)
+	self._lootProfile = self._lootProfile or { enabled = false, runs = 0, totalMs = 0 }
+	local p = self._lootProfile
+	p.enabled = not not enabled
+	p.runs = 0
+	p.totalMs = 0
+end
+
+function Module:LootProfileDump()
+	local p = self._lootProfile
+	if p and p.enabled then
+		K.Print(string_format("[Loot] runs=%d time=%.2fms", p.runs, p.totalMs))
+	else
+		K.Print("[Loot] profiling disabled")
 	end
 end

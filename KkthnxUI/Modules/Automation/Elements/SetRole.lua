@@ -10,10 +10,29 @@ local IsInGroup = IsInGroup
 local IsPartyLFG = IsPartyLFG
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitSetRole = UnitSetRole
+local debugprofilestop = debugprofilestop
+local string_format = string.format
 
 -- Local variables
 local lastRoleChangeTime = 0
 local ROLE_CHANGE_THRESHOLD = 2
+
+-- Lightweight profiling
+local RoleProfile = { enabled = false, runs = 0, totalMs = 0 }
+
+function Module:SetRoleProfileSetEnabled(enabled)
+	RoleProfile.enabled = not not enabled
+	RoleProfile.runs = 0
+	RoleProfile.totalMs = 0
+end
+
+function Module:SetRoleProfileDump()
+	if RoleProfile.enabled then
+		K.Print(string_format("[AutoSetRole] runs=%d time=%.2fms", RoleProfile.runs, RoleProfile.totalMs))
+	else
+		K.Print("[AutoSetRole] profiling disabled")
+	end
+end
 
 -- Function to change the player's role
 local function ChangePlayerRole(role)
@@ -35,12 +54,22 @@ function Module:SetupAutoRole()
 		return
 	end
 
+	local t0
+	if RoleProfile.enabled then
+		t0 = debugprofilestop()
+	end
+
 	local spec = GetSpecialization()
 	if spec then
 		local role = GetSpecializationRole(spec)
 		if role and role ~= "NONE" then
 			ChangePlayerRole(role)
 		end
+	end
+
+	if RoleProfile.enabled and t0 then
+		RoleProfile.runs = RoleProfile.runs + 1
+		RoleProfile.totalMs = RoleProfile.totalMs + (debugprofilestop() - t0)
 	end
 end
 

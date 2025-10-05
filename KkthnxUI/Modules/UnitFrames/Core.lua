@@ -56,7 +56,8 @@ function Module:GetPartyVisibility()
 	if C["Raid"].UseRaidForParty then
 		return "hide"
 	end
-	local vis = "[group:party] show;hide"
+	-- Blizzard-like: hide party when in raid; show in party (and optional solo)
+	local vis = "[group:raid] hide;[group:party] show;hide"
 	if C["Party"].ShowPartySolo then
 		vis = "[nogroup] show;" .. vis
 	end
@@ -71,6 +72,7 @@ function Module:GetRaidVisibility()
 	if C["Raid"].UseRaidForParty then
 		return "[group] show;hide"
 	end
+	-- Only show in raid (Blizzard-like)
 	return "[group:raid] show;hide"
 end
 

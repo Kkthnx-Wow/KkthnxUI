@@ -844,10 +844,10 @@ do
 
 	-- Role Icons
 	local GroupRoleTex = {
-		TANK = "roleicon-tiny-tank",
-		HEALER = "roleicon-tiny-healer",
-		DAMAGER = "roleicon-tiny-dps",
-		DPS = "roleicon-tiny-dps",
+		TANK = "groupfinder-icon-role-micro-tank",
+		HEALER = "groupfinder-icon-role-micro-heal",
+		DAMAGER = "groupfinder-icon-role-micro-dps",
+		DPS = "groupfinder-icon-role-micro-dps",
 	}
 
 	function K.ReskinSmallRole(self, role)
