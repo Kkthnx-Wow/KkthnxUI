@@ -185,7 +185,7 @@ local function CreateAnnouncementsCategory()
 	GUI:CreateSwitch(questNotifierSection, "Announcements.QuestNotifier", enableTextColor .. L["Enable QuestNotifier"], L["QuestNotifier Desc"] or "Enables notifications related to quest progress and completion.")
 	GUI:CreateSwitch(questNotifierSection, "Announcements.OnlyCompleteRing", L["Only Play Complete Quest Sound"], "Plays a sound only when a quest is fully completed.")
 	GUI:CreateSwitch(questNotifierSection, "Announcements.QuestProgress", L["Alert QuestProgress In Chat"], "Sends quest progress updates to chat.")
-	GUI:CreateSwitch(questNotifierSection, "Announcements.AnnounceWorldQuests", L["Announce World Quests"], L["AnnounceWorldQuests Desc"])
+	GUI:CreateSwitch(questNotifierSection, "Announcements.AnnounceWorldQuests", L["Announce World Quests"], L["AnnounceWorldQuests Desc"], nil, true)
 	GUI:CreateSlider(questNotifierSection, "Announcements.QuestProgressEveryNth", L["Quest Progress: Announce Every N Updates"], 1, 5, 1, L["QuestProgressEveryNth Desc"], nil, true)
 
 	-- Rare Alert
@@ -599,6 +599,7 @@ local function CreateInventoryCategory()
 
 	-- Bags Section
 	local bagsSection = GUI:AddSection(inventoryCategory, L["Bags"] or "Bags")
+	GUI:CreateSwitch(bagsSection, "Inventory.ColorUnusableItems", L["Color Unusable Items"], L["ColorUnusableItems Desc"], UpdateBagStatus, true)
 	GUI:CreateSwitch(bagsSection, "Inventory.BagsBindOnEquip", L["Display Bind Status"], L["BagsBindOnEquip Desc"], UpdateBagStatus)
 	GUI:CreateSwitch(bagsSection, "Inventory.BagsItemLevel", L["Display Item Level"], L["BagsItemLevel Desc"], UpdateBagStatus)
 	GUI:CreateSwitch(bagsSection, "Inventory.DeleteButton", L["Bags Delete Button"], "Shows a delete button for easy item deletion")
@@ -656,8 +657,6 @@ local function CreateInventoryCategory()
 		{ text = "Descending", value = 2 },
 	}
 	GUI:CreateDropdown(bagBarSection, "Inventory.SortDirection", L["Sort Direction"], sortDirectionOptions, "Choose the direction for sorting bag contents")
-
-	GUI:CreateSwitch(bagsSection, "Inventory.ColorUnusableItems", L["Color Unusable Items"], L["ColorUnusableItems Desc"], UpdateBagStatus)
 end
 
 -- Loot
