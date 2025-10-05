@@ -2,6 +2,7 @@
 local Module = K:NewModule("Bags")
 
 local cargBags = K.cargBags
+local Unfit = K.LibUnfit
 
 local ceil = ceil
 local ipairs = ipairs
@@ -18,7 +19,6 @@ local ClearCursor = ClearCursor
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local GameTooltip = GameTooltip
-local ITEM_SCRAPABLE_NOT = ITEM_SCRAPABLE_NOT
 local DeleteCursorItem = DeleteCursorItem
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -28,13 +28,11 @@ local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsCosmeticItem = C_Item.IsCosmeticItem
-local IsReagentBankUnlocked = IsReagentBankUnlocked
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
-local SortReagentBankBags = C_Container.SortReagentBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
 
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
@@ -47,68 +45,6 @@ local customJunkEnable
 
 local sortCache = {}
 local toggleButtons = {}
-
--- Reusable hidden tooltip for scanning item usability and other details
-local ScanTT = K.ScanTooltip
-
-local function IsTooltipLineRed(fontString)
-	if not fontString then
-		return
-	end
-	local r, g, b = fontString:GetTextColor()
-	return r and g and b and r >= 0.99 and g <= 0.2 and b <= 0.2
-end
-
-function Module:IsItemUnusableByTooltip(bagId, slotId)
-	if not bagId or not slotId then
-		return
-	end
-	if GameTooltip:IsForbidden() then
-		return
-	end
-	ScanTT:ClearLines()
-	ScanTT:SetBagItem(bagId, slotId)
-
-	local name = ScanTT:GetName()
-	local lines = ScanTT:NumLines() or 0
-	for i = 1, lines do
-		local leftFS = _G[name .. "TextLeft" .. i]
-		local rightFS = _G[name .. "TextRight" .. i]
-		local leftText = leftFS and leftFS:GetText()
-		-- Ignore red lines that relate to effect gating (Equip:/Use:) rather than equip restrictions
-		if leftText and leftText ~= ITEM_SCRAPABLE_NOT and IsTooltipLineRed(leftFS) then
-			local trimmed = leftText:gsub("^%s+", "")
-			if not (trimmed:find("^Equip:") or trimmed:find("^Use:")) then
-				return true
-			end
-		end
-		if rightFS and IsTooltipLineRed(rightFS) then
-			local rt = rightFS:GetText()
-			local trimmed = rt and rt:gsub("^%s+", "") or nil
-			if not (trimmed and (trimmed:find("^Equip:") or trimmed:find("^Use:"))) then
-				return true
-			end
-		end
-	end
-	return false
-end
-
--- Simple cache to avoid repeated tooltip scans on the same item
-local unusableCache = {}
-function Module:IsItemUnusableByTooltipCached(item)
-	local link = item and item.link
-	local key = link or (item and (tostring(item.bagId) .. ":" .. tostring(item.slotId)))
-	if not key then
-		return
-	end
-	local cached = unusableCache[key]
-	if cached ~= nil then
-		return cached
-	end
-	local res = Module:IsItemUnusableByTooltip(item.bagId, item.slotId) or false
-	unusableCache[key] = res
-	return res
-end
 
 function Module:ReverseSort()
 	for bag = 0, 4 do
@@ -1399,24 +1335,12 @@ function Module:OnEnable()
 			end
 		end
 
-		-- Determine if we can use that item or not via tooltip only (IsUsableItem is unreliable)
-		if C["Inventory"].ColorUnusableItems and not item.locked then
-			local unusable = Module:IsItemUnusableByTooltipCached(item)
-			if unusable then
-				if not self.__kkui_iconIsRed then
-					self.Icon:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b)
-					self.__kkui_iconIsRed = true
-				end
+		-- Determine if we can use that item
+		if C["Inventory"].ColorUnusableItems then
+			if (Unfit:IsItemUnusable(item.link) or item.minlevel and item.minlevel > K.Level) and not item.locked then
+				self.Icon:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b)
 			else
-				if self.__kkui_iconIsRed then
-					self.Icon:SetVertexColor(1, 1, 1)
-					self.__kkui_iconIsRed = false
-				end
-			end
-		else
-			if self.__kkui_iconIsRed then
 				self.Icon:SetVertexColor(1, 1, 1)
-				self.__kkui_iconIsRed = false
 			end
 		end
 
@@ -1465,10 +1389,12 @@ function Module:OnEnable()
 		self.bindType:SetText("")
 		if showBindOnEquip then
 			local BoE, BoU = item.bindType == 2, item.bindType == 3
-			if item.quality > 1 and not item.bound and (BoE or BoU) then
-				local color = K.QualityColors[item.quality]
-				self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
-				self.bindType:SetTextColor(color.r, color.g, color.b)
+			if BoE or BoU then
+				if item.quality > 1 and not item.bound then
+					local color = K.QualityColors[item.quality]
+					self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
+					self.bindType:SetTextColor(color.r, color.g, color.b)
+				end
 			end
 		end
 

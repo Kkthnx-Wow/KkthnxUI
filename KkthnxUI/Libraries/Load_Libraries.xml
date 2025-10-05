@@ -9,6 +9,7 @@
    <Script file="LibDeflate\LibDeflate.lua"/>
    <Script file="LibSerialize\LibSerialize.lua"/>
    <Include file="cargBags\cargBags.xml"/>
+   <Script file="LibUnfit-1.0\LibUnfit-1.0.lua"/>
    <Include file="oUF\oUF.xml"/>
    <Script file="LibBase64-1.0\LibBase64-1.0.lua" />
    <Include file="UTF8\UTF8.xml" />
