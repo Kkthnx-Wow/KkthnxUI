@@ -26,59 +26,37 @@ DEPENDENCIES
 local _, ns = ...
 local layouts = ns.cargBags.classes.Container.layouts
 local ipairs = ipairs
-local math_min = math.min
 local math_ceil = math.ceil
 local cos = math.cos
 local sin = math.sin
-
--- Debug flag for visual layout verification (set to true to enable)
-local DEBUG_LAYOUT = false
 
 function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
 	local width, height = 0, 0
-	local visibleIndex = 0
-	local lastRow = 0
-
-	for _, button in ipairs(self.buttons) do
+	local col, row = 0, 0
+	for i, button in ipairs(self.buttons) do
 		if button:IsShown() then
-			if width == 0 or height == 0 then
+			if i == 1 then -- Hackish, I know
 				width, height = button:GetSize()
 			end
 
-			visibleIndex = visibleIndex + 1
-			local col = ((visibleIndex - 1) % columns) + 1
-			local row = math_ceil(visibleIndex / columns)
-			lastRow = row
+			col = i % columns
+			if col == 0 then
+				col = columns
+			end
+			row = math_ceil(i / columns)
 
 			local xPos = (col - 1) * (width + spacing)
 			local yPos = -1 * (row - 1) * (height + spacing)
 
 			button:ClearAllPoints()
 			button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
-
-			-- Optional visual debug overlay to verify spacing/alignment
-			if DEBUG_LAYOUT then
-				local overlay = button.DebugOverlay or button:CreateTexture(nil, "OVERLAY")
-				button.DebugOverlay = overlay
-				overlay:SetAllPoints()
-				overlay:SetColorTexture(1, 0, 0, 0.18) -- subtle red
-				overlay:Show()
-			elseif button.DebugOverlay then
-				button.DebugOverlay:Hide()
-			end
 		end
 	end
 
-	if visibleIndex == 0 then
-		return 0, 0
-	end
-
-	local usedCols = math_min(columns, visibleIndex)
-	local usedRows = lastRow
-	return usedCols * (width + spacing) - spacing, usedRows * (height + spacing) - spacing
+	return columns * (width + spacing) - spacing, row * (height + spacing) - spacing
 end
 
 --[[!
