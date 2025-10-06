@@ -32,6 +32,21 @@ local UnitPowerType = UnitPowerType
 local UnitReaction = UnitReaction
 local UnitStagger = UnitStagger
 
+local IsInGroup = IsInGroup
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+local UnitName = UnitName
+local GetCVarBool = GetCVarBool
+local format = string.format
+local strfind = string.find
+
+-- Precomputed atlas strings for role icons to avoid branching and allocations per update
+local ROLE_ATLAS = {
+	HEALER = "|A:groupfinder-icon-role-micro-heal:16:16|a",
+	TANK = "|A:groupfinder-icon-role-micro-tank:16:16|a",
+	DAMAGER = "|A:groupfinder-icon-role-micro-dps:16:16|a",
+}
+
 -- Add scantip back, due to issue on ColorMixin
 local scanTip = K.ScanTooltip
 
@@ -53,8 +68,6 @@ local function FormatHealthValue(health, percentage)
 	local formattedValue = K.ShortValue(health)
 	if percentage < 100 then
 		formattedValue = formattedValue .. " - " .. GetHealthColor(percentage)
-	else
-		formattedValue = formattedValue
 	end
 	return formattedValue
 end
@@ -73,7 +86,7 @@ oUF.Tags.Methods["hp"] = function(unit)
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local percentage, currentHealth = GetUnitHealthPerc(unit)
-		if unit == "player" or unit == "target" or unit == "focus" or unit:match("party%d?$") then
+		if unit == "player" or unit == "target" or unit == "focus" or (unit and unit:sub(1, 5) == "party") then
 			return FormatHealthValue(currentHealth, percentage)
 		else
 			return GetHealthColor(percentage)
@@ -345,14 +358,17 @@ end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
 oUF.Tags.Methods["lfdrole"] = function(unit)
+	if not IsInGroup() then
+		return
+	end
+
+	if not (UnitInParty(unit) or UnitInRaid(unit)) then
+		return
+	end
+
 	local role = UnitGroupRolesAssigned(unit)
-	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" and role ~= "DAMAGER") then
-		if role == "HEALER" then
-			return "|A:groupfinder-icon-role-micro-healer:16:16|a"
-		elseif role == "TANK" then
-			return "|A:groupfinder-icon-role-micro-tank:16:16|a"
-		end
-		-- return "|A:groupfinder-icon-role-micro-dps:16:16|a DPS"
+	if role and role ~= "NONE" then
+		return ROLE_ATLAS[role]
 	end
 end
 oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

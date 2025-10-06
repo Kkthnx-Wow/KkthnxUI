@@ -258,15 +258,13 @@ function Module:CreateSpecDataText()
 
 	SpecDataText.Text = K.CreateFontString(SpecDataText, 12)
 	SpecDataText.Text:ClearAllPoints()
-	SpecDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -210)
+	SpecDataText.Text:SetPoint("LEFT", SpecDataText, "LEFT", 24, 0)
 
 	SpecDataText.Texture = SpecDataText:CreateTexture(nil, "ARTWORK")
-	SpecDataText.Texture:SetPoint("RIGHT", SpecDataText.Text, "LEFT", 0, 2)
+	SpecDataText.Texture:SetPoint("LEFT", SpecDataText, "LEFT", 0, 2)
 	SpecDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\talents.blp")
 	SpecDataText.Texture:SetSize(24, 24)
 	SpecDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
-
-	SpecDataText:SetAllPoints(SpecDataText.Text)
 
 	local function _OnEvent(...)
 		OnEvent(...)
@@ -280,4 +278,22 @@ function Module:CreateSpecDataText()
 	SpecDataText:SetScript("OnEnter", OnEnter)
 	SpecDataText:SetScript("OnLeave", OnLeave)
 	SpecDataText:SetScript("OnMouseUp", OnMouseUp)
+
+	-- Keep frame and mover size in sync with icon + text on updates
+	SpecDataText:HookScript("OnEvent", function()
+		local textW = SpecDataText.Text:GetStringWidth() or 0
+		local iconW = (SpecDataText.Texture and SpecDataText.Texture:GetWidth()) or 0
+		local totalW = textW + iconW
+		local textH = SpecDataText.Text:GetLineHeight() or 12
+		local iconH = (SpecDataText.Texture and SpecDataText.Texture:GetHeight()) or 12
+		local totalH = math.max(textH, iconH)
+		SpecDataText:SetSize(math.max(totalW, 56), totalH)
+		if SpecDataText.mover then
+			SpecDataText.mover:SetWidth(math.max(totalW, 56))
+			SpecDataText.mover:SetHeight(totalH)
+		end
+	end)
+
+	-- Make the whole block (icon + text) movable
+	SpecDataText.mover = K.Mover(SpecDataText, "SpecDT", "SpecDT", { "LEFT", UIParent, "LEFT", 0, -210 }, 56, 12)
 end

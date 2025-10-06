@@ -11,6 +11,7 @@ local error = error
 local tostring = tostring
 local print = print
 local format = string.format
+local gsub = string.gsub
 local debugprofilestop = debugprofilestop
 
 -- Localizing math functions
@@ -42,6 +43,7 @@ local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Item_GetItemQualityColor = C_Item.GetItemQualityColor
 local StaticPopupDialogs = StaticPopupDialogs
 local IsGuildMember = IsGuildMember
+local GetGuildInfo = GetGuildInfo
 local C_Map_GetMapInfo = C_Map.GetMapInfo
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local C_Map_SetUserWaypoint = C_Map.SetUserWaypoint
@@ -135,6 +137,7 @@ function Module:OnEnable()
 		"CreateVehicleSeatMover",
 		"UpdateYClassColors",
 		"UpdateMaxCameraZoom",
+		"CreateQuickMenuList",
 		-- "CreateObjectiveSizeUpdate",
 		-- "CreateQuestSizeUpdate",
 	}
@@ -160,6 +163,13 @@ function Module:OnEnable()
 
 	enableAutoBubbles()
 	modifyDeleteDialog()
+
+	-- Keep guild invite label up-to-date
+	if self.UpdateGuildInviteString then
+		self:UpdateGuildInviteString()
+		-- K:RegisterEvent("PLAYER_ENTERING_WORLD", self.UpdateGuildInviteString)
+		-- K:RegisterEvent("PLAYER_GUILD_UPDATE", self.UpdateGuildInviteString)
+	end
 	KKUI_ProfileEnd("Misc:OnEnable")
 end
 
@@ -518,6 +528,108 @@ do
 		end
 	end
 	K:RegisterEvent("RESURRECT_REQUEST", soundOnResurrect)
+end
+
+-- Buttons to enhance popup menu
+function Module:CustomMenu_AddFriend(rootDescription, data, name)
+	rootDescription:CreateButton(K.InfoColor .. ADD_CHARACTER_FRIEND, function()
+		local fullName = data.server and data.name .. "-" .. data.server or data.name
+		C_FriendList.AddFriend(name or fullName)
+	end)
+end
+
+-- Build guild invite string: "Invite to <Guild Name>" when possible
+local guildInviteString
+function Module:UpdateGuildInviteString()
+	local base = _G.COMMUNITIES_INVITE_MANAGER_LABEL or "Invite to %s"
+	local guildName = GetGuildInfo("player")
+	if guildName and guildName ~= "" then
+		guildInviteString = format(base, guildName)
+	else
+		guildInviteString = gsub("Invite To Guild", HEADER_COLON, "")
+	end
+end
+function Module:CustomMenu_GuildInvite(rootDescription, data, name)
+	rootDescription:CreateButton(K.InfoColor .. guildInviteString, function()
+		local fullName = data.server and data.name .. "-" .. data.server or data.name
+		C_GuildInfo.Invite(name or fullName)
+	end)
+end
+
+function Module:CustomMenu_CopyName(rootDescription, data, name)
+	rootDescription:CreateButton(K.InfoColor .. COPY_NAME, function()
+		local editBox = ChatEdit_ChooseBoxForSend()
+		local hasText = (editBox:GetText() ~= "")
+		ChatEdit_ActivateChat(editBox)
+		editBox:Insert(name or data.name)
+		if not hasText then
+			editBox:HighlightText()
+		end
+	end)
+end
+
+function Module:CustomMenu_Whisper(rootDescription, data)
+	rootDescription:CreateButton(K.InfoColor .. WHISPER, function()
+		ChatFrame_SendTell(data.name)
+	end)
+end
+
+function Module:CreateQuickMenuList()
+	-- if not C["Misc"].MenuButton then
+	-- 	return
+	-- end
+
+	--hooksecurefunc(UnitPopupManager, "OpenMenu", function(_, which)
+	--	print("MENU_UNIT_"..which)
+	--end)
+
+	Menu.ModifyMenu("MENU_UNIT_SELF", function(_, rootDescription, data)
+		Module:CustomMenu_CopyName(rootDescription, data)
+		Module:CustomMenu_Whisper(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_TARGET", function(_, rootDescription, data)
+		Module:CustomMenu_CopyName(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_PLAYER", function(_, rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_FRIEND", function(_, rootDescription, data)
+		Module:CustomMenu_AddFriend(rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_BN_FRIEND", function(_, rootDescription, data)
+		local fullName
+		local gameAccountInfo = data.accountInfo and data.accountInfo.gameAccountInfo
+		if gameAccountInfo then
+			local characterName = gameAccountInfo.characterName
+			local realmName = gameAccountInfo.realmName
+			if characterName and realmName then
+				fullName = characterName .. "-" .. realmName
+			end
+		end
+		Module:CustomMenu_AddFriend(rootDescription, data, fullName)
+		Module:CustomMenu_GuildInvite(rootDescription, data, fullName)
+		Module:CustomMenu_CopyName(rootDescription, data, fullName)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_PARTY", function(_, rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_RAID", function(_, rootDescription, data)
+		Module:CustomMenu_AddFriend(rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+		Module:CustomMenu_CopyName(rootDescription, data)
+		Module:CustomMenu_Whisper(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_RAID_PLAYER", function(_, rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
 end
 
 function Module:CreateCustomWaypoint()

@@ -674,7 +674,7 @@ local function OnEnter()
 
 	if totalOnline == 0 then
 		GameTooltip:SetOwner(FriendsDataText, "ANCHOR_NONE")
-		GameTooltip:SetPoint(K.GetAnchors(FriendsDataText.Text))
+		GameTooltip:SetPoint(K.GetAnchors(FriendsDataText))
 		GameTooltip:ClearLines()
 		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0.4, 0.6, 1, 0.4, 0.6, 1)
 		GameTooltip:AddLine(" ")
@@ -721,6 +721,32 @@ local function OnEvent(event, arg1)
 		FriendsDataText.Text:SetText("")
 	else
 		FriendsDataText.Text:SetText(string_format("%s: " .. K.MyClassColor .. "%d", FRIENDS, Module.totalOnline))
+	end
+
+	-- Keep frame and mover size in sync with icon + text
+	local textW = FriendsDataText.Text:GetStringWidth() or 0
+	local iconW = (FriendsDataText.Texture and FriendsDataText.Texture:GetWidth()) or 0
+	local totalW = textW + iconW
+	local textH = FriendsDataText.Text:GetLineHeight() or 12
+	local iconH = (FriendsDataText.Texture and FriendsDataText.Texture:GetHeight()) or 12
+	local totalH = math_max(textH, iconH)
+	FriendsDataText:SetSize(math_max(totalW, 56), totalH)
+	if FriendsDataText.mover then
+		FriendsDataText.mover:SetWidth(math_max(totalW, 56))
+		FriendsDataText.mover:SetHeight(totalH)
+	end
+
+	-- Keep frame and mover size in sync with icon + text
+	local textW = FriendsDataText.Text:GetStringWidth() or 0
+	local iconW = (FriendsDataText.Texture and FriendsDataText.Texture:GetWidth()) or 0
+	local totalW = textW + iconW
+	local textH = FriendsDataText.Text:GetLineHeight() or 12
+	local iconH = (FriendsDataText.Texture and FriendsDataText.Texture:GetHeight()) or 12
+	local totalH = math_max(textH, iconH)
+	FriendsDataText:SetSize(math_max(totalW, 56), totalH)
+	if FriendsDataText.mover then
+		FriendsDataText.mover:SetWidth(math_max(totalW, 56))
+		FriendsDataText.mover:SetHeight(totalH)
 	end
 
 	updateRequest = false
@@ -771,15 +797,13 @@ function Module:CreateSocialDataText()
 
 	FriendsDataText.Text = K.CreateFontString(FriendsDataText, 12)
 	FriendsDataText.Text:ClearAllPoints()
-	FriendsDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -270)
+	FriendsDataText.Text:SetPoint("LEFT", FriendsDataText, "LEFT", 24, 0)
 
 	FriendsDataText.Texture = FriendsDataText:CreateTexture(nil, "ARTWORK")
-	FriendsDataText.Texture:SetPoint("RIGHT", FriendsDataText.Text, "LEFT", 0, 2)
+	FriendsDataText.Texture:SetPoint("LEFT", FriendsDataText, "LEFT", 0, 2)
 	FriendsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
 	FriendsDataText.Texture:SetSize(24, 24)
 	FriendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
-
-	FriendsDataText:SetAllPoints(FriendsDataText.Text)
 
 	local function _OnEvent(...)
 		OnEvent(...)
@@ -794,5 +818,6 @@ function Module:CreateSocialDataText()
 	FriendsDataText:SetScript("OnLeave", OnLeave)
 	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
 
-	K.Mover(FriendsDataText.Text, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 24, -270 }, 56, 12)
+	-- Make the whole block (icon + text) movable
+	FriendsDataText.mover = K.Mover(FriendsDataText, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 0, -270 }, 56, 12)
 end

@@ -532,6 +532,19 @@ local function OnEvent(_, event, arg1)
 		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. onlineDisplay
 		GuildDataText.Text:SetText(message)
 
+		-- Keep frame and mover size in sync with icon + text
+		local textW = GuildDataText.Text:GetStringWidth() or 0
+		local iconW = (GuildDataText.Texture and GuildDataText.Texture:GetWidth()) or 0
+		local totalW = textW + iconW
+		local textH = GuildDataText.Text:GetLineHeight() or 12
+		local iconH = (GuildDataText.Texture and GuildDataText.Texture:GetHeight()) or 12
+		local totalH = math_max(textH, iconH)
+		GuildDataText:SetSize(math_max(totalW, 56), totalH)
+		if GuildDataText.mover then
+			GuildDataText.mover:SetWidth(math_max(totalW, 56))
+			GuildDataText.mover:SetHeight(totalH)
+		end
+
 		if infoFrame and infoFrame:IsShown() then
 			if not updateQueued then
 				updateQueued = true
@@ -559,7 +572,7 @@ local function OnEnter()
 	local onlineCount = (allOnline or numOnline) or 0
 	if onlineCount == 0 then
 		GameTooltip:SetOwner(GuildDataText, "ANCHOR_NONE")
-		GameTooltip:SetPoint(K.GetAnchors(GuildDataText.Text))
+		GameTooltip:SetPoint(K.GetAnchors(GuildDataText))
 		GameTooltip:ClearLines()
 		GameTooltip:AddDoubleLine(GUILD, string_format("%s: %d/%s", GUILD_ONLINE_LABEL, 0, "0"), 0.4, 0.6, 1, 0.4, 0.6, 1)
 		GameTooltip:AddLine(" ")
@@ -615,15 +628,13 @@ function Module:CreateGuildDataText()
 
 	GuildDataText.Text = K.CreateFontString(GuildDataText, 12)
 	GuildDataText.Text:ClearAllPoints()
-	GuildDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -240)
+	GuildDataText.Text:SetPoint("LEFT", GuildDataText, "LEFT", 24, 0)
 
 	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "ARTWORK")
-	GuildDataText.Texture:SetPoint("RIGHT", GuildDataText.Text, "LEFT", 0, 2)
+	GuildDataText.Texture:SetPoint("LEFT", GuildDataText, "LEFT", 0, 2)
 	GuildDataText.Texture:SetTexture(K.MediaFolder .. "DataText\\guild.blp")
 	GuildDataText.Texture:SetSize(24, 24)
 	GuildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
-
-	GuildDataText:SetAllPoints(GuildDataText.Text)
 
 	local function _OnEvent(...)
 		OnEvent(...)
@@ -637,4 +648,7 @@ function Module:CreateGuildDataText()
 	GuildDataText:SetScript("OnEnter", OnEnter)
 	GuildDataText:SetScript("OnLeave", OnLeave)
 	GuildDataText:SetScript("OnMouseUp", OnMouseUp)
+
+	-- Make the whole block (icon + text) movable
+	GuildDataText.mover = K.Mover(GuildDataText, "GuildDT", "GuildDT", { "LEFT", UIParent, "LEFT", 0, -240 }, 56, 12)
 end

@@ -5,6 +5,7 @@ local Module = K:GetModule("DataText")
 local pairs = pairs
 local string_format = string.format
 local unpack = unpack
+local math_max = math.max
 
 -- WoW API and Constants
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
@@ -118,7 +119,7 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	if not ticker then
+	if not ticker and not K.IsFirestorm then
 		C_WowTokenPublic_UpdateMarketPrice()
 		ticker = C_Timer_NewTicker(60, UpdateMarketPrice)
 	end
@@ -140,6 +141,19 @@ local function OnEvent(_, event, arg1)
 			else
 				GoldDataText.Text:SetText(K.FormatMoney(newMoney))
 			end
+		end
+
+		-- Keep frame and mover size in sync with icon + text
+		local textW = GoldDataText.Text:GetStringWidth() or 0
+		local iconW = (GoldDataText.Texture and GoldDataText.Texture:GetWidth()) or 0
+		local totalW = textW + iconW
+		local textH = GoldDataText.Text:GetLineHeight() or 12
+		local iconH = (GoldDataText.Texture and GoldDataText.Texture:GetHeight()) or 12
+		local totalH = math_max(textH, iconH)
+		GoldDataText:SetSize(math_max(totalW, 56), totalH)
+		if GoldDataText.mover then
+			GoldDataText.mover:SetWidth(math_max(totalW, 56))
+			GoldDataText.mover:SetHeight(totalH)
 		end
 	end
 
@@ -197,7 +211,7 @@ local function OnEnter(self)
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(self))
+	GameTooltip:SetPoint(K.GetAnchors(GoldDataText))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor .. CURRENCY)
@@ -349,15 +363,15 @@ function Module:CreateGoldDataText()
 	if C["DataText"].Gold then
 		GoldDataText.Text = K.CreateFontString(GoldDataText, 12)
 		GoldDataText.Text:ClearAllPoints()
-		GoldDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -302)
+		GoldDataText.Text:SetPoint("LEFT", GoldDataText, "LEFT", 24, 0)
 
 		GoldDataText.Texture = GoldDataText:CreateTexture(nil, "ARTWORK")
-		GoldDataText.Texture:SetPoint("RIGHT", GoldDataText.Text, "LEFT", 0, 2)
+		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 0, 2)
 		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
 		GoldDataText.Texture:SetSize(24, 24)
 		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-		GoldDataText:SetAllPoints(GoldDataText.Text)
+		-- Size will be controlled dynamically based on text+icon width
 	end
 
 	for _, event in pairs(eventList) do
@@ -370,5 +384,10 @@ function Module:CreateGoldDataText()
 
 	if C["DataText"].Gold then
 		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
+		-- Make the whole block (icon + text) movable
+		GoldDataText.mover = K.Mover(GoldDataText, "GoldDT", "GoldDT", { "LEFT", UIParent, "LEFT", 0, -300 }, 56, 12)
+		-- Initialize mover width to current total width (with a sane minimum)
+		local w = (GoldDataText.Text:GetStringWidth() or 0) + (GoldDataText.Texture and GoldDataText.Texture:GetWidth() or 0)
+		GoldDataText.mover:SetWidth(math_max(w, 56))
 	end
 end
