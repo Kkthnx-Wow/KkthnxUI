@@ -75,11 +75,6 @@ function Implementation:New(name)
 	impl:EnableMouse(nil)
 	impl:Hide()
 
-	impl._dirtyBags = {}
-	impl._dirtySlots = {}
-	impl._fullDirty = nil
-	impl._flushUpdater = nil
-
 	cargBags.SetScriptHandlers(impl, "OnEvent", "OnShow", "OnHide")
 
 	impl.contByID = {} --! @property contByID <table> Holds all child-Containers by index
@@ -364,12 +359,11 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.bagId = bagID
 	i.slotId = slotID
 
-	local texture, count, locked, quality, itemLink, noValue, itemID
 	local info = GetContainerItemInfo(bagID, slotID)
 	if info then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice, i.bound = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue, info.isBound
 
-		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID) -- Still Broken!
+		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
 
 		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
 
@@ -378,8 +372,8 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 			i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 		end
 
-		local name, _, _, _, _, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = GetItemInfo(i.link)
-		i.name, i.type, i.subType, i.equipLoc, i.classID, i.subClassID, i.expacID, i.bindType = name, typeText, subTypeText, (equipLoc and _G[equipLoc]) or nil, classID, subClassID, expacID, bindType
+		local name, _, _, _, minLevel, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = GetItemInfo(i.link)
+		i.name, i.minLevel, i.type, i.subType, i.equipLoc, i.classID, i.subClassID, i.expacID, i.bindType = name, minLevel, typeText, subTypeText, (equipLoc and _G[equipLoc]) or nil, classID, subClassID, expacID, bindType
 
 		if isItemHasLevel(i) then
 			i.ilvl = KkthnxUI and KkthnxUI[1].GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
@@ -467,102 +461,40 @@ end
 	@callback Container:OnBagUpdate(bagID, slotID)
 ]]
 
-local function flushDirty(self)
-	-- Early-out if nothing to do
-	if not self._fullDirty and not next(self._dirtyBags) and not next(self._dirtySlots) then
-		return
-	end
+local isUpdating = false
 
-	if self._fullDirty then
-		if next(self.bagSizes) then
-			for bagKey in pairs(self.bagSizes) do
-				self:UpdateBag(bagKey)
-			end
-		else
-			for bagID = 0, 5 do
-				self:UpdateBag(bagID)
-			end
-		end
-	else
-		for bagID in pairs(self._dirtyBags) do
-			self:UpdateBag(bagID)
-		end
-		for bagID, slots in pairs(self._dirtySlots) do
-			for slotID in pairs(slots) do
-				self:UpdateSlot(bagID, slotID)
-			end
-		end
-	end
-
-	wipe(self._dirtyBags)
-	wipe(self._dirtySlots)
-	self._fullDirty = nil
-end
-
-function Implementation:BAG_UPDATE(event, bagID, slotID, ...)
+function Implementation:BAG_UPDATE(_, bagID, slotID)
 	if self.isSorting then
 		return
 	end
-
-	-- Coalesce updates: mark dirty on BAG_UPDATE, flush on next frame or when BAG_UPDATE_DELAYED fires
-	if event == "BAG_UPDATE" then
-		if bagID and slotID then
-			self._dirtySlots[bagID] = self._dirtySlots[bagID] or {}
-			self._dirtySlots[bagID][slotID] = true
-		elseif bagID then
-			self._dirtyBags[bagID] = true
-		else
-			self._fullDirty = true
-		end
-
-		if not self._flushUpdater then
-			self._flushUpdater = CreateFrame("Frame")
-			self._flushUpdater:Hide()
-			self._flushUpdater:SetScript("OnUpdate", function(f)
-				f:Hide()
-				self._flushScheduled = false
-				flushDirty(self)
-			end)
-		end
-		if not self._flushScheduled then
-			self._flushScheduled = true
-			self._flushUpdater:Show()
-		end
+	if isUpdating then
 		return
 	end
+	isUpdating = true
 
-	-- Flush on delayed or other triggers
-	if event == "BAG_UPDATE_DELAYED" then
-		flushDirty(self)
+	if bagID and slotID then
+		self:UpdateSlot(bagID, slotID)
+	elseif bagID then
+		self:UpdateBag(bagID)
 	else
-		-- Backward compatibility for direct calls from other handlers
-		if bagID and slotID then
-			self:UpdateSlot(bagID, slotID)
-		elseif bagID then
+		for bagID = 0, 5 do
 			self:UpdateBag(bagID)
-		else
-			if next(self.bagSizes) then
-				for bagKey in pairs(self.bagSizes) do
-					self:UpdateBag(bagKey)
-				end
-			else
-				for id = 0, 5 do
-					self:UpdateBag(id)
-				end
+		end
 
-				local bankType = BankFrame.BankPanel.bankType
-				if bankType == Enum.BankType.Character then
-					for bagID = 6, 11 do
-						self:UpdateBag(bagID)
-					end
-				elseif bankType == Enum.BankType.Account then
-					for bagID = 12, 16 do
-						self:UpdateBag(bagID)
-					end
-				end
+		local bankType = BankFrame.BankPanel.bankType
+
+		if bankType == Enum.BankType.Character then
+			for bagID = 6, 11 do
+				self:UpdateBag(bagID)
+			end
+		elseif bankType == Enum.BankType.Account then
+			for bagID = 12, 16 do
+				self:UpdateBag(bagID)
 			end
 		end
 	end
+
+	isUpdating = false
 end
 
 --[[!
