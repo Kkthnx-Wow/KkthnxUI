@@ -44,7 +44,7 @@ local strfind = string.find
 local ROLE_ATLAS = {
 	HEALER = "|A:groupfinder-icon-role-micro-heal:16:16|a",
 	TANK = "|A:groupfinder-icon-role-micro-tank:16:16|a",
-	DAMAGER = "|A:groupfinder-icon-role-micro-dps:16:16|a",
+	--DAMAGER = "|A:groupfinder-icon-role-micro-dps:16:16|a",
 }
 
 -- Add scantip back, due to issue on ColorMixin
@@ -367,7 +367,7 @@ oUF.Tags.Methods["lfdrole"] = function(unit)
 	end
 
 	local role = UnitGroupRolesAssigned(unit)
-	if role and role ~= "NONE" then
+	if role and role ~= "NONE" and role ~= "DAMAGER" then
 		return ROLE_ATLAS[role]
 	end
 end

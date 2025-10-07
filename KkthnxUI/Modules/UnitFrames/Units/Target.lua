@@ -359,12 +359,13 @@ function Module:CreateTarget()
 		K.Mover(FloatingCombatFeedback, "CombatText", "TargetCombatText", { "BOTTOM", self, "TOPRIGHT", 0, 120 })
 
 		for i = 1, 36 do
-			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
+			FloatingCombatFeedback[i] = FloatingCombatFeedback:CreateFontString("$parentText", "OVERLAY")
 		end
 
 		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
 		FloatingCombatFeedback.fontFlags = "OUTLINE"
 		FloatingCombatFeedback.abbreviateNumbers = true
+		FloatingCombatFeedback:SetFrameStrata("HIGH")
 
 		self.FloatingCombatFeedback = FloatingCombatFeedback
 
