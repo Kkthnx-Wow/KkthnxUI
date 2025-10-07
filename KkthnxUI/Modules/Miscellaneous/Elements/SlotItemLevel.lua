@@ -498,11 +498,17 @@ function Module:ItemLevel_ScrappingUpdate()
 	self.iLvl:SetTextColor(color.r, color.g, color.b)
 end
 
-function Module.ItemLevel_ScrappingShow(event, addon)
-	if addon == "Blizzard_ScrappingMachineUI" then
-		for button in pairs(ScrappingMachineFrame.ItemSlots.scrapButtons.activeObjects) do
+function Module:ItemLevel_ScrappingSetup()
+	for button in self.ItemSlots.scrapButtons:EnumerateActive() do
+		if button and not button.iLvl then
 			hooksecurefunc(button, "RefreshIcon", Module.ItemLevel_ScrappingUpdate)
 		end
+	end
+end
+
+function Module.ItemLevel_ScrappingShow(event, addon)
+	if addon == "Blizzard_ScrappingMachineUI" then
+		hooksecurefunc(ScrappingMachineFrame, "SetupScrapButtonPool", Module.ItemLevel_ScrappingSetup)
 
 		K:UnregisterEvent(event, Module.ItemLevel_ScrappingShow)
 	end
