@@ -2723,20 +2723,20 @@ local function PopulateContent(category)
 
 	-- Category title (match section header styling for uniformity)
 	local categoryTitleFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
-	categoryTitleFrame:SetSize(CONTENT_WIDTH - 30, 30)
+	categoryTitleFrame:SetSize(CONTENT_WIDTH, 30)
 	categoryTitleFrame:SetPoint("TOPLEFT", 15, yOffset)
 
 	-- Background to match section headers
 	local categoryBg = categoryTitleFrame:CreateTexture(nil, "BACKGROUND")
 	categoryBg:SetAllPoints()
 	categoryBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	categoryBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+	categoryBg:SetVertexColor(0.09, 0.09, 0.09, 0.8)
 
 	local categoryTitle = categoryTitleFrame:CreateFontString(nil, "OVERLAY")
 	categoryTitle:SetFontObject(K.UIFont)
-	categoryTitle:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-	categoryTitle:SetText(category.Name)
-	categoryTitle:SetPoint("LEFT", categoryTitleFrame, "LEFT", 10, 0)
+	categoryTitle:SetTextColor(0.9, 0.9, 0.9, 1)
+	categoryTitle:SetText("|T" .. category.Icon .. ":16:16:0:0:64:64:4:60:4:60|t " .. category.Name)
+	categoryTitle:SetPoint("CENTER", categoryTitleFrame, "CENTER", 0, 0)
 	yOffset = yOffset - 40
 
 	-- Create sections with proper spacing
@@ -2751,19 +2751,19 @@ local function PopulateContent(category)
 		if not (sectionIndex == 1 and firstMatchesCategory) then
 			-- Section header frame with proper background
 			local sectionFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
-			sectionFrame:SetSize(CONTENT_WIDTH - 30, 30)
+			sectionFrame:SetSize(CONTENT_WIDTH, 30)
 			sectionFrame:SetPoint("TOPLEFT", 15, yOffset)
 
 			-- Section header background
 			local sectionBg = sectionFrame:CreateTexture(nil, "BACKGROUND")
 			sectionBg:SetAllPoints()
 			sectionBg:SetTexture(C["Media"].Textures.White8x8Texture)
-			sectionBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+			sectionBg:SetVertexColor(0.1, 0.1, 0.1, 0.8)
 
 			-- Section title with proper positioning
 			local sectionTitle = sectionFrame:CreateFontString(nil, "OVERLAY")
 			sectionTitle:SetFontObject(K.UIFont)
-			sectionTitle:SetTextColor(0.9, 0.9, 0.9, 1)
+			sectionTitle:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 
 			-- Use clean section title text
 			sectionTitle:SetText(section.Name)
