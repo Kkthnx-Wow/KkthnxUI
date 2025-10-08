@@ -532,19 +532,6 @@ local function OnEvent(_, event, arg1)
 		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. onlineDisplay
 		GuildDataText.Text:SetText(message)
 
-		-- Keep frame and mover size in sync with icon + text
-		local textW = GuildDataText.Text:GetStringWidth() or 0
-		local iconW = (GuildDataText.Texture and GuildDataText.Texture:GetWidth()) or 0
-		local totalW = textW + iconW
-		local textH = GuildDataText.Text:GetLineHeight() or 12
-		local iconH = (GuildDataText.Texture and GuildDataText.Texture:GetHeight()) or 12
-		local totalH = math_max(textH, iconH)
-		GuildDataText:SetSize(math_max(totalW, 56), totalH)
-		if GuildDataText.mover then
-			GuildDataText.mover:SetWidth(math_max(totalW, 56))
-			GuildDataText.mover:SetHeight(totalH)
-		end
-
 		if infoFrame and infoFrame:IsShown() then
 			if not updateQueued then
 				updateQueued = true
@@ -559,6 +546,20 @@ local function OnEvent(_, event, arg1)
 		end
 	else
 		GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. NO .. " " .. GUILD)
+	end
+
+	-- Keep frame and mover size in sync with icon + text
+	local textW = GuildDataText.Text:GetStringWidth() or 0
+	local iconW = (GuildDataText.Texture and GuildDataText.Texture:GetWidth()) or 0
+	local totalW = textW + iconW
+	local textH = GuildDataText.Text:GetLineHeight() or 12
+	local iconH = (GuildDataText.Texture and GuildDataText.Texture:GetHeight()) or 12
+	local totalH = math_max(textH, iconH)
+
+	GuildDataText:SetSize(math_max(totalW, 56), totalH)
+	if GuildDataText.mover then
+		GuildDataText.mover:SetWidth(math_max(totalW, 56))
+		GuildDataText.mover:SetHeight(totalH)
 	end
 end
 
