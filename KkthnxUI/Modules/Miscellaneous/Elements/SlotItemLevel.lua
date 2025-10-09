@@ -483,6 +483,7 @@ function Module:ItemLevel_ScrappingUpdate()
 	if not self.iLvl then
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 	end
+
 	if not self.itemLink then
 		self.iLvl:SetText("")
 		return
@@ -508,6 +509,11 @@ end
 
 function Module.ItemLevel_ScrappingShow(event, addon)
 	if addon == "Blizzard_ScrappingMachineUI" then
+		if ScrappingMachineFrame.ItemSlots and ScrappingMachineFrame.ItemSlots.scrapButtons then
+			-- Process any buttons that already exist
+			Module.ItemLevel_ScrappingSetup(ScrappingMachineFrame)
+		end
+
 		hooksecurefunc(ScrappingMachineFrame, "SetupScrapButtonPool", Module.ItemLevel_ScrappingSetup)
 
 		K:UnregisterEvent(event, Module.ItemLevel_ScrappingShow)
