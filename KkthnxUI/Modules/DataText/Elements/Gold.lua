@@ -119,7 +119,7 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	if not ticker and not K.IsFirestorm then
+	if not ticker then
 		C_WowTokenPublic_UpdateMarketPrice()
 		ticker = C_Timer_NewTicker(60, UpdateMarketPrice)
 	end
@@ -210,8 +210,12 @@ local function OnEnter(self)
 		return
 	end
 
-	GameTooltip:SetOwner(self, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(GoldDataText))
+	GameTooltip:SetOwner(GoldDataText, "ANCHOR_NONE")
+	if self == GoldDataText then
+		GameTooltip:SetPoint(K.GetAnchors(GoldDataText))
+	else
+		GameTooltip:SetPoint(K.GetAnchors(self))
+	end
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor .. CURRENCY)
