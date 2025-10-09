@@ -2,7 +2,7 @@
    <Script file="AuraWatchSpells.lua" />
    <Script file="AutoQuest.lua" />
    <Script file="BadBuffs.lua" />
-   <Script file="Changelog.lua" />
+   <Script file="ChangelogData.lua" />
    <Script file="Emojis.lua" />
    <Script file="ExtraQuestButton.lua" />
    <Script file="MapReveal.lua" />

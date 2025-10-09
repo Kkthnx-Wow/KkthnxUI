@@ -716,8 +716,5 @@ function Module:OnEnable()
 	Module.ForceAddonSkins()
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
 		HelloWorld()
-	else
-		K.LibChangeLog:Register(K.Title, K.Changelog, KkthnxUIDB.ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
-		K.LibChangeLog:ShowChangelog(K.Title)
 	end
 end

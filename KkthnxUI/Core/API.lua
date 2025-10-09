@@ -453,13 +453,26 @@ end
 -- Skin CheckBox
 local function SkinCheckBox(self, forceSaturation)
 	self:SetNormalTexture(0)
-	self:SetPushedTexture(0)
 
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
+	bg:CreateBorder()
 	self.bg = bg
+
+	self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+	local hl = self:GetHighlightTexture()
+	hl:SetAllPoints(bg)
+
+	self:SetPushedTexture("Interface\\Buttons\\ButtonHilight-Square")
+	local pushed = self:GetPushedTexture()
+	pushed:SetAllPoints(bg)
+	pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
+
+	local ch = self:GetCheckedTexture()
+	ch:SetAtlas("checkmark-minimal")
+	ch:SetPoint("TOPLEFT", bg, "TOPLEFT", -3, 3)
+	ch:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", 3, -3)
 
 	self.forceSaturation = forceSaturation
 end

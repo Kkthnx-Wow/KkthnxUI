@@ -555,7 +555,6 @@ local function OnEvent(_, event, arg1)
 	local textH = GuildDataText.Text:GetLineHeight() or 12
 	local iconH = (GuildDataText.Texture and GuildDataText.Texture:GetHeight()) or 12
 	local totalH = math_max(textH, iconH)
-
 	GuildDataText:SetSize(math_max(totalW, 56), totalH)
 	if GuildDataText.mover then
 		GuildDataText.mover:SetWidth(math_max(totalW, 56))

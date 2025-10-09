@@ -55,7 +55,6 @@ local K, C, L = Engine[1], Engine[2], Engine[3]
 K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true) or nil
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
 K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
-K.LibChangeLog = LibStub("LibChangelog-KkthnxUI", true) or nil
 K.LibDeflate = LibStub("LibDeflate-KkthnxUI", true) or nil
 K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true) or nil
 K.LibSerialize = LibStub("LibSerialize-KkthnxUI", true) or nil

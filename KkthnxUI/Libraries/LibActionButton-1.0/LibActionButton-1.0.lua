@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-KkthnxUI"
-local MINOR_VERSION = 130
+local MINOR_VERSION = 131
 
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -43,6 +43,10 @@ end
 local type, error, tostring, tonumber, assert, select = type, error, tostring, tonumber, assert, select
 local setmetatable, wipe, unpack, pairs, next = setmetatable, wipe, unpack, pairs, next
 local str_match, format = string.match, format
+local tconcat = table.concat
+local GetTime = GetTime
+local InCombatLockdown = InCombatLockdown
+local IsMouseButtonDown = IsMouseButtonDown
 
 local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
@@ -131,6 +135,13 @@ local DefaultConfig = {
 	outOfRangeColoring = "button",
 	tooltip = "enabled",
 	showGrid = false,
+	-- Cooldown appearance options (apply when not in Loss of Control mode)
+	cooldown = {
+		drawBling = nil, -- nil: auto based on alpha; boolean to force
+		reverse = false,
+		edgeTexture = nil, -- custom edge texture path for normal cooldown
+		swipeColor = nil, -- {r, g, b, a} for normal cooldown
+	},
 	colors = {
 		range = { 0.8, 0.1, 0.1 },
 		mana = { 0.5, 0.5, 1.0 },
@@ -157,6 +168,7 @@ local DefaultConfig = {
 				flags = "OUTLINE",
 			},
 			color = { 0.75, 0.75, 0.75 },
+			formatter = nil, -- optional function(key: string) -> string
 			position = {
 				anchor = "TOPRIGHT",
 				relAnchor = "TOPRIGHT",
@@ -172,6 +184,7 @@ local DefaultConfig = {
 				flags = "OUTLINE",
 			},
 			color = { 1, 1, 1 },
+			formatter = nil, -- optional function(count: number, maxCharges: number|nil) -> string
 			position = {
 				anchor = "BOTTOMRIGHT",
 				relAnchor = "BOTTOMRIGHT",
@@ -729,7 +742,7 @@ local DiscoverFlyoutSpells, UpdateFlyoutSpells, UpdateFlyoutHandlerScripts, Flyo
 if UseCustomFlyout then
 	-- params: self, flyoutID
 	local FlyoutHandleFunc = [[
-		local SPELLFLYOUT_DEFAULT_SPACING = 4
+		local SPELLFLYOUT_DEFAULT_SPACING = 6
 		local SPELLFLYOUT_INITIAL_SPACING = 7
 		local SPELLFLYOUT_FINAL_SPACING = 9
 
@@ -973,13 +986,14 @@ if UseCustomFlyout then
 
 		local maxNumSlots = 0
 
-		local data = "LAB_FlyoutInfo = newtable();\n"
+		local lines = {}
+		lines[#lines + 1] = "LAB_FlyoutInfo = newtable();\n"
 		for flyoutID, info in pairs(lib.FlyoutInfo) do
 			if info.isKnown then
 				local numSlots = 0
-				data = data .. ("LAB_FlyoutInfo[%d] = newtable();LAB_FlyoutInfo[%d].slots = newtable();\n"):format(flyoutID, flyoutID)
+				lines[#lines + 1] = ("LAB_FlyoutInfo[%d] = newtable();LAB_FlyoutInfo[%d].slots = newtable();\n"):format(flyoutID, flyoutID)
 				for slotID, slotInfo in ipairs(info.slots) do
-					data = data .. ("LAB_FlyoutInfo[%d].slots[%d] = newtable();LAB_FlyoutInfo[%d].slots[%d].spellID = %d;LAB_FlyoutInfo[%d].slots[%d].isKnown = %s;\n"):format(flyoutID, slotID, flyoutID, slotID, slotInfo.spellID, flyoutID, slotID, slotInfo.isKnown and "true" or "nil")
+					lines[#lines + 1] = ("LAB_FlyoutInfo[%d].slots[%d] = newtable();LAB_FlyoutInfo[%d].slots[%d].spellID = %d;LAB_FlyoutInfo[%d].slots[%d].isKnown = %s;\n"):format(flyoutID, slotID, flyoutID, slotID, slotInfo.spellID, flyoutID, slotID, slotInfo.isKnown and "true" or "nil")
 					numSlots = numSlots + 1
 				end
 
@@ -990,7 +1004,7 @@ if UseCustomFlyout then
 		end
 
 		-- load generated data into the restricted environment
-		GetFlyoutHandler():Execute(data)
+		GetFlyoutHandler():Execute(tconcat(lines))
 
 		if maxNumSlots > #lib.FlyoutButtons then
 			for i = #lib.FlyoutButtons + 1, maxNumSlots do
@@ -1277,6 +1291,15 @@ function Generic:UpdateConfig(config)
 	end
 end
 
+function Generic:SetFlyoutDirection(direction)
+	-- convenience setter to mirror bar-driven updates
+	if direction then
+		self.config.flyoutDirection = direction
+		self:SetAttribute("flyoutDirection", direction)
+		UpdateFlyout(self)
+	end
+end
+
 -----------------------------------------------------------
 --- event handler
 
@@ -1323,7 +1346,7 @@ function InitializeEventHandler()
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_ICON")
 	if not WoWClassic and not WoWBCC then
 		if not WoWWrath then
-			lib.eventFrame.showGlow = true -- KkthnxUI
+			lib.eventFrame.showGlow = true -- NDui
 			lib.eventFrame:RegisterEvent("ARCHAEOLOGY_CLOSED")
 			lib.eventFrame:RegisterEvent("UPDATE_SUMMONPETS_ACTION")
 			lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
@@ -1744,7 +1767,7 @@ function Generic:UpdateAction(force)
 	end
 end
 
--- KkthnxUI: add quality border
+-- NDui: add quality border
 local GetProfessionQuality = C_ActionBar and C_ActionBar.GetProfessionQuality
 
 local function ClearProfessionQuality(self)
@@ -1764,7 +1787,7 @@ local function UpdateProfessionQuality(self)
 		if quality then
 			if not self.ProfessionQuality then
 				self.ProfessionQuality = CreateFrame("Frame", nil, self)
-				self.ProfessionQuality:SetAllPoints()
+				self.ProfessionQuality:SetInside()
 				local tex = self.ProfessionQuality:CreateTexture(nil, "ARTWORK")
 				tex:SetPoint("TOPLEFT")
 				self.ProfessionQuality.Texture = tex
@@ -1933,6 +1956,11 @@ function Update(self)
 			]]):format(formatHelper(self:GetAttribute("state")), formatHelper(self._state_type), formatHelper(self._state_action)))
 		end
 	end
+
+	-- Notify listeners post styling and state updates
+	if lib and lib.callbacks then
+		lib.callbacks:Fire("OnButtonStyled", self)
+	end
 	lib.callbacks:Fire("OnButtonUpdate", self)
 end
 
@@ -1986,6 +2014,14 @@ function UpdateCount(self)
 	end
 	if self:IsConsumableOrStackable() then
 		local count = self:GetCount()
+		local formatter = self.config and self.config.text and self.config.text.count and self.config.text.count.formatter
+		if type(formatter) == "function" then
+			local ok, text = pcall(formatter, count, nil)
+			if ok and type(text) == "string" then
+				self.Count:SetText(text)
+				return
+			end
+		end
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
@@ -1994,6 +2030,14 @@ function UpdateCount(self)
 	else
 		local charges, maxCharges, _chargeStart, _chargeDuration = self:GetCharges()
 		if charges and maxCharges and maxCharges > 1 then
+			local formatter = self.config and self.config.text and self.config.text.count and self.config.text.count.formatter
+			if type(formatter) == "function" then
+				local ok, text = pcall(formatter, charges, maxCharges)
+				if ok and type(text) == "string" then
+					self.Count:SetText(text)
+					return
+				end
+			end
 			self.Count:SetText(charges)
 		else
 			self.Count:SetText("")
@@ -2084,10 +2128,19 @@ function UpdateCooldown(self)
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = self:GetCharges()
 	end
 
-	self.cooldown:SetDrawBling(self.cooldown:GetEffectiveAlpha() > 0.5)
+	local cdconf = self.config and self.config.cooldown
+	local drawnBling
+	if cdconf and cdconf.drawBling ~= nil then
+		self.cooldown:SetDrawBling(cdconf.drawBling)
+		drawnBling = true
+	end
+	if not drawnBling then
+		self.cooldown:SetDrawBling(self.cooldown:GetEffectiveAlpha() > 0.5)
+	end
 
 	local hasLocCooldown = locStart and locDuration and locStart > 0 and locDuration > 0
 	local hasCooldown = enable and start and duration and start > 0 and duration > 0
+	local cooldownType
 	if hasLocCooldown and ((not hasCooldown) or ((locStart + locDuration) > (start + duration))) then
 		if self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC")
@@ -2099,6 +2152,7 @@ function UpdateCooldown(self)
 		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate)
 		self.cooldown:SetScript("OnCooldownDone", OnCooldownDone, false)
 		ClearChargeCooldown(self)
+		cooldownType = "loc"
 	else
 		if self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
@@ -2114,7 +2168,25 @@ function UpdateCooldown(self)
 		else
 			ClearChargeCooldown(self)
 		end
+		-- Apply optional cooldown config for normal cooldowns
+		if cdconf then
+			if cdconf.edgeTexture then
+				self.cooldown:SetEdgeTexture(cdconf.edgeTexture)
+			end
+			if cdconf.swipeColor then
+				self.cooldown:SetSwipeColor(cdconf.swipeColor[1] or 0, cdconf.swipeColor[2] or 0, cdconf.swipeColor[3] or 0, cdconf.swipeColor[4] or 1)
+			end
+			if self.cooldown.SetReverse then
+				self.cooldown:SetReverse(cdconf.reverse and true or false)
+			end
+		end
 		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate)
+		cooldownType = "normal"
+	end
+
+	-- Notify listeners that the cooldown visuals/state were updated
+	if lib and lib.callbacks and cooldownType then
+		lib.callbacks:Fire("OnCooldownUpdated", self, cooldownType)
 	end
 end
 
@@ -2160,11 +2232,18 @@ function UpdateHotkeys(self)
 		self.HotKey:SetText(RANGE_INDICATOR)
 		self.HotKey:Hide()
 	else
+		local formatter = self.config and self.config.text and self.config.text.hotkey and self.config.text.hotkey.formatter
+		if type(formatter) == "function" then
+			local ok, text = pcall(formatter, key)
+			if ok and type(text) == "string" then
+				key = text
+			end
+		end
 		self.HotKey:SetText(key)
 		self.HotKey:Show()
 	end
 end
--- KkthnxUI: custom glow
+-- NDui: custom glow
 function ShowOverlayGlow(self)
 	if LCG and lib.eventFrame.showGlow then
 		LCG.ShowOverlayGlow(self)
@@ -2177,6 +2256,7 @@ function HideOverlayGlow(self)
 	end
 end
 
+local IsSpellOverlayed = C_SpellActivationOverlay and C_SpellActivationOverlay.IsSpellOverlayed or IsSpellOverlayed
 function UpdateOverlayGlow(self)
 	local spellId = lib.eventFrame.showGlow and self:GetSpellId()
 	if spellId and IsSpellOverlayed(spellId) then
@@ -2288,6 +2368,7 @@ function UpdateAssistedCombatRotationFrame(self)
 	-- create frame if needed
 	if show and not assistedCombatRotationFrame then
 		assistedCombatRotationFrame = CreateFrame("Frame", nil, self, "ActionBarButtonAssistedCombatRotationTemplate")
+		assistedCombatRotationFrame.UpdateGlow = function() end
 		self.AssistedCombatRotationFrame = assistedCombatRotationFrame
 	end
 

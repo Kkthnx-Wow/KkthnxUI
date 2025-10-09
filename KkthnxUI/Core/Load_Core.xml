@@ -14,5 +14,6 @@
    <Script file="GUI.lua"/>
    <Script file="ExtraGUI.lua"/>
    <Script file="ProfileGUI.lua"/>
+   <Script file="Changelog.lua"/>
    <Script file="AddOns.lua"/>
 </Ui>

@@ -14,5 +14,4 @@
    <Script file="LibBase64-1.0\LibBase64-1.0.lua" />
    <Include file="UTF8\UTF8.xml" />
    <Script file="LibAnim\LibAnim.lua" />
-   <Script file="LibChangelog\LibChangelog.lua" />
 </Ui>
