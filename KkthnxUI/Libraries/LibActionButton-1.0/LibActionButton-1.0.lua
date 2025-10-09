@@ -1787,7 +1787,7 @@ local function UpdateProfessionQuality(self)
 		if quality then
 			if not self.ProfessionQuality then
 				self.ProfessionQuality = CreateFrame("Frame", nil, self)
-				self.ProfessionQuality:SetInside()
+				self.ProfessionQuality:SetAllPoints()
 				local tex = self.ProfessionQuality:CreateTexture(nil, "ARTWORK")
 				tex:SetPoint("TOPLEFT")
 				self.ProfessionQuality.Texture = tex
