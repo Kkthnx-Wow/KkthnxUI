@@ -73,18 +73,19 @@ StaticPopupDialogs["KKUI_POPUP_LINK"] = {
 	button1 = OKAY,
 	hasEditBox = 1,
 	OnShow = function(self, data)
-		self.editBox:SetAutoFocus(false)
-		self.editBox.width = self.editBox:GetWidth()
-		self.editBox:SetWidth(280)
-		self.editBox:AddHistoryLine("text")
-		self.editBox.temptxt = data
-		self.editBox:SetText(data)
-		self.editBox:HighlightText()
-		self.editBox:SetJustifyH("CENTER")
+		data = data or "" -- Ensure data is valid
+		self.EditBox:SetAutoFocus(false)
+		self.EditBox.width = self.EditBox:GetWidth()
+		self.EditBox:SetWidth(280)
+		self.EditBox:AddHistoryLine("text")
+		self.EditBox.temptxt = data
+		self.EditBox:SetText(data)
+		self.EditBox:HighlightText() -- Text highlighted on show
+		self.EditBox:SetJustifyH("CENTER")
 	end,
 	OnHide = function(self)
-		self.editBox:SetWidth(self.editBox.width or 50)
-		self.editBox.width = nil
+		self.EditBox:SetWidth(self.EditBox.width or 50)
+		self.EditBox.width = nil
 		self.temptxt = nil
 	end,
 	EditBoxOnEnterPressed = function(self)
@@ -96,9 +97,9 @@ StaticPopupDialogs["KKUI_POPUP_LINK"] = {
 	EditBoxOnTextChanged = function(self)
 		if self:GetText() ~= self.temptxt then
 			self:SetText(self.temptxt)
+			self:HighlightText()
+			self:ClearFocus()
 		end
-		self:HighlightText()
-		self:ClearFocus()
 	end,
 	OnAccept = K.Noop,
 	timeout = 0,
