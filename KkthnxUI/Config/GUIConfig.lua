@@ -395,6 +395,13 @@ local function CreateChatCategory()
 		end
 	end
 
+	local function UpdateChatButtons()
+		local chatModule = K:GetModule("Chat")
+		if chatModule and chatModule.UpdateChatButtons then
+			chatModule:UpdateChatButtons()
+		end
+	end
+
 	-- General
 	local generalChatSection = GUI:AddSection(chatCategory, GENERAL)
 	GUI:CreateSwitch(generalChatSection, "Chat.Enable", enableTextColor .. L["Enable Chat"], L["Enable Desc"])
@@ -406,6 +413,9 @@ local function CreateChatCategory()
 	local appearanceChatSection = GUI:AddSection(chatCategory, L["Appearance"])
 	GUI:CreateSwitch(appearanceChatSection, "Chat.Emojis", L["Show Emojis In Chat"] .. " |TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t", L["Emojis Desc"])
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatItemLevel", L["Show ItemLevel on ChatFrames"], L["ChatItemLevel Desc"])
+	GUI:CreateSwitch(appearanceChatSection, "Chat.CopyButton", "Show Copy Chat Button |TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14|t", "Enable or disable the Copy Chat button, which allows you to copy chat text.", UpdateChatButtons, true)
+	GUI:CreateSwitch(appearanceChatSection, "Chat.ConfigButton", "Show Config Button |TInterface\\Buttons\\UI-OptionsButton:14:14|t", "Enable or disable the Config button, which provides quick access to the configuration menu.", UpdateChatButtons, true)
+	GUI:CreateSwitch(appearanceChatSection, "Chat.RollButton", "Show Roll Button |A:charactercreate-icon-dice:14:14|a", "Enable or disable the Roll button, which allows you to roll a random number between 1 and 100.", UpdateChatButtons, true)
 
 	-- Timestamp Format
 	local timestampOptions = {

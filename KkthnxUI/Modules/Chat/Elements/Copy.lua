@@ -54,6 +54,22 @@ local menuList = {
 	},
 
 	{
+		text = "Changelog",
+		notCheckable = true,
+		func = function()
+			SlashCmdList["KKUI_CHANGELOG"]()
+		end,
+	},
+
+	{
+		text = "Commands List",
+		notCheckable = true,
+		func = function()
+			SlashCmdList["KKUI_COMMANDS"]("help")
+		end,
+	},
+
+	{
 		text = RELOADUI,
 		notCheckable = true,
 		func = function()
@@ -64,6 +80,8 @@ local menuList = {
 			ReloadUI()
 		end,
 	},
+
+	{ text = "", notClickable = true, notCheckable = true },
 
 	{
 		text = BINDING_NAME_TOGGLECOMBATLOG,
@@ -226,14 +244,6 @@ function Module:ChatCopy_CreateMenu()
 	_G.ChatFrameChannelButton:SetPoint("TOP", _G.ChatFrameMenuButton, "BOTTOM", 0, -6)
 	_G.ChatFrameChannelButton:SetParent(menu)
 
-	_G.ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
-	_G.ChatFrameToggleVoiceDeafenButton:SetPoint("TOP", _G.ChatFrameChannelButton, "BOTTOM", 0, -6)
-	_G.ChatFrameToggleVoiceDeafenButton:SetParent(menu)
-
-	_G.ChatFrameToggleVoiceMuteButton:ClearAllPoints()
-	_G.ChatFrameToggleVoiceMuteButton:SetPoint("TOP", _G.ChatFrameToggleVoiceDeafenButton, "BOTTOM", 0, -6)
-	_G.ChatFrameToggleVoiceMuteButton:SetParent(menu)
-
 	if _G.QuickJoinToastButton then
 		_G.QuickJoinToastButton:SetParent(menu)
 	end
@@ -291,31 +301,33 @@ function Module:ChatCopy_Create()
 		editBox:SetHitRectInsets(0, 0, offset, (editBox:GetHeight() - offset - self:GetHeight()))
 	end)
 
-	local copy = CreateFrame("Button", "KKUI_ChatCopyButton", UIParent)
-	copy:SetPoint("BOTTOM", menu)
-	copy:CreateBorder()
-	copy:SetSize(16, 16)
-	copy:SetAlpha(0.25)
+	local kkuicopy = CreateFrame("Button", "KKUI_ChatCopyButton", UIParent)
+	kkuicopy:SetPoint("BOTTOM", menu)
+	kkuicopy:CreateBorder()
+	kkuicopy:SetSize(16, 16)
+	kkuicopy:SetAlpha(0.25)
 
-	copy.Texture = copy:CreateTexture(nil, "ARTWORK")
-	copy.Texture:SetAllPoints()
-	copy.Texture:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-	copy:RegisterForClicks("AnyUp")
-	copy:SetScript("OnClick", self.ChatCopy_OnClick)
+	kkuicopy.Texture = kkuicopy:CreateTexture(nil, "ARTWORK")
+	kkuicopy.Texture:SetAllPoints()
+	kkuicopy.Texture:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+	kkuicopy:RegisterForClicks("AnyUp")
+	kkuicopy:SetScript("OnClick", self.ChatCopy_OnClick)
 
-	copy:SetScript("OnEnter", function(self)
+	kkuicopy:SetScript("OnEnter", function(self)
 		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 
 		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
+		GameTooltip:AddLine(CALENDAR_COPY_EVENT .. " " .. CHAT)
+		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine(leftButtonString .. L["Left Click"], "Copy Chat", 1, 1, 1)
 		GameTooltip:AddDoubleLine(rightButtonString .. L["Right Click"], "Chat Menu", 1, 1, 1)
 
 		GameTooltip:Show()
 	end)
 
-	copy:SetScript("OnLeave", function(self)
+	kkuicopy:SetScript("OnLeave", function(self)
 		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 
 		if not GameTooltip:IsForbidden() then
@@ -323,9 +335,8 @@ function Module:ChatCopy_Create()
 		end
 	end)
 
-	-- Create Configbutton
-	local kkuiconfig = CreateFrame("Button", "kkuiconfig", UIParent)
-	kkuiconfig:SetPoint("BOTTOM", copy, "TOP", 0, 6)
+	-- Create Config button
+	local kkuiconfig = CreateFrame("Button", "KKUI_ChatConfigButton", UIParent)
 	kkuiconfig:SkinButton()
 	kkuiconfig:SetSize(16, 16)
 	kkuiconfig:SetAlpha(0.25)
@@ -339,7 +350,7 @@ function Module:ChatCopy_Create()
 			PlaySound(111)
 			K.LibEasyMenu.Create(menuList, K.EasyMenu, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
-			K.GUI:Toggle()
+			K.NewGUI:Toggle()
 		end
 	end)
 
@@ -349,6 +360,8 @@ function Module:ChatCopy_Create()
 		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
+		GameTooltip:AddLine(OPTIONS_MENU)
+		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine(leftButtonString .. L["Left Click"], L["Toggle Quick Menu"], 1, 1, 1)
 		GameTooltip:AddDoubleLine(rightButtonString .. L["Right Click"], L["Toggle KkthnxUI Config"], 1, 1, 1)
 		GameTooltip:Show()
@@ -361,6 +374,97 @@ function Module:ChatCopy_Create()
 			GameTooltip:Hide()
 		end
 	end)
+
+	-- Create Roll button
+	local lastClickTime = 0
+	local cooldown = 2 -- Cooldown time in seconds
+
+	local kkuiroll = CreateFrame("Button", "KKUI_ChatRollButton", UIParent)
+	kkuiroll:SkinButton()
+	kkuiroll:SetSize(16, 16)
+	kkuiroll:SetAlpha(0.25)
+
+	kkuiroll.Texture = kkuiroll:CreateTexture(nil, "ARTWORK")
+	kkuiroll.Texture:SetAllPoints()
+	kkuiroll.Texture:SetAtlas("charactercreate-icon-dice")
+	kkuiroll:RegisterForClicks("AnyUp")
+	kkuiroll:SetScript("OnClick", function(_, btn)
+		local currentTime = GetTime()
+		if currentTime - lastClickTime < cooldown then
+			K.Print("Please wait before rolling again.")
+			return
+		end
+
+		lastClickTime = currentTime
+
+		if btn == "LeftButton" then
+			RandomRoll(1, 100) -- Simulates the /roll command (default 1-100 range)
+		elseif btn == "RightButton" then
+			-- Perform an emote for a humorous roll
+			local roll = -math.random(1, 100)
+			SendChatMessage("rolls " .. roll .. " (1-100)", "EMOTE")
+		end
+	end)
+
+	kkuiroll:SetScript("OnEnter", function(self)
+		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+
+		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
+		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine(FAST .. " " .. ROLL)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(leftButtonString .. L["Left Click"], "Roll a random number between 1 and 100", 1, 1, 1)
+		GameTooltip:AddDoubleLine(rightButtonString .. L["Right Click"], "Guaranteed to roll a perfect 100!", 1, 1, 1)
+
+		GameTooltip:Show()
+	end)
+
+	kkuiroll:SetScript("OnLeave", function(self)
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+
+		if not GameTooltip:IsForbidden() then
+			GameTooltip:Hide()
+		end
+	end)
+
+	-- Function to update button positions based on enabled settings
+	local function UpdateButtonPositions()
+		local buttons = {}
+
+		if C["Chat"].CopyButton then
+			table.insert(buttons, kkuicopy)
+		else
+			kkuicopy:Hide()
+		end
+		if C["Chat"].ConfigButton then
+			table.insert(buttons, kkuiconfig)
+		else
+			kkuiconfig:Hide()
+		end
+		if C["Chat"].RollButton then
+			table.insert(buttons, kkuiroll)
+		else
+			kkuiroll:Hide()
+		end
+
+		for i, button in ipairs(buttons) do
+			if i == 1 then
+				button:SetPoint("BOTTOM", menu)
+			else
+				button:SetPoint("BOTTOM", buttons[i - 1], "TOP", 0, 6)
+			end
+			button:Show()
+		end
+	end
+
+	-- Initial update of button positions
+	UpdateButtonPositions()
+
+	-- Function to live update button positions
+	function Module:UpdateChatButtons()
+		UpdateButtonPositions()
+	end
 end
 
 function Module:CreateCopyChat()

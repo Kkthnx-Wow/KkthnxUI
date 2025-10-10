@@ -115,12 +115,10 @@ L["Declined a pet battle PVP duel request from: %s"] = "Declined a pet battle PV
 L["Removed Bad Buff: %s"] = "Removed Bad Buff: %s"
 L["%s used %s"] = "%s used %s"
 L["My new keystone is %s"] = "My new keystone is %s"
--- Reset Instance messages
 L["Cannot reset %s (There are players still inside the instance.)"] = "Cannot reset %s (There are players still inside the instance.)"
 L["Cannot reset %s (There are players offline in your party.)"] = "Cannot reset %s (There are players offline in your party.)"
 L["Cannot reset %s (There are players in your party attempting to zone into an instance.)"] = "Cannot reset %s (There are players in your party attempting to zone into an instance.)"
 L["%s has been reset"] = "%s has been reset"
--- AutoQuest Tooltip
 L["AutoQuest Ignored Tooltip"] = "|cffff5050Auto Quest: Ignored|r|n|nThis NPC will not be auto-interacted.|nHold |cffffff00ALT|r and click this name to toggle."
 L["Calendar"] = "Calendar"
 L["Pending Calendar Invite(s)!"] = "Pending Calendar Invite(s)!"
@@ -137,7 +135,6 @@ L["Mail Is COD"] = "You can't auto collect Cash on Delivery"
 L["Memory Collected"] = "Memory Collected"
 L["MoveUI"] = "MoveUI"
 L["Next Invasion"] = "Next: "
--- Time DataText quests/events
 L["500 Timewarped Badges"] = "500 Timewarped Badges"
 L["Feast of Winter Veil"] = "Feast of Winter Veil"
 L["Blingtron Daily Gift"] = "Blingtron Daily Gift"
@@ -226,6 +223,8 @@ L["WoW"] = "WoW"
 L["World Latency"] = "World Latency"
 L["World Protocol"] = "World Protocol"
 L["XP"] = "XP:"
+L["Disband Info"] = "Are you sure to |cffff0000disband|r your group?"
+L["Disband Process"] = "[KkthnxUI] Raid Disbanding"
 
 -- =============================================================================
 -- 2) ExtraGUI and New GUI strings
