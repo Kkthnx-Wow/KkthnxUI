@@ -361,7 +361,7 @@ end
 
 -- Chat
 local function CreateChatCategory()
-	local chatIcon = "Interface\\Icons\\Spell_Holy_Silence"
+	local chatIcon = "Interface\\Icons\\Ui_chat"
 	local chatCategory = GUI:AddCategory(L["Chat"] or "Chat", chatIcon)
 
 	-- Hooks
@@ -1101,7 +1101,7 @@ end
 
 -- Party
 local function CreatePartyCategory()
-	local partyIcon = "Interface\\Icons\\Spell_ChargePositive"
+	local partyIcon = "Interface\\Icons\\Ships_ability_boardingparty"
 	local partyCategory = GUI:AddCategory(L["Party"] or "Party", partyIcon)
 
 	-- Hook Functions for Party
@@ -1144,9 +1144,61 @@ local function CreatePartyCategory()
 	GUI:CreateDropdown(colorsPartySection, "Party.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on party frames")
 end
 
+-- SimpleParty (Raid-style compact party frames)
+local function CreateSimplePartyCategory()
+	local simplePartyIcon = "Interface\\Icons\\Ships_ability_boardingpartyalliance"
+	local simplePartyCategory = GUI:AddCategory("Simple Party", simplePartyIcon)
+
+	-- Hook Functions
+	local function UpdateUnitSimplePartySize()
+		local unitframeModule = K:GetModule("Unitframes")
+		if unitframeModule and unitframeModule.UpdateSimplePartySize then
+			unitframeModule:UpdateSimplePartySize()
+		end
+	end
+
+	-- General Section
+	local generalSimplePartySection = GUI:AddSection(simplePartyCategory, GENERAL)
+	GUI:CreateSwitch(generalSimplePartySection, "SimpleParty.Enable", enableTextColor .. "Enable Simple Party (Raid-Style)", "Use compact raid-style party frames instead of traditional party frames (requires reload)", nil, true)
+	GUI:CreateSwitch(generalSimplePartySection, "SimpleParty.ShowHealPrediction", L["Show HealPrediction Statusbars"], "Show incoming heal predictions on party frames", nil, true)
+	GUI:CreateSwitch(generalSimplePartySection, "SimpleParty.Smooth", L["Smooth Bar Transition"], "Enable smooth animations for party frame bars", nil, true)
+	GUI:CreateSwitch(generalSimplePartySection, "SimpleParty.TargetHighlight", L["Show Highlighted Target"], "Highlight the targeted party member", nil, true)
+
+	-- Layout Section
+	local layoutSimplePartySection = GUI:AddSection(simplePartyCategory, L["Layout"] or "Layout")
+	GUI:CreateSwitch(layoutSimplePartySection, "SimpleParty.HorizonParty", L["Horizontal Party Frames"] or "Horizontal Party Frames", "Arrange party frames horizontally instead of vertically (requires reload)", nil, true)
+
+	-- Bars Section
+	local barsSimplePartySection = GUI:AddSection(simplePartyCategory, L["Bars"] or "Bars")
+	GUI:CreateSwitch(barsSimplePartySection, "SimpleParty.PowerBarShow", "Show All Power Bars", "Show power bars on all party frames", nil, true)
+	GUI:CreateSwitch(barsSimplePartySection, "SimpleParty.ManabarShow", L["Show Manabars"], "Display mana bars on party frames", nil, true)
+
+	-- Sizes Section
+	local sizesSimplePartySection = GUI:AddSection(simplePartyCategory, L["Sizes"])
+	GUI:CreateSlider(sizesSimplePartySection, "SimpleParty.HealthHeight", "Simple Party Frame Height", 20, 100, 1, "Height of simple party member frames (requires reload)", UpdateUnitSimplePartySize, true)
+	GUI:CreateSlider(sizesSimplePartySection, "SimpleParty.HealthWidth", "Simple Party Frame Width", 20, 100, 1, "Width of simple party member frames (requires reload)", UpdateUnitSimplePartySize, true)
+
+	-- Colors Section
+	local colorsSimplePartySection = GUI:AddSection(simplePartyCategory, COLORS)
+	local healthColorOptions = {
+		{ text = "Class", value = 1 },
+		{ text = "Dark", value = 2 },
+		{ text = "Value", value = 3 },
+	}
+	GUI:CreateDropdown(colorsSimplePartySection, "SimpleParty.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on simple party frames", nil, true)
+
+	-- Raid Buffs Style
+	local raidBuffsStyleOptions = {
+		{ text = "Standard", value = 1 },
+		{ text = "Aura Track", value = 2 },
+		{ text = "Disable", value = 3 },
+	}
+	GUI:CreateDropdown(colorsSimplePartySection, "SimpleParty.RaidBuffsStyle", L["Buff Style"], raidBuffsStyleOptions, "Choose the buff display style for simple party frames", nil, true)
+end
+
 -- Raid Category
 local function CreateRaidCategory()
-	local raidIcon = "Interface\\Icons\\Spell_Holy_PrayerOfHealing02"
+	local raidIcon = "Interface\\Icons\\Achievement_boss_illidan"
 	local raidCategory = GUI:AddCategory(L["Raid"] or "Raid", raidIcon)
 
 	-- Hook Functions for Raid
@@ -1322,7 +1374,7 @@ end
 
 -- Tooltip
 local function CreateTooltipCategory()
-	local tooltipIcon = "Interface\\Icons\\Spell_Holy_SealOfWisdom"
+	local tooltipIcon = "Interface\\Icons\\Inv_inscription_tooltip_darkmooncard_mop"
 	local tooltipCategory = GUI:AddCategory(L["Tooltip"] or "Tooltip", tooltipIcon)
 
 	local function UpdateTooltipAnchor()
@@ -1584,7 +1636,7 @@ end
 
 -- WorldMap
 local function CreateWorldMapCategory()
-	local worldMapIcon = "Interface\\Icons\\Achievement_worldevent_childrensweek"
+	local worldMapIcon = "Interface\\Icons\\Icon_treasuremap"
 	local worldMapCategory = GUI:AddCategory(L["WorldMap"] or "WorldMap", worldMapIcon)
 
 	local function UpdateMapFading()
@@ -1728,6 +1780,7 @@ CreateMinimapCategory()
 CreateMiscCategory()
 CreateNameplateCategory()
 CreatePartyCategory()
+CreateSimplePartyCategory()
 CreateRaidCategory()
 CreateSkinsCategory()
 CreateTooltipCategory()

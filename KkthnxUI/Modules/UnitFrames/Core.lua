@@ -1011,73 +1011,97 @@ function Module:CreateUnits()
 
 	local partyMover
 	if showPartyFrame then
-		oUF:RegisterStyle("Party", Module.CreateParty)
-		oUF:SetActiveStyle("Party")
+		-- Check if using SimpleParty (raid-style compact) or traditional Party frames
+		if C["SimpleParty"].Enable then
+			-- Use raid-style compact party frames
+			oUF:RegisterStyle("SimpleParty", Module.CreateSimpleParty)
+			oUF:SetActiveStyle("SimpleParty")
 
-		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 56 or 36
-		local partyMoverWidth = C["Party"].HealthWidth
-		local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 1 + partyYOffset * 8
-		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
+			local simplePartyWidth = C["SimpleParty"].HealthWidth
+			local simplePartyHeight = C["SimpleParty"].HealthHeight
+			local horizonParty = C["SimpleParty"].HorizonParty
+			local partyXOffset = horizonParty and 6 or 0
+			local partyYOffset = horizonParty and 0 or -6
 
-		-- stylua: ignore
-		local party = oUF:SpawnHeader(
-			"oUF_Party", nil, nil,
-			"showPlayer", C["Party"].ShowPlayer,
-			"showSolo", true,
-			"showParty", true,
-			"showRaid", false,
-			"xoffset", partyXOffset,
-			"yOffset", partyYOffset,
-			"groupFilter", "1",
-			"groupingOrder", partyGroupingOrder,
-			"groupBy", "ASSIGNEDROLE",
-			"sortMethod", "NAME",
-			"point", "BOTTOM",
-			"columnAnchorPoint", "LEFT",
-			"oUF-initialConfigFunction", string_format([[ 
-				self:SetWidth(%d)
-				self:SetHeight(%d)
-			]], C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
-		)
-
-		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 50, -300 }, partyMoverWidth, partyMoverHeight)
-		party.groupType = "party"
-		tinsert(Module.headers, party)
-		RegisterStateDriver(party, "visibility", Module:GetPartyVisibility())
-		party:ClearAllPoints()
-		party:SetPoint("TOPLEFT", partyMover)
-
-		if C["Party"].ShowPet then
-			oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
-			oUF:SetActiveStyle("PartyPet")
-
-			local partypetXOffset, partypetYOffset = 6, 25
-			local partpetMoverWidth = 60
-			local partpetMoverHeight = 34 * 5 + partypetYOffset * 4
+			-- Calculate mover size based on orientation
+			local partyMoverWidth, partyMoverHeight
+			if horizonParty then
+				-- Horizontal: width = 5 frames wide, height = 1 frame tall
+				partyMoverWidth = (simplePartyWidth + 6) * 5
+				partyMoverHeight = simplePartyHeight
+			else
+				-- Vertical: width = 1 frame wide, height = 5 frames tall
+				partyMoverWidth = simplePartyWidth
+				partyMoverHeight = (simplePartyHeight + 6) * 5
+			end
 
 			-- stylua: ignore
-			local partyPet = oUF:SpawnHeader(
-				"oUF_PartyPet", "SecureGroupPetHeaderTemplate", nil,
+			local party = oUF:SpawnHeader(
+				"oUF_SimpleParty", nil, nil,
+				"showPlayer", C["Party"].ShowPlayer,
 				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
-				"xoffset", partypetXOffset,
-				"yOffset", partypetYOffset,
+				"xoffset", partyXOffset,
+				"yOffset", partyYOffset,
+				"groupFilter", "1",
+				"groupingOrder", "TANK,HEALER,DAMAGER,NONE",
+				"groupBy", "GROUP",
+				"sortMethod", "INDEX",
+				"maxColumns", 1,
+				"unitsPerColumn", 5,
+				"columnSpacing", 6,
+				"point", horizonParty and "LEFT" or "TOP",
+				"columnAnchorPoint", "LEFT",
+				"oUF-initialConfigFunction", string_format([[ 
+					self:SetWidth(%d)
+					self:SetHeight(%d)
+				]], simplePartyWidth, simplePartyHeight)
+			)
+
+			partyMover = K.Mover(party, "SimplePartyFrame", "SimplePartyFrame", { "LEFT", UIParent, 350, 0 }, partyMoverWidth, partyMoverHeight)
+			party.groupType = "party"
+			tinsert(Module.headers, party)
+			RegisterStateDriver(party, "visibility", Module:GetPartyVisibility())
+			party:ClearAllPoints()
+			party:SetPoint("TOPLEFT", partyMover)
+		else
+			-- Use traditional party frames with portraits, castbars, etc.
+			oUF:RegisterStyle("Party", Module.CreateParty)
+			oUF:SetActiveStyle("Party")
+
+			local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 56 or 36
+			local partyMoverWidth = C["Party"].HealthWidth
+			local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 1 + partyYOffset * 8
+			local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
+
+			-- stylua: ignore
+			local party = oUF:SpawnHeader(
+				"oUF_Party", nil, nil,
+				"showPlayer", C["Party"].ShowPlayer,
+				"showSolo", true,
+				"showParty", true,
+				"showRaid", false,
+				"xoffset", partyXOffset,
+				"yOffset", partyYOffset,
+				"groupFilter", "1",
+				"groupingOrder", partyGroupingOrder,
+				"groupBy", "ASSIGNEDROLE",
+				"sortMethod", "NAME",
 				"point", "BOTTOM",
 				"columnAnchorPoint", "LEFT",
 				"oUF-initialConfigFunction", string_format([[ 
 					self:SetWidth(%d)
 					self:SetHeight(%d)
-				]], 60, 34)
+				]], C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 			)
 
-			local moverAnchor = { "TOPLEFT", partyMover, "TOPRIGHT", 6, -40 }
-			local petMover = K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
-			partyPet.groupType = "pet"
-			tinsert(Module.headers, partyPet)
-			RegisterStateDriver(partyPet, "visibility", Module:GetPartyPetVisibility())
-			partyPet:ClearAllPoints()
-			partyPet:SetPoint("TOPLEFT", petMover)
+			partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 50, -300 }, partyMoverWidth, partyMoverHeight)
+			party.groupType = "party"
+			tinsert(Module.headers, party)
+			RegisterStateDriver(party, "visibility", Module:GetPartyVisibility())
+			party:ClearAllPoints()
+			party:SetPoint("TOPLEFT", partyMover)
 		end
 	end
 

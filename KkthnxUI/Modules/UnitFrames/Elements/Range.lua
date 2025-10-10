@@ -267,7 +267,12 @@ local function FriendlyInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
 	if UnitIsPlayer(unit) then
-		if UnitPhaseReason and UnitPhaseReason(unit) then
+		local phaseReason = UnitPhaseReason(unit)
+		if phaseReason == Enum.PhaseReason.TimerunningHwt then
+			if not IsInInstance() then -- phased in open world (hero / nonhero) but not phased in dungeons
+				return false
+			end
+		elseif phaseReason then
 			return false
 		end
 	end

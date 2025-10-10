@@ -365,12 +365,36 @@ local blizzRegions = {
 	"Left",
 	"Middle",
 	"Right",
+	"Mid",
+	"LeftDisabled",
+	"MiddleDisabled",
+	"RightDisabled",
 	"TopLeft",
 	"TopRight",
 	"BottomLeft",
 	"BottomRight",
-	"Background",
+	"TopMiddle",
+	"MiddleLeft",
+	"MiddleRight",
+	"BottomMiddle",
+	"MiddleMiddle",
+	"TabSpacer",
+	"TabSpacer1",
+	"TabSpacer2",
+	"_RightSeparator",
+	"_LeftSeparator",
+	"Cover",
 	"Border",
+	"Background",
+	"TopTex",
+	"TopLeftTex",
+	"TopRightTex",
+	"LeftTex",
+	"BottomTex",
+	"BottomLeftTex",
+	"BottomRightTex",
+	"RightTex",
+	"MiddleTex",
 	"Center",
 }
 
@@ -477,28 +501,28 @@ local function SkinCheckBox(self, forceSaturation)
 	self.forceSaturation = forceSaturation
 end
 
-local function SkinEditBox(frame, width, height)
-	frame:DisableDrawLayer("BACKGROUND")
-
-	frame:CreateBackdrop()
-
-	local frameName = frame.GetName and frame:GetName()
-	if frameName and (frameName:find("Gold") or frameName:find("Silver") or frameName:find("Copper")) then
-		if frameName:find("Gold") then
-			frame.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 1)
-			frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -3, 0)
-		else
-			frame.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 1)
-			frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -13, 0)
+local function SkinEditBox(self, height, width)
+	local frameName = self.GetName and self:GetName()
+	for _, region in pairs(blizzRegions) do
+		region = frameName and _G[frameName .. region] or self[region]
+		if region then
+			region:SetAlpha(0)
 		end
 	end
 
-	if width then
-		frame:SetWidth(width)
-	end
+	local bg = CreateFrame("Frame", nil, self)
+	bg:SetFrameLevel(self:GetFrameLevel())
+	bg:SetPoint("TOPLEFT", -2, 0)
+	bg:SetPoint("BOTTOMRIGHT", 0, 0)
+	bg:CreateBorder()
+	self.__bg = bg
 
 	if height then
-		frame:SetHeight(height)
+		self:SetHeight(height)
+	end
+
+	if width then
+		self:SetWidth(width)
 	end
 end
 

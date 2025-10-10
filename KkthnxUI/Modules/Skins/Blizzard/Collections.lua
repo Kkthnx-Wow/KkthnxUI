@@ -1,47 +1,87 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+-- Cache frequently accessed values
+local DESIRED_WARDROBE_WIDTH = 1092
+local TEXTURE_PATH = "Interface\\DressUpFrame\\DressingRoom"
+
 local function AdjustWardrobeFrame()
-	local WardrobeFrame = _G["WardrobeFrame"]
-	local WardrobeTransmogFrame = _G["WardrobeTransmogFrame"]
+	-- Cache global frame lookups
+	local wardrobeFrame = _G.WardrobeFrame
+	local transmogFrame = _G.WardrobeTransmogFrame
 
-	-- Increase the width of the parent frames
-	local initialParentFrameWidth = WardrobeFrame:GetWidth()
-	local desiredParentFrameWidth = 1092
-	local parentFrameWidthIncrease = desiredParentFrameWidth - initialParentFrameWidth
-	WardrobeFrame:SetWidth(desiredParentFrameWidth)
+	-- Safety check
+	if not wardrobeFrame or not transmogFrame then
+		return
+	end
 
-	local initialTransmogFrameWidth = WardrobeTransmogFrame:GetWidth()
-	local desiredTransmogFrameWidth = initialTransmogFrameWidth + parentFrameWidthIncrease
-	WardrobeTransmogFrame:SetWidth(desiredTransmogFrameWidth)
+	-- Cache frame width values (minimize method calls)
+	local initialParentWidth = wardrobeFrame:GetWidth()
+	local parentWidthIncrease = DESIRED_WARDROBE_WIDTH - initialParentWidth
+	wardrobeFrame:SetWidth(DESIRED_WARDROBE_WIDTH)
+
+	local initialTransmogWidth = transmogFrame:GetWidth()
+	local desiredTransmogWidth = initialTransmogWidth + parentWidthIncrease
+	transmogFrame:SetWidth(desiredTransmogWidth)
+
+	-- Cache nested frame references
+	local insetBG = transmogFrame.Inset.BG
+	local modelScene = transmogFrame.ModelScene
+
+	-- Safety check for nested frames
+	if not insetBG or not modelScene then
+		return
+	end
 
 	-- Improve the background texture
-	WardrobeTransmogFrame.Inset.BG:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. K.Class)
-	WardrobeTransmogFrame.Inset.BG:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
-	WardrobeTransmogFrame.Inset.BG:SetHorizTile(false)
-	WardrobeTransmogFrame.Inset.BG:SetVertTile(false)
+	local texturePath = TEXTURE_PATH .. K.Class
+	insetBG:SetTexture(texturePath)
+	insetBG:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
+	insetBG:SetHorizTile(false)
+	insetBG:SetVertTile(false)
 
 	-- Fix the size of the inset and model scene frames
-	local insetWidth = K.Round(initialTransmogFrameWidth - WardrobeTransmogFrame.ModelScene:GetWidth(), 0)
-	WardrobeTransmogFrame.Inset.BG:SetWidth(WardrobeTransmogFrame.Inset.Bg:GetWidth() - insetWidth)
-	WardrobeTransmogFrame.ModelScene:SetWidth(WardrobeTransmogFrame:GetWidth() - insetWidth)
+	local modelSceneWidth = modelScene:GetWidth()
+	local insetWidth = K.Round(initialTransmogWidth - modelSceneWidth, 0)
+	local insetBgWidth = transmogFrame.Inset.Bg:GetWidth()
+	insetBG:SetWidth(insetBgWidth - insetWidth)
 
-	-- Reposition the buttons and checkboxes
-	WardrobeTransmogFrame.HeadButton:SetPoint("LEFT", 7, 0)
-	WardrobeTransmogFrame.HandsButton:SetPoint("RIGHT", -7, 0)
-	WardrobeTransmogFrame.MainHandButton:SetPoint("BOTTOM", -26, 23)
-	WardrobeTransmogFrame.MainHandEnchantButton:SetPoint("CENTER", -26, -230)
-	WardrobeTransmogFrame.SecondaryHandButton:SetPoint("BOTTOM", 26, 23)
-	WardrobeTransmogFrame.SecondaryHandEnchantButton:SetPoint("CENTER", 26, -230)
-	WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox:SetPoint("BOTTOMLEFT", WardrobeTransmogFrame, "BOTTOMLEFT", 474, 15)
+	-- Cache final width calculation
+	local finalTransmogWidth = transmogFrame:GetWidth()
+	modelScene:SetWidth(finalTransmogWidth - insetWidth)
 
-	-- Hide the control frame
-	WardrobeTransmogFrame.ModelScene.ControlFrame:SetAlpha(0)
-	WardrobeTransmogFrame.ModelScene.ControlFrame:SetScale(0.00001)
+	-- Reposition buttons (cache button references)
+	local headButton = transmogFrame.HeadButton
+	local handsButton = transmogFrame.HandsButton
+	local mainHandButton = transmogFrame.MainHandButton
+	local mainHandEnchant = transmogFrame.MainHandEnchantButton
+	local secondaryHandButton = transmogFrame.SecondaryHandButton
+	local secondaryHandEnchant = transmogFrame.SecondaryHandEnchantButton
+	local toggleCheckbox = transmogFrame.ToggleSecondaryAppearanceCheckbox
+
+	headButton:SetPoint("LEFT", 7, 0)
+	handsButton:SetPoint("RIGHT", -7, 0)
+	mainHandButton:SetPoint("BOTTOM", -26, 23)
+	mainHandEnchant:SetPoint("CENTER", -26, -230)
+	secondaryHandButton:SetPoint("BOTTOM", 26, 23)
+	secondaryHandEnchant:SetPoint("CENTER", 26, -230)
+	toggleCheckbox:SetPoint("BOTTOMLEFT", transmogFrame, "BOTTOMLEFT", 474, 15)
+
+	-- Hide the control frame (cache reference)
+	local controlFrame = modelScene.ControlFrame
+	if controlFrame then
+		controlFrame:SetAlpha(0)
+		controlFrame:SetScale(0.00001)
+	end
 end
 
 local function HideTutorialButton()
-	if C["General"].NoTutorialButtons then
-		_G.PetJournalTutorialButton:Kill()
+	if not C["General"].NoTutorialButtons then
+		return
+	end
+
+	local tutorialButton = _G.PetJournalTutorialButton
+	if tutorialButton and tutorialButton.Kill then
+		tutorialButton:Kill()
 	end
 end
 

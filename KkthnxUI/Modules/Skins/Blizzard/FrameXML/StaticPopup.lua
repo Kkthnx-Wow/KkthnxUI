@@ -11,7 +11,7 @@ tinsert(C.defaultThemes, function()
 		local frame = _G["StaticPopup" .. i]
 		local itemFrame = frame.ItemFrame
 		local bu = frame.ItemFrame.Item
-		local icon = _G["StaticPopup" .. i .. "IconTexture"]
+		-- local icon = _G["StaticPopup" .. i .. "IconTexture"]
 		local close = _G["StaticPopup" .. i .. "CloseButton"]
 
 		local gold = _G["StaticPopup" .. i .. "MoneyInputFrameGold"]
@@ -39,8 +39,13 @@ tinsert(C.defaultThemes, function()
 			-- frame:CreateBorder()
 		end
 
-		silver:SetPoint("LEFT", gold, "RIGHT", 1, 0)
-		copper:SetPoint("LEFT", silver, "RIGHT", 1, 0)
+		silver:SetPoint("LEFT", gold, "RIGHT", 8, 0)
+		copper:SetPoint("LEFT", silver, "RIGHT", 8, 0)
+
+		silver.texture:ClearAllPoints()
+		silver.texture:SetPoint("RIGHT", silver, "RIGHT", -4, 0)
+		copper.texture:ClearAllPoints()
+		copper.texture:SetPoint("RIGHT", copper, "RIGHT", -4, 0)
 
 		frame:StripTextures()
 		for j = 1, 4 do
@@ -49,7 +54,7 @@ tinsert(C.defaultThemes, function()
 		frame:CreateBorder()
 		close:SkinCloseButton()
 
-		frame.EditBox:SkinEditBox()
+		frame.EditBox:SkinEditBox(20)
 		frame.EditBox.NineSlice:SetAlpha(0)
 
 		gold:SkinEditBox()

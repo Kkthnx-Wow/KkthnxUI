@@ -42,8 +42,8 @@ local strfind = string.find
 
 -- Precomputed atlas strings for role icons to avoid branching and allocations per update
 local ROLE_ATLAS = {
-	HEALER = "|A:groupfinder-icon-role-micro-heal:16:16|a",
-	TANK = "|A:groupfinder-icon-role-micro-tank:16:16|a",
+	HEALER = "|A:groupfinder-icon-role-micro-heal:12:12|a",
+	TANK = "|A:groupfinder-icon-role-micro-tank:12:12|a",
 	--DAMAGER = "|A:groupfinder-icon-role-micro-dps:16:16|a",
 }
 

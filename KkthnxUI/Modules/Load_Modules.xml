@@ -88,6 +88,7 @@
    <Script file="UnitFrames\Units\Arena.lua" />
    <Script file="UnitFrames\Units\Nameplates.lua" />
    <Script file="UnitFrames\Groups\Party.lua" />
+   <Script file="UnitFrames\Groups\SimpleParty.lua" />
    <Script file="UnitFrames\Groups\PartyPet.lua" />
    <Include file="UnitFrames\Groups\MainTankTemplate.xml" />
    <Script file="UnitFrames\Groups\Raid.lua" />
