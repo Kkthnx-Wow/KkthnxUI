@@ -1103,6 +1103,39 @@ function Module:CreateUnits()
 			party:ClearAllPoints()
 			party:SetPoint("TOPLEFT", partyMover)
 		end
+
+		if C["Party"].ShowPet then
+			oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
+			oUF:SetActiveStyle("PartyPet")
+
+			local partypetXOffset, partypetYOffset = 6, 25
+			local partpetMoverWidth = 60
+			local partpetMoverHeight = 34 * 5 + partypetYOffset * 4
+
+			-- stylua: ignore
+			local partyPet = oUF:SpawnHeader(
+				"oUF_PartyPet", "SecureGroupPetHeaderTemplate", nil,
+				"showSolo", true,
+				"showParty", true,
+				"showRaid", false,
+				"xoffset", partypetXOffset,
+				"yOffset", partypetYOffset,
+				"point", "BOTTOM",
+				"columnAnchorPoint", "LEFT",
+				"oUF-initialConfigFunction", string_format([[ 
+					self:SetWidth(%d)
+					self:SetHeight(%d)
+				]], 60, 34)
+			)
+
+			local moverAnchor = { "TOPLEFT", partyMover, "TOPRIGHT", 6, -40 }
+			local petMover = K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
+			partyPet.groupType = "pet"
+			tinsert(Module.headers, partyPet)
+			RegisterStateDriver(partyPet, "visibility", Module:GetPartyPetVisibility())
+			partyPet:ClearAllPoints()
+			partyPet:SetPoint("TOPLEFT", petMover)
+		end
 	end
 
 	if C["Raid"].Enable then

@@ -1,8 +1,14 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
+local Module = K:GetModule("Miscellaneous")
 
--- Caching global functions and variables for performance
-local pairs, type, string_gmatch, print = pairs, type, string.gmatch, print
+-- Cache global functions for performance (Lua 5.1)
+local _G = _G
+local pairs = pairs
+local string_gmatch = string.gmatch
+local type = type
+local print = print
 
+-- Frame data structures
 local frames = {
 	-- ["FrameName"] = true (the parent frame should be moved) or false (the frame itself should be moved)
 	-- for child frames (i.e. frames that don't have a name, but only a parentKey="XX" use
@@ -12,7 +18,7 @@ local frames = {
 	["AddonList"] = false,
 	["ChannelFrame"] = false,
 	["ChatConfigFrame"] = false,
-	["CommunitiesFrame"] = false,
+	["CommunitiesFrame"] = false, -- needs review
 	["DressUpFrame"] = false,
 	["FriendsFrame"] = false,
 	["GossipFrame"] = false,
@@ -25,14 +31,13 @@ local frames = {
 	["MerchantFrame"] = false,
 	["ModelPreviewFrame"] = false,
 	["OpenMailFrame"] = false,
-	["PVEFrame"] = false,
 	["PaperDollFrame"] = true,
 	["PetitionFrame"] = false,
+	["PVEFrame"] = false,
 	["QuestFrame"] = false,
 	["RaidParentFrame"] = false,
 	["ReputationFrame"] = true,
 	["SendMailFrame"] = true,
-	["SettingsPanel"] = false,
 	["SplashFrame"] = false,
 	["StackSplitFrame"] = false,
 	["TabardFrame"] = false,
@@ -40,16 +45,17 @@ local frames = {
 	["TokenFrame"] = true,
 	["TradeFrame"] = false,
 	["TutorialFrame"] = false,
+	["SettingsPanel"] = false,
 }
 
--- Frame Existing Check
+-- Frame Existing Check (only runs in developer mode for debugging)
 local function IsFrameExists()
-	if not C["General"].MoveBlizzardFrames then
+	if not K.isDeveloper then
 		return
 	end
 
 	for k in pairs(frames) do
-		if not _G[k] and K.isDeveloper then
+		if not _G[k] then
 			print("Frame not found:", k)
 		end
 	end
@@ -78,8 +84,8 @@ local lodFrames = {
 	Blizzard_CovenantSanctum = { ["CovenantSanctumFrame"] = false },
 	Blizzard_EncounterJournal = { ["EncounterJournal"] = false },
 	Blizzard_FlightMap = { ["FlightMapFrame"] = false },
-	Blizzard_GMSurveyUI = { ["GMSurveyFrame"] = false },
 	Blizzard_GenericTraitUI = { ["GenericTraitFrame"] = false },
+	Blizzard_GMSurveyUI = { ["GMSurveyFrame"] = false },
 	Blizzard_GuildBankUI = { ["GuildBankFrame"] = false, ["GuildBankEmblemFrame"] = true },
 	Blizzard_GuildControlUI = { ["GuildControlUI"] = false },
 	Blizzard_GuildRecruitmentUI = { ["CommunitiesGuildRecruitmentFrame"] = false },
@@ -93,10 +99,10 @@ local lodFrames = {
 	Blizzard_MacroUI = { ["MacroFrame"] = false },
 	Blizzard_ObliterumUI = { ["ObliterumForgeFrame"] = false },
 	Blizzard_OrderHallUI = { ["OrderHallTalentFrame"] = false },
-	Blizzard_Professions = { ["InspectRecipeFrame"] = false, ["ProfessionsFrame"] = false },
-	Blizzard_ProfessionsBook = { ["ProfessionsBookFrame"] = false },
-	Blizzard_ProfessionsCustomerOrders = { ["ProfessionsCustomerOrdersFrame"] = false },
 	Blizzard_ScrappingMachineUI = { ["ScrappingMachineFrame"] = false },
+	Blizzard_Professions = { ["InspectRecipeFrame"] = false, ["ProfessionsFrame"] = false },
+	--Blizzard_ProfessionsBook	= { ["ProfessionsBookFrame"] = false },
+	Blizzard_ProfessionsCustomerOrders = { ["ProfessionsCustomerOrdersFrame"] = false },
 	Blizzard_TalentUI = { ["PlayerTalentFrame"] = false, ["PVPTalentPrestigeLevelDialog"] = false },
 	Blizzard_TimeManager = { ["TimeManagerFrame"] = false },
 	Blizzard_TokenUI = { ["TokenFrame"] = true },
@@ -106,74 +112,112 @@ local lodFrames = {
 	Blizzard_WeeklyRewards = { ["WeeklyRewardsFrame"] = false },
 }
 
+-- Cache tables for frame tracking (reused to minimize allocations)
 local parentFrame = {}
 local hooked = {}
 
+-- Mouse event handlers (optimized with early returns)
 local function MouseDownHandler(frame, button)
-	frame = parentFrame[frame] or frame
-	if frame and button == "LeftButton" then
-		frame:StartMoving()
-		frame:SetUserPlaced(false)
+	if button ~= "LeftButton" then
+		return
+	end
+
+	-- Use cached parent frame if available
+	local targetFrame = parentFrame[frame] or frame
+	if targetFrame then
+		targetFrame:StartMoving()
+		targetFrame:SetUserPlaced(false)
 	end
 end
 
 local function MouseUpHandler(frame, button)
-	frame = parentFrame[frame] or frame
-	if frame and button == "LeftButton" and frame:IsMovable() then
-		frame:StopMovingOrSizing()
-	end
-end
-
-local function HookScript(frame, script, handler)
-	if not frame.GetScript then
+	if button ~= "LeftButton" then
 		return
 	end
+
+	-- Use cached parent frame if available
+	local targetFrame = parentFrame[frame] or frame
+	if targetFrame then
+		targetFrame:StopMovingOrSizing()
+	end
+end
+
+-- Optimized script hooking (avoids creating unnecessary closures)
+local function HookScript(frame, script, handler)
+	if not frame or not frame.GetScript then
+		return
+	end
+
 	local oldHandler = frame:GetScript(script)
-	frame:SetScript(script, function(...)
-		handler(...)
-		if oldHandler then
+	if oldHandler then
+		frame:SetScript(script, function(...)
+			handler(...)
 			oldHandler(...)
-		end
-	end)
+		end)
+	else
+		frame:SetScript(script, handler)
+	end
 end
 
+-- Hook frame to make it movable (with caching)
 local function HookFrame(name, moveParent)
+	-- Early return if already hooked
+	if hooked[name] then
+		return
+	end
+
+	-- Find frame (name may contain dots for children, e.g. ReforgingFrame.InvisibleButton)
 	local frame = _G
-	for s in string_gmatch(name, "%w+") do
-		frame = frame and frame[s]
+	for segment in string_gmatch(name, "%w+") do
+		if not frame then
+			break
+		end
+		frame = frame[segment]
 	end
 
-	if frame == _G then
-		frame = nil
+	-- Validate frame was found
+	if frame == _G or not frame then
+		return
 	end
 
+	-- Handle parent frame if specified
 	local parent
-	if frame and not hooked[name] then
-		if moveParent then
-			parent = type(moveParent) == "string" and _G[moveParent] or frame:GetParent()
-			if not parent then
+	if moveParent then
+		if type(moveParent) == "string" then
+			parent = _G[moveParent]
+		else
+			parent = frame:GetParent()
+		end
+
+		if not parent then
+			if K.isDeveloper then
 				print("Parent frame not found: " .. name)
-				return
 			end
-			parentFrame[frame] = parent
+			return
 		end
 
-		if parent then
-			parent:SetMovable(true)
-			parent:SetClampedToScreen(false)
-		end
+		-- Cache parent frame reference
+		parentFrame[frame] = parent
 
-		frame:EnableMouse(true)
-		frame:SetMovable(true)
-		frame:SetClampedToScreen(false)
-		HookScript(frame, "OnMouseDown", MouseDownHandler)
-		HookScript(frame, "OnMouseUp", MouseUpHandler)
-		hooked[name] = true
+		-- Make parent movable
+		parent:SetMovable(true)
+		parent:SetClampedToScreen(false)
 	end
+
+	-- Make frame movable and hook mouse events
+	frame:EnableMouse(true)
+	frame:SetMovable(true)
+	frame:SetClampedToScreen(false)
+	HookScript(frame, "OnMouseDown", MouseDownHandler)
+	HookScript(frame, "OnMouseUp", MouseUpHandler)
+
+	-- Mark as hooked to prevent duplicate hooks
+	hooked[name] = true
 end
 
+-- Iterate and hook multiple frames (optimized)
 local function HookFrames(list)
-	if not C["General"].MoveBlizzardFrames then
+	if not list then
 		return
 	end
 
@@ -182,16 +226,25 @@ local function HookFrames(list)
 	end
 end
 
-local function InitSetup()
+-- Module initialization function
+function Module:CreateMoveBlizzardFrames()
+	-- Early return if module is disabled
+	if not C["General"].MoveBlizzardFrames then
+		return
+	end
+
+	-- Initialize default frames
 	HookFrames(frames)
 	IsFrameExists()
-end
 
-local function AddonLoaded(_, name)
-	local frameList = lodFrames[name]
-	if frameList then
-		HookFrames(frameList)
+	-- Hook frames from load-on-demand addons when they load
+	local function OnAddonLoaded(_, name)
+		local frameList = lodFrames[name]
+		if frameList then
+			HookFrames(frameList)
+		end
 	end
+
+	-- Register event for LOD addons
+	K:RegisterEvent("ADDON_LOADED", OnAddonLoaded)
 end
-K:RegisterEvent("PLAYER_LOGIN", InitSetup)
-K:RegisterEvent("ADDON_LOADED", AddonLoaded)

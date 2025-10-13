@@ -56,12 +56,20 @@ end
 -- Register or unregister events for auto-declining duels
 function Module:CreateAutoDeclineDuels()
 	local automationConfig = C["Automation"]
-	local enabled = automationConfig and automationConfig.AutoDeclineDuels
-	if enabled then
+
+	-- Handle regular PvP duels
+	local declineDuels = automationConfig and automationConfig.AutoDeclineDuels
+	if declineDuels then
 		K:RegisterEvent("DUEL_REQUESTED", self.DUEL_REQUESTED)
-		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", self.PET_BATTLE_PVP_DUEL_REQUESTED)
 	else
 		K:UnregisterEvent("DUEL_REQUESTED", self.DUEL_REQUESTED)
+	end
+
+	-- Handle pet battle duels separately
+	local declinePetDuels = automationConfig and automationConfig.AutoDeclinePetDuels
+	if declinePetDuels then
+		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", self.PET_BATTLE_PVP_DUEL_REQUESTED)
+	else
 		K:UnregisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", self.PET_BATTLE_PVP_DUEL_REQUESTED)
 	end
 end

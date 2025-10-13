@@ -227,7 +227,7 @@ end
 
 -- AuraWatch
 local function CreateAuraWatchCategory()
-	local auraWatchCategory = GUI:AddCategory(L["AuraWatch"] or "AuraWatch", "Interface\\Icons\\Spell_Shadow_BrainWash")
+	local auraWatchCategory = GUI:AddCategory(L["AuraWatch"] or "AuraWatch", "Interface\\Icons\\Ability_deathknight_heartstopaura")
 
 	local function OpenAuraWatchGUI()
 		-- Open the AuraWatch configuration GUI
@@ -292,9 +292,16 @@ local function CreateAutomationCategory()
 		end
 	end
 
+	local function updateDeclineDuels()
+		local automationModule = K:GetModule("Automation")
+		if automationModule and automationModule.CreateAutoDeclineDuels then
+			automationModule:CreateAutoDeclineDuels()
+		end
+	end
+
 	GUI:CreateSwitch(inviteSection, "Automation.AutoInvite", L["Accept Invites From Friends & Guild Members"], L["AutoInvite Desc"])
-	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclineDuels", L["Decline PvP Duels"], L["AutoDeclineDuels Desc"])
-	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclinePetDuels", L["Decline Pet Duels"], L["AutoDeclinePetDuels Desc"])
+	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclineDuels", L["Decline PvP Duels"], L["AutoDeclineDuels Desc"], updateDeclineDuels)
+	GUI:CreateSwitch(inviteSection, "Automation.AutoDeclinePetDuels", L["Decline Pet Duels"], L["AutoDeclinePetDuels Desc"], updateDeclineDuels)
 	GUI:CreateSwitch(inviteSection, "Automation.AutoPartySync", L["Accept PartySync From Friends & Guild Members"], L["AutoPartySync Desc"])
 	GUI:CreateTextInput(inviteSection, "Automation.WhisperInvite", L["Auto Accept Invite Keyword"], L["WhisperInvite Placeholder"], L["WhisperInvite Desc"], updateInviteKeyword)
 

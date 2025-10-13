@@ -694,6 +694,10 @@ Module:RegisterTooltips("KkthnxUI", function()
 		if AltoTooltip then
 			Module.ReskinTooltip(AltoTooltip)
 		end
+
+		if AppearanceTooltipTooltip then
+			Module.ReskinTooltip(AppearanceTooltipTooltip)
+		end
 	end)
 
 	if C_AddOns.IsAddOnLoaded("BattlePetBreedID") then
