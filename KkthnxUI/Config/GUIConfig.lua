@@ -799,6 +799,7 @@ local function CreateMiscCategory()
 	local uiEnhanceSection = GUI:AddSection(miscCategory, "UI Enhancements")
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.ColorPicker", L["Enhanced Color Picker"], "Enhances the default color picker with additional functionality")
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.ImprovedStats", L["Display Character Frame Full Stats"], "Shows expanded character statistics in the character frame")
+	GUI:CreateSwitch(uiEnhanceSection, "Misc.QuickMenuList", L["Enhanced Unit Popup Menus"], "Adds extra options to unit right-click menus such as Copy Name, Whisper, Guild Invite, and Add Friend")
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.YClassColors", "Enable ClassColors", "Toggle the display of class colors in the guild roster, friends list, and Who frame.", UpdateYClassColors)
 
 	-- Target Marking

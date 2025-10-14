@@ -329,6 +329,7 @@ C["Misc"] = {
 	QueueTimerWarning = true,
 	QueueTimerHideOtherTimers = true,
 	QuickJoin = false,
+	QuickMenuList = true,
 	ShowWowHeadLinks = false,
 	SlotDurability = false,
 	TradeTabs = false,
@@ -487,6 +488,7 @@ C["Unitframe"] = {
 	ResurrectSound = false,
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
+	HideMaxPlayerLevel = false,
 	Smooth = false,
 	Stagger = true,
 

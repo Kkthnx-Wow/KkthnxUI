@@ -132,12 +132,13 @@ function Module:OnEnable()
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
+		"CreateMoveBlizzardFrames",
+		"CreateQuickMenuList",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
-		"UpdateYClassColors",
 		"UpdateMaxCameraZoom",
-		"CreateQuickMenuList",
+		"UpdateYClassColors",
 		-- "CreateObjectiveSizeUpdate",
 		-- "CreateQuestSizeUpdate",
 	}
@@ -212,7 +213,7 @@ local function KKUI_ClickMinimapButton(_, btn)
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
-		K["GUI"]:Toggle()
+		K.NewGUI:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION, "SFX")
 	end
 end
@@ -575,9 +576,9 @@ function Module:CustomMenu_Whisper(rootDescription, data)
 end
 
 function Module:CreateQuickMenuList()
-	-- if not C["Misc"].MenuButton then
-	-- 	return
-	-- end
+	if not C["Misc"].QuickMenuList then
+		return
+	end
 
 	--hooksecurefunc(UnitPopupManager, "OpenMenu", function(_, which)
 	--	print("MENU_UNIT_"..which)

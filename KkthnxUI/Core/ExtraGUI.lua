@@ -2572,6 +2572,19 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Nameplate Auras")
 
+	-- Player Level Extra Config
+	self:RegisterExtraConfig("Unitframe.ShowPlayerLevel", function(parent)
+		local yOffset = -10
+
+		-- Hide at Max Level Switch
+		local hideMaxLevelSwitch = self:CreateSwitch(parent, "Unitframe.HideMaxPlayerLevel", L["Hide Player Level At Max Level"], L["Automatically hide the player level text when you reach maximum level (80)"])
+		hideMaxLevelSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Set parent height based on content
+		parent:SetHeight(math.abs(yOffset) + 20)
+	end, "Player Level Options")
+
 	-- Auto-Quest Ignore NPCs Manager
 	self:RegisterExtraConfig("Automation.AutoQuestIgnoreNPC", function(parent)
 		local yOffset = -10

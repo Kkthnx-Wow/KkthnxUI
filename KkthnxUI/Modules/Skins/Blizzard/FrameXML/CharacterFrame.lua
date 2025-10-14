@@ -1,13 +1,30 @@
 -- Cache Global Variables
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+-- Cache Lua functions
 local select = select
 local hooksecurefunc = hooksecurefunc
 local tinsert = tinsert
+local ipairs = ipairs
 
+-- Cache WoW API
 local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
 local CreateFrame = CreateFrame
 local GetInventoryItemLink = GetInventoryItemLink
+local InCombatLockdown = InCombatLockdown
+
+-- Cache texture paths (avoid string concatenation in loops)
+local DRESSING_ROOM_PATH = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom"
+local LEAVE_ITEM_TEXTURE = "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent"
+local COSMETIC_ATLAS = "CosmeticIconFrame"
+local AZERITE_ATLAS = "AzeriteIconFrame"
+
+-- Constants
+local SLOT_SIZE = 36
+local FONT_SIZE_RANK = 13
+local FONT_SIZE_ILVL = 18
+local WHITE_R, WHITE_G, WHITE_B = 1, 1, 1
+local ORANGE_R, ORANGE_G, ORANGE_B = 1, 0.5, 0
 
 -- Global Colors
 local greyRGB = K.QualityColors[0].r
@@ -17,19 +34,26 @@ local function UpdateAzeriteItem(self)
 	if not self.styled then
 		self.AzeriteTexture:SetAlpha(0)
 		self.RankFrame.Texture:SetTexture(nil)
-		self.RankFrame.Label:ClearAllPoints()
-		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
-		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
-		self.RankFrame.Label:SetFontObject(K.UIFontOutline)
-		self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
+
+		local label = self.RankFrame.Label
+		label:ClearAllPoints()
+		label:SetPoint("TOPLEFT", self, 2, -1)
+		label:SetTextColor(ORANGE_R, ORANGE_G, ORANGE_B)
+		label:SetFontObject(K.UIFontOutline)
+
+		-- Cache font data to avoid multiple GetFont() calls
+		local fontPath, _, fontFlags = label:GetFont()
+		label:SetFont(fontPath, FONT_SIZE_RANK, fontFlags)
+
 		self.styled = true
 	end
 end
 
 local function UpdateAzeriteEmpoweredItem(self)
-	self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
-	self.AzeriteTexture:SetAllPoints()
-	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
+	local texture = self.AzeriteTexture
+	texture:SetAtlas(AZERITE_ATLAS)
+	texture:SetAllPoints()
+	texture:SetDrawLayer("BORDER", 1)
 end
 
 local function UpdateCosmetic(self)
@@ -38,12 +62,16 @@ local function UpdateCosmetic(self)
 end
 
 local function updateIconBorderColor(slot, r, g, b)
-	if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
-		r, g, b = 1, 1, 1
+	local border = slot.KKUI_Border
+	if not border then
+		return
 	end
 
-	if slot.KKUI_Border then
-		slot.KKUI_Border:SetVertexColor(r, g, b)
+	-- Reset to white if invalid/grey/white color
+	if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
+		border:SetVertexColor(WHITE_R, WHITE_G, WHITE_B)
+	else
+		border:SetVertexColor(r, g, b)
 	end
 end
 
@@ -64,21 +92,26 @@ local function styleEquipmentSlot(slotName)
 	if not slot or slot.KKUI_Styled then
 		return
 	end
+
+	-- Cache slot elements
 	local icon = slot.icon
 	local iconBorder = slot.IconBorder
 	local cooldown = slot.Cooldown or _G[slotName .. "Cooldown"]
+	local iconOverlay = slot.IconOverlay
+	local ignoreTexture = slot.ignoreTexture
 
 	slot:StripTextures()
-	slot:SetSize(36, 36)
+	slot:SetSize(SLOT_SIZE, SLOT_SIZE)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	iconBorder:SetAlpha(0)
 	slot:CreateBorder()
 	cooldown:SetAllPoints()
-	slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
-	slot.IconOverlay:SetAtlas("CosmeticIconFrame")
-	slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
-	slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
+	ignoreTexture:SetTexture(LEAVE_ITEM_TEXTURE)
+	iconOverlay:SetAtlas(COSMETIC_ATLAS)
+	iconOverlay:SetPoint("TOPLEFT", 1, -1)
+	iconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
+	-- Hook icon border updates
 	hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
 		updateIconBorderColor(slot, r, g, b)
 	end)
@@ -91,6 +124,7 @@ local function styleEquipmentSlot(slotName)
 		iconBorderShown(slot, show)
 	end)
 
+	-- Hook azerite display updates
 	hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
 	hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
 
@@ -138,35 +172,44 @@ tinsert(C.defaultThemes, function()
 	end
 
 	if not CharacterFrame or not CharacterFrame.KKUI_Hooks then
-		-- Hook to update popout color and cosmetics
+		-- Hook to update cosmetics
 		hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
 			if button then
 				UpdateCosmetic(button)
 			end
 		end)
 
-		-- Restore PaperDollFrame_UpdateStats hook with conservative approach
+		-- Hook item level font updates
 		if not InCombatLockdown() then
 			hooksecurefunc("PaperDollFrame_UpdateStats", function()
 				if CharacterStatsPane and CharacterStatsPane.ItemLevelFrame then
-					local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
-					if CharItemLvLValue then
-						CharItemLvLValue:SetFontObject(K.UIFont)
-						CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
+					local ilvlValue = CharacterStatsPane.ItemLevelFrame.Value
+					if ilvlValue then
+						ilvlValue:SetFontObject(K.UIFont)
+
+						-- Cache font data to avoid multiple GetFont() calls
+						local fontPath, _, fontFlags = ilvlValue:GetFont()
+						ilvlValue:SetFont(fontPath, FONT_SIZE_ILVL, fontFlags)
 					end
 				end
 			end)
 		end
 
 		-- Character frame sizing/background hooks
+		-- Cache player class texture path (computed once, reused)
+		local playerClassTexture = DRESSING_ROOM_PATH .. K.Class
+
 		hooksecurefunc(CharacterFrame, "UpdateSize", function()
+			local inset = CharacterFrame.Inset
+			local bg = inset.Bg
+
 			if CharacterFrame.activeSubframe == "PaperDollFrame" then
 				CharacterFrame:SetSize(640, 431)
-				CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
-				CharacterFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class)
-				CharacterFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
-				CharacterFrame.Inset.Bg:SetHorizTile(false)
-				CharacterFrame.Inset.Bg:SetVertTile(false)
+				inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
+				bg:SetTexture(playerClassTexture)
+				bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+				bg:SetHorizTile(false)
+				bg:SetVertTile(false)
 				CharacterFrame.Background:Hide()
 			else
 				CharacterFrame.Background:Show()
@@ -174,24 +217,39 @@ tinsert(C.defaultThemes, function()
 		end)
 
 		-- Sidebar tabs
+		-- Cache golden border color
+		local BORDER_GOLD_R, BORDER_GOLD_G, BORDER_GOLD_B = 255 / 255, 223 / 255, 0 / 255
+
 		local function StyleSidebarTab(tab)
 			if not tab.bg then
-				tab.bg = CreateFrame("Frame", nil, tab)
-				tab.bg:SetAllPoints(tab)
-				tab.bg:SetFrameLevel(tab:GetFrameLevel())
-				tab.bg:CreateBorder(nil, nil, nil, nil, nil, { 255 / 255, 223 / 255, 0 / 255 })
-				tab.Icon:SetAllPoints(tab.bg)
-				tab.Hider:SetAllPoints(tab.bg)
-				tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
-				tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
-				tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
-				tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
+				-- Create and cache background frame
+				local bg = CreateFrame("Frame", nil, tab)
+				bg:SetAllPoints(tab)
+				bg:SetFrameLevel(tab:GetFrameLevel())
+				bg:CreateBorder(nil, nil, nil, nil, nil, { BORDER_GOLD_R, BORDER_GOLD_G, BORDER_GOLD_B })
+
+				-- Cache tab elements
+				local icon = tab.Icon
+				local hider = tab.Hider
+				local highlight = tab.Highlight
+
+				icon:SetAllPoints(bg)
+				hider:SetAllPoints(bg)
+				highlight:SetPoint("TOPLEFT", bg, "TOPLEFT", 1, -1)
+				highlight:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -1, 1)
+				highlight:SetColorTexture(1, 1, 1, 0.25)
+				hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
 				tab.TabBg:SetAlpha(0)
+
+				tab.bg = bg
 			end
-			local region = select(1, tab:GetRegions())
-			if region and not tab.regionStyled then
-				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-				tab.regionStyled = true
+
+			if not tab.regionStyled then
+				local region = select(1, tab:GetRegions())
+				if region then
+					region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+					tab.regionStyled = true
+				end
 			end
 		end
 

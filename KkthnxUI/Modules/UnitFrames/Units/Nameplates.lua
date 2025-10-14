@@ -26,11 +26,9 @@ local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyC
 local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 local C_Scenario_GetInfo = C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = C_Scenario.GetStepInfo
-local C_TooltipInfo_GetUnit = C_TooltipInfo.GetUnit
 local CreateFrame = CreateFrame
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers
--- local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local INTERRUPTED = INTERRUPTED
 local InCombatLockdown = InCombatLockdown
 local IsInGroup = IsInGroup
@@ -1243,7 +1241,7 @@ function Module:UpdatePlateByType()
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
 
-	local shouldHideName = self.widgetsOnly and self.plateType ~= "NameOnly"
+	local shouldHideName = self.widgetsOnly
 	if shouldHideName then
 		name:Hide()
 	else
@@ -1276,7 +1274,7 @@ function Module:UpdatePlateByType()
 
 		name:SetJustifyH("CENTER")
 		name:SetPoint("CENTER", self, "BOTTOM")
-		name:Show()
+		-- name:Show()
 		name:UpdateTag()
 
 		level:Hide()
@@ -1319,8 +1317,8 @@ function Module:UpdatePlateByType()
 			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -6)
 		end
 
-		name:Show()
-		name:UpdateTag()
+		-- name:Show()
+		-- name:UpdateTag()
 	end
 
 	Module.UpdateNameplateSize(self)
@@ -1426,7 +1424,7 @@ function Module:PostUpdatePlates(event, unit)
 		Module.RefreshPlateType(self, unit)
 		-- Mitigate intermittent delayed name availability
 		if self.nameText and self.plateType == "NameOnly" then
-			C_Timer.After(0, function()
+			C_Timer.After(0.25, function()
 				if self.nameText and self:IsShown() then
 					self.nameText:UpdateTag()
 				end

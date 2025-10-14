@@ -7,6 +7,7 @@ local string_format = string.format
 
 -- WoW API
 local CreateFrame = CreateFrame
+local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
 
 function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then
@@ -368,6 +369,26 @@ function Module:CreatePlayer()
 		self:Tag(Level, "[fulllevel]")
 
 		self.Level = Level
+
+		-- Handle dynamic max level hiding
+		if C["Unitframe"].HideMaxPlayerLevel then
+			local function UpdateLevelVisibility()
+				if IsLevelAtEffectiveMaxLevel(K.Level) then
+					Level:Hide()
+				else
+					if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
+						Level:Show()
+					end
+				end
+			end
+
+			-- Initial check
+			UpdateLevelVisibility()
+
+			-- Update on level changes
+			self:RegisterEvent("PLAYER_LEVEL_UP", UpdateLevelVisibility, true)
+			self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateLevelVisibility, true)
+		end
 	end
 
 	if C["Unitframe"].Stagger then

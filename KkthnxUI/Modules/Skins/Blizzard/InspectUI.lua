@@ -1,5 +1,26 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+-- Cache WoW API functions
+local GetInventoryItemLink = GetInventoryItemLink
+local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
+local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
+local UnitClass = UnitClass
+local hooksecurefunc = hooksecurefunc
+local ipairs = ipairs
+
+-- Cache texture paths (avoid string concatenation in loops)
+local DRESSING_ROOM_PATH = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom"
+local MARBLE_TEXTURE = "Interface\\FrameGeneral\\UI-Background-Marble"
+local COSMETIC_ATLAS = "CosmeticIconFrame"
+
+-- Constants
+local SLOT_SIZE = 36
+local FRAME_SIZE_TAB1_WIDTH = 438
+local FRAME_SIZE_TAB1_HEIGHT = 431
+local FRAME_SIZE_TAB2_WIDTH = 338
+local FRAME_SIZE_TAB2_HEIGHT = 424
+local WHITE_R, WHITE_G, WHITE_B = 1, 1, 1
+
 C.themes["Blizzard_InspectUI"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return
@@ -9,12 +30,7 @@ C.themes["Blizzard_InspectUI"] = function()
 		return
 	end
 
-	local GetInventoryItemLink = GetInventoryItemLink
-	local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
-	local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
-	local UnitClass = UnitClass
-	local hooksecurefunc = hooksecurefunc
-
+	-- Cache frame references
 	local InspectPaperDollItemsFrame = InspectPaperDollItemsFrame
 	local InspectModelFrame = InspectModelFrame
 
@@ -49,24 +65,37 @@ C.themes["Blizzard_InspectUI"] = function()
 		"InspectTabardSlot",
 	}
 
-	for i = 1, #equipmentSlots do
-		local slot = _G[equipmentSlots[i]]
+	-- Style equipment slots
+	for _, slotName in ipairs(equipmentSlots) do
+		local slot = _G[slotName]
 		if slot and not slot.KKUI_Styled then
-			slot:StripTextures()
-			slot:SetSize(36, 36)
-			slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			slot:CreateBorder()
-			slot.IconBorder:SetAlpha(0)
-			slot.IconOverlay:SetAtlas("CosmeticIconFrame")
-			slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
-			slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
+			-- Cache slot elements
+			local icon = slot.icon
+			local iconBorder = slot.IconBorder
+			local iconOverlay = slot.IconOverlay
 
-			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
-				slot.KKUI_Border:SetVertexColor(r, g, b)
+			slot:StripTextures()
+			slot:SetSize(SLOT_SIZE, SLOT_SIZE)
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			slot:CreateBorder()
+			iconBorder:SetAlpha(0)
+			iconOverlay:SetAtlas(COSMETIC_ATLAS)
+			iconOverlay:SetPoint("TOPLEFT", 1, -1)
+			iconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
+
+			local border = slot.KKUI_Border
+
+			-- Hook icon border updates
+			hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
+				if border then
+					border:SetVertexColor(r, g, b)
+				end
 			end)
 
-			hooksecurefunc(slot.IconBorder, "Hide", function()
-				slot.KKUI_Border:SetVertexColor(1, 1, 1)
+			hooksecurefunc(iconBorder, "Hide", function()
+				if border then
+					border:SetVertexColor(WHITE_R, WHITE_G, WHITE_B)
+				end
 			end)
 
 			slot.KKUI_Styled = true
@@ -80,61 +109,66 @@ C.themes["Blizzard_InspectUI"] = function()
 	end
 
 	if not InspectFrame or not InspectFrame.KKUI_Hooks then
+		-- Hook to update cosmetics
 		hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
 			if button then
 				UpdateCosmetic(button)
 			end
 		end)
 
-		local InspectHeadSlot = InspectHeadSlot
-		local InspectHandsSlot = InspectHandsSlot
-		local InspectMainHandSlot = InspectMainHandSlot
-		local InspectSecondaryHandSlot = InspectSecondaryHandSlot
+		-- Cache slot references
+		local headSlot = InspectHeadSlot
+		local handsSlot = InspectHandsSlot
+		local mainHandSlot = InspectMainHandSlot
+		local secondaryHandSlot = InspectSecondaryHandSlot
+		local frameInset = InspectFrameInset
 
-		InspectHeadSlot:ClearAllPoints()
-		InspectHandsSlot:ClearAllPoints()
-		InspectMainHandSlot:ClearAllPoints()
-		InspectSecondaryHandSlot:ClearAllPoints()
+		-- Position equipment slots
+		headSlot:ClearAllPoints()
+		handsSlot:ClearAllPoints()
+		mainHandSlot:ClearAllPoints()
+		secondaryHandSlot:ClearAllPoints()
 		InspectModelFrame:ClearAllPoints()
 
-		InspectHeadSlot:SetPoint("TOPLEFT", InspectFrameInset, "TOPLEFT", 6, -6)
-		InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrameInset, "TOPRIGHT", -6, -6)
-		InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrameInset, "BOTTOMLEFT", 176, 5)
-		InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrameInset, "BOTTOMRIGHT", -176, 5)
+		headSlot:SetPoint("TOPLEFT", frameInset, "TOPLEFT", 6, -6)
+		handsSlot:SetPoint("TOPRIGHT", frameInset, "TOPRIGHT", -6, -6)
+		mainHandSlot:SetPoint("BOTTOMLEFT", frameInset, "BOTTOMLEFT", 176, 5)
+		secondaryHandSlot:SetPoint("BOTTOMRIGHT", frameInset, "BOTTOMRIGHT", -176, 5)
 
 		InspectModelFrame:SetSize(300, 360)
-		InspectModelFrame:ClearAllPoints()
-		InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 64, -3)
+		InspectModelFrame:SetPoint("TOPLEFT", frameInset, 64, -3)
 
 		local function ApplyInspectFrameLayout()
-			local InspectFrame = InspectFrame
-			local InspectFrameInset = InspectFrame.Inset
+			local inspectFrame = InspectFrame
+			local inset = inspectFrame.Inset
+			local bg = inset.Bg
 
-			if PanelTemplates_GetSelectedTab(InspectFrame) == 1 then
-				InspectFrame:SetSize(438, 431)
-				InspectFrameInset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 432, 4)
+			if PanelTemplates_GetSelectedTab(inspectFrame) == 1 then
+				inspectFrame:SetSize(FRAME_SIZE_TAB1_WIDTH, FRAME_SIZE_TAB1_HEIGHT)
+				inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", 432, 4)
 
+				-- Cache target class texture (built once per call)
 				local _, targetClass = UnitClass("target")
 				if targetClass then
-					InspectFrameInset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
-					InspectFrameInset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
-					InspectFrameInset.Bg:SetHorizTile(false)
-					InspectFrameInset.Bg:SetVertTile(false)
+					local classTexture = DRESSING_ROOM_PATH .. targetClass
+					bg:SetTexture(classTexture)
+					bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
+					bg:SetHorizTile(false)
+					bg:SetVertTile(false)
 				end
 			else
-				InspectFrame:SetSize(338, 424)
-				InspectFrameInset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 332, 4)
+				inspectFrame:SetSize(FRAME_SIZE_TAB2_WIDTH, FRAME_SIZE_TAB2_HEIGHT)
+				inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", 332, 4)
 
-				InspectFrameInset.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", "REPEAT", "REPEAT")
-				InspectFrameInset.Bg:SetTexCoord(0, 1, 0, 1)
-				InspectFrameInset.Bg:SetHorizTile(true)
-				InspectFrameInset.Bg:SetVertTile(true)
+				bg:SetTexture(MARBLE_TEXTURE, "REPEAT", "REPEAT")
+				bg:SetTexCoord(0, 1, 0, 1)
+				bg:SetHorizTile(true)
+				bg:SetVertTile(true)
 			end
 		end
 
 		local function OnInspectSwitchTabs(newID)
-			local tabID = newID or PanelTemplates_GetSelectedTab(InspectFrame)
-			ApplyInspectFrameLayout(tabID == 1)
+			ApplyInspectFrameLayout()
 		end
 
 		hooksecurefunc("InspectSwitchTabs", OnInspectSwitchTabs)
