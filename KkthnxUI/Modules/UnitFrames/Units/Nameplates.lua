@@ -207,7 +207,7 @@ function Module:BlockAddons()
 end
 
 function Module:CreateUnitTable()
-	K.ClearTable(customUnits)
+	table_wipe(customUnits)
 	if not C["Nameplate"].CustomUnitColor then
 		return
 	end
@@ -217,7 +217,7 @@ function Module:CreateUnitTable()
 end
 
 function Module:CreatePowerUnitTable()
-	K.ClearTable(showPowerList)
+	table_wipe(showPowerList)
 	K.CopyTable(C.NameplateShowPowerList, showPowerList)
 	K.SplitList(showPowerList, C["Nameplate"].PowerUnitList)
 end
@@ -1274,7 +1274,7 @@ function Module:UpdatePlateByType()
 
 		name:SetJustifyH("CENTER")
 		name:SetPoint("CENTER", self, "BOTTOM")
-		-- name:Show()
+		name:Show()
 		name:UpdateTag()
 
 		level:Hide()
@@ -1317,8 +1317,8 @@ function Module:UpdatePlateByType()
 			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -6)
 		end
 
-		-- name:Show()
-		-- name:UpdateTag()
+		name:Show()
+		name:UpdateTag()
 	end
 
 	Module.UpdateNameplateSize(self)

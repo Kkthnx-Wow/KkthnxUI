@@ -86,20 +86,43 @@ end
 
 -- Configuration Functions
 
+-- Get default value for a config path
+local function GetDefaultValue(configPath)
+	-- First check if K.Defaults exists and has the path
+	if K.Defaults then
+		local defaultValue = GetValueByPath(K.Defaults, configPath)
+		if defaultValue ~= nil then
+			return defaultValue
+		end
+	end
+
+	-- Fallback: If K.Defaults doesn't exist or doesn't have the path,
+	-- try to get from the original C table structure (may be current values though)
+	return GetValueByPath(C, configPath)
+end
+
 -- Get extra configuration value by path
 local function GetExtraConfigValue(configPath)
 	return GetValueByPath(C, configPath)
 end
 
--- Set extra configuration value with hook integration
-local function SetExtraConfigValue(configPath, value)
+-- Set extra configuration value with hook integration and reload tracking
+local function SetExtraConfigValue(configPath, value, settingName)
+	-- Use main GUI's SetConfigValue if available - it handles hooks AND reload tracking
+	if K.NewGUI and K.NewGUI.SetConfigValue then
+		-- Main GUI's SetConfigValue handles everything: saving, hooks, and reload tracking
+		K.NewGUI:SetConfigValue(configPath, value, false, settingName)
+		return true
+	end
+
+	-- Fallback if main GUI not available (shouldn't happen in normal operation)
 	-- Get old value for hook comparison
 	local oldValue = GetValueByPath(C, configPath)
 
 	-- Set in runtime config
 	SetValueByPath(C, configPath, value)
 
-	-- Save to database (with safety check) - exactly like main GUI
+	-- Save to database (with safety check)
 	if KkthnxUIDB then
 		if not KkthnxUIDB.Settings then
 			KkthnxUIDB.Settings = {}
@@ -116,13 +139,157 @@ local function SetExtraConfigValue(configPath, value)
 
 	-- Execute real-time update hooks (if available from main GUI)
 	if oldValue ~= value then
-		-- Try to use main GUI's hook system if available
-		if K.GUI and K.GUI.GUI and K.GUI.GUI.TriggerHooks and type(K.GUI.GUI.TriggerHooks) == "function" then
-			K.GUI.GUI:TriggerHooks(configPath, value, oldValue)
+		if K.NewGUI and K.NewGUI.TriggerHooks and type(K.NewGUI.TriggerHooks) == "function" then
+			K.NewGUI:TriggerHooks(configPath, value, oldValue)
 		end
 	end
 
 	return true
+end
+
+-- Reset to Default Functionality
+
+-- Reset a setting to its default value
+local function ResetToDefault(configPath, widget, settingName)
+	local defaultValue = GetDefaultValue(configPath)
+	if defaultValue == nil then
+		-- No default found, show warning
+		print("|cffff6b6bKkthnxUI:|r No default value found for " .. (settingName or configPath))
+		return false
+	end
+
+	local currentValue = GetExtraConfigValue(configPath)
+	if currentValue == defaultValue then
+		-- Already at default, provide feedback
+		print("|cff669DFFKkthnxUI:|r " .. (settingName or configPath) .. " is already at default value")
+		return false
+	end
+
+	-- Set to default value
+	SetExtraConfigValue(configPath, defaultValue, settingName)
+
+	-- Update widget display
+	if widget and widget.UpdateValue then
+		widget:UpdateValue()
+	end
+
+	-- Visual feedback - brief highlight
+	if widget then
+		local originalBg = widget.KKUI_Background
+		if not originalBg then
+			-- Try to find the background texture
+			for i = 1, widget:GetNumRegions() do
+				local region = select(i, widget:GetRegions())
+				if region and region:GetObjectType() == "Texture" and region:GetDrawLayer() == "BACKGROUND" then
+					originalBg = region
+					break
+				end
+			end
+		end
+
+		if originalBg and originalBg.SetVertexColor then
+			-- Brief green flash to indicate reset
+			originalBg:SetVertexColor(0.3, 0.9, 0.3, 0.6)
+			C_Timer.After(0.2, function()
+				originalBg:SetVertexColor(0.12, 0.12, 0.12, 0.8)
+			end)
+		end
+	end
+
+	-- Audio feedback
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+
+	-- Print success message
+	print("|cff669DFFKkthnxUI:|r Reset " .. (settingName or configPath) .. " to default")
+	return true
+end
+
+-- Global Ctrl key checker for reset buttons
+local CtrlChecker = CreateFrame("Frame")
+local resetButtons = {}
+
+local function CtrlUpdate()
+	for widget, resetButton in pairs(resetButtons) do
+		if widget:IsMouseOver() then
+			if IsControlKeyDown() then
+				if not resetButton:IsShown() then
+					resetButton:Show()
+				end
+			else
+				if resetButton:IsShown() then
+					resetButton:Hide()
+					GameTooltip:Hide()
+				end
+			end
+		else
+			if resetButton:IsShown() then
+				resetButton:Hide()
+				GameTooltip:Hide()
+			end
+		end
+	end
+end
+
+CtrlChecker.CtrlUpdate = CtrlUpdate
+-- Disabled by default; enabled while ExtraGUI is visible
+CtrlChecker:SetScript("OnUpdate", nil)
+
+-- Helper function to add reset-to-default functionality to widget labels
+local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	-- Create reset button with undo icon
+	local resetButton = CreateFrame("Button", nil, widget)
+	resetButton:SetSize(16, 16)
+
+	-- Position next to label (no cogwheel in ExtraGUI widgets)
+	resetButton:SetPoint("LEFT", label, "RIGHT", 5, 0)
+	resetButton:Hide() -- Initially hidden
+
+	-- Undo icon
+	local undoIcon = resetButton:CreateTexture(nil, "ARTWORK")
+	undoIcon:SetAllPoints()
+	undoIcon:SetAlpha(0.7)
+
+	-- Try to set the atlas, with fallback
+	local success = pcall(function()
+		undoIcon:SetAtlas("common-icon-undo", true)
+		undoIcon:SetSize(16, 16)
+	end)
+
+	if not success then
+		-- Fallback to a texture if atlas fails
+		undoIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
+		undoIcon:SetTexCoord(0, 1, 0, 1)
+	end
+
+	-- Hover effects for the reset button
+	resetButton:SetScript("OnEnter", function(self)
+		undoIcon:SetAlpha(1)
+		-- Show tooltip
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(L["Reset to Default"] or "Reset to Default", 1, 1, 1, 1, true)
+		GameTooltip:AddLine(L["Click to reset this setting to its default value"] or "Click to reset this setting to its default value", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+		GameTooltip:Show()
+	end)
+
+	resetButton:SetScript("OnLeave", function(self)
+		undoIcon:SetAlpha(0.7)
+		GameTooltip:Hide()
+	end)
+
+	-- Click handler for reset
+	resetButton:SetScript("OnClick", function(self, button)
+		if button == "LeftButton" then
+			ResetToDefault(configPath, widget, cleanText)
+		end
+	end)
+
+	-- Store reference for showing/hiding
+	widget.ResetButton = resetButton
+
+	-- Register with global checker
+	resetButtons[widget] = resetButton
+
+	return resetButton
 end
 
 -- Constants
@@ -153,21 +320,25 @@ local function CreateColoredBackground(frame, r, g, b, a)
 	return bg
 end
 
--- Create gradient separator lines
-local function CreateGradientSeparator(parent, yOffset)
-	local separator = CreateFrame("Frame", nil, parent)
-	separator:SetHeight(1)
-	separator:SetPoint("TOPLEFT", 15, yOffset)
-	separator:SetPoint("TOPRIGHT", -15, yOffset)
+-- Create section header with background (reduces code duplication)
+local function CreateSectionHeader(parent, text, width, yOffset)
+	local headerFrame = CreateFrame("Frame", nil, parent)
+	headerFrame:SetSize(width or (EXTRA_PANEL_WIDTH - 40), 30)
+	headerFrame:SetPoint("TOPLEFT", 0, yOffset or 0)
 
-	-- Create simple colored line (gradient methods are deprecated in newer WoW)
-	local line = separator:CreateTexture(nil, "ARTWORK")
-	line:SetAllPoints()
-	line:SetTexture(C["Media"].Textures.White8x8Texture)
-	-- Use solid accent color since SetGradientAlpha is no longer available
-	line:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.6)
+	-- Section header background
+	local headerBg = headerFrame:CreateTexture(nil, "BACKGROUND")
+	headerBg:SetAllPoints()
+	headerBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	headerBg:SetVertexColor(0.1, 0.1, 0.1, 0.8)
 
-	return separator
+	local headerText = headerFrame:CreateFontString(nil, "OVERLAY")
+	headerText:SetFontObject(K.UIFont)
+	headerText:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+	headerText:SetText(text)
+	headerText:SetPoint("LEFT", headerFrame, "LEFT", 10, 0)
+
+	return headerFrame, headerText
 end
 
 -- ExtraGUI Module Core
@@ -285,6 +456,48 @@ function ExtraGUI:CreateFrame()
 		closeBg:SetVertexColor(0, 0, 0, 0)
 	end)
 
+	-- Reload UI Button (left of close button)
+	local reloadButton = CreateFrame("Button", nil, titleBar)
+	reloadButton:SetSize(24, 24)
+	reloadButton:SetPoint("RIGHT", closeButton, "LEFT", -4, 0)
+
+	local reloadBg = reloadButton:CreateTexture(nil, "BACKGROUND")
+	reloadBg:SetAllPoints()
+	reloadBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	reloadBg:SetVertexColor(0, 0, 0, 0)
+
+	reloadButton.Icon = reloadButton:CreateTexture(nil, "ARTWORK")
+	reloadButton.Icon:SetSize(14, 14)
+	reloadButton.Icon:SetPoint("CENTER")
+	reloadButton.Icon:SetAtlas("transmog-icon-revert")
+	reloadButton.Icon:SetVertexColor(1, 1, 1, 0.8)
+
+	reloadButton:SetScript("OnClick", function()
+		-- Clear pending reloads and reload UI immediately
+		if K.NewGUI and K.NewGUI.ClearReloadQueue then
+			K.NewGUI:ClearReloadQueue()
+		end
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		ReloadUI()
+	end)
+
+	reloadButton:SetScript("OnEnter", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 1)
+		reloadBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
+
+		-- Tooltip
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+		GameTooltip:SetText(L["Reload UI"] or "Reload UI", 1, 1, 1, 1, true)
+		GameTooltip:AddLine(L["Apply changes immediately"] or "Apply changes immediately", 0.7, 0.7, 0.7)
+		GameTooltip:Show()
+	end)
+
+	reloadButton:SetScript("OnLeave", function(self)
+		self.Icon:SetVertexColor(1, 1, 1, 0.8)
+		reloadBg:SetVertexColor(0, 0, 0, 0)
+		GameTooltip:Hide()
+	end)
+
 	-- Content Area
 	local content = CreateFrame("Frame", nil, frame)
 	content:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT)
@@ -386,14 +599,20 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 
 	-- Add category title in content area (like main GUI)
 	local categoryTitleFrame = CreateFrame("Frame", nil, self.ScrollChild)
-	categoryTitleFrame:SetSize(EXTRA_PANEL_WIDTH - 40, 25) -- Match main GUI height
+	categoryTitleFrame:SetSize(EXTRA_PANEL_WIDTH - 40, 30) -- Match main GUI height
 	categoryTitleFrame:SetPoint("TOPLEFT", 15, yOffset)
+
+	-- Background to match main GUI category headers
+	local categoryBg = categoryTitleFrame:CreateTexture(nil, "BACKGROUND")
+	categoryBg:SetAllPoints()
+	categoryBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	categoryBg:SetVertexColor(0.09, 0.09, 0.09, 0.8)
 
 	local categoryTitle = categoryTitleFrame:CreateFontString(nil, "OVERLAY")
 	categoryTitle:SetFontObject(K.UIFont)
-	categoryTitle:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1) -- Match main GUI accent color
+	categoryTitle:SetTextColor(0.9, 0.9, 0.9, 1) -- Match main GUI style
 	categoryTitle:SetText(displayTitle)
-	categoryTitle:SetPoint("TOPLEFT", 0, 0) -- Match main GUI positioning
+	categoryTitle:SetPoint("CENTER", categoryTitleFrame, "CENTER", 0, 0) -- Centered like main GUI
 
 	-- Update yOffset after category title
 	yOffset = yOffset - 45
@@ -447,6 +666,11 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	self.CurrentConfig = config
 	self.Frame:Show()
 	self.IsVisible = true
+
+	-- Enable CtrlChecker updates while ExtraGUI is visible
+	if CtrlChecker then
+		CtrlChecker:SetScript("OnUpdate", CtrlChecker.CtrlUpdate)
+	end
 end
 
 -- Hook main GUI close event to auto-close ExtraGUI
@@ -481,6 +705,11 @@ function ExtraGUI:Hide()
 	end
 	self.IsVisible = false
 	self.CurrentConfig = nil
+
+	-- Disable CtrlChecker when ExtraGUI is hidden
+	if CtrlChecker then
+		CtrlChecker:SetScript("OnUpdate", nil)
+	end
 end
 
 -- Show/Toggle the extra panel
@@ -647,9 +876,15 @@ end
 
 -- Helper function to process NEW tags (same as main GUI)
 local function ProcessNewTag(name)
+	-- Handle nil or empty strings gracefully
+	if not name or name == "" then
+		return "", false
+	end
+
 	if K and K.GUIHelpers and K.GUIHelpers.ProcessNewTag then
 		return K.GUIHelpers.ProcessNewTag(name)
 	end
+
 	local cleanName, hasNewTag = string.gsub(name, "ISNEW", "")
 	return cleanName, (hasNewTag > 0)
 end
@@ -698,6 +933,20 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 	label:SetText(cleanText)
 	label:SetPoint("LEFT", 8, 0)
 
+	-- Make label clickable for reset functionality
+	if configPath then
+		local labelButton = CreateFrame("Button", nil, widget)
+		labelButton:SetAllPoints(label)
+		labelButton:SetScript("OnClick", function(self, button)
+			if button == "LeftButton" and IsControlKeyDown() then
+				ResetToDefault(configPath, widget, cleanText)
+			end
+		end)
+
+		-- Add reset-to-default functionality with undo icon
+		AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	end
+
 	-- Add NEW tag if specified
 	if showNewTag then
 		AddNewTag(widget, label)
@@ -722,6 +971,13 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 	-- Tooltip
 	if tooltip and K and K.GUIHelpers and K.GUIHelpers.CreateEnhancedTooltip then
 		K.GUIHelpers.CreateEnhancedTooltip(widget, cleanText, tooltip)
+	end
+
+	-- Register hook function with main GUI's hook system
+	if hookFunction and type(hookFunction) == "function" and configPath then
+		if K.NewGUI and K.NewGUI.RegisterHook then
+			K.NewGUI:RegisterHook(configPath, hookFunction)
+		end
 	end
 
 	-- Update function using proper config system
@@ -775,7 +1031,7 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 
 		local newValue = not currentValue
 
-		SetExtraConfigValue(configPath, newValue)
+		SetExtraConfigValue(configPath, newValue, cleanText)
 		widget:UpdateValue()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 
@@ -818,6 +1074,20 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 	label:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	label:SetText(cleanText)
 	label:SetPoint("LEFT", 8, 0)
+
+	-- Make label clickable for reset functionality
+	if configPath then
+		local labelButton = CreateFrame("Button", nil, widget)
+		labelButton:SetAllPoints(label)
+		labelButton:SetScript("OnClick", function(self, button)
+			if button == "LeftButton" and IsControlKeyDown() then
+				ResetToDefault(configPath, widget, cleanText)
+			end
+		end)
+
+		-- Add reset-to-default functionality with undo icon
+		AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	end
 
 	-- Add NEW tag if specified
 	if showNewTag then
@@ -881,6 +1151,13 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 		return math.floor(rawValue / step + 0.5) * step
 	end
 
+	-- Register hook function with main GUI's hook system
+	if hookFunction and type(hookFunction) == "function" and configPath then
+		if K.NewGUI and K.NewGUI.RegisterHook then
+			K.NewGUI:RegisterHook(configPath, hookFunction)
+		end
+	end
+
 	-- Update function
 	function widget:UpdateValue()
 		local value = GetExtraConfigValue(self.ConfigPath)
@@ -908,7 +1185,7 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 						currentValue = newValue
 						valueText:SetText(tostring(newValue))
 						UpdateThumbPosition(newValue)
-						SetExtraConfigValue(configPath, newValue)
+						SetExtraConfigValue(configPath, newValue, cleanText)
 
 						-- Call hook function if provided
 						if hookFunction and type(hookFunction) == "function" then
@@ -927,6 +1204,33 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 		end
 	end)
+
+	-- Mouse wheel support for fine adjustment
+	sliderContainer:EnableMouseWheel(true)
+	sliderContainer:SetScript("OnMouseWheel", function(self, delta)
+		local newValue = currentValue + (step * delta)
+		newValue = max(minVal, min(maxVal, newValue))
+
+		if newValue ~= currentValue then
+			currentValue = newValue
+			valueText:SetText(tostring(newValue))
+			UpdateThumbPosition(newValue)
+			SetExtraConfigValue(configPath, newValue, cleanText)
+
+			-- Call hook function if provided
+			if hookFunction and type(hookFunction) == "function" then
+				hookFunction(newValue, currentValue, configPath)
+			end
+
+			-- Play feedback sound
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end
+	end)
+
+	-- Tooltip support with mousewheel hint
+	if tooltip and K and K.GUIHelpers and K.GUIHelpers.CreateEnhancedTooltip then
+		K.GUIHelpers.CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nTip: Use mouse wheel for fine adjustment!")
+	end
 
 	-- Initialize
 	widget:UpdateValue()
@@ -953,9 +1257,30 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 	label:SetText(cleanText)
 	label:SetPoint("LEFT", 8, 0)
 
+	-- Make label clickable for reset functionality
+	if configPath then
+		local labelButton = CreateFrame("Button", nil, widget)
+		labelButton:SetAllPoints(label)
+		labelButton:SetScript("OnClick", function(self, button)
+			if button == "LeftButton" and IsControlKeyDown() then
+				ResetToDefault(configPath, widget, cleanText)
+			end
+		end)
+
+		-- Add reset-to-default functionality with undo icon
+		AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	end
+
 	-- Add NEW tag if specified
 	if showNewTag then
 		AddNewTag(widget, label)
+	end
+
+	-- Register hook function with main GUI's hook system
+	if hookFunction and type(hookFunction) == "function" and configPath then
+		if K.NewGUI and K.NewGUI.RegisterHook then
+			K.NewGUI:RegisterHook(configPath, hookFunction)
+		end
 	end
 
 	-- Dropdown Button
@@ -1036,7 +1361,7 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 			onSelect = function(option)
 				if configPath then
 					local prev = GetExtraConfigValue(configPath)
-					SetExtraConfigValue(configPath, option.value)
+					SetExtraConfigValue(configPath, option.value, cleanText)
 					widget:UpdateValue()
 					if hookFunction and type(hookFunction) == "function" then
 						hookFunction(option.value, prev, configPath)
@@ -1622,12 +1947,8 @@ function ExtraGUI:RegisterExampleConfigs()
 		yOffset = yOffset - 35
 
 		-- List header
-		local listHeader = parent:CreateFontString(nil, "OVERLAY")
-		listHeader:SetFontObject(K.UIFont)
-		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listHeader:SetText(L["Current IDs"] or "Current IDs")
-		listHeader:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
+		CreateSectionHeader(parent, L["Current IDs"] or "Current IDs", contentWidth, yOffset)
+		yOffset = yOffset - 40
 
 		-- List container
 		local listFrame = CreateFrame("Frame", nil, parent)
@@ -1942,12 +2263,8 @@ function ExtraGUI:RegisterExampleConfigs()
 		addLabel:SetPoint("CENTER")
 		yOffset = yOffset - 35
 
-		local listHeader = parent:CreateFontString(nil, "OVERLAY")
-		listHeader:SetFontObject(K.UIFont)
-		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listHeader:SetText(L["Current IDs"] or "Current IDs")
-		listHeader:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
+		CreateSectionHeader(parent, L["Current IDs"] or "Current IDs", contentWidth, yOffset)
+		yOffset = yOffset - 40
 
 		local listFrame = CreateFrame("Frame", nil, parent)
 		listFrame:SetPoint("TOPLEFT", 10, yOffset)
@@ -2585,6 +2902,146 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Player Level Options")
 
+	-- Simple Party Frames Extra Config (accessed via Party.Enable cogwheel)
+	self:RegisterExtraConfig("Party.Enable", function(parent)
+		local yOffset = -10
+		local contentWidth = GetExtraContentWidth()
+
+		-- Hook function for size updates
+		local function UpdateUnitSimplePartySize()
+			local unitframeModule = K:GetModule("Unitframes")
+			if unitframeModule and unitframeModule.UpdateSimplePartySize then
+				unitframeModule:UpdateSimplePartySize()
+			end
+		end
+
+		-- Enable Simple Party (main toggle)
+		local enableSimpleSwitch = self:CreateSwitch(parent, "SimpleParty.Enable", L["Enable Simple Party (Raid-Style)"] or "Enable Simple Party (Raid-Style)", L["Use compact raid-style party frames instead of traditional party frames (requires reload)"] or "Use compact raid-style party frames instead of traditional party frames (requires reload)")
+		enableSimpleSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- -- Show Heal Prediction
+		-- local healPredictionSwitch = self:CreateSwitch(parent, "SimpleParty.ShowHealPrediction", L["Show HealPrediction Statusbars"], L["Show incoming heal predictions on party frames"] or "Show incoming heal predictions on party frames")
+		-- healPredictionSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		-- yOffset = yOffset - 35
+
+		-- -- Smooth Bar Transition
+		-- local smoothSwitch = self:CreateSwitch(parent, "SimpleParty.Smooth", L["Smooth Bar Transition"], L["Enable smooth animations for party frame bars"] or "Enable smooth animations for party frame bars")
+		-- smoothSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		-- yOffset = yOffset - 35
+
+		-- -- Target Highlight
+		-- local targetHighlightSwitch = self:CreateSwitch(parent, "SimpleParty.TargetHighlight", L["Show Highlighted Target"], L["Highlight the targeted party member"] or "Highlight the targeted party member")
+		-- targetHighlightSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		-- yOffset = yOffset - 35
+
+		-- Horizontal Layout
+		local horizonSwitch = self:CreateSwitch(parent, "SimpleParty.HorizonParty", L["Horizontal Party Frames"] or "Horizontal Party Frames", L["Arrange party frames horizontally instead of vertically (requires reload)"] or "Arrange party frames horizontally instead of vertically (requires reload)")
+		horizonSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Power Bar Options
+		local function UpdatePowerBarVisibility()
+			local oUF = K.oUF
+			if not oUF then
+				return
+			end
+
+			-- Force update power bar visibility for all party frames
+			for _, object in next, oUF.objects do
+				if object.unit and object.unit:match("^party%d") and object.UpdateSimplePartyPower then
+					-- Call the stored update function directly
+					object:UpdateSimplePartyPower(nil, object.unit)
+				end
+			end
+		end
+
+		local powerBarSwitch = self:CreateSwitch(parent, "SimpleParty.PowerBarShow", L["Show All Power Bars"] or "Show All Power Bars", L["Show power bars on all party frames"] or "Show power bars on all party frames", UpdatePowerBarVisibility)
+		powerBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local manaBarSwitch = self:CreateSwitch(parent, "SimpleParty.ManabarShow", L["Show Manabars"], L["Display mana bars on party frames"] or "Display mana bars on party frames", UpdatePowerBarVisibility)
+		manaBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		yOffset = yOffset - 20 -- Extra spacing before section
+
+		-- Size Section Header
+		CreateSectionHeader(parent, L["Sizes"] or "Sizes", EXTRA_PANEL_WIDTH - 40, yOffset)
+		yOffset = yOffset - 40
+
+		-- Health Height Slider
+		local heightSlider = self:CreateSlider(parent, "SimpleParty.HealthHeight", L["Frame Height"] or "Frame Height", 20, 100, 1, L["Height of simple party member frames (requires reload)"] or "Height of simple party member frames (requires reload)", UpdateUnitSimplePartySize)
+		heightSlider:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Health Width Slider
+		local widthSlider = self:CreateSlider(parent, "SimpleParty.HealthWidth", L["Frame Width"] or "Frame Width", 20, 100, 1, L["Width of simple party member frames (requires reload)"] or "Width of simple party member frames (requires reload)", UpdateUnitSimplePartySize)
+		widthSlider:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Power Bar Height Slider (live update)
+		local function UpdatePowerBarHeight()
+			local oUF = K.oUF
+			if not oUF then
+				return
+			end
+
+			local newHeight = C["SimpleParty"].PowerBarHeight
+
+			for _, object in next, oUF.objects do
+				if object.Power and object.unit and object.unit:match("^party%d") then
+					-- Update power bar height
+					object.Power:SetHeight(newHeight)
+
+					-- Trigger the update function to reposition health bar correctly
+					if object.UpdateSimplePartyPower then
+						object:UpdateSimplePartyPower(nil, object.unit)
+					end
+				end
+			end
+		end
+
+		local powerHeightSlider = self:CreateSlider(parent, "SimpleParty.PowerBarHeight", L["Power Bar Height"] or "Power Bar Height", 2, 15, 1, L["Height of power bars on simple party frames"] or "Height of power bars on simple party frames", UpdatePowerBarHeight)
+		powerHeightSlider:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		yOffset = yOffset - 20 -- Extra spacing before section
+
+		-- Colors Section Header
+		CreateSectionHeader(parent, COLORS or "Colors", EXTRA_PANEL_WIDTH - 40, yOffset)
+		yOffset = yOffset - 40
+
+		-- Health Color Format Dropdown
+		local healthColorOptions = {
+			{ text = "Class", value = 1 },
+			{ text = "Dark", value = 2 },
+			{ text = "Value", value = 3 },
+		}
+		local colorDropdown = self:CreateDropdown(parent, "SimpleParty.HealthbarColor", L["Health Color Format"] or "Health Color Format", healthColorOptions, L["Choose how health bars are colored on simple party frames"] or "Choose how health bars are colored on simple party frames")
+		colorDropdown:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		yOffset = yOffset - 20 -- Extra spacing before section
+
+		-- Buffs Section Header
+		CreateSectionHeader(parent, L["Raid Buffs"] or "Raid Buffs", EXTRA_PANEL_WIDTH - 40, yOffset)
+		yOffset = yOffset - 40
+
+		-- Raid Buffs Style Dropdown
+		local raidBuffsOptions = {
+			{ text = L["Disabled"] or "Disabled", value = 0 },
+			{ text = L["Standard"] or "Standard", value = 1 },
+			{ text = L["Aura Track"] or "Aura Track", value = 2 },
+		}
+		local buffsDropdown = self:CreateDropdown(parent, "SimpleParty.RaidBuffsStyle", L["Raid Buffs Style"] or "Raid Buffs Style", raidBuffsOptions, L["Choose how raid buffs are displayed on simple party frames"] or "Choose how raid buffs are displayed on simple party frames")
+		buffsDropdown:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Set parent height based on content
+		parent:SetHeight(math.abs(yOffset) + 20)
+	end, "Simple Party Frames")
+
 	-- Auto-Quest Ignore NPCs Manager
 	self:RegisterExtraConfig("Automation.AutoQuestIgnoreNPC", function(parent)
 		local yOffset = -10
@@ -2613,12 +3070,8 @@ function ExtraGUI:RegisterExampleConfigs()
 		addButton:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local listHeader = parent:CreateFontString(nil, "OVERLAY")
-		listHeader:SetFontObject(K.UIFont)
-		listHeader:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listHeader:SetText("Current IDs")
-		listHeader:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
+		CreateSectionHeader(parent, "Current IDs", contentWidth, yOffset)
+		yOffset = yOffset - 40
 
 		local listFrame = CreateFrame("Frame", nil, parent)
 		listFrame:SetPoint("TOPLEFT", 10, yOffset)
@@ -2864,9 +3317,30 @@ function ExtraGUI:CreateColorPicker(parent, configPath, text, tooltip, hookFunct
 	label:SetText(cleanText)
 	label:SetPoint("LEFT", 8, 0)
 
+	-- Make label clickable for reset functionality
+	if configPath then
+		local labelButton = CreateFrame("Button", nil, widget)
+		labelButton:SetAllPoints(label)
+		labelButton:SetScript("OnClick", function(self, button)
+			if button == "LeftButton" and IsControlKeyDown() then
+				ResetToDefault(configPath, widget, cleanText)
+			end
+		end)
+
+		-- Add reset-to-default functionality with undo icon
+		AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	end
+
 	-- Add NEW tag if specified
 	if showNewTag then
 		AddNewTag(widget, label)
+	end
+
+	-- Register hook function with main GUI's hook system
+	if hookFunction and type(hookFunction) == "function" and configPath then
+		if K.NewGUI and K.NewGUI.RegisterHook then
+			K.NewGUI:RegisterHook(configPath, hookFunction)
+		end
 	end
 
 	-- Color Button
@@ -2929,9 +3403,30 @@ function ExtraGUI:CreateCheckboxGroup(parent, configPath, text, options, tooltip
 	label:SetText(cleanText)
 	label:SetPoint("TOPLEFT", 8, -8)
 
+	-- Make label clickable for reset functionality
+	if configPath then
+		local labelButton = CreateFrame("Button", nil, widget)
+		labelButton:SetAllPoints(label)
+		labelButton:SetScript("OnClick", function(self, button)
+			if button == "LeftButton" and IsControlKeyDown() then
+				ResetToDefault(configPath, widget, cleanText)
+			end
+		end)
+
+		-- Add reset-to-default functionality with undo icon
+		AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	end
+
 	-- Add NEW tag if specified
 	if showNewTag then
 		AddNewTag(widget, label)
+	end
+
+	-- Register hook function with main GUI's hook system
+	if hookFunction and type(hookFunction) == "function" and configPath then
+		if K.NewGUI and K.NewGUI.RegisterHook then
+			K.NewGUI:RegisterHook(configPath, hookFunction)
+		end
 	end
 
 	local checkboxes = {}
@@ -3025,7 +3520,7 @@ function ExtraGUI:CreateCheckboxGroup(parent, configPath, text, options, tooltip
 				table.insert(newValues, self.OptionValue)
 			end
 
-			SetExtraConfigValue(configPath, newValues)
+			SetExtraConfigValue(configPath, newValues, cleanText)
 			widget:UpdateValue()
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 
@@ -3061,9 +3556,30 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	label:SetText(cleanText)
 	label:SetPoint("LEFT", 8, 0)
 
+	-- Make label clickable for reset functionality
+	if configPath then
+		local labelButton = CreateFrame("Button", nil, widget)
+		labelButton:SetAllPoints(label)
+		labelButton:SetScript("OnClick", function(self, button)
+			if button == "LeftButton" and IsControlKeyDown() then
+				ResetToDefault(configPath, widget, cleanText)
+			end
+		end)
+
+		-- Add reset-to-default functionality with undo icon
+		AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
+	end
+
 	-- Add NEW tag if specified
 	if showNewTag then
 		AddNewTag(widget, label)
+	end
+
+	-- Register hook function with main GUI's hook system
+	if hookFunction and type(hookFunction) == "function" and configPath then
+		if K.NewGUI and K.NewGUI.RegisterHook then
+			K.NewGUI:RegisterHook(configPath, hookFunction)
+		end
 	end
 
 	-- Text Input EditBox
@@ -3129,7 +3645,7 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		local newValue = self:GetText()
 		-- Only persist and trigger hooks when a configPath is provided
 		if configPath then
-			SetExtraConfigValue(configPath, newValue)
+			SetExtraConfigValue(configPath, newValue, cleanText)
 		end
 		self:ClearFocus()
 
@@ -3144,7 +3660,7 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		local newValue = self:GetText()
 		-- Only persist and trigger hooks when a configPath is provided
 		if configPath then
-			SetExtraConfigValue(configPath, newValue)
+			SetExtraConfigValue(configPath, newValue, cleanText)
 		end
 
 		-- Call hook function if provided
@@ -3199,7 +3715,7 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	applyButton:SetScript("OnClick", function()
 		-- Only persist when a configPath is provided
 		if configPath then
-			SetExtraConfigValue(configPath, editBox:GetText())
+			SetExtraConfigValue(configPath, editBox:GetText(), cleanText)
 		end
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)

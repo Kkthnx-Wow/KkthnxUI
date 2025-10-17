@@ -1,7 +1,7 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local string_format, table_insert, table_sort, table_clear = string.format, table.insert, table.sort, table.clear
+local string_format, table_insert, table_sort, table_wipe = string.format, table.insert, table.sort, table.wipe
 local GetAddOnCPUUsage, C_AddOns_GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, C_AddOns_GetNumAddOns, GetTime, C_AddOns_IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, C_AddOns.GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, C_AddOns.GetNumAddOns, GetTime, C_AddOns.IsAddOnLoaded, IsShiftKeyDown
 local ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage = ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage
 local collectgarbage, gcinfo = collectgarbage, gcinfo
@@ -35,7 +35,7 @@ local function BuildAddonList()
 		return
 	end
 
-	table_clear(infoTable)
+	table_wipe(infoTable)
 	for i = 1, numAddons do
 		local _, title, _, loadable = C_AddOns_GetAddOnInfo(i)
 		if loadable then

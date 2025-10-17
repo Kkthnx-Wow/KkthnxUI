@@ -2,6 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
 local insert = table.insert
+local table_wipe = table.wipe
 local ipairs = ipairs
 local type = type
 local _G = _G
@@ -286,6 +287,6 @@ end
 
 -- Add cleanup function for when feature is disabled
 function Module:CleanupMicroMenu()
-	K.ClearTable(MicroButtons)
+	table_wipe(MicroButtons)
 	StopFadeTimer()
 end

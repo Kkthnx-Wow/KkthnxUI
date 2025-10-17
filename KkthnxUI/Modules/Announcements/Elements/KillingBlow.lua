@@ -2,6 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Announcements = K:GetModule("Announcements")
 
 local bit_band, math_random = bit.band, math.random
+local table_wipe = table.wipe
 local BossBanner_BeginAnims, DoEmote, GetAchievementInfo, GetBattlefieldScore, GetNumBattlefieldScores, RAID_CLASS_COLORS = BossBanner_BeginAnims, DoEmote, GetAchievementInfo, GetBattlefieldScore, GetNumBattlefieldScores, RAID_CLASS_COLORS
 local TopBannerManager_Show, hooksecurefunc, CombatLogGetCurrentEventInfo = TopBannerManager_Show, hooksecurefunc, CombatLogGetCurrentEventInfo
 
@@ -64,7 +65,7 @@ local pvpEmotes = {
 local battlegroundOpponents = {}
 
 function Announcements:BuildBattlegroundOpponents()
-	K.ClearTable(battlegroundOpponents) -- Clear the battleground opponents list
+	table_wipe(battlegroundOpponents) -- Clear the battleground opponents list
 	for index = 1, GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = GetBattlefieldScore(index)
 		if (K.Faction == "Horde" and faction == 1) or (K.Faction == "Alliance" and faction == 0) then

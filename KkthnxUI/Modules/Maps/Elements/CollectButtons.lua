@@ -8,6 +8,7 @@ local string_find = string.find
 local string_match = string.match
 local string_upper = string.upper
 local table_insert = table.insert
+local table_wipe = table.wipe
 
 local CreateFrame = CreateFrame
 local Minimap = Minimap
@@ -237,7 +238,7 @@ function Module:CreateRecycleBin()
 			return
 		end
 
-		K.ClearTable(shownButtons)
+		table_wipe(shownButtons)
 		for _, button in pairs(buttons) do
 			if button and button.IsShown and button:IsShown() then -- fix for fuxking AHDB
 				table_insert(shownButtons, button)
@@ -263,8 +264,8 @@ function Module:CreateRecycleBin()
 
 	-- Add cleanup function for when feature is disabled
 	local function CleanupCollectButtons()
-		K.ClearTable(buttons)
-		K.ClearTable(shownButtons)
+		table_wipe(buttons)
+		table_wipe(shownButtons)
 		numMinimapChildren = 0
 		currentIndex = 0
 		StopAutoCloseTimer()

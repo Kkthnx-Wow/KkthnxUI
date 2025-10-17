@@ -278,6 +278,7 @@ C["General"] = {
 	BorderStyle = "KkthnxUI",
 	NumberPrefixStyle = 1,
 	GlowMode = 3,
+	VersionCheck = true,
 }
 
 -- Loot
@@ -576,6 +577,7 @@ C["SimpleParty"] = {
 	HorizonParty = false,
 	ManabarShow = false,
 	PowerBarShow = false,
+	PowerBarHeight = 5,
 	RaidBuffsStyle = 2,
 	ShowHealPrediction = true,
 	Smooth = false,

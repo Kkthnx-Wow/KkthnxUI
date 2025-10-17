@@ -21,23 +21,32 @@ local _, ns = ...
 local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetContainerItemInfo = C_Container.GetContainerItemInfo
-local GetContainerItemCooldown = C_Container.GetContainerItemCooldown
-local GetContainerItemQuestInfo = C_Container.GetContainerItemQuestInfo
-local GetItemInfo = C_Item.GetItemInfo
-local tinsert = tinsert
-local pairs = pairs
+-- Cache globals for performance
+local error = error
+local getmetatable = getmetatable
 local ipairs = ipairs
-local strmatch = strmatch
 local next = next
-local wipe = wipe
+local pairs = pairs
+local setmetatable = setmetatable
+local string_format = string.format
+local string_match = string.match
+local table_insert = table.insert
+local table_wipe = table.wipe
+local tonumber = tonumber
+local type = type
+local unpack = unpack
+
+local C_Bank_CloseBankFrame = C_Bank.CloseBankFrame
+local C_Container_GetContainerItemCooldown = C_Container.GetContainerItemCooldown
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_GetContainerItemQuestInfo = C_Container.GetContainerItemQuestInfo
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Item_GetItemInfo = C_Item.GetItemInfo
 local CreateFrame = CreateFrame
+local Enum = Enum
 local InCombatLockdown = InCombatLockdown
 local UIParent = UIParent
-local C_Bank = C_Bank
-local Enum = Enum
-local tonumber = tonumber
+local UISpecialFrames = UISpecialFrames
 
 --[[!
 	@class Implementation
@@ -62,10 +71,10 @@ local MYTHIC_KEYSTONES = {
 ]]
 function Implementation:New(name)
 	if self.instances[name] then
-		return error(("cargBags: Implementation '%s' already exists!"):format(name))
+		return error(string_format("cargBags: Implementation '%s' already exists!", name))
 	end
 	if _G[name] then
-		return error(("cargBags: Global '%s' for Implementation is already used!"):format(name))
+		return error(string_format("cargBags: Global '%s' for Implementation is already used!", name))
 	end
 
 	local impl = setmetatable(CreateFrame("Button", name, UIParent), self.__index)
@@ -84,7 +93,7 @@ function Implementation:New(name)
 	impl.events = {} -- @property events <table> Holds all event callbacks
 	impl.notInited = true -- @property notInited <bool>
 
-	tinsert(UISpecialFrames, name)
+	table_insert(UISpecialFrames, name)
 
 	self.instances[name] = impl
 
@@ -123,7 +132,7 @@ function Implementation:OnHide()
 		self:OnClose()
 	end
 	if self:AtBank() then
-		C_Bank.CloseBankFrame()
+		C_Bank_CloseBankFrame()
 	end
 end
 
@@ -352,27 +361,25 @@ end
 
 function Implementation:GetItemInfo(bagID, slotID, i)
 	i = i or defaultItem
-	for k in pairs(i) do
-		i[k] = nil
-	end
+	table_wipe(i)
 
 	i.bagId = bagID
 	i.slotId = slotID
 
-	local info = GetContainerItemInfo(bagID, slotID)
+	local info = C_Container_GetContainerItemInfo(bagID, slotID)
 	if info then
 		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice, i.bound = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue, info.isBound
 
 		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
 
-		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
+		i.cdStart, i.cdFinish, i.cdEnable = C_Container_GetContainerItemCooldown(bagID, slotID)
 
-		local questInfo = GetContainerItemQuestInfo(bagID, slotID)
+		local questInfo = C_Container_GetContainerItemQuestInfo(bagID, slotID)
 		if questInfo then
 			i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 		end
 
-		local name, _, _, _, minLevel, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = GetItemInfo(i.link)
+		local name, _, _, _, minLevel, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = C_Item_GetItemInfo(i.link)
 		i.name, i.minLevel, i.type, i.subType, i.equipLoc, i.classID, i.subClassID, i.expacID, i.bindType = name, minLevel, typeText, subTypeText, (equipLoc and _G[equipLoc]) or nil, classID, subClassID, expacID, bindType
 
 		if isItemHasLevel(i) then
@@ -380,14 +387,14 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 		end
 
 		if i.id == PET_CAGE then
-			local petID, petLevel, petName = strmatch(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
+			local petID, petLevel, petName = string_match(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
 			i.name = petName
 			i.id = tonumber(petID) or 0
 			i.level = tonumber(petLevel) or 0
 			i.classID = Enum.ItemClass.Miscellaneous
 			i.subClassID = Enum.ItemMiscellaneousSubclass.CompanionPet
 		elseif MYTHIC_KEYSTONES[i.id] then
-			i.level, i.name = strmatch(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
+			i.level, i.name = string_match(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
 			i.level = tonumber(i.level) or 0
 		end
 	end
@@ -436,7 +443,7 @@ function Implementation:UpdateBag(bagID)
 	if closed then
 		numSlots, bagID = 0, closed
 	else
-		numSlots = GetContainerNumSlots(bagID)
+		numSlots = C_Container_GetContainerNumSlots(bagID)
 	end
 	local lastSlots = self.bagSizes[bagID] or 0
 	self.bagSizes[bagID] = numSlots
@@ -512,7 +519,7 @@ end
 ]]
 function Implementation:BAG_UPDATE_COOLDOWN(_, bagID)
 	if bagID then
-		for slotID = 1, GetContainerNumSlots(bagID) do
+		for slotID = 1, C_Container_GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
 			if button then
 				local item = self:GetItemInfo(bagID, slotID)

@@ -6,7 +6,7 @@ local select = select
 local string_find = string.find
 local table_insert = table.insert
 local table_remove = table.remove
-local table_clear = table.clear
+local table_wipe = table.wipe
 
 local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Item_GetItemCooldown = C_Item.GetItemCooldown
@@ -76,7 +76,7 @@ end
 
 local function InsertData(index, target)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
-		K.ClearTable(target)
+		table_wipe(target)
 	end
 
 	for spellID, v in pairs(myTable[index]) do
@@ -91,7 +91,7 @@ end
 local function ConvertTable()
 	for i = 1, 10 do
 		if myTable[i] then
-			K.ClearTable(myTable[i])
+			table_wipe(myTable[i])
 		end
 		myTable[i] = myTable[i] or {}
 
@@ -879,7 +879,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 
 		-- Clear cache when it gets too large
 		if cacheSize > maxCacheSize then
-			table_clear(cache)
+			table_wipe(cache)
 			cacheSize = 0
 		end
 	end
@@ -1088,7 +1088,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			table_clear(IntTable)
+			table_wipe(IntTable)
 
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
@@ -1121,7 +1121,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			table_clear(IntTable)
+			table_wipe(IntTable)
 		end
 	end
 end

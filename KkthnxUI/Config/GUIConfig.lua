@@ -522,6 +522,7 @@ local function CreateGeneralCategory()
 	GUI:CreateSwitch(generalGeneralSection, "General.MoveBlizzardFrames", L["Move Blizzard Frames"], L["MoveBlizzardFrames Desc"])
 	GUI:CreateSwitch(generalGeneralSection, "General.NoErrorFrame", L["Disable Blizzard Error Frame Combat"], "Prevents error messages from appearing during combat")
 	GUI:CreateSwitch(generalGeneralSection, "General.NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"], L["NoTutorialButtons Desc"])
+	GUI:CreateSwitch(generalGeneralSection, "General.VersionCheck", L["Enable Version Check"], "Checks for newer versions of KkthnxUI when joining guild or group (requires reload)")
 
 	-- Button Glow Mode
 	local glowModeOptions = {
@@ -1152,7 +1153,12 @@ local function CreatePartyCategory()
 	GUI:CreateDropdown(colorsPartySection, "Party.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on party frames")
 end
 
--- SimpleParty (Raid-style compact party frames)
+--[[
+	SimpleParty (Raid-style compact party frames)
+	NOTE: SimpleParty settings have been moved to ExtraGUI (accessed via cogwheel on Party.Enable)
+	This category is deprecated and kept for reference only.
+]]
+--[[ DEPRECATED: Moved to ExtraGUI - Accessible via Party.Enable cogwheel
 local function CreateSimplePartyCategory()
 	local simplePartyIcon = "Interface\\Icons\\Ships_ability_boardingpartyalliance"
 	local simplePartyCategory = GUI:AddCategory("Simple Party", simplePartyIcon)
@@ -1203,6 +1209,8 @@ local function CreateSimplePartyCategory()
 	}
 	GUI:CreateDropdown(colorsSimplePartySection, "SimpleParty.RaidBuffsStyle", L["Buff Style"], raidBuffsStyleOptions, "Choose the buff display style for simple party frames", nil, true)
 end
+--]]
+-- END DEPRECATED SimpleParty category
 
 -- Raid Category
 local function CreateRaidCategory()
@@ -1788,7 +1796,7 @@ CreateMinimapCategory()
 CreateMiscCategory()
 CreateNameplateCategory()
 CreatePartyCategory()
-CreateSimplePartyCategory()
+-- CreateSimplePartyCategory() -- DEPRECATED: Moved to ExtraGUI (accessible via Party.Enable cogwheel)
 CreateRaidCategory()
 CreateSkinsCategory()
 CreateTooltipCategory()

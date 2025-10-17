@@ -19,13 +19,22 @@
 	class-generation, helper-functions and the Blizzard-replacement.
 ]]
 local parent, ns = ...
-local global = C_AddOns.GetAddOnMetadata(parent, "X-cargBags")
+
+-- Cache globals for performance
 local floor = math.floor
+local getmetatable = getmetatable
 local pairs = pairs
 local select = select
+local setmetatable = setmetatable
+local type = type
+
+local BankFrame = BankFrame
+local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local IsLoggedIn = IsLoggedIn
+
+local global = C_AddOns_GetAddOnMetadata(parent, "X-cargBags")
 
 --- @class table
 --  @name cargBags

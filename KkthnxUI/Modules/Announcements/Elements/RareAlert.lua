@@ -14,6 +14,7 @@ local format = string.format
 local strfind = string.find
 local print = print
 local debugprofilestop = debugprofilestop
+local table_wipe = table.wipe
 
 -- Cache for rare alerts and ignored zones
 local RareAlertCache = {}
@@ -115,7 +116,7 @@ function Module:RareAlert_Update(id)
 
 	-- Limit the size of the cache to prevent overflow
 	if rareCacheSize > 666 then
-		K.ClearTable(RareAlertCache)
+		table_wipe(RareAlertCache)
 		rareCacheSize = 0
 	end
 	KKUI_ProfileEnd("RareAlert_Update")
@@ -150,7 +151,7 @@ function Module:CreateRareAnnounce()
 		K:RegisterEvent("UPDATE_INSTANCE_INFO", Module.RareAlert_CheckInstance)
 	else
 		-- Clear cache on zone change
-		K.ClearTable(RareAlertCache)
+		table_wipe(RareAlertCache)
 		rareCacheSize = 0
 		K:UnregisterEvent("VIGNETTE_MINIMAP_UPDATED", Module.RareAlert_Update)
 		K:UnregisterEvent("UPDATE_INSTANCE_INFO", Module.RareAlert_CheckInstance)

@@ -85,7 +85,7 @@ local function sortFriends(a, b)
 end
 
 local function buildFriendTable(num)
-	K.ClearTable(friendTable)
+	table_wipe(friendTable)
 
 	for i = 1, num do
 		local info = C_FriendList_GetFriendInfoByIndex(i)
@@ -134,7 +134,7 @@ local function GetOnlineInfoText(client, isMobile, rafLinkType, locationText)
 end
 
 local function buildBNetTable(num)
-	K.ClearTable(bnetTable)
+	table_wipe(bnetTable)
 
 	for i = 1, num do
 		local accountInfo = C_BattleNet_GetFriendAccountInfo(i)

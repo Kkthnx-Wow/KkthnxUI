@@ -44,7 +44,7 @@ local strfind = string.find
 local ROLE_ATLAS = {
 	HEALER = "|A:groupfinder-icon-role-micro-heal:12:12|a",
 	TANK = "|A:groupfinder-icon-role-micro-tank:12:12|a",
-	--DAMAGER = "|A:groupfinder-icon-role-micro-dps:16:16|a",
+	-- DAMAGER = "|A:groupfinder-icon-role-micro-dps:16:16|a",
 }
 
 -- Add scantip back, due to issue on ColorMixin

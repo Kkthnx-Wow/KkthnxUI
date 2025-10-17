@@ -6,20 +6,31 @@ local Unfit = K.LibUnfit
 
 local ceil = ceil
 local ipairs = ipairs
+local pairs = pairs
 local string_match = string.match
 local table_wipe = table.wipe
+local tinsert = table.insert
+local tonumber = tonumber
+local type = type
 local unpack = unpack
 
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+local C_Bank_CanPurchaseBankTab = C_Bank.CanPurchaseBankTab
+local C_Bank_CanViewBank = C_Bank.CanViewBank
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_SetInsertItemsLeftToRight = C_Container.SetInsertItemsLeftToRight
+local C_Container_SetSortBagsRightToLeft = C_Container.SetSortBagsRightToLeft
+local C_Container_SortAccountBankBags = C_Container.SortAccountBankBags
 local C_NewItems_IsNewItem = C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = C_NewItems.RemoveNewItem
 local C_Soulbinds_IsItemConduitByItemInfo = C_Soulbinds.IsItemConduitByItemInfo
+local C_Spell_GetSpellName = C_Spell.GetSpellName
 local ClearCursor = ClearCursor
 local CreateFrame = CreateFrame
-local UIParent = UIParent
-local GameTooltip = GameTooltip
 local DeleteCursorItem = DeleteCursorItem
+local DepositReagentBank = DepositReagentBank
+local GameTooltip = GameTooltip
+local GetCVarBool = GetCVarBool
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetInventoryItemID = GetInventoryItemID
@@ -28,12 +39,23 @@ local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsCosmeticItem = C_Item.IsCosmeticItem
+local IsReagentBankUnlocked = IsReagentBankUnlocked
+local IsShiftKeyDown = IsShiftKeyDown
+local OpenAllBags = OpenAllBags
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
+local SetCVar = SetCVar
+local SetCVarBitfield = SetCVarBitfield
+local SetItemCraftingQualityOverlay = SetItemCraftingQualityOverlay
 local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
+local SortReagentBankBags = C_Container.SortReagentBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
+local StaticPopup_Hide = StaticPopup_Hide
+local StaticPopup_Show = StaticPopup_Show
+local StaticPopup_Visible = StaticPopup_Visible
+local UIParent = UIParent
 
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
 local CHAR_BANK_TYPE = Enum.BankType.Character or 0
@@ -75,7 +97,7 @@ local function CheckForBagReagent(name)
 end
 
 function Module:UpdateBagsAnchor(parent, bags)
-	K.ClearTable(anchorCache)
+	table_wipe(anchorCache)
 
 	local index = 1
 	local perRow = C["Inventory"].BagsPerRow
@@ -101,7 +123,7 @@ function Module:UpdateBagsAnchor(parent, bags)
 end
 
 function Module:UpdateBankAnchor(parent, bags)
-	K.ClearTable(anchorCache)
+	table_wipe(anchorCache)
 
 	local index = 1
 	local perRow = C["Inventory"].BankPerRow
@@ -352,7 +374,7 @@ function Module:CreateAccountBankButton(f)
 
 	accountBankButton:RegisterForClicks("AnyUp")
 	accountBankButton:SetScript("OnClick", function(_, btn)
-		if not C_Bank.CanViewBank(ACCOUNT_BANK_TYPE) then
+		if not C_Bank_CanViewBank(ACCOUNT_BANK_TYPE) then
 			return
 		end
 
@@ -414,7 +436,7 @@ function Module:CreateBankButton(f)
 	BankButton.Icon:SetTexture(413587)
 
 	BankButton:SetScript("OnClick", function()
-		if not C_Bank.CanViewBank(CHAR_BANK_TYPE) then
+		if not C_Bank_CanViewBank(CHAR_BANK_TYPE) then
 			return
 		end
 
@@ -540,7 +562,7 @@ function Module:CreateSortButton(name)
 		if name == "Bank" then
 			SortBankBags()
 		elseif name == "Account" then
-			C_Container.SortAccountBankBags()
+			C_Container_SortAccountBankBags()
 		else
 			if C["Inventory"].ReverseSort then
 				if InCombatLockdown() then
@@ -1042,6 +1064,7 @@ function Module:OnEnable()
 		return
 	end
 
+	-- Check for conflicting bag addons (cached at local level for faster access)
 	if C_AddOns.IsAddOnLoaded("AdiBags") or C_AddOns.IsAddOnLoaded("ArkInventory") or C_AddOns.IsAddOnLoaded("cargBags_Nivaya") or C_AddOns.IsAddOnLoaded("cargBags") or C_AddOns.IsAddOnLoaded("Bagnon") or C_AddOns.IsAddOnLoaded("Combuctor") or C_AddOns.IsAddOnLoaded("TBag") or C_AddOns.IsAddOnLoaded("BaudBag") then
 		return
 	end
@@ -1177,8 +1200,6 @@ function Module:OnEnable()
 
 		self.Icon:SetAllPoints()
 		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self.Icon:SetVertexColor(1, 1, 1)
-		self.__kkui_iconIsRed = false
 
 		self.Count:SetPoint("BOTTOMRIGHT", 1, 1)
 		self.Count:SetFontObject(K.UIFontOutline)
@@ -1337,7 +1358,7 @@ function Module:OnEnable()
 
 		-- Determine if we can use that item
 		if C["Inventory"].ColorUnusableItems then
-			if (Unfit:IsItemUnusable(item.link) or item.minlevel and item.minlevel > K.Level) and not item.locked then
+			if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
 				self.Icon:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b)
 			else
 				self.Icon:SetVertexColor(1, 1, 1)
@@ -1527,25 +1548,25 @@ function Module:OnEnable()
 		local label
 		-- Use patterns with '$' to match the end of the string
 		if name:match("AzeriteItem$") then
-			label = "Azerite Armor"
+			label = L["Azerite Armor"]
 		elseif name:match("Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
 		elseif name:match("EquipSet$") then
-			label = "Equipment Set" -- L["Equipment Set"]
+			label = L["Equipment Set"]
 		elseif name == "Junk" then
 			label = BAG_FILTER_JUNK
 		elseif name == "BagRelic" then
-			label = "Korthian Relics"
+			label = L["Korthian Relics"]
 		elseif name == "BagReagent" then
-			label = "Reagent Bag"
+			label = L["Reagent Bag"]
 		elseif name == "BagStone" then
-			label = C_Spell.GetSpellName(404861)
+			label = C_Spell_GetSpellName(404861)
 		elseif strmatch(name, "AOE") then
 			label = ITEM_ACCOUNTBOUND_UNTIL_EQUIP
 		elseif strmatch(name, "Lower") then
-			label = "Lower item level"
+			label = L["Lower Item Level"]
 		elseif strmatch(name, "Legacy") then
-			label = "Legacy items"
+			label = L["Legacy Items"]
 		else
 			if name:match("Legendary$") then
 				label = LOOT_JOURNAL_LEGENDARIES
@@ -1685,8 +1706,8 @@ function Module:OnEnable()
 	end
 
 	-- Sort order
-	C_Container.SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
-	C_Container.SetInsertItemsLeftToRight(false)
+	C_Container_SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
+	C_Container_SetInsertItemsLeftToRight(false)
 
 	-- Init
 	ToggleAllBags()
@@ -1729,36 +1750,21 @@ function Module:OnEnable()
 		end
 	end)
 
-	-- Delay updates for data jam (Improved)
-	local BAG_UPDATE_DELAY = 1
-	Module.BagUpdater = CreateFrame("Frame", nil, f.main)
-	Module.BagUpdater:Hide()
-
-	Module.BagUpdater:SetScript("OnUpdate", function(self, elapsed)
+	-- Delay updates for data jam
+	local updater = CreateFrame("Frame", nil, f.main)
+	updater:Hide()
+	updater:SetScript("OnUpdate", function(self, elapsed)
 		self.delay = self.delay - elapsed
 		if self.delay < 0 then
-			local success, error = pcall(function()
-				Module:UpdateAllBags()
-			end)
-			if not success then
-				K.Print("Bag update failed:", error)
-			end
+			Module:UpdateAllBags()
 			self:Hide()
 		end
 	end)
 
 	K:RegisterEvent("GET_ITEM_INFO_RECEIVED", function()
-		if Module.Bags and Module.Bags:IsShown() and Module.BagUpdater then
-			Module.BagUpdater.delay = BAG_UPDATE_DELAY
-			Module.BagUpdater:Show()
-		end
-	end)
-
-	-- Cleanup when frame is hidden
-	f.main:HookScript("OnHide", function()
-		if Module.BagUpdater and Module.BagUpdater:IsShown() then
-			Module.BagUpdater:Hide()
-			Module.BagUpdater.delay = 0
+		if Module.Bags and Module.Bags:IsShown() then
+			updater.delay = 1
+			updater:Show()
 		end
 	end)
 end

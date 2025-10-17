@@ -7,7 +7,11 @@ local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
 local C_Item_IsAnimaItemByID = C_Item.IsAnimaItemByID
 local C_Item_GetItemSpell = C_Item.GetItemSpell
 local string_lower = string.lower
+local type = type
 local CURRENT_EXPANSION = LE_EXPANSION_WAR_WITHIN or 10 -- 11.0
+
+-- Cache character database reference (updated on PLAYER_LOGIN via UpdateCharDB)
+local charDB
 
 -- Custom filter lists
 local CustomFilterList = {
@@ -109,12 +113,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	-- Optimized short-circuiting for database access
-	local db = KkthnxUIDB and KkthnxUIDB.Variables
-	local realmDB = db and db[K.Realm]
-	local charDB = realmDB and realmDB[K.Name]
 	local isCustomJunk = charDB and charDB.CustomJunkList and charDB.CustomJunkList[item.id]
-
 	return (item.quality == Enum.ItemQuality.Poor or isCustomJunk) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
@@ -213,7 +212,6 @@ local function isItemCustom(item, index)
 	local realmDB = db and db[K.Realm]
 	local charDB = realmDB and realmDB[K.Name]
 	local customIndex = charDB and charDB.CustomItems and charDB.CustomItems[item.id]
-
 	return customIndex and customIndex == index
 end
 
@@ -267,125 +265,79 @@ local function isWarboundUntilEquipped(item)
 	return item.bindOn and item.bindOn == "accountequip"
 end
 
--- Main Module Filters
+-- Filter factory functions (reusable, optimized)
+local function CreateLocationFilter(locationCheck, typeCheck)
+	if typeCheck then
+		return function(item)
+			return locationCheck(item) and typeCheck(item)
+		end
+	else
+		return function(item)
+			return locationCheck(item) and not isEmptySlot(item)
+		end
+	end
+end
+
+-- Main Module Filters (using factory pattern)
 function Module:GetFilters()
 	local filters = {}
 
-	filters.onlyBags = function(item)
-		return isItemInBag(item) and not isEmptySlot(item)
-	end
-	filters.bagAzeriteItem = function(item)
-		return isItemInBag(item) and isAzeriteArmor(item)
-	end
-	filters.bagEquipment = function(item)
-		return isItemInBag(item) and isItemEquipment(item)
-	end
-	filters.bagEquipSet = function(item)
-		return isItemInBag(item) and isItemEquipSet(item)
-	end
-	filters.bagConsumable = function(item)
-		return isItemInBag(item) and isItemConsumable(item)
-	end
-	filters.bagsJunk = function(item)
-		return isItemInBag(item) and isItemJunk(item)
-	end
-	filters.bagCollection = function(item)
-		return isItemInBag(item) and isItemCollection(item)
-	end
-	filters.bagGoods = function(item)
-		return isItemInBag(item) and isTradeGoods(item)
-	end
-	filters.bagQuest = function(item)
-		return isItemInBag(item) and isQuestItem(item)
-	end
-	filters.bagAnima = function(item)
-		return isItemInBag(item) and isAnimaItem(item)
-	end
-	filters.bagStone = function(item)
-		return isItemInBag(item) and isPrimordialStone(item)
-	end
-	filters.bagAOE = function(item)
-		return isItemInBag(item) and isWarboundUntilEquipped(item)
-	end
-	filters.bagLower = function(item)
-		return isItemInBag(item) and isItemLowerLevel(item)
-	end
-	filters.bagLegacy = function(item)
-		return isItemInBag(item) and isItemLegacy(item)
-	end
+	-- Bag filters
+	filters.onlyBags = CreateLocationFilter(isItemInBag)
+	filters.bagAzeriteItem = CreateLocationFilter(isItemInBag, isAzeriteArmor)
+	filters.bagEquipment = CreateLocationFilter(isItemInBag, isItemEquipment)
+	filters.bagEquipSet = CreateLocationFilter(isItemInBag, isItemEquipSet)
+	filters.bagConsumable = CreateLocationFilter(isItemInBag, isItemConsumable)
+	filters.bagsJunk = CreateLocationFilter(isItemInBag, isItemJunk)
+	filters.bagCollection = CreateLocationFilter(isItemInBag, isItemCollection)
+	filters.bagGoods = CreateLocationFilter(isItemInBag, isTradeGoods)
+	filters.bagQuest = CreateLocationFilter(isItemInBag, isQuestItem)
+	filters.bagAnima = CreateLocationFilter(isItemInBag, isAnimaItem)
+	filters.bagStone = CreateLocationFilter(isItemInBag, isPrimordialStone)
+	filters.bagAOE = CreateLocationFilter(isItemInBag, isWarboundUntilEquipped)
+	filters.bagLower = CreateLocationFilter(isItemInBag, isItemLowerLevel)
+	filters.bagLegacy = CreateLocationFilter(isItemInBag, isItemLegacy)
 
-	filters.onlyBank = function(item)
-		return isItemInBank(item) and not isEmptySlot(item)
-	end
-	filters.bankAzeriteItem = function(item)
-		return isItemInBank(item) and isAzeriteArmor(item)
-	end
-	filters.bankLegendary = function(item)
-		return isItemInBank(item) and isItemLegendary(item)
-	end
-	filters.bankEquipment = function(item)
-		return isItemInBank(item) and isItemEquipment(item)
-	end
-	filters.bankEquipSet = function(item)
-		return isItemInBank(item) and isItemEquipSet(item)
-	end
-	filters.bankConsumable = function(item)
-		return isItemInBank(item) and isItemConsumable(item)
-	end
-	filters.bankCollection = function(item)
-		return isItemInBank(item) and isItemCollection(item)
-	end
-	filters.bankGoods = function(item)
-		return isItemInBank(item) and isTradeGoods(item)
-	end
-	filters.bankQuest = function(item)
-		return isItemInBank(item) and isQuestItem(item)
-	end
-	filters.bankAnima = function(item)
-		return isItemInBank(item) and isAnimaItem(item)
-	end
-	filters.bankAOE = function(item)
-		return isItemInBank(item) and isWarboundUntilEquipped(item)
-	end
-	filters.bankLower = function(item)
-		return isItemInBank(item) and isItemLowerLevel(item)
-	end
-	filters.bankLegacy = function(item)
-		return isItemInBank(item) and isItemLegacy(item)
-	end
+	-- Bank filters
+	filters.onlyBank = CreateLocationFilter(isItemInBank)
+	filters.bankAzeriteItem = CreateLocationFilter(isItemInBank, isAzeriteArmor)
+	filters.bankLegendary = CreateLocationFilter(isItemInBank, isItemLegendary)
+	filters.bankEquipment = CreateLocationFilter(isItemInBank, isItemEquipment)
+	filters.bankEquipSet = CreateLocationFilter(isItemInBank, isItemEquipSet)
+	filters.bankConsumable = CreateLocationFilter(isItemInBank, isItemConsumable)
+	filters.bankCollection = CreateLocationFilter(isItemInBank, isItemCollection)
+	filters.bankGoods = CreateLocationFilter(isItemInBank, isTradeGoods)
+	filters.bankQuest = CreateLocationFilter(isItemInBank, isQuestItem)
+	filters.bankAnima = CreateLocationFilter(isItemInBank, isAnimaItem)
+	filters.bankAOE = CreateLocationFilter(isItemInBank, isWarboundUntilEquipped)
+	filters.bankLower = CreateLocationFilter(isItemInBank, isItemLowerLevel)
+	filters.bankLegacy = CreateLocationFilter(isItemInBank, isItemLegacy)
 
+	-- Reagent filters
+	end
 	filters.onlyBagReagent = function(item)
 		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (hasReagentBagEquipped() and isItemInBag(item) and isTradeGoods(item))
-	end -- reagent bagslot
-
-	filters.accountbank = function(item)
-		return isItemInAccountBank(item) and not isEmptySlot(item)
-	end
-	filters.accountEquipment = function(item)
-		return isItemInAccountBank(item) and isItemEquipment(item)
-	end
-	filters.accountConsumable = function(item)
-		return isItemInAccountBank(item) and isItemConsumable(item)
-	end
-	filters.accountGoods = function(item)
-		return isItemInAccountBank(item) and isTradeGoods(item)
-	end
-	filters.accountAOE = function(item)
-		return isItemInAccountBank(item) and isWarboundUntilEquipped(item)
-	end
-	filters.accountLegacy = function(item)
-		return isItemInAccountBank(item) and isItemLegacy(item)
 	end
 
+	-- Account bank filters
+	filters.accountbank = CreateLocationFilter(isItemInAccountBank)
+	filters.accountEquipment = CreateLocationFilter(isItemInAccountBank, isItemEquipment)
+	filters.accountConsumable = CreateLocationFilter(isItemInAccountBank, isItemConsumable)
+	filters.accountGoods = CreateLocationFilter(isItemInAccountBank, isTradeGoods)
+	filters.accountAOE = CreateLocationFilter(isItemInAccountBank, isWarboundUntilEquipped)
+	filters.accountLegacy = CreateLocationFilter(isItemInAccountBank, isItemLegacy)
+
+	-- Custom filters (dynamic generation)
 	for i = 1, 5 do
+		local customIndex = i -- Capture for closure
 		filters["bagCustom" .. i] = function(item)
-			return (isItemInBag(item) or isItemInBagReagent(item)) and isItemCustom(item, i)
+			return (isItemInBag(item) or isItemInBagReagent(item)) and isItemCustom(item, customIndex)
 		end
 		filters["bankCustom" .. i] = function(item)
-			return isItemInBank(item) and isItemCustom(item, i)
+			return isItemInBank(item) and isItemCustom(item, customIndex)
 		end
 		filters["accountCustom" .. i] = function(item)
-			return isItemInAccountBank(item) and isItemCustom(item, i)
+			return isItemInAccountBank(item) and isItemCustom(item, customIndex)
 		end
 	end
 

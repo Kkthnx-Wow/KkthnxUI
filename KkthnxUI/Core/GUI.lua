@@ -136,6 +136,11 @@ end
 
 -- Helper function to check and strip NEW tags from names
 local function ProcessNewTag(name)
+	-- Handle nil or empty strings gracefully
+	if not name or name == "" then
+		return "", false
+	end
+
 	local cleanName, hasNewTag = gsub(name, IsNew, "")
 	return cleanName, (hasNewTag > 0)
 end
@@ -3264,8 +3269,8 @@ function GUI:GetConfigValue(configPath)
 	return GetConfigValue(configPath)
 end
 
-function GUI:SetConfigValue(configPath, value)
-	return SetConfigValue(configPath, value)
+function GUI:SetConfigValue(configPath, value, requiresReload, settingName)
+	return SetConfigValue(configPath, value, requiresReload, settingName)
 end
 
 -- Enhanced functionality methods

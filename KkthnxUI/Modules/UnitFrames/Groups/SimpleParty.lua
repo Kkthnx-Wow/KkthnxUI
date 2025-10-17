@@ -37,27 +37,31 @@ local function UpdateSimplePartyPower(self, _, unit)
 
 	-- Check power type (MANA or others)
 	local _, powerToken = UnitPowerType(unit)
+	local shouldShowPower = false
+
+	-- Determine if power bar should be shown
 	if C["SimpleParty"].PowerBarShow then
-		if powerToken == "MANA" and C["SimpleParty"].ManabarShow then
-			if not self.Power:IsVisible() then
-				self.Health:ClearAllPoints()
-				self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
-				self.Health:SetPoint("TOPRIGHT", self)
-				self.Power:Show()
-			end
-		elseif powerToken ~= "MANA" and not C["SimpleParty"].ManabarShow then
-			if not self.Power:IsVisible() then
-				self.Health:ClearAllPoints()
-				self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
-				self.Health:SetPoint("TOPRIGHT", self)
-				self.Power:Show()
-			end
+		-- Show all power bars when PowerBarShow is enabled
+		shouldShowPower = true
+	elseif C["SimpleParty"].ManabarShow and powerToken == "MANA" then
+		-- Show only mana bars when ManabarShow is enabled
+		shouldShowPower = true
+	end
+
+	-- Calculate health bar offset based on power bar height + spacing
+	local powerBarOffset = C["SimpleParty"].PowerBarHeight + 2
+
+	if shouldShowPower then
+		if not self.Power:IsVisible() then
+			self.Health:ClearAllPoints()
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, powerBarOffset)
+			self.Health:SetPoint("TOPRIGHT", self)
+			self.Power:Show()
 		else
-			if self.Power:IsVisible() then
-				self.Health:ClearAllPoints()
-				self.Health:SetAllPoints(self)
-				self.Power:Hide()
-			end
+			-- Update health position if power bar height changed
+			self.Health:ClearAllPoints()
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, powerBarOffset)
+			self.Health:SetPoint("TOPRIGHT", self)
 		end
 	else
 		if self.Power:IsVisible() then
@@ -90,11 +94,11 @@ function Module:CreateSimpleParty()
 	Health.colorDisconnected = true
 	Health.frequentUpdates = true
 
-	if C["SimpleParty"].HealthbarColor == 3 then
+	if C["Party"].HealthbarColor == 3 then
 		Health.colorSmooth = true
 		Health.colorClass = false
 		Health.colorReaction = false
-	elseif C["SimpleParty"].HealthbarColor == 2 then
+	elseif C["Party"].HealthbarColor == 2 then
 		Health.colorSmooth = false
 		Health.colorClass = false
 		Health.colorReaction = false
@@ -105,7 +109,7 @@ function Module:CreateSimpleParty()
 		Health.colorReaction = true
 	end
 
-	if C["SimpleParty"].Smooth then
+	if C["Party"].Smooth then
 		K:SmoothBar(Health)
 	end
 
@@ -114,23 +118,24 @@ function Module:CreateSimpleParty()
 	Power:SetFrameLevel(self:GetFrameLevel())
 	Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -1)
 	Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -1)
-	Power:SetHeight(4)
+	Power:SetHeight(C["SimpleParty"].PowerBarHeight)
 	Power:SetStatusBarTexture(SimplePartyframeTexture)
 
 	Power.colorPower = true
 	Power.frequentUpdates = false
 
-	if C["SimpleParty"].Smooth then
+	if C["Party"].Smooth then
 		K:SmoothBar(Power)
 	end
 
 	self.Power = Power
+	self.UpdateSimplePartyPower = UpdateSimplePartyPower -- Store reference for external access
 
 	table.insert(self.__elements, UpdateSimplePartyPower)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateSimplePartyPower)
 	UpdateSimplePartyPower(self, _, self.unit)
 
-	if C["SimpleParty"].ShowHealPrediction then
+	if C["Party"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetAllPoints(Health)
 		local frameLevel = frame:GetFrameLevel()
@@ -370,7 +375,7 @@ function Module:CreateSimpleParty()
 		self.RaidDebuffs = RaidDebuffs
 	end
 
-	if C["SimpleParty"].TargetHighlight then
+	if C["Party"].TargetHighlight then
 		local TargetHighlight = CreateFrame("Frame", nil, Overlay, "BackdropTemplate")
 		TargetHighlight:SetFrameLevel(6)
 		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })

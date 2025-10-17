@@ -20,15 +20,20 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
+-- Cache globals for performance
+local ipairs = ipairs
+local pairs = pairs
+local setmetatable = setmetatable
+local table_insert = table.insert
+local table_remove = table.remove
+
+local CreateFrame = CreateFrame
+
 --[[!
 	@class Container
 		The container class provides the virtual bags for cargBags
 ]]
 local Container = cargBags:NewClass("Container", nil, "Button")
-local CreateFrame = CreateFrame
-local ipairs = ipairs
-local table_insert = table.insert
-local table_remove = table.remove
 
 local mt_bags = {
 	__index = function(self, bagID)

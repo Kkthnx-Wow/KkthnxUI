@@ -7,7 +7,7 @@ local Module = K:NewModule("Mover")
 local pairs = pairs
 local table_insert = table.insert
 local table_remove = table.remove
-local table_clear = table.clear
+local table_wipe = table.wipe
 local type = type
 local unpack = unpack
 
@@ -231,8 +231,8 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
-		table_clear(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"])
-		table_clear(KkthnxUIDB.Variables[K.Realm][K.Name]["AuraWatchMover"])
+		table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"])
+		table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["AuraWatchMover"])
 		_G.ReloadUI()
 	end,
 }

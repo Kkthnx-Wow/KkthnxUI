@@ -20,9 +20,24 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local _G = _G
-local ReagentButtonInventorySlot = _G.ReagentButtonInventorySlot
-local ButtonInventorySlot = _G.ButtonInventorySlot
+-- Cache globals for performance
+local setmetatable = setmetatable
+local string_format = string.format
+local table_insert = table.insert
+local table_remove = table.remove
+local type = type
+
+local AccountBankPanel = AccountBankPanel
+local BankFrame = BankFrame
+local BankFrameItemButton_OnEnter = BankFrameItemButton_OnEnter
+local ButtonInventorySlot = ButtonInventorySlot
+local ContainerFrameItemButtonMixin = ContainerFrameItemButtonMixin
+local CreateFrame = CreateFrame
+local C_Container_SplitContainerItem = C_Container.SplitContainerItem
+local Enum = Enum
+local ReagentBankFrame = ReagentBankFrame
+local ReagentButtonInventorySlot = ReagentButtonInventorySlot
+
 local BANK_CONTAINER = BANK_CONTAINER or -1
 local BANK_SLOTS = {
 	[Enum.BagIndex.CharacterBankTab_1 or 6] = true,
@@ -37,16 +52,12 @@ local BANK_SLOTS = {
 	[Enum.BagIndex.AccountBankTab_4 or 15] = true,
 	[Enum.BagIndex.AccountBankTab_5 or 16] = true,
 }
-local SplitContainerItem = C_Container.SplitContainerItem
 
 --[[!
 	@class ItemButton
 		This class serves as the basis for all itemSlots in a container
 ]]
 local ItemButton = cargBags:NewClass("ItemButton", nil, "ItemButton")
-local CreateFrame = CreateFrame
-local table_insert = table.insert
-local table_remove = table.remove
 
 --[[!
 	Gets a template name for the bagID
@@ -72,11 +83,11 @@ local mt_gen_key = {
 	@return button <ItemButton>
 ]]
 local function BankSplitStack(button, split)
-	SplitContainerItem(BANK_CONTAINER, button:GetID(), split)
+	C_Container_SplitContainerItem(BANK_CONTAINER, button:GetID(), split)
 end
 
 local function ReagenBankSplitStack(button, split)
-	SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split)
+	C_Container_SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split)
 end
 
 function ItemButton:New(bagID, slotID)
@@ -127,7 +138,7 @@ end
 function ItemButton:Create(tpl, parent)
 	local impl = self.implementation
 	impl.numSlots = (impl.numSlots or 0) + 1
-	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
+	local name = string_format("%sSlot%d", impl.name, impl.numSlots)
 
 	local button = setmetatable(GetButton(impl.numSlots, name, tpl), self.__index)
 	button:SetParent(parent or UIParent)

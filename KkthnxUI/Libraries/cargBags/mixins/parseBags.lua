@@ -30,8 +30,11 @@ DESCRIPTION
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
-local type = type
+
+-- Cache globals for performance
+local string_match = string.match
 local tonumber = tonumber
+local type = type
 
 local bagStrings = {
 	["backpack"] = { 0 },
@@ -61,7 +64,7 @@ function cargBags:ParseBags(bags)
 	if bagStrings[bags] then
 		return bagStrings[bags]
 	end
-	local min, max = bags:match("(%d+)-(%d+)")
+	local min, max = string_match(bags, "(%d+)-(%d+)")
 	if min then
 		local t = {}
 		local nmin, nmax = tonumber(min), tonumber(max)

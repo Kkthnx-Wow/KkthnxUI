@@ -52,6 +52,7 @@ local ForEachAura = _G.AuraUtil.ForEachAura
 local debuffColor = _G.DebuffTypeColor
 local pairs = pairs
 local ipairs = ipairs
+local table_wipe = table.wipe
 
 -- Timer throttle for text updates (seconds)
 local TIMER_THROTTLE = 0.1
@@ -302,10 +303,7 @@ end
 
 -- Reset cache and full scan when isFullUpdate.
 local function FullUpdate(self, unit)
-	local K = KkthnxUI[1]
-	if K then
-		K.ClearTable(self.RaidDebuffs.debuffCache)
-	end
+	table_wipe(self.RaidDebuffs.debuffCache)
 	HideElement(self, unit)
 
 	if ForEachAura then

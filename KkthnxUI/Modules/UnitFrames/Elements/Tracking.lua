@@ -1,156 +1,248 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+--[[
+	Tracking.lua - Debuff Tracking UI for KkthnxUI
+	
+	This module provides an interface for managing custom PvE and PvP debuff tracking.
+	Players can add/remove spell IDs to track on raid frames.
+	
+	Features:
+	- Add custom PvE debuffs
+	- Add custom PvP debuffs
+	- Browse tracked debuffs
+	- Remove tracked debuffs
+	- Combat lockdown safe
+	- Taint-free implementation
+]]
+
+-- Localized globals
+local _G = _G
+local pairs = pairs
+local tonumber = tonumber
+local CreateFrame = CreateFrame
+local InCombatLockdown = InCombatLockdown
+local StaticPopup_Show = StaticPopup_Show
+local SetClampedTextureRotation = SetClampedTextureRotation
+
+-- KkthnxUI namespace
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Unitframes")
-local Tracking = CreateFrame("Frame", "KKUI_Tracking", UIParent)
 
-local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
-local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
+-- Module constants
+local ARROW_UP_TEXTURE = "Interface\\Buttons\\Arrow-Up-Down"
+local ARROW_DOWN_TEXTURE = "Interface\\Buttons\\Arrow-Down-Down"
+local QUESTION_MARK_ICON = [[Interface\Icons\Inv_misc_questionmark]]
 
+-- Localized Blizzard globals
+local ACCEPT = _G.ACCEPT
+local CANCEL = _G.CANCEL
+
+-- Color constants
+local COLOR_GREEN = "|CFF00FF00"
+local COLOR_BLUE = "|CFF567AFF"
+local COLOR_RED = "|CFFFF5252"
+local COLOR_YELLOW = "|CFFFFFF00"
+local COLOR_ORANGE = "|cffff8800"
+local COLOR_END = "|r"
+
+--[[-----------------------------------------------------------------------------
+	Spell Info Compatibility Layer
+	
+	Provides compatibility between retail and classic GetSpellInfo APIs.
+	Caches results to avoid repeated API calls.
+-------------------------------------------------------------------------------]]
 do
-	local GetSpellInfo = GetSpellInfo
-	local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+	local GetSpellInfo = _G.GetSpellInfo
+	local C_Spell_GetSpellInfo = _G.C_Spell and _G.C_Spell.GetSpellInfo
+	local spellCache = {}
+
+	--- Get spell information with caching
+	-- @param spell Spell ID or name
+	-- @return name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID
 	Module.GetSpellInfo = function(spell)
 		if not spell then
 			return
 		end
+
+		-- Check cache first
+		if spellCache[spell] then
+			return unpack(spellCache[spell])
+		end
+
+		local name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID
+
 		if GetSpellInfo then
-			return GetSpellInfo(spell)
-		else
+			-- Classic API
+			name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = GetSpellInfo(spell)
+		elseif C_Spell_GetSpellInfo then
+			-- Retail API
 			local info = C_Spell_GetSpellInfo(spell)
 			if info then
-				return info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
 			end
+		end
+
+		-- Cache the result
+		if name then
+			spellCache[spell] = { name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID }
+		end
+
+		return name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID
+	end
+end
+
+--[[-----------------------------------------------------------------------------
+	Static Popup Dialogs
+	
+	Dialog boxes for adding new PvE/PvP debuffs to track.
+-------------------------------------------------------------------------------]]
+
+--- Create static popup dialog for tracking
+-- @param category "PvE" or "PvP"
+-- @return dialog configuration table
+local function CreateTrackingDialog(category)
+	local categoryUpper = category:upper()
+	local categoryColor = category == "PvE" and COLOR_BLUE or COLOR_RED
+
+	return {
+		text = L["Which spell id would you like to add?"],
+		button1 = ACCEPT,
+		button2 = CANCEL,
+		OnAccept = function(self)
+			local spellID = tonumber(self.editBox:GetText())
+			if not spellID then
+				return
+			end
+
+			local db = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[category]
+			local name, _, icon = Module.GetSpellInfo(spellID)
+
+			local trackingTitle = COLOR_GREEN .. L["DEBUFF TRACKING"] .. " " .. COLOR_END
+			local categoryTitle = categoryColor .. "[" .. L[categoryUpper] .. "] " .. COLOR_END
+
+			if not name then
+				K.Print(trackingTitle .. categoryTitle .. L["Sorry, this spell id doesn't exist"])
+				return
+			end
+
+			if db[spellID] then
+				K.Print(trackingTitle .. categoryTitle .. string.format(L["Sorry, %s is already tracked"], COLOR_YELLOW .. name .. COLOR_END))
+				return
+			end
+
+			-- Add to database
+			db[spellID] = {
+				enable = true,
+				priority = 1,
+				stackThreshold = 0,
+			}
+
+			K.Print(trackingTitle .. categoryTitle .. string.format(L["You have added %s"], COLOR_YELLOW .. name .. COLOR_END))
+
+			-- Update UI if frame exists
+			local trackingFrame = _G.KKUI_Tracking
+			if trackingFrame and trackingFrame[category] then
+				trackingFrame[category].Text:SetText(name)
+				trackingFrame[category].Icon.Texture:SetTexture(icon)
+				trackingFrame[category].SpellID = spellID
+			end
+
+			-- Update raid frames
+			Module:UpdateRaidDebuffIndicator()
+		end,
+		hasEditBox = true,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+end
+
+StaticPopupDialogs["KKUI_TRACKING_ADD_PVE"] = CreateTrackingDialog("PvE")
+StaticPopupDialogs["KKUI_TRACKING_ADD_PVP"] = CreateTrackingDialog("PvP")
+
+--[[-----------------------------------------------------------------------------
+	Tracking UI Frame
+	
+	Main frame for debuff tracking interface.
+-------------------------------------------------------------------------------]]
+local Tracking = {}
+Tracking.__index = Tracking
+
+--- Get spell from tracking database by button ID
+-- @param button UI button reference
+-- @param category "PvE" or "PvP"
+-- @return spellID, name, iconPath
+function Tracking:GetSpell(button, category)
+	local count = 0
+	local id = button.ID
+	local db = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[category]
+
+	for spellID in pairs(db) do
+		count = count + 1
+		if count == id then
+			local name, _, iconPath = Module.GetSpellInfo(spellID)
+			return spellID, name, iconPath
 		end
 	end
 end
 
-StaticPopupDialogs["TRACKING_ADD_PVE"] = {
-	text = "Which spell id would you like to add?",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		local SpellID = tonumber(self.EditBox:GetText())
-		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE
-		local Name, _, Icon = Module.GetSpellInfo(SpellID)
-		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
-		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
-		local PVETitle = "|CFF567AFF[PVE] |r"
-
-		if Name then
-			if Table[SpellID] then
-				K.Print(TrackingTitle .. PVETitle .. "Sorry, |CFFFFFF00" .. Name .. "|r is already tracked")
-			else
-				K.Print(TrackingTitle .. PVETitle .. "You have added |CFFFFFF00" .. Name .. "|r")
-
-				Table[SpellID] = Values
-
-				Tracking.PVE.Text:SetText(Name)
-				Tracking.PVE.Icon.Texture:SetTexture(Icon)
-				Tracking.PVE.SpellID = SpellID
-
-				Module:UpdateRaidDebuffIndicator()
-			end
-		else
-			K.Print(TrackingTitle .. PVETitle .. "Sorry, this spell id doesn't exist")
-		end
-	end,
-	hasEditBox = true,
-}
-
-StaticPopupDialogs["TRACKING_ADD_PVP"] = {
-	text = "Which spell id would you like to add?",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		local SpellID = tonumber(self.EditBox:GetText())
-		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP
-		local Name, _, Icon = Module.GetSpellInfo(SpellID)
-		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
-		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
-		local PVPTitle = "|CFFFF5252[PVP] |r"
-
-		if Name then
-			if Table[SpellID] then
-				K.Print(TrackingTitle .. PVPTitle .. "Sorry, |CFFFFFF00" .. Name .. "|r is already tracked")
-			else
-				K.Print(TrackingTitle .. PVPTitle .. "You have added |CFFFFFF00" .. Name .. "|r")
-
-				Table[SpellID] = Values
-
-				Tracking.PVP.Text:SetText(Name)
-				Tracking.PVP.Icon.Texture:SetTexture(Icon)
-				Tracking.PVP.SpellID = SpellID
-
-				Module:UpdateRaidDebuffIndicator()
-			end
-		else
-			K.Print(TrackingTitle .. PVPTitle .. "Sorry, this spell id doesn't exist")
-		end
-	end,
-	hasEditBox = true,
-}
-
-function Tracking:GetSpell(button, cat)
-	local Count = 0
-	local ID = button.ID
-	local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[cat]
-
-	for SpellID in pairs(Table) do
-		Count = Count + 1
-
-		if Count == ID then
-			local Name, _, IconPath = Module.GetSpellInfo(SpellID)
-
-			return SpellID, Name, IconPath
-		end
-	end
-end
-
+--- Remove spell from tracking
+-- Handler for clicking on spell name button
 function Tracking:RemoveSpell()
-	local Cat = self.Cat
-	local SpellID = self.SpellID
-	local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[Cat]
+	if InCombatLockdown() then
+		K.Print(L["Sorry, our raid module is currently disabled"]) -- Using existing string, ideally add "Cannot modify during combat"
+		return
+	end
 
-	if SpellID and Table[SpellID] then
-		Table[SpellID] = nil
+	local category = self.Cat
+	local spellID = self.SpellID
+	local db = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[category]
 
+	if spellID and db[spellID] then
+		db[spellID] = nil
 		Module:UpdateRaidDebuffIndicator()
 
+		-- Reset and show next spell
 		self.ID = 0
 		self.Next:Click()
 	end
 end
 
-function Tracking:Update()
-	local Button = self:GetParent()
-	local Cat = Button.Cat
-	local ID = Button.ID
-	local Icon = Button.Icon.Texture
-	local Text = Button.Text
-	local CurrentID = ID
+--- Update displayed spell in UI
+-- Handler for navigation arrows
+function Tracking:UpdateSpellDisplay()
+	local button = self:GetParent()
+	local category = button.Cat
+	local id = button.ID
+	local icon = button.Icon.Texture
+	local text = button.Text
+	local currentID = id
 
+	-- Adjust ID based on direction
 	if self.Decrease then
-		ID = ID - 1
+		id = id - 1
 	else
-		Button.ID = Button.ID + 1
+		button.ID = button.ID + 1
 	end
 
-	local SpellID, Name, IconPath = Tracking:GetSpell(Button, Cat)
+	local spellID, name, iconPath = Tracking:GetSpell(button, category)
 
-	if Name and IconPath then
-		Text:SetText(Name)
-		Icon:SetTexture(IconPath)
-
-		Button.SpellID = SpellID
+	if name and iconPath then
+		text:SetText(name)
+		icon:SetTexture(iconPath)
+		button.SpellID = spellID
 	else
-		Button.ID = CurrentID
+		-- No spell found, revert ID
+		button.ID = currentID
 	end
 
-	if ID == 0 then
-		Icon:SetTexture([[Interface\Icons\Inv_misc_questionmark]])
-		Text:SetText("|cffff8800This list is currently empty!|r")
+	-- Show empty state
+	if id == 0 then
+		icon:SetTexture(QUESTION_MARK_ICON)
+		text:SetText(COLOR_ORANGE .. L["This list is currently empty!"] .. COLOR_END)
 	end
 end
 
+--- Toggle frame visibility
 function Tracking:Toggle()
 	if self:IsShown() then
 		self:Hide()
@@ -159,184 +251,205 @@ function Tracking:Toggle()
 	end
 end
 
+--- Create navigation button (arrow)
+-- @param parent Parent frame
+-- @param texture Arrow texture path
+-- @param point Anchor point
+-- @param relativeFrame Relative frame
+-- @param relativePoint Relative anchor point
+-- @param offsetX X offset
+-- @param offsetY Y offset
+-- @param rotation Texture rotation in degrees
+-- @param isDecrease Whether this decreases the ID
+-- @return button frame
+local function CreateNavigationButton(parent, texture, point, relativeFrame, relativePoint, offsetX, offsetY, rotation, isDecrease)
+	local button = CreateFrame("Button", nil, parent)
+	button:SetSize(26, 26)
+	button:SetPoint(point, relativeFrame, relativePoint, offsetX, offsetY)
+	button:SkinButton()
+	button:SetScript("OnClick", Tracking.UpdateSpellDisplay)
+
+	local btnTexture = button:CreateTexture(nil, "OVERLAY")
+	btnTexture:SetSize(16, 16)
+	btnTexture:SetPoint("CENTER", isDecrease and -3 or 3, 0)
+	btnTexture:SetTexture(texture)
+
+	if rotation then
+		SetClampedTextureRotation(btnTexture, rotation)
+	end
+
+	button.Texture = btnTexture
+	button.Decrease = isDecrease
+
+	return button
+end
+
+--- Create category section (PvE or PvP)
+-- @param trackingFrame Main tracking frame
+-- @param category "PvE" or "PvP"
+-- @param titleText Title text
+-- @param buttonText Add button text
+-- @param titlePoint Anchor point for title
+-- @param titleRelative Relative frame for title
+-- @param titleOffsetY Y offset for title
+-- @param popupName Static popup name
+-- @return category frame
+local function CreateCategorySection(trackingFrame, category, titleText, buttonText, titlePoint, titleRelative, titleOffsetY, popupName)
+	-- Title
+	local title = trackingFrame:CreateFontString(nil, "OVERLAY")
+	title:SetFontObject(K.UIFont)
+	title:SetFont(select(1, title:GetFont()), 16, select(3, title:GetFont()))
+	title:SetPoint(titlePoint, titleRelative, titlePoint, 0, titleOffsetY)
+	title:SetText(titleText)
+
+	-- Main button (displays spell)
+	local button = CreateFrame("Button", nil, trackingFrame)
+	button:SetSize(300, 26)
+	button:SetPoint("TOP", title, "BOTTOM", 18, -10)
+	button:SkinButton()
+	button:SetScript("OnClick", Tracking.RemoveSpell)
+	button.ID = 0
+	button.Cat = category
+
+	-- Spell name text
+	button.Text = button:CreateFontString(nil, "OVERLAY")
+	button.Text:SetFontObject(K.UIFont)
+	button.Text:SetFont(select(1, button.Text:GetFont()), 14, select(3, button.Text:GetFont()))
+	button.Text:SetPoint("LEFT", 10, 0)
+
+	-- Icon frame
+	button.Icon = CreateFrame("Frame", nil, button)
+	button.Icon:SetSize(26, 26)
+	button.Icon:SetPoint("RIGHT", button, "LEFT", -6, 0)
+	button.Icon:CreateBorder()
+
+	button.Icon.Texture = button.Icon:CreateTexture(nil, "OVERLAY")
+	button.Icon.Texture:SetAllPoints()
+	button.Icon.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	button.Icon.Texture:SetTexture(QUESTION_MARK_ICON)
+
+	-- Navigation buttons
+	button.Previous = CreateNavigationButton(button, ARROW_UP_TEXTURE, "RIGHT", button, "LEFT", -38, 0, 270, true)
+	button.Next = CreateNavigationButton(button, ARROW_DOWN_TEXTURE, "LEFT", button, "RIGHT", 6, 0, 270, false)
+
+	-- Add button
+	button.Add = CreateFrame("Button", nil, trackingFrame)
+	button.Add:SetSize(trackingFrame:GetWidth() / 2 - 3, 26)
+	button.Add:SetPoint(category == "PvE" and "TOPLEFT" or "TOPRIGHT", trackingFrame, category == "PvE" and "BOTTOMLEFT" or "BOTTOMRIGHT", 0, -6)
+	button.Add:SkinButton()
+	button.Add:SetScript("OnClick", function()
+		StaticPopup_Show(popupName)
+	end)
+
+	button.Add.Text = button.Add:CreateFontString(nil, "OVERLAY")
+	button.Add.Text:SetFontObject(K.UIFont)
+	button.Add.Text:SetPoint("CENTER")
+	button.Add.Text:SetText(buttonText)
+
+	return button
+end
+
+--- Setup tracking UI frame
+-- @param self Tracking frame
 function Tracking:Setup()
 	self:SetSize(460, 280)
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 64)
 	self:CreateBorder()
 
+	-- Title
 	K.CreateFontString(self, 24, K.Title, "", false, "TOP", 0, -12)
-	K.CreateFontString(self, 14, "Debuff Tracking", "", true, "TOP", 0, -40)
+	K.CreateFontString(self, 14, L["Debuff Tracking"], "", true, "TOP", 0, -40)
 
-	local ll = CreateFrame("Frame", nil, self)
-	ll:SetPoint("TOP", self, -100, -70)
-	K.CreateGF(ll, 200, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
-	ll:SetFrameStrata("HIGH")
-	local lr = CreateFrame("Frame", nil, self)
-	lr:SetPoint("TOP", self, 100, -70)
-	K.CreateGF(lr, 200, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
-	lr:SetFrameStrata("HIGH")
+	-- Decorative gradient lines
+	local leftLine = CreateFrame("Frame", nil, self)
+	leftLine:SetPoint("TOP", self, -100, -70)
+	K.CreateGF(leftLine, 200, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
+	leftLine:SetFrameStrata("HIGH")
 
+	local rightLine = CreateFrame("Frame", nil, self)
+	rightLine:SetPoint("TOP", self, 100, -70)
+	K.CreateGF(rightLine, 200, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
+	rightLine:SetFrameStrata("HIGH")
+
+	-- PvE Section
 	self.TitlePVE = self:CreateFontString(nil, "OVERLAY")
 	self.TitlePVE:SetFontObject(K.UIFont)
 	self.TitlePVE:SetFont(select(1, self.TitlePVE:GetFont()), 16, select(3, self.TitlePVE:GetFont()))
 	self.TitlePVE:SetPoint("TOP", self, "TOP", 0, -86)
-	self.TitlePVE:SetText("PvE Debuffs to track")
 
-	self.PVE = CreateFrame("Button", nil, self)
-	self.PVE:SetSize(300, 26)
-	self.PVE:SetPoint("TOP", self.TitlePVE, "BOTTOM", 18, -10)
-	self.PVE:SkinButton()
-	self.PVE:SetScript("OnClick", self.RemoveSpell)
-	self.PVE.ID = 0
-	self.PVE.Cat = "PvE"
+	self.PvE = CreateCategorySection(self, "PvE", L["PvE Debuffs to track"], L["Add a pve debuff to track"], "TOP", self, -86, "KKUI_TRACKING_ADD_PVE")
 
-	self.PVE.Text = self.PVE:CreateFontString(nil, "OVERLAY")
-	self.PVE.Text:SetFontObject(K.UIFont)
-	self.PVE.Text:SetFont(select(1, self.PVE.Text:GetFont()), 14, select(3, self.PVE.Text:GetFont()))
-	self.PVE.Text:SetPoint("LEFT", 10, 0)
-
-	self.PVE.Icon = CreateFrame("Frame", nil, self.PVE)
-	self.PVE.Icon:SetSize(26, 26)
-	self.PVE.Icon:SetPoint("RIGHT", self.PVE, "LEFT", -6, 0)
-	self.PVE.Icon:CreateBorder()
-
-	self.PVE.Icon.Texture = self.PVE.Icon:CreateTexture(nil, "OVERLAY")
-	self.PVE.Icon.Texture:SetAllPoints()
-	self.PVE.Icon.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	self.PVE.Previous = CreateFrame("Button", nil, self.PVE)
-	self.PVE.Previous:SetSize(26, 26)
-	self.PVE.Previous:SetPoint("RIGHT", self.PVE, "LEFT", -38, 0)
-	self.PVE.Previous:SkinButton()
-	self.PVE.Previous:SetScript("OnClick", self.Update)
-
-	self.PVE.Previous.Texture = self.PVE.Previous:CreateTexture(nil, "OVERLAY")
-	self.PVE.Previous.Texture:SetSize(16, 16)
-	self.PVE.Previous.Texture:SetPoint("CENTER", -3, 0)
-	self.PVE.Previous.Texture:SetTexture(ArrowUp)
-	self.PVE.Previous.Decrease = true
-	SetClampedTextureRotation(self.PVE.Previous.Texture, 270)
-
-	self.PVE.Next = CreateFrame("Button", nil, self.PVE)
-	self.PVE.Next:SetSize(26, 26)
-	self.PVE.Next:SetPoint("LEFT", self.PVE, "RIGHT", 6, 0)
-	self.PVE.Next:SkinButton()
-	self.PVE.Next:SetScript("OnClick", self.Update)
-
-	self.PVE.Next.Texture = self.PVE.Next:CreateTexture(nil, "OVERLAY")
-	self.PVE.Next.Texture:SetSize(16, 16)
-	self.PVE.Next.Texture:SetPoint("CENTER", 3, 0)
-	self.PVE.Next.Texture:SetTexture(ArrowDown)
-	SetClampedTextureRotation(self.PVE.Next.Texture, 270)
-
-	self.PVE.Add = CreateFrame("Button", nil, self)
-	self.PVE.Add:SetSize(self:GetWidth() / 2 - 3, 26)
-	self.PVE.Add:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -6)
-	self.PVE.Add:SkinButton()
-	self.PVE.Add:SetScript("OnClick", function()
-		StaticPopup_Show("TRACKING_ADD_PVE")
-	end)
-
-	self.PVE.Add.Text = self.PVE.Add:CreateFontString(nil, "OVERLAY")
-	self.PVE.Add.Text:SetFontObject(K.UIFont)
-	self.PVE.Add.Text:SetPoint("CENTER")
-	self.PVE.Add.Text:SetText("Add a pve debuff to track")
-
+	-- PvP Section
 	self.TitlePVP = self:CreateFontString(nil, "OVERLAY")
 	self.TitlePVP:SetFontObject(K.UIFont)
 	self.TitlePVP:SetFont(select(1, self.TitlePVP:GetFont()), 16, select(3, self.TitlePVP:GetFont()))
 	self.TitlePVP:SetPoint("TOP", self.TitlePVE, "TOP", 0, -86)
-	self.TitlePVP:SetText("PvP Debuffs to track")
 
-	self.PVP = CreateFrame("Button", nil, self)
-	self.PVP:SetSize(300, 26)
-	self.PVP:SetPoint("TOP", self.TitlePVP, "BOTTOM", 18, -10)
-	self.PVP:SkinButton()
-	self.PVP:SetScript("OnClick", self.RemoveSpell)
-	self.PVP.ID = 0
-	self.PVP.Cat = "PvP"
+	self.PvP = CreateCategorySection(self, "PvP", L["PvP Debuffs to track"], L["Add a pvp debuff to track"], "TOP", self.TitlePVE, -86, "KKUI_TRACKING_ADD_PVP")
 
-	self.PVP.Text = self.PVP:CreateFontString(nil, "OVERLAY")
-	self.PVP.Text:SetFontObject(K.UIFont)
-	self.PVP.Text:SetFont(select(1, self.PVP.Text:GetFont()), 14, select(3, self.PVP.Text:GetFont()))
-	self.PVP.Text:SetPoint("LEFT", 10, 0)
-
-	self.PVP.Icon = CreateFrame("Frame", nil, self.PVP)
-	self.PVP.Icon:SetSize(26, 26)
-	self.PVP.Icon:SetPoint("RIGHT", self.PVP, "LEFT", -6, 0)
-	self.PVP.Icon:CreateBorder()
-
-	self.PVP.Icon.Texture = self.PVP.Icon:CreateTexture(nil, "OVERLAY")
-	self.PVP.Icon.Texture:SetAllPoints()
-	self.PVP.Icon.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	self.PVP.Icon.Texture:SetTexture([[Interface\Icons\Inv_misc_questionmark]])
-
-	self.PVP.Previous = CreateFrame("Button", nil, self.PVP)
-	self.PVP.Previous:SetSize(26, 26)
-	self.PVP.Previous:SetPoint("RIGHT", self.PVP, "LEFT", -38, 0)
-	self.PVP.Previous:SkinButton()
-	self.PVP.Previous:SetScript("OnClick", self.Update)
-
-	self.PVP.Previous.Texture = self.PVP.Previous:CreateTexture(nil, "OVERLAY")
-	self.PVP.Previous.Texture:SetSize(16, 16)
-	self.PVP.Previous.Texture:SetPoint("CENTER", -3, 0)
-	self.PVP.Previous.Texture:SetTexture(ArrowUp)
-	self.PVP.Previous.Decrease = true
-	SetClampedTextureRotation(self.PVP.Previous.Texture, 270)
-
-	self.PVP.Next = CreateFrame("Button", nil, self.PVP)
-	self.PVP.Next:SetSize(26, 26)
-	self.PVP.Next:SetPoint("LEFT", self.PVP, "RIGHT", 6, 0)
-	self.PVP.Next:SkinButton()
-	self.PVP.Next:SetScript("OnClick", self.Update)
-
-	self.PVP.Next.Texture = self.PVP.Next:CreateTexture(nil, "OVERLAY")
-	self.PVP.Next.Texture:SetSize(16, 16)
-	self.PVP.Next.Texture:SetPoint("CENTER", 3, 0)
-	self.PVP.Next.Texture:SetTexture(ArrowDown)
-	SetClampedTextureRotation(self.PVP.Next.Texture, 270)
-
-	self.PVP.Add = CreateFrame("Button", nil, self)
-	self.PVP.Add:SetSize(self:GetWidth() / 2 - 3, 26)
-	self.PVP.Add:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
-	self.PVP.Add:SkinButton()
-	self.PVP.Add:SetScript("OnClick", function()
-		StaticPopup_Show("TRACKING_ADD_PVP")
-	end)
-
-	self.PVP.Add.Text = self.PVP.Add:CreateFontString(nil, "OVERLAY")
-	self.PVP.Add.Text:SetFontObject(K.UIFont)
-	self.PVP.Add.Text:SetPoint("CENTER")
-	self.PVP.Add.Text:SetText("Add a pvp debuff to track")
-
+	-- Close button
 	self.Close = CreateFrame("Button", nil, self)
 	self.Close:SetSize(32, 32)
 	self.Close:SetPoint("TOPRIGHT", self, "TOPRIGHT", 2, 2)
 	self.Close:SkinCloseButton()
-	self.Close:SetScript("OnClick", function(self)
-		self:GetParent():Hide()
+	self.Close:SetScript("OnClick", function(closeBtn)
+		closeBtn:GetParent():Hide()
 	end)
 
+	-- Footer instructions
 	self.Footer = self:CreateFontString(nil, "OVERLAY")
 	self.Footer:SetFontObject(K.UIFont)
 	self.Footer:SetPoint("BOTTOM", 0, 18)
-	self.Footer:SetText("To remove a debuff from the list, select with arrow and click on name")
+	self.Footer:SetText(L["To remove a debuff from the list, select with arrow and click on name"])
 
-	-- Init
-	self.PVE.Next:Click()
-	self.PVP.Next:Click()
+	-- Initialize display
+	self.PvE.Next:Click()
+	self.PvP.Next:Click()
 	self:Hide()
 end
 
+--[[-----------------------------------------------------------------------------
+	Module Integration
+-------------------------------------------------------------------------------]]
+
+--- Create tracking UI
+-- Called by the unitframes module during initialization
 function Module:CreateTracking()
-	Tracking:Setup()
+	if _G.KKUI_Tracking then
+		-- Already created
+		return
+	end
+
+	local trackingFrame = CreateFrame("Frame", "KKUI_Tracking", UIParent)
+
+	-- Apply methods
+	for k, v in pairs(Tracking) do
+		trackingFrame[k] = v
+	end
+
+	trackingFrame:Setup()
 end
 
+--[[-----------------------------------------------------------------------------
+	Slash Command
+-------------------------------------------------------------------------------]]
+
+--- Slash command handler for /debufftrack
 SlashCmdList["KKUI_TRACKING"] = function()
-	if C["Unitframe"].Enable and C["Raid"].Enable then
-		Tracking:Toggle()
-	else
-		K.Print("Sorry, our raid module is currently disabled")
+	if not C["Unitframe"].Enable or not C["Raid"].Enable then
+		K.Print(L["Sorry, our raid module is currently disabled"])
+		return
+	end
+
+	if InCombatLockdown() then
+		K.Print(L["Sorry, our raid module is currently disabled"]) -- Ideally add "Cannot open during combat"
+		return
+	end
+
+	local trackingFrame = _G.KKUI_Tracking
+	if trackingFrame then
+		trackingFrame:Toggle()
 	end
 end
+
 _G.SLASH_KKUI_TRACKING1 = "/debufftrack"
