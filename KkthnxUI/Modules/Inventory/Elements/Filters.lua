@@ -314,7 +314,6 @@ function Module:GetFilters()
 	filters.bankLegacy = CreateLocationFilter(isItemInBank, isItemLegacy)
 
 	-- Reagent filters
-	end
 	filters.onlyBagReagent = function(item)
 		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (hasReagentBagEquipped() and isItemInBag(item) and isTradeGoods(item))
 	end
