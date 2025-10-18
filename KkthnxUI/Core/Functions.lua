@@ -768,6 +768,205 @@ do
 	end
 end
 
+-- Perks Theme Overlay Helpers
+do
+	local OverlayManager = { overlays = {} }
+	local managerFrame = CreateFrame("Frame")
+	local overlayCount = 0 -- active overlays; enables lazy event registration
+
+	local function getThemePrefix()
+		local prefix
+		if C_PerksActivities and C_PerksActivities.GetPerksUIThemePrefix then
+			prefix = C_PerksActivities.GetPerksUIThemePrefix()
+		end
+		if not prefix or prefix == "" then
+			if C_PerksActivities and C_PerksActivities.GetPerksActivitiesInfo then
+				local info = C_PerksActivities.GetPerksActivitiesInfo()
+				prefix = info and info.uiTextureKit or prefix
+			end
+		end
+		-- Do not hardcode a seasonal fallback; only use Blizzard's active theme.
+		return prefix
+	end
+
+	local function atlasExists(name)
+		return name and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(name)
+	end
+
+	local function pickAtlas(variant, suffix)
+		local prefix = getThemePrefix()
+		local trySuffixes = {}
+		if suffix and suffix ~= "" then
+			table.insert(trySuffixes, suffix)
+		end
+		if variant == "tp" then
+			-- Common Trading Post suffixes
+			table.insert(trySuffixes, "topbig")
+			table.insert(trySuffixes, "topsmall")
+			table.insert(trySuffixes, "top")
+		else
+			-- Traveler's Log common pieces
+			table.insert(trySuffixes, "top")
+			table.insert(trySuffixes, "box")
+		end
+		for _, s in ipairs(trySuffixes) do
+			local atlas = ("perks-theme-%s-%s-%s"):format(prefix, variant, s)
+			if atlasExists(atlas) then
+				return atlas
+			end
+		end
+		-- cross-variant fallback using the same active prefix only
+		if variant == "tp" then
+			local altList = { "top", "box" }
+			for _, s in ipairs(altList) do
+				local alt = ("perks-theme-%s-tl-%s"):format(prefix, s)
+				if atlasExists(alt) then
+					return alt
+				end
+			end
+		else
+			local altList = { "topbig", "topsmall", "top" }
+			for _, s in ipairs(altList) do
+				local alt = ("perks-theme-%s-tp-%s"):format(prefix, s)
+				if atlasExists(alt) then
+					return alt
+				end
+			end
+		end
+		return nil
+	end
+
+	local function updateOverlay(entry)
+		if not entry or not entry.tex or not entry.holder or not entry.parent then
+			return
+		end
+		local opts = entry.opts or {}
+		local variant = opts.variant or "tp" -- "tp" (trading post) or "tl" (traveler's log)
+		local suffix = opts.suffix or (variant == "tp" and "topbig" or "top")
+		local atlas = pickAtlas(variant, suffix)
+		if atlas then
+			entry.tex:SetAtlas(atlas, true)
+			entry.holder:SetSize(entry.tex:GetWidth(), entry.tex:GetHeight())
+			entry.tex:Show()
+			entry.holder:Show()
+		else
+			entry.tex:Hide()
+			entry.holder:Hide()
+		end
+	end
+
+	local function register(entry)
+		OverlayManager.overlays[entry] = true
+		overlayCount = overlayCount + 1
+		if overlayCount == 1 then
+			managerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+			managerFrame:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
+			managerFrame:RegisterEvent("PERKS_ACTIVITIES_UPDATED")
+			managerFrame:RegisterEvent("CVAR_UPDATE")
+			managerFrame:SetScript("OnEvent", function()
+				K.RefreshPerksThemeOverlays()
+			end)
+		end
+	end
+
+	local function unregister(entry)
+		if OverlayManager.overlays[entry] then
+			OverlayManager.overlays[entry] = nil
+			overlayCount = overlayCount - 1
+			if overlayCount <= 0 then
+				overlayCount = 0
+				managerFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+				managerFrame:UnregisterEvent("CALENDAR_UPDATE_EVENT_LIST")
+				managerFrame:UnregisterEvent("PERKS_ACTIVITIES_UPDATED")
+				managerFrame:UnregisterEvent("CVAR_UPDATE")
+				managerFrame:SetScript("OnEvent", nil)
+			end
+		end
+	end
+
+	function K.RefreshPerksThemeOverlays()
+		for entry in pairs(OverlayManager.overlays) do
+			updateOverlay(entry)
+		end
+	end
+
+	-- events are registered lazily in register()/unregister()
+
+	-- Public API: attach a themed overlay to any frame
+	--- Creates a themed Trading Post/Traveler's Log overlay anchored to a frame.
+	-- @param parent Frame: parent holder frame (required)
+	-- @param opts table|nil: variant("tp"|"tl"), suffix, point, relPoint, x, y, strata, level, anchorTo
+	-- @return table overlay handle with :Refresh() and :SetShown(bool)
+	function K.CreatePerksThemeOverlay(parent, opts)
+		if not parent then
+			return
+		end
+		opts = opts or {}
+		local holder = CreateFrame("Frame", nil, parent)
+		holder:SetFrameStrata(opts.strata or "TOOLTIP")
+		holder:SetFrameLevel(opts.level or (parent:GetFrameLevel() + 10))
+		holder:Hide()
+
+		local tex = holder:CreateTexture(nil, "ARTWORK", nil, 7)
+		tex:SetDrawLayer("ARTWORK", 7)
+		tex:Hide()
+		tex:ClearAllPoints()
+		-- default anchor above the frame; allow overrides
+		local point = opts.point or "TOP"
+		local relPoint = opts.relPoint or "TOP"
+		local x = opts.x or 0
+		local y = opts.y or 0
+		holder:ClearAllPoints()
+		local anchorTarget = opts.anchorTo or parent
+		holder:SetPoint(point, anchorTarget, relPoint, x, y)
+		tex:SetPoint("TOP", holder, "TOP", 0, 0)
+
+		local entry = { parent = parent, holder = holder, tex = tex, opts = opts }
+		register(entry)
+		updateOverlay(entry)
+
+		-- convenience methods
+		function entry:Refresh()
+			updateOverlay(self)
+		end
+		function entry:SetShown(shown)
+			if shown then
+				self.holder:Show()
+				self.tex:Show()
+			else
+				self.holder:Hide()
+				self.tex:Hide()
+			end
+		end
+
+		return entry
+	end
+
+	--- Destroys a previously created overlay and unregisters updates.
+	-- @param entry table overlay handle returned by K.CreatePerksThemeOverlay
+	function K.DestroyPerksThemeOverlay(entry)
+		if not entry then
+			return
+		end
+		unregister(entry)
+		if entry.tex then
+			entry.tex:Hide()
+			entry.tex:SetTexture(nil)
+		end
+		if entry.holder then
+			entry.holder:Hide()
+			entry.holder:SetParent(nil)
+		end
+		entry.parent = nil
+		entry.opts = nil
+	end
+
+	-- Sugar alias
+	function K.AttachPerksTheme(frame, opts)
+		return K.CreatePerksThemeOverlay(frame, opts)
+	end
+end
+
 -- Overlay Glow Functions
 do
 	function K.CreateGlowFrame(self, size)

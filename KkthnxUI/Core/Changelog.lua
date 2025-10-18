@@ -202,6 +202,11 @@ local function CreateChangelogFrame()
 	title:SetPoint("TOP", frame, "TOP", 0, -10)
 	title:SetText(K.InfoColor .. "KkthnxUI Changelog|r")
 
+	-- Perks Theme overlay at the top of the changelog
+	if K.AttachPerksTheme then
+		frame.PerksOverlay = K.AttachPerksTheme(frame, { variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 62, strata = "TOOLTIP", level = 999 })
+	end
+
 	-- Logo
 	local logo = frame:CreateTexture(nil, "OVERLAY")
 	logo:SetSize(512, 256)

@@ -41,7 +41,6 @@ local IsControlKeyDown = IsControlKeyDown
 local IsCosmeticItem = C_Item.IsCosmeticItem
 local IsReagentBankUnlocked = IsReagentBankUnlocked
 local IsShiftKeyDown = IsShiftKeyDown
-local OpenAllBags = OpenAllBags
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
 local SetCVar = SetCVar
@@ -1179,6 +1178,7 @@ function Module:OnEnable()
 		BankFrame.BankPanel:Show()
 
 		if not initBagType then
+			Module:UpdateAllBags() -- Initialize bagType
 			Module:UpdateBagSize()
 			initBagType = true
 		end
@@ -1331,19 +1331,56 @@ function Module:OnEnable()
 		end
 	end
 
+	-- Upgrade arrow update (ElvUI-style integration per Pawn guidance)
+	local ITEM_UPGRADE_CHECK_TIME = 0.5
+
+	local function UpgradeCheck_OnUpdate(self, elapsed)
+		self._timeSinceUpgradeCheck = (self._timeSinceUpgradeCheck or 0) + elapsed
+		if self._timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME then
+			self._timeSinceUpgradeCheck = 0
+			if self._callUpdateUpgradeIcon then
+				self:_callUpdateUpgradeIcon()
+			end
+		end
+	end
+
 	local function UpdatePawnArrow(self, item)
-		if not hasPawn then
+		if not self or not self.UpgradeIcon then
 			return
 		end
 
-		if not PawnIsContainerItemAnUpgrade then
+		-- Respect user setting; only show for equippable items
+		if not C["Inventory"].UpgradeIcon or not item or not item.link or not IsEquippableItem(item.link) then
+			self.UpgradeIcon:SetShown(false)
+			self:SetScript("OnUpdate", nil)
 			return
 		end
 
-		if self.UpgradeIcon then
-			self.UpgradeIcon:ClearAllPoints()
-			self.UpgradeIcon:SetPoint("TOPRIGHT", 3, 3)
-			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagId, item.slotId))
+		local itemIsUpgrade
+		local containerID, slotID = item.bagId, item.slotId
+
+		-- Prefer Pawn API; fallback to Blizzard API if needed
+		if _G.PawnIsContainerItemAnUpgrade then
+			itemIsUpgrade = _G.PawnIsContainerItemAnUpgrade(containerID, slotID)
+		end
+		if itemIsUpgrade == nil and _G.IsContainerItemAnUpgrade then
+			itemIsUpgrade = _G.IsContainerItemAnUpgrade(containerID, slotID)
+		end
+
+		self.UpgradeIcon:ClearAllPoints()
+		self.UpgradeIcon:SetPoint("TOPRIGHT", 3, 3)
+
+		if itemIsUpgrade == nil then
+			-- Data not ready yet; hide for now and retry on a throttled OnUpdate
+			self.UpgradeIcon:SetShown(false)
+			self._callUpdateUpgradeIcon = function(btn)
+				-- Re-evaluate using the latest item for this button
+				UpdatePawnArrow(btn, item)
+			end
+			self:SetScript("OnUpdate", UpgradeCheck_OnUpdate)
+		else
+			self.UpgradeIcon:SetShown(itemIsUpgrade)
+			self:SetScript("OnUpdate", nil)
 		end
 	end
 

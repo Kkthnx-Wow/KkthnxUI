@@ -2549,6 +2549,8 @@ local function CreateMainFrame()
 	frame:SetFrameLevel(100)
 	frame:Hide()
 
+	GUI.Frame = frame
+
 	-- Modern background with subtle shadow effect
 	local mainBg = frame:CreateTexture(nil, "BACKGROUND")
 	mainBg:SetAllPoints()
@@ -2579,6 +2581,11 @@ local function CreateMainFrame()
 	title:SetText(format("%s %s - %s", K.Title, K.Version, "Configuration"))
 	title:SetPoint("CENTER", 0, -1)
 
+	-- Perks Theme overlay via reusable helper
+	if K.AttachPerksTheme then
+		GUI.PerksOverlay = K.AttachPerksTheme(frame, { variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 68, strata = "TOOLTIP", level = 999 })
+	end
+
 	-- Close Button
 	local closeButton = CreateFrame("Button", nil, titleBar)
 	closeButton:SetSize(32, 32)
@@ -2598,6 +2605,20 @@ local function CreateMainFrame()
 	closeButton:SetScript("OnClick", function()
 		GUI:Hide()
 	end)
+
+	-- -- Manage theme overlay visibility
+	-- frame:HookScript("OnShow", function()
+	-- 	if GUI.PerksOverlay and GUI.PerksOverlay.SetShown then
+	-- 		GUI.PerksOverlay:SetShown(true)
+	-- 	end
+	-- end)
+
+	-- -- Hide overlay when GUI hides
+	-- frame:HookScript("OnHide", function()
+	-- 	if GUI.PerksOverlay and GUI.PerksOverlay.SetShown then
+	-- 		GUI.PerksOverlay:SetShown(false)
+	-- 	end
+	-- end)
 
 	closeButton:SetScript("OnEnter", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 1)
