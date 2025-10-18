@@ -25,18 +25,11 @@ local setmetatable = setmetatable
 local string_format = string.format
 local table_insert = table.insert
 local table_remove = table.remove
-local type = type
 
-local AccountBankPanel = AccountBankPanel
 local BankFrame = BankFrame
-local BankFrameItemButton_OnEnter = BankFrameItemButton_OnEnter
-local ButtonInventorySlot = ButtonInventorySlot
 local ContainerFrameItemButtonMixin = ContainerFrameItemButtonMixin
 local CreateFrame = CreateFrame
-local C_Container_SplitContainerItem = C_Container.SplitContainerItem
 local Enum = Enum
-local ReagentBankFrame = ReagentBankFrame
-local ReagentButtonInventorySlot = ReagentButtonInventorySlot
 
 local BANK_CONTAINER = BANK_CONTAINER or -1
 local BANK_SLOTS = {
@@ -75,21 +68,12 @@ local mt_gen_key = {
 		return self[k]
 	end,
 }
-
 --[[!
 	Fetches a new instance of the ItemButton, creating one if necessary
 	@param bagID <number>
 	@param slotID <number>
 	@return button <ItemButton>
 ]]
-local function BankSplitStack(button, split)
-	C_Container_SplitContainerItem(BANK_CONTAINER, button:GetID(), split)
-end
-
-local function ReagenBankSplitStack(button, split)
-	C_Container_SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split)
-end
-
 function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
 
@@ -100,22 +84,8 @@ function ItemButton:New(bagID, slotID)
 	button.slotId = slotID
 	button:SetID(slotID)
 	button:Show()
-	if not button._hooked then
-		button:HookScript("OnEnter", button.ButtonOnEnter)
-		button:HookScript("OnLeave", button.ButtonOnLeave)
-		button._hooked = true
-	end
-	if bagID == REAGENTBANK_CONTAINER then
-		button.GetInventorySlot = ReagentButtonInventorySlot
-		button.UpdateTooltip = BankFrameItemButton_OnEnter
-		button.SplitStack = ReagenBankSplitStack
-	elseif bagID == BANK_CONTAINER then
-		button.GetInventorySlot = ButtonInventorySlot
-		button.UpdateTooltip = BankFrameItemButton_OnEnter
-		button.SplitStack = BankSplitStack
-	else
-		button.UpdateTooltip = ContainerFrameItemButtonMixin.OnUpdate
-	end
+	button:HookScript("OnEnter", button.ButtonOnEnter)
+	button:HookScript("OnLeave", button.ButtonOnLeave)
 
 	return button
 end

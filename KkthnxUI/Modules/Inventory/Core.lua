@@ -15,7 +15,6 @@ local type = type
 local unpack = unpack
 
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
-local C_Bank_CanPurchaseBankTab = C_Bank.CanPurchaseBankTab
 local C_Bank_CanViewBank = C_Bank.CanViewBank
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_Container_SetInsertItemsLeftToRight = C_Container.SetInsertItemsLeftToRight
@@ -28,7 +27,6 @@ local C_Spell_GetSpellName = C_Spell.GetSpellName
 local ClearCursor = ClearCursor
 local CreateFrame = CreateFrame
 local DeleteCursorItem = DeleteCursorItem
-local DepositReagentBank = DepositReagentBank
 local GameTooltip = GameTooltip
 local GetCVarBool = GetCVarBool
 local GetContainerItemID = C_Container.GetContainerItemID
@@ -39,8 +37,6 @@ local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsCosmeticItem = C_Item.IsCosmeticItem
-local IsReagentBankUnlocked = IsReagentBankUnlocked
-local IsShiftKeyDown = IsShiftKeyDown
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
 local SetCVar = SetCVar
@@ -49,7 +45,6 @@ local SetItemCraftingQualityOverlay = SetItemCraftingQualityOverlay
 local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
-local SortReagentBankBags = C_Container.SortReagentBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
 local StaticPopup_Hide = StaticPopup_Hide
 local StaticPopup_Show = StaticPopup_Show
@@ -1178,7 +1173,6 @@ function Module:OnEnable()
 		BankFrame.BankPanel:Show()
 
 		if not initBagType then
-			Module:UpdateAllBags() -- Initialize bagType
 			Module:UpdateBagSize()
 			initBagType = true
 		end

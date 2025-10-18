@@ -18,14 +18,10 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local _, ns = ...
-local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
 -- Cache globals for performance
 local error = error
-local getmetatable = getmetatable
-local ipairs = ipairs
-local next = next
 local pairs = pairs
 local setmetatable = setmetatable
 local string_format = string.format
@@ -33,8 +29,6 @@ local string_match = string.match
 local table_insert = table.insert
 local table_wipe = table.wipe
 local tonumber = tonumber
-local type = type
-local unpack = unpack
 
 local C_Bank_CloseBankFrame = C_Bank.CloseBankFrame
 local C_Container_GetContainerItemCooldown = C_Container.GetContainerItemCooldown
@@ -441,7 +435,7 @@ local closed
 function Implementation:UpdateBag(bagID)
 	local numSlots
 	if closed then
-		numSlots, bagID = 0, closed
+		numSlots, closed = 0
 	else
 		numSlots = C_Container_GetContainerNumSlots(bagID)
 	end
