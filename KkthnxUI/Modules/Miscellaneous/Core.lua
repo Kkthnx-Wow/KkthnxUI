@@ -451,10 +451,14 @@ function Module:CreateTradeTargetInfo()
 	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -8)
 
 	local function updateColor()
+		-- Color recipient name with NPC color
 		local r, g, b = K.UnitColor("NPC")
-		TradeFrameRecipientNameText:SetTextColor(r, g, b)
+		TradeFrameRecipientNameText:SetTextColor(r or 1, g or 1, b or 1)
+
+		-- Simple, reliable GUID fetch
 		local guid = UnitGUID("NPC")
 		if not guid then
+			infoText:SetText("|cffff0000" .. L["Stranger"])
 			return
 		end
 		local text = "|cffff0000" .. L["Stranger"]
@@ -638,8 +642,17 @@ function Module:CreateCustomWaypoint()
 		return
 	end
 
+	-- Disable our waypoint system entirely if TomTom is loaded
+	if C_AddOns.IsAddOnLoaded("TomTom") then
+		return
+	end
+
 	local debugMode = false
-	local pointString = K.InfoColor .. "|Hworldmap:%d:%d:%d|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
+	-- Use 1/10000 precision in hyperlink coords; display with one decimal place
+	local pointString = K.InfoColor .. "|Hworldmap:%d:%d:%d|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%.1f, %.1f)%s]|h|r"
+
+	-- Recent waypoints (session)
+	local recent = {}
 
 	-- Debugging function
 	local function DebugPrint(...)
@@ -651,76 +664,222 @@ function Module:CreateCustomWaypoint()
 	-- Ensures coordinates are valid and within bounds
 	local function GetCorrectCoord(coord)
 		DebugPrint("Validating coordinate:", coord)
-		coord = tonumber(coord)
-		if coord then
-			return math.max(0, math.min(100, coord))
+		local num = tonumber(coord)
+		if not num then
+			return
 		end
+		if num > 100 then
+			return 100
+		end
+		if num < 0 then
+			return 0
+		end
+		return num
+	end
+
+	local function CanWaypointOnMap(mapID)
+		if not mapID then
+			return false
+		end
+		local ok = true
+		if C_Map and C_Map.CanSetUserWaypointOnMap then
+			ok = C_Map.CanSetUserWaypointOnMap(mapID)
+		end
+		return not not ok
 	end
 
 	-- Formats the clickable waypoint message
 	local function FormatClickableWaypoint(mapID, x, y, mapName, desc)
 		local descriptionPart = desc and (" " .. desc) or ""
-		local formatted = format(pointString, mapID, x * 100, y * 100, mapName, x, y, descriptionPart)
+		-- World map hyperlink expects coordinates as percent * 100 (e.g., 50.0 -> 5000)
+		local hx = math.floor(x * 100 + 0.5)
+		local hy = math.floor(y * 100 + 0.5)
+		local formatted = string.format(pointString, mapID, hx, hy, mapName, x, y, descriptionPart)
 		DebugPrint("Formatted clickable waypoint message:", formatted)
 		return formatted
 	end
 
 	-- Sets the waypoint and supertracks it
 	local function SetWaypoint(mapID, x, y, desc)
-		local info = C_Map_GetMapInfo(mapID)
+		if not mapID or not x or not y then
+			return
+		end
+		local info = C_Map.GetMapInfo(mapID)
 		local mapName = (info and info.name) or "Unknown"
 		DebugPrint("Setting waypoint - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
 
 		local message = FormatClickableWaypoint(mapID, x, y, mapName, desc)
 		print(message)
 
-		C_Map_SetUserWaypoint(UiMapPoint_CreateFromCoordinates(mapID, x / 100, y / 100))
-		C_SuperTrack_SetSuperTrackedUserWaypoint(true)
+		if CanWaypointOnMap(mapID) then
+			C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
+			-- Always supertrack our user waypoint
+			C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+		end
+
+		-- Save recent (max 20)
+		recent[#recent + 1] = { mapID = mapID, x = x, y = y, desc = desc, name = mapName }
+		if #recent > 20 then
+			table.remove(recent, 1)
+		end
+
+		-- Optionally open world map
+		if C["WorldMap"].AutoOpenWaypoint then
+			if C_Map.OpenWorldMap then
+				C_Map.OpenWorldMap(mapID)
+			elseif WorldMapFrame then
+				if WorldMapFrame.SetMapID then
+					WorldMapFrame:SetMapID(mapID)
+				end
+				WorldMapFrame:Show()
+			end
+		end
 	end
 
 	-- Parses the input message for mapID, coordinates, and description
 	local function ParseInput(msg)
 		DebugPrint("Parsing input:", msg)
+		msg = (msg or ""):gsub("^%s+", ""):gsub("%s+$", "")
+		-- '/way here' -> player's current map and position
+		if msg == "" or msg:lower() == "here" then
+			local mapID = C_Map.GetBestMapForUnit("player")
+			if not mapID then
+				print("Unable to determine the current map.")
+				return
+			end
+			local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+			if not pos then
+				print("Unable to determine player position on the current map.")
+				return
+			end
+			local px, py = pos:GetXY()
+			return mapID, px * 100, py * 100, nil
+		end
 
-		-- Match input with map ID format
-		local mapID, x, y, desc = msg:match("#(%d+)%s*([%d%.]+),?%s*([%d%.]+)%s*(.*)")
+		-- Normalize separators: allow 'x,y', 'x y', 'x; y', decimals with '.' or ','
+		msg = msg:gsub(",", ".")
+		msg = msg:gsub(";", " ")
+		msg = msg:gsub("%s+", " ")
+
+		-- Name-based: "Map Name" x y [desc] OR MapName x y [desc]
+		local mapName, nsx, nsy, ndesc = msg:match('^"([^"]+)"%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$')
+		if not mapName then
+			mapName, nsx, nsy, ndesc = msg:match("^([^#%d][^%d]*)%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$")
+			if mapName then
+				mapName = mapName:gsub("%s+$", "")
+			end
+		end
+		if mapName and nsx and nsy then
+			local function FindRoot(id)
+				local info = C_Map.GetMapInfo(id)
+				while info and info.parentMapID do
+					local parent = C_Map.GetMapInfo(info.parentMapID)
+					if not parent then
+						break
+					end
+					info = parent
+				end
+				return info and info.mapID
+			end
+			local function FindByName(rootID, name)
+				if not rootID then
+					return
+				end
+				local children = C_Map.GetMapChildrenInfo(rootID, nil, true)
+				if children then
+					local lname = name:lower()
+					for i = 1, #children do
+						local mi = children[i]
+						if mi.name and mi.name:lower() == lname then
+							return mi.mapID
+						end
+					end
+				end
+			end
+			local current = C_Map.GetBestMapForUnit("player")
+			local root = current and FindRoot(current)
+			local found = root and FindByName(root, mapName)
+			if found then
+				local xx = GetCorrectCoord(nsx)
+				local yy = GetCorrectCoord(nsy)
+				if xx and yy then
+					return found, xx, yy, (ndesc ~= "" and ndesc or nil)
+				end
+			end
+			-- fall through if not found
+		end
+
+		-- With explicit mapID: '#<mapID> x y [desc]'
+		local mapID, sx, sy, desc = msg:match("^#(%d+)%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$")
 		if not mapID then
-			-- Match input without map ID
-			x, y, desc = msg:match("([%d%.]+),?%s*([%d%.]+)%s*(.*)")
-			if x and y then
-				-- Default to player's current map
-				mapID = C_Map_GetBestMapForUnit("player")
+			-- Without mapID: 'x y [desc]' -> default to player's map
+			sx, sy, desc = msg:match("^([%d%.]+)%s+([%d%.]+)%s*(.*)$")
+			if sx and sy then
+				mapID = C_Map.GetBestMapForUnit("player")
 				if not mapID then
-					print("Unable to determine the current map. Please try again.")
-					DebugPrint("Failed to retrieve map ID")
+					print("Unable to determine the current map.")
 					return
 				end
 			end
 		end
 
-		if not x or not y then
-			print("Invalid input. Usage: /way [#<mapID>] <x>,<y> [description]")
-			DebugPrint("Input validation failed. MapID:", mapID, "X:", x, "Y:", y)
+		if not mapID or not sx or not sy then
+			print("Invalid input. Usage: /way [#<mapID>] <x> <y> [description]")
 			return
 		end
 
-		x = GetCorrectCoord(x)
-		y = GetCorrectCoord(y)
+		local x = GetCorrectCoord(sx)
+		local y = GetCorrectCoord(sy)
 		mapID = tonumber(mapID)
 
 		if not (x and y and mapID) then
 			print("Coordinates must be between 0 and 100, and mapID must be valid.")
-			DebugPrint("Coordinate validation failed. MapID:", mapID, "X:", x, "Y:", y)
 			return
 		end
 
 		DebugPrint("Parsed values - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
-		return mapID, x, y, desc
+		return mapID, x, y, (desc ~= "" and desc or nil)
 	end
 
 	-- Handles slash command inputs
 	local function HandleSlashCommand(msg, command)
 		DebugPrint("Handling /" .. command .. " command with input:", msg)
+		local lower = (msg or ""):lower():gsub("^%s+", "")
+
+		-- Manage
+		if lower == "clear" then
+			if C_Map.ClearUserWaypoint then
+				C_Map.ClearUserWaypoint()
+			end
+			C_SuperTrack.SetSuperTrackedUserWaypoint(false)
+			print("Waypoints cleared.")
+			return
+		else
+			local idx = lower:match("^remove%s+(%d+)$")
+			if idx then
+				idx = tonumber(idx)
+				if idx >= 1 and idx <= #recent then
+					table.remove(recent, idx)
+					print("Removed waypoint #" .. idx .. ".")
+					return
+				end
+				print("Invalid index.")
+				return
+			end
+		end
+
+		-- Option toggles
+		local key, val = lower:match("^(autoopen)%s+(on|off)$")
+		if key and val then
+			local enabled = (val == "on")
+			if key == "autoopen" then
+				options.autoOpenWorldMap = enabled
+			end
+			print("/way option '" .. key .. "' set to " .. val .. ".")
+			return
+		end
+
+		-- Regular
 		local mapID, x, y, desc = ParseInput(msg)
 		if mapID then
 			SetWaypoint(mapID, x, y, desc)

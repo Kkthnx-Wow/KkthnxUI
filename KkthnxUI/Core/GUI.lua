@@ -717,6 +717,16 @@ CtrlChecker.CtrlUpdate = CtrlUpdate
 -- Disabled by default; enabled while GUI is visible
 CtrlChecker:SetScript("OnUpdate", nil)
 
+-- Throttled OnUpdate wrapper to reduce per-frame work
+local function CtrlChecker_OnUpdate(self, elapsed)
+	self._accum = (self._accum or 0) + (elapsed or 0)
+	if self._accum < 0.12 then
+		return
+	end
+	self._accum = 0
+	CtrlChecker:CtrlUpdate()
+end
+
 -- NEW: Helper function to add reset-to-default functionality to widget labels
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
 	-- Create reset button with undo icon
@@ -3015,6 +3025,8 @@ function GUI:Initialize()
 		self:RefreshCategoryNewTags()
 	end)
 
+	-- Theme overlay is managed by overlay helper events; nothing to do here
+
 	self.IsInitialized = true
 	DebugLog("GUI initialization complete")
 	return self.Frame
@@ -3036,7 +3048,7 @@ function GUI:Show()
 	self.IsVisible = true
 	-- Enable CtrlChecker updates only while GUI is visible
 	if CtrlChecker then
-		CtrlChecker:SetScript("OnUpdate", CtrlChecker.CtrlUpdate)
+		CtrlChecker:SetScript("OnUpdate", CtrlChecker_OnUpdate)
 	end
 end
 

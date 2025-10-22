@@ -1269,13 +1269,13 @@ function Module:UpdateRaidDebuffIndicator()
 		ORD:ResetDebuffData()
 
 		if InstanceType == "party" or InstanceType == "raid" then
-			if C["Raid"].DebuffWatchDefault then
+			if C["Raid"].DebuffWatchDefault or C["SimpleParty"].DebuffWatchDefault then
 				ORD:RegisterDebuffs(C["DebuffsTracking_PvE"].spells)
 			end
 
 			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE)
 		else
-			if C["Raid"].DebuffWatchDefault then
+			if C["Raid"].DebuffWatchDefault or C["SimpleParty"].DebuffWatchDefault then
 				ORD:RegisterDebuffs(C["DebuffsTracking_PvP"].spells)
 			end
 
@@ -1288,7 +1288,7 @@ function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
 
-	if C["Raid"].DebuffWatch then
+	if C["Raid"].DebuffWatch or C["SimpleParty"].DebuffWatch then
 		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
 		local RaidDebuffs = CreateFrame("Frame")
 
@@ -1302,5 +1302,79 @@ function Module:OnEnable()
 		end
 
 		self:CreateTracking()
+	end
+end
+
+-- Live update SimpleParty width/height from GUI without reload
+function Module:UpdateSimplePartySize()
+	-- Defer in combat
+	if InCombatLockdown() then
+		self._pendingSimplePartySize = true
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateSimplePartySize)
+		return
+	elseif self._pendingSimplePartySize then
+		self._pendingSimplePartySize = nil
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateSimplePartySize)
+	end
+
+	if not C["Party"].Enable or not C["SimpleParty"].Enable then
+		return
+	end
+
+	local width = C["SimpleParty"].HealthWidth or 70
+	local height = C["SimpleParty"].HealthHeight or 44
+	local horizon = C["SimpleParty"].HorizonParty
+
+	-- Find the SimpleParty header
+	local header
+	for _, h in pairs(self.headers or {}) do
+		if h and h.groupType == "party" and h.GetName and h:GetName() == "oUF_SimpleParty" then
+			header = h
+			break
+		end
+	end
+	-- Fallback: pick the first party header when using SimpleParty
+	if not header then
+		for _, h in pairs(self.headers or {}) do
+			if h and h.groupType == "party" then
+				header = h
+				break
+			end
+		end
+	end
+	if not header then
+		return
+	end
+
+	-- Resize each unit button and adjust dependent elements
+	for i = 1, header:GetNumChildren() do
+		local frame = select(i, header:GetChildren())
+		if frame and frame.SetSize then
+			frame:SetSize(width, height)
+
+			-- Update debuff indicator size if present
+			if frame.RaidDebuffs then
+				local debuffSize = (height >= 32) and (height - 20) or height
+				frame.RaidDebuffs:SetSize(debuffSize, debuffSize)
+			end
+
+			-- Re-run power/health layout logic to respect PowerBarHeight
+			if frame.UpdateSimplePartyPower and (frame.unit or frame.GetAttribute) then
+				local unit = frame.unit or (frame.GetAttribute and (frame:GetAttribute("oUF-guessUnit") or frame:GetAttribute("unit")))
+				if unit then
+					frame:UpdateSimplePartyPower(nil, unit)
+				end
+			end
+		end
+	end
+
+	-- Update mover size to match layout
+	local mover = _G["SimplePartyFrame"]
+	if mover and mover.SetSize then
+		if horizon then
+			mover:SetSize((width + 6) * 5, height)
+		else
+			mover:SetSize(width, (height + 6) * 5)
+		end
 	end
 end

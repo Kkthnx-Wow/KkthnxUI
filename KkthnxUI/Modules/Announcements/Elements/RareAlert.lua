@@ -17,8 +17,12 @@ local debugprofilestop = debugprofilestop
 local table_wipe = table.wipe
 
 -- Cache for rare alerts and ignored zones
-local RareAlertCache = {}
+-- Cache recently alerted vignettes with timestamps to avoid spam
+local RareAlertCache = {} -- table<vignetteGUID|id, lastAlertTime>
 local rareCacheSize = 0
+local RARE_ALERT_TTL = 90 -- seconds to suppress repeats for the same vignette
+local RARE_ALERT_MAX = 256 -- hard cap before a soft cleanup
+local nextGlobalAlertAt = 0 -- global throttle to avoid bursts
 local isIgnoredZone = {
 	[1153] = true, -- 部落要塞
 	[1159] = true, -- 联盟要塞
@@ -65,13 +69,21 @@ end
 -- Function to handle rare alerts
 function Module:RareAlert_Update(id)
 	KKUI_ProfileStart("RareAlert_Update")
-	if not id or RareAlertCache[id] then
+	if not id then
 		KKUI_ProfileEnd("RareAlert_Update")
 		return
 	end
 
 	local info = C_VignetteInfo_GetVignetteInfo(id)
 	if not info or not isUsefulAtlas(info) or isIgnoredIDs[id] then
+		KKUI_ProfileEnd("RareAlert_Update")
+		return
+	end
+
+	-- Anti-spam: suppress repeats of the same vignette within TTL
+	local now = GetTime()
+	local last = RareAlertCache[info.vignetteGUID or id]
+	if last and (now - last) < RARE_ALERT_TTL then
 		KKUI_ProfileEnd("RareAlert_Update")
 		return
 	end
@@ -88,8 +100,11 @@ function Module:RareAlert_Update(id)
 		return
 	end
 
-	-- Show UI error message for rare spotting
-	UIErrorsFrame:AddMessage(K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. "[" .. (vignetteName or "") .. "]" .. K.SystemColor .. "!")
+	-- Global throttle (UIErrorsFrame can be spammed by rapid vignette updates)
+	if now >= nextGlobalAlertAt then
+		UIErrorsFrame:AddMessage(K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. "[" .. (vignetteName or "") .. "]" .. K.SystemColor .. "!")
+		nextGlobalAlertAt = now + 1.0
+	end
 
 	-- Chat alert if enabled
 	if C["Announcements"].AlertInChat then
@@ -106,18 +121,30 @@ function Module:RareAlert_Update(id)
 		K.Print(currentTime .. K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. (nameString or "") .. K.SystemColor .. "!")
 	end
 
-	-- Play sound if enabled and not in an instance
+	-- Play sound if enabled and not in an ignored instance (follows existing semantics)
 	if not C["Announcements"].AlertInWild or Module.RareInstType == "none" then
 		PlaySound(37881, "Master")
 	end
 
-	RareAlertCache[id] = true
+	-- Record seen time and perform lightweight cleanup
+	RareAlertCache[info.vignetteGUID or id] = now
 	rareCacheSize = rareCacheSize + 1
 
 	-- Limit the size of the cache to prevent overflow
-	if rareCacheSize > 666 then
-		table_wipe(RareAlertCache)
-		rareCacheSize = 0
+	if rareCacheSize > RARE_ALERT_MAX then
+		local pruned = 0
+		for key, ts in pairs(RareAlertCache) do
+			if (now - (ts or 0)) > RARE_ALERT_TTL then
+				RareAlertCache[key] = nil
+				pruned = pruned + 1
+			end
+		end
+		if pruned == 0 then
+			-- Fallback: full reset to keep memory bounded
+			table_wipe(RareAlertCache)
+		else
+			rareCacheSize = rareCacheSize - pruned
+		end
 	end
 	KKUI_ProfileEnd("RareAlert_Update")
 end

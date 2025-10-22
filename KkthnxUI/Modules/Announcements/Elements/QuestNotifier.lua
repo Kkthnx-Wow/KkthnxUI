@@ -1,7 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Announcements")
 
--- Cache Lua functions and constants
+-- Cache Lua (safe) functions and constants
 local floor = math.floor
 local pairs = pairs
 local find = string.find
@@ -11,16 +11,8 @@ local match = string.match
 local wipe = table.wipe
 local tonumber = tonumber
 
--- Cache WoW API functions and constants
+-- WoW constants (values) are safe to cache; avoid caching API functions
 local COLLECTED = COLLECTED
-local GetQuestInfo = C_QuestLog.GetInfo
-local GetQuestLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
-local GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
-local GetQuestIDForLogIndex = C_QuestLog.GetQuestIDForLogIndex
-local GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
-local GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
-local IsQuestComplete = C_QuestLog.IsComplete
-local IsWorldQuest = C_QuestLog.IsWorldQuest
 local DAILY = DAILY
 local ERR_ADD_FOUND_SII = ERR_QUEST_ADD_FOUND_SII
 local ERR_ADD_ITEM_SII = ERR_QUEST_ADD_ITEM_SII
@@ -29,14 +21,8 @@ local ERR_ADD_PLAYER_KILL_SII = ERR_QUEST_ADD_PLAYER_KILL_SII
 local ERR_COMPLETE_S = ERR_QUEST_COMPLETE_S
 local ERR_FAILED_S = ERR_QUEST_FAILED_S
 local ERR_OBJECTIVE_COMPLETE_S = ERR_QUEST_OBJECTIVE_COMPLETE_S
-local GetQuestLink = GetQuestLink
-local IsInGroup = IsInGroup
-local IsInRaid = IsInRaid
-local IsPartyLFG = IsPartyLFG
 local QUEST_FREQUENCY_DAILY = Enum.QuestFrequency.Daily
 local QUEST_TAG_TYPE_PROFESSION = Enum.QuestTagType.Profession
-local PlaySound = PlaySound
-local SendChatMessage = SendChatMessage
 
 -- Sound Kit ID
 local questCompleteSoundID = 6199 -- https://wowhead.com/sound=6199/b-peonbuildingcomplete1
@@ -46,6 +32,11 @@ local debugMode = false -- Indicates if debug mode is enabled
 local worldQuestCache = {} -- Cache for world quest IDs
 local completedQuests = {} -- Cache for completed quest IDs
 local initialCheckComplete = false -- Indicates if initial quest check is complete
+local recentInfoMsgs = {} -- Anti-spam for UI_INFO_MESSAGE text
+local recentInfoCount = 0
+local INFO_MSG_TTL = 2 -- seconds
+local INFO_MSG_MAX = 100 -- simple cap before wipe
+local _debounceQueued = false -- debounce flag for QUEST_LOG_UPDATE
 
 -- Ignored quests by ID (can be overridden by config C["Announcements"].IgnoredQuestIDs)
 local defaultIgnoredQuests = {
@@ -89,23 +80,22 @@ end
 
 -- Get the quest link or the quest name
 local function GetQuestLinkOrName(questID)
-	return GetQuestLink(questID) or GetTitleForQuestID(questID) or ""
+	return GetQuestLink(questID) or C_QuestLog.GetTitleForQuestID(questID) or ""
 end
 
 -- Get the text for the quest acceptance message
 local function GetQuestAcceptText(questID, isDaily)
 	local questTitle = GetQuestLinkOrName(questID)
 	if isDaily then
-		return format("%s [%s]%s", "Accepted", DAILY, questTitle)
-	else
-		return format("%s %s", "Accepted", questTitle)
+		return format(ERR_QUEST_ACCEPTED_S, format("[%s]%s", DAILY, questTitle))
 	end
+	return format(ERR_QUEST_ACCEPTED_S, questTitle)
 end
 
 -- Get the text for the quest completion message
 local function GetQuestCompleteText(questID)
 	PlaySound(questCompleteSoundID, "Master")
-	return format("%s %s", "Completed", GetQuestLinkOrName(questID))
+	return format(ERR_QUEST_COMPLETE_S, GetQuestLinkOrName(questID))
 end
 
 -- Send message to the appropriate channel
@@ -155,6 +145,13 @@ function Module:FindQuestProgress(_, message)
 		return
 	end
 
+	-- Anti-dup within a short window (UI can fire the same line multiple times)
+	local now = GetTime()
+	local last = recentInfoMsgs[message]
+	if last and (now - last) < INFO_MSG_TTL then
+		return
+	end
+
 	for _, pattern in pairs(questMatchPatterns) do
 		if match(message, pattern) then
 			local _, _, _, current, maximum = find(message, "(.*)[:]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
@@ -174,6 +171,13 @@ function Module:FindQuestProgress(_, message)
 				end
 			end
 
+			-- record recent and cap size
+			recentInfoMsgs[message] = now
+			recentInfoCount = recentInfoCount + 1
+			if recentInfoCount > INFO_MSG_MAX then
+				wipe(recentInfoMsgs)
+				recentInfoCount = 0
+			end
 			break
 		end
 	end
@@ -187,21 +191,21 @@ function Module:HandleQuestAccept(questID)
 	if IsQuestIgnored(questID) then
 		return
 	end
-	if IsWorldQuest(questID) and worldQuestCache[questID] then
+	if C_QuestLog.IsWorldQuest(questID) and worldQuestCache[questID] then
 		return
 	end
 
 	worldQuestCache[questID] = true
-	local questTagInfo = GetQuestTagInfo(questID)
+	local questTagInfo = C_QuestLog.GetQuestTagInfo(questID)
 	if questTagInfo and questTagInfo.worldQuestType == QUEST_TAG_TYPE_PROFESSION then
 		return
 	end
 
-	local questLogIndex = GetQuestLogIndexForQuestID(questID)
+	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID)
 	if questLogIndex then
-		local questInfo = GetQuestInfo(questLogIndex)
+		local questInfo = C_QuestLog.GetInfo(questLogIndex)
 		if questInfo then
-			local isWQ = IsWorldQuest(questID)
+			local isWQ = C_QuestLog.IsWorldQuest(questID)
 			if not isWQ or (isWQ and (C["Announcements"].AnnounceWorldQuests ~= false)) then
 				SendQuestMessage(GetQuestAcceptText(questID, questInfo.frequency == QUEST_FREQUENCY_DAILY))
 			end
@@ -210,12 +214,12 @@ function Module:HandleQuestAccept(questID)
 end
 
 -- Handle quest completion
-function Module:HandleQuestCompletion()
-	for i = 1, GetNumQuestLogEntries() do
-		local questID = GetQuestIDForLogIndex(i)
+local function ScanQuestCompletion()
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i)
 		if questID and not IsQuestIgnored(questID) then
-			local isQuestComplete = IsQuestComplete(questID)
-			if isQuestComplete and not completedQuests[questID] and not IsWorldQuest(questID) then
+			local isQuestComplete = C_QuestLog.IsComplete(questID)
+			if isQuestComplete and not completedQuests[questID] and not C_QuestLog.IsWorldQuest(questID) then
 				if initialCheckComplete then
 					SendQuestMessage(GetQuestCompleteText(questID))
 				end
@@ -226,10 +230,27 @@ function Module:HandleQuestCompletion()
 	initialCheckComplete = true
 end
 
+function Module:HandleQuestCompletion()
+	-- Debounce frequent QUEST_LOG_UPDATE bursts
+	if _debounceQueued then
+		return
+	end
+	_debounceQueued = true
+	C_Timer.After(0.3, function()
+		_debounceQueued = false
+		ScanQuestCompletion()
+	end)
+end
+
 -- Handle world quest completion
 function Module:HandleWorldQuestCompletion(questID)
-	if IsWorldQuest(questID) and questID and not completedQuests[questID] then
+	if C_QuestLog.IsWorldQuest(questID) and questID and not completedQuests[questID] then
 		if IsQuestIgnored(questID) then
+			return
+		end
+		-- Skip profession WQs (match acceptance behavior)
+		local questTagInfo = C_QuestLog.GetQuestTagInfo(questID)
+		if questTagInfo and questTagInfo.worldQuestType == QUEST_TAG_TYPE_PROFESSION then
 			return
 		end
 		if C["Announcements"].AnnounceWorldQuests ~= false then

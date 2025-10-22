@@ -102,6 +102,30 @@ end)
 
 local QUEST_STRING = "cFF0000FF.-" .. TRANSMOG_SOURCE_2
 
+-- If any gossip option contains color codes or
+-- angle-bracketed subtext (eg. Skip campaign), suspend automation.
+local function ShouldSuspendForSkipGossip()
+	local gossipInfoTable = C_GossipInfo_GetOptions()
+	if not gossipInfoTable then
+		return false
+	end
+	for i = 1, #gossipInfoTable do
+		local nameText = gossipInfoTable[i].name
+		if nameText then
+			-- Explicit red "<...>" prefix used for Skip options
+			if nameText:sub(1, 11) == "|cFFFF0000<" then
+				return true
+			end
+			-- Any colored or angle-bracketed line (except known purple DMF quests)
+			local upper = strupper(nameText)
+			if (strfind(upper, "|C", 1, true) or strfind(upper, "<", 1, true)) and not strfind(nameText, "FF0008E8", 1, true) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 QuickQuest:Register("GOSSIP_SHOW", function()
 	local npcID = GetNPCID()
 	if C.IgnoreQuestNPC[npcID] then
@@ -132,6 +156,10 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 
 	local gossipInfoTable = C_GossipInfo_GetOptions()
 	if not gossipInfoTable then
+		return
+	end
+
+	if ShouldSuspendForSkipGossip() then
 		return
 	end
 

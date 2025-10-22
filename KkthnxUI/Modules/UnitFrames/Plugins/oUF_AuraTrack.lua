@@ -57,6 +57,7 @@ local Tracker = {
 	-- SHAMAN
 	[61295] = { 0.2, 0.8, 0.8 }, -- Riptide
 	[974] = { 1, 0.8, 0 }, -- Earth Shield
+	[383648] = { 1, 0.8, 0 }, -- Earth Shield (PvP)
 
 	-- MONK
 	[119611] = { 0.3, 0.8, 0.6 }, -- Revival
@@ -80,22 +81,25 @@ local Tracker = {
 
 if not UnitAura then
 	UnitAura = function(unitToken, index, filter)
-		local auraData = C_UnitAuras_GetAuraDataByIndex and C_UnitAuras_GetAuraDataByIndex(unitToken, index, filter)
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
+
 		if not auraData then
 			return nil
 		end
-		return AuraUtil_UnpackAuraData and AuraUtil_UnpackAuraData(auraData)
+
+		return AuraUtil.UnpackAuraData(auraData)
 	end
 end
 
 -- Handle per-tick countdown updates; min/max is set when duration changes
 local function OnUpdate(self)
-	local timeLeft = self.Expiration - GetTime()
-	if timeLeft < 0 then
-		timeLeft = 0
-	end
-	if self.SetValue then
-		self:SetValue(timeLeft)
+	local Time = GetTime()
+	local Timeleft = self.Expiration - Time
+	local Duration = self.Duration
+
+	if self.SetMinMaxValues then
+		self:SetMinMaxValues(0, Duration)
+		self:SetValue(Timeleft)
 	end
 end
 
@@ -117,11 +121,7 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 		AuraTrack.Auras[id]:SetSize(AuraTrack.IconSize, AuraTrack.IconSize)
 		AuraTrack.Auras[id]:SetPoint("TOPLEFT", PositionX, AuraTrack.IconSize / 3)
 
-		AuraTrack.Auras[id].Backdrop = AuraTrack.Auras[id]:CreateTexture(nil, "BACKGROUND")
-		AuraTrack.Auras[id].Backdrop:SetPoint("TOPLEFT", AuraTrack.Auras[id], -1, 1)
-		AuraTrack.Auras[id].Backdrop:SetPoint("BOTTOMRIGHT", AuraTrack.Auras[id], 1, -1)
-
-		if AuraTrack.Auras[id].CreateShadow then
+		if not AuraTrack.Auras[id].Shadow then
 			AuraTrack.Auras[id]:CreateShadow(true)
 		end
 
@@ -141,7 +141,9 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 
 	AuraTrack.Auras[id].Expiration = expiration
 	AuraTrack.Auras[id].Duration = duration
-	AuraTrack.Auras[id].Backdrop:SetColorTexture(r * 0.2, g * 0.2, b * 0.2)
+	if AuraTrack.Auras[id].Shadow then
+		AuraTrack.Auras[id].Shadow:SetBackdropColor(r * 0.2, g * 0.2, b * 0.2)
+	end
 	AuraTrack.Auras[id].Cooldown:SetCooldown(expiration - duration, duration)
 	AuraTrack.Auras[id]:Show()
 
@@ -188,15 +190,18 @@ local function UpdateBar(self, _, spellID, _, id, expiration, duration)
 			AuraTrack.Auras[id]:SetOrientation("VERTICAL")
 		end
 
-		AuraTrack.Auras[id].Backdrop = AuraTrack.Auras[id]:CreateTexture(nil, "BACKGROUND")
-		AuraTrack.Auras[id].Backdrop:SetAllPoints()
+		if not AuraTrack.Auras[id].Shadow then
+			AuraTrack.Auras[id]:CreateShadow(true)
+		end
 	end
 
 	AuraTrack.Auras[id].Expiration = expiration
 	AuraTrack.Auras[id].Duration = duration
 	AuraTrack.Auras[id]:SetStatusBarTexture(AuraTrack.Texture)
 	AuraTrack.Auras[id]:SetStatusBarColor(r, g, b)
-	AuraTrack.Auras[id].Backdrop:SetColorTexture(r * 0.2, g * 0.2, b * 0.2)
+	if AuraTrack.Auras[id].Shadow then
+		AuraTrack.Auras[id].Shadow:SetBackdropColor(r * 0.2, g * 0.2, b * 0.2)
+	end
 
 	if expiration > 0 and duration > 0 then
 		AuraTrack.Auras[id]:SetMinMaxValues(0, duration)

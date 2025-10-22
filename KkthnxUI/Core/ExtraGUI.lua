@@ -234,6 +234,16 @@ CtrlChecker.CtrlUpdate = CtrlUpdate
 -- Disabled by default; enabled while ExtraGUI is visible
 CtrlChecker:SetScript("OnUpdate", nil)
 
+-- Throttled OnUpdate to reduce per-frame work
+local function CtrlChecker_OnUpdate(self, elapsed)
+	self._accum = (self._accum or 0) + (elapsed or 0)
+	if self._accum < 0.12 then
+		return
+	end
+	self._accum = 0
+	CtrlChecker:CtrlUpdate()
+end
+
 -- Helper function to add reset-to-default functionality to widget labels
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
 	-- Create reset button with undo icon
@@ -669,7 +679,7 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 
 	-- Enable CtrlChecker updates while ExtraGUI is visible
 	if CtrlChecker then
-		CtrlChecker:SetScript("OnUpdate", CtrlChecker.CtrlUpdate)
+		CtrlChecker:SetScript("OnUpdate", CtrlChecker_OnUpdate)
 	end
 end
 
@@ -2920,20 +2930,20 @@ function ExtraGUI:RegisterExampleConfigs()
 		enableSimpleSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		-- -- Show Heal Prediction
-		-- local healPredictionSwitch = self:CreateSwitch(parent, "SimpleParty.ShowHealPrediction", L["Show HealPrediction Statusbars"], L["Show incoming heal predictions on party frames"] or "Show incoming heal predictions on party frames")
-		-- healPredictionSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		-- yOffset = yOffset - 35
+		-- Show Heal Prediction
+		local healPredictionSwitch = self:CreateSwitch(parent, "SimpleParty.ShowHealPrediction", L["Show HealPrediction Statusbars"], L["Show incoming heal predictions on party frames"] or "Show incoming heal predictions on party frames")
+		healPredictionSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
 
-		-- -- Smooth Bar Transition
-		-- local smoothSwitch = self:CreateSwitch(parent, "SimpleParty.Smooth", L["Smooth Bar Transition"], L["Enable smooth animations for party frame bars"] or "Enable smooth animations for party frame bars")
-		-- smoothSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		-- yOffset = yOffset - 35
+		-- Smooth Bar Transition
+		local smoothSwitch = self:CreateSwitch(parent, "SimpleParty.Smooth", L["Smooth Bar Transition"], L["Enable smooth animations for party frame bars"] or "Enable smooth animations for party frame bars")
+		smoothSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
 
-		-- -- Target Highlight
-		-- local targetHighlightSwitch = self:CreateSwitch(parent, "SimpleParty.TargetHighlight", L["Show Highlighted Target"], L["Highlight the targeted party member"] or "Highlight the targeted party member")
-		-- targetHighlightSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		-- yOffset = yOffset - 35
+		-- Target Highlight
+		local targetHighlightSwitch = self:CreateSwitch(parent, "SimpleParty.TargetHighlight", L["Show Highlighted Target"], L["Highlight the targeted party member"] or "Highlight the targeted party member")
+		targetHighlightSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
 
 		-- Horizontal Layout
 		local horizonSwitch = self:CreateSwitch(parent, "SimpleParty.HorizonParty", L["Horizontal Party Frames"] or "Horizontal Party Frames", L["Arrange party frames horizontally instead of vertically (requires reload)"] or "Arrange party frames horizontally instead of vertically (requires reload)")
@@ -3028,6 +3038,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		CreateSectionHeader(parent, L["Raid Buffs"] or "Raid Buffs", EXTRA_PANEL_WIDTH - 40, yOffset)
 		yOffset = yOffset - 40
 
+		-- Raid Buffs Enable
+		local raidBuffsEnable = self:CreateSwitch(parent, "SimpleParty.RaidBuffs", L["Enable Raid Buffs"] or "Enable Raid Buffs", L["Show raid buffs on simple party frames"] or "Show raid buffs on simple party frames")
+		raidBuffsEnable:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
 		-- Raid Buffs Style Dropdown
 		local raidBuffsOptions = {
 			{ text = L["Disabled"] or "Disabled", value = 0 },
@@ -3036,6 +3051,48 @@ function ExtraGUI:RegisterExampleConfigs()
 		}
 		local buffsDropdown = self:CreateDropdown(parent, "SimpleParty.RaidBuffsStyle", L["Raid Buffs Style"] or "Raid Buffs Style", raidBuffsOptions, L["Choose how raid buffs are displayed on simple party frames"] or "Choose how raid buffs are displayed on simple party frames")
 		buffsDropdown:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Aura Track specific options
+		local auraHeader = CreateSectionHeader(parent, L["Aura Track Options"] or "Aura Track Options", EXTRA_PANEL_WIDTH - 40, yOffset)
+		yOffset = yOffset - 40
+
+		local auraIconsSwitch = self:CreateSwitch(parent, "SimpleParty.AuraTrackIcons", L["Show Aura Icons"] or "Show Aura Icons", L["Display icons for tracked auras"] or "Display icons for tracked auras")
+		auraIconsSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local auraTexturesSwitch = self:CreateSwitch(parent, "SimpleParty.AuraTrackSpellTextures", L["Use Spell Textures"] or "Use Spell Textures", L["Use spell textures instead of generic icons"] or "Use spell textures instead of generic icons")
+		auraTexturesSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local auraThicknessSlider = self:CreateSlider(parent, "SimpleParty.AuraTrackThickness", L["Aura Track Thickness"] or "Aura Track Thickness", 1, 10, 1, L["Line thickness for aura track indicators"] or "Line thickness for aura track indicators")
+		auraThicknessSlider:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Only show Aura Track options when style == 2
+		self:DependsOn(auraHeader, "SimpleParty.RaidBuffsStyle", 2, function(v)
+			return v == 2
+		end)
+		self:DependsOn(auraIconsSwitch, "SimpleParty.RaidBuffsStyle", 2, function(v)
+			return v == 2
+		end)
+		self:DependsOn(auraTexturesSwitch, "SimpleParty.RaidBuffsStyle", 2, function(v)
+			return v == 2
+		end)
+		self:DependsOn(auraThicknessSlider, "SimpleParty.RaidBuffsStyle", 2, function(v)
+			return v == 2
+		end)
+
+		-- Debuff Watch options
+		local debuffHeader = CreateSectionHeader(parent, L["Debuff Watch"] or "Debuff Watch", EXTRA_PANEL_WIDTH - 40, yOffset)
+		yOffset = yOffset - 40
+
+		local debuffWatchSwitch = self:CreateSwitch(parent, "SimpleParty.DebuffWatch", L["Enable Debuff Watch"] or "Enable Debuff Watch", L["Show debuff indicators on simple party frames"] or "Show debuff indicators on simple party frames")
+		debuffWatchSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local debuffWatchDefaultSwitch = self:CreateSwitch(parent, "SimpleParty.DebuffWatchDefault", L["Use Default Debuff List"] or "Use Default Debuff List", L["Use the default debuff list for tracking"] or "Use the default debuff list for tracking")
+		debuffWatchDefaultSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Set parent height based on content

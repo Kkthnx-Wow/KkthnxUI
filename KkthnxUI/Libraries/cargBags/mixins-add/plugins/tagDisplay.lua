@@ -41,7 +41,6 @@ CALLBACKS
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
-local B = ns[1]
 
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 
@@ -145,12 +144,23 @@ tagPool["item"] = function(self, item)
 	end
 end
 
-tagPool["currency"] = function(_, id)
-	local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
-	if not currencyInfo then
+tagPool["currency"] = function(self, indexOrCurrencyID)
+	-- Support either an index (as used by GetNumWatchedTokens) or a direct currencyID
+	local info
+	if type(indexOrCurrencyID) == "number" then
+		-- First, try backpack watched token by index
+		if indexOrCurrencyID <= (GetNumWatchedTokens() or 0) then
+			info = C_CurrencyInfo.GetBackpackCurrencyInfo(indexOrCurrencyID)
+		end
+		-- If not found, treat the number as a currencyID
+		if not info then
+			info = C_CurrencyInfo.GetCurrencyInfo(indexOrCurrencyID)
+		end
+	end
+	if not info then
 		return
 	end
-	local name, count, icon = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID
+	local name, count, icon = info.name, info.quantity or info.quantityEarnedThisWeek or 0, info.iconFileID
 	if name and count then
 		local iconTexture = "|T" .. icon .. ":13:15:0:0:50:50:4:46:4:46|t "
 		return (iconTexture .. BreakUpLargeNumbers(count))
@@ -159,29 +169,17 @@ end
 tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
 tagPool["currencies"] = function(self)
-	local str
-	for i = 1, GetNumWatchedTokens() do
+	local out
+	local watched = GetNumWatchedTokens() or 0
+	for i = 1, watched do
 		local curr = self.tags["currency"](self, i)
 		if curr then
-			str = (str and str .. " " or "") .. curr
+			out = out and (out .. " " .. curr) or curr
 		end
 	end
-	return str
+	return out
 end
 tagEvents["currencies"] = tagEvents["currency"]
-
-local atlasCache = {}
-local function createAtlasCoin(coin)
-	local str = atlasCache[coin]
-	if not str then
-		local info = C_Texture.GetAtlasInfo("coin-" .. coin)
-		if info then
-			str = B:GetTextureStrByAtlas(info, 16, 16)
-			atlasCache[coin] = str
-		end
-	end
-	return str
-end
 
 tagPool["money"] = function()
 	local coppername = "|cffeda55fc|r"

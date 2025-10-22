@@ -94,11 +94,11 @@ function Module:CreateSimpleParty()
 	Health.colorDisconnected = true
 	Health.frequentUpdates = true
 
-	if C["Party"].HealthbarColor == 3 then
+	if C["SimpleParty"].HealthbarColor == 3 then
 		Health.colorSmooth = true
 		Health.colorClass = false
 		Health.colorReaction = false
-	elseif C["Party"].HealthbarColor == 2 then
+	elseif C["SimpleParty"].HealthbarColor == 2 then
 		Health.colorSmooth = false
 		Health.colorClass = false
 		Health.colorReaction = false
@@ -109,7 +109,7 @@ function Module:CreateSimpleParty()
 		Health.colorReaction = true
 	end
 
-	if C["Party"].Smooth then
+	if C["SimpleParty"].Smooth then
 		K:SmoothBar(Health)
 	end
 
@@ -124,7 +124,7 @@ function Module:CreateSimpleParty()
 	Power.colorPower = true
 	Power.frequentUpdates = false
 
-	if C["Party"].Smooth then
+	if C["SimpleParty"].Smooth then
 		K:SmoothBar(Power)
 	end
 
@@ -135,7 +135,7 @@ function Module:CreateSimpleParty()
 	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateSimplePartyPower)
 	UpdateSimplePartyPower(self, _, self.unit)
 
-	if C["Party"].ShowHealPrediction then
+	if C["SimpleParty"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetAllPoints(Health)
 		local frameLevel = frame:GetFrameLevel()
@@ -294,9 +294,9 @@ function Module:CreateSimpleParty()
 	if C["SimpleParty"].RaidBuffsStyle == 2 then
 		local AuraTrack = CreateFrame("Frame", nil, Health)
 		AuraTrack.Texture = SimplePartyframeTexture
-		AuraTrack.Icons = C["Raid"].AuraTrackIcons
-		AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures
-		AuraTrack.Thickness = C["Raid"].AuraTrackThickness
+		AuraTrack.Icons = C["SimpleParty"].AuraTrackIcons
+		AuraTrack.SpellTextures = C["SimpleParty"].AuraTrackSpellTextures
+		AuraTrack.Thickness = C["SimpleParty"].AuraTrackThickness
 		AuraTrack.Font = select(1, _G.KkthnxUIFontOutline:GetFont())
 
 		AuraTrack:ClearAllPoints()
@@ -310,8 +310,8 @@ function Module:CreateSimpleParty()
 
 		self.AuraTrack = AuraTrack
 	elseif C["SimpleParty"].RaidBuffsStyle == 1 then
-		local filter = C["Raid"].RaidBuffs == 3 and "HELPFUL" or "HELPFUL|RAID"
-		local onlyShowPlayer = C["Raid"].RaidBuffs == 2
+		local filter = C["SimpleParty"].RaidBuffs == 3 and "HELPFUL" or "HELPFUL|RAID"
+		local onlyShowPlayer = C["SimpleParty"].RaidBuffs == 2
 
 		local frameName = self:GetName()
 		local Buffs = CreateFrame("Frame", frameName and string_format("%sBuffs", frameName) or nil, Health)
@@ -335,8 +335,8 @@ function Module:CreateSimpleParty()
 		self.Buffs = Buffs
 	end
 
-	if C["Raid"].DebuffWatch then
-		local Height = C["Raid"].Height
+	if C["SimpleParty"].DebuffWatch then
+		local Height = C["SimpleParty"].HealthHeight
 		local DebuffSize = Height >= 32 and Height - 20 or Height
 
 		local RaidDebuffs = CreateFrame("Frame", nil, Health)
@@ -375,7 +375,7 @@ function Module:CreateSimpleParty()
 		self.RaidDebuffs = RaidDebuffs
 	end
 
-	if C["Party"].TargetHighlight then
+	if C["SimpleParty"].TargetHighlight then
 		local TargetHighlight = CreateFrame("Frame", nil, Overlay, "BackdropTemplate")
 		TargetHighlight:SetFrameLevel(6)
 		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })

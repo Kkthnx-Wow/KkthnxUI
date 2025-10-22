@@ -22,7 +22,6 @@ DESCRIPTION:
 	Item keys which require tooltip parsing to work
 ]]
 local _, ns = ...
-local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
 local bindTypeToString = {

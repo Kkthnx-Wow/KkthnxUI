@@ -838,9 +838,9 @@ end
 
 -- Profile List
 function ProfileGUI:RefreshProfileList()
-	local t0
+	local startMs
 	if K.isDeveloper then
-		t0 = debugprofilestop()
+		startMs = debugprofilestop()
 	end
 	if not self.ProfileScrollFrame or not self.ProfileScrollFrame.Child then
 		return
@@ -895,10 +895,9 @@ function ProfileGUI:RefreshProfileList()
 		if profiles[currentKey] then
 			self.SelectedProfile = currentKey
 		end
-
-		if K.isDeveloper and t0 then
-			local dt = debugprofilestop() - t0
-			K.Print(string.format("[KKUI_DEV] RefreshProfileList %.3f ms", dt))
+		if K.isDeveloper and startMs then
+			local elapsedMs = debugprofilestop() - startMs
+			K.Print(string.format("[KKUI_DEV] RefreshProfileList %.3f ms", elapsedMs))
 		end
 	end
 end

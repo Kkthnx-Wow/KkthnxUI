@@ -113,7 +113,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	local isCustomJunk = charDB and charDB.CustomJunkList and charDB.CustomJunkList[item.id]
+	local isCustomJunk = KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]
 	return (item.quality == Enum.ItemQuality.Poor or isCustomJunk) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
@@ -207,11 +207,7 @@ local function isItemCustom(item, index)
 		return
 	end
 
-	-- Optimized short-circuiting for database access
-	local db = KkthnxUIDB and KkthnxUIDB.Variables
-	local realmDB = db and db[K.Realm]
-	local charDB = realmDB and realmDB[K.Name]
-	local customIndex = charDB and charDB.CustomItems and charDB.CustomItems[item.id]
+	local customIndex = KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]
 	return customIndex and customIndex == index
 end
 

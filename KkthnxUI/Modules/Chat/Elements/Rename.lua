@@ -67,7 +67,9 @@ local function escapeForPattern(s)
 end
 
 local function buildTemplatePattern(template)
-	local esc = escapeForPattern(template)
+	-- Anchor at start so we only rewrite the leading prefix once
+	local esc = "^" .. escapeForPattern(template)
+	-- Replace %s placeholders with non-greedy capture to tolerate links/names
 	esc = esc:gsub("%%%%s", "(.-)")
 	return esc
 end
@@ -81,75 +83,79 @@ local function initRewritePatterns()
 
 	-- Whisper prefixes
 	if CHAT_WHISPER_INFORM_GET_T then
-		rewritePatterns[buildTemplatePattern(CHAT_WHISPER_INFORM_GET_T)] = (L["To"] .. " %1 ")
+		table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_WHISPER_INFORM_GET_T), repl = (L["To"] .. " %1 ") })
 	end
 	if CHAT_WHISPER_GET_T then
-		rewritePatterns[buildTemplatePattern(CHAT_WHISPER_GET_T)] = (L["From"] .. " %1 ")
+		table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_WHISPER_GET_T), repl = (L["From"] .. " %1 ") })
 	end
 	if CHAT_BN_WHISPER_INFORM_GET_T then
-		rewritePatterns[buildTemplatePattern(CHAT_BN_WHISPER_INFORM_GET_T)] = (L["To"] .. " %1 ")
+		table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_BN_WHISPER_INFORM_GET_T), repl = (L["To"] .. " %1 ") })
 	end
 	if CHAT_BN_WHISPER_GET_T then
-		rewritePatterns[buildTemplatePattern(CHAT_BN_WHISPER_GET_T)] = (L["From"] .. " %1 ")
+		table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_BN_WHISPER_GET_T), repl = (L["From"] .. " %1 ") })
 	end
 
 	-- Say / Yell prefixes
 	if CHAT_SAY_GET_T then
-		rewritePatterns[buildTemplatePattern(CHAT_SAY_GET_T)] = "%1 "
+		table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_SAY_GET_T), repl = "|Hchannel:SAY|h[S]|h %1 " })
 	end
 	if CHAT_YELL_GET_T then
-		rewritePatterns[buildTemplatePattern(CHAT_YELL_GET_T)] = "%1 "
+		table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_YELL_GET_T), repl = "|Hchannel:YELL|h[Y]|h %1 " })
 	end
 
 	if not C["Chat"].OldChatNames then
 		-- Channel tags
 		if CHAT_GUILD_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_GUILD_GET_T)] = "|Hchannel:GUILD|h[G]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_GUILD_GET_T), repl = "|Hchannel:GUILD|h[G]|h %1 " })
 		end
 		if CHAT_OFFICER_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_OFFICER_GET_T)] = "|Hchannel:OFFICER|h[O]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_OFFICER_GET_T), repl = "|Hchannel:OFFICER|h[O]|h %1 " })
 		end
 		if CHAT_RAID_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_RAID_GET_T)] = "|Hchannel:RAID|h[R]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_RAID_GET_T), repl = "|Hchannel:RAID|h[R]|h %1 " })
 		end
 		if CHAT_RAID_WARNING_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_RAID_WARNING_GET_T)] = "[RW] %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_RAID_WARNING_GET_T), repl = "[RW] %1 " })
 		end
 		if CHAT_RAID_LEADER_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_RAID_LEADER_GET_T)] = "|Hchannel:RAID|h[RL]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_RAID_LEADER_GET_T), repl = "|Hchannel:RAID|h[RL]|h %1 " })
 		end
 		if CHAT_PARTY_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_PARTY_GET_T)] = "|Hchannel:PARTY|h[P]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_PARTY_GET_T), repl = "|Hchannel:PARTY|h[P]|h %1 " })
 		end
 		if CHAT_PARTY_LEADER_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_PARTY_LEADER_GET_T)] = "|Hchannel:PARTY|h[PL]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_PARTY_LEADER_GET_T), repl = "|Hchannel:PARTY|h[PL]|h %1 " })
 		end
 		if CHAT_PARTY_GUIDE_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_PARTY_GUIDE_GET_T)] = "|Hchannel:PARTY|h[PG]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_PARTY_GUIDE_GET_T), repl = "|Hchannel:PARTY|h[PG]|h %1 " })
 		end
 		if CHAT_INSTANCE_CHAT_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_INSTANCE_CHAT_GET_T)] = "|Hchannel:INSTANCE|h[I]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_INSTANCE_CHAT_GET_T), repl = "|Hchannel:INSTANCE|h[I]|h %1 " })
 		end
 		if CHAT_INSTANCE_CHAT_LEADER_GET_T then
-			rewritePatterns[buildTemplatePattern(CHAT_INSTANCE_CHAT_LEADER_GET_T)] = "|Hchannel:INSTANCE|h[IL]|h %1 "
+			table.insert(rewritePatterns, { pattern = buildTemplatePattern(CHAT_INSTANCE_CHAT_LEADER_GET_T), repl = "|Hchannel:INSTANCE|h[IL]|h %1 " })
 		end
 		-- Flags
 		if CHAT_FLAG_AFK_T then
-			rewritePatterns[escapeForPattern(CHAT_FLAG_AFK_T)] = "[AFK] "
+			table.insert(rewritePatterns, { pattern = "^" .. escapeForPattern(CHAT_FLAG_AFK_T), repl = "[AFK] " })
 		end
 		if CHAT_FLAG_DND_T then
-			rewritePatterns[escapeForPattern(CHAT_FLAG_DND_T)] = "[DND] "
+			table.insert(rewritePatterns, { pattern = "^" .. escapeForPattern(CHAT_FLAG_DND_T), repl = "[DND] " })
 		end
 		if CHAT_FLAG_GM_T then
-			rewritePatterns[escapeForPattern(CHAT_FLAG_GM_T)] = "[GM] "
+			table.insert(rewritePatterns, { pattern = "^" .. escapeForPattern(CHAT_FLAG_GM_T), repl = "[GM] " })
 		end
 	end
 end
 
 local function applyRewrites(text)
 	initRewritePatterns()
-	for pattern, repl in pairs(rewritePatterns) do
-		text = text:gsub(pattern, repl)
+	for i = 1, #rewritePatterns do
+		local entry = rewritePatterns[i]
+		local replaced, count = text:gsub(entry.pattern, entry.repl, 1)
+		if count > 0 then
+			return replaced
+		end
 	end
 	return text
 end
@@ -172,9 +178,9 @@ function Module:SetupChannelNames(text, ...)
 			defaultTimestamp = nil
 		end
 
-		local oldTimeStamp = defaultTimestamp and gsub(BetterDate(defaultTimestamp, locTime), "%[([^]]*)%]", "%%[%1%%]")
+		local oldTimeStamp = defaultTimestamp and string_gsub(BetterDate(defaultTimestamp, locTime), "%[([^]]*)%]", "%%[%1%%]")
 		if oldTimeStamp then
-			text = gsub(text, oldTimeStamp, "")
+			text = string_gsub(text, oldTimeStamp, "")
 		end
 
 		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[TimestampFormat] .. "|r", realmTime or locTime)
@@ -195,12 +201,22 @@ local function renameChatFrames()
 	for i = 1, NUM_CHAT_WINDOWS do
 		if i ~= 2 then
 			local chatFrame = _G["ChatFrame" .. i]
-			chatFrame.oldAddMessage = chatFrame.AddMessage
-			chatFrame.AddMessage = Module.SetupChannelNames
+			if chatFrame.AddMessage ~= Module.SetupChannelNames then
+				if not chatFrame.oldAddMessage then
+					chatFrame.oldAddMessage = chatFrame.AddMessage
+				end
+				chatFrame.AddMessage = Module.SetupChannelNames
+			end
 		end
 	end
 end
 
 function Module:CreateChatRename()
+	-- Friend online/offline message overrides (localized if globals exist)
+	local COME = rawget(_G, "L_CHAT_COME_ONLINE") or "has come |cff298F00online|r."
+	local GONE = rawget(_G, "L_CHAT_GONE_OFFLINE") or "has gone |cffff0000offline|r."
+	_G.ERR_FRIEND_ONLINE_SS = "|Hplayer:%s|h[%s]|h " .. COME
+	_G.ERR_FRIEND_OFFLINE_S = "[%s] " .. GONE
+
 	renameChatFrames()
 end

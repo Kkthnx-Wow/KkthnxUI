@@ -587,7 +587,7 @@ function Module:RaidTool_CreateMenu(parent)
 	end)
 
 	StaticPopupDialogs["Group_Disband"] = {
-		text = L["Disband Info"],
+		text = L["Disband Info"] or "Are you sure you want to disband the group?",
 		button1 = YES,
 		button2 = NO,
 		OnAccept = function()

@@ -706,6 +706,9 @@ L["Map Reveal Shadow"] = "Map Reveal Shadow"
 L["Show Player/Mouse Coordinates"] = "Show Player/Mouse Coordinates"
 L["Show Smaller Worldmap"] = "Show Smaller Worldmap"
 
+-- Waypoints
+L["Auto-open world map when setting waypoint"] = "Auto-open world map when setting waypoint"
+
 -- =============================================================================
 -- 4) HelpTip Locales
 -- =============================================================================

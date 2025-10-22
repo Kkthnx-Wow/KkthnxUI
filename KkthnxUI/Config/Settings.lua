@@ -579,9 +579,15 @@ C["SimpleParty"] = {
 	PowerBarShow = false,
 	PowerBarHeight = 5,
 	RaidBuffsStyle = 2,
+	RaidBuffs = 1,
 	ShowHealPrediction = true,
 	Smooth = false,
 	TargetHighlight = false,
+	AuraTrackIcons = true,
+	AuraTrackSpellTextures = true,
+	AuraTrackThickness = 5,
+	DebuffWatch = true,
+	DebuffWatchDefault = true,
 }
 
 C["Boss"] = {
@@ -647,4 +653,6 @@ C["WorldMap"] = {
 	FadeWhenMoving = true,
 	MapRevealGlow = true,
 	SmallWorldMap = true,
+	-- Waypoint options
+	AutoOpenWaypoint = true,
 }

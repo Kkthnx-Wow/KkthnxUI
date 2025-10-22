@@ -71,9 +71,10 @@ local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
 			local tex = ticks[i]
 			if not tex then
 				tex = bar:CreateTexture(nil, "OVERLAY")
-				tex:SetAtlas("UI-Frame-Bar-BorderTick", false)
-				tex:SetWidth(17)
-				tex:SetHeight(48)
+				tex:SetAtlas("UI-Frame-DastardlyDuos-ProgressBar-BorderTick", false)
+				tex:SetWidth(3)
+				tex:SetHeight(height)
+				tex:SetVertexColor(0.8, 0.8, 0.8, 0.8)
 				ticks[i] = tex
 			end
 			tex:ClearAllPoints()

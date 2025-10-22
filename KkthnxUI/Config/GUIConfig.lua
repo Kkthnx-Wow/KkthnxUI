@@ -1682,6 +1682,9 @@ local function CreateWorldMapCategory()
 	GUI:CreateSwitch(generalWorldMapSection, "WorldMap.FadeWhenMoving", L["Fade Worldmap When Moving"], "Make the world map fade out when your character is moving", UpdateMapFading)
 	GUI:CreateSwitch(generalWorldMapSection, "WorldMap.SmallWorldMap", L["Show Smaller Worldmap"], "Use a smaller, more compact world map size", UpdateMapSize)
 
+	-- Waypoint options
+	GUI:CreateSwitch(generalWorldMapSection, "WorldMap.AutoOpenWaypoint", L["Auto-open world map when setting waypoint"], "If enabled, automatically opens the World Map when you create a waypoint via /way or /go.")
+
 	-- WorldMap Reveal
 	local revealWorldMapSection = GUI:AddSection(worldMapCategory, "WorldMap Reveal")
 	GUI:CreateSwitch(revealWorldMapSection, "WorldMap.MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"], UpdateMapReveal)
