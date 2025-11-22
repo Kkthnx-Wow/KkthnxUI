@@ -9,14 +9,6 @@ local unpack = unpack
 local SOUNDKIT = SOUNDKIT
 local C_AddOns_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded
 local C_Garrison_HasGarrison = C_Garrison and C_Garrison.HasGarrison
-local ShowGarrisonLandingPage = ShowGarrisonLandingPage
-local UIParentLoadAddOn = UIParentLoadAddOn
-local ToggleFrame = ToggleFrame
-local CloseMenus = CloseMenus
-local CloseAllWindows = CloseAllWindows
-local PlaySound = PlaySound
-local ShowUIPanel = ShowUIPanel
-local HideUIPanel = HideUIPanel
 local ipairs = ipairs
 
 local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
@@ -43,7 +35,7 @@ local menuList = {
 			if PlayerSpellsUtil then
 				PlayerSpellsUtil.ToggleSpellBookFrame()
 			else
-				ToggleFrame(_G.SpellBookFrame)
+				_G.ToggleFrame(_G.SpellBookFrame)
 			end
 		end,
 		notCheckable = 1,
@@ -52,7 +44,7 @@ local menuList = {
 	{
 		text = _G.TIMEMANAGER_TITLE,
 		func = function()
-			ToggleFrame(_G.TimeManagerFrame)
+			_G.ToggleFrame(_G.TimeManagerFrame)
 		end,
 		notCheckable = 1,
 		icon = 237538,
@@ -130,9 +122,9 @@ local menuList = {
 		microOffset = "EJMicroButton",
 		func = function()
 			if not (C_AddOns_IsAddOnLoaded and C_AddOns_IsAddOnLoaded("Blizzard_EncounterJournal")) then
-				UIParentLoadAddOn("Blizzard_EncounterJournal")
+				_G.UIParentLoadAddOn("Blizzard_EncounterJournal")
 			end
-			ToggleFrame(_G.EncounterJournal)
+			_G.ToggleFrame(_G.EncounterJournal)
 		end,
 		notCheckable = 1,
 		icon = 236409,
@@ -167,10 +159,10 @@ if K.Level == 80 then
 	tinsert(menuList, {
 		text = RATED_PVP_WEEKLY_VAULT,
 		func = function()
-			if not WeeklyRewardsFrame then
+			if not _G.WeeklyRewardsFrame then
 				WeeklyRewards_LoadUI()
 			end
-			ToggleFrame(WeeklyRewardsFrame)
+			_G.ToggleFrame(_G.WeeklyRewardsFrame)
 		end,
 		notCheckable = 1,
 		icon = "greatVault-whole-normal",
@@ -200,15 +192,15 @@ tinsert(menuList, {
 	microOffset = "MainMenuMicroButton",
 	func = function()
 		if not _G.GameMenuFrame:IsShown() then
-			CloseMenus()
-			CloseAllWindows()
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
-			ShowUIPanel(_G.GameMenuFrame)
+			_G.CloseMenus()
+			_G.CloseAllWindows()
+			_G.PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
+			_G.ShowUIPanel(_G.GameMenuFrame)
 		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
-			HideUIPanel(_G.GameMenuFrame)
+			_G.PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
+			_G.HideUIPanel(_G.GameMenuFrame)
 
-			MainMenuMicroButton:SetButtonState("NORMAL")
+			_G.MainMenuMicroButton:SetButtonState("NORMAL")
 		end
 	end,
 	notCheckable = 1,
@@ -301,60 +293,84 @@ end
 
 local function ToggleLandingPage(_, ...)
 	if not C_Garrison_HasGarrison(...) then
-		UIErrorsFrame:AddMessage(K.InfoColor .. CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE)
+		_G.UIErrorsFrame:AddMessage(K.InfoColor .. CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE)
 		return
 	end
-	ShowGarrisonLandingPage(...)
+	_G.ShowGarrisonLandingPage(...)
 end
 
 function Module:ReskinRegions()
-	-- Garrison
+	-- Garrison / Expansion Landing Page Minimap Button (mirror Blizzard behavior)
 	local garrMinimapButton = ExpansionLandingPageMinimapButton
 	if garrMinimapButton then
 		local buttonTextureIcon = "ShipMissionIcon-Combat-Mission"
-		local function updateMinimapButtons(self)
-			self:ClearAllPoints()
-			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-			self:GetNormalTexture():SetAtlas(buttonTextureIcon)
-			self:GetPushedTexture():SetAtlas(buttonTextureIcon)
-			self:GetHighlightTexture():SetAtlas(buttonTextureIcon)
-			self:GetNormalTexture():SetVertexColor(1, 1, 1, 1)
-			self:GetPushedTexture():SetVertexColor(1, 1, 1, 1)
-			self:GetHighlightTexture():SetVertexColor(1, 1, 1, 1)
 
-			self.LoopingGlow:SetAtlas(buttonTextureIcon)
-			self.LoopingGlow:SetSize(26, 26)
-
-			self:SetHitRectInsets(0, 0, 0, 0)
+		local function skinLandingPageButton(self)
+			-- Reapply our custom icon after Blizzard updates
+			local normal = self:GetNormalTexture()
+			local pushed = self:GetPushedTexture()
+			local highlight = self:GetHighlightTexture()
+			if normal and normal.SetAtlas then
+				normal:SetAtlas(buttonTextureIcon)
+				normal:SetVertexColor(1, 1, 1, 1)
+			end
+			if pushed and pushed.SetAtlas then
+				pushed:SetAtlas(buttonTextureIcon)
+				pushed:SetVertexColor(1, 1, 1, 1)
+			end
+			if highlight and highlight.SetAtlas then
+				highlight:SetAtlas(buttonTextureIcon)
+				highlight:SetVertexColor(1, 1, 1, 1)
+			end
+			if self.LoopingGlow and self.LoopingGlow.SetAtlas then
+				self.LoopingGlow:SetAtlas(buttonTextureIcon)
+				self.LoopingGlow:SetSize(26, 26)
+			end
 			self:SetSize(26, 26)
 		end
-		updateMinimapButtons(garrMinimapButton)
-		garrMinimapButton:HookScript("OnShow", updateMinimapButtons)
-		hooksecurefunc(garrMinimapButton, "UpdateIcon", updateMinimapButtons)
+
+		local function positionLandingPageButton(self)
+			-- Only adjust position; let Blizzard handle icon/size/tooltip via UpdateIcon/OnEnter
+			self:ClearAllPoints()
+			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+			-- Ensure hit rect is sane without overriding built-in visuals
+			self:SetHitRectInsets(0, 0, 0, 0)
+		end
+
+		local function refreshLandingPageButton(self)
+			positionLandingPageButton(self)
+			skinLandingPageButton(self)
+		end
+
+		refreshLandingPageButton(garrMinimapButton)
+		garrMinimapButton:HookScript("OnShow", refreshLandingPageButton)
+		hooksecurefunc(garrMinimapButton, "UpdateIcon", refreshLandingPageButton)
 
 		local menuList = {
 			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0_Garrison, notCheckable = true },
-			{ text = _G.WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0_Garrison, notCheckable = true },
+			{ text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0_Garrison, notCheckable = true },
 			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0_Garrison, notCheckable = true },
 			{ text = _G.GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_6_0_Garrison, notCheckable = true },
 		}
+
 		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
 			if btn == "RightButton" then
 				if _G.GarrisonLandingPage and _G.GarrisonLandingPage:IsShown() then
-					HideUIPanel(_G.GarrisonLandingPage)
+					_G.HideUIPanel(_G.GarrisonLandingPage)
 				end
 				if _G.ExpansionLandingPage and _G.ExpansionLandingPage:IsShown() then
-					HideUIPanel(_G.ExpansionLandingPage)
+					_G.HideUIPanel(_G.ExpansionLandingPage)
 				end
 				K.LibEasyMenu.Create(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
 			end
 		end)
-		garrMinimapButton:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-			GameTooltip:SetText(self.title, 1, 1, 1)
-			GameTooltip:AddLine(self.description, nil, nil, nil, true)
-			GameTooltip:AddLine("|nRight Click to switch Summaries", nil, nil, nil, true)
-			GameTooltip:Show()
+
+		-- Additive tooltip hint without replacing Blizzard's tooltip logic
+		garrMinimapButton:HookScript("OnEnter", function(self)
+			if GameTooltip:IsOwned(self) then
+				GameTooltip:AddLine("\n" .. (L and (L["Right Click to switch Summaries"] or "Right Click to switch Summaries") or "Right Click to switch Summaries"), 1, 1, 1, true)
+				GameTooltip:Show()
+			end
 		end)
 	end
 
@@ -638,7 +654,7 @@ local function GetVolumeColor(cur)
 end
 
 local function GetCurrentVolume()
-	return K.Round(GetCVar("Sound_MasterVolume") * 100)
+	return K.Round(_G.GetCVar("Sound_MasterVolume") * 100)
 end
 
 function Module:CreateSoundVolume()
@@ -680,16 +696,16 @@ function Module:Minimap_OnMouseWheel(zoom)
 			value = 0
 		end
 
-		SetCVar("Sound_MasterVolume", tostring(value / 100))
+		_G.SetCVar("Sound_MasterVolume", tostring(value / 100))
 		Module.VolumeText:SetText(value .. "%")
 		Module.VolumeText:SetTextColor(GetVolumeColor(value))
 		Module.VolumeAnim:Stop()
 		Module.VolumeAnim:Play()
 	else
 		if zoom > 0 then
-			Minimap_ZoomIn()
+			_G.Minimap_ZoomIn()
 		else
-			Minimap_ZoomOut()
+			_G.Minimap_ZoomOut()
 		end
 	end
 end

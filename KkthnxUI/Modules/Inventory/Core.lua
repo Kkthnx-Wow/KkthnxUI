@@ -1107,15 +1107,16 @@ function Module:OnEnable()
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
 		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
-		AddNewContainer("Bag", 19, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 20, "Junk", filters.bagsJunk)
 		AddNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 10, "BagAOE", filters.bagAOE)
 		AddNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
 		AddNewContainer("Bag", 17, "BagLegacy", filters.bagLegacy)
-		AddNewContainer("Bag", 18, "BagLower", filters.bagLower)
+		AddNewContainer("Bag", 19, "BagLower", filters.bagLower)
 		AddNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 11, "BagCollection", filters.bagCollection)
 		AddNewContainer("Bag", 14, "BagStone", filters.bagStone)
+		AddNewContainer("Bag", 18, "BagKeystone", filters.bagKeystone)
 		AddNewContainer("Bag", 15, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 12, "BagGoods", filters.bagGoods)
 		AddNewContainer("Bag", 16, "BagQuest", filters.bagQuest)
@@ -1596,6 +1597,8 @@ function Module:OnEnable()
 			label = L["Reagent Bag"]
 		elseif name == "BagStone" then
 			label = C_Spell_GetSpellName(404861)
+		elseif name:match("Keystone$") then
+			label = WEEKLY_REWARDS_MYTHIC_KEYSTONE
 		elseif strmatch(name, "AOE") then
 			label = ITEM_ACCOUNTBOUND_UNTIL_EQUIP
 		elseif strmatch(name, "Lower") then

@@ -8,6 +8,7 @@ local C_Item_IsAnimaItemByID = C_Item.IsAnimaItemByID
 local C_Item_GetItemSpell = C_Item.GetItemSpell
 local string_lower = string.lower
 local type = type
+local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
 local CURRENT_EXPANSION = LE_EXPANSION_WAR_WITHIN or 10 -- 11.0
 
 -- Cache character database reference (updated on PLAYER_LOGIN via UpdateCharDB)
@@ -254,6 +255,21 @@ local function isPrimordialStone(item)
 	return item.id and primordialStones[item.id]
 end
 
+local function isItemKeystone(item)
+	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterKeystone then
+		return
+	end
+
+	if isCustomFilter(item) == false then
+		return
+	end
+
+	if item.id and C_Item_IsItemKeystoneByID(item.id) then
+		return true
+	end
+	return item.classID == Enum.ItemClass.Reagent and item.subClassID == Enum.ItemReagentSubclass.Keystone
+end
+
 local function isWarboundUntilEquipped(item)
 	if not C["Inventory"].ItemFilter or not C["Inventory"].FilterAOE then
 		return
@@ -284,6 +300,7 @@ function Module:GetFilters()
 	filters.bagEquipment = CreateLocationFilter(isItemInBag, isItemEquipment)
 	filters.bagEquipSet = CreateLocationFilter(isItemInBag, isItemEquipSet)
 	filters.bagConsumable = CreateLocationFilter(isItemInBag, isItemConsumable)
+	filters.bagKeystone = CreateLocationFilter(isItemInBag, isItemKeystone)
 	filters.bagsJunk = CreateLocationFilter(isItemInBag, isItemJunk)
 	filters.bagCollection = CreateLocationFilter(isItemInBag, isItemCollection)
 	filters.bagGoods = CreateLocationFilter(isItemInBag, isTradeGoods)

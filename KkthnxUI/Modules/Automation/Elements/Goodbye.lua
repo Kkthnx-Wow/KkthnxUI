@@ -1,9 +1,16 @@
+-- Cache globals / tables locally for performance
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
--- Local references for global functions
+-- Lua / WoW API locals
 local math_random = math.random
+local GetLocale = GetLocale
+local GetInstanceInfo = GetInstanceInfo
+local GetTime = GetTime
 local IsInGroup = IsInGroup
+local IsPartyLFG = IsPartyLFG
+local C_PartyInfo_IsPartyWalkIn = C_PartyInfo.IsPartyWalkIn
+local C_Timer_After = C_Timer.After
 local SendChatMessage = SendChatMessage
 
 -- Random list of auto-goodbye messages for different locales
@@ -142,47 +149,83 @@ local AutoGoodbyeMessages = {
 	},
 }
 
+-- Pre-resolve locale goodbye list once
 local locale = GetLocale()
 local AutoGoodbyeList = AutoGoodbyeMessages[locale] or AutoGoodbyeMessages["enUS"]
-local lastGoodbyeAt = 0
 
-local function SendAutoGoodbyeMessage()
+-- Anti-spam timestamp + "are we already waiting to send?"
+local lastGoodbyeAt = 0
+local pendingGoodbye = false
+
+-- tiny helper: are we in an instance & what channel would we use?
+local function GetGroupChannel()
+	-- Must still be in an instance and in group when we ACTUALLY speak
 	local _, instanceType = GetInstanceInfo()
 	if not instanceType or instanceType == "none" then
-		return -- Exit if not in an instance
+		return nil
 	end
 
-	local now = GetTime and GetTime() or 0
+	if not IsInGroup() then
+		return nil
+	end
+
+	local inPartyLFG = IsPartyLFG() and not C_PartyInfo_IsPartyWalkIn()
+	if inPartyLFG then
+		return "INSTANCE_CHAT"
+	else
+		return "PARTY"
+	end
+end
+
+-- final sender (runs AFTER the delay)
+local function SendAutoGoodbyeMessage()
+	pendingGoodbye = false -- timer fired, clear guard
+
+	-- rate limit: don't spam multiple in <8s
+	local now = GetTime() or 0
 	if now > 0 and (now - lastGoodbyeAt) < 8 then
 		return
 	end
+
+	-- make sure we still have something to say
 	if not AutoGoodbyeList or #AutoGoodbyeList == 0 then
-		return -- Exit if the list is nil or empty
+		return
 	end
 
-	local message = AutoGoodbyeList[math_random(#AutoGoodbyeList)]
-
-	local channel
-	local inPartyLFG = IsPartyLFG() and not C_PartyInfo.IsPartyWalkIn()
-	if IsInGroup() then
-		channel = inPartyLFG and "INSTANCE_CHAT" or "PARTY"
-	else
-		return -- Exit if not in a party or instance group
+	-- make sure it's still appropriate to speak
+	local channel = GetGroupChannel()
+	if not channel then
+		return
 	end
 
-	if message then
-		SendChatMessage(message, channel)
-		lastGoodbyeAt = now
+	-- pick random line
+	local msg = AutoGoodbyeList[math_random(#AutoGoodbyeList)]
+	if not msg then
+		return
 	end
+
+	SendChatMessage(msg, channel)
+	lastGoodbyeAt = now
 end
 
--- Setup delayed goodbye message
+-- schedules the goodbye with a random delay (2-5s),
+-- but won't stack multiple timers if events fire twice
 local function SetupAutoGoodbye()
+	-- if one is already enqueued, don't queue another
+	if pendingGoodbye then
+		return
+	end
+
+	-- you COULD early-return if not in group/instance yet,
+	-- but I prefer to re-check at send time instead,
+	-- in case you're technically still "inside" the runout phase.
+	pendingGoodbye = true
+
 	local delay = math_random(2, 5)
-	C_Timer.After(delay, SendAutoGoodbyeMessage)
+	C_Timer_After(delay, SendAutoGoodbyeMessage)
 end
 
--- Create or disable Auto Goodbye feature
+-- public API toggle
 function Module:CreateAutoGoodbye()
 	if C["Automation"].AutoGoodbye then
 		K:RegisterEvent("LFG_COMPLETION_REWARD", SetupAutoGoodbye)

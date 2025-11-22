@@ -1838,6 +1838,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		stoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
+		-- Filter Keystone Items Switch
+		local keystoneSwitch = self:CreateSwitch(parent, "Inventory.FilterKeystone", "Filter Keystone Items", "Filter Mythic Keystone items", UpdateBagStatus)
+		keystoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
 		-- Gather Empty Slots Switch (this stays in extra config)
 		local gatherEmptySwitch = self:CreateSwitch(parent, "Inventory.GatherEmpty", "Gather Empty Slots", "Gather empty slots into one button", UpdateBagStatus)
 		gatherEmptySwitch:SetPoint("TOPLEFT", 0, yOffset)
@@ -1860,6 +1865,7 @@ function ExtraGUI:RegisterExampleConfigs()
 			SetExtraConfigValue("Inventory.FilterLower", true)
 			SetExtraConfigValue("Inventory.FilterLegacy", false)
 			SetExtraConfigValue("Inventory.FilterStone", true)
+			SetExtraConfigValue("Inventory.FilterKeystone", true)
 
 			-- Update all widgets
 			warbandSwitch:UpdateValue()
@@ -1876,6 +1882,7 @@ function ExtraGUI:RegisterExampleConfigs()
 			lowerSwitch:UpdateValue()
 			legacySwitch:UpdateValue()
 			stoneSwitch:UpdateValue()
+			keystoneSwitch:UpdateValue()
 			gatherEmptySwitch:UpdateValue()
 		end)
 		resetButton:SetPoint("TOPLEFT", 10, yOffset)

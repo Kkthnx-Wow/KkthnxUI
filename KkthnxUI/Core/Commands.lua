@@ -406,12 +406,49 @@ SlashCmdList["KKUI_COMMANDS"] = function(input)
 end
 _G.SLASH_KKUI_COMMANDS1 = "/kk"
 
-SlashCmdList.KKUI_PROFILE = function()
+SlashCmdList["KKUI_PROFILE"] = function(msg)
 	if K.ProfileGUI then
-		K.ProfileGUI:Toggle()
+		local command = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+		if command == "show" or command == "" then
+			K.ProfileGUI:Show()
+		elseif command == "hide" then
+			K.ProfileGUI:Hide()
+		elseif command == "toggle" then
+			K.ProfileGUI:Toggle()
+		elseif command == "import" then
+			if K.ProfileGUI.Frame and K.ProfileGUI.Frame:IsShown() then
+				K.ProfileGUI:ShowImportDialog()
+			else
+				K.ProfileGUI:Show()
+				C_Timer.After(0.2, function()
+					K.ProfileGUI:ShowImportDialog()
+				end)
+			end
+		elseif command == "export" then
+			if K.ProfileGUI.Frame and K.ProfileGUI.Frame:IsShown() then
+				K.ProfileGUI:ShowExportDialog()
+			else
+				K.ProfileGUI:Show()
+				C_Timer.After(0.2, function()
+					K.ProfileGUI:ShowExportDialog()
+				end)
+			end
+		elseif command == "help" then
+			print("|cff669DFFKkthnxUI Profile Manager:|r")
+			print("  |cffffffffUsage: /profile <command>|r")
+			print("  |cff00ff00show|r - Show profile manager")
+			print("  |cff00ff00hide|r - Hide profile manager")
+			print("  |cff00ff00toggle|r - Toggle profile manager")
+			print("  |cff00ff00import|r - Open import dialog")
+			print("  |cff00ff00export|r - Open export dialog")
+			print("  |cff00ff00help|r - Show this help")
+		else
+			print("|cff669DFFKkthnxUI Profile Manager:|r Unknown command '" .. command .. "'. Use '/profile help' for available commands.")
+		end
 	else
 		print("|cff669DFFKkthnxUI:|r ProfileGUI system not available.")
 	end
 end
-SLASH_KKUI_PROFILE1 = "/kprofile"
-SLASH_KKUI_PROFILE2 = "/kkthnxprofile"
+_G.SLASH_KKUI_PROFILE1 = "/profile"
+_G.SLASH_KKUI_PROFILE2 = "/kprofile"
+_G.SLASH_KKUI_PROFILE3 = "/kkthnxprofile"

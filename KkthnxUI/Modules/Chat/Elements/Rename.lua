@@ -212,11 +212,23 @@ local function renameChatFrames()
 end
 
 function Module:CreateChatRename()
-	-- Friend online/offline message overrides (localized if globals exist)
+	-- Friend online/offline formatting: avoid mutating Blizzard globals to prevent taint
 	local COME = rawget(_G, "L_CHAT_COME_ONLINE") or "has come |cff298F00online|r."
 	local GONE = rawget(_G, "L_CHAT_GONE_OFFLINE") or "has gone |cffff0000offline|r."
-	_G.ERR_FRIEND_ONLINE_SS = "|Hplayer:%s|h[%s]|h " .. COME
-	_G.ERR_FRIEND_OFFLINE_S = "[%s] " .. GONE
+
+	local function SystemFilter(_, _, msg, ...)
+		-- Rewrite only friend online/offline lines, keep everything else intact
+		-- Pattern-match player links or names when present
+		msg = msg:gsub("%|Hplayer:([^|]+)%|h%[([^%]]+)%]%|h has come online%.", function(player, name)
+			return "|Hplayer:" .. player .. "|h[" .. name .. "]|h " .. COME
+		end)
+		msg = msg:gsub("%[([^%]]+)%] has gone offline%.", function(name)
+			return "[" .. name .. "] " .. GONE
+		end)
+		return false, msg, ...
+	end
+
+	_G.ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", SystemFilter)
 
 	renameChatFrames()
 end

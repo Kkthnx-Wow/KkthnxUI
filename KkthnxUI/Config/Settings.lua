@@ -182,6 +182,7 @@ C["Inventory"] = {
 	FilterLegacy = false,
 	FilterQuest = true,
 	FilterStone = true,
+	FilterKeystone = true,
 	GatherEmpty = false,
 	IconSize = 36,
 	ItemFilter = true,

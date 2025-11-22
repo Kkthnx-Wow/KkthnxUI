@@ -2975,49 +2975,7 @@ function ProfileGUI:Enable()
 		end
 	end
 
-	-- Enhanced slash commands with better help
-	SLASH_KKTHNXUI_PROFILE1 = "/profile"
-	SLASH_KKTHNXUI_PROFILE2 = "/kprofile"
-	SLASH_KKTHNXUI_PROFILE3 = "/kkthnxprofile"
-	SlashCmdList["KKTHNXUI_PROFILE"] = function(msg)
-		local command = msg:lower():trim()
-		if command == "show" or command == "" then
-			ProfileGUI:Show()
-		elseif command == "hide" then
-			ProfileGUI:Hide()
-		elseif command == "toggle" then
-			ProfileGUI:Toggle()
-		elseif command == "import" then
-			if ProfileGUI.Frame and ProfileGUI.Frame:IsShown() then
-				ProfileGUI:ShowImportDialog()
-			else
-				ProfileGUI:Show()
-				C_Timer.After(0.2, function()
-					ProfileGUI:ShowImportDialog()
-				end)
-			end
-		elseif command == "export" then
-			if ProfileGUI.Frame and ProfileGUI.Frame:IsShown() then
-				ProfileGUI:ShowExportDialog()
-			else
-				ProfileGUI:Show()
-				C_Timer.After(0.2, function()
-					ProfileGUI:ShowExportDialog()
-				end)
-			end
-		elseif command == "help" then
-			print("|cff669DFFKkthnxUI Profile Manager:|r")
-			print("  |cffffffffUsage: /profile <command>|r")
-			print("  |cff00ff00show|r - Show profile manager")
-			print("  |cff00ff00hide|r - Hide profile manager")
-			print("  |cff00ff00toggle|r - Toggle profile manager")
-			print("  |cff00ff00import|r - Open import dialog")
-			print("  |cff00ff00export|r - Open export dialog")
-			print("  |cff00ff00help|r - Show this help")
-		else
-			print("|cff669DFFKkthnxUI Profile Manager:|r Unknown command '" .. command .. "'. Use '/profile help' for available commands.")
-		end
-	end
+	-- Slash commands are registered centrally in Core/Commands.lua to reduce taint
 
 	self._enabled = true
 	return true
