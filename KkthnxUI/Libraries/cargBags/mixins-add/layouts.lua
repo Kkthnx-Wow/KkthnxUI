@@ -26,65 +26,36 @@ DEPENDENCIES
 local _, ns = ...
 local layouts = ns.cargBags.classes.Container.layouts
 local ipairs = ipairs
-local math_floor = math.floor
 local cos = math.cos
-local sin = math.sin
+local sin = math.sinlocal
 
---[[!
-	Grid layout (refactored)
-	Refactored by Kkthnx to enhance efficiency, robustness, and maintainability:
-		Replaced the 'i == 1' size probe with a visibility-based counter to handle hidden buttons correctly
-		Rounded cached button size and total dimensions to integers to prevent sub-pixel artifacts
-		Localized lookups and precomputed step sizes to reduce per-button overhead
-	@param columns <number> number of columns [default: 8]
-	@param spacing <number> spacing between buttons [default: 5]
-	@param xOffset <number> x-offset of the whole layout [default: 0]
-	@param yOffset <number> y-offset of the whole layout [default: 0]
-]]
 function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
-	local buttons = self.buttons
 	local width, height = 0, 0
-	local stepX, stepY = 0, 0
-	local visibleIndex = 0
-	local rows = 0
-
-	for i = 1, #buttons do
-		local button = buttons[i]
+	local col, row = 0, 0
+	for i, button in ipairs(self.buttons) do
 		if button:IsShown() then
-			visibleIndex = visibleIndex + 1
-
-			if visibleIndex == 1 then
+			if i == 1 then -- Hackish, I know
 				width, height = button:GetSize()
-				width = math_floor(width + 0.5)
-				height = math_floor(height + 0.5)
-				stepX = width + spacing
-				stepY = height + spacing
 			end
 
-			local col = (visibleIndex - 1) % columns + 1
-			rows = math_floor((visibleIndex - 1) / columns) + 1
+			col = i % columns
+			if col == 0 then
+				col = columns
+			end
+			row = math.ceil(i / columns)
 
-			local xPos = (col - 1) * stepX
-			local yPos = -(rows - 1) * stepY
+			local xPos = (col - 1) * (width + spacing)
+			local yPos = -1 * (row - 1) * (height + spacing)
 
 			button:ClearAllPoints()
 			button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
 		end
 	end
 
-	if visibleIndex == 0 then
-		return 0, 0
-	end
-
-	local rawTotalWidth = columns * stepX - spacing
-	local rawTotalHeight = rows * stepY - spacing
-	local totalWidth = math_floor(rawTotalWidth + 0.5)
-	local totalHeight = math_floor(rawTotalHeight + 0.5)
-
-	return totalWidth, totalHeight
+	return columns * (width + spacing) - spacing, row * (height + spacing) - spacing
 end
 
 --[[!
