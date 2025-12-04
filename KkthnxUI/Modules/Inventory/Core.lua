@@ -301,7 +301,7 @@ function Module:CreateBagTab(settings, columns, account)
 	bagTab:UpdateAnchor()
 
 	if account then
-		local purchaseButton = CreateFrame("Button", "KKUI_BankPurchaseButton", bagTab, "InsecureActionButtonTemplate")
+		local purchaseButton = CreateFrame("Button", "KKUI_" .. account .. "PurchaseButton", bagTab, "InsecureActionButtonTemplate")
 		purchaseButton:SetSize(120, 22)
 		purchaseButton:SetPoint("TOP", bagTab, "BOTTOM", 0, -5)
 		K.CreateFontString(purchaseButton, 14, PURCHASE, "info")
@@ -310,7 +310,8 @@ function Module:CreateBagTab(settings, columns, account)
 
 		purchaseButton:RegisterForClicks("AnyUp", "AnyDown")
 		purchaseButton:SetAttribute("type", "click")
-		purchaseButton:SetAttribute("clickbutton", _G.BankFrame.BankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
+		purchaseButton:SetAttribute("clickbutton", _G.BankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
+		bagTab.purchaseButton = purchaseButton
 	end
 
 	self.BagBar = bagTab
@@ -1041,6 +1042,13 @@ function Module:CloseBags()
 	end
 end
 
+function Module:GetPurchaseButton()
+	local panel = _G.BankPanel
+	local prompt = panel and panel.PurchasePrompt
+	local cost = prompt and prompt.TabCostFrame
+	return cost and cost.PurchaseButton
+end
+
 function Module:OnEnable()
 	local loadInventoryModules = {
 		"CreateInventoryBar",
@@ -1187,6 +1195,11 @@ function Module:OnEnable()
 		self:GetContainer("Bank"):Hide()
 		BankFrame.BankPanel:Hide()
 		self:GetContainer("Account"):Hide()
+
+		local purchaseButton = Module:GetPurchaseButton()
+		if purchaseButton then
+			purchaseButton:SetAttribute("overrideBankType", nil)
+		end
 	end
 
 	local MyButton = Backpack:GetItemButtonClass()
@@ -1643,12 +1656,12 @@ function Module:OnEnable()
 			buttons[6] = Module.CreateJunkButton(self)
 			buttons[7] = Module.CreateDeleteButton(self)
 		elseif name == "Bank" then
-			Module.CreateBagTab(self, settings, 6)
+			Module.CreateBagTab(self, settings, 6, "Bank")
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateBankDeposit(self)
 			buttons[5] = Module.CreateAccountBankButton(self, f)
 		elseif name == "Account" then
-			Module.CreateBagTab(self, settings, 5, "account")
+			Module.CreateBagTab(self, settings, 5, "Account")
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateAccountBankDeposit(self)
 			buttons[5] = Module.CreateBankButton(self, f)
@@ -1782,12 +1795,24 @@ function Module:OnEnable()
 
 	-- Bank frame paging
 	hooksecurefunc(BankFrame.BankPanel, "SetBankType", function(self, bankType)
-		Module.Bags:GetContainer("Bank"):SetShown(bankType == CHAR_BANK_TYPE)
-		Module.Bags:GetContainer("Account"):SetShown(bankType == ACCOUNT_BANK_TYPE)
-		Module:UpdateAllBags()
-		if _G["KKUI_BankPurchaseButton"] then
-			_G["KKUI_BankPurchaseButton"]:SetShown(bankType == ACCOUNT_BANK_TYPE and C_Bank.CanPurchaseBankTab(ACCOUNT_BANK_TYPE))
+		local bank = Module.Bags:GetContainer("Bank")
+		if bank then
+			bank:SetShown(bankType == CHAR_BANK_TYPE)
+			bank.BagBar.purchaseButton:SetShown(C_Bank.CanPurchaseBankTab(bankType))
 		end
+
+		local account = Module.Bags:GetContainer("Account")
+		if account then
+			account:SetShown(bankType == ACCOUNT_BANK_TYPE)
+			account.BagBar.purchaseButton:SetShown(C_Bank.CanPurchaseBankTab(bankType))
+		end
+
+		local purchaseButton = Module:GetPurchaseButton()
+		if purchaseButton then
+			purchaseButton:SetAttribute("overrideBankType", bankType)
+		end
+
+		Module:UpdateAllBags()
 	end)
 
 	-- Delay updates for data jam

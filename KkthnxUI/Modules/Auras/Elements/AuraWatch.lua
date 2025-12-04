@@ -965,6 +965,7 @@ end
 function Module.AuraWatch_OnEvent(event, ...)
 	if not C["AuraWatch"].Enable then
 		K:UnregisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
+		K:UnregisterEvent("PLAYER_TARGET_CHANGED", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
@@ -977,11 +978,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 		end
 		K:UnregisterEvent(event, Module.AuraWatch_OnEvent)
-	elseif event == "UNIT_AURA" then
-		local unit = ...
-		if not UnitIDTable[unit] then
-			return
-		end
+	elseif (event == "UNIT_AURA" and UnitIDTable[...]) or (event == "PLAYER_TARGET_CHANGED" and UnitIDTable["target"]) then
 		Module:AuraWatch_PreCleanup()
 		Module:AuraWatch_UpdateCD()
 		local inCombat = InCombatLockdown()
@@ -995,6 +992,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 	end
 end
 K:RegisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
+K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.AuraWatch_OnEvent)
 K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
 K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
 K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)

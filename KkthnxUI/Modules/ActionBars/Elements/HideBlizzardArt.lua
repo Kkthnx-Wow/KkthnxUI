@@ -4,6 +4,8 @@ local Module = K:GetModule("ActionBar")
 local _G = _G
 local next, tonumber = next, tonumber
 
+local MainMenuBar = MainMenuBar or MainActionBar -- isNewPatch, needs review
+
 local scripts = {
 	"OnShow",
 	"OnHide",

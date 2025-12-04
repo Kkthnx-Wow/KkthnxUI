@@ -218,6 +218,7 @@ function Module:CreateMicroMenu()
 		{ "PlayerSpellsMicroButton" },
 		{ "AchievementMicroButton" },
 		{ "QuestLogMicroButton" },
+		{ "HousingMicroButton" },
 		{ "GuildMicroButton" },
 		{ "LFDMicroButton" },
 		{ "EJMicroButton" },

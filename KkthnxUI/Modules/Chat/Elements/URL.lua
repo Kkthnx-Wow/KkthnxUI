@@ -101,5 +101,5 @@ function Module:CreateCopyURL()
 		return orig(self, link, ...)
 	end
 
-	hooksecurefunc("ChatFrame_OnHyperlinkShow", self.HyperlinkShowHook)
+	-- hooksecurefunc("ChatFrame_OnHyperlinkShow", self.HyperlinkShowHook) -- FIX ME
 end

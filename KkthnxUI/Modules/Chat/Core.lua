@@ -565,8 +565,8 @@ function Module:OnEnable()
 	end)
 
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
-	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
-	hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound)
+	-- hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors) -- FIX ME
+	-- hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound) -- FIX ME
 
 	-- Default
 	if CHAT_OPTIONS then -- only flash whisper
