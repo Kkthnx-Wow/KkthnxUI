@@ -432,9 +432,9 @@ local function buttonOnClick(self, button)
 		end
 	else
 		if self.isBNet then
-			ChatFrame_SendBNetTell(self.data[2])
+			ChatFrameUtil.SendBNetTell(self.data[2])
 		else
-			ChatFrame_SendTell(self.data[1], SELECTED_DOCK_FRAME)
+			ChatFrameUtil.SendTell(self.data[1], SELECTED_DOCK_FRAME)
 		end
 	end
 end

@@ -17,7 +17,6 @@ local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatFrame_SendTell = ChatFrame_SendTell
 local ConsoleExec = ConsoleExec
 local CreateFrame = CreateFrame
 local GetCVar = GetCVar
@@ -111,7 +110,7 @@ local function editBoxOnTextChanged(self)
 			end
 
 			if name then
-				ChatFrame_SendTell(name, self.chatFrame)
+				ChatFrameUtil.SendTell(name, self.chatFrame)
 			else
 				UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
 			end
@@ -565,8 +564,8 @@ function Module:OnEnable()
 	end)
 
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
-	-- hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors) -- FIX ME
-	-- hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound) -- FIX ME
+	hooksecurefunc("FloatingChatFrameManager_OnEvent", Module.UpdateTabEventColors)
+	hooksecurefunc(ChatFrameUtil, "ProcessMessageEventFilters", Module.PlayWhisperSound)
 
 	-- Default
 	if CHAT_OPTIONS then -- only flash whisper

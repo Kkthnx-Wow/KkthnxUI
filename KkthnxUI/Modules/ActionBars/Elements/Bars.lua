@@ -236,7 +236,7 @@ function Module:UpdateBarConfig()
 end
 
 function Module:ReassignBindings()
-	if InCombatLockdown() then
+	if InCombatLockdown() or Module.isHousing then
 		return
 	end
 
@@ -266,6 +266,15 @@ function Module:ClearBindings()
 		if frame then
 			ClearOverrideBindings(frame)
 		end
+	end
+end
+
+function Module:UpdateHousingState(state)
+	Module.isHousing = (state ~= 0)
+	if Module.isHousing then
+		Module:ClearBindings()
+	else
+		Module:ReassignBindings()
 	end
 end
 
@@ -415,6 +424,7 @@ function Module:OnEnable()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_CLOSE", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_OPENING_DONE", Module.ClearBindings)
+	K:RegisterEvent("HOUSE_EDITOR_MODE_CHANGED", Module.UpdateHousingState)
 
 	if AdiButtonAuras then
 		AdiButtonAuras:RegisterLAB("LibActionButton-1.0")

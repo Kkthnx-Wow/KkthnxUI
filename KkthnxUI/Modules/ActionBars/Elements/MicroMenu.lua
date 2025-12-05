@@ -207,7 +207,7 @@ function Module:CreateMicroMenu()
 	local FadeMicroMenuEnabled = C["ActionBar"].FadeMicroMenu
 
 	local KKUI_MenuBar = CreateFrame("Frame", "KKUI_MenuBar", K.PetBattleFrameHider)
-	KKUI_MenuBar:SetSize(302, 30)
+	KKUI_MenuBar:SetSize(330, 30)
 	KKUI_MenuBar:SetAlpha(FadeMicroMenuEnabled and not KKUI_MenuBar.IsMouseOvered and 0 or 1)
 	KKUI_MenuBar:EnableMouse(false)
 	K.Mover(KKUI_MenuBar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
