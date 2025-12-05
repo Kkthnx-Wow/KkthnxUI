@@ -10,15 +10,9 @@ local Module = K:NewModule("Installer")
 
 -- Basic Lua functions
 local _G = _G
-local pairs = pairs
-local ipairs = ipairs
-local type = type
-local tostring = tostring
-local tonumber = tonumber
 
 -- Table functions
 local tinsert = table.insert
-local tremove = table.remove
 local wipe = wipe
 
 -- String functions
@@ -29,11 +23,12 @@ local CreateFrame = CreateFrame
 local UIParent = UIParent
 
 -- Chat Functions and Variables
+local CHAT_FRAMES = CHAT_FRAMES
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
-local ChatFrame_AddChannel = ChatFrame_AddChannel
-local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
-local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
-local ChatFrame_RemoveChannel = ChatFrame_RemoveChannel
+local ChatFrame1_AddChannel = ChatFrame1.AddChannel
+local ChatFrame1_AddMessageGroup = ChatFrame1.AddMessageGroup
+local ChatFrame1_RemoveAllMessageGroups = ChatFrame1.RemoveAllMessageGroups
+local ChatFrame1_RemoveChannel = ChatFrame1.RemoveChannel
 local ChatTypeInfo = ChatTypeInfo
 local FCF_DockFrame = FCF_DockFrame
 local FCF_OpenNewWindow = FCF_OpenNewWindow
@@ -44,11 +39,9 @@ local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
 local FCF_StopDragging = FCF_StopDragging
-local CHAT_FRAMES = CHAT_FRAMES
 
 -- Game and System Settings
 local C_Timer = C_Timer
-local GetCVarBool = GetCVarBool
 local InCombatLockdown = InCombatLockdown
 local PlaySound = PlaySound
 local ReloadUI = ReloadUI
@@ -299,17 +292,17 @@ function Module:ForceChatSettings()
 	ChatFrame1:Show()
 
 	-- Remove channels and message groups from ChatFrame1
-	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, "LocalDefense")
-	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
-	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
-	ChatFrame_RemoveChannel(ChatFrame1, "Services")
+	ChatFrame1_RemoveAllMessageGroups(ChatFrame1)
+	ChatFrame1_RemoveChannel(ChatFrame1, TRADE)
+	ChatFrame1_RemoveChannel(ChatFrame1, GENERAL)
+	ChatFrame1_RemoveChannel(ChatFrame1, "LocalDefense")
+	ChatFrame1_RemoveChannel(ChatFrame1, "GuildRecruitment")
+	ChatFrame1_RemoveChannel(ChatFrame1, "LookingForGroup")
+	ChatFrame1_RemoveChannel(ChatFrame1, "Services")
 
 	-- Add message groups to ChatFrame1
 	for i = 1, #generalMessageGroups do
-		ChatFrame_AddMessageGroup(ChatFrame1, generalMessageGroups[i])
+		ChatFrame1_AddMessageGroup(ChatFrame1, generalMessageGroups[i])
 	end
 
 	-- Configure ChatFrame2 (Combat Log)
@@ -323,31 +316,31 @@ function Module:ForceChatSettings()
 	local Whispers = FCF_OpenNewWindow("Whispers")
 	FCF_SetLocked(Whispers, true)
 	FCF_DockFrame(Whispers)
-	ChatFrame_RemoveAllMessageGroups(Whispers)
-	ChatFrame_AddMessageGroup(Whispers, "WHISPER")
-	ChatFrame_AddMessageGroup(Whispers, "BN_WHISPER")
-	ChatFrame_AddMessageGroup(Whispers, "BN_CONVERSATION")
+	ChatFrame1_RemoveAllMessageGroups(Whispers)
+	ChatFrame1_AddMessageGroup(Whispers, "WHISPER")
+	ChatFrame1_AddMessageGroup(Whispers, "BN_WHISPER")
+	ChatFrame1_AddMessageGroup(Whispers, "BN_CONVERSATION")
 
 	-- Configure Trade Window
 	local Trade = FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
-	ChatFrame_RemoveAllMessageGroups(Trade)
-	ChatFrame_AddChannel(Trade, TRADE)
-	ChatFrame_AddChannel(Trade, GENERAL)
-	ChatFrame_AddChannel(Trade, L["Services"])
+	ChatFrame1_RemoveAllMessageGroups(Trade)
+	ChatFrame1_AddChannel(Trade, TRADE)
+	ChatFrame1_AddChannel(Trade, GENERAL)
+	ChatFrame1_AddChannel(Trade, L["Services"])
 
 	-- Configure Loot Window
 	local Loot = FCF_OpenNewWindow(L["Loot"])
 	FCF_SetLocked(Loot, true)
 	FCF_DockFrame(Loot)
-	ChatFrame_RemoveAllMessageGroups(Loot)
-	ChatFrame_AddMessageGroup(Loot, "COMBAT_XP_GAIN")
-	ChatFrame_AddMessageGroup(Loot, "COMBAT_HONOR_GAIN")
-	ChatFrame_AddMessageGroup(Loot, "COMBAT_FACTION_CHANGE")
-	ChatFrame_AddMessageGroup(Loot, "LOOT")
-	ChatFrame_AddMessageGroup(Loot, "MONEY")
-	ChatFrame_AddMessageGroup(Loot, "SKILL")
+	ChatFrame1_RemoveAllMessageGroups(Loot)
+	ChatFrame1_AddMessageGroup(Loot, "COMBAT_XP_GAIN")
+	ChatFrame1_AddMessageGroup(Loot, "COMBAT_HONOR_GAIN")
+	ChatFrame1_AddMessageGroup(Loot, "COMBAT_FACTION_CHANGE")
+	ChatFrame1_AddMessageGroup(Loot, "LOOT")
+	ChatFrame1_AddMessageGroup(Loot, "MONEY")
+	ChatFrame1_AddMessageGroup(Loot, "SKILL")
 
 	-- Finalize
 	FCF_SelectDockFrame(ChatFrame1)
