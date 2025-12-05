@@ -106,6 +106,14 @@ function Module:UpdateTimer(elapsed)
 		return
 	end
 
+	-- Throttle updates to reduce CPU churn in large aura sets
+	self._throttle = (self._throttle or 0) + elapsed
+	if self._throttle < 0.1 then
+		return
+	end
+	elapsed = self._throttle
+	self._throttle = 0
+
 	if self.timeLeft then
 		self.timeLeft = self.timeLeft - elapsed
 	end

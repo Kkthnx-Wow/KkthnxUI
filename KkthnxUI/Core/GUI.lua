@@ -3725,10 +3725,9 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 		return
 	end
 
-	-- Close existing helper menu if open
+	-- Close existing helper menu if open (we reuse the singleton)
 	if K.GUIHelpers._menu and K.GUIHelpers._menu:IsShown() then
 		K.GUIHelpers._menu:Hide()
-		K.GUIHelpers._menu = nil
 	end
 	if K.GUIHelpers._blocker and K.GUIHelpers._blocker:IsShown() then
 		K.GUIHelpers._blocker:Hide()
@@ -3743,57 +3742,79 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 	local visibleCount = args.visibleCount or 10
 	local searchThreshold = args.showSearchOver or 10
 
-	local menu = CreateFrame("Frame", nil, UIParent)
+	-- Reuse a singleton dropdown frame to avoid leaking frames
+	local menu = K.GUIHelpers._menu
+	if not menu then
+		menu = CreateFrame("Frame", nil, UIParent)
+		menu:SetFrameStrata("TOOLTIP")
+		menu:SetFrameLevel(1000)
+		menu:SetClampedToScreen(true)
+		-- Static background and border (created once)
+		local menuBg = menu:CreateTexture(nil, "BACKGROUND")
+		menuBg:SetAllPoints()
+		menuBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		menuBg:SetVertexColor(0.1, 0.1, 0.1, 0.95)
+		menu._bg = menuBg
+		local menuBorder = CreateFrame("Frame", nil, menu)
+		menuBorder:SetPoint("TOPLEFT", -1, 1)
+		menuBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+		menuBorder:SetFrameLevel(menu:GetFrameLevel() - 1)
+		local borderTexture = menuBorder:CreateTexture(nil, "BACKGROUND")
+		borderTexture:SetAllPoints()
+		borderTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+		borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+		menu._border = menuBorder
+		K.GUIHelpers._menu = menu
+	end
 	local itemHeight = 22
 	local useSearch = #options > searchThreshold
 	local searchHeight = useSearch and 24 or 0
 	local menuHeight = math.min(#options, visibleCount) * itemHeight + 4 + searchHeight
 	menu:SetSize(menuWidth, menuHeight)
 	menu:SetPoint("TOPLEFT", anchorButton, "BOTTOMLEFT", 0, -2)
-	menu:SetFrameStrata("TOOLTIP")
-	menu:SetFrameLevel(1000)
-	menu:SetClampedToScreen(true)
-
-	local menuBg = menu:CreateTexture(nil, "BACKGROUND")
-	menuBg:SetAllPoints()
-	menuBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	menuBg:SetVertexColor(0.1, 0.1, 0.1, 0.95)
-
-	local menuBorder = CreateFrame("Frame", nil, menu)
-	menuBorder:SetPoint("TOPLEFT", -1, 1)
-	menuBorder:SetPoint("BOTTOMRIGHT", 1, -1)
-	menuBorder:SetFrameLevel(menu:GetFrameLevel() - 1)
-	local borderTexture = menuBorder:CreateTexture(nil, "BACKGROUND")
-	borderTexture:SetAllPoints()
-	borderTexture:SetTexture(C["Media"].Textures.White8x8Texture)
-	borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+	-- Ensure background/border visible after size change
+	if menu._bg then
+		menu._bg:Show()
+	end
+	if menu._border then
+		menu._border:Show()
+	end
 
 	local container = menu
 	local scrollChild, scrollFrame
 	local searchBox
 	if useSearch then
-		local searchFrame = CreateFrame("Frame", nil, menu)
+		local searchFrame = menu._searchFrame or CreateFrame("Frame", nil, menu)
 		searchFrame:SetSize(menuWidth - 4, searchHeight)
 		searchFrame:SetPoint("TOPLEFT", 2, -2)
-		local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
-		searchBg:SetAllPoints()
-		searchBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		searchBg:SetVertexColor(0.08, 0.08, 0.08, 1)
-		searchBox = CreateFrame("EditBox", nil, searchFrame)
-		searchBox:SetAllPoints()
-		searchBox:SetFontObject(K.UIFont)
-		searchBox:SetAutoFocus(true)
-		searchBox:SetTextColor(0.9, 0.9, 0.9, 1)
-		searchBox:SetJustifyH("LEFT")
-		searchBox:SetText("")
-		searchBox:EnableKeyboard(true)
-		if searchBox.SetPropagateKeyboardInput then
-			searchBox:SetPropagateKeyboardInput(false)
+		if not searchFrame._bg then
+			local searchBg = searchFrame:CreateTexture(nil, "BACKGROUND")
+			searchBg:SetAllPoints()
+			searchBg:SetTexture(C["Media"].Textures.White8x8Texture)
+			searchBg:SetVertexColor(0.08, 0.08, 0.08, 1)
+			searchFrame._bg = searchBg
 		end
+		local edit = searchFrame._edit or CreateFrame("EditBox", nil, searchFrame)
+		edit:SetAllPoints()
+		edit:SetFontObject(K.UIFont)
+		edit:SetAutoFocus(true)
+		edit:SetTextColor(0.9, 0.9, 0.9, 1)
+		edit:SetJustifyH("LEFT")
+		edit:SetText("")
+		edit:EnableKeyboard(true)
+		if edit.SetPropagateKeyboardInput then
+			edit:SetPropagateKeyboardInput(false)
+		end
+		searchFrame._edit = edit
+		menu._searchFrame = searchFrame
+		searchFrame:Show()
+		searchBox = edit
+	elseif menu._searchFrame then
+		menu._searchFrame:Hide()
 	end
 
 	if #options > visibleCount then
-		scrollFrame = CreateFrame("ScrollFrame", nil, menu)
+		scrollFrame = menu._scrollFrame or CreateFrame("ScrollFrame", nil, menu)
 		scrollFrame:SetPoint("TOPLEFT", 2, -(2 + searchHeight))
 		scrollFrame:SetPoint("BOTTOMRIGHT", -2, 2)
 		scrollFrame:EnableMouseWheel(true)
@@ -3807,11 +3828,19 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 				self:SetVerticalScroll(math.min(maxScroll, current + step))
 			end
 		end)
-
-		scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		if not menu._scrollChild then
+			menu._scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		end
+		scrollChild = menu._scrollChild
 		scrollChild:SetSize(menuWidth - 4, #options * itemHeight)
 		scrollFrame:SetScrollChild(scrollChild)
 		container = scrollChild
+		menu._scrollFrame = scrollFrame
+		scrollFrame:Show()
+	else
+		if menu._scrollFrame then
+			menu._scrollFrame:Hide()
+		end
 	end
 
 	local optionButtons = {}

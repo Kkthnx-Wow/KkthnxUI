@@ -849,10 +849,13 @@ function ProfileGUI:RefreshProfileList()
 	-- Refresh current character metadata to ensure it's up to date
 	self:StoreCharacterMetadata(K.Name, K.Realm)
 
-	-- Clear existing buttons
-	for _, child in ipairs({ self.ProfileScrollFrame.Child:GetChildren() }) do
-		child:Hide()
-		child:SetParent(nil)
+	-- Ensure button pool
+	self.ProfileButtons = self.ProfileButtons or {}
+	-- Hide existing buttons; we'll reuse them
+	for _, btn in ipairs(self.ProfileButtons) do
+		if btn.Hide then
+			btn:Hide()
+		end
 	end
 
 	local profiles = self:GetAllProfiles()
@@ -874,14 +877,36 @@ function ProfileGUI:RefreshProfileList()
 	local yOffset = -8
 	local buttonHeight = 32
 
-	for _, profile in ipairs(sortedProfiles) do
-		local button = self:CreateProfileListButton(profile)
-		button:SetParent(self.ProfileScrollFrame.Child)
+	for index, profile in ipairs(sortedProfiles) do
+		local button = self.ProfileButtons[index]
+		if not button then
+			button = self:CreateProfileListButton(profile)
+			self.ProfileButtons[index] = button
+			button:SetParent(self.ProfileScrollFrame.Child)
+		else
+			-- Reuse existing button; update its data and visuals
+			button.Profile = profile
+			if button.Text then
+				button.Text:SetText(profile.name)
+			end
+			if button.Portrait then
+				self:SetupPortrait(button.Portrait, profile.name, profile.realm)
+			end
+			self:UpdateProfileButtonState(button, profile)
+			button:Show()
+		end
 		button:SetPoint("TOPLEFT", 8, yOffset)
 		button:SetPoint("TOPRIGHT", -8, yOffset)
 		button:SetHeight(buttonHeight)
 
 		yOffset = yOffset - buttonHeight - 4
+	end
+	-- Hide any extra buttons beyond current list
+	for i = #sortedProfiles + 1, #self.ProfileButtons do
+		local btn = self.ProfileButtons[i]
+		if btn and btn.Hide then
+			btn:Hide()
+		end
 	end
 
 	-- Update scroll frame content height
@@ -1668,15 +1693,24 @@ function ProfileGUI:ShowExportDialog()
 		self:ShowStatusMessage("No profile selected", "error")
 		return
 	end
-
+	-- Export string for current selection
 	local exportString, error = self:ExportProfile(self.SelectedProfile)
 	if not exportString then
 		self:ShowStatusMessage(error, "error")
 		return
 	end
 
-	-- Create dialog with main GUI styling
-	local dialog = CreateFrame("Frame", nil, UIParent)
+	-- Reuse singleton dialog if already created
+	if self.ExportDialog and self.ExportDialog:IsShown() then
+		if self.ExportDialog._exportBox then
+			self.ExportDialog._exportBox:SetText(exportString)
+			self.ExportDialog._exportBox:SetCursorPosition(0)
+			self.ExportDialog._exportBox:HighlightText()
+		end
+		return self.ExportDialog
+	end
+
+	local dialog = self.ExportDialog or CreateFrame("Frame", nil, UIParent)
 	dialog.__KKUI_ProfileGUI = true
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
@@ -1744,7 +1778,6 @@ function ProfileGUI:ShowExportDialog()
 
 	closeButton:SetScript("OnClick", function()
 		dialog:Hide()
-		dialog:SetParent(nil)
 	end)
 	dialog:EnableKeyboard(true)
 	if dialog.SetPropagateKeyboardInput then
@@ -1813,7 +1846,7 @@ function ProfileGUI:ShowExportDialog()
 	scrollFrame:SetScrollChild(scrollChild)
 
 	-- Export code editbox
-	local exportBox = CreateFrame("EditBox", nil, scrollChild)
+	local exportBox = dialog._exportBox or CreateFrame("EditBox", nil, scrollChild)
 	exportBox:SetSize(440, 220)
 	exportBox:SetPoint("TOPLEFT", 10, -10)
 	exportBox:SetFontObject(K.UIFont)
@@ -1849,7 +1882,6 @@ function ProfileGUI:ShowExportDialog()
 
 	local cancelButton = CreateButton(content, "Close", 100, BUTTON_HEIGHT, function()
 		dialog:Hide()
-		dialog:SetParent(nil)
 	end)
 	cancelButton:SetPoint("BOTTOMRIGHT", content, "BOTTOMRIGHT", -20, 15)
 
@@ -1859,13 +1891,18 @@ function ProfileGUI:ShowExportDialog()
 		exportBox:HighlightText()
 	end)
 
+	dialog._exportBox = exportBox
+	self.ExportDialog = dialog
 	return dialog
 end
 
 -- Import Dialog - Enhanced with better styling
 function ProfileGUI:ShowImportDialog()
-	-- Create dialog with main GUI styling
-	local dialog = CreateFrame("Frame", nil, UIParent)
+	-- Reuse singleton dialog if available
+	if self.ImportDialog and self.ImportDialog:IsShown() then
+		return self.ImportDialog
+	end
+	local dialog = self.ImportDialog or CreateFrame("Frame", nil, UIParent)
 	dialog.__KKUI_ProfileGUI = true
 	dialog:SetSize(500, 400)
 	dialog:SetPoint("CENTER")
@@ -1933,7 +1970,6 @@ function ProfileGUI:ShowImportDialog()
 
 	closeButton:SetScript("OnClick", function()
 		dialog:Hide()
-		dialog:SetParent(nil)
 	end)
 	dialog:EnableKeyboard(true)
 	if dialog.SetPropagateKeyboardInput then
@@ -1998,7 +2034,7 @@ function ProfileGUI:ShowImportDialog()
 	scrollFrame:SetScrollChild(scrollChild)
 
 	-- Import code editbox
-	local importBox = CreateFrame("EditBox", nil, scrollChild)
+	local importBox = dialog._importBox or CreateFrame("EditBox", nil, scrollChild)
 	importBox:SetSize(440, 180)
 	importBox:SetPoint("TOPLEFT", 10, -10)
 	importBox:SetFontObject(K.UIFont)
@@ -2128,7 +2164,6 @@ function ProfileGUI:ShowImportDialog()
 
 	local cancelButton = CreateButton(content, "Cancel", 80, BUTTON_HEIGHT, function()
 		dialog:Hide()
-		dialog:SetParent(nil)
 	end)
 	cancelButton:SetPoint("BOTTOMRIGHT", content, "BOTTOMRIGHT", -20, 15)
 
@@ -2149,6 +2184,8 @@ function ProfileGUI:ShowImportDialog()
 		importBox:SetFocus()
 	end)
 
+	dialog._importBox = importBox
+	self.ImportDialog = dialog
 	return dialog
 end
 

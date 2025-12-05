@@ -104,7 +104,7 @@ function cargBags:ReplaceBlizzard(name)
 	local impl = name and cargBags:GetImplementation(name) or self.blizzard
 	self.blizzard = impl
 
-	-- Can we maybe live without hooking ToggleBag(id)?
+	-- Replace Blizzard toggles to forward to our implementation (legacy cargBags behavior)
 	ToggleAllBags = toggleNoForce
 	ToggleBag = toggleNoForce
 	ToggleBackpack = toggleNoForce
@@ -159,7 +159,7 @@ cargBags:SetScript("OnEvent", function(self, event)
 		self.atBank = true
 
 		if impl:IsShown() then
-			-- impl:OnEvent("BAG_UPDATE") -- No need to update twice here, needs review
+			-- impl:OnEvent("BAG_UPDATE")
 		else
 			impl:Show()
 		end

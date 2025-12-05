@@ -188,6 +188,7 @@
    <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
    <Include file="Skins\Addons\Nekometer.lua" />
+   <Include file="Skins\Addons\Hekili.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\RaiderIO.lua" /> -->
 </Ui>

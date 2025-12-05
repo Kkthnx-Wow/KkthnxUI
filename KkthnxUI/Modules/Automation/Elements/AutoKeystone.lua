@@ -13,7 +13,9 @@ local function isKeystone(itemID)
 end
 
 local function useKeystone()
-	for bag = 0, NUM_BAG_FRAMES do
+	-- Include reagent bag (bagID 5) explicitly for safety on modern clients
+	local lastBag = (Enum.BagIndex and Enum.BagIndex.ReagentBag) or (NUM_BAG_FRAMES + 1)
+	for bag = 0, lastBag do
 		for slot = 1, GetContainerNumSlots(bag) do
 			local itemID = GetContainerItemID(bag, slot)
 			if itemID and isKeystone(itemID) then

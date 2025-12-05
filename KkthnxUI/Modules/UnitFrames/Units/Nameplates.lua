@@ -112,12 +112,21 @@ function Module:UpdatePlateCVars()
 		return
 	end
 
+	local curTop, curBottom = GetCVar("nameplateOtherTopInset"), GetCVar("nameplateOtherBottomInset")
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
-	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
-		SetCVar("nameplateOtherTopInset", -1)
-		SetCVar("nameplateOtherBottomInset", -1)
+		if curTop ~= "0.05" then
+			SetCVar("nameplateOtherTopInset", 0.05)
+		end
+		if curBottom ~= "0.08" then
+			SetCVar("nameplateOtherBottomInset", 0.08)
+		end
+	else
+		if curTop == "0.05" then
+			SetCVar("nameplateOtherTopInset", -1)
+		end
+		if curBottom == "0.08" then
+			SetCVar("nameplateOtherBottomInset", -1)
+		end
 	end
 
 	local settings = {
@@ -131,7 +140,11 @@ function Module:UpdatePlateCVars()
 	}
 
 	for cvar, value in pairs(settings) do
-		SetCVar(cvar, value)
+		local cur = GetCVar(cvar)
+		local want = tostring(value)
+		if cur ~= want then
+			SetCVar(cvar, value)
+		end
 	end
 end
 
@@ -350,15 +363,13 @@ function Module:UpdateColor(_, unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) or C.NameplateTrashUnits[npcID] then
 			r, g, b = 0.6, 0.6, 0.6
 		else
-			-- Ill work on this later, I have an idea how I want to handle it.
-			local selectionType = UnitSelectionType(unit, true)
-			-- print(selectionType)
-			if selectionType == 1 then -- Hostile or Unfriendly -- Dumbass orange color.
-				r, g, b = 0.87, 0.44, 0.20
-			else
-				local ur, ug, ub = K.UnitColor(unit)
-				r, g, b = ur, ug, ub
-			end
+			-- Prefer robust reaction-based coloring over UnitSelectionType magic numbers
+			-- if UnitIsEnemy("player", unit) then
+			-- 	r, g, b = 0.87, 0.44, 0.20
+			-- else
+			local ur, ug, ub = K.UnitColor(unit)
+			r, g, b = ur, ug, ub
+			--end
 
 			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 				if status == 3 then
@@ -1586,13 +1597,16 @@ function Module:UpdateTargetClassPower()
 
 	local bar = plate.ClassPowerBar
 	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
-	if nameplate then
+	if nameplate and nameplate.unitFrame then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
 		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 24)
 		bar:Show()
 	else
 		bar:Hide()
+		-- Reset parent back to the original holder to avoid dangling references on recycled plates
+		bar:SetParent(plate)
+		bar:ClearAllPoints()
 	end
 end
 

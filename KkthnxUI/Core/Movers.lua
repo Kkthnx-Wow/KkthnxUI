@@ -44,7 +44,9 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 		key = "AuraWatchMover"
 	end
 
-	local mover = CreateFrame("Button", "KKUI_Mover", UIParent)
+	-- Use a unique name to avoid global collisions, or keep anonymous if preferred
+	local uniqueName = "KKUI_Mover_" .. tostring(value or "Anon")
+	local mover = CreateFrame("Button", uniqueName, UIParent)
 	mover:SetWidth(width or (self.GetWidth and self:GetWidth() or 50)) -- Default to 50 if self:GetWidth is unavailable
 	mover:SetHeight(height or (self.GetHeight and self:GetHeight() or 50)) -- Default to 50 if self:GetHeight is unavailable
 	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 38 / 255, 125 / 255, 206 / 255, 80 / 255 })

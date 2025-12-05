@@ -584,6 +584,8 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	if not config then
 		return
 	end
+	-- Container cache by configPath to avoid recreating content every time
+	self.ConfigContainers = self.ConfigContainers or {}
 
 	if not self.Frame then
 		self:CreateFrame()
@@ -594,10 +596,11 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 		self:HookMainGUIClose()
 	end
 
-	-- Clear existing content
-	for _, child in ipairs({ self.ScrollChild:GetChildren() }) do
-		child:Hide()
-		child:SetParent(nil)
+	-- Hide existing containers; we'll show or create for the requested path
+	for key, container in pairs(self.ConfigContainers) do
+		if container and container.Hide then
+			container:Hide()
+		end
 	end
 
 	-- Update title bar only (remove duplicate titles)
@@ -627,19 +630,27 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	-- Update yOffset after category title
 	yOffset = yOffset - 45
 
-	-- Create the extra configuration content directly without redundant titles
+	-- Create the extra configuration content once per configPath and reuse
 	if config.createContent then
-		local contentContainer = CreateFrame("Frame", nil, self.ScrollChild)
-		contentContainer:SetPoint("TOPLEFT", 15, yOffset)
-		contentContainer:SetSize(EXTRA_PANEL_WIDTH - 40, 1) -- Proper width with margins
+		local contentContainer = self.ConfigContainers[configPath]
+		if not contentContainer then
+			contentContainer = CreateFrame("Frame", nil, self.ScrollChild)
+			contentContainer:SetPoint("TOPLEFT", 15, yOffset)
+			contentContainer:SetSize(EXTRA_PANEL_WIDTH - 40, 1) -- Proper width with margins
 
-		-- Add subtle content background like main GUI
-		local contentBg = contentContainer:CreateTexture(nil, "BACKGROUND")
-		contentBg:SetAllPoints()
-		contentBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		contentBg:SetVertexColor(0.05, 0.05, 0.05, 0.4)
+			-- Add subtle content background like main GUI
+			local contentBg = contentContainer:CreateTexture(nil, "BACKGROUND")
+			contentBg:SetAllPoints()
+			contentBg:SetTexture(C["Media"].Textures.White8x8Texture)
+			contentBg:SetVertexColor(0.05, 0.05, 0.05, 0.4)
 
-		config.createContent(contentContainer)
+			config.createContent(contentContainer)
+			self.ConfigContainers[configPath] = contentContainer
+		else
+			contentContainer:ClearAllPoints()
+			contentContainer:SetPoint("TOPLEFT", 15, yOffset)
+		end
+		contentContainer:Show()
 
 		-- Calculate proper height from actual content
 		local contentHeight = 0

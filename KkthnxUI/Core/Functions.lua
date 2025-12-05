@@ -337,6 +337,7 @@ do
 	end
 
 	local FADEFRAMES, FADEMANAGER = {}, CreateFrame("FRAME")
+	setmetatable(FADEFRAMES, { __mode = "k" }) -- allow frames to be GC'd
 	FADEMANAGER.delay = 0.05
 
 	function K.UIFrameFade_OnUpdate(_, elapsed)
@@ -573,6 +574,12 @@ do
 			end
 			return iLvlDB[link]
 		end
+		-- Periodically clear cached item levels to avoid unbounded growth during long sessions
+		local function ClearItemLevelCache()
+			table.wipe(iLvlDB)
+		end
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", ClearItemLevelCache)
+		K:RegisterEvent("PLAYER_LEAVING_WORLD", ClearItemLevelCache)
 	end
 
 	local pendingNPCs, nameCache, callbacks = {}, {}, {}
@@ -1127,6 +1134,8 @@ end
 do
 	local mapRects = {}
 	local tempVec2D = CreateVector2D(0, 0)
+	local vecZero = CreateVector2D(0, 0)
+	local vecOne = CreateVector2D(1, 1)
 	function K.GetPlayerMapPos(mapID)
 		if not mapID then
 			return
@@ -1139,8 +1148,8 @@ do
 
 		local mapRect = mapRects[mapID]
 		if not mapRect then
-			local pos1 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
-			local pos2 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
+			local pos1 = select(2, C_Map_GetWorldPosFromMapPos(mapID, vecZero))
+			local pos2 = select(2, C_Map_GetWorldPosFromMapPos(mapID, vecOne))
 			if not pos1 or not pos2 then
 				return
 			end

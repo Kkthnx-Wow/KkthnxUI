@@ -876,6 +876,9 @@ end
 
 -- Centralized Blizzard raid frame disable
 local function DisableBlizzardRaidFrames()
+	if InCombatLockdown() then
+		return
+	end
 	if CompactPartyFrame then
 		CompactPartyFrame:UnregisterAllEvents()
 	end
@@ -888,6 +891,10 @@ local function DisableBlizzardRaidFrames()
 end
 
 function Module:CreateUnits()
+	-- Reset header list to avoid duplicates on re-init/profile switch
+	if Module.headers then
+		wipe(Module.headers)
+	end
 	local horizonRaid = C["Raid"].HorizonRaid
 	local numGroups = C["Raid"].NumGroups
 	local raidWidth, raidHeight = C["Raid"].Width, C["Raid"].Height

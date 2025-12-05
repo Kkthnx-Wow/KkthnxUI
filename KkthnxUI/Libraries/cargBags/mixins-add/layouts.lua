@@ -29,33 +29,76 @@ local ipairs = ipairs
 local cos = math.cos
 local sin = math.sinlocal
 
+-- function layouts.grid(self, columns, spacing, xOffset, yOffset)
+-- 	columns, spacing = columns or 8, spacing or 5
+-- 	xOffset, yOffset = xOffset or 0, yOffset or 0
+
+-- 	local width, height = 0, 0
+-- 	local col, row = 0, 0
+-- 	for i, button in ipairs(self.buttons) do
+-- 		if button:IsShown() then
+-- 			if i == 1 then -- Hackish, I know
+-- 				width, height = button:GetSize()
+-- 			end
+
+-- 			col = i % columns
+-- 			if col == 0 then
+-- 				col = columns
+-- 			end
+-- 			row = math.ceil(i / columns)
+
+-- 			local xPos = (col - 1) * (width + spacing)
+-- 			local yPos = -1 * (row - 1) * (height + spacing)
+
+-- 			button:ClearAllPoints()
+-- 			button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
+-- 		end
+-- 	end
+
+-- 	return columns * (width + spacing) - spacing, row * (height + spacing) - spacing
+-- end
+
 function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
-	local width, height = 0, 0
-	local col, row = 0, 0
+	-- Safe size check: Get size from first button, or default to 30 if list is empty
+	local itemWidth, itemHeight = 30, 30
+	if self.buttons and self.buttons[1] then
+		itemWidth, itemHeight = self.buttons[1]:GetSize()
+	end
+
+	local visibleIndex = 0
+	local totalRows = 0
+
 	for i, button in ipairs(self.buttons) do
 		if button:IsShown() then
-			if i == 1 then -- Hackish, I know
-				width, height = button:GetSize()
-			end
+			-- Only increment position for visible items
+			visibleIndex = visibleIndex + 1
 
-			col = i % columns
-			if col == 0 then
-				col = columns
-			end
-			row = math.ceil(i / columns)
+			-- Math: (index - 1) allows for clean 0-based grid math
+			local col = (visibleIndex - 1) % columns
+			local row = math.floor((visibleIndex - 1) / columns)
 
-			local xPos = (col - 1) * (width + spacing)
-			local yPos = -1 * (row - 1) * (height + spacing)
+			totalRows = row + 1
+
+			local xPos = col * (itemWidth + spacing)
+			local yPos = -1 * row * (itemHeight + spacing)
 
 			button:ClearAllPoints()
 			button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
 		end
 	end
 
-	return columns * (width + spacing) - spacing, row * (height + spacing) - spacing
+	local totalWidth = columns * (itemWidth + spacing) - spacing
+	local totalHeight = totalRows * (itemHeight + spacing) - spacing
+
+	-- Safety: if nothing is shown, height is 0
+	if visibleIndex == 0 then
+		totalHeight = 0
+	end
+
+	return totalWidth, totalHeight
 end
 
 --[[!

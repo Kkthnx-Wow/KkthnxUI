@@ -247,8 +247,8 @@ function Module:OnEnable()
 		-- Create the coordinates frame
 		local coordsFrame = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
 		coordsFrame:SetSize(WorldMapFrame:GetWidth(), 17)
-		coordsFrame:SetPoint("BOTTOMLEFT", 17)
-		coordsFrame:SetPoint("BOTTOMRIGHT", 0)
+		coordsFrame:SetPoint("BOTTOMLEFT", 17, 0)
+		coordsFrame:SetPoint("BOTTOMRIGHT", 0, 0)
 
 		-- Background texture for the coordinates frame
 		coordsFrame.Texture = coordsFrame:CreateTexture(nil, "BACKGROUND")

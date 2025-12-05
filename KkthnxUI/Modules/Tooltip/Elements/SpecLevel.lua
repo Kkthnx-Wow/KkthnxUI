@@ -6,6 +6,7 @@ local select, max, strfind, format, strsplit = select, math.max, string.find, st
 local GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown = GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown
 local UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi = UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi
 local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel
+local C_Item_GetItemInfoInstant = C_Item and C_Item.GetItemInfoInstant
 local HEIRLOOMS = HEIRLOOMS
 
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
@@ -106,6 +107,12 @@ function Module:InspectOnUpdate(elapsed)
 	self.elapsed = (self.elapsed or frequency) + elapsed
 	if self.elapsed > frequency then
 		self.elapsed = 0
+		self.retries = (self.retries or 0) + 1
+		if self.retries > 10 then -- safety: stop after ~5s (10 * 0.5)
+			self:Hide()
+			self.retries = 0
+			return
+		end
 		self:Hide()
 		ClearInspectPlayer()
 
@@ -200,7 +207,7 @@ function Module:GetUnitItemLevel(unit)
 							boa = boa + 1
 						end
 
-						local itemID = GetItemInfoFromHyperlink(itemLink)
+						local itemID = C_Item_GetItemInfoInstant and C_Item_GetItemInfoInstant(itemLink)
 						if Tooltip_TierSets[itemID] then
 							sets = sets + 1
 						end
@@ -210,13 +217,16 @@ function Module:GetUnitItemLevel(unit)
 							if i < 16 then
 								total = total + level
 							elseif i > 15 and quality == Enum.ItemQuality.Artifact then
-								local relics = { select(4, strsplit(":", itemLink)) }
-								for i = 1, 3 do
-									local relicID = relics[i] ~= "" and relics[i]
-									local relicLink = select(2, GetItemGem(itemLink, i))
-									if relicID and not relicLink then
-										delay = true
-										break
+								-- Legacy artifact relic scan; skip if API removed
+								if GetItemGem then
+									local relics = { select(4, strsplit(":", itemLink)) }
+									for i = 1, 3 do
+										local relicID = relics[i] ~= "" and relics[i]
+										local relicLink = select(2, GetItemGem(itemLink, i))
+										if relicID and not relicLink then
+											delay = true
+											break
+										end
 									end
 								end
 							end
@@ -317,6 +327,7 @@ function Module:InspectUnit(unit, forced)
 		end
 
 		self:SetupItemLevel()
+		updater.retries = 0
 		updater:Show()
 	end
 end
