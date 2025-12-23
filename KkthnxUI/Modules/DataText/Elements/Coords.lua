@@ -1,8 +1,13 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
+-- Cache frequently used functions
 local string_format = string.format
+local string_join = string.join
+local math_floor = math.floor
 local math_max = math.max
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local C_Map_GetPlayerMapPosition = C_Map.GetPlayerMapPosition
 
 local CoordsDataText
 local coordX, coordY = 0, 0
@@ -10,6 +15,9 @@ local faction
 local pvpType
 local subzone
 local zone
+
+-- Cache mapID to avoid expensive C_Map.GetBestMapForUnit calls every frame
+local currentMapID = nil
 
 local zoneInfo = {
 	arena = { FREE_FOR_ALL_TERRITORY, { 0.84, 0.03, 0.03 } },
@@ -21,16 +29,35 @@ local zoneInfo = {
 	sanctuary = { SANCTUARY_TERRITORY, { 0.035, 0.58, 0.84 } },
 }
 
+-- Event driver to update MapID only when needed (zone changes)
+local function UpdateMapID()
+	currentMapID = C_Map_GetBestMapForUnit("player")
+end
+
+-- Optimized coordinate formatting using math instead of string.format
 local function formatCoords()
-	return string_format("%.1f, %.1f", coordX * 100, coordY * 100)
+	-- Use math.floor for rounding instead of string formatting (zero GC)
+	local x = math_floor(coordX * 100 + 0.5)
+	local y = math_floor(coordY * 100 + 0.5)
+	return string_join(" ", x, y)
 end
 
 local function OnUpdate(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
+	-- Throttle to 10 updates per second (0.1s) to reduce CPU usage
 	if self.elapsed > 0.1 then
-		local x, y = K.GetPlayerMapPos(C_Map.GetBestMapForUnit("player"))
-		if x then
-			coordX, coordY = x, y
+		self.elapsed = 0
+
+		-- Update mapID only if not cached
+		if not currentMapID then
+			UpdateMapID()
+			return
+		end
+
+		-- Use cached mapID instead of calling GetBestMapForUnit every frame
+		local position = C_Map_GetPlayerMapPosition(currentMapID, "player")
+		if position then
+			coordX, coordY = position.x, position.y
 			CoordsDataText.Text:SetText(formatCoords())
 			CoordsDataText:Show()
 
@@ -47,10 +74,11 @@ local function OnUpdate(self, elapsed)
 				CoordsDataText.mover:SetHeight(totalH)
 			end
 		else
+			-- If position is nil, try to refresh mapID
+			currentMapID = nil
 			coordX, coordY = 0, 0
 			CoordsDataText:Hide()
 		end
-		self.elapsed = 0
 	end
 end
 
@@ -63,6 +91,8 @@ local eventList = {
 
 local function OnEvent(_, event, ...)
 	if tContains(eventList, event) then
+		-- Update cached mapID when zone changes
+		UpdateMapID()
 		subzone = GetSubZoneText()
 		zone = GetZoneText()
 		pvpType, _, faction = C_PvP.GetZonePVPInfo()

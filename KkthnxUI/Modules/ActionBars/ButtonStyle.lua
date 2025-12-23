@@ -1,31 +1,72 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
-local keyButton = gsub(KEY_BUTTON4, "%d", "")
-local keyNumpad = gsub(KEY_NUMPAD1, "%d", "")
+-- 1. Define Localized Globals (Cache them to avoid nil errors if WoW changes keys)
+-- We use "or" to fallback to English if the Global is missing in a specific client version.
+local L_BUTTON = _G.KEY_BUTTON3:gsub("3", "") or "Button"
+local L_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP or "Mouse Wheel Up"
+local L_MOUSEWHEELDN = _G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down"
+local L_NUMPAD = _G.KEY_NUMPAD0:gsub("0", "") or "Num Pad"
+local L_PAGEUP = _G.KEY_PAGEUP or "Page Up"
+local L_PAGEDOWN = _G.KEY_PAGEDOWN or "Page Down"
+local L_SPACE = _G.KEY_SPACE or "Space"
+local L_INSERT = _G.KEY_INSERT or "Insert"
+local L_HOME = _G.KEY_HOME or "Home"
+local L_DELETE = _G.KEY_DELETE or "Delete"
 
-local replaces = {
-	{ "(" .. keyButton .. ")", "M" },
-	{ "(" .. keyNumpad .. ")", "N" },
-	{ "(a%-)", "a" },
-	{ "(c%-)", "c" },
-	{ "(s%-)", "s" },
-	{ KEY_BUTTON3, "M3" },
-	{ KEY_MOUSEWHEELUP, "MU" },
-	{ KEY_MOUSEWHEELDOWN, "MD" },
-	{ KEY_SPACE, "Sp" },
+-- 2. The Master Replacement Table
+-- Ordered specifically: Modifiers first, then specific keys, then generic patterns.
+local replacements = {
+	-- >> Modifiers (Handle various casings and localized formats)
+	{ "(CTRL%-)", "c" },
+	{ "(Ctrl%-)", "c" },
+	{ "(ALT%-)", "a" },
+	{ "(Alt%-)", "a" },
+	{ "(SHIFT%-)", "s" },
+	{ "(Shift%-)", "s" },
+	{ "(META%-)", "m" }, -- macOS Command Key
+	{ "(Meta%-)", "m" },
+
+	-- >> Mouse (Localized & English)
+	{ L_MOUSEWHEELUP, "MU" },
+	{ "MOUSEWHEELUP", "MU" },
+	{ L_MOUSEWHEELDN, "MD" },
+	{ "MOUSEWHEELDOWN", "MD" },
+	{ L_BUTTON, "M" }, -- Localized "Button"
+	{ "BUTTON", "M" }, -- English "BUTTON"
+
+	-- >> Navigation & Editing (The missing items)
+	{ L_PAGEUP, "PU" },
+	{ "PAGEUP", "PU" },
+	{ L_PAGEDOWN, "PD" },
+	{ "PAGEDOWN", "PD" },
+	{ L_HOME, "Hm" },
+	{ "HOME", "Hm" },
+	{ "END", "End" }, -- Usually same in Locales, but safe to keep
+	{ L_INSERT, "Ins" },
+	{ "INSERT", "Ins" },
+	{ L_DELETE, "Del" },
+	{ "DELETE", "Del" },
+	{ "BACKSPACE", "BS" },
+	{ "Backspace", "BS" },
+	{ "TAB", "Tab" },
+	{ "ESCAPE", "Esc" },
+
+	-- >> Special Keys
+	{ L_SPACE, "Sp" },
+	{ "SPACE", "Sp" },
 	{ "CAPSLOCK", "CL" },
 	{ "Capslock", "CL" },
-	{ "BUTTON", "M" },
-	{ "NUMPAD", "N" },
-	{ "(META%-)", "m" },
-	{ "(Meta%-)", "m" },
-	{ "(ALT%-)", "a" },
-	{ "(CTRL%-)", "c" },
-	{ "(SHIFT%-)", "s" },
-	{ "MOUSEWHEELUP", "MU" },
-	{ "MOUSEWHEELDOWN", "MD" },
-	{ "SPACE", "Sp" },
+	{ "NUMLOCK", "NL" },
+	{ "Num Lock", "NL" },
+
+	-- >> Numpad Cleanup (Specific operators first, then generic)
+	{ "NUMPADDIVIDE", "N/" },
+	{ "NUMPADMULTIPLY", "N*" },
+	{ "NUMPADPLUS", "N+" },
+	{ "NUMPADMINUS", "N-" },
+	{ L_NUMPAD, "N" }, -- Localized "Num Pad"
+	{ "NUMPAD", "N" }, -- English "NUMPAD"
 }
 
 function Module:UpdateHotKey()
@@ -37,7 +78,7 @@ function Module:UpdateHotKey()
 	if text == RANGE_INDICATOR then
 		text = ""
 	else
-		for _, value in pairs(replaces) do
+		for _, value in pairs(replacements) do
 			text = gsub(text, value[1], value[2])
 		end
 	end

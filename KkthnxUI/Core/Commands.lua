@@ -7,12 +7,14 @@ local string_lower = string.lower
 local string_trim = string.trim
 local tonumber = tonumber
 
--- WoW API Functions
+-- WoW API Functions (cached locals for performance and modernization)
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local CombatLogClearEntries = CombatLogClearEntries
 local DoReadyCheck = DoReadyCheck
-local GetContainerItemLink = GetContainerItemLink
-local GetItemInfo = GetItemInfo
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
+local C_Item_GetItemInfo = C_Item and C_Item.GetItemInfo
 local PlaySound = PlaySound
 local UIErrorsFrame = UIErrorsFrame
 
@@ -109,10 +111,13 @@ end
 
 local function DeleteQuestItems()
 	for bag = 0, 4 do
-		for slot = 1, C_Container.GetContainerNumSlots(bag) do
-			local itemLink = GetContainerItemLink(bag, slot)
-			if itemLink and select(12, GetItemInfo(itemLink)) == _G.LE_ITEM_CLASS_QUESTITEM then
+		for slot = 1, C_Container_GetContainerNumSlots(bag) do
+			local itemLink = C_Container_GetContainerItemLink(bag, slot)
+			if itemLink then
+				local classID = C_Item_GetItemInfo and select(12, C_Item_GetItemInfo(itemLink))
+				if classID == _G.LE_ITEM_CLASS_QUESTITEM then
 				_G.print("Quest Item to Delete: " .. itemLink .. " in Bag: " .. bag .. " Slot: " .. slot)
+				end
 			end
 		end
 	end
@@ -121,10 +126,12 @@ end
 
 local function DeleteHeirlooms()
 	for bag = 0, 4 do
-		for slot = 1, C_Container.GetContainerNumSlots(bag) do
-			local item = { GetContainerItemInfo(bag, slot) }
-			if item[4] == 7 then -- Heirloom items
-				_G.print("Heirloom Item to Delete: " .. item[1] .. " in Bag: " .. bag .. " Slot: " .. slot)
+		for slot = 1, C_Container_GetContainerNumSlots(bag) do
+			local info = C_Container_GetContainerItemInfo(bag, slot)
+			-- Use modern container API struct; quality matches Enum.ItemQuality.Heirloom on modern clients
+			if info and info.quality == Enum.ItemQuality.Heirloom then
+				local itemLink = info.hyperlink or C_Container_GetContainerItemLink(bag, slot) or ("item:" .. (info.itemID or ""))
+				_G.print("Heirloom Item to Delete: " .. itemLink .. " in Bag: " .. bag .. " Slot: " .. slot)
 			end
 		end
 	end

@@ -100,77 +100,9 @@ local ProfileGUI = {
 -- Helper Functions
 
 -- Create colored background texture (matching main GUI exactly)
-local function CreateColoredBackground(frame, r, g, b, a)
-	local bg = frame:CreateTexture(nil, "BACKGROUND")
-	bg:SetAllPoints()
-	bg:SetTexture(C["Media"].Textures.White8x8Texture)
-	bg:SetVertexColor(r or 0, g or 0, b or 0, a or 0.8)
-	return bg
-end
-
--- Create clean, simple button (updated to match main GUI styling exactly)
-local function CreateButton(parent, text, width, height, onClick)
-	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(width or 120, height or BUTTON_HEIGHT)
-
-	-- Clean button background (matching main GUI exactly)
-	local buttonBg = button:CreateTexture(nil, "BACKGROUND")
-	buttonBg:SetAllPoints()
-	buttonBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	buttonBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-	button.KKUI_Background = buttonBg
-
-	-- Subtle border for depth (matching main GUI exactly)
-	local buttonBorder = button:CreateTexture(nil, "BORDER")
-	buttonBorder:SetPoint("TOPLEFT", -1, 1)
-	buttonBorder:SetPoint("BOTTOMRIGHT", 1, -1)
-	buttonBorder:SetTexture(C["Media"].Textures.White8x8Texture)
-	buttonBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
-	button.KKUI_Border = buttonBorder
-
-	-- Hover effects for clean design (matching main GUI exactly)
-	button:SetScript("OnEnter", function(self)
-		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
-		self.KKUI_Border:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		if self.Text then
-			self.Text:SetTextColor(1, 1, 1, 1)
-		end
-	end)
-
-	button:SetScript("OnLeave", function(self)
-		self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
-		self.KKUI_Border:SetVertexColor(0.3, 0.3, 0.3, 0.8)
-		if self.Text then
-			self.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		end
-	end)
-
-	-- Click effect (matching main GUI exactly)
-	button:SetScript("OnMouseDown", function(self)
-		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.6, ACCENT_COLOR[2] * 0.6, ACCENT_COLOR[3] * 0.6, 1)
-	end)
-
-	button:SetScript("OnMouseUp", function(self)
-		if self:IsMouseOver() then
-			self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
-		else
-			self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
-		end
-	end)
-
-	-- Button text
-	button.Text = button:CreateFontString(nil, "OVERLAY")
-	button.Text:SetFontObject(K.UIFont)
-	button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	button.Text:SetText(text)
-	button.Text:SetPoint("CENTER")
-
-	if onClick then
-		button:SetScript("OnClick", onClick)
-	end
-
-	return button
-end
+-- Use unified widget factory from K.WidgetFactory
+local CreateColoredBackground = K.WidgetFactory.CreateBackdrop
+local CreateButton = K.WidgetFactory.CreateButton
 
 -- Simplified EditBox
 local function CreateEditBox(parent, width, height, multiline)
@@ -2230,6 +2162,11 @@ end
 
 -- Show/Hide functions
 function ProfileGUI:Show()
+	-- Close ExtraGUI if it's open
+	if K.ExtraGUI and K.ExtraGUI.Hide then
+		K.ExtraGUI:Hide()
+	end
+
 	if not self.Frame then
 		self:CreateMainFrame()
 	end

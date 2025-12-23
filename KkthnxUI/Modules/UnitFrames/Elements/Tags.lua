@@ -35,9 +35,10 @@ local UnitStagger = UnitStagger
 local IsInGroup = IsInGroup
 local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
-local UnitName = UnitName
 local GetCVarBool = GetCVarBool
-local format = string.format
+
+-- Cache string functions for performance
+local sformat = string.format
 local strfind = string.find
 
 -- Precomputed atlas strings for role icons to avoid branching and allocations per update
@@ -304,7 +305,7 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 		scanTip:SetOwner(UIParent, "ANCHOR_NONE")
 		scanTip:SetUnit(unit)
 
-		local textLine = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]
+		local textLine = _G[sformat("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]
 		local title = textLine and textLine:GetText()
 		if title and not strfind(title, "^" .. LEVEL) then
 			return title

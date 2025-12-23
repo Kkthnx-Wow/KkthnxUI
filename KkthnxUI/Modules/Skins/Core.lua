@@ -16,7 +16,7 @@ end
 
 -- Function to load skins from a given list
 function Module:LoadSkins(skinList)
-	if type(skinList) ~= "table" or not next(skinList) then
+	if not next(skinList) then
 		return
 	end
 

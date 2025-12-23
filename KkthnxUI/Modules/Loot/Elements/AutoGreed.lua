@@ -9,7 +9,6 @@ local GetLootRollItemLink = GetLootRollItemLink
 local RollOnLoot = RollOnLoot
 
 local function SetupAutoGreed(_, _, id)
-	print("SetupAutoGreed", id) -- Remove this later
 	local _, _, _, quality, BoP, _, _, canDisenchant = GetLootRollItemInfo(id)
 	if id and quality == 2 and not BoP then
 		local link = GetLootRollItemLink(id)

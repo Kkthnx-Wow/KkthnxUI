@@ -157,9 +157,9 @@ function Module:UpdateButtonConfig(i)
 	self.buttonConfig.actionButtonUI = true -- rotation highlight
 
 	local hotkey = self.buttonConfig.text.hotkey
-	hotkey.font.font = K.UIFont
+	hotkey.font.font = K.UIFontOutline
 	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	hotkey.font.flags = K.UIFontStyle
+	hotkey.font.flags = K.UIFontOutlineStyle
 	hotkey.position.anchor = "TOPRIGHT"
 	hotkey.position.relAnchor = false
 	hotkey.position.offsetX = 0
@@ -167,9 +167,9 @@ function Module:UpdateButtonConfig(i)
 	hotkey.justifyH = "RIGHT"
 
 	local count = self.buttonConfig.text.count
-	count.font.font = K.UIFont
+	count.font.font = K.UIFontOutline
 	count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	count.font.flags = K.UIFontStyle
+	count.font.flags = K.UIFontOutlineStyle
 	count.position.anchor = "BOTTOMRIGHT"
 	count.position.relAnchor = false
 	count.position.offsetX = 2
@@ -177,9 +177,9 @@ function Module:UpdateButtonConfig(i)
 	count.justifyH = "RIGHT"
 
 	local macro = self.buttonConfig.text.macro
-	macro.font.font = K.UIFont
+	macro.font.font = K.UIFontOutline
 	macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	macro.font.flags = K.UIFontStyle
+	macro.font.flags = K.UIFontOutlineStyle
 	macro.position.anchor = "BOTTOM"
 	macro.position.relAnchor = false
 	macro.position.offsetX = 0

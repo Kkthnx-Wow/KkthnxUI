@@ -1,21 +1,19 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
--- Enhanced Queue Timer (PvE/PvP) with config toggles
--- - Audio cue on pop and warning near expiration
--- - Optional hiding of other timer status bars on the dialog
--- - Persists PvE queue pop time across reloads to keep timer accurate
-
+-- Cached Globals
 local SecondsToTime = SecondsToTime
 local CreateFrame = CreateFrame
 local PlaySoundFile = PlaySoundFile
 local GetTime = GetTime
 local hooksecurefunc = hooksecurefunc
+local math_max = math.max
+local type = type
 
 local LFGDungeonReadyDialog = LFGDungeonReadyDialog
 local PVPReadyDialog = PVPReadyDialog
 
-local SOUND_ID = 567458 -- UI_Button_Click_01 (placeholder from example)
+local SOUND_ID = 567458
 local WARNING_THRESHOLD = 6
 local PVE_BASE_EXPIRE = 40
 
@@ -26,13 +24,11 @@ local soundPlayed
 local updateInterval = 0.2
 local elapsedStamp = 0
 
--- Chat prints intentionally omitted; audio handled in BeepWarningIfNeeded
-
 local function HideOtherTimers()
 	if not C["Misc"].QueueTimerHideOtherTimers then
 		return
 	end
-	local popup = _G and rawget(_G, "LFGDungeonReadyPopup")
+	local popup = LFGDungeonReadyPopup
 	if not popup then
 		return
 	end
@@ -44,19 +40,16 @@ local function HideOtherTimers()
 	end
 end
 
--- Create large, center-aligned timer presentation similar to BetterBlizzQueue
 local function EnsureCustomLabels(dialog)
 	if not dialog or not dialog.label then
 		return
 	end
-
 	if dialog.queueTimerLabels then
 		return
 	end
 
 	local maxWidth = dialog:GetWidth()
 
-	-- Title: "Queue expires in"
 	dialog.customLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	dialog.customLabel:SetPoint("TOP", dialog.label, "TOP", 0, 0)
 	dialog.customLabel:SetText("Queue expires in")
@@ -65,7 +58,6 @@ local function EnsureCustomLabels(dialog)
 	dialog.customLabel:SetShadowOffset(1, -1)
 	dialog.customLabel:SetWidth(maxWidth)
 
-	-- Big timer
 	dialog.timerLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	dialog.timerLabel:SetPoint("TOP", dialog.customLabel, "BOTTOM", 0, -5)
 	fontFile = select(1, dialog.timerLabel:GetFont())
@@ -73,7 +65,6 @@ local function EnsureCustomLabels(dialog)
 	dialog.timerLabel:SetShadowOffset(1, -1)
 	dialog.timerLabel:SetWidth(maxWidth)
 
-	-- Instance name
 	dialog.bgLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	dialog.bgLabel:SetPoint("TOP", dialog.timerLabel, "BOTTOM", 0, -4)
 	fontFile = select(1, dialog.bgLabel:GetFont())
@@ -81,7 +72,6 @@ local function EnsureCustomLabels(dialog)
 	dialog.bgLabel:SetShadowOffset(1, -1)
 	dialog.bgLabel:SetWidth(maxWidth)
 
-	-- Status text
 	dialog.statusTextLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	dialog.statusTextLabel:SetPoint("TOP", dialog.bgLabel, "BOTTOM", 0, -3)
 	fontFile = select(1, dialog.statusTextLabel:GetFont())
@@ -92,9 +82,8 @@ local function EnsureCustomLabels(dialog)
 	dialog.queueTimerLabels = true
 end
 
--- Format timer color like BetterBlizzQueue: >20 green, >10 yellow, else red
 local function FormatExpiresText(seconds)
-	local secs = seconds and seconds > 0 and seconds or 1
+	local secs = (seconds and seconds > 0) and seconds or 1
 	local colorHex = (secs > 20) and "20ff20" or (secs > 10) and "ffff00" or "ff0000"
 	return string.format("|cff%s%s|r", colorHex, SecondsToTime(secs))
 end
@@ -103,7 +92,6 @@ local function SetExpiresText(timeRemaining, dialog, isPvP)
 	if not dialog then
 		return
 	end
-
 	EnsureCustomLabels(dialog)
 
 	local secs = timeRemaining or 0
@@ -131,7 +119,6 @@ local function SetExpiresText(timeRemaining, dialog, isPvP)
 	end
 end
 
--- Persist PvE pop time to survive reloads
 local function SavePVEPopTime()
 	KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer = KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer or {}
 	KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer.PVEPopTime = GetTime()
@@ -149,12 +136,20 @@ local function ClearPVEPopTime()
 	end
 end
 
+-- FIX: Added defensive check for table values
 local function RecalcPVERemaining()
 	local pop = LoadPVEPopTime()
-	if not pop then
+
+	-- Handle cases where 'pop' might be a table (Blizzard Info Table) or nil
+	if type(pop) == "table" then
+		pop = pop.timeAdded or pop.value or pop[1] -- Extraction logic
+	end
+
+	if not pop or type(pop) ~= "number" then
 		pveRemaining = PVE_BASE_EXPIRE
 		return
 	end
+
 	local delta = GetTime() - pop
 	local remain = PVE_BASE_EXPIRE - delta
 	if remain < 0 or remain > PVE_BASE_EXPIRE then
@@ -182,7 +177,7 @@ end
 
 local function UpdatePvE()
 	if LFGDungeonReadyDialog and LFGDungeonReadyDialog:IsShown() then
-		local secs = math.max(pveRemaining or 0, 0)
+		local secs = math_max(pveRemaining or 0, 0)
 		BeepWarningIfNeeded(secs)
 		SetExpiresText(secs, LFGDungeonReadyDialog)
 	end
@@ -226,12 +221,8 @@ end
 local function StopUpdater()
 	if updateFrame then
 		updateFrame:Hide()
-		soundPlayed = false
 	end
-end
-
-local function CaptureQueueWaitTimes()
-	-- Optional enhancement: measure LFD queued time
+	soundPlayed = false
 end
 
 function Module:CreateQueueTimers()
@@ -239,7 +230,6 @@ function Module:CreateQueueTimers()
 		return
 	end
 
-	-- PvE proposal
 	K:RegisterEvent("LFG_PROPOSAL_SHOW", function()
 		pveRemaining = PVE_BASE_EXPIRE
 		RecalcPVERemaining()
@@ -250,29 +240,15 @@ function Module:CreateQueueTimers()
 		HideOtherTimers()
 	end)
 
-	K:RegisterEvent("LFG_PROPOSAL_SUCCEEDED", function()
+	local function LFG_DONE()
 		StopUpdater()
 		ClearPVEPopTime()
-		soundPlayed = false
-	end)
+	end
 
-	K:RegisterEvent("LFG_PROPOSAL_DONE", function()
-		StopUpdater()
-		ClearPVEPopTime()
-		soundPlayed = false
-	end)
+	K:RegisterEvent("LFG_PROPOSAL_SUCCEEDED", LFG_DONE)
+	K:RegisterEvent("LFG_PROPOSAL_DONE", LFG_DONE)
+	K:RegisterEvent("LFG_PROPOSAL_FAILED", LFG_DONE)
 
-	K:RegisterEvent("LFG_PROPOSAL_FAILED", function()
-		StopUpdater()
-		ClearPVEPopTime()
-		soundPlayed = false
-	end)
-
-	K:RegisterEvent("LFG_QUEUE_STATUS_UPDATE", function()
-		CaptureQueueWaitTimes()
-	end)
-
-	-- PvP confirm
 	if PVPReadyDialog_Display then
 		hooksecurefunc("PVPReadyDialog_Display", function(_, index)
 			pvpQueueIndex = index

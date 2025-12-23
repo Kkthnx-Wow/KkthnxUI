@@ -16,5 +16,6 @@
    <Script file="ProfileGUI.lua"/>
    <Script file="Changelog.lua"/>
    <Script file="VersionCheck.lua"/>
-   <Script file="AddOns.lua"/>
+
+   <Include file="AddOns\AddOns.xml"/>
 </Ui>

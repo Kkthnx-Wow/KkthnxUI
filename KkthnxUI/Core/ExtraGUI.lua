@@ -42,46 +42,79 @@ local function tKeys(t)
 	return keys
 end
 
--- Utility functions for handling nested config paths
-local function SetValueByPath(table, path, value)
-	if not path then
-		return false
+-- Static event handlers to prevent memory leaks from anonymous closures
+local function OnCogwheelClicked(self)
+	local configPath = self.configPath
+	local optionTitle = self.optionTitle
+	local icon = self.icon
+
+	if not configPath then
+		return
 	end
 
-	local keys = { strsplit(".", path) }
-	local current = table
-
-	for i = 1, #keys - 1 do
-		if not current[keys[i]] then
-			current[keys[i]] = {}
-		elseif type(current[keys[i]]) ~= "table" then
-			-- Handle case where we encounter a primitive value that needs to become a table
-			current[keys[i]] = {}
-		end
-		current = current[keys[i]]
+	-- Visual feedback
+	if icon then
+		icon:SetVertexColor(1, 1, 1, 1)
+		C_Timer.After(0.1, function()
+			if icon and icon.SetVertexColor then
+				icon:SetVertexColor(K.r, K.g, K.b, 1)
+			end
+		end)
 	end
 
-	local finalKey = keys[#keys]
-	current[finalKey] = value
-	return true
+	-- Close Profile GUI if it's open (Window Overlap Fix)
+	if K.ProfileGUI and K.ProfileGUI.Frame and K.ProfileGUI.Frame:IsShown() then
+		K.ProfileGUI:Hide()
+	end
+
+	-- Check if ExtraGUI is already open with the same config
+	-- We use K.ExtraGUI here to ensure we reference the initialized global module
+	local ExtraGUI = K.ExtraGUI
+	if ExtraGUI and ExtraGUI.IsVisible and ExtraGUI.CurrentConfig and ExtraGUI.CurrentConfig.configPath == configPath then
+		-- Same config is open, close it (toggle off)
+		ExtraGUI:Hide()
+	elseif ExtraGUI then
+		-- Different config or not open, show it (toggle on or switch)
+		ExtraGUI:ShowExtraConfig(configPath, optionTitle)
+	end
+
+	-- Play sound feedback
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
 
-local function GetValueByPath(table, path)
-	if not path then
-		return nil
+local function OnCogwheelEnter(self)
+	local icon = self.icon
+	if not icon then
+		return
 	end
 
-	local keys = { strsplit(".", path) }
-	local current = table
+	local ACCENT_COLOR = { K.r, K.g, K.b }
+	icon:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 
-	for i = 1, #keys do
-		if not current or type(current) ~= "table" or current[keys[i]] == nil then
-			return nil
-		end
-		current = current[keys[i]]
+	-- Add subtle scaling effect
+	icon:SetSize(30, 30)
+
+	-- Show tooltip
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip:SetText(L["Extra Configuration"] or "Extra Configuration", 1, 1, 1, 1, true)
+	local optionTitle = self.optionTitle or self.configPath or ""
+	local tipMsg = format(L["Click to open additional options for %s"] or "Click to open additional options for %s", optionTitle)
+	GameTooltip:AddLine(tipMsg, 0.7, 0.7, 0.7, true)
+	GameTooltip:Show()
+end
+
+local function OnCogwheelLeave(self)
+	local icon = self.icon
+	if not icon then
+		return
 	end
 
-	return current
+	icon:SetVertexColor(0.8, 0.8, 0.8, 0.9)
+
+	-- Return to normal size
+	icon:SetSize(22, 22)
+
+	GameTooltip:Hide()
 end
 
 -- Configuration Functions
@@ -90,7 +123,7 @@ end
 local function GetDefaultValue(configPath)
 	-- First check if K.Defaults exists and has the path
 	if K.Defaults then
-		local defaultValue = GetValueByPath(K.Defaults, configPath)
+		local defaultValue = K.GetValueByPath(K.Defaults, configPath)
 		if defaultValue ~= nil then
 			return defaultValue
 		end
@@ -98,12 +131,12 @@ local function GetDefaultValue(configPath)
 
 	-- Fallback: If K.Defaults doesn't exist or doesn't have the path,
 	-- try to get from the original C table structure (may be current values though)
-	return GetValueByPath(C, configPath)
+	return K.GetValueByPath(C, configPath)
 end
 
 -- Get extra configuration value by path
 local function GetExtraConfigValue(configPath)
-	return GetValueByPath(C, configPath)
+	return K.GetValueByPath(C, configPath)
 end
 
 -- Set extra configuration value with hook integration and reload tracking
@@ -117,10 +150,10 @@ local function SetExtraConfigValue(configPath, value, settingName)
 
 	-- Fallback if main GUI not available (shouldn't happen in normal operation)
 	-- Get old value for hook comparison
-	local oldValue = GetValueByPath(C, configPath)
+	local oldValue = K.GetValueByPath(C, configPath)
 
 	-- Set in runtime config
-	SetValueByPath(C, configPath, value)
+	K.SetValueByPath(C, configPath, value)
 
 	-- Save to database (with safety check)
 	if KkthnxUIDB then
@@ -134,7 +167,7 @@ local function SetExtraConfigValue(configPath, value, settingName)
 			KkthnxUIDB.Settings[K.Realm][K.Name] = {}
 		end
 
-		SetValueByPath(KkthnxUIDB.Settings[K.Realm][K.Name], configPath, value)
+		K.SetValueByPath(KkthnxUIDB.Settings[K.Realm][K.Name], configPath, value)
 	end
 
 	-- Execute real-time update hooks (if available from main GUI)
@@ -318,17 +351,8 @@ local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
 -- Helper Functions
 
--- Create colored background texture
-local function CreateColoredBackground(frame, r, g, b, a)
-	if K and K.GUIHelpers and K.GUIHelpers.CreateColoredBackground then
-		return K.GUIHelpers.CreateColoredBackground(frame, r, g, b, a)
-	end
-	local bg = frame:CreateTexture(nil, "BACKGROUND")
-	bg:SetAllPoints()
-	bg:SetTexture(C["Media"].Textures.White8x8Texture)
-	bg:SetVertexColor(r or 0, g or 0, b or 0, a or 0.8)
-	return bg
-end
+-- Use unified widget factory from K.WidgetFactory
+local CreateColoredBackground = K.WidgetFactory.CreateBackdrop
 
 -- Create section header with background (reduces code duplication)
 local function CreateSectionHeader(parent, text, width, yOffset)
@@ -432,11 +456,11 @@ function ExtraGUI:CreateFrame()
 	title:SetFontObject(K.UIFont)
 	title:SetTextColor(1, 1, 1, 1)
 	title:SetText(L["Extra Configuration"] or "Extra Configuration")
-	title:SetPoint("LEFT", 15, 0)
+	title:SetPoint("CENTER", 0, -1)
 
 	-- Close Button using atlas icon
 	local closeButton = CreateFrame("Button", nil, titleBar)
-	closeButton:SetSize(24, 24)
+	closeButton:SetSize(32, 32)
 	closeButton:SetPoint("RIGHT", -8, 0)
 
 	-- Close button background
@@ -447,7 +471,7 @@ function ExtraGUI:CreateFrame()
 
 	-- Use atlas icon for close button
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
-	closeButton.Icon:SetSize(12, 12)
+	closeButton.Icon:SetSize(16, 16)
 	closeButton.Icon:SetPoint("CENTER")
 	closeButton.Icon:SetAtlas("uitools-icon-close")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
@@ -464,48 +488,6 @@ function ExtraGUI:CreateFrame()
 	closeButton:SetScript("OnLeave", function(self)
 		self.Icon:SetVertexColor(1, 1, 1, 0.8)
 		closeBg:SetVertexColor(0, 0, 0, 0)
-	end)
-
-	-- Reload UI Button (left of close button)
-	local reloadButton = CreateFrame("Button", nil, titleBar)
-	reloadButton:SetSize(24, 24)
-	reloadButton:SetPoint("RIGHT", closeButton, "LEFT", -4, 0)
-
-	local reloadBg = reloadButton:CreateTexture(nil, "BACKGROUND")
-	reloadBg:SetAllPoints()
-	reloadBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	reloadBg:SetVertexColor(0, 0, 0, 0)
-
-	reloadButton.Icon = reloadButton:CreateTexture(nil, "ARTWORK")
-	reloadButton.Icon:SetSize(14, 14)
-	reloadButton.Icon:SetPoint("CENTER")
-	reloadButton.Icon:SetAtlas("transmog-icon-revert")
-	reloadButton.Icon:SetVertexColor(1, 1, 1, 0.8)
-
-	reloadButton:SetScript("OnClick", function()
-		-- Clear pending reloads and reload UI immediately
-		if K.NewGUI and K.NewGUI.ClearReloadQueue then
-			K.NewGUI:ClearReloadQueue()
-		end
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		ReloadUI()
-	end)
-
-	reloadButton:SetScript("OnEnter", function(self)
-		self.Icon:SetVertexColor(1, 1, 1, 1)
-		reloadBg:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 0.3)
-
-		-- Tooltip
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-		GameTooltip:SetText(L["Reload UI"] or "Reload UI", 1, 1, 1, 1, true)
-		GameTooltip:AddLine(L["Apply changes immediately"] or "Apply changes immediately", 0.7, 0.7, 0.7)
-		GameTooltip:Show()
-	end)
-
-	reloadButton:SetScript("OnLeave", function(self)
-		self.Icon:SetVertexColor(1, 1, 1, 0.8)
-		reloadBg:SetVertexColor(0, 0, 0, 0)
-		GameTooltip:Hide()
 	end)
 
 	-- Content Area
@@ -580,10 +562,16 @@ end
 
 -- Show extra configuration for a specific config path
 function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
+	-- Close ProfileGUI if it's open
+	if K.ProfileGUI and K.ProfileGUI.Hide then
+		K.ProfileGUI:Hide()
+	end
+
 	local config = self.ExtraConfigs[configPath]
 	if not config then
 		return
 	end
+
 	-- Container cache by configPath to avoid recreating content every time
 	self.ConfigContainers = self.ConfigContainers or {}
 
@@ -611,21 +599,26 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	local yOffset = -20
 
 	-- Add category title in content area (like main GUI)
-	local categoryTitleFrame = CreateFrame("Frame", nil, self.ScrollChild)
-	categoryTitleFrame:SetSize(EXTRA_PANEL_WIDTH - 40, 30) -- Match main GUI height
-	categoryTitleFrame:SetPoint("TOPLEFT", 15, yOffset)
+	if not self.CategoryTitleFrame then
+		self.CategoryTitleFrame = CreateFrame("Frame", nil, self.ScrollChild)
+		self.CategoryTitleFrame:SetSize(EXTRA_PANEL_WIDTH - 40, 30)
 
-	-- Background to match main GUI category headers
-	local categoryBg = categoryTitleFrame:CreateTexture(nil, "BACKGROUND")
-	categoryBg:SetAllPoints()
-	categoryBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	categoryBg:SetVertexColor(0.09, 0.09, 0.09, 0.8)
+		local categoryBg = self.CategoryTitleFrame:CreateTexture(nil, "BACKGROUND")
+		categoryBg:SetAllPoints()
+		categoryBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		categoryBg:SetVertexColor(0.09, 0.09, 0.09, 0.8)
 
-	local categoryTitle = categoryTitleFrame:CreateFontString(nil, "OVERLAY")
-	categoryTitle:SetFontObject(K.UIFont)
-	categoryTitle:SetTextColor(0.9, 0.9, 0.9, 1) -- Match main GUI style
-	categoryTitle:SetText(displayTitle)
-	categoryTitle:SetPoint("CENTER", categoryTitleFrame, "CENTER", 0, 0) -- Centered like main GUI
+		self.CategoryTitleText = self.CategoryTitleFrame:CreateFontString(nil, "OVERLAY")
+		self.CategoryTitleText:SetFontObject(K.UIFont)
+		self.CategoryTitleText:SetTextColor(0.9, 0.9, 0.9, 1)
+		self.CategoryTitleText:SetPoint("CENTER", self.CategoryTitleFrame, "CENTER", 0, 0)
+	end
+
+	-- Update existing objects instead of creating new ones
+	self.CategoryTitleFrame:ClearAllPoints()
+	self.CategoryTitleFrame:SetPoint("TOPLEFT", 15, yOffset)
+	self.CategoryTitleText:SetText(displayTitle)
+	self.CategoryTitleFrame:Show()
 
 	-- Update yOffset after category title
 	yOffset = yOffset - 45
@@ -824,50 +817,15 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 
 	icon:SetVertexColor(0.8, 0.8, 0.8, 0.9) -- Slightly brighter and more opaque
 
-	-- Enhanced hover effects
-	cogwheel:SetScript("OnEnter", function(self)
-		icon:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+	-- Store config data in the button for static handlers to access
+	cogwheel.configPath = configPath
+	cogwheel.optionTitle = optionTitle
+	cogwheel.icon = icon
 
-		-- Add subtle scaling effect
-		icon:SetSize(30, 30) -- Increased hover size from 24x24 to 26x26
-
-		-- Show tooltip
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(L["Extra Configuration"] or "Extra Configuration", 1, 1, 1, 1, true)
-		local tipMsg = format(L["Click to open additional options for %s"] or "Click to open additional options for %s", (optionTitle or configPath))
-		GameTooltip:AddLine(tipMsg, 0.7, 0.7, 0.7, true)
-		GameTooltip:Show()
-	end)
-
-	cogwheel:SetScript("OnLeave", function(self)
-		icon:SetVertexColor(0.8, 0.8, 0.8, 0.9)
-
-		-- Return to normal size
-		icon:SetSize(22, 22) -- Return to new normal size of 22x22
-
-		GameTooltip:Hide()
-	end)
-
-	-- Click handler with toggle functionality
-	cogwheel:SetScript("OnClick", function()
-		-- Visual feedback
-		icon:SetVertexColor(1, 1, 1, 1)
-		C_Timer.After(0.1, function()
-			icon:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		end)
-
-		-- Check if ExtraGUI is already open with the same config
-		if ExtraGUI.IsVisible and ExtraGUI.CurrentConfig and ExtraGUI.CurrentConfig.configPath == configPath then
-			-- Same config is open, close it (toggle off)
-			ExtraGUI:Hide()
-		else
-			-- Different config or not open, show it (toggle on or switch)
-			ExtraGUI:ShowExtraConfig(configPath, optionTitle)
-		end
-
-		-- Play sound feedback
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-	end)
+	-- Use static handlers to prevent memory leaks
+	cogwheel:SetScript("OnEnter", OnCogwheelEnter)
+	cogwheel:SetScript("OnLeave", OnCogwheelLeave)
+	cogwheel:SetScript("OnClick", OnCogwheelClicked)
 
 	return cogwheel
 end
@@ -920,15 +878,6 @@ local function AddNewTag(parent, anchor)
 	tag:SetScale(0.85)
 	tag:Show()
 	return tag
-end
-
--- Helper function to create colored backgrounds (same as main GUI)
-local function CreateColoredBackground(frame, r, g, b, a)
-	local bg = frame:CreateTexture(nil, "BACKGROUND")
-	bg:SetAllPoints()
-	bg:SetTexture(C["Media"].Textures.White8x8Texture)
-	bg:SetVertexColor(r or 0, g or 0, b or 0, a or 0.8)
-	return bg
 end
 
 -- Widget Creation Functions
@@ -1196,22 +1145,43 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 	thumbFrame:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" then
 			isDragging = true
-			self:SetScript("OnUpdate", function(self)
-				if isDragging then
-					local x = GetCursorPosition()
-					local scale = UIParent:GetEffectiveScale()
-					x = x / scale
-					local newValue = GetValueFromPosition(x)
-					if newValue ~= currentValue then
-						currentValue = newValue
-						valueText:SetText(tostring(newValue))
-						UpdateThumbPosition(newValue)
-						SetExtraConfigValue(configPath, newValue, cleanText)
 
-						-- Call hook function if provided
-						if hookFunction and type(hookFunction) == "function" then
-							hookFunction(newValue, currentValue, configPath)
-						end
+			-- Throttled OnUpdate to avoid per-frame config writes and string work
+			local lastUpdate = 0
+			local sinceLastCommit = 0
+
+			self:SetScript("OnUpdate", function(self, elapsed)
+				if not isDragging then
+					self:SetScript("OnUpdate", nil)
+					return
+				end
+
+				lastUpdate = lastUpdate + elapsed
+				if lastUpdate < 0.033 then -- ~30 FPS visual updates
+					return
+				end
+				lastUpdate = 0
+				sinceLastCommit = sinceLastCommit + elapsed
+
+				local x = GetCursorPosition()
+				local scale = UIParent:GetEffectiveScale()
+				x = x / scale
+
+				local newValue = GetValueFromPosition(x)
+				if newValue ~= currentValue then
+					currentValue = newValue
+					valueText:SetText(tostring(newValue))
+					UpdateThumbPosition(newValue)
+				end
+
+				-- Coalesce extra-config writes while dragging
+				if sinceLastCommit >= 0.12 then
+					SetExtraConfigValue(configPath, currentValue, cleanText)
+					sinceLastCommit = 0
+
+					-- Call hook function if provided
+					if hookFunction and type(hookFunction) == "function" then
+						hookFunction(currentValue, currentValue, configPath)
 					end
 				end
 			end)
@@ -3751,11 +3721,11 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		if widget.ConfigPath then
 			local defaultValue
 			if K.Defaults then
-				defaultValue = GetValueByPath(K.Defaults, widget.ConfigPath)
+				defaultValue = K.GetValueByPath(K.Defaults, widget.ConfigPath)
 			end
 			local revertValue = defaultValue
 			if revertValue == nil then
-				revertValue = GetValueByPath(C, widget.ConfigPath)
+				revertValue = K.GetValueByPath(C, widget.ConfigPath)
 			end
 			if revertValue ~= nil then
 				editBox:SetText(tostring(revertValue))
@@ -3828,38 +3798,8 @@ end
 
 -- Button Widget for ExtraGUI
 function ExtraGUI:CreateButton(parent, text, width, height, onClick)
-	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(width or 100, height or 25)
-
-	-- Button background
-	local buttonBg = button:CreateTexture(nil, "BACKGROUND")
-	buttonBg:SetAllPoints()
-	buttonBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	buttonBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-
-	-- Button text
-	local buttonText = button:CreateFontString(nil, "OVERLAY")
-	buttonText:SetFontObject(K.UIFont)
-	buttonText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	buttonText:SetText(text)
-	buttonText:SetPoint("CENTER")
-
-	-- Hover effects
-	button:SetScript("OnEnter", function(self)
-		buttonBg:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
-		buttonText:SetTextColor(1, 1, 1, 1)
-	end)
-
-	button:SetScript("OnLeave", function(self)
-		buttonBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-		buttonText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	end)
-
-	if onClick then
-		button:SetScript("OnClick", onClick)
-	end
-
-	return button
+	-- Use unified widget factory from K.WidgetFactory
+	return K.WidgetFactory.CreateButton(parent, text, width, height, onClick)
 end
 
 -- Module Exports

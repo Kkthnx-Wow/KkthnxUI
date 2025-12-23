@@ -2,6 +2,10 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
 function Module:ReskinHekili()
+	if not C["Skins"].Hekili then
+		return
+	end
+
 	local Hekili = _G.Hekili
 	if not Hekili then
 		return

@@ -36,7 +36,6 @@ local UnitClass = UnitClass
 local UnitFactionGroup = UnitFactionGroup
 local GetItemInfo = C_Item.GetItemInfo
 local GetInventoryItemID = GetInventoryItemID
-local GetSpellInfo = C_Spell.GetSpellInfo
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local GetInventoryItemLink = GetInventoryItemLink
 local GetTradePlayerItemLink = GetTradePlayerItemLink
@@ -73,6 +72,32 @@ local C_TooltipInfo = C_TooltipInfo
 local C_AddOns = C_AddOns
 local Item = Item
 local ItemLocation = ItemLocation
+
+-- Spell info compatibility helper
+local GetSpellInfo
+do
+	local Classic_GetSpellInfo = _G.GetSpellInfo
+	local C_Spell_GetSpellInfo = C_Spell and C_Spell.GetSpellInfo
+
+	if C_Spell_GetSpellInfo then
+		-- Modern retail: adapt C_Spell.GetSpellInfo struct to classic multi-return signature
+		GetSpellInfo = function(spell)
+			if not spell then
+				return
+			end
+
+			local info = C_Spell_GetSpellInfo(spell)
+			if not info then
+				return
+			end
+
+			return info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+		end
+	else
+		-- Classic / fallback
+		GetSpellInfo = Classic_GetSpellInfo
+	end
+end
 
 -- Global strings
 local ITEM_LEVEL = ITEM_LEVEL

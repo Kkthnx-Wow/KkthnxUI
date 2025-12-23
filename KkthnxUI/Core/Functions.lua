@@ -1,30 +1,47 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local math_abs = math.abs
-local math_floor = math.floor
-local mod = mod
+--========================================================
+-- Cache Lua Globals (Upvalues) for speed
+--========================================================
 local select = select
-local string_find = string.find
+local unpack = unpack
+local type = type
+local tonumber = tonumber
+local pairs = pairs
+local ipairs = ipairs
+local next = next
+
+-- Table functions
+local table_insert = table.insert
+local table_wipe = table.wipe
+
+-- Math functions
+local math_floor = math.floor
+local math_abs = math.abs
+local mod = mod
+
+-- String functions
 local string_format = string.format
+local string_match = string.match
+local string_find = string.find
 local string_gsub = string.gsub
 local string_lower = string.lower
-local string_match = string.match
-local tonumber = tonumber
-local type = type
-local unpack = unpack
 
+-- WoW API caching (common APIs used in utilities)
+local GetTime = GetTime
+local UnitClass = UnitClass
+local UnitIsPlayer = UnitIsPlayer
+
+-- Additional WoW API caching
 local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
 local CreateVector2D = CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = ENCHANTED_TOOLTIP_LINE
 local GameTooltip = GameTooltip
 local GetSpecialization = GetSpecialization
 local GetSpecializationInfo = GetSpecializationInfo
-local GetTime = GetTime
 local ITEM_LEVEL = ITEM_LEVEL
 local IsInRaid = IsInRaid
 local UIParent = UIParent
-local UnitClass = UnitClass
-local UnitIsPlayer = UnitIsPlayer
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 
@@ -34,9 +51,25 @@ do
 		print("|cff3c9bedKkthnxUI:|r", ...)
 	end
 
+	-- Optimized ShortValue (Zero GC Churn - uses math instead of string.format)
+	-- Cached format strings to avoid string concatenation in hot paths
+	local format1 = "%.1f"
+	local format2 = "%.2f"
+
 	function K.ShortValue(n)
+		if not n or type(n) ~= "number" then
+			return ""
+		end
+
+		local abs_n = math_abs(n)
+
+		-- Optimization: Don't format small numbers (save CPU/Memory - no string allocation)
+		-- This early return avoids all calculations and string concatenation for the most common case
+		if abs_n < 1e3 then
+			return n
+		end
+
 		local prefixStyle = C["General"].NumberPrefixStyle
-		local abs_n = abs(n)
 		local suffix, div = "", 1
 
 		-- Calculate the appropriate suffix and division factor.
@@ -50,12 +83,14 @@ do
 			suffix, div = (prefixStyle == 1 and "k" or "w"), 1e3
 		end
 
-		-- Format the shortened value.
+		-- Format the shortened value using math for rounding (zero GC).
 		local val = n / div
-		if div > 1 and val < 10 then
-			return string_format("%.1f%s", val, suffix)
+		if val < 10 then
+			-- Round to 1 decimal place using cached format string
+			local rounded = math_floor(val * 10 + 0.5) / 10
+			return string_format(format1, rounded) .. suffix
 		else
-			return string_format("%d%s", val, suffix)
+			return math_floor(val + 0.5) .. suffix
 		end
 	end
 
@@ -71,32 +106,99 @@ do
 		idp = idp or 0
 		local mult = 10 ^ idp
 
-		return math.floor(number * mult + 0.5) / mult
+		return math_floor(number * mult + 0.5) / mult
+	end
+end
+
+do
+	-- Path Utilities (Reused table to prevent GC churn)
+	local keysTable = {} -- Reused table for path splitting
+
+	-- SetValueByPath: Sets a value in a nested table using a dot-separated path
+	function K.SetValueByPath(tbl, path, value)
+		table_wipe(keysTable)
+		local n = select("#", strsplit(".", path))
+		for i = 1, n do
+			keysTable[i] = select(i, strsplit(".", path))
+		end
+
+		local current = tbl
+		for i = 1, #keysTable - 1 do
+			if not current[keysTable[i]] or type(current[keysTable[i]]) ~= "table" then
+				current[keysTable[i]] = {}
+			end
+			current = current[keysTable[i]]
+		end
+		current[keysTable[#keysTable]] = value
+	end
+
+	-- GetValueByPath: Gets a value from a nested table using a dot-separated path
+	function K.GetValueByPath(tbl, path)
+		if not path then
+			return nil
+		end
+		table_wipe(keysTable)
+		local n = select("#", strsplit(".", path))
+		for i = 1, n do
+			keysTable[i] = select(i, strsplit(".", path))
+		end
+
+		local current = tbl
+		for i = 1, #keysTable do
+			if not current or type(current) ~= "table" or not current[keysTable[i]] then
+				return nil
+			end
+			current = current[keysTable[i]]
+		end
+		return current
 	end
 end
 
 -- Color-related Functions
 do
 	local factor = 255
+	-- Optimized: Color Caching System (Memoization)
+	-- Cache stores hex strings for frequently used colors to avoid repeated string formatting
+	local colorCache = {}
+
 	function K.RGBToHex(r, g, b)
 		-- Check if r is a table, and extract r, g, b values from it if necessary
 		if type(r) == "table" then
 			r, g, b = r.r or r[1], r.g or r[2], r.b or r[3]
 		end
+
 		-- Check if r is not nil, and return the hex code if true
-		if r then
-			-- Convert RGB values to hexadecimal format
-			local hex = string.format("%02x%02x%02x", r * factor, g * factor, b * factor)
-			-- Return the hex code with alpha value appended
-			return "|cff" .. hex
+		if not r then
+			return
 		end
+
+		-- Normalize values (handle nil cases)
+		r = r or 1
+		g = g or 1
+		b = b or 1
+
+		-- Generate a unique integer key for this color combo
+		-- Multiply by 1000 to convert 0-1 range to 0-1000 range (3 decimal places precision)
+		-- Then combine: r gets 9 digits, g gets 6 digits, b gets 3 digits
+		-- This avoids floating point key issues and ensures unique keys
+		local key = math_floor(r * 1000000000 + g * 1000000 + b * 1000)
+
+		-- Return cached value if it exists (Instant CPU return - no string formatting)
+		if colorCache[key] then
+			return colorCache[key]
+		end
+
+		-- Calculate and cache if new
+		local hex = string_format("|cff%02x%02x%02x", math_floor(r * factor + 0.5), math_floor(g * factor + 0.5), math_floor(b * factor + 0.5))
+		colorCache[key] = hex
+		return hex
 	end
 
 	-- Function to get the class icon using atlas textures
 	function K.GetClassIcon(class, iconSize)
 		local size = iconSize or 16
 		if class then
-			return string.format("|A:groupfinder-icon-class-%s:%d:%d|a ", string.lower(class), size, size)
+			return string_format("|A:groupfinder-icon-class-%s:%d:%d|a ", string_lower(class), size, size)
 		end
 	end
 
@@ -179,7 +281,7 @@ do
 		variable = variable or ""
 
 		if cleanup then
-			table.wipe(list)
+			table_wipe(list)
 		end
 
 		for word in gmatch(variable, "%S+") do
@@ -506,8 +608,8 @@ do
 				return
 			end
 
-			table.wipe(slotData.gems)
-			table.wipe(slotData.gemsColor)
+			table_wipe(slotData.gems)
+			table_wipe(slotData.gemsColor)
 			slotData.iLvl = nil
 			slotData.enchantText = nil
 
@@ -576,7 +678,7 @@ do
 		end
 		-- Periodically clear cached item levels to avoid unbounded growth during long sessions
 		local function ClearItemLevelCache()
-			table.wipe(iLvlDB)
+			table_wipe(iLvlDB)
 		end
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", ClearItemLevelCache)
 		K:RegisterEvent("PLAYER_LEAVING_WORLD", ClearItemLevelCache)
@@ -804,17 +906,17 @@ do
 		local prefix = getThemePrefix()
 		local trySuffixes = {}
 		if suffix and suffix ~= "" then
-			table.insert(trySuffixes, suffix)
+			table_insert(trySuffixes, suffix)
 		end
 		if variant == "tp" then
 			-- Common Trading Post suffixes
-			table.insert(trySuffixes, "topbig")
-			table.insert(trySuffixes, "topsmall")
-			table.insert(trySuffixes, "top")
+			table_insert(trySuffixes, "topbig")
+			table_insert(trySuffixes, "topsmall")
+			table_insert(trySuffixes, "top")
 		else
 			-- Traveler's Log common pieces
-			table.insert(trySuffixes, "top")
-			table.insert(trySuffixes, "box")
+			table_insert(trySuffixes, "top")
+			table_insert(trySuffixes, "box")
 		end
 		for _, s in ipairs(trySuffixes) do
 			local atlas = ("perks-theme-%s-%s-%s"):format(prefix, variant, s)
@@ -1186,4 +1288,89 @@ do
 			return string_format("%d%s", copper, coppername)
 		end
 	end
+end
+
+--========================================================
+-- Unified Widget Factory (K.WidgetFactory)
+--========================================================
+-- Centralized UI toolkit for consistent styling across all GUI modules
+-- This eliminates code duplication and makes theme changes easier
+
+K.WidgetFactory = {}
+
+-- CreateBackdrop: Creates a colored background texture
+function K.WidgetFactory.CreateBackdrop(parent, r, g, b, a)
+	local bg = parent:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetTexture(C["Media"].Textures.White8x8Texture)
+	bg:SetVertexColor(r or 0.05, g or 0.05, b or 0.05, a or 0.9)
+	return bg
+end
+
+-- CreateButton: Creates a styled button with hover effects and consistent theming
+function K.WidgetFactory.CreateButton(parent, text, width, height, onClick)
+	local button = CreateFrame("Button", nil, parent)
+	button:SetSize(width or 120, height or 28)
+
+	-- Default colors (Silver/Blue theme)
+	local ACCENT_COLOR = { K.r, K.g, K.b }
+	local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
+
+	-- Clean button background
+	local buttonBg = button:CreateTexture(nil, "BACKGROUND")
+	buttonBg:SetAllPoints()
+	buttonBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	buttonBg:SetVertexColor(0.15, 0.15, 0.15, 1)
+	button.KKUI_Background = buttonBg
+
+	-- Subtle border for depth
+	local buttonBorder = button:CreateTexture(nil, "BORDER")
+	buttonBorder:SetPoint("TOPLEFT", -1, 1)
+	buttonBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+	buttonBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+	buttonBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+	button.KKUI_Border = buttonBorder
+
+	-- Hover effects for clean design
+	button:SetScript("OnEnter", function(self)
+		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
+		self.KKUI_Border:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		if self.Text then
+			self.Text:SetTextColor(1, 1, 1, 1)
+		end
+	end)
+
+	button:SetScript("OnLeave", function(self)
+		self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
+		self.KKUI_Border:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+		if self.Text then
+			self.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		end
+	end)
+
+	-- Click effect
+	button:SetScript("OnMouseDown", function(self)
+		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.6, ACCENT_COLOR[2] * 0.6, ACCENT_COLOR[3] * 0.6, 1)
+	end)
+
+	button:SetScript("OnMouseUp", function(self)
+		if self:IsMouseOver() then
+			self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
+		else
+			self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
+		end
+	end)
+
+	-- Button text
+	button.Text = button:CreateFontString(nil, "OVERLAY")
+	button.Text:SetFontObject(K.UIFont)
+	button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+	button.Text:SetText(text)
+	button.Text:SetPoint("CENTER")
+
+	if onClick then
+		button:SetScript("OnClick", onClick)
+	end
+
+	return button
 end

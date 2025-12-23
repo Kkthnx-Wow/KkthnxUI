@@ -69,15 +69,23 @@ do
 
 		local name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID
 
-		if GetSpellInfo then
-			-- Classic API
-			name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = GetSpellInfo(spell)
-		elseif C_Spell_GetSpellInfo then
-			-- Retail API
+		if C_Spell_GetSpellInfo then
+			-- Modern retail API (preferred)
 			local info = C_Spell_GetSpellInfo(spell)
 			if info then
-				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID =
+					info.name,
+					info.rank,
+					info.iconID,
+					info.castTime,
+					info.minRange,
+					info.maxRange,
+					info.spellID,
+					info.originalIconID
 			end
+		elseif GetSpellInfo then
+			-- Classic / fallback API
+			name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = GetSpellInfo(spell)
 		end
 
 		-- Cache the result
