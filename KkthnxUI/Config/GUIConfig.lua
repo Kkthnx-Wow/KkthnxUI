@@ -191,7 +191,7 @@ local function CreateAnnouncementsCategory()
 	-- Rare Alert
 	local rareAlertSection = GUI:AddSection(announcementsCategory, L["Rare Alert"])
 	GUI:CreateSwitch(rareAlertSection, "Announcements.RareAlert", enableTextColor .. L["Enable Event & Rare Alerts"], "Enables alerts for nearby rare creatures and events.")
-	GUI:CreateSwitch(rareAlertSection, "Announcements.AlertInWild", L["Don't Alert In Instances"], "Prevents rare alerts from triggering inside instances.")
+	GUI:CreateSwitch(rareAlertSection, "Announcements.AlertOnlyInWorld", L["Don't Alert In Instances"], "Prevents rare alerts from triggering inside instances.")
 	GUI:CreateSwitch(rareAlertSection, "Announcements.AlertInChat", L["Print Alerts In Chat"], "Prints alerts for rare events and creatures in the chat window.")
 end
 

@@ -8,6 +8,7 @@ local GetLocale = GetLocale
 local GetInstanceInfo = GetInstanceInfo
 local GetTime = GetTime
 local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
 local IsPartyLFG = IsPartyLFG
 local C_PartyInfo_IsPartyWalkIn = C_PartyInfo.IsPartyWalkIn
 local C_Timer_After = C_Timer.After
@@ -48,7 +49,6 @@ local AutoGoodbyeMessages = {
 		"GG y gracias!",
 		"Salud, todos!",
 		"GG, amigos!",
-		"Gracias a todos!",
 		"GG, lo aprecio!",
 	},
 	frFR = {
@@ -60,7 +60,6 @@ local AutoGoodbyeMessages = {
 		"GG et merci!",
 		"À la vôtre, tout le monde!",
 		"GG, les amis!",
-		"Merci à tous!",
 		"GG, je l'apprécie!",
 	},
 	itIT = {
@@ -72,7 +71,6 @@ local AutoGoodbyeMessages = {
 		"GG e grazie!",
 		"Salute, tutti!",
 		"GG, amici!",
-		"Grazie a tutti!",
 		"GG, lo apprezzo!",
 	},
 	koKR = {
@@ -84,7 +82,6 @@ local AutoGoodbyeMessages = {
 		"GG와 감사합니다!",
 		"건배, 모두!",
 		"GG, 여러분!",
-		"모두 감사합니다!",
 		"GG, 감사합니다!",
 	},
 	ptBR = {
@@ -96,7 +93,6 @@ local AutoGoodbyeMessages = {
 		"GG e obrigado!",
 		"Saúde, pessoal!",
 		"GG, amigos!",
-		"Obrigado a todos!",
 		"GG, agradeço!",
 	},
 	ruRU = {
@@ -108,7 +104,6 @@ local AutoGoodbyeMessages = {
 		"GG и спасибо!",
 		"За здоровье, все!",
 		"GG, ребята!",
-		"Спасибо всем!",
 		"GG, благодарю!",
 	},
 	trTR = {
@@ -120,7 +115,6 @@ local AutoGoodbyeMessages = {
 		"GG ve teşekkürler!",
 		"Şerefe, herkes!",
 		"GG, arkadaşlar!",
-		"Herkese teşekkürler!",
 		"GG, takdir ediyorum!",
 	},
 	zhCN = {
@@ -132,7 +126,6 @@ local AutoGoodbyeMessages = {
 		"GG和谢谢!",
 		"干杯, 大家!",
 		"GG, 朋友们!",
-		"谢谢大家!",
 		"GG, 感谢!",
 	},
 	zhTW = {
@@ -144,22 +137,20 @@ local AutoGoodbyeMessages = {
 		"GG和謝謝!",
 		"乾杯, 大家!",
 		"GG, 朋友們!",
-		"謝謝大家!",
 		"GG, 感謝!",
 	},
 }
 
 -- Pre-resolve locale goodbye list once
 local locale = GetLocale()
-local AutoGoodbyeList = AutoGoodbyeMessages[locale] or AutoGoodbyeMessages["enUS"]
+local AutoGoodbyeList = AutoGoodbyeMessages[locale] or AutoGoodbyeMessages.enUS
 
 -- Anti-spam timestamp + "are we already waiting to send?"
 local lastGoodbyeAt = 0
 local pendingGoodbye = false
 
--- tiny helper: are we in an instance & what channel would we use?
+-- Choose correct channel at send-time
 local function GetGroupChannel()
-	-- Must still be in an instance and in group when we ACTUALLY speak
 	local _, instanceType = GetInstanceInfo()
 	if not instanceType or instanceType == "none" then
 		return nil
@@ -169,38 +160,38 @@ local function GetGroupChannel()
 		return nil
 	end
 
-	local inPartyLFG = IsPartyLFG() and not C_PartyInfo_IsPartyWalkIn()
-	if inPartyLFG then
+	-- Prefer instance chat for queued groups (LFD/LFR), otherwise party/raid.
+	if IsPartyLFG() and not C_PartyInfo_IsPartyWalkIn() then
 		return "INSTANCE_CHAT"
-	else
-		return "PARTY"
 	end
+
+	if IsInRaid() then
+		return "RAID"
+	end
+
+	return "PARTY"
 end
 
--- final sender (runs AFTER the delay)
 local function SendAutoGoodbyeMessage()
-	pendingGoodbye = false -- timer fired, clear guard
+	pendingGoodbye = false
 
-	-- rate limit: don't spam multiple in <8s
 	local now = GetTime() or 0
 	if now > 0 and (now - lastGoodbyeAt) < 8 then
 		return
 	end
 
-	-- make sure we still have something to say
-	if not AutoGoodbyeList or #AutoGoodbyeList == 0 then
+	local list = AutoGoodbyeList
+	if not list or #list == 0 then
 		return
 	end
 
-	-- make sure it's still appropriate to speak
 	local channel = GetGroupChannel()
 	if not channel then
 		return
 	end
 
-	-- pick random line
-	local msg = AutoGoodbyeList[math_random(#AutoGoodbyeList)]
-	if not msg then
+	local msg = list[math_random(#list)]
+	if not msg or msg == "" then
 		return
 	end
 
@@ -208,24 +199,17 @@ local function SendAutoGoodbyeMessage()
 	lastGoodbyeAt = now
 end
 
--- schedules the goodbye with a random delay (2-5s),
--- but won't stack multiple timers if events fire twice
 local function SetupAutoGoodbye()
-	-- if one is already enqueued, don't queue another
 	if pendingGoodbye then
 		return
 	end
 
-	-- you COULD early-return if not in group/instance yet,
-	-- but I prefer to re-check at send time instead,
-	-- in case you're technically still "inside" the runout phase.
 	pendingGoodbye = true
 
-	local delay = math_random(2, 5)
-	C_Timer_After(delay, SendAutoGoodbyeMessage)
+	-- Random delay 2-5s
+	C_Timer_After(math_random(2, 5), SendAutoGoodbyeMessage)
 end
 
--- public API toggle
 function Module:CreateAutoGoodbye()
 	if C["Automation"].AutoGoodbye then
 		K:RegisterEvent("LFG_COMPLETION_REWARD", SetupAutoGoodbye)

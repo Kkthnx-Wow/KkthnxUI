@@ -107,7 +107,7 @@ C["ActionBar"] = {
 -- Announcements
 C["Announcements"] = {
 	AlertInChat = false,
-	AlertInWild = false,
+	AlertOnlyInWorld = false,
 	KeystoneAlert = false,
 	BrokenAlert = false,
 	DispellAlert = false,

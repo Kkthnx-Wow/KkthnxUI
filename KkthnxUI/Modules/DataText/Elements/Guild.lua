@@ -77,29 +77,31 @@ local function GuildPanel_Resize(rowCount)
 
 	-- Toggle scrollbar visibility only when needed
 	local scrollBar = infoFrame.scrollFrame.scrollBar
-	if rowCount > MAX_VISIBLE_ROWS then
+	local maxScroll = math_max(0, (rowCount - MAX_VISIBLE_ROWS) * BUTTON_HEIGHT)
+
+	if maxScroll > 0 then
 		scrollBar:Show()
+		scrollBar:SetMinMaxValues(0, maxScroll)
 	else
 		scrollBar:Hide()
 		scrollBar:SetValue(0)
+		scrollBar:SetMinMaxValues(0, 0)
 	end
 
-	-- Make sure hybrid scroll metrics are in a sane range
-	local numButtons = MAX_VISIBLE_ROWS + 1
-	infoFrame.scrollFrame.scrollChild:SetSize(infoFrame.scrollFrame:GetWidth(), numButtons * BUTTON_HEIGHT)
-	infoFrame.scrollFrame.scrollBar:SetMinMaxValues(0, numButtons * BUTTON_HEIGHT)
+	-- Make scrollChild tall enough for HybridScrollFrame math
+	infoFrame.scrollFrame.scrollChild:SetSize(infoFrame.scrollFrame:GetWidth(), math_max(rowCount, 1) * BUTTON_HEIGHT)
 	infoFrame.scrollFrame:UpdateScrollChildRect()
 end
 
 local function rosterButtonOnClick(self, button)
 	local index = self.index
-	local _, _, name, _, _, _, _, _, guid = unpack(guildTable[index])
-
-	-- Check if the index is valid
-	if not index or not guildTable[index] then
+	local entry = index and guildTable[index]
+	if not entry then
 		return
 	end
 
+	local name = entry[3]
+	local guid = entry[9]
 	if not (name and name ~= "") then
 		return
 	end
@@ -117,7 +119,7 @@ local function rosterButtonOnClick(self, button)
 				C_PartyInfo_InviteUnit(name)
 			end
 		elseif IsShiftKeyDown() then
-			if MailFrame:IsShown() then
+			if MailFrame and MailFrame:IsShown() then
 				MailFrameTab_OnClick(nil, 2)
 				SendMailNameEditBox:SetText(name)
 				SendMailNameEditBox:HighlightText()
@@ -147,6 +149,26 @@ local officerNoteLabel = "|cff999999" .. _G.GUILD_RANK1_DESC .. ":|r %s"
 local title = "|cffffffff" .. GUILD_INFORMATION .. "|r"
 local noNoteText = "|cff999999" .. NOT_APPLICABLE .. "|r"
 local rankLabel = "|cff999999" .. _G.RANK .. ":|r %s"
+
+local function GetStatusIcon(status, isMobile)
+	if status == 1 or status == "AFK" or status == "<AFK>" then
+		if isMobile then
+			return "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-AwayMobile:14:14:0:0:16:16:0:16:0:16|t"
+		end
+		return "|T" .. FRIENDS_TEXTURE_AFK .. ":14:14:0:0:16:16:1:15:1:15|t"
+	elseif status == 2 or status == "DND" or status == "<DND>" then
+		if isMobile then
+			return "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"
+		end
+		return "|T" .. FRIENDS_TEXTURE_DND .. ":14:14:0:0:16:16:1:15:1:15|t"
+	end
+
+	if isMobile then
+		return ChatFrame_GetMobileEmbeddedTexture(73 / 255, 177 / 255, 73 / 255)
+	end
+
+	return " "
+end
 
 -- Event handler for guild roster button hover
 local function rosterButtonOnEnter(self)
@@ -220,12 +242,17 @@ end
 
 local function GuildPanel_UpdateButton(button)
 	local index = button.index
-	local level, class, name, zone, status, guid = unpack(guildTable[index])
-
-	-- Check if the index is valid
-	if not index or not guildTable[index] then
+	local entry = index and guildTable[index]
+	if not entry then
 		return
 	end
+
+	local level = entry[1]
+	local class = entry[2]
+	local name = entry[3]
+	local zone = entry[4]
+	local status = entry[5]
+	local guid = entry[9]
 
 	local levelcolor = K.RGBToHex(GetQuestDifficultyColor(level))
 	button.level:SetText(levelcolor .. level)
@@ -240,7 +267,7 @@ local function GuildPanel_UpdateButton(button)
 	local namecolor = K.RGBToHex(K.ColorClass(class))
 	local isTimerunning = guid and C_ChatInfo and C_ChatInfo.IsTimerunningPlayer and C_ChatInfo.IsTimerunningPlayer(guid)
 	local playerName = (isTimerunning and TimerunningUtil and TimerunningUtil.AddSmallIcon and TimerunningUtil.AddSmallIcon(name)) or name
-	button.name:SetText(namecolor .. playerName .. status)
+	button.name:SetText(namecolor .. playerName .. (status or ""))
 
 	local zonecolor = K.GreyColor
 	if UnitInRaid(name) or UnitInParty(name) then
@@ -248,7 +275,7 @@ local function GuildPanel_UpdateButton(button)
 	elseif GetRealZoneText() == zone then
 		zonecolor = "|cff4cff4c"
 	end
-	button.zone:SetText(zonecolor .. zone)
+	button.zone:SetText(zonecolor .. (zone or UNKNOWN))
 end
 
 local function GuildPanel_Update()
@@ -469,24 +496,12 @@ local function GuildPanel_Refresh()
 	for i = 1, total do
 		local name, rank, _, level, _, zone, note, officerNote, connected, status, class, _, _, mobile, _, _, guid = GetGuildRosterInfo(i)
 		if connected or mobile then
-			if mobile and not connected then
+			local isMobile = (mobile and not connected)
+			if isMobile then
 				zone = REMOTE_CHAT
-				if status == 1 then
-					status = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-AwayMobile:14:14:0:0:16:16:0:16:0:16|t"
-				elseif status == 2 then
-					status = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"
-				else
-					status = ChatFrame_GetMobileEmbeddedTexture(73 / 255, 177 / 255, 73 / 255)
-				end
-			else
-				if status == 1 then
-					status = "|T" .. FRIENDS_TEXTURE_AFK .. ":14:14:0:0:16:16:1:15:1:15|t"
-				elseif status == 2 then
-					status = "|T" .. FRIENDS_TEXTURE_DND .. ":14:14:0:0:16:16:1:15:1:15|t"
-				else
-					status = " "
-				end
 			end
+
+			status = GetStatusIcon(status, isMobile)
 
 			if not zone then
 				zone = UNKNOWN
@@ -604,7 +619,9 @@ local function OnMouseUp(_, btn)
 		return
 	end
 
-	infoFrame:Hide()
+	if infoFrame then
+		infoFrame:Hide()
+	end
 
 	if not CommunitiesFrame then
 		C_AddOns.LoadAddOn("Blizzard_Communities")
