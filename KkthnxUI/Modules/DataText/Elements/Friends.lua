@@ -84,16 +84,19 @@ local BNET_CLIENT_WOW = BNET_CLIENT_WOW
 
 local r, g, b = K.r, K.g, K.b
 local infoFrame
-local updateRequest
 local prevTime
 local updateQueued
 
 local BUTTON_HEIGHT = 22
 local MAX_VISIBLE_ROWS = 20
 local BASE_EXTRA_HEIGHT = 95 -- header + footer padding based on current layout
+local MIN_DT_WIDTH = 56
 
 local friendTable = {}
 local bnetTable = {}
+
+local friendsDirty = true
+local lastDTW, lastDTH = 0, 0
 
 local activeZone = "|cff4cff4c"
 local inactiveZone = K.GreyColor
@@ -121,7 +124,6 @@ local menuList = {
 }
 
 local function sortFriends(a, b)
-	-- Always return a boolean for table.sort
 	return (a and a[1] or "") < (b and b[1] or "")
 end
 
@@ -242,6 +244,29 @@ local function buildBNetTable(num)
 	table_sort(bnetTable, sortBNFriends)
 end
 
+local function RebuildTablesIfDirty()
+	if not friendsDirty then
+		return
+	end
+
+	local numFriends = Module.numFriends or 0
+	local numBNet = Module.numBNet or 0
+
+	if numFriends > 0 then
+		buildFriendTable(numFriends)
+	else
+		table_wipe(friendTable)
+	end
+
+	if numBNet > 0 then
+		buildBNetTable(numBNet)
+	else
+		table_wipe(bnetTable)
+	end
+
+	friendsDirty = false
+end
+
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
 	if self.timer > 0.2 then
@@ -296,8 +321,15 @@ local function FriendsPanel_Resize(rowCount)
 		scrollBar:SetMinMaxValues(0, maxScroll)
 	else
 		scrollBar:Hide()
-		scrollBar:SetValue(0)
 		scrollBar:SetMinMaxValues(0, 0)
+	end
+
+	-- Clamp scroll value into new range to avoid "stuck" states
+	local cur = scrollBar:GetValue() or 0
+	if cur < 0 then
+		scrollBar:SetValue(0)
+	elseif cur > maxScroll then
+		scrollBar:SetValue(maxScroll)
 	end
 
 	-- Make scrollChild tall enough for HybridScrollFrame math
@@ -305,10 +337,9 @@ local function FriendsPanel_Resize(rowCount)
 	infoFrame.scrollFrame:UpdateScrollChildRect()
 end
 
-local function FriendsPanel_UpdateButton(button)
+local function FriendsPanel_UpdateButton(button, currentZone)
 	local index = button.index
 	local onlineFriends = Module.onlineFriends or 0
-	local currentZone = GetRealZoneText()
 
 	if index <= onlineFriends then
 		local entry = friendTable[index]
@@ -380,13 +411,14 @@ local function FriendsPanel_Update()
 	local height = scrollFrame.buttonHeight
 	local numFriendButtons = Module.totalOnline or 0
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
+	local currentZone = GetRealZoneText()
 
 	for i = 1, #buttons do
 		local button = buttons[i]
 		local idx = offset + i
 		if idx <= numFriendButtons then
 			button.index = idx
-			FriendsPanel_UpdateButton(button)
+			FriendsPanel_UpdateButton(button, currentZone)
 			usedHeight = usedHeight + height
 			button:Show()
 		else
@@ -658,9 +690,12 @@ local function FriendsPanel_CreateButton(parent, index)
 	return button
 end
 
-local function FriendsPanel_Init()
+local function FriendsPanel_Init(rowCount)
+	rowCount = rowCount or (Module.totalOnline or 0)
+
 	if infoFrame then
 		infoFrame:Show()
+		FriendsPanel_Resize(rowCount)
 		return
 	end
 
@@ -723,7 +758,8 @@ local function FriendsPanel_Init()
 	local invtInfo = K.InfoColor .. "ALT +" .. K.LeftButton .. L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
 
-	FriendsPanel_Resize(0)
+	-- IMPORTANT: size correctly on first create (no squish)
+	FriendsPanel_Resize(rowCount)
 end
 
 local function FriendsPanel_Refresh()
@@ -744,20 +780,35 @@ local function FriendsPanel_Refresh()
 	Module.totalOnline = totalOnline
 	Module.totalFriends = totalFriends
 
-	if infoFrame and infoFrame.scrollFrame then
+	-- If panel is visible, keep its size in sync with current count
+	if infoFrame and infoFrame:IsShown() and infoFrame.scrollFrame then
 		FriendsPanel_Resize(totalOnline)
+	end
+end
+
+local function FriendsPanel_FullUpdate()
+	FriendsPanel_Refresh()
+	RebuildTablesIfDirty()
+
+	if infoFrame and infoFrame:IsShown() then
+		FriendsPanel_Resize(Module.totalOnline or 0)
+		FriendsPanel_Update()
+		if infoFrame.friendCountText then
+			infoFrame.friendCountText:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, Module.totalOnline or 0, Module.totalFriends or 0))
+		end
 	end
 end
 
 local function OnEnter()
 	local thisTime = GetTime()
-	if not prevTime or (thisTime - prevTime > 5) then
+	local openingNow = (not infoFrame) or (infoFrame and not infoFrame:IsShown())
+
+	-- Always refresh on first open; otherwise throttle a bit unless dirty
+	if openingNow or friendsDirty or not prevTime or (thisTime - prevTime > 5) then
 		FriendsPanel_Refresh()
 		prevTime = thisTime
 	end
 
-	local numFriends = Module.numFriends or 0
-	local numBNet = Module.numBNet or 0
 	local totalOnline = Module.totalOnline or 0
 	local totalFriends = Module.totalFriends or 0
 
@@ -772,19 +823,14 @@ local function OnEnter()
 		return
 	end
 
-	if not updateRequest then
-		if numFriends > 0 then
-			buildFriendTable(numFriends)
-		end
-		if numBNet > 0 then
-			buildBNetTable(numBNet)
-		end
-		updateRequest = true
-	end
+	-- Build only when data changed
+	RebuildTablesIfDirty()
 
-	FriendsPanel_Init()
+	FriendsPanel_Init(totalOnline)
 	FriendsPanel_Update()
-	infoFrame.friendCountText:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
+	if infoFrame and infoFrame.friendCountText then
+		infoFrame.friendCountText:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
+	end
 end
 
 local eventList = {
@@ -804,37 +850,43 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
+	friendsDirty = true
 	FriendsPanel_Refresh()
 
+	-- Update DT text
 	if C["DataText"].HideText then
 		FriendsDataText.Text:SetText("")
 	else
 		FriendsDataText.Text:SetText(string_format("%s: " .. K.MyClassColor .. "%d", FRIENDS, Module.totalOnline or 0))
 	end
 
-	-- Keep frame and mover size in sync with icon + text
+	-- Keep frame and mover size in sync with icon + text (avoid spamming SetSize)
 	local textW = FriendsDataText.Text:GetStringWidth() or 0
 	local iconW = (FriendsDataText.Texture and FriendsDataText.Texture:GetWidth()) or 0
-	local totalW = textW + iconW
+	local newW = math_max(textW + iconW, MIN_DT_WIDTH)
+
 	local textH = FriendsDataText.Text:GetLineHeight() or 12
 	local iconH = (FriendsDataText.Texture and FriendsDataText.Texture:GetHeight()) or 12
-	local totalH = math_max(textH, iconH)
+	local newH = math_max(textH, iconH)
 
-	FriendsDataText:SetSize(math_max(totalW, 56), totalH)
-	if FriendsDataText.mover then
-		FriendsDataText.mover:SetWidth(math_max(totalW, 56))
-		FriendsDataText.mover:SetHeight(totalH)
+	if newW ~= lastDTW or newH ~= lastDTH then
+		lastDTW, lastDTH = newW, newH
+		FriendsDataText:SetSize(newW, newH)
+		if FriendsDataText.mover then
+			FriendsDataText.mover:SetWidth(newW)
+			FriendsDataText.mover:SetHeight(newH)
+		end
 	end
 
-	updateRequest = false
+	-- If panel is open, refresh it directly (no bouncing through OnEnter throttles)
 	if infoFrame and infoFrame:IsShown() then
 		if not updateQueued then
 			updateQueued = true
 			K.Delay(0.05, function()
-				if infoFrame and infoFrame:IsShown() then
-					OnEnter()
-				end
 				updateQueued = false
+				if infoFrame and infoFrame:IsShown() then
+					FriendsPanel_FullUpdate()
+				end
 			end)
 		end
 	end
@@ -892,5 +944,5 @@ function Module:CreateSocialDataText()
 	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
 
 	-- Make the whole block (icon + text) movable
-	FriendsDataText.mover = K.Mover(FriendsDataText, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 0, -270 }, 56, 12)
+	FriendsDataText.mover = K.Mover(FriendsDataText, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 0, -270 }, MIN_DT_WIDTH, 12)
 end
