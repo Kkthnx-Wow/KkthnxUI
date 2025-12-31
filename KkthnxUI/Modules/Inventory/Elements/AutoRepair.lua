@@ -3,7 +3,6 @@ local Module = K:GetModule("Bags")
 
 -- Locals for speed / clarity
 local string_format = string.format
-local debugprofilestop = debugprofilestop
 
 local CanGuildBankRepair = CanGuildBankRepair
 local CanMerchantRepair = CanMerchantRepair
@@ -21,23 +20,6 @@ local canRepair
 local isBankEmpty
 local isShown
 local repairAllCost
-
--- Lightweight profiling for diagnostics
-local AutoRepairProfile = { enabled = false, runs = 0, totalMs = 0 }
-
-function Module:AutoRepairProfileSetEnabled(enabled)
-	AutoRepairProfile.enabled = not not enabled
-	AutoRepairProfile.runs = 0
-	AutoRepairProfile.totalMs = 0
-end
-
-function Module:AutoRepairProfileDump()
-	if AutoRepairProfile.enabled then
-		K.Print(string_format("[AutoRepair] runs=%d time=%.2fms", AutoRepairProfile.runs, AutoRepairProfile.totalMs))
-	else
-		K.Print("[AutoRepair] profiling disabled")
-	end
-end
 
 local function delayFunc()
 	if isBankEmpty then
@@ -60,9 +42,6 @@ local function autoRepair(override)
 
 	if canRepair and repairAllCost > 0 then
 		local t0
-		if AutoRepairProfile.enabled then
-			t0 = debugprofilestop()
-		end
 
 		if not override and C["Inventory"].AutoRepair == 1 and IsInGuild() and CanGuildBankRepair() and GetGuildBankWithdrawMoney() >= repairAllCost then
 			RepairAllItems(true)
@@ -75,11 +54,6 @@ local function autoRepair(override)
 				K.Print(K.SystemColor .. L["Repaired Failed"] .. K.Name)
 				return
 			end
-		end
-
-		if AutoRepairProfile.enabled and t0 then
-			AutoRepairProfile.runs = AutoRepairProfile.runs + 1
-			AutoRepairProfile.totalMs = AutoRepairProfile.totalMs + (debugprofilestop() - t0)
 		end
 
 		K.Delay(0.5, delayFunc)

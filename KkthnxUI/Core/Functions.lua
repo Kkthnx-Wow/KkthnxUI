@@ -1,8 +1,18 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Central utility library for various core functions and helpers.
+-- - Design: Lightweight, high-performance, and cached for frequent access.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
---========================================================
--- Cache Lua Globals (Upvalues) for speed
---========================================================
+-- ---------------------------------------------------------------------------
+-- Locals & Global Caching
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache Lua globals for speed and consistency.
 local select = select
 local unpack = unpack
 local type = type
@@ -14,11 +24,11 @@ local next = next
 -- Table functions
 local table_insert = table.insert
 local table_wipe = table.wipe
+local strsplit = strsplit
 
 -- Math functions
 local math_floor = math.floor
 local math_abs = math.abs
-local mod = mod
 
 -- String functions
 local string_format = string.format
@@ -28,33 +38,32 @@ local string_gsub = string.gsub
 local string_lower = string.lower
 
 -- WoW API caching (common APIs used in utilities)
-local GetTime = GetTime
 local UnitClass = UnitClass
 local UnitIsPlayer = UnitIsPlayer
+local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
 
 -- Additional WoW API caching
-local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
-local CreateVector2D = CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = ENCHANTED_TOOLTIP_LINE
-local GameTooltip = GameTooltip
 local GetSpecialization = GetSpecialization
 local GetSpecializationInfo = GetSpecializationInfo
 local ITEM_LEVEL = ITEM_LEVEL
-local IsInRaid = IsInRaid
 local UIParent = UIParent
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 
--- General Utility Functions
+-- ---------------------------------------------------------------------------
+-- Core Utility API
+-- ---------------------------------------------------------------------------
+
 do
 	function K.Print(...)
 		print("|cff3c9bedKkthnxUI:|r", ...)
 	end
 
-	-- Optimized ShortValue (Zero GC Churn - uses math instead of string.format)
-	-- Cached format strings to avoid string concatenation in hot paths
+	-- PERF: Optimized ShortValue with zero GC churn by using math for rounding instead of string.format
+	-- where possible. Cached format strings avoid repeated allocations in hot paths like damage meters.
 	local format1 = "%.1f"
-	local format2 = "%.2f"
+	-- local format2 = "%.2f" -- No used atm
 
 	function K.ShortValue(n)
 		if not n or type(n) ~= "number" then
@@ -63,8 +72,7 @@ do
 
 		local abs_n = math_abs(n)
 
-		-- Optimization: Don't format small numbers (save CPU/Memory - no string allocation)
-		-- This early return avoids all calculations and string concatenation for the most common case
+		-- NOTE: Avoid formatting small numbers to save CPU cycles and memory allocations.
 		if abs_n < 1e3 then
 			return n
 		end
@@ -72,7 +80,7 @@ do
 		local prefixStyle = C["General"].NumberPrefixStyle
 		local suffix, div = "", 1
 
-		-- Calculate the appropriate suffix and division factor.
+		-- REASON: Calculate suffix and divisor for SI-style or localized numbering.
 		if abs_n >= 1e12 then
 			suffix, div = (prefixStyle == 1 and "t" or "z"), 1e12
 		elseif abs_n >= 1e9 then
@@ -83,7 +91,7 @@ do
 			suffix, div = (prefixStyle == 1 and "k" or "w"), 1e3
 		end
 
-		-- Format the shortened value using math for rounding (zero GC).
+		-- PERF: Final formatting using math for rounding to avoid GC pressure.
 		local val = n / div
 		if val < 10 then
 			-- Round to 1 decimal place using cached format string
@@ -110,11 +118,13 @@ do
 	end
 end
 
-do
-	-- Path Utilities (Reused table to prevent GC churn)
-	local keysTable = {} -- Reused table for path splitting
+-- ---------------------------------------------------------------------------
+-- Path-based Table Access
+-- ---------------------------------------------------------------------------
 
-	-- SetValueByPath: Sets a value in a nested table using a dot-separated path
+do
+	local keysTable = {}
+	-- REASON: Allows setting nested values via string paths (e.g., "General.FontSize").
 	function K.SetValueByPath(tbl, path, value)
 		table_wipe(keysTable)
 		local n = select("#", strsplit(".", path))
@@ -132,7 +142,6 @@ do
 		current[keysTable[#keysTable]] = value
 	end
 
-	-- GetValueByPath: Gets a value from a nested table using a dot-separated path
 	function K.GetValueByPath(tbl, path)
 		if not path then
 			return nil
@@ -154,47 +163,38 @@ do
 	end
 end
 
--- Color-related Functions
+-- ---------------------------------------------------------------------------
+-- Color & Atlas Helpers
+-- ---------------------------------------------------------------------------
+
 do
 	local factor = 255
-	-- Optimized: Color Caching System (Memoization)
-	-- Cache stores hex strings for frequently used colors to avoid repeated string formatting
 	local colorCache = {}
 
+	-- REASON: Convert RGB values to hex string; caches results to minimize string allocations.
 	function K.RGBToHex(r, g, b)
-		-- Check if r is a table, and extract r, g, b values from it if necessary
 		if type(r) == "table" then
 			r, g, b = r.r or r[1], r.g or r[2], r.b or r[3]
 		end
 
-		-- Check if r is not nil, and return the hex code if true
 		if not r then
 			return
 		end
-
-		-- Normalize values (handle nil cases)
 		r = r or 1
 		g = g or 1
 		b = b or 1
 
-		-- Generate a unique integer key for this color combo
-		-- Multiply by 1000 to convert 0-1 range to 0-1000 range (3 decimal places precision)
-		-- Then combine: r gets 9 digits, g gets 6 digits, b gets 3 digits
-		-- This avoids floating point key issues and ensures unique keys
 		local key = math_floor(r * 1000000000 + g * 1000000 + b * 1000)
 
-		-- Return cached value if it exists (Instant CPU return - no string formatting)
 		if colorCache[key] then
 			return colorCache[key]
 		end
-
-		-- Calculate and cache if new
 		local hex = string_format("|cff%02x%02x%02x", math_floor(r * factor + 0.5), math_floor(g * factor + 0.5), math_floor(b * factor + 0.5))
 		colorCache[key] = hex
 		return hex
 	end
 
-	-- Function to get the class icon using atlas textures
+	-- COMPAT: Uses Blizzard's class-specific atlas textures for consistent UI iconography.
 	function K.GetClassIcon(class, iconSize)
 		local size = iconSize or 16
 		if class then
@@ -202,7 +202,7 @@ do
 		end
 	end
 
-	-- Table for class colors
+	-- NOTE: Pre-formatted hex strings for class colors to avoid inline conversion.
 	local ClassColors = {
 		DEATHKNIGHT = "|CFFC41F3B",
 		DEMONHUNTER = "|CFFA330C9",
@@ -219,18 +219,17 @@ do
 		WARRIOR = "|CFFC79C6E",
 	}
 
-	-- Function to get the class color
 	function K.GetClassColor(class)
 		return ClassColors[class]
 	end
 
-	-- Function to get the class icon and color
 	function K.GetClassIconAndColor(class, iconSize)
 		local classIcon = K.GetClassIcon(class, iconSize)
 		local classColor = K.GetClassColor(class)
 		return classIcon .. classColor
 	end
 
+	-- REASON: Extracts texture coordinate data from an atlas info object for use in font strings (|T...|t).
 	function K.GetTextureStrByAtlas(info, sizeX, sizeY)
 		local file = info and info.file
 		if not file then
@@ -254,12 +253,16 @@ do
 	end
 end
 
--- Table-related Functions
+-- ---------------------------------------------------------------------------
+-- Table Manipulation
+-- ---------------------------------------------------------------------------
+
 do
 	function K.CopyTable(source, target, seen)
 		target = target or {}
 		seen = seen or {}
 
+		-- NOTE: Recursively copies tables while tracking seen objects to prevent infinite loops.
 		if seen[source] then
 			return seen[source]
 		end
@@ -291,7 +294,10 @@ do
 	end
 end
 
--- Gradient Frame and Font String Functions
+-- ---------------------------------------------------------------------------
+-- UI Component Helpers
+-- ---------------------------------------------------------------------------
+
 do
 	-- Gradient Frame
 	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
@@ -304,15 +310,6 @@ do
 		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
 	end
 
-	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
-	function K.CreateGradientFrame(frame)
-		local gradientFrame = frame:CreateTexture(nil, "BACKGROUND")
-		gradientFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -2)
-		gradientFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -0, 2)
-		gradientFrame:SetTexture(C["Media"].Textures.White8x8Texture)
-		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
-	end
-
 	function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, y)
 		if not self then
 			return
@@ -320,7 +317,7 @@ do
 
 		local fs = self:CreateFontString(nil, "OVERLAY")
 
-		-- check if fontstring is created or not
+		-- REASON: Ensures the font string is valid and applies consistent outlining or shadows.
 		if not fs then
 			return
 		end
@@ -354,7 +351,10 @@ do
 	end
 end
 
--- Class Color and Unit Color Functions
+-- ---------------------------------------------------------------------------
+-- Unit & Class Color Logic
+-- ---------------------------------------------------------------------------
+
 do
 	function K.ColorClass(class)
 		local color = K.ClassColors[class]
@@ -386,7 +386,10 @@ do
 	end
 end
 
--- Other Utility Functions
+-- ---------------------------------------------------------------------------
+-- Addon State & Delay Logic
+-- ---------------------------------------------------------------------------
+
 do
 	function K.TogglePanel(frame)
 		if frame:IsShown() then
@@ -396,6 +399,7 @@ do
 		end
 	end
 
+	-- REASON: Resolves the numeric NPC ID from a GUID; handles varying GUID formats.
 	function K.GetNPCID(guid)
 		local id = tonumber(string_match((guid or ""), "%-(%d-)%-%x-$"))
 		return id
@@ -427,6 +431,7 @@ do
 		end
 	end
 
+	-- NOTE: Delayed function execution with support for packed arguments via closures.
 	function K.Delay(delay, func, ...)
 		if type(delay) ~= "number" or type(func) ~= "function" then
 			return false
@@ -439,7 +444,8 @@ do
 	end
 
 	local FADEFRAMES, FADEMANAGER = {}, CreateFrame("FRAME")
-	setmetatable(FADEFRAMES, { __mode = "k" }) -- allow frames to be GC'd
+	-- REASON: Weak keys allow frames to be garbage collected even if they are in the fade queue.
+	setmetatable(FADEFRAMES, { __mode = "k" })
 	FADEMANAGER.delay = 0.05
 
 	function K.UIFrameFade_OnUpdate(_, elapsed)
@@ -470,7 +476,7 @@ do
 					if info.fadeHoldTime and info.fadeHoldTime > 0 then
 						info.fadeHoldTime = info.fadeHoldTime - elapsed
 					else
-						-- Complete the fade and call the finished function if there is one
+						-- REASON: Fade complete; cleanup and trigger optional callbacks.
 						K.UIFrameFadeRemoveFrame(frame)
 
 						if info.finishedFunc then
@@ -530,10 +536,11 @@ do
 		frame:SetAlpha(info.startAlpha)
 
 		if not FADEFRAMES[frame] then
-			FADEFRAMES[frame] = info -- read below comment
+			FADEFRAMES[frame] = info
 			FADEMANAGER:SetScript("OnUpdate", K.UIFrameFade_OnUpdate)
 		else
-			FADEFRAMES[frame] = info -- keep these both, we need this updated in the event its changed to another ref from a plugin or sth, don't move it up!
+			-- NOTE: Update reference in case it was changed by a plugin or external call.
+			FADEFRAMES[frame] = info
 		end
 	end
 
@@ -590,7 +597,10 @@ do
 	end
 end
 
--- Item Level Functions
+-- ---------------------------------------------------------------------------
+-- Item Level & NPC Resolution
+-- ---------------------------------------------------------------------------
+
 do
 	local iLvlDB = {}
 	local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
@@ -601,6 +611,7 @@ do
 	}
 
 	local slotData = { gems = {}, gemsColor = {} }
+	-- PERF: Optimized item level scanner using C_TooltipInfo; supports full scans for gems/enchants.
 	function K.GetItemLevel(link, arg1, arg2, fullScan)
 		if fullScan then
 			local data = C_TooltipInfo.GetInventoryItem(arg1, arg2)
@@ -619,9 +630,9 @@ do
 				local lineData = data.lines[i]
 				if not slotData.iLvl then
 					local text = lineData.leftText
-					local found = text and strfind(text, itemLevelString)
+					local found = text and string_find(text, itemLevelString)
 					if found then
-						local level = strmatch(text, "(%d+)%)?$")
+						local level = string_match(text, "(%d+)%)?$")
 						slotData.iLvl = tonumber(level) or 0
 					end
 				elseif isHoA then
@@ -632,7 +643,7 @@ do
 					end
 				else
 					if lineData.enchantID then
-						slotData.enchantText = strmatch(lineData.leftText, enchantString)
+						slotData.enchantText = string_match(lineData.leftText, enchantString)
 					elseif lineData.gemIcon then
 						num = num + 1
 						slotData.gems[num] = lineData.gemIcon
@@ -667,22 +678,23 @@ do
 					break
 				end
 				local text = lineData.leftText
-				local found = text and strfind(text, itemLevelString)
+				local found = text and string_find(text, itemLevelString)
 				if found then
-					local level = strmatch(text, "(%d+)%)?$")
+					local level = string_match(text, "(%d+)%)?$")
 					iLvlDB[link] = tonumber(level)
 					break
 				end
 			end
 			return iLvlDB[link]
 		end
-		-- Periodically clear cached item levels to avoid unbounded growth during long sessions
-		local function ClearItemLevelCache()
-			table_wipe(iLvlDB)
-		end
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", ClearItemLevelCache)
-		K:RegisterEvent("PLAYER_LEAVING_WORLD", ClearItemLevelCache)
 	end
+
+	-- PERF: Clear item level cache on world transitions to maintain a slim memory footprint.
+	local function ClearItemLevelCache()
+		table_wipe(iLvlDB)
+	end
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", ClearItemLevelCache)
+	K:RegisterEvent("PLAYER_LEAVING_WORLD", ClearItemLevelCache)
 
 	local pendingNPCs, nameCache, callbacks = {}, {}, {}
 	local loadingStr = "..."
@@ -700,6 +712,7 @@ do
 						end
 						pendingNPCs[npcID] = nil
 					else
+						-- REASON: Retry NPC resolution for entries that are still loading or nil.
 						local name = K.GetNPCName(npcID, callbacks[npcID])
 						if name and name ~= loadingStr then
 							pendingNPCs[npcID] = nil
@@ -726,6 +739,7 @@ do
 				name = lineData[1] and lineData[1].leftText
 			end
 			if name == loadingStr then
+				-- NOTE: NPC is not yet in cache; queue it for the throttled OnUpdate processor.
 				if not pendingNPCs[npcID] then
 					pendingNPCs[npcID] = 1
 					pendingFrame:Show()
@@ -759,7 +773,10 @@ do
 	end
 end
 
--- Role Updater and Chat Channel Check Functions
+-- ---------------------------------------------------------------------------
+-- Role & Chat Channel Helpers
+-- ---------------------------------------------------------------------------
+
 do
 	local function CheckRole()
 		local tree = GetSpecialization()
@@ -783,6 +800,7 @@ do
 			end
 		end
 	end
+	-- NOTE: Update player role on specialization or talent changes for UI adaptation.
 	K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 	K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
@@ -801,11 +819,15 @@ do
 	end
 
 	function K.CheckChat()
+		-- REASON: Resolves the appropriate chat channel based on the current group type.
 		return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 	end
 end
 
--- Tooltip Functions
+-- ---------------------------------------------------------------------------
+-- Tooltip & Anchor Helpers
+-- ---------------------------------------------------------------------------
+
 do
 	function K.GetAnchors(frame)
 		local x, y = frame:GetCenter()
@@ -877,7 +899,10 @@ do
 	end
 end
 
--- Perks Theme Overlay Helpers
+-- ---------------------------------------------------------------------------
+-- UI Features: Perks Theme Overlay
+-- ---------------------------------------------------------------------------
+
 do
 	local OverlayManager = { overlays = {} }
 	local managerFrame = CreateFrame("Frame")
@@ -894,7 +919,7 @@ do
 				prefix = info and info.uiTextureKit or prefix
 			end
 		end
-		-- Do not hardcode a seasonal fallback; only use Blizzard's active theme.
+		-- REASON: Do not hardcode seasonal fallbacks; only use Blizzard's active theme.
 		return prefix
 	end
 
@@ -967,6 +992,7 @@ do
 	local function register(entry)
 		OverlayManager.overlays[entry] = true
 		overlayCount = overlayCount + 1
+		-- NOTE: Lazily register events only when the first overlay is attached to save resources.
 		if overlayCount == 1 then
 			managerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 			managerFrame:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
@@ -1020,7 +1046,8 @@ do
 		tex:SetDrawLayer("ARTWORK", 7)
 		tex:Hide()
 		tex:ClearAllPoints()
-		-- default anchor above the frame; allow overrides
+
+		-- REASON: Default anchor is above the frame; allows overrides for flexible UI placement.
 		local point = opts.point or "TOP"
 		local relPoint = opts.relPoint or "TOP"
 		local x = opts.x or 0
@@ -1076,7 +1103,10 @@ do
 	end
 end
 
+-- ---------------------------------------------------------------------------
 -- Overlay Glow Functions
+-- ---------------------------------------------------------------------------
+
 do
 	function K.CreateGlowFrame(self, size)
 		local glowFrame = CreateFrame("Frame", nil, self)
@@ -1087,8 +1117,12 @@ do
 	end
 end
 
--- Movable Frame and String Shortening Functions
+-- ---------------------------------------------------------------------------
+-- Positional Helpers
+-- ---------------------------------------------------------------------------
+
 do
+	-- REASON: Enables drag-and-drop functionality for any frame; supports persistent positioning.
 	function K.CreateMoverFrame(self, parent, saved)
 		local frame = parent or self
 		if not (frame and type(frame) == "table" and frame.SetMovable) then
@@ -1137,41 +1171,45 @@ do
 			end
 		end
 	end
+end
 
-	function K.ShortenString(string, numChars, dots)
-		local bytes = string:len()
-		if bytes <= numChars then
-			return string
+-- NOTE: Shortens a string to a specific number of characters, handling multi-byte UTF-8 sequences.
+function K.ShortenString(string, numChars, dots)
+	local bytes = string:len()
+	if bytes <= numChars then
+		return string
+	else
+		local len, pos = 0, 1
+		while pos <= bytes do
+			len = len + 1
+			local c = string:byte(pos)
+			if c > 0 and c <= 127 then
+				pos = pos + 1
+			elseif c >= 192 and c <= 223 then
+				pos = pos + 2
+			elseif c >= 224 and c <= 239 then
+				pos = pos + 3
+			elseif c >= 240 and c <= 247 then
+				pos = pos + 4
+			end
+
+			if len == numChars then
+				break
+			end
+		end
+
+		if len == numChars and pos <= bytes then
+			return string:sub(1, pos - 1) .. (dots and "..." or "")
 		else
-			local len, pos = 0, 1
-			while pos <= bytes do
-				len = len + 1
-				local c = string:byte(pos)
-				if c > 0 and c <= 127 then
-					pos = pos + 1
-				elseif c >= 192 and c <= 223 then
-					pos = pos + 2
-				elseif c >= 224 and c <= 239 then
-					pos = pos + 3
-				elseif c >= 240 and c <= 247 then
-					pos = pos + 4
-				end
-
-				if len == numChars then
-					break
-				end
-			end
-
-			if len == numChars and pos <= bytes then
-				return string:sub(1, pos - 1) .. (dots and "..." or "")
-			else
-				return string
-			end
+			return string
 		end
 	end
 end
 
--- Interface Option Functions
+-- ---------------------------------------------------------------------------
+-- Interface Option Helpers
+-- ---------------------------------------------------------------------------
+
 do
 	function K.HideInterfaceOption(self)
 		if not self then
@@ -1183,10 +1221,14 @@ do
 	end
 end
 
--- Time Formatting Functions
+-- ---------------------------------------------------------------------------
+-- Time & Money Formatting
+-- ---------------------------------------------------------------------------
+
 do
 	-- Variables to store time-related values in seconds
 	local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
+	-- REASON: Formats raw seconds into human-readable strings with class coloring and color thresholds.
 	function K.FormatTime(s)
 		if s >= day then
 			return string_format("%d" .. K.MyClassColor .. "d", s / day + pointFive), s % day
@@ -1232,12 +1274,84 @@ do
 	end
 end
 
--- Map Position and Money Formatting Functions
+-- ---------------------------------------------------------------------------
+-- Interface Option Helpers
+-- ---------------------------------------------------------------------------
+
+do
+	function K.HideInterfaceOption(self)
+		if not self then
+			return
+		end
+
+		self:SetAlpha(0)
+		self:SetScale(0.0001)
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Time & Money Formatting
+-- ---------------------------------------------------------------------------
+
+do
+	-- Variables to store time-related values in seconds
+	local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
+	-- REASON: Formats raw seconds into human-readable strings with class coloring and color thresholds.
+	function K.FormatTime(s)
+		if s >= day then
+			return string_format("%d" .. K.MyClassColor .. "d", s / day + pointFive), s % day
+		elseif s >= hour then
+			return string_format("%d" .. K.MyClassColor .. "h", s / hour + pointFive), s % hour
+		elseif s >= minute then
+			return string_format("%d" .. K.MyClassColor .. "m", s / minute + pointFive), s % minute
+		elseif s > 10 then
+			return string_format("|cffcccc33%d|r", s + 0.5), s - math_floor(s)
+		elseif s > 3 then
+			return string_format("|cffffff00%d|r", s + 0.5), s - math_floor(s)
+		else
+			return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
+		end
+	end
+
+	function K.FormatTimeRaw(s)
+		if s >= day then
+			return string_format("%dd", s / day + pointFive)
+		elseif s >= hour then
+			return string_format("%dh", s / hour + pointFive)
+		elseif s >= minute then
+			return string_format("%dm", s / minute + pointFive)
+		else
+			return string_format("%d", s + pointFive)
+		end
+	end
+
+	function K.CooldownOnUpdate(self, elapsed, raw)
+		local formatTime = raw and K.FormatTimeRaw or K.FormatTime
+		self.elapsed = (self.elapsed or 0) + elapsed
+		if self.elapsed >= 0.1 then
+			local timeLeft = self.expiration - GetTime()
+			if timeLeft > 0 then
+				local text = formatTime(timeLeft)
+				self.timer:SetText(text)
+			else
+				self:SetScript("OnUpdate", nil)
+				self.timer:SetText(nil)
+			end
+			self.elapsed = 0
+		end
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Map & Money Logic
+-- ---------------------------------------------------------------------------
+
 do
 	local mapRects = {}
 	local tempVec2D = CreateVector2D(0, 0)
 	local vecZero = CreateVector2D(0, 0)
 	local vecOne = CreateVector2D(1, 1)
+	-- REASON: Translates world coordinates to map-specific relative coordinates (0.0 - 1.0).
 	function K.GetPlayerMapPos(mapID)
 		if not mapID then
 			return
@@ -1290,15 +1404,16 @@ do
 	end
 end
 
---========================================================
--- Unified Widget Factory (K.WidgetFactory)
---========================================================
--- Centralized UI toolkit for consistent styling across all GUI modules
--- This eliminates code duplication and makes theme changes easier
+-- ---------------------------------------------------------------------------
+-- Unified Widget Factory
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Centralized UI toolkit for consistent styling across all GUI modules.
+-- This eliminates code duplication and ensures theme consistency.
 
 K.WidgetFactory = {}
 
--- CreateBackdrop: Creates a colored background texture
+-- REASON: Creates a colored background texture with default or custom alpha.
 function K.WidgetFactory.CreateBackdrop(parent, r, g, b, a)
 	local bg = parent:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
@@ -1307,7 +1422,7 @@ function K.WidgetFactory.CreateBackdrop(parent, r, g, b, a)
 	return bg
 end
 
--- CreateButton: Creates a styled button with hover effects and consistent theming
+-- REASON: Creates a styled button with hover effects and consistent theme-aware coloring.
 function K.WidgetFactory.CreateButton(parent, text, width, height, onClick)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(width or 120, height or 28)

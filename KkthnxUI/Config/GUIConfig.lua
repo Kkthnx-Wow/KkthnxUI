@@ -838,7 +838,7 @@ local function CreateMiscCategory()
 	-- Audio
 	local audioSection = GUI:AddSection(miscCategory, "Audio")
 	GUI:CreateSwitch(audioSection, "Misc.MuteSounds", "Mute Various Annoying Sounds In-Game", "Mutes specific annoying sound effects in the game")
-
+	GUI:CreateTextInput(audioSection, "Misc.MuteSoundIDs", "Custom Mute Sound IDs", "e.g. 12345 67890", "Space/comma separated SoundKit IDs to mute. Click the cogwheel to open the list editor.")
 	-- Mail
 	local mailSection = GUI:AddSection(miscCategory, "Mail")
 	GUI:CreateSwitch(mailSection, "Misc.EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox", "Enhances the mailbox with features similar to the Postal addon")

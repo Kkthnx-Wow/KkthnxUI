@@ -12,7 +12,6 @@ local tostring = tostring
 local print = print
 local format = string.format
 local gsub = string.gsub
-local debugprofilestop = debugprofilestop
 
 -- Localizing math functions
 local atan2, cos, sin, max, min, sqrt = math.atan2, math.cos, math.sin, math.max, math.min, math.sqrt
@@ -60,25 +59,6 @@ local YES = YES
 local KKUI_MISC_MODULE = {}
 
 -- Lightweight profiling helpers (opt-in via C["General"].DebugProfiling)
-local kkuiProfileMarks = {}
-local function KKUI_ProfileStart(key)
-	if not (C and C["General"] and C["General"].DebugProfiling) then
-		return
-	end
-	kkuiProfileMarks[key] = debugprofilestop()
-end
-
-local function KKUI_ProfileEnd(key)
-	if not (C and C["General"] and C["General"].DebugProfiling) then
-		return
-	end
-	local startTime = kkuiProfileMarks[key]
-	if startTime then
-		local elapsed = debugprofilestop() - startTime
-		kkuiProfileMarks[key] = nil
-		print("|cFF99CCFFKkthnxUI|r:", key, format("%.2f ms", elapsed))
-	end
-end
 
 -- Register Miscellaneous Modules
 function Module:RegisterMisc(name, func)
@@ -116,7 +96,6 @@ end
 
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
-	KKUI_ProfileStart("Misc:OnEnable")
 	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
@@ -171,7 +150,6 @@ function Module:OnEnable()
 		-- K:RegisterEvent("PLAYER_ENTERING_WORLD", self.UpdateGuildInviteString)
 		-- K:RegisterEvent("PLAYER_GUILD_UPDATE", self.UpdateGuildInviteString)
 	end
-	KKUI_ProfileEnd("Misc:OnEnable")
 end
 
 -- BNToast Frame Mover Setup

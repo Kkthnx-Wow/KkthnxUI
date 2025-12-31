@@ -4,9 +4,7 @@ local Module = K:NewModule("Installer")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
--- ====================================================
 -- Local Variable Caching - Performance Optimization
--- ====================================================
 
 -- Basic Lua functions
 local _G = _G
@@ -70,18 +68,14 @@ local SOUNDKIT_ACHIEVEMENT = 21968
 local SOUNDKIT_UI_BNET_TOAST = 140268
 local SOUNDKIT_READY_CHECK = 166318
 
--- ====================================================
 -- Reusable Tables - Memory Management
--- ====================================================
 
 local chatColorTypes = {}
 local defaultCVarsCache = {}
 local combatCVarsCache = {}
 local developerCVarsCache = {}
 
--- ====================================================
 -- Helper Functions
--- ====================================================
 
 -- Apply CVars from a cached table
 local function ApplyCVars(cvarTable)
@@ -168,9 +162,7 @@ local function InitializeCVarCaches()
 	}
 end
 
--- ====================================================
 -- Module Functions
--- ====================================================
 
 function Module:ResetSettings()
 	KkthnxUIDB.Settings[K.Realm][K.Name] = {}
@@ -389,9 +381,7 @@ function Module:ForceChatSettings()
 	end
 end
 
--- ====================================================
 -- Fake Achievement Popup (Optimized)
--- ====================================================
 
 local fakeAchievementPopup
 local achievementAnimationGroup
@@ -471,9 +461,7 @@ local function ShowFakeAchievement(title, description)
 	achievementAnimationGroup:Play()
 end
 
--- ====================================================
 -- Tutorial Frame (Optimized)
--- ====================================================
 
 local tutor
 local tutorProgressBar
@@ -706,9 +694,7 @@ local function YesTutor()
 	end)
 end
 
--- ====================================================
 -- Welcome Frame (Optimized)
--- ====================================================
 
 local welcome
 

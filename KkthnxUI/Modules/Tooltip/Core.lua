@@ -26,7 +26,6 @@ local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = C_PlayerInfo and C_PlayerI
 local GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet = GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet
 local C_Item_GetItemLinkByGUID = C_Item and C_Item.GetItemLinkByGUID
 local C_Item_GetItemInfo = C_Item and C_Item.GetItemInfo
-local debugprofilestop = debugprofilestop
 
 local classification = {
 	worldboss = format("|cffAF5050 %s|r", BOSS),

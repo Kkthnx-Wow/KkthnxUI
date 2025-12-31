@@ -13,6 +13,7 @@ function Module:OnEnable()
 		"CreateAutoPartySyncAccept",
 		"CreateAutoRelease",
 		"CreateAutoResurrect",
+		"CreateAutoHideTracker",
 		"CreateAutoScreenshot",
 		"CreateAutoSetRole",
 		"CreateAutoWhisperInvite",

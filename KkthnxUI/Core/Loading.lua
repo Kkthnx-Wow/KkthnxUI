@@ -6,11 +6,8 @@ local KKUI_ModulesEnabled = false
 local pairs = pairs
 local print = print
 local string_format = string.format
-local debugprofilestop = debugprofilestop
 
--- ----------------------------------------------------------------------------
 -- Database Handling
--- ----------------------------------------------------------------------------
 
 local function KKUI_CreateDefaults()
 	K.Defaults = {}
@@ -119,9 +116,7 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.ChangelogHighlightLatest = KkthnxUIDB.ChangelogHighlightLatest or false
 end
 
--- ----------------------------------------------------------------------------
 -- Module Management
--- ----------------------------------------------------------------------------
 
 local function KKUI_EnableModulesOnce()
 	if KKUI_ModulesEnabled then
@@ -131,7 +126,6 @@ local function KKUI_EnableModulesOnce()
 
 	local startTime
 	if K.isDeveloper then
-		startTime = debugprofilestop()
 	end
 
 	-- 1) Enable Main GUI
@@ -160,20 +154,16 @@ local function KKUI_EnableModulesOnce()
 	end
 
 	if K.isDeveloper and startTime then
-		local duration = debugprofilestop() - startTime
 		K.Print(string_format("[KKUI_DEV] Modules Enabled in %.3f ms", duration))
 	end
 end
 
--- ----------------------------------------------------------------------------
 -- Event Handler
--- ----------------------------------------------------------------------------
 
 local function KKUI_OnEvent(self, event, arg1)
 	if event == "ADDON_LOADED" and arg1 == "KkthnxUI" then
 		local startTime
 		if K.isDeveloper then
-			startTime = debugprofilestop()
 		end
 
 		-- Initialize Database
@@ -187,7 +177,6 @@ local function KKUI_OnEvent(self, event, arg1)
 		end
 
 		if K.isDeveloper and startTime then
-			local duration = debugprofilestop() - startTime
 			K.Print(string_format("[KKUI_DEV] ADDON_LOADED processing in %.3f ms", duration))
 		end
 

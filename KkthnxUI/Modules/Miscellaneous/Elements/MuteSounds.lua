@@ -4,6 +4,10 @@ local Module = K:GetModule("Miscellaneous")
 local MuteSoundFile = MuteSoundFile
 local UnmuteSoundFile = UnmuteSoundFile
 
+local pairs = pairs
+local tonumber = tonumber
+local string_gmatch = string.gmatch
+
 -- Website For Looking Up Sounds
 -- https://wow.tools/
 
@@ -93,13 +97,48 @@ local muteSounds = {
 	[53221] = true, -- sound/music/gluescreenmusic/bccredits_lament_of_the_highborne.mp3
 }
 
+local activeMuted = {}
+
+local function GetCombinedMuteSounds()
+	local combined = {}
+	for soundID in pairs(muteSounds) do
+		combined[soundID] = true
+	end
+
+	local extra = C["Misc"] and C["Misc"].MuteSoundIDs
+	if type(extra) == "number" then
+		combined[extra] = true
+	elseif type(extra) == "string" and extra ~= "" then
+		for w in string_gmatch(extra, "%S+") do
+			local id = tonumber(w)
+			if id then
+				combined[id] = true
+			end
+		end
+	end
+
+	return combined
+end
+
 function Module:CreateMuteSounds()
 	local shouldMute = C["Misc"].MuteSounds
-	for soundID in pairs(muteSounds) do
-		if shouldMute then
-			MuteSoundFile(soundID)
-		else
+	local combined = GetCombinedMuteSounds()
+
+	-- Unmute anything that should no longer be muted (or when the feature is disabled)
+	for soundID in pairs(activeMuted) do
+		if not shouldMute or not combined[soundID] then
 			UnmuteSoundFile(soundID)
+			activeMuted[soundID] = nil
+		end
+	end
+
+	-- Mute anything new
+	if shouldMute then
+		for soundID in pairs(combined) do
+			if not activeMuted[soundID] then
+				MuteSoundFile(soundID)
+				activeMuted[soundID] = true
+			end
 		end
 	end
 end

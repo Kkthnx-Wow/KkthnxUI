@@ -1,23 +1,51 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Minimap")
 
-local math_floor = math.floor
+-- Lua locals
+local _G = _G
+local error = error
+local ipairs = ipairs
+local pcall = pcall
 local select = select
+local tostring = tostring
+local type = type
+local unpack = unpack
+
+local math_floor = math.floor
+local string_find = string.find
 local table_sort = table.sort
 local tinsert = tinsert
-local unpack = unpack
-local SOUNDKIT = SOUNDKIT
-local C_AddOns_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded
-local C_Garrison_HasGarrison = C_Garrison and C_Garrison.HasGarrison
-local ipairs = ipairs
 
-local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
-local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+-- WoW API locals
+local CreateFrame = CreateFrame
+local GameTooltip = GameTooltip
+local GetTime = GetTime
 local GetUnitName = GetUnitName
 local InCombatLockdown = InCombatLockdown
-local Minimap = Minimap
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local IsShiftKeyDown = IsShiftKeyDown
+local ToggleCalendar = ToggleCalendar
 local UnitClass = UnitClass
+local UnitIsUnit = UnitIsUnit
 local hooksecurefunc = hooksecurefunc
+local UIParent = UIParent
+
+-- Globals / frames
+local Minimap = Minimap
+local MinimapCluster = MinimapCluster
+local SOUNDKIT = SOUNDKIT
+
+-- C_ API locals (guarded for private server compatibility)
+local C_AddOns_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded
+local C_Calendar_GetNumPendingInvites = C_Calendar and C_Calendar.GetNumPendingInvites
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime and C_DateAndTime.GetCurrentCalendarTime
+local C_Garrison_HasGarrison = C_Garrison and C_Garrison.HasGarrison
+local C_StorePublic_IsEnabled = C_StorePublic and C_StorePublic.IsEnabled
+
+-- Blizzard helpers (may not exist on all clients)
+local Minimap_OnClick = _G.Minimap_OnClick
+local Minimap_OnMouseUp = _G.Minimap_OnMouseUp
 
 -- Create the minimap micro menu
 local menuList = {
@@ -32,8 +60,9 @@ local menuList = {
 	{
 		text = _G.SPELLBOOK,
 		func = function()
-			if PlayerSpellsUtil then
-				PlayerSpellsUtil.ToggleSpellBookFrame()
+			-- PlayerSpellsUtil can be loaded after login; avoid caching it.
+			if _G.PlayerSpellsUtil then
+				_G.PlayerSpellsUtil.ToggleSpellBookFrame()
 			else
 				_G.ToggleFrame(_G.SpellBookFrame)
 			end
@@ -68,8 +97,8 @@ local menuList = {
 	{
 		text = _G.TALENTS_BUTTON,
 		func = function()
-			if PlayerSpellsUtil then
-				PlayerSpellsUtil.ToggleClassTalentFrame()
+			if _G.PlayerSpellsUtil then
+				_G.PlayerSpellsUtil.ToggleClassTalentFrame()
 			else
 				_G.ToggleTalentFrame()
 			end
@@ -112,7 +141,9 @@ local menuList = {
 	{
 		text = (L and L["Calendar"]) or "Calendar",
 		func = function()
-			_G.GameTimeFrame:Click()
+			if _G.GameTimeFrame then
+				_G.GameTimeFrame:Click()
+			end
 		end,
 		notCheckable = 1,
 		icon = 3007435,
@@ -140,7 +171,9 @@ local menuList = {
 	{
 		text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
 		func = function()
-			_G.ExpansionLandingPageMinimapButton:ToggleLandingPage()
+			if _G.ExpansionLandingPageMinimapButton then
+				_G.ExpansionLandingPageMinimapButton:ToggleLandingPage()
+			end
 		end,
 		notCheckable = 1,
 		icon = 1044996,
@@ -157,10 +190,10 @@ local menuList = {
 
 if K.Level == 80 then
 	tinsert(menuList, {
-		text = RATED_PVP_WEEKLY_VAULT,
+		text = _G.RATED_PVP_WEEKLY_VAULT,
 		func = function()
-			if not _G.WeeklyRewardsFrame then
-				WeeklyRewards_LoadUI()
+			if not _G.WeeklyRewardsFrame and _G.WeeklyRewards_LoadUI then
+				_G.WeeklyRewards_LoadUI()
 			end
 			_G.ToggleFrame(_G.WeeklyRewardsFrame)
 		end,
@@ -169,11 +202,13 @@ if K.Level == 80 then
 	})
 end
 
-if C_StorePublic.IsEnabled and C_StorePublic.IsEnabled() then
+if C_StorePublic_IsEnabled and C_StorePublic_IsEnabled() then
 	tinsert(menuList, {
 		text = _G.BLIZZARD_STORE,
 		func = function()
-			_G.StoreMicroButton:Click()
+			if _G.StoreMicroButton then
+				_G.StoreMicroButton:Click()
+			end
 		end,
 		notCheckable = 1,
 		icon = 939375,
@@ -199,7 +234,6 @@ tinsert(menuList, {
 		else
 			_G.PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
 			_G.HideUIPanel(_G.GameMenuFrame)
-
 			_G.MainMenuMicroButton:SetButtonState("NORMAL")
 		end
 	end,
@@ -229,7 +263,8 @@ function Module:CreateStyle()
 		return
 	end
 
-	local MinimapMailFrame = MinimapCluster.IndicatorFrame.MailFrame
+	local indicatorFrame = MinimapCluster and MinimapCluster.IndicatorFrame
+	local MinimapMailFrame = indicatorFrame and indicatorFrame.MailFrame
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({
@@ -248,52 +283,55 @@ function Module:CreateStyle()
 	anim.fader:SetDuration(1)
 	anim.fader:SetSmoothing("OUT")
 
-	-- Add comments to describe the purpose of the function
 	local function updateMinimapBorderAnimation(event)
-		local borderColor = nil
+		local borderColor
 
-		-- If player enters combat, set border color to red
 		if event == "PLAYER_REGEN_DISABLED" then
 			borderColor = { 1, 0, 0, 0.8 }
 		elseif not InCombatLockdown() then
-			if C_Calendar_GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
-				-- If there are pending calendar invites or minimap mail frame is shown, set border color to yellow
+			local invites = C_Calendar_GetNumPendingInvites and C_Calendar_GetNumPendingInvites() or 0
+			if invites > 0 or (MinimapMailFrame and MinimapMailFrame:IsShown()) then
 				borderColor = { 1, 1, 0, 0.8 }
 			end
 		end
 
-		-- If a border color was set, show the minimap mail pulse frame and play the animation
 		if borderColor then
 			minimapMailPulse:Show()
 			minimapMailPulse:SetBackdropBorderColor(unpack(borderColor))
-			anim:Play()
+			if not anim:IsPlaying() then
+				anim:Play()
+			end
 		else
+			if anim:IsPlaying() then
+				anim:Stop()
+			end
 			minimapMailPulse:Hide()
 			minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
-			-- Stop the animation
-			anim:Stop()
 		end
 	end
+
 	K:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateMinimapBorderAnimation)
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MinimapMailFrame:HookScript("OnHide", function()
-		if InCombatLockdown() then
-			return
-		end
+	if MinimapMailFrame then
+		MinimapMailFrame:HookScript("OnHide", function()
+			if InCombatLockdown() then
+				return
+			end
 
-		if anim and anim:IsPlaying() then
-			anim:Stop()
-			minimapMailPulse:Hide()
-		end
-	end)
+			if anim:IsPlaying() then
+				anim:Stop()
+				minimapMailPulse:Hide()
+			end
+		end)
+	end
 end
 
 local function ToggleLandingPage(_, ...)
-	if not C_Garrison_HasGarrison(...) then
-		_G.UIErrorsFrame:AddMessage(K.InfoColor .. CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE)
+	if not (C_Garrison_HasGarrison and C_Garrison_HasGarrison(...)) then
+		_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE)
 		return
 	end
 	_G.ShowGarrisonLandingPage(...)
@@ -301,15 +339,15 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison / Expansion Landing Page Minimap Button (mirror Blizzard behavior)
-	local garrMinimapButton = ExpansionLandingPageMinimapButton
+	local garrMinimapButton = _G.ExpansionLandingPageMinimapButton
 	if garrMinimapButton then
 		local buttonTextureIcon = "ShipMissionIcon-Combat-Mission"
 
 		local function skinLandingPageButton(self)
-			-- Reapply our custom icon after Blizzard updates
 			local normal = self:GetNormalTexture()
 			local pushed = self:GetPushedTexture()
 			local highlight = self:GetHighlightTexture()
+
 			if normal and normal.SetAtlas then
 				normal:SetAtlas(buttonTextureIcon)
 				normal:SetVertexColor(1, 1, 1, 1)
@@ -326,14 +364,13 @@ function Module:ReskinRegions()
 				self.LoopingGlow:SetAtlas(buttonTextureIcon)
 				self.LoopingGlow:SetSize(26, 26)
 			end
+
 			self:SetSize(26, 26)
 		end
 
 		local function positionLandingPageButton(self)
-			-- Only adjust position; let Blizzard handle icon/size/tooltip via UpdateIcon/OnEnter
 			self:ClearAllPoints()
 			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-			-- Ensure hit rect is sane without overriding built-in visuals
 			self:SetHitRectInsets(0, 0, 0, 0)
 		end
 
@@ -346,7 +383,7 @@ function Module:ReskinRegions()
 		garrMinimapButton:HookScript("OnShow", refreshLandingPageButton)
 		hooksecurefunc(garrMinimapButton, "UpdateIcon", refreshLandingPageButton)
 
-		local menuList = {
+		local landingMenuList = {
 			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0_Garrison, notCheckable = true },
 			{ text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0_Garrison, notCheckable = true },
 			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0_Garrison, notCheckable = true },
@@ -361,13 +398,12 @@ function Module:ReskinRegions()
 				if _G.ExpansionLandingPage and _G.ExpansionLandingPage:IsShown() then
 					_G.HideUIPanel(_G.ExpansionLandingPage)
 				end
-				K.LibEasyMenu.Create(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
+				K.LibEasyMenu.Create(landingMenuList, K.EasyMenu, self, -80, 0, "MENU", 1)
 			end
 		end)
 
-		-- Additive tooltip hint without replacing Blizzard's tooltip logic
 		garrMinimapButton:HookScript("OnEnter", function(self)
-			if GameTooltip:IsOwned(self) then
+			if GameTooltip and GameTooltip:IsOwned(self) then
 				GameTooltip:AddLine("\n" .. (L and (L["Right Click to switch Summaries"] or "Right Click to switch Summaries") or "Right Click to switch Summaries"), 1, 1, 1, true)
 				GameTooltip:Show()
 			end
@@ -375,15 +411,22 @@ function Module:ReskinRegions()
 	end
 
 	-- QueueStatus Button
+	local QueueStatusButton = _G.QueueStatusButton
 	if QueueStatusButton then
+		local QueueStatusButtonIcon = _G.QueueStatusButtonIcon
+		local QueueStatusFrame = _G.QueueStatusFrame
+
 		QueueStatusButton:SetParent(MinimapCluster)
 		QueueStatusButton:SetSize(24, 24)
 		QueueStatusButton:SetFrameLevel(20)
 		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -4, 4)
 
-		QueueStatusButtonIcon:SetAlpha(0)
-
-		QueueStatusFrame:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+		if QueueStatusButtonIcon then
+			QueueStatusButtonIcon:SetAlpha(0)
+		end
+		if QueueStatusFrame then
+			QueueStatusFrame:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+		end
 
 		hooksecurefunc(QueueStatusButton, "SetPoint", function(button, _, _, _, x, y)
 			if not (x == -4 and y == 4) then
@@ -403,17 +446,20 @@ function Module:ReskinRegions()
 		anim.rota:SetDuration(2)
 		anim.rota:SetDegrees(360)
 
-		hooksecurefunc(QueueStatusFrame, "Update", function()
-			queueIcon:SetShown(QueueStatusButton:IsShown())
-		end)
+		if QueueStatusFrame then
+			hooksecurefunc(QueueStatusFrame, "Update", function()
+				queueIcon:SetShown(QueueStatusButton:IsShown())
+			end)
+		end
 
-		hooksecurefunc(QueueStatusButton.Eye, "PlayAnim", function()
-			anim:Play()
-		end)
-
-		hooksecurefunc(QueueStatusButton.Eye, "StopAnimating", function()
-			anim:Pause()
-		end)
+		if QueueStatusButton.Eye then
+			hooksecurefunc(QueueStatusButton.Eye, "PlayAnim", function()
+				anim:Play()
+			end)
+			hooksecurefunc(QueueStatusButton.Eye, "StopAnimating", function()
+				anim:Pause()
+			end)
+		end
 
 		local queueStatusDisplay = Module.QueueStatusDisplay
 		if queueStatusDisplay then
@@ -429,17 +475,14 @@ function Module:ReskinRegions()
 	end
 
 	-- Difficulty Flags
-	local instDifficulty = MinimapCluster.InstanceDifficulty
+	local instDifficulty = MinimapCluster and MinimapCluster.InstanceDifficulty
 	if instDifficulty then
 		instDifficulty:SetParent(Minimap)
 		instDifficulty:SetScale(0.9)
 
-		local function UpdateFlagAnchor(frame, _, _, _, _, _, force)
-			if force then
-				return
-			end
+		local function UpdateFlagAnchor(frame)
 			frame:ClearAllPoints()
-			frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2, true)
+			frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 		end
 
 		UpdateFlagAnchor(instDifficulty)
@@ -453,7 +496,6 @@ function Module:ReskinRegions()
 			if not frame then
 				return
 			end
-
 			if frame.Border then
 				frame.Border:Hide()
 			end
@@ -466,40 +508,29 @@ function Module:ReskinRegions()
 		ReskinDifficultyFrame(instDifficulty.ChallengeMode)
 	end
 
-	local function updateMapAnchor(frame, _, _, newAnchor, _, _, force)
-		if force then
+	-- Indicator Frame (mail/calendar, etc.)
+	local function UpdateIndicatorAnchor(frame)
+		if not frame then
 			return
 		end
 
+		local wantY = (C["DataText"].Time and 20) or 4
 		local p, rel, rp, x, y = frame:GetPoint()
-		local wantY
-		if C["DataText"].Time then
-			wantY = 20
-		else
-			wantY = 4
-		end
-		if not (p == newAnchor and rel == Minimap and rp == "BOTTOM" and x == 0 and y == wantY) then
+		if not (p == "BOTTOM" and rel == Minimap and rp == "BOTTOM" and x == 0 and y == wantY) then
 			frame:ClearAllPoints()
 			frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, wantY)
 		end
 	end
 
-	-- get the indicator frame from the MinimapCluster object
-	local indicatorFrame = MinimapCluster.IndicatorFrame
+	local indicatorFrame = MinimapCluster and MinimapCluster.IndicatorFrame
 	if indicatorFrame then
-		-- set the initial position of the frame
-		updateMapAnchor(indicatorFrame)
-
-		-- hook into the SetPoint function to update the frame's position if necessary
-		hooksecurefunc(indicatorFrame, "SetPoint", function(frame, ...)
-			updateMapAnchor(frame, ..., select(2, frame:GetPoint()))
-		end)
-
-		-- set the frame level to 11 to ensure it appears above other elements
+		UpdateIndicatorAnchor(indicatorFrame)
+		hooksecurefunc(indicatorFrame, "SetPoint", UpdateIndicatorAnchor)
 		indicatorFrame:SetFrameLevel(11)
 	end
 
 	-- Invites Icon
+	local GameTimeCalendarInvitesTexture = _G.GameTimeCalendarInvitesTexture
 	if GameTimeCalendarInvitesTexture then
 		GameTimeCalendarInvitesTexture:ClearAllPoints()
 		GameTimeCalendarInvitesTexture:SetParent(Minimap)
@@ -507,6 +538,7 @@ function Module:ReskinRegions()
 	end
 
 	-- Streaming icon
+	local StreamingIcon = _G.StreamingIcon
 	if StreamingIcon then
 		StreamingIcon:ClearAllPoints()
 		StreamingIcon:SetParent(Minimap)
@@ -516,7 +548,8 @@ function Module:ReskinRegions()
 		StreamingIcon:SetFrameStrata("LOW")
 	end
 
-	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
+	-- Calendar invite notification border
+	local inviteNotification = CreateFrame("Button", nil, Minimap, "BackdropTemplate")
 	inviteNotification:SetBackdrop({
 		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay",
 		edgeSize = 12,
@@ -529,7 +562,8 @@ function Module:ReskinRegions()
 	K.CreateFontString(inviteNotification, 12, K.InfoColor .. ((L and L["Pending Calendar Invite(s)!"]) or "Pending Calendar Invite(s)!"), "")
 
 	local function updateInviteVisibility()
-		inviteNotification:SetShown(C_Calendar_GetNumPendingInvites() > 0)
+		local invites = C_Calendar_GetNumPendingInvites and C_Calendar_GetNumPendingInvites() or 0
+		inviteNotification:SetShown(invites > 0)
 	end
 	K:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateInviteVisibility)
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", updateInviteVisibility)
@@ -537,7 +571,7 @@ function Module:ReskinRegions()
 	inviteNotification:SetScript("OnClick", function(_, btn)
 		inviteNotification:Hide()
 
-		if btn == "LeftButton" then
+		if btn == "LeftButton" and ToggleCalendar then
 			ToggleCalendar()
 		end
 
@@ -549,15 +583,13 @@ end
 function Module:CreatePing()
 	local pingFrame = CreateFrame("Frame", nil, Minimap)
 	pingFrame:SetSize(Minimap:GetWidth(), 13)
-	pingFrame:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 30)
+	pingFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 30)
 	pingFrame.text = K.CreateFontString(pingFrame, 13, "", "OUTLINE", false, "CENTER")
 
 	local pingAnimation = pingFrame:CreateAnimationGroup()
-
 	pingAnimation:SetScript("OnPlay", function()
 		pingFrame:SetAlpha(0.8)
 	end)
-
 	pingAnimation:SetScript("OnFinished", function()
 		pingFrame:SetAlpha(0)
 	end)
@@ -570,7 +602,7 @@ function Module:CreatePing()
 	pingAnimation.fader:SetStartDelay(3)
 
 	K:RegisterEvent("MINIMAP_PING", function(_, unit)
-		if UnitIsUnit(unit, "player") then -- ignore player ping
+		if UnitIsUnit(unit, "player") then
 			return
 		end
 
@@ -598,11 +630,11 @@ function GetMinimapShape() -- LibDBIcon
 		Module:UpdateMinimapScale()
 		Module.Initialized = true
 	end
-
 	return "SQUARE"
 end
 
 function Module:HideMinimapClock()
+	local TimeManagerClockButton = _G.TimeManagerClockButton
 	if TimeManagerClockButton then
 		TimeManagerClockButton:Hide()
 	end
@@ -610,9 +642,13 @@ end
 
 local GameTimeFrameStyled
 function Module:ShowCalendar()
+	local GameTimeFrame = _G.GameTimeFrame
+	if not GameTimeFrame then
+		return
+	end
+
 	if C["Minimap"].Calendar then
 		if not GameTimeFrameStyled then
-			local GameTimeFrame = GameTimeFrame
 			local calendarText = GameTimeFrame:CreateFontString(nil, "OVERLAY")
 
 			GameTimeFrame:SetParent(Minimap)
@@ -636,7 +672,10 @@ function Module:ShowCalendar()
 				GameTimeFrame:SetHighlightTexture(0)
 				GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 				GameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
-				calendarText:SetText(C_DateAndTime_GetCurrentCalendarTime().monthDay)
+
+				if C_DateAndTime_GetCurrentCalendarTime then
+					calendarText:SetText(C_DateAndTime_GetCurrentCalendarTime().monthDay)
+				end
 			end)
 
 			GameTimeFrameStyled = true
@@ -664,8 +703,8 @@ function Module:CreateSoundVolume()
 
 	local f = CreateFrame("Frame", nil, Minimap)
 	f:SetAllPoints()
-	local text = K.CreateFontString(f, 30)
 
+	local text = K.CreateFontString(f, 30)
 	local anim = f:CreateAnimationGroup()
 	anim:SetScript("OnPlay", function()
 		f:SetAlpha(1)
@@ -684,15 +723,15 @@ function Module:CreateSoundVolume()
 	Module.VolumeAnim = anim
 end
 
-function Module:Minimap_OnMouseWheel(zoom)
+function Module.Minimap_OnMouseWheel(_, zoom)
 	if IsControlKeyDown() and Module.VolumeText then
 		local value = GetCurrentVolume()
 		local mult = IsAltKeyDown() and 100 or 2
+
 		value = value + zoom * mult
 		if value > 100 then
 			value = 100
-		end
-		if value < 0 then
+		elseif value < 0 then
 			value = 0
 		end
 
@@ -711,7 +750,7 @@ function Module:Minimap_OnMouseWheel(zoom)
 end
 
 function Module:Minimap_TrackingDropdown()
-	local dropdown = CreateFrame("Frame", "KKUI_MiniMapTrackingDropDown", _G.UIParent, "UIDropDownMenuTemplate")
+	local dropdown = CreateFrame("Frame", "KKUI_MiniMapTrackingDropDown", UIParent, "UIDropDownMenuTemplate")
 	dropdown:SetID(1)
 	dropdown:SetClampedToScreen(true)
 	dropdown:Hide()
@@ -722,43 +761,54 @@ function Module:Minimap_TrackingDropdown()
 	return dropdown
 end
 
-function Module:Minimap_OnMouseUp(btn)
+function Module.Minimap_OnMouseUp(_, btn)
 	K.EasyMenu:Hide()
 
 	if Module.TrackingDropdown then
 		_G.HideDropDownMenu(1, nil, Module.TrackingDropdown)
 	end
 
-	local position = Minimap.mover:GetPoint()
+	local position = Minimap.mover and Minimap.mover:GetPoint()
 	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
 		if InCombatLockdown() then
 			_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 			return
 		end
 
-		if position:match("LEFT") then
+		if position and string_find(position, "LEFT") then
 			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", 0, 0)
 		else
 			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", -160, 0)
 		end
 	elseif btn == "RightButton" then
-		local button = _G.MinimapCluster.Tracking.Button
-		if button then
-			button:OpenMenu()
-
-			if button.menu then
-				local left = position and position:match("RIGHT")
-				button.menu:ClearAllPoints()
-				button.menu:SetPoint(left and "TOPRIGHT" or "TOPLEFT", Minimap, left and "LEFT" or "RIGHT", left and -4 or 4, 0)
+		local trackingButton = MinimapCluster and MinimapCluster.Tracking and MinimapCluster.Tracking.Button
+		if trackingButton and trackingButton.OpenMenu then
+			trackingButton:OpenMenu()
+			if trackingButton.menu then
+				local left = position and string_find(position, "RIGHT")
+				trackingButton.menu:ClearAllPoints()
+				trackingButton.menu:SetPoint(left and "TOPRIGHT" or "TOPLEFT", Minimap, left and "LEFT" or "RIGHT", left and -4 or 4, 0)
 			end
 		end
 	else
-		_G.Minimap:OnClick(self)
+		-- Preserve Blizzard minimap click behavior
+		if Minimap and Minimap.OnClick then
+			Minimap:OnClick(btn)
+		elseif Minimap_OnClick then
+			Minimap_OnClick(Minimap, btn)
+		elseif Minimap_OnMouseUp then
+			Minimap_OnMouseUp(Minimap, btn)
+		else
+			Minimap:Click()
+		end
 	end
 end
 
 function Module:SetupHybridMinimap()
-	HybridMinimap.CircleMask:SetTexture("Interface\\BUTTONS\\WHITE8X8")
+	local HybridMinimap = _G.HybridMinimap
+	if HybridMinimap and HybridMinimap.CircleMask then
+		HybridMinimap.CircleMask:SetTexture("Interface\\BUTTONS\\WHITE8X8")
+	end
 end
 
 function Module:HybridMinimapOnLoad(addon)
@@ -769,30 +819,41 @@ function Module:HybridMinimapOnLoad(addon)
 end
 
 function Module:QueueStatusTimeFormat(seconds)
+	local display = Module.QueueStatusDisplay
+	if not (display and display.text) then
+		return
+	end
+
 	local hours = math_floor((seconds % 86400) / 3600)
 	if hours > 0 then
-		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "h", hours)
+		display.text:SetFormattedText("%d" .. K.MyClassColor .. "h", hours)
+		return
 	end
 
 	local mins = math_floor((seconds % 3600) / 60)
 	if mins > 0 then
-		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "m", mins)
+		display.text:SetFormattedText("%d" .. K.MyClassColor .. "m", mins)
+		return
 	end
 
 	local secs = math_floor(seconds % 60)
 	if secs > 0 then
-		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "s", secs)
+		display.text:SetFormattedText("%d" .. K.MyClassColor .. "s", secs)
 	end
 end
 
 function Module:QueueStatusSetTime(seconds)
+	local display = Module.QueueStatusDisplay
+	if not display then
+		return
+	end
+
 	local timeInQueue = GetTime() - seconds
 	Module:QueueStatusTimeFormat(timeInQueue)
-	Module.QueueStatusDisplay.text:SetTextColor(1, 1, 1)
+	display.text:SetTextColor(1, 1, 1)
 end
 
 function Module:QueueStatusOnUpdate(elapsed)
-	-- Replicate QueueStatusEntry_OnUpdate throttle
 	self.updateThrottle = self.updateThrottle - elapsed
 	if self.updateThrottle <= 0 then
 		Module:QueueStatusSetTime(self.queuedTime)
@@ -806,6 +867,10 @@ function Module:SetFullQueueStatus(title, queuedTime, averageWait)
 	end
 
 	local display = Module.QueueStatusDisplay
+	if not display then
+		return
+	end
+
 	if not display.title or display.title == title then
 		if queuedTime then
 			display.title = title
@@ -820,13 +885,18 @@ function Module:SetFullQueueStatus(title, queuedTime, averageWait)
 end
 
 function Module:SetMinimalQueueStatus(title)
-	if Module.QueueStatusDisplay.title == title then
+	local display = Module.QueueStatusDisplay
+	if display and display.title == title then
 		Module:ClearQueueStatus()
 	end
 end
 
 function Module:ClearQueueStatus()
 	local display = Module.QueueStatusDisplay
+	if not display then
+		return
+	end
+
 	display.text:SetText("")
 	display.title = nil
 	display.queuedTime = nil
@@ -835,18 +905,27 @@ function Module:ClearQueueStatus()
 end
 
 function Module:CreateQueueStatusText()
-	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", _G.QueueStatusButton)
+	local QueueStatusButton = _G.QueueStatusButton
+	if not QueueStatusButton then
+		return
+	end
+
+	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", QueueStatusButton)
 	display.text = display:CreateFontString(nil, "OVERLAY")
 
 	Module.QueueStatusDisplay = display
 
-	_G.QueueStatusButton:HookScript("OnHide", Module.ClearQueueStatus)
+	QueueStatusButton:HookScript("OnHide", Module.ClearQueueStatus)
 	hooksecurefunc("QueueStatusEntry_SetMinimalDisplay", Module.SetMinimalQueueStatus)
 	hooksecurefunc("QueueStatusEntry_SetFullDisplay", Module.SetFullQueueStatus)
 end
 
 function Module:BlizzardACF()
-	local frame = AddonCompartmentFrame
+	local frame = _G.AddonCompartmentFrame
+	if not frame then
+		return
+	end
+
 	if C["Minimap"].ShowRecycleBin then
 		K.HideInterfaceOption(frame)
 	else
@@ -866,7 +945,10 @@ function Module:OnEnable()
 	-- Shape and Position
 	Minimap:SetFrameLevel(10)
 	Minimap:SetMaskTexture(C["Media"].Textures.White8x8Texture)
-	DropDownList1:SetClampedToScreen(true)
+
+	if _G.DropDownList1 then
+		_G.DropDownList1:SetClampedToScreen(true)
+	end
 
 	-- Create the new minimap tracking dropdown frame and initialize it
 	Module.TrackingDropdown = Module:Minimap_TrackingDropdown()
@@ -879,6 +961,7 @@ function Module:OnEnable()
 	self:HideMinimapClock()
 	self:ShowCalendar()
 	self:UpdateMinimapScale()
+
 	if _G.QueueStatusButton then
 		Module:CreateQueueStatusText()
 	end
@@ -888,17 +971,36 @@ function Module:OnEnable()
 	Minimap:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
 
 	-- Hide Blizz
-	MinimapCluster:EnableMouse(false)
-	MinimapCluster.Tracking:SetAlpha(0)
-	MinimapCluster.Tracking:SetScale(0.0001)
-	MinimapCluster.BorderTop:Hide()
-	MinimapCluster.ZoneTextButton:Hide()
+	if MinimapCluster then
+		MinimapCluster:EnableMouse(false)
+		if MinimapCluster.Tracking then
+			MinimapCluster.Tracking:SetAlpha(0)
+			MinimapCluster.Tracking:SetScale(0.0001)
+		end
+		if MinimapCluster.BorderTop then
+			MinimapCluster.BorderTop:Hide()
+		end
+		if MinimapCluster.ZoneTextButton then
+			MinimapCluster.ZoneTextButton:Hide()
+		end
+	end
+
 	Minimap:SetArchBlobRingScalar(0)
 	Minimap:SetQuestBlobRingScalar(0)
-	K.HideInterfaceOption(Minimap.ZoomIn)
-	K.HideInterfaceOption(Minimap.ZoomOut)
-	K.HideInterfaceOption(MinimapCompassTexture)
-	MinimapCluster:KillEditMode()
+
+	if Minimap.ZoomIn then
+		K.HideInterfaceOption(Minimap.ZoomIn)
+	end
+	if Minimap.ZoomOut then
+		K.HideInterfaceOption(Minimap.ZoomOut)
+	end
+	if _G.MinimapCompassTexture then
+		K.HideInterfaceOption(_G.MinimapCompassTexture)
+	end
+
+	if MinimapCluster and MinimapCluster.KillEditMode then
+		MinimapCluster:KillEditMode()
+	end
 
 	-- Add Elements
 	local loadMinimapModules = {

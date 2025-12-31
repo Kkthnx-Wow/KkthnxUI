@@ -930,7 +930,7 @@ function Module:CreateSocialDataText()
 
 	FriendsDataText.Texture = FriendsDataText:CreateTexture(nil, "ARTWORK")
 	FriendsDataText.Texture:SetPoint("LEFT", FriendsDataText, "LEFT", 0, 2)
-	FriendsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
+	FriendsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player")
 	FriendsDataText.Texture:SetSize(24, 24)
 	FriendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 

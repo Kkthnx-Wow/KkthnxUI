@@ -1,3 +1,11 @@
+--[[-----------------------------------------------------------------------------
+Addon: KkthnxUI
+Author: Josh "Kkthnx" Russell
+Notes:
+- Purpose: Custom color definitions for oUF and unit frames.
+- Design: Uses a consistent, softened palette for better UI readability.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
@@ -6,7 +14,12 @@ if not oUF then
 	return
 end
 
-oUF.colors.fallback = { 1.0, 1.0, 0.8 } -- Fallback color (light yellow)
+-- REASON: Fallback color ensuring UI elements remain visible if a specific color is missing.
+oUF.colors.fallback = { 1.0, 1.0, 0.8 }
+
+-- ---------------------------------------------------------------------------
+-- Unit Frame Colors
+-- ---------------------------------------------------------------------------
 
 oUF.colors.castbar = {
 	CastingColor = { 1.0, 0.7, 0.0 }, -- Orange (casting)
@@ -16,7 +29,10 @@ oUF.colors.castbar = {
 	FailColor = { 1.0, 0.0, 0.0 }, -- Bright red (failed)
 }
 
--- Aura Coloring
+-- ---------------------------------------------------------------------------
+-- Aura & Debuff Colors
+-- ---------------------------------------------------------------------------
+
 oUF.colors.debuff = {
 	none = { 0.8, 0.1, 0.1 }, -- Soft red (no debuff)
 	Magic = { 0.2, 0.6, 1.0 }, -- Light blue (magic)
@@ -26,12 +42,20 @@ oUF.colors.debuff = {
 	[""] = { 1.0, 1.0, 1.0 }, -- White (default)
 }
 
+-- ---------------------------------------------------------------------------
+-- Mirror Timer Colors
+-- ---------------------------------------------------------------------------
+
 oUF.colors.mirror = {
 	EXHAUSTION = { 1.0, 0.9, 0.0 }, -- Soft yellow (exhaustion)
 	BREATH = { 0.0, 0.5, 1.0 }, -- Soft blue (breath)
 	DEATH = { 1.0, 0.7, 0.0 }, -- Soft orange (death)
 	FEIGNDEATH = { 1.0, 0.7, 0.0 }, -- Soft orange (feign death)
 }
+
+-- ---------------------------------------------------------------------------
+-- NPC & Faction Reaction Colors
+-- ---------------------------------------------------------------------------
 
 oUF.colors.reaction = {
 	[1] = { 0.87, 0.37, 0.37 }, -- Hated (soft red)
@@ -43,6 +67,10 @@ oUF.colors.reaction = {
 	[7] = { 0.29, 0.67, 0.30 }, -- Revered (soft green)
 	[8] = { 0.29, 0.67, 0.30 }, -- Exalted (soft green)
 }
+
+-- ---------------------------------------------------------------------------
+-- Selection & Interaction Colors
+-- ---------------------------------------------------------------------------
 
 oUF.colors.selection = {
 	[0] = { 1.00, 0.18, 0.18 }, -- HOSTILE (bright red)
@@ -57,12 +85,16 @@ oUF.colors.selection = {
 	[13] = { 0.10, 0.58, 0.28 }, -- BATTLEGROUND_FRIENDLY_PVP (teal)
 }
 
+-- ---------------------------------------------------------------------------
+-- Power & Resource Colors
+-- ---------------------------------------------------------------------------
+
 oUF.colors.power = {
 	["ALTPOWER"] = { 0.00, 0.85, 0.85 }, -- Cyan, softened to avoid harshness
 	["AMMOSLOT"] = { 0.75, 0.60, 0.20 }, -- Warm earthy brown
 	["ARCANE_CHARGES"] = { 0.45, 0.75, 0.85 }, -- Soft sky blue
-	["CHI"] = { 0.65, 0.90, 0.80 }, -- Muted teal-green, softening the brightness
-	["COMBO_POINTS"] = { 0.65, 0.30, 0.30 }, -- Deep muted red (fallback for oUF compatibility)
+	["CHI"] = { 0.65, 0.90, 0.80 }, -- Muted teal-green
+	["COMBO_POINTS"] = { 0.65, 0.30, 0.30 }, -- NOTE: Fallback for older oUF versions / compatibility.
 	["COMBO_POINTS_GRADUATED"] = {
 		{ 0.75, 0.31, 0.31 }, -- 1 point: Red
 		{ 0.78, 0.56, 0.31 }, -- 2 points: Red-orange
@@ -98,6 +130,11 @@ oUF.colors.power = {
 	["UNUSED"] = { 0.70, 0.75, 0.80 }, -- Soft light gray
 }
 
+-- ---------------------------------------------------------------------------
+-- Class Colors
+-- ---------------------------------------------------------------------------
+
+-- REASON: Softened versions of Blizzard class colors for better scannability.
 oUF.colors.class = {
 	["DEATHKNIGHT"] = { 0.70, 0.15, 0.20 }, -- Deep muted red
 	["DEMONHUNTER"] = { 0.60, 0.25, 0.75 }, -- Softer violet
@@ -115,6 +152,10 @@ oUF.colors.class = {
 	["UNKNOWN"] = { 0.70, 0.75, 0.80 }, -- Soft light gray
 }
 
+-- ---------------------------------------------------------------------------
+-- Renown & Standing Colors
+-- ---------------------------------------------------------------------------
+
 oUF.colors.faction = {
 	{ r = 0.75, g = 0.20, b = 0.20 }, -- 1: Soft red
 	{ r = 0.75, g = 0.20, b = 0.20 }, -- 2: Soft red (same as 1)
@@ -128,4 +169,5 @@ oUF.colors.faction = {
 	{ r = 0.00, g = 0.70, b = 0.90 }, -- 10: Soft teal (Renown)
 }
 
+-- REASON: Expose the finalized oUF color table to the KkthnxUI engine.
 K["Colors"] = oUF.colors

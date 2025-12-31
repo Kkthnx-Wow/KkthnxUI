@@ -21,7 +21,6 @@ local ATTACHMENTS_MAX = _G.ATTACHMENTS_MAX or ATTACHMENTS_MAX_RECEIVE or 12
 local PROFILING_ENABLED = false
 local function profileStart()
 	if PROFILING_ENABLED then
-		return debugprofilestop()
 	end
 end
 
@@ -29,7 +28,6 @@ local function profileEnd(startTime, label)
 	if not PROFILING_ENABLED or not startTime then
 		return
 	end
-	local elapsed = debugprofilestop() - startTime
 	if K and K.Print then
 		K.Print(string.format("[ImprovedMail] %s: %.2f ms", label or "block", elapsed))
 	else

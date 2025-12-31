@@ -1,45 +1,67 @@
+--[[-----------------------------------------------------------------------------
+Addon: KkthnxUI
+Author: Josh "Kkthnx" Russell
+Notes:
+- Purpose: Core API extension framework for WoW UI objects.
+- Combat: Safe for combat use except where explicitly noted (taint hazards).
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
+local ADDON_NAME = ...
 
---[[
-    KkthnxUI API (Application Programming Interface)
-    is a set of functions and tools designed to help developers interact with and extend the KkthnxUI user interface.
-    The API provides developers with access to various features and functions of KkthnxUI,
-    allowing them to customize and extend the user interface in new and unique ways.
-    Whether you're building an addon, developing a plugin, or just looking to customize your KkthnxUI experience,
-    the API provides a powerful set of tools to help you achieve your goals.
-]]
+-- ---------------------------------------------------------------------------
+-- Locals & Global Caching
+-- ---------------------------------------------------------------------------
 
-local getmetatable, select, unpack = getmetatable, select, unpack
+-- PERF: Cache frequent APIs and globals to reduce table lookups in hot paths.
+local _G = _G
+local type, tonumber, unpack, select, pairs = type, tonumber, unpack, select, pairs
+local getmetatable = getmetatable
 local math_min, math_max, math_pi = math.min, math.max, math.pi
 local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver = RegisterStateDriver
 local UIParent = UIParent
-local strsplit = strsplit
-local table_wipe = table.wipe
+
+-- ---------------------------------------------------------------------------
+-- Constants & Configuration
+-- ---------------------------------------------------------------------------
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
+-- ---------------------------------------------------------------------------
 -- Utility Functions
+-- ---------------------------------------------------------------------------
+
+-- Converts degrees to radians for API rotations.
 local function rad(degrees)
 	return degrees * math_pi / 180
 end
 
+-- ---------------------------------------------------------------------------
 -- Frame Hiders
-do
-	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
+-- ---------------------------------------------------------------------------
 
+do
+	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(ADDON_NAME, "Title")
+
+	-- NOTE: Generic hider for elements that should never be shown.
 	K.UIFrameHider = CreateFrame("Frame", nil, UIParent)
 	K.UIFrameHider:SetPoint("BOTTOM")
 	K.UIFrameHider:SetSize(1, 1)
 	K.UIFrameHider:Hide()
 
+	-- WARNING: Securely hide/show frames based on pet battle state without causing taint.
 	K.PetBattleFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 	K.PetBattleFrameHider:SetFrameStrata("LOW")
 	RegisterStateDriver(K.PetBattleFrameHider, "visibility", "[petbattle] hide; show")
 end
 
--- Helper to apply background texture
+-- ---------------------------------------------------------------------------
+-- UI Styling: Backgrounds & Borders
+-- ---------------------------------------------------------------------------
+
+-- REASON: Consolidated helper to apply consistent background textures and colors.
 local function AddBackground(frame, texture, subLevel, layer, point, color)
 	if frame.KKUI_Background then
 		return
@@ -63,6 +85,7 @@ local function AddBackground(frame, texture, subLevel, layer, point, color)
 	bg:SetPoint("TOPLEFT", frame, "TOPLEFT", bgPoint, -bgPoint)
 	bg:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -bgPoint, bgPoint)
 
+	-- NOTE: Handle both ColorBackdrop (table) and custom color overrides.
 	if type(bgColor) == "table" then
 		bg:SetVertexColor(unpack(bgColor))
 	end
@@ -70,7 +93,7 @@ local function AddBackground(frame, texture, subLevel, layer, point, color)
 	frame.KKUI_Background = bg
 end
 
--- 1. K.SetBorderColor
+-- REASON: Dynamically updates border colors based on user configuration or defaults.
 function K.SetBorderColor(self)
 	if not self or type(self) ~= "table" or not self.SetVertexColor then
 		return
@@ -89,7 +112,7 @@ function K.SetBorderColor(self)
 	end
 end
 
--- 2. CreateBorder (Wrapper)
+-- REASON: High-level wrapper to create a full KkthnxUI-styled frame (border + background).
 local function CreateBorder(bFrame, ...)
 	if not bFrame or type(bFrame) ~= "table" then
 		return nil, "Invalid frame"
@@ -115,13 +138,17 @@ local function CreateBorder(bFrame, ...)
 	local BorderOffset = bOffset or -4
 	local BorderColor = bColor or Media.Borders.ColorBorder
 
+	-- REASON: Ensure the actual texture object is updated with the correct styling.
 	kkui_border:SetSize(BorderSize)
 	kkui_border:SetTexture(BorderTexture)
 	kkui_border:SetOffset(BorderOffset)
 
 	-- Handle Coloring
-	local colorToUse = (General.ColorTextures and General.TexturesColor) or BorderColor
-	if colorToUse and type(colorToUse) == "table" then
+	local colorToUse = BorderColor
+	if General.ColorTextures and type(General.TexturesColor) == "table" then
+		colorToUse = General.TexturesColor
+	end
+	if type(colorToUse) == "table" then
 		kkui_border:SetVertexColor(unpack(colorToUse))
 	else
 		kkui_border:SetVertexColor(1, 1, 1)
@@ -135,7 +162,7 @@ local function CreateBorder(bFrame, ...)
 	return bFrame
 end
 
--- 3. CreateBackdrop
+-- REASON: Creates a separate backdrop frame to handle layering and styling without affecting content.
 local function CreateBackdrop(bFrame, ...)
 	if not bFrame or type(bFrame) ~= "table" then
 		return
@@ -161,7 +188,11 @@ local function CreateBackdrop(bFrame, ...)
 	return bFrame
 end
 
--- 4. CreateShadow
+-- ---------------------------------------------------------------------------
+-- Visual Effects: Shadows & Glows
+-- ---------------------------------------------------------------------------
+
+-- REASON: Applies a glow/shadow effect using the legacy Backdrop system (BackdropTemplate).
 local function CreateShadow(frame, useBackdrop)
 	if not frame or type(frame) ~= "table" then
 		return
@@ -199,7 +230,11 @@ local function CreateShadow(frame, useBackdrop)
 	return shadow
 end
 
--- Kill Function
+-- ---------------------------------------------------------------------------
+-- UI Utilities: Texture Manipulation
+-- ---------------------------------------------------------------------------
+
+-- REASON: Effectively "deletes" an object by hiding it and preventing re-show or event triggers.
 local function Kill(object)
 	if object.UnregisterAllEvents then
 		object:UnregisterAllEvents()
@@ -225,15 +260,30 @@ local blizzTextures = {
 	"BorderFrame",
 	"bottomInset",
 	"BottomInset",
-	"bgLeft",
-	"bgRight",
-	"Portrait",
-	"portrait",
-	"ScrollFrameBorder",
-	"ScrollUpBorder",
-	"ScrollDownBorder",
+	"BottomMiddle",
+	"MiddleMiddle",
+	"TabSpacer",
+	"TabSpacer1",
+	"TabSpacer2",
+	"_RightSeparator",
+	"_LeftSeparator",
+	"Cover",
+	"Border",
+	"Background",
+	"TopTex",
+	"TopLeftTex",
+	"TopRightTex",
+	"LeftTex",
+	"BottomTex",
+	"BottomLeftTex",
+	"BottomRightTex",
+	"RightTex",
+	"MiddleTex",
+	"Center",
 }
 
+-- REASON: Recursively removes Blizzard default textures and frame regions to allow for custom skinning.
+-- NOTE: Supports "killing" textures or setting specific alpha/texture values for targeted stripping.
 local function StripTextures(object, kill)
 	local frameName = object.GetName and object:GetName()
 
@@ -268,7 +318,11 @@ local function StripTextures(object, kill)
 	end
 end
 
--- Create Texture
+-- ---------------------------------------------------------------------------
+-- UI Components: Buttons & Textures
+-- ---------------------------------------------------------------------------
+
+-- REASON: Standardized texture creation for buttons.
 local function CreateTexture(button, noTexture, texturePath, desaturated, vertexColor, setPoints)
 	if not noTexture then
 		local texture = button:CreateTexture()
@@ -289,7 +343,7 @@ local function CreateTexture(button, noTexture, texturePath, desaturated, vertex
 	end
 end
 
--- Style Button
+-- REASON: Adds standard hover, pushed, and checked states to any button.
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	-- setPoints default value is 0
 	setPoints = setPoints or 0
@@ -322,20 +376,34 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 end
 
--- Button OnEnter and OnLeave
+-- ---------------------------------------------------------------------------
+-- Internal Handlers
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Used to highlight borders on mouse interactions.
 local function Button_OnEnter(self)
 	if not self:IsEnabled() then
 		return
 	end
 
-	self.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
+	local border = self.KKUI_Border
+	if border and border.SetVertexColor then
+		border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
+	end
 end
 
 local function Button_OnLeave(self)
-	K.SetBorderColor(self.KKUI_Border)
+	local border = self.KKUI_Border
+	if border then
+		K.SetBorderColor(border)
+	end
 end
 
--- Skin Button
+-- ---------------------------------------------------------------------------
+-- Button Skinning
+-- ---------------------------------------------------------------------------
+
+-- REASON: Comprehensive Blizzard button skinning; handles texture stripping, borders, and interaction hooks.
 local blizzRegions = {
 	"Left",
 	"Middle",
@@ -375,8 +443,10 @@ local blizzRegions = {
 
 local function SkinButton(self, override, ...)
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
-	-- Remove the normal, highlight, pushed and disabled textures
+
+	-- NOTE: Use 0 to safely clear textures as nil/"" can cause issues on some game clients.
 	if self.SetNormalTexture and not override then
+		-- SetNormalTexture(nil/"") can error on some clients; 0 is a common safe clear
 		self:SetNormalTexture(0)
 	end
 
@@ -400,7 +470,7 @@ local function SkinButton(self, override, ...)
 		end
 	end
 
-	-- Do not apply custom border if the override argument is true
+	-- Apply custom border (override only affects whether we clear the normal texture)
 	self:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor)
 
 	-- Hook the OnEnter and OnLeave events
@@ -408,7 +478,11 @@ local function SkinButton(self, override, ...)
 	self:HookScript("OnLeave", Button_OnLeave)
 end
 
--- Skin Close Button
+-- ---------------------------------------------------------------------------
+-- Specialized UI Skinning
+-- ---------------------------------------------------------------------------
+
+-- REASON: Standardizes the appearance and positioning of close buttons.
 local function SkinCloseButton(self, parent, xOffset, yOffset)
 	-- Define the parent frame and x,y offset of the close button
 	parent = parent or self:GetParent()
@@ -449,8 +523,9 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 	self.__texture = tex
 end
 
--- Skin CheckBox
+-- REASON: Standardizes checkbox appearance with a custom backdrop and checkmark.
 local function SkinCheckBox(self, forceSaturation)
+	-- SetNormalTexture(nil/"") can error on some clients; 0 is a common safe clear
 	self:SetNormalTexture(0)
 
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
@@ -476,6 +551,7 @@ local function SkinCheckBox(self, forceSaturation)
 	self.forceSaturation = forceSaturation
 end
 
+-- REASON: Standardizes editbox appearance by stripping textures and adding a border.
 local function SkinEditBox(self, height, width)
 	local frameName = self.GetName and self:GetName()
 	for _, region in pairs(blizzRegions) do
@@ -501,7 +577,7 @@ local function SkinEditBox(self, height, width)
 	end
 end
 
--- Hide Backdrop
+-- REASON: Utility to hide standard Blizzard backdrop elements (NineSlice, etc.).
 local function HideBackdrop(self)
 	if self.NineSlice then
 		self.NineSlice:SetAlpha(0)
@@ -512,7 +588,11 @@ local function HideBackdrop(self)
 	end
 end
 
--- Setup Arrow
+-- ---------------------------------------------------------------------------
+-- UI Utilities: Arrows & Navigation
+-- ---------------------------------------------------------------------------
+
+-- REASON: Standardizes the appearance and rotation of arrow textures.
 local arrowDegree = {
 	["up"] = 0,
 	["down"] = 180,
@@ -525,7 +605,7 @@ function K.SetupArrow(self, direction)
 	self:SetRotation(rad(arrowDegree[direction]))
 end
 
--- Reskin Arrow
+-- REASON: High-level wrapper to skin an arrow button.
 function K.ReskinArrow(self, direction)
 	self:StripTextures()
 	self:SetSize(16, 16)
@@ -544,27 +624,32 @@ function K.ReskinArrow(self, direction)
 	self.__texture = tex
 end
 
--- Grab ScrollBar Element
+-- ---------------------------------------------------------------------------
+-- ScrollBar Skinning
+-- ---------------------------------------------------------------------------
+
+-- REASON: Locates internal scrollbar elements (up/down/thumb) reliably.
 local function GrabScrollBarElement(frame, element)
 	local frameName = frame:GetDebugName()
-	return frame[element] or frameName and (_G[frameName .. element] or string.find(frameName, element)) or nil
+	return frame[element] or (frameName and _G[frameName .. element]) or nil
 end
 
--- Skin ScrollBar (continued)
+-- REASON: Comprehensive scrollbar skinning; handles thumb styling and arrow reskinning.
 local function SkinScrollBar(self)
-	-- Strip the textures from the parent and scrollbar frame
+	-- NOTE: Standardize scrollbar width and texture transparency.
 	self:GetParent():StripTextures()
 	self:StripTextures()
 
-	-- Get the thumb texture and set its alpha to 0, width to 16, and create a frame for it
 	local thumb = GrabScrollBarElement(self, "ThumbTexture") or GrabScrollBarElement(self, "thumbTexture") or self.GetThumbTexture and self:GetThumbTexture()
+	if thumb and (type(thumb) ~= "table" or not thumb.SetAlpha) then
+		thumb = nil
+	end
 	if thumb then
 		thumb:SetAlpha(0)
 		thumb:SetWidth(16)
 		self.thumb = thumb
 
 		local bg = CreateFrame("Frame", nil, self)
-		-- Create a border for the frame with a dark grey color
 		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
 
 		-- Set the position of the frame relative to the thumb texture
@@ -575,7 +660,7 @@ local function SkinScrollBar(self)
 		thumb.bg = bg
 	end
 
-	-- Get the up and down arrows from the scrollbar frame and skin them with K.ReskinArrow() function
+	-- NOTE: Skin the up/down buttons using standardized arrow logic.
 	local up, down = self:GetChildren()
 	K.ReskinArrow(up, "up")
 	K.ReskinArrow(down, "down")
@@ -586,9 +671,17 @@ local function KillEditMode(object)
 	object.ClearHighlight = K.Noop
 end
 
--- Add API Function
+-- ---------------------------------------------------------------------------
+-- API Injection
+-- ---------------------------------------------------------------------------
+
+-- REASON: Injects KkthnxUI methods into frame metatables for object-oriented usage.
 local function addapi(object)
-	local mt = getmetatable(object).__index
+	local meta = getmetatable(object)
+	local mt = meta and meta.__index
+	if not mt then
+		return
+	end
 
 	if not mt.CreateBorder then
 		mt.CreateBorder = CreateBorder
@@ -631,7 +724,11 @@ local function addapi(object)
 	end
 end
 
--- Apply API to Existing Frames
+-- ---------------------------------------------------------------------------
+-- Initialization
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Automatically apply the API to all existing frames and common UI objects.
 local handled = { Frame = true }
 local object = CreateFrame("Frame")
 addapi(object)

@@ -1,47 +1,57 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+local type = type
+local tostring = tostring
 
-local function SpellName(id)
+local function GetSpellName(id)
 	local spellInfo = C_Spell_GetSpellInfo(id)
-	local name
+	if not spellInfo then
+		return nil
+	end
 
-	-- Handle both old API (string) and new API (table)
 	if type(spellInfo) == "table" then
-		name = spellInfo.name
-	else
-		name = spellInfo
+		return spellInfo.name
 	end
 
-	if name then
-		return name
-	else
-		K.Print("|cffff0000WARNING: [BadBuffsFilter] - spell ID [" .. tostring(id) .. "] no longer exists! Report this to Kkthnx.|r")
-		return "Empty"
-	end
+	return spellInfo
 end
 
-C.CheckBadBuffs = {
-	[SpellName(172003)] = true,
-	[SpellName(172008)] = true,
-	[SpellName(172010)] = true,
-	[SpellName(172015)] = true,
-	[SpellName(172020)] = true,
-	[SpellName(24709)] = true,
-	[SpellName(24710)] = true,
-	[SpellName(24712)] = true,
-	[SpellName(24723)] = true,
-	[SpellName(24732)] = true,
-	[SpellName(24735)] = true,
-	[SpellName(24740)] = true,
-	[SpellName(279509)] = true,
-	[SpellName(44212)] = true,
-	[SpellName(58493)] = true,
-	[SpellName(61716)] = true,
-	[SpellName(61734)] = true,
-	[SpellName(61781)] = true,
-	[SpellName(261477)] = true,
-	[SpellName(354550)] = true,
-	[SpellName(354481)] = true,
-	[SpellName(279997)] = true, -- DEBUG
+local badIds = {
+	172003,
+	172008,
+	172010,
+	172015,
+	172020,
+	24709,
+	24710,
+	24712,
+	24723,
+	24732,
+	24735,
+	24740,
+	279509,
+	44212,
+	58493,
+	61716,
+	61734,
+	61781,
+	261477,
+	354550,
+	354481,
+	279997, -- DEBUG
 }
+
+C.CheckBadBuffs = {}
+
+for i = 1, #badIds do
+	local id = badIds[i]
+	C.CheckBadBuffs[id] = true
+
+	local name = GetSpellName(id)
+	if name then
+		C.CheckBadBuffs[name] = true
+	else
+		K.Print("|cffff0000WARNING: [BadBuffsFilter] - spell ID [" .. tostring(id) .. "] not found (uncached/invalid).|r")
+	end
+end

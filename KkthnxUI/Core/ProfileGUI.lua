@@ -30,7 +30,6 @@ local UnitClass = UnitClass
 local UnitRace = UnitRace
 local UnitSex = UnitSex
 local UnitFactionGroup = UnitFactionGroup
-local debugprofilestop = debugprofilestop
 
 -- WoW API
 local CreateFrame = CreateFrame
@@ -770,10 +769,6 @@ end
 
 -- Profile List
 function ProfileGUI:RefreshProfileList()
-	local startMs
-	if K.isDeveloper then
-		startMs = debugprofilestop()
-	end
 	if not self.ProfileScrollFrame or not self.ProfileScrollFrame.Child then
 		return
 	end
@@ -851,10 +846,6 @@ function ProfileGUI:RefreshProfileList()
 		local currentKey = self:GetCurrentProfileKey()
 		if profiles[currentKey] then
 			self.SelectedProfile = currentKey
-		end
-		if K.isDeveloper and startMs then
-			local elapsedMs = debugprofilestop() - startMs
-			K.Print(string.format("[KKUI_DEV] RefreshProfileList %.3f ms", elapsedMs))
 		end
 	end
 end

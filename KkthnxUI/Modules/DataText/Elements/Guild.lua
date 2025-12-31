@@ -649,7 +649,7 @@ function Module:CreateGuildDataText()
 
 	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "ARTWORK")
 	GuildDataText.Texture:SetPoint("LEFT", GuildDataText, "LEFT", 0, 2)
-	GuildDataText.Texture:SetTexture(K.MediaFolder .. "DataText\\guild.blp")
+	GuildDataText.Texture:SetTexture(K.MediaFolder .. "DataText\\guild.tga")
 	GuildDataText.Texture:SetSize(24, 24)
 	GuildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 

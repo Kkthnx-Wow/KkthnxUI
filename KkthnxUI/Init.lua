@@ -1,8 +1,18 @@
+--[[-----------------------------------------------------------------------------
+Addon: KkthnxUI
+Author: Josh "Kkthnx" Russell
+Notes:
+- Purpose: Core initialization, engine setup, and module management.
+- Combat: Runs during combat to handle events and scale updates.
+-----------------------------------------------------------------------------]]
+
 local AddOnName, Engine = ...
 
---========================================================
--- Locals / global caching (WoW Lua 5.1 performance)
---========================================================
+-- ---------------------------------------------------------------------------
+-- Locals & Global Caching
+-- ---------------------------------------------------------------------------
+
+-- PERF: Lua 5.1 local caching for better performance in hotspots.
 local _G = _G
 
 local pairs = pairs
@@ -22,13 +32,13 @@ local string_format = string.format
 local string_lower = string.lower
 
 local table_insert = table.insert
-local table_remove = table.remove
 
-local debugstack = debugstack
+local next = next
 
---========================================================
--- Cached WoW globals / APIs
---========================================================
+-- ---------------------------------------------------------------------------
+-- WoW Globals & API Caching
+-- ---------------------------------------------------------------------------
+
 local BAG_ITEM_QUALITY_COLORS = BAG_ITEM_QUALITY_COLORS
 
 local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
@@ -43,7 +53,7 @@ local GetAddOnEnableState = C_AddOns.GetAddOnEnableState
 local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local GetNumAddOns = C_AddOns.GetNumAddOns
 
--- Cache additional globals for performance
+-- PERF: Cache additional high-traffic APIs.
 local hooksecurefunc = hooksecurefunc
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local CreateFrame = CreateFrame
@@ -67,18 +77,20 @@ local UnitName = UnitName
 local UnitRace = UnitRace
 local UnitSex = UnitSex
 
---========================================================
--- Engine tables
---========================================================
-Engine[1] = {} -- K
-Engine[2] = {} -- C
-Engine[3] = {} -- L
+-- ---------------------------------------------------------------------------
+-- Engine & Tables
+-- ---------------------------------------------------------------------------
+
+Engine[1] = {} -- K: Utilities/Core
+Engine[2] = {} -- C: Configuration
+Engine[3] = {} -- L: Locales
 
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
---========================================================
--- Lib Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Library Support
+-- ---------------------------------------------------------------------------
+
 K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true) or nil
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
 K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
@@ -90,60 +102,70 @@ K.LibUnfit = LibStub("LibUnfit-1.0-KkthnxUI", true) or nil
 K.cargBags = Engine and Engine.cargBags or nil
 K.oUF = Engine and Engine.oUF or nil
 
---========================================================
--- AddOn Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- AddOn Metadata
+-- ---------------------------------------------------------------------------
+
 K.Title = C_AddOns_GetAddOnMetadata(AddOnName, "Title")
 K.Version = C_AddOns_GetAddOnMetadata(AddOnName, "Version")
 
--- Functions
+-- ---------------------------------------------------------------------------
+-- Global Functions
+-- ---------------------------------------------------------------------------
+
 K.Noop = function() end
 
---========================================================
--- Player Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Character Data
+-- ---------------------------------------------------------------------------
+
 K.Name = UnitName("player")
 K.Class = select(2, UnitClass("player"))
 K.Race = UnitRace("player")
 K.Faction = UnitFactionGroup("player")
 K.Level = UnitLevel("player")
-K.Client = GetLocale()
+K.Client = GetLocale() -- NOTE: This is the user's game client locale (enUS, deDE, etc.)
 K.Realm = GetRealmName()
 K.Sex = UnitSex("player")
 K.GUID = UnitGUID("player")
 
---========================================================
--- Screen Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Display Details
+-- ---------------------------------------------------------------------------
+
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 
---========================================================
--- UI Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Game & UI Components
+-- ---------------------------------------------------------------------------
+
 K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
 K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", UIParent, "GameTooltipTemplate")
 K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
---========================================================
--- WoW Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Expansion & Patch Info
+-- ---------------------------------------------------------------------------
+
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
-K.IsNewPatch = K.WowBuild >= 110200 -- Patch 11.2.0+
+K.IsNewPatch = K.WowBuild >= 110200 -- COMPAT: Handle breaking API changes in Patch 11.2.0+
 
---========================================================
--- Color Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Color Definitions
+-- ---------------------------------------------------------------------------
+
 K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF5C8BCF"
 K.InfoColorTint = "|CFF93BAFF"
 K.SystemColor = "|CFFFFCC66"
 
---========================================================
--- Media Info
---========================================================
+-- ---------------------------------------------------------------------------
+-- Media & Fonts
+-- ---------------------------------------------------------------------------
+
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 
 K.UIFont = "KkthnxUIFont"
@@ -158,24 +180,27 @@ K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:51
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
 
---========================================================
--- Lists
---========================================================
+-- ---------------------------------------------------------------------------
+-- Tracking Lists
+-- ---------------------------------------------------------------------------
+
 K.ClassList = {}
 K.ClassColors = {}
 K.QualityColors = {}
 K.AddOns = {}
 K.AddOnVersion = {}
 
---========================================================
--- Flags / Constants
---========================================================
+-- ---------------------------------------------------------------------------
+-- Constants & Flags
+-- ---------------------------------------------------------------------------
+
 K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
---========================================================
--- Tables / State
---========================================================
+-- ---------------------------------------------------------------------------
+-- Internal State
+-- ---------------------------------------------------------------------------
+
 local eventsFrame = CreateFrame("Frame")
 local events = {} -- events[event] = { func1 = true, func2 = true }
 local modules = {}
@@ -184,23 +209,22 @@ local modulesQueue = {}
 local isScaling = false
 local pendingScaleApply = false
 
---========================================================
--- Deferred scale application after combat
---========================================================
+-- REASON: Protected frames cannot be scaled in combat; defer until regen enabled.
 local function ApplyScaleAfterCombat()
 	K:UnregisterEvent("PLAYER_REGEN_ENABLED", ApplyScaleAfterCombat)
 	pendingScaleApply = false
 	K:SetupUIScale()
 end
 
---========================================================
--- Helpers
---========================================================
+-- ---------------------------------------------------------------------------
+-- Utility Helpers
+-- ---------------------------------------------------------------------------
+
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
 end
 
--- Populate ClassList with localized class names
+-- NOTE: Use localized class names for lookup tables where tokens aren't available.
 for classToken, localizedName in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[localizedName] = classToken
 end
@@ -208,7 +232,7 @@ for classToken, localizedName in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
 	K.ClassList[localizedName] = classToken
 end
 
--- Class colors (prefer custom if present)
+-- REASON: Prefer CUSTOM_CLASS_COLORS if a color-modifying addon is present.
 local colors = _G.CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 for class, value in pairs(colors) do
 	local t = K.ClassColors[class]
@@ -225,7 +249,10 @@ end
 K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
 K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
 
--- Quality colors
+-- ---------------------------------------------------------------------------
+-- Quality Colors
+-- ---------------------------------------------------------------------------
+
 for index, value in pairs(BAG_ITEM_QUALITY_COLORS) do
 	K.QualityColors[index] = { r = value.r, g = value.g, b = value.b }
 end
@@ -233,23 +260,32 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[Enum.ItemQuality.Poor] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 }
 
---========================================================
--- Event System (Simplified)
---========================================================
-eventsFrame:SetScript("OnEvent", function(self, event, ...)
+-- ---------------------------------------------------------------------------
+-- Event System
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Centralized dispatcher to minimize the number of OnEvent handlers.
+eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	local funcs = events[event]
 	if not funcs then
 		return
 	end
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		for func in pairs(funcs) do
-			-- Directly pass the API call return values to avoid table churn and truncation
-			func(event, CombatLogGetCurrentEventInfo())
+		for func, context in pairs(funcs) do
+			if context == true then
+				func(event, CombatLogGetCurrentEventInfo())
+			else
+				func(context, event, CombatLogGetCurrentEventInfo())
+			end
 		end
 	else
-		for func in pairs(funcs) do
-			func(event, ...)
+		for func, context in pairs(funcs) do
+			if context == true then
+				func(event, ...)
+			else
+				func(context, event, ...)
+			end
 		end
 	end
 end)
@@ -259,8 +295,8 @@ function K:RegisterEvent(event, func, unit1, unit2)
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
 	end
 
-	if not func or type(func) ~= "function" then
-		print(string_format("|cffff0000KkthnxUI:RegisterEvent error:|r invalid function for '%s'", event))
+	if not func or (type(func) ~= "function" and type(func) ~= "string") then
+		K.Print(string_format("RegisterEvent error: invalid function for '%s'", event))
 		return
 	end
 
@@ -292,18 +328,43 @@ function K:UnregisterEvent(event, func)
 	end
 end
 
---========================================================
--- Modules
---========================================================
-function K:NewModule(name)
+-- ---------------------------------------------------------------------------
+-- Module Framework
+-- ---------------------------------------------------------------------------
+
+function K:NewModule(name, noReport)
 	if modules[name] then
-		print(string_format("|cffff0000KkthnxUI:|r Module <%s> has been registered.", name))
+		K.Print(string_format("Module <%s> has already been registered.", name))
 		return modules[name]
 	end
-	local module = { name = name, IsEnabled = false }
-	modules[name] = module
 
+	local internal = { name = name, IsEnabled = false, noReport = noReport }
+	if noReport then
+		internal.OnEnable = K.Noop
+	end
+	local module = setmetatable({}, {
+		__index = internal,
+		__newindex = function(_, k, v)
+			if k == "OnEnable" or k == "OnDisable" or k == "OnInitialize" then
+				if internal[k] ~= nil and internal[k] ~= K.Noop then
+					K.Print(string_format("|cffff0000KkthnxUI Error:|r Module [%s] already has an [%s] function. This choice will overwrite the previous one! Please check your module code.", name, k))
+				end
+			end
+			internal[k] = v
+		end,
+	})
+
+	module.Toggle = function(_, state)
+		if state then
+			K:EnableModule(name)
+		else
+			K:DisableModule(name)
+		end
+	end
+
+	modules[name] = module
 	table_insert(modulesQueue, module)
+
 	return module
 end
 
@@ -323,16 +384,41 @@ end
 function K:InitializeModules()
 	for i = 1, #modulesQueue do
 		local module = modulesQueue[i]
-		if module.OnEnable and not module.IsEnabled then
-			module:OnEnable()
-			module.IsEnabled = true
-		end
+		K:EnableModule(module.name)
 	end
 end
 
---========================================================
--- Secure Frame Helpers (Taint Safety)
---========================================================
+function K:EnableModule(name)
+	local module = modules[name]
+	if not module or module.IsEnabled then
+		return
+	end
+
+	if module.OnEnable then
+		module:OnEnable()
+		module.IsEnabled = true
+	else
+		K.Print(string_format("Module <%s> failed to initialize: Missing OnEnable function.", name))
+	end
+end
+
+function K:DisableModule(name)
+	local module = modules[name]
+	if not module or not module.IsEnabled then
+		return
+	end
+
+	if module.OnDisable then
+		module:OnDisable()
+	end
+	module.IsEnabled = false
+end
+
+-- ---------------------------------------------------------------------------
+-- Secure Action Helpers
+-- ---------------------------------------------------------------------------
+
+-- WARNING: These functions deal with protected states and must remain taint-safe.
 function K:RegisterStateDriver(frame, state, value)
 	if not frame or not state or not value then
 		print(string_format("|cffff0000KkthnxUI:RegisterStateDriver error:|r invalid arguments"))
@@ -343,9 +429,11 @@ end
 
 K.HookSecureFunc = hooksecurefunc
 
---========================================================
--- Scaling
---========================================================
+-- ---------------------------------------------------------------------------
+-- UI Scaling
+-- ---------------------------------------------------------------------------
+
+-- PERF: Calculate the most pixel-perfect scale for the current resolution.
 local function GetBestScale()
 	local scale = max(0.4, min(1.15, 768 / K.ScreenHeight))
 	return K.Round(scale, 2)
@@ -358,6 +446,7 @@ function K:SetupUIScale(init)
 
 	local scale = C["General"].UIScale
 	if init then
+		-- REASON: Pre-calculate the coordinate multiplier for pixel-perfect positioning.
 		local pixel = 1
 		local ratio = 768 / K.ScreenHeight
 		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
@@ -365,6 +454,7 @@ function K:SetupUIScale(init)
 	end
 
 	if InCombatLockdown() then
+		-- WARNING: Protected frames cannot be scaled in combat; defer.
 		if not pendingScaleApply then
 			pendingScaleApply = true
 			K:RegisterEvent("PLAYER_REGEN_ENABLED", ApplyScaleAfterCombat)
@@ -400,10 +490,12 @@ local function UpdatePixelScale(event)
 	isScaling = false
 end
 
---========================================================
--- Initialization
---========================================================
+-- ---------------------------------------------------------------------------
+-- Final Initialization
+-- ---------------------------------------------------------------------------
+
 K:RegisterEvent("PLAYER_LOGIN", function()
+	-- NOTE: Use KeyDown for better responsiveness.
 	SetCVar("ActionButtonUseKeyDown", 1)
 
 	K:SetupUIScale()
@@ -418,7 +510,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 		K.HideOverlayGlow = K.LibCustomGlow.HideOverlayGlow
 	end
 
-	-- Initialize all modules
+	-- Initialize all registered modules.
 	K:InitializeModules()
 
 	K.Modules = modules
@@ -432,9 +524,11 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
---========================================================
--- AddOn list cache
---========================================================
+-- ---------------------------------------------------------------------------
+-- AddOn Cache
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Pre-cache addon statuses to avoid repetitive C_AddOns calls.
 do
 	local playerName = K.Name
 	for i = 1, GetNumAddOns() do
@@ -447,7 +541,9 @@ do
 	end
 end
 
---========================================================
--- Expose Engine globally
---========================================================
+-- ---------------------------------------------------------------------------
+-- Global Exposure
+-- ---------------------------------------------------------------------------
+
+-- WARNING: Exposing the engine globally for other modules and external support.
 _G.KkthnxUI = Engine

@@ -3,21 +3,9 @@ if not L then
 	return
 end
 
--- =============================================================================
 -- Localization: enUS
--- Organization
---   1) Core/Common & Legacy keys
---   2) ExtraGUI (panel, nameplate managers, aura tools)
---   3) GUI (group titles, sub options, option labels, module strings)
---   4) HelpTips & GUI Config Tooltips
---   5) GUI Elements (Sections/Switches/Sliders/Dropdowns/Tooltips)
---   6) Missing Keys (placeholders pending usage)
---   7) GUI Setting Descriptions (by area)
--- =============================================================================
 
--- =============================================================================
 -- 1) Core / Common & Legacy keys
--- =============================================================================
 L["%s players"] = "%s players"
 L["AddToIgnoreList"] = "%s SpellID %s has been added to the Ignored AuraWatch list. You can hold CTRL+ALT and click on the unit's aura icon to remove it from the list."
 L["All Buffs Ready"] = "[KkthnxUI] All Buffs Are Ready!"
@@ -257,9 +245,7 @@ L["World Latency"] = "World Latency"
 L["World Protocol"] = "World Protocol"
 L["XP"] = "XP:"
 
--- =============================================================================
 -- 2) ExtraGUI and New GUI strings
--- =============================================================================
 L["Extra Configuration"] = "Extra Configuration"
 L["Extra: %s"] = "Extra: %s"
 L["Click to open additional options for %s"] = "Click to open additional options for %s"
@@ -298,9 +284,7 @@ L["Remove Aura"] = "Remove Aura"
 L["Click to remove this aura from the list"] = "Click to remove this aura from the list"
 L["Invalid Spell ID. Please enter a valid number."] = "Invalid Spell ID. Please enter a valid number."
 
--- =============================================================================
 -- 3) GUI: Group titles and option labels
--- =============================================================================
 L["QuestNotifier"] = "Quest Notifier"
 -- GUI: Additional titles and labels
 L["ActionBar 1"] = "ActionBar 1"
@@ -340,6 +324,13 @@ L["Auto Share Accepted Quests"] = "Auto Share Accepted Quests"
 L["AutoShareQuest Desc"] = "Automatically shares newly accepted quests with your party (not in raid)."
 L["Say Goodbye After Dungeon Completion"] = "Say Goodbye After Dungeon Completion"
 L["AutoGoodbye Desc"] = "Automatically says 'Goodbye' to the group when the dungeon is completed."
+L["AutoGoodbyeMessages"] = {
+	"Thanks for the group!",
+	"GG, thanks for the run!",
+	"Thanks for the run, GG!",
+	"Good game everyone, thanks!",
+	"GG, thanks for the group!",
+}
 L["Auto Place Mythic Keystones"] = "Auto Place Mythic Keystones"
 L["AutoKeystone Desc"] = "Automatically places your highest available Mythic Keystone in the dungeon keystone slot."
 L["Auto Release in Battlegrounds & Arenas"] = "Auto Release in Battlegrounds & Arenas"

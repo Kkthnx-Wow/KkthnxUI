@@ -4,7 +4,6 @@ local Module = K:GetModule("Bags")
 -- Locals for speed
 local table_wipe = table.wipe
 local string_format = string.format
-local debugprofilestop = debugprofilestop
 
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -22,36 +21,10 @@ local SELL_DELAY = 0.2
 local toSell = {}
 local sellIndex = 1
 
--- Lightweight profiling
-local AutoSellProfile = { enabled = false, scans = 0, sold = 0, totalMs = 0 }
-
-function Module:AutoSellProfileSetEnabled(enabled)
-	AutoSellProfile.enabled = not not enabled
-	AutoSellProfile.scans = 0
-	AutoSellProfile.sold = 0
-	AutoSellProfile.totalMs = 0
-end
-
-function Module:AutoSellProfileDump()
-	if AutoSellProfile.enabled then
-		K.Print(string_format("[AutoSell] scans=%d sold=%d time=%.2fms", AutoSellProfile.scans, AutoSellProfile.sold, AutoSellProfile.totalMs))
-	else
-		K.Print("[AutoSell] profiling disabled")
-	end
-end
-
 local function startSelling()
 	if autoSellStop then
 		return
 	end
-
-	local t0
-	if AutoSellProfile.enabled then
-		t0 = debugprofilestop()
-	end
-
-	local charDB = KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name]
-	local customJunk = charDB and charDB.CustomJunkList
 
 	local total = #toSell
 	while sellIndex <= total do
@@ -80,20 +53,12 @@ local function startSelling()
 					else
 						sellCache[key] = true
 						C_Container_UseContainerItem(bag, slot)
-						if AutoSellProfile.enabled then
-							AutoSellProfile.sold = AutoSellProfile.sold + 1
-						end
 						K.Delay(SELL_DELAY, startSelling)
 						return
 					end
 				end
 			end
 		end
-	end
-
-	if AutoSellProfile.enabled and t0 then
-		AutoSellProfile.scans = AutoSellProfile.scans + 1
-		AutoSellProfile.totalMs = AutoSellProfile.totalMs + (debugprofilestop() - t0)
 	end
 end
 

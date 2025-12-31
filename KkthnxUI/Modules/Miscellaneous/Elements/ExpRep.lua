@@ -151,9 +151,7 @@ local function GetProgress(cur, maxV, val)
 	return current, maximum, percent, capped, remaining
 end
 
--- =========================
 -- Bar Handlers
--- =========================
 local function HandleXP(bar)
 	currentMode = "xp"
 
@@ -349,9 +347,7 @@ local function HandleAzerite(bar)
 	bar.text:SetText(string_format("%s - %s (%.1f%%) [%s]", K.ShortValue(CurrentAzerite), K.ShortValue(MaxAzerite), PercentAzerite, AzeriteLevel))
 end
 
--- =========================
 -- Tooltip Sections (consistent formatting)
--- =========================
 local function AddXPTooltip()
 	GameTooltip:AddDoubleLine("|cff0070ff" .. COMBAT_XP_GAIN .. "|r", string_format("%s %d", LEVEL, K.Level))
 	GameTooltip:AddLine(" ")
@@ -512,9 +508,7 @@ local function AddAzeriteTooltip(addSpacingBefore)
 	GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPct, remainBars, L["Bars"]), 1, 1, 1)
 end
 
--- =========================
 -- Frame Scripts
--- =========================
 local function UpdateBarSize(bar)
 	local w = (Minimap and Minimap:GetWidth()) or 190
 	bar:SetWidth(w)

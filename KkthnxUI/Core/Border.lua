@@ -1,12 +1,29 @@
+--[[-----------------------------------------------------------------------------
+Addon: KkthnxUI
+Author: Josh "Kkthnx" Russell
+Notes:
+- Purpose: Custom 8-section border system for UI objects.
+- Combat: Safe for combat use; uses frame script hooks for resizing.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = {}
 
--- Lua API cache (Performance Optimization)
-local type, unpack, setmetatable, pairs, error, ipairs = type, unpack, setmetatable, pairs, error, ipairs
-local math_min, math_max = math.min, math.max
+-- ---------------------------------------------------------------------------
+-- Locals & Global Caching
+-- ---------------------------------------------------------------------------
 
--- 1. FIX: Weak table to prevent memory leaks (Garbage collection can now clean these up)
-local objectToWidgets = setmetatable({}, { __mode = "k" })
+local type = type
+local unpack = unpack
+local ipairs = ipairs
+local error = error
+
+-- ---------------------------------------------------------------------------
+-- Internal State & Config
+-- ---------------------------------------------------------------------------
+
+-- REASON: Border is stored directly on the parent frame to prevent table growth and avoid weak-table pitfalls.
+local BORDER_KEY = "__kkthnx_border"
 
 local borderSections = {
 	{ name = "TOPLEFT", coord = { 0.5, 0.625, 0, 1 } },
@@ -19,61 +36,56 @@ local borderSections = {
 	{ name = "RIGHT", coord = { 0.125, 0.25, 0, 1 } },
 }
 
--- Centralize default config
-local Config = {
-	Style = C["General"].BorderStyle or "KkthnxUI",
-	SizeKkthnx = 12,
-	SizeDefault = 10,
-}
-
 local function GetDefaultBorderSize()
-	return (Config.Style == "KkthnxUI") and Config.SizeKkthnx or Config.SizeDefault
+	local style = C and C["General"] and C["General"].BorderStyle or "KkthnxUI"
+	return (style == "KkthnxUI") and 12 or 10
 end
 
--- Export border size for API.lua consistency
 K.BorderSize = GetDefaultBorderSize()
 
---------------------------------------------------------------------------------
--- HELPER FUNCTIONS (Internal)
---------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- Utility Helpers
+-- ---------------------------------------------------------------------------
 
-local function GetTileCount(border, w, h)
-	local size = border.__size or GetDefaultBorderSize()
-	-- Prevent division by zero
+local function GetTileCount(border, w)
+	local size = border.__size or K.BorderSize
 	if size == 0 then
 		return 1
 	end
-	return (w + 2 * (border.__offset or 0)) / size
+
+	local offset = border.__offset or 0
+	return (w + 2 * offset) / size
 end
 
 local function UpdateTextureCoords(border, tile)
-	-- Only the straight edges need tile repeating
+	-- REASON: Uses 8-arg SetTexCoord to preserve existing tiling behavior for atlas-based strips.
 	border.TOP:SetTexCoord(0.25, tile, 0.375, tile, 0.25, 0, 0.375, 0)
 	border.BOTTOM:SetTexCoord(0.375, tile, 0.5, tile, 0.375, 0, 0.5, 0)
 	border.LEFT:SetTexCoord(0, 0.125, 0, tile)
 	border.RIGHT:SetTexCoord(0.125, 0.25, 0, tile)
 end
 
--- Defined outside CreateBorder to avoid creating closures repeatedly
+-- NOTE: Resizes tiling edges when the parent frame changes size.
 local function OnBorderResize(self)
-	local border = objectToWidgets[self]
+	local border = self and self[BORDER_KEY]
 	if not border then
 		return
 	end
 
-	local w, h = self:GetSize()
-	local tile = GetTileCount(border, w, h)
+	local w = self:GetWidth()
+	local tile = GetTileCount(border, w)
 	UpdateTextureCoords(border, tile)
 end
 
---------------------------------------------------------------------------------
--- MODULE METHODS (The Border Object)
---------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- Border Framework Methods
+-- ---------------------------------------------------------------------------
 
 function Module:SetOffset(offset)
 	if type(offset) ~= "number" then
 		return
 	end
+
 	self.__offset = offset
 
 	local p = self.__parent
@@ -81,21 +93,28 @@ function Module:SetOffset(offset)
 	self.TOPRIGHT:SetPoint("BOTTOMLEFT", p, "TOPRIGHT", offset, offset)
 	self.BOTTOMLEFT:SetPoint("TOPRIGHT", p, "BOTTOMLEFT", -offset, -offset)
 	self.BOTTOMRIGHT:SetPoint("TOPLEFT", p, "BOTTOMRIGHT", offset, -offset)
+
+	OnBorderResize(p)
 end
 
 function Module:SetTexture(texture)
-	-- Case 1: Texture is a color table {r, g, b}
+	-- NOTE: Case 1: Texture is a color table {r, g, b, a}.
 	if type(texture) == "table" then
 		self:SetVertexColor(unpack(texture))
 		return
 	end
 
-	-- Case 2: Texture is a file path string
+	-- NOTE: Case 2: Texture is a file path string.
 	if type(texture) == "string" then
-		for i, section in ipairs(borderSections) do
+		for i = 1, #borderSections do
+			local section = borderSections[i]
 			local tex = self[section.name]
-			-- Sections > 4 are the repeating sides (TOP, BOTTOM, LEFT, RIGHT)
-			tex:SetTexture(texture, (i > 4) and "REPEAT" or nil, (i > 4) and "REPEAT" or nil)
+			if i > 4 then
+				-- REASON: Straight edges allow wrap behavior for coords outside [0..1] to facilitate tiling.
+				tex:SetTexture(texture, "REPEAT", "REPEAT")
+			else
+				tex:SetTexture(texture)
+			end
 		end
 	end
 end
@@ -104,38 +123,39 @@ function Module:SetSize(size)
 	if type(size) ~= "number" then
 		error("Border:SetSize() - Size must be a number", 2)
 	end
+
 	self.__size = size
 
-	for _, v in ipairs(borderSections) do
-		local tex = self[v.name]
-		if v.name == "TOP" or v.name == "BOTTOM" then
+	for i = 1, #borderSections do
+		local name = borderSections[i].name
+		local tex = self[name]
+
+		if name == "TOP" or name == "BOTTOM" then
 			tex:SetHeight(size)
-		elseif v.name == "LEFT" or v.name == "RIGHT" then
+		elseif name == "LEFT" or name == "RIGHT" then
 			tex:SetWidth(size)
 		else
 			tex:SetSize(size, size)
 		end
 	end
 
-	-- Force an immediate update on the parent to fix coords
-	if self.__parent then
-		OnBorderResize(self.__parent)
-	end
+	OnBorderResize(self.__parent)
 end
 
 function Module:SetVertexColor(r, g, b, a)
-	for _, section in ipairs(borderSections) do
-		self[section.name]:SetVertexColor(r, g, b, a)
+	for i = 1, #borderSections do
+		self[borderSections[i].name]:SetVertexColor(r, g, b, a)
 	end
 end
 
--- Create proxy methods for common texture functions (Hide, Show, SetAlpha, etc.)
+-- REASON: Dynamically maps standard Frame methods to all 8 border segments.
 local function CreateProxyMethod(methodName)
 	Module[methodName] = function(self, ...)
-		for _, section in ipairs(borderSections) do
-			local tex = self[section.name]
-			if tex[methodName] then
-				tex[methodName](tex, ...)
+		for i = 1, #borderSections do
+			local tex = self[borderSections[i].name]
+			local fn = tex and tex[methodName]
+			if fn then
+				fn(tex, ...)
 			end
 		end
 	end
@@ -147,8 +167,8 @@ CreateProxyMethod("SetShown")
 CreateProxyMethod("SetAlpha")
 
 function Module:SetIgnoreParentAlpha(ignore)
-	for _, section in ipairs(borderSections) do
-		local tex = self[section.name]
+	for i = 1, #borderSections do
+		local tex = self[borderSections[i].name]
 		if tex and tex.SetIgnoreParentAlpha then
 			tex:SetIgnoreParentAlpha(ignore and true or false)
 		end
@@ -159,14 +179,15 @@ function Module:IsObjectType(t)
 	return t == "Border"
 end
 
---------------------------------------------------------------------------------
--- INTERNAL FACTORY (K:CreateBorder)
---------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- Border Factory
+-- ---------------------------------------------------------------------------
 
 function K:CreateBorder(drawLayer, drawSubLevel)
-	-- If this frame already has a border object tracked, return it
-	if objectToWidgets[self] then
-		return objectToWidgets[self]
+	-- NOTE: Return existing border for this frame if it already exists to avoid duplication.
+	local existing = self[BORDER_KEY]
+	if existing then
+		return existing
 	end
 
 	local border = setmetatable({}, { __index = Module })
@@ -175,14 +196,15 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	local layer = type(drawLayer) == "string" and drawLayer or "OVERLAY"
 	local subLevel = type(drawSubLevel) == "number" and drawSubLevel or 1
 
-	-- Create all 8 texture sections
-	for _, section in ipairs(borderSections) do
+	-- REASON: Create all 8 sections (4 corners, 4 edges).
+	for i = 1, #borderSections do
+		local section = borderSections[i]
 		local tex = self:CreateTexture(nil, layer, nil, subLevel)
 		tex:SetTexCoord(unpack(section.coord))
 		border[section.name] = tex
 	end
 
-	-- Link corners to each other to form the frame structure
+	-- REASON: Link edges to corners to ensure they scale and move together.
 	border.TOP:SetPoint("TOPLEFT", border.TOPLEFT, "TOPRIGHT", 0, 0)
 	border.TOP:SetPoint("TOPRIGHT", border.TOPRIGHT, "TOPLEFT", 0, 0)
 	border.BOTTOM:SetPoint("BOTTOMLEFT", border.BOTTOMLEFT, "BOTTOMRIGHT", 0, 0)
@@ -192,16 +214,17 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	border.RIGHT:SetPoint("TOPRIGHT", border.TOPRIGHT, "BOTTOMRIGHT", 0, 0)
 	border.RIGHT:SetPoint("BOTTOMRIGHT", border.BOTTOMRIGHT, "TOPRIGHT", 0, 0)
 
-	-- Hook resizing logic
+	-- NOTE: Hook resizing logic without clobbering existing OnSizeChanged scripts.
 	if not self:GetScript("OnSizeChanged") then
 		self:SetScript("OnSizeChanged", OnBorderResize)
 	else
 		self:HookScript("OnSizeChanged", OnBorderResize)
 	end
 
-	objectToWidgets[self] = border
+	-- Store on the frame so it stays reachable and doesn't require a global map.
+	self[BORDER_KEY] = border
 
-	-- Apply defaults
+	-- Apply defaults.
 	border:SetOffset(-4)
 	border:SetSize(K.BorderSize)
 

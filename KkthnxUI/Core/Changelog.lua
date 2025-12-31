@@ -1,6 +1,18 @@
+--[[-----------------------------------------------------------------------------
+Addon: KkthnxUI
+Author: Josh "Kkthnx" Russell
+Notes:
+- Purpose: Automated changelog display and version tracking.
+- Combat: Safe; logic runs on login or manual trigger via slash command.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- Localized globals for performance
+-- ---------------------------------------------------------------------------
+-- Locals & Global Caching
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache frequent APIs and globals to minimize table lookups.
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local pairs, ipairs, type = pairs, ipairs, type
@@ -8,10 +20,14 @@ local table_concat = table.concat
 local string_format, string_rep = string.format, string.rep
 local GameTooltip, GameTooltip_Hide = GameTooltip, GameTooltip_Hide
 
--- Changelog frame (singleton, reused)
+-- ---------------------------------------------------------------------------
+-- Internal State & Mapping
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Singleton frame reference to avoid multiple instances.
 local changelogFrame
 
--- Section color and icon mapping
+-- REASON: Define a consistent color and icon theme for changelog categories.
 local sectionColors = {
 	["General"] = "|cff5C8BCF",
 	["Performance"] = "|cff6FCF5C",
@@ -31,7 +47,11 @@ local sectionIcons = {
 	["API"] = "|TInterface\\Icons\\INV_Misc_Gear_01:14:14:0:0|t",
 }
 
--- Count changes by category for a version
+-- ---------------------------------------------------------------------------
+-- Utility Helpers
+-- ---------------------------------------------------------------------------
+
+-- REASON: Categorizes changes for summary line generation.
 local function CountChangesByCategory(changes)
 	local counts = {}
 	local total = 0
@@ -46,7 +66,7 @@ local function CountChangesByCategory(changes)
 	return counts, total
 end
 
--- Build summary line for a version
+-- REASON: Generates a concise summary line for the version header (e.g., "(2 Bug Fixes, 1 New Features)").
 local function BuildSummary(counts, useGrey)
 	local parts = {}
 	local greyColor = "|cff999999"
@@ -70,7 +90,8 @@ local function BuildSummary(counts, useGrey)
 	return ""
 end
 
--- Build changelog text from data
+-- REASON: Processes raw changelog data into a formatted string for the UI.
+-- NOTE: Uses escape sequences for colors and embedded textures for icons.
 local function BuildChangelogText(highlightLatestOnly)
 	local data = K.ChangelogData
 	if not data or #data == 0 then
@@ -81,7 +102,7 @@ local function BuildChangelogText(highlightLatestOnly)
 	local greyColor = "|cff999999"
 	local separatorColor = "|cff444444"
 
-	-- Limit to 15 most recent versions to avoid FontString character limits
+	-- NOTE: Limit to 15 most recent versions to avoid FontString character/memory limits.
 	local maxVersions = math.min(#data, 15)
 
 	for i = 1, maxVersions do
@@ -90,23 +111,21 @@ local function BuildChangelogText(highlightLatestOnly)
 			local isLatest = (i == 1)
 			local useGrey = highlightLatestOnly and not isLatest
 
-			-- Version header
+			-- REASON: Use InfoColor (usually blue/cyan) for versions to make them stand out.
 			local versionColor = useGrey and greyColor or K.InfoColor
 			lines[#lines + 1] = versionColor .. "Version " .. entry.version .. "|r"
 
-			-- Date
 			if entry.date then
 				local dateColor = useGrey and greyColor or K.GreyColor
 				lines[#lines + 1] = dateColor .. entry.date .. "|r"
 			end
 
-			-- Description
 			if entry.description then
 				local descColor = useGrey and greyColor or K.SystemColor
 				lines[#lines + 1] = descColor .. entry.description .. "|r"
 			end
 
-			-- Summary line
+			-- REASON: Summary line provides a quick "at a glance" view of changes.
 			local counts, total = CountChangesByCategory(entry.changes)
 			if total > 0 then
 				local summary = BuildSummary(counts, useGrey)
@@ -117,7 +136,7 @@ local function BuildChangelogText(highlightLatestOnly)
 
 			lines[#lines + 1] = " "
 
-			-- Check if changes is a table with sections or simple array
+			-- REASON: Handle both new sectioned format and legacy array format for backwards compatibility.
 			local hasSection = false
 			for k in pairs(entry.changes) do
 				if type(k) == "string" then
@@ -127,14 +146,13 @@ local function BuildChangelogText(highlightLatestOnly)
 			end
 
 			if hasSection then
-				-- Sectioned format with icons
 				for section, items in pairs(entry.changes) do
 					local color = useGrey and greyColor or (sectionColors[section] or "|cffFFFFFF")
 					local icon = sectionIcons[section] or "•"
 					lines[#lines + 1] = color .. icon .. " " .. section .. ":|r"
 
 					for j = 1, #items do
-						-- Alternate between two subtle shades for better readability
+						-- REASON: Alternate shades slightly for better readability in long lists.
 						local bulletColor = useGrey and greyColor or K.SystemColor
 						local textColor
 						if useGrey then
@@ -147,7 +165,6 @@ local function BuildChangelogText(highlightLatestOnly)
 					lines[#lines + 1] = " "
 				end
 			else
-				-- Simple array format (backwards compatible)
 				for j = 1, #entry.changes do
 					local bulletColor = useGrey and greyColor or K.SystemColor
 					local textColor
@@ -161,7 +178,6 @@ local function BuildChangelogText(highlightLatestOnly)
 				lines[#lines + 1] = " "
 			end
 
-			-- Separator line between versions
 			if i < maxVersions then
 				lines[#lines + 1] = separatorColor .. string_rep("-", 80) .. "|r"
 				lines[#lines + 1] = " "
@@ -169,7 +185,6 @@ local function BuildChangelogText(highlightLatestOnly)
 		end
 	end
 
-	-- Add note if there are more versions
 	if #data > maxVersions then
 		lines[#lines + 1] = " "
 		lines[#lines + 1] = K.GreyColor .. "... " .. (#data - maxVersions) .. " older versions not shown (character limit)|r"
@@ -178,7 +193,11 @@ local function BuildChangelogText(highlightLatestOnly)
 	return table_concat(lines, "\n")
 end
 
--- Create the changelog frame (singleton pattern)
+-- ---------------------------------------------------------------------------
+-- UI Component: Changelog Frame
+-- ---------------------------------------------------------------------------
+
+-- REASON: Singleton pattern to ensure only one instance of the changelog window exists.
 local function CreateChangelogFrame()
 	if changelogFrame then
 		return changelogFrame
@@ -202,7 +221,7 @@ local function CreateChangelogFrame()
 	title:SetPoint("TOP", frame, "TOP", 0, -10)
 	title:SetText(K.InfoColor .. "KkthnxUI Changelog|r")
 
-	-- Perks Theme overlay at the top of the changelog
+	-- REASON: Visual branding for the changelog.
 	if K.AttachPerksTheme then
 		frame.PerksOverlay = K.AttachPerksTheme(frame, { variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 62, strata = "TOOLTIP", level = 999 })
 	end
@@ -235,11 +254,10 @@ local function CreateChangelogFrame()
 	changelogText:SetJustifyH("LEFT")
 	changelogText:SetJustifyV("TOP")
 
-	-- Store references for updating
 	frame.changelogText = changelogText
 	frame.scrollChild = scrollChild
 
-	-- Function to refresh changelog display
+	-- REASON: Dynamically updates the content and adjusts the scroll child height.
 	local function RefreshChangelog()
 		local highlightLatest = KkthnxUIDB.ChangelogHighlightLatest or false
 		changelogText:SetText(BuildChangelogText(highlightLatest))
@@ -254,7 +272,7 @@ local function CreateChangelogFrame()
 	closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
 	closeButton:SkinCloseButton()
 
-	-- Checkbox: Don't show until next update
+	-- REASON: Persistent storage of "don't show" preference in KkthnxUIDB.
 	local checkbox = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
 	checkbox:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 6, 6)
 	checkbox:SetSize(16, 16)
@@ -275,7 +293,7 @@ local function CreateChangelogFrame()
 
 	frame.checkbox = checkbox
 
-	-- Checkbox: Highlight latest only
+	-- REASON: Allows users to focus on what changed in the current version.
 	local highlightCheckbox = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
 	highlightCheckbox:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 6, 28)
 	highlightCheckbox:SetSize(16, 16)
@@ -294,6 +312,10 @@ local function CreateChangelogFrame()
 	highlightCheckbox:SetChecked(KkthnxUIDB.ChangelogHighlightLatest or false)
 
 	frame.highlightCheckbox = highlightCheckbox
+
+	-- ---------------------------------------------------------------------------
+	-- External Links (Buttons)
+	-- ---------------------------------------------------------------------------
 
 	-- Discord button with tooltip
 	local discordButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
@@ -350,7 +372,11 @@ local function CreateChangelogFrame()
 	return frame
 end
 
--- Show changelog if version has changed
+-- ---------------------------------------------------------------------------
+-- Global API: Changelog Control
+-- ---------------------------------------------------------------------------
+
+-- REASON: Main entry point for showing the changelog; handles version checking.
 function K:ShowChangelog(force)
 	if not KkthnxUIDB then
 		KkthnxUIDB = {}
@@ -371,14 +397,21 @@ function K:ShowChangelog(force)
 	end
 end
 
--- Slash command to open changelog manually
+-- ---------------------------------------------------------------------------
+-- Slash Commands
+-- ---------------------------------------------------------------------------
+
 SlashCmdList["KKUI_CHANGELOG"] = function()
 	K:ShowChangelog(true)
 end
 SLASH_KKUI_CHANGELOG1 = "/changelog"
 SLASH_KKUI_CHANGELOG2 = "/kkchangelog"
 
--- Auto-show on PLAYER_LOGIN if version changed
+-- ---------------------------------------------------------------------------
+-- Event Handling
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Automated check on login; respects user's "don't show" preference.
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("PLAYER_LOGIN")
 eventFrame:SetScript("OnEvent", function(_, event)

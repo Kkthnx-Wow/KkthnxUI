@@ -266,6 +266,7 @@ function Module:CreateRaid()
 	LeaderIndicator:SetTexCoord(0, 1, 0, 1) -- NEW?
 	LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 8)
 	LeaderIndicator:SetSize(14, 14)
+	LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetPoint("TOPLEFT", Health, 0, 8)

@@ -353,6 +353,7 @@ function Module:CreateFocus()
 	else
 		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
 	end
+	self.LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if focusPortraitStyle ~= 0 and focusPortraitStyle ~= 4 then

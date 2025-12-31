@@ -43,12 +43,7 @@ local COLOR_YELLOW = "|CFFFFFF00"
 local COLOR_ORANGE = "|cffff8800"
 local COLOR_END = "|r"
 
---[[-----------------------------------------------------------------------------
-	Spell Info Compatibility Layer
-	
-	Provides compatibility between retail and classic GetSpellInfo APIs.
-	Caches results to avoid repeated API calls.
--------------------------------------------------------------------------------]]
+-- Spell Info Compatibility Layer
 do
 	local GetSpellInfo = _G.GetSpellInfo
 	local C_Spell_GetSpellInfo = _G.C_Spell and _G.C_Spell.GetSpellInfo
@@ -97,11 +92,7 @@ do
 	end
 end
 
---[[-----------------------------------------------------------------------------
-	Static Popup Dialogs
-	
-	Dialog boxes for adding new PvE/PvP debuffs to track.
--------------------------------------------------------------------------------]]
+-- Static Popup Dialogs
 
 --- Create static popup dialog for tracking
 -- @param category "PvE" or "PvP"
@@ -167,11 +158,7 @@ end
 StaticPopupDialogs["KKUI_TRACKING_ADD_PVE"] = CreateTrackingDialog("PvE")
 StaticPopupDialogs["KKUI_TRACKING_ADD_PVP"] = CreateTrackingDialog("PvP")
 
---[[-----------------------------------------------------------------------------
-	Tracking UI Frame
-	
-	Main frame for debuff tracking interface.
--------------------------------------------------------------------------------]]
+-- Tracking UI Frame
 local Tracking = {}
 Tracking.__index = Tracking
 
@@ -438,9 +425,7 @@ function Module:CreateTracking()
 	trackingFrame:Setup()
 end
 
---[[-----------------------------------------------------------------------------
-	Slash Command
--------------------------------------------------------------------------------]]
+-- Slash Command
 
 --- Slash command handler for /debufftrack
 SlashCmdList["KKUI_TRACKING"] = function()

@@ -427,7 +427,7 @@ function Module:CreateGoldDataText()
 
 		GoldDataText.Texture = GoldDataText:CreateTexture(nil, "ARTWORK")
 		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 0, 2)
-		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
+		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags")
 		GoldDataText.Texture:SetSize(24, 24)
 		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 	end

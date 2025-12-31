@@ -366,6 +366,7 @@ function Module:CreateParty()
 	else
 		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 10)
 	end
+	LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetSize(15, 15)

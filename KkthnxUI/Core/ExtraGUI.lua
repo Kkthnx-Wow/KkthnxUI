@@ -1,27 +1,18 @@
+--[[-----------------------------------------------------------------------------
+Addon: KkthnxUI
+Author: Josh "Kkthnx" Russell
+Notes:
+- Purpose: Side panel GUI for supplemental configuration options.
+- Design: Dynamic registration, search-enabled, and profile-aware.
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
--- System Documentation
+-- ---------------------------------------------------------------------------
+-- Locals & Global Caching
+-- ---------------------------------------------------------------------------
 
---[[
-ExtraGUI System for KkthnxUI
-
-This system provides a side panel that appears to the right of the main GUI
-when users click cogwheel icons next to certain options. Features:
-- Side panel positioned to the right of main GUI
-- Same height as main GUI, half the width
-- No overlapping - proper positioning
-- Gradient line separators like NDui
-- Cogwheel icons in main GUI for options with extra configs
-
-Usage:
-K.ExtraGUI:RegisterExtraConfig("Actionbar.MicroMenu", function(parent)
-	-- Create extra configuration widgets here
-end)
-]]
-
--- API Declarations
-
--- Lua API
+-- PERF: Cache frequent APIs and globals to minimize table lookups.
 local _G = _G
 local floor, max, min = math.floor, math.max, math.min
 local format = string.format
@@ -31,9 +22,11 @@ local ipairs, pairs, type = ipairs, pairs, type
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
--- Utility Functions
+-- ---------------------------------------------------------------------------
+-- Utility Helpers
+-- ---------------------------------------------------------------------------
 
--- Helper function to get table keys
+-- NOTE: Simple helper to extract keys from a table for iteration or sorting.
 local function tKeys(t)
 	local keys = {}
 	for k, _ in pairs(t) do
@@ -42,7 +35,11 @@ local function tKeys(t)
 	return keys
 end
 
--- Static event handlers to prevent memory leaks from anonymous closures
+-- ---------------------------------------------------------------------------
+-- Static Event Handlers
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Handles cogwheel clicks in the main GUI to toggle the ExtraGUI panel.
 local function OnCogwheelClicked(self)
 	local configPath = self.configPath
 	local optionTitle = self.optionTitle
@@ -62,13 +59,12 @@ local function OnCogwheelClicked(self)
 		end)
 	end
 
-	-- Close Profile GUI if it's open (Window Overlap Fix)
+	-- REASON: Close Profile GUI if open to prevent window overlap and visual clutter.
 	if K.ProfileGUI and K.ProfileGUI.Frame and K.ProfileGUI.Frame:IsShown() then
 		K.ProfileGUI:Hide()
 	end
 
-	-- Check if ExtraGUI is already open with the same config
-	-- We use K.ExtraGUI here to ensure we reference the initialized global module
+	-- REASON: Toggle the panel off if the same config is clicked again.
 	local ExtraGUI = K.ExtraGUI
 	if ExtraGUI and ExtraGUI.IsVisible and ExtraGUI.CurrentConfig and ExtraGUI.CurrentConfig.configPath == configPath then
 		-- Same config is open, close it (toggle off)
@@ -117,7 +113,9 @@ local function OnCogwheelLeave(self)
 	GameTooltip:Hide()
 end
 
--- Configuration Functions
+-- ---------------------------------------------------------------------------
+-- Configuration API
+-- ---------------------------------------------------------------------------
 
 -- Get default value for a config path
 local function GetDefaultValue(configPath)
@@ -139,9 +137,9 @@ local function GetExtraConfigValue(configPath)
 	return K.GetValueByPath(C, configPath)
 end
 
--- Set extra configuration value with hook integration and reload tracking
+-- REASON: Propagates changes to main GUI and handles reload tracking/hooks.
 local function SetExtraConfigValue(configPath, value, settingName)
-	-- Use main GUI's SetConfigValue if available - it handles hooks AND reload tracking
+	-- NOTE: Prefers K.NewGUI:SetConfigValue to ensure consistent behavior across all parts of the addon.
 	if K.NewGUI and K.NewGUI.SetConfigValue then
 		-- Main GUI's SetConfigValue handles everything: saving, hooks, and reload tracking
 		K.NewGUI:SetConfigValue(configPath, value, false, settingName)
@@ -180,9 +178,11 @@ local function SetExtraConfigValue(configPath, value, settingName)
 	return true
 end
 
+-- ---------------------------------------------------------------------------
 -- Reset to Default Functionality
+-- ---------------------------------------------------------------------------
 
--- Reset a setting to its default value
+-- REASON: Provides a way for users to revert individual settings without a full GUI reset.
 local function ResetToDefault(configPath, widget, settingName)
 	local defaultValue = GetDefaultValue(configPath)
 	if defaultValue == nil then
@@ -237,7 +237,11 @@ local function ResetToDefault(configPath, widget, settingName)
 	return true
 end
 
--- Global Ctrl key checker for reset buttons
+-- ---------------------------------------------------------------------------
+-- Control Key Checker (Reset Buttons)
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Global frame to track Ctrl key state; used to reveal hidden reset buttons on hover.
 local CtrlChecker = CreateFrame("Frame")
 local resetButtons = {}
 
@@ -264,7 +268,7 @@ local function CtrlUpdate()
 end
 
 CtrlChecker.CtrlUpdate = CtrlUpdate
--- Disabled by default; enabled while ExtraGUI is visible
+-- NOTE: Update logic is throttled to 0.12s to minimize CPU impact while the GUI is open.
 CtrlChecker:SetScript("OnUpdate", nil)
 
 -- Throttled OnUpdate to reduce per-frame work
@@ -277,7 +281,7 @@ local function CtrlChecker_OnUpdate(self, elapsed)
 	CtrlChecker:CtrlUpdate()
 end
 
--- Helper function to add reset-to-default functionality to widget labels
+-- REASON: Attaches a hidden reset button to a widget that appears only when Ctrl is held.
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
 	-- Create reset button with undo icon
 	local resetButton = CreateFrame("Button", nil, widget)
@@ -303,6 +307,10 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 		undoIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
 		undoIcon:SetTexCoord(0, 1, 0, 1)
 	end
+
+	-- ---------------------------------------------------------------------------
+	-- Reset Button Logic
+	-- ---------------------------------------------------------------------------
 
 	-- Hover effects for the reset button
 	resetButton:SetScript("OnEnter", function(self)
@@ -335,9 +343,11 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 	return resetButton
 end
 
--- Constants
+-- ---------------------------------------------------------------------------
+-- Constants & Layout Config
+-- ---------------------------------------------------------------------------
 
--- Panel Dimensions (based on main GUI)
+-- REASON: Panel dimensions are derived from the main GUI to ensure visual consistency.
 local PANEL_WIDTH = 880
 local PANEL_HEIGHT = 640
 local EXTRA_PANEL_WIDTH = PANEL_WIDTH / 2 -- Half the width of main GUI
@@ -349,9 +359,11 @@ local ACCENT_COLOR = { K.r, K.g, K.b }
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
--- Helper Functions
+-- ---------------------------------------------------------------------------
+-- Internal Helpers
+-- ---------------------------------------------------------------------------
 
--- Use unified widget factory from K.WidgetFactory
+-- PERF: Use unified widget factory to reduce individual texture allocations.
 local CreateColoredBackground = K.WidgetFactory.CreateBackdrop
 
 -- Create section header with background (reduces code duplication)
@@ -375,9 +387,10 @@ local function CreateSectionHeader(parent, text, width, yOffset)
 	return headerFrame, headerText
 end
 
+-- ---------------------------------------------------------------------------
 -- ExtraGUI Module Core
+-- ---------------------------------------------------------------------------
 
--- ExtraGUI Module
 local ExtraGUI = {
 	ExtraConfigs = {},
 	CurrentConfig = nil,
@@ -385,9 +398,11 @@ local ExtraGUI = {
 	IsInitialized = false,
 }
 
+-- ---------------------------------------------------------------------------
 -- Configuration Registration
+-- ---------------------------------------------------------------------------
 
--- Register extra configuration for a specific option path
+-- REASON: Allows other modules to hook into the GUI and provide supplemental settings.
 function ExtraGUI:RegisterExtraConfig(configPath, createContentFunc, title)
 	if not configPath or not createContentFunc then
 		error("ExtraGUI config must have configPath and createContentFunc")
@@ -409,9 +424,11 @@ function ExtraGUI:HasExtraConfig(configPath)
 	return self.ExtraConfigs[configPath] ~= nil
 end
 
--- Frame Creation
+-- ---------------------------------------------------------------------------
+-- UI Component: Side Panel Frame
+-- ---------------------------------------------------------------------------
 
--- Create the ExtraGUI side panel
+-- REASON: Creates the physical frame for the side panel; lazy-loaded when needed.
 function ExtraGUI:CreateFrame()
 	if self.Frame then
 		return self.Frame
@@ -425,8 +442,7 @@ function ExtraGUI:CreateFrame()
 	frame:EnableMouse(true)
 	frame:Hide()
 
-	-- Position to the right of main GUI
-	-- We'll set this dynamically when showing based on main GUI position
+	-- REASON: Position to the right of main GUI; set dynamically during Show().
 
 	-- Main background with same styling as main GUI
 	local mainBg = frame:CreateTexture(nil, "BACKGROUND")
@@ -452,13 +468,14 @@ function ExtraGUI:CreateFrame()
 
 	CreateColoredBackground(titleBar, ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3])
 
+	-- NOTE: Center-aligned title text for the side panel.
 	local title = titleBar:CreateFontString(nil, "OVERLAY")
 	title:SetFontObject(K.UIFont)
 	title:SetTextColor(1, 1, 1, 1)
 	title:SetText(L["Extra Configuration"] or "Extra Configuration")
 	title:SetPoint("CENTER", 0, -1)
 
-	-- Close Button using atlas icon
+	-- REASON: Standardized close button using atlas icons.
 	local closeButton = CreateFrame("Button", nil, titleBar)
 	closeButton:SetSize(32, 32)
 	closeButton:SetPoint("RIGHT", -8, 0)
@@ -490,7 +507,9 @@ function ExtraGUI:CreateFrame()
 		closeBg:SetVertexColor(0, 0, 0, 0)
 	end)
 
-	-- Content Area
+	-- ---------------------------------------------------------------------------
+	-- Scrolling Content Area
+	-- ---------------------------------------------------------------------------
 	local content = CreateFrame("Frame", nil, frame)
 	content:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT)
 	content:SetPoint("BOTTOMRIGHT", 0, 0)
@@ -502,7 +521,7 @@ function ExtraGUI:CreateFrame()
 	scrollFrame:SetPoint("TOPLEFT", SPACING, -SPACING)
 	scrollFrame:SetPoint("BOTTOMRIGHT", -SPACING, SPACING)
 
-	-- Mouse wheel scrolling
+	-- NOTE: Attaches the KkthnxUI custom scroll logic to handle mousewheel interaction.
 	if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
 		K.GUIHelpers.AttachSimpleScroll(scrollFrame, 40)
 	end
@@ -531,9 +550,11 @@ function ExtraGUI:CreateFrame()
 	return frame
 end
 
--- Panel Positioning
+-- ---------------------------------------------------------------------------
+-- Panel Positioning Logic
+-- ---------------------------------------------------------------------------
 
--- Position the extra panel relative to the main GUI
+-- REASON: Ensures the panel is always flush with the main GUI's right edge.
 function ExtraGUI:PositionPanel()
 	if not self.Frame then
 		return
@@ -558,9 +579,11 @@ function ExtraGUI:PositionPanel()
 	self.Frame:SetSize(EXTRA_PANEL_WIDTH, mainGUI:GetHeight())
 end
 
--- Show/Hide Functionality
+-- ---------------------------------------------------------------------------
+-- Visibility Control
+-- ---------------------------------------------------------------------------
 
--- Show extra configuration for a specific config path
+-- REASON: Main entry point for displaying a specific configuration module.
 function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	-- Close ProfileGUI if it's open
 	if K.ProfileGUI and K.ProfileGUI.Hide then
@@ -598,7 +621,7 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	-- Start content layout with proper spacing
 	local yOffset = -20
 
-	-- Add category title in content area (like main GUI)
+	-- NOTE: Category headers use a subtle background to delineate sections.
 	if not self.CategoryTitleFrame then
 		self.CategoryTitleFrame = CreateFrame("Frame", nil, self.ScrollChild)
 		self.CategoryTitleFrame:SetSize(EXTRA_PANEL_WIDTH - 40, 30)
@@ -687,7 +710,11 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	end
 end
 
--- Hook main GUI close event to auto-close ExtraGUI
+-- ---------------------------------------------------------------------------
+-- GUI Hooks
+-- ---------------------------------------------------------------------------
+
+-- REASON: Automatically closes the side panel when the main GUI is hidden.
 function ExtraGUI:HookMainGUIClose()
 	if self.MainGUIHooked then
 		return
@@ -743,9 +770,11 @@ function ExtraGUI:Toggle()
 	end
 end
 
--- Cogwheel Icon Creation
+-- ---------------------------------------------------------------------------
+-- Cogwheel Management
+-- ---------------------------------------------------------------------------
 
--- Helper function to create cogwheel icon for main GUI widgets
+-- REASON: Injects a clickable icon into main GUI widgets to link to extra settings.
 function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	if not self:HasExtraConfig(configPath) then
 		return nil
@@ -830,9 +859,11 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	return cogwheel
 end
 
+-- ---------------------------------------------------------------------------
 -- Module Initialization
+-- ---------------------------------------------------------------------------
 
--- Initialize ExtraGUI
+-- REASON: Ensures the module is only enabled once and pulls in initial configs.
 function ExtraGUI:Enable()
 	if self.IsInitialized or self._enabled then
 		return true
@@ -846,14 +877,16 @@ function ExtraGUI:Enable()
 	return true
 end
 
--- Widget Helper Functions
+-- ---------------------------------------------------------------------------
+-- Widget Helpers
+-- ---------------------------------------------------------------------------
 
--- Helper function to get extra panel content width
+-- NOTE: Standardizes spacing within the side panel.
 local function GetExtraContentWidth()
 	return EXTRA_PANEL_WIDTH - 40 -- Account for margins
 end
 
--- Helper function to process NEW tags (same as main GUI)
+-- REASON: Strips ISNEW markers from strings and returns a boolean for visual tagging.
 local function ProcessNewTag(name)
 	-- Handle nil or empty strings gracefully
 	if not name or name == "" then
@@ -868,7 +901,7 @@ local function ProcessNewTag(name)
 	return cleanName, (hasNewTag > 0)
 end
 
--- Helper function to add NEW tags (same as main GUI)
+-- NOTE: Reuses the system feature label template for a consistent "NEW" visual indicator.
 local function AddNewTag(parent, anchor)
 	if K and K.GUIHelpers and K.GUIHelpers.AddNewTag then
 		return K.GUIHelpers.AddNewTag(parent, anchor)
@@ -880,10 +913,11 @@ local function AddNewTag(parent, anchor)
 	return tag
 end
 
--- Widget Creation Functions
--- These match the main GUI widget functions but are sized for the extra panel
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Switch
+-- ---------------------------------------------------------------------------
 
--- Switch Widget for ExtraGUI
+-- REASON: Toggle-based setting widget; features visual feedback and support for 'NEW' tags.
 function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, isNew)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(GetExtraContentWidth(), 28)
@@ -1016,8 +1050,11 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 	return widget
 end
 
--- Declare dependency for an ExtraGUI widget on a parent config path
--- Mirrors GUI:DependsOn, reusing shared helpers
+-- ---------------------------------------------------------------------------
+-- Dependency Management
+-- ---------------------------------------------------------------------------
+
+-- REASON: Allows widgets to be shown/hidden based on the value of another setting.
 function ExtraGUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate)
 	if K and K.GUIHelpers and K.GUIHelpers.BindDependency then
 		return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate)
@@ -1025,7 +1062,11 @@ function ExtraGUI:DependsOn(childWidget, parentConfigPath, expectedValue, predic
 	return childWidget
 end
 
--- Slider Widget for ExtraGUI
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Slider
+-- ---------------------------------------------------------------------------
+
+-- REASON: Range-based setting widget; supports fine adjustment via mousewheel.
 function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(GetExtraContentWidth(), 28)
@@ -1146,7 +1187,7 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 		if button == "LeftButton" then
 			isDragging = true
 
-			-- Throttled OnUpdate to avoid per-frame config writes and string work
+			-- PERF: Throttled OnUpdate to avoid excessive config writes and string operations during drag.
 			local lastUpdate = 0
 			local sinceLastCommit = 0
 
@@ -1174,7 +1215,7 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 					UpdateThumbPosition(newValue)
 				end
 
-				-- Coalesce extra-config writes while dragging
+				-- PERF: Coalesce config writes while dragging to minimize database and hook overhead.
 				if sinceLastCommit >= 0.12 then
 					SetExtraConfigValue(configPath, currentValue, cleanText)
 					sinceLastCommit = 0
@@ -1228,7 +1269,11 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 	return widget
 end
 
--- Dropdown Widget for ExtraGUI
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Dropdown
+-- ---------------------------------------------------------------------------
+
+-- REASON: Selection-based setting widget; utilizes a shared overlay menu system.
 function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hookFunction, isNew)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(GetExtraContentWidth(), 28)
@@ -1439,6 +1484,11 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 	return widget
 end
 
+-- ---------------------------------------------------------------------------
+-- Module Hooks: ActionBars
+-- ---------------------------------------------------------------------------
+
+-- REASON: These helpers bridge the GUI settings to the ActionBar module's internal scaling logic.
 local function UpdateActionBar1Scale()
 	K:GetModule("ActionBar"):UpdateActionSize("Bar1")
 end
@@ -1471,6 +1521,7 @@ local function UpdateActionBar8Scale()
 	K:GetModule("ActionBar"):UpdateActionSize("Bar8")
 end
 
+-- REASON: Updates the fader state to ensure changes to visibility/alpha are applied immediately.
 local function UpdateABFaderState()
 	local ActionBarModule = K:GetModule("ActionBar")
 	if not ActionBarModule.fadeParent then
@@ -1480,7 +1531,11 @@ local function UpdateABFaderState()
 	ActionBarModule.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
 end
 
--- Hook Functions for Inventory
+-- ---------------------------------------------------------------------------
+-- Module Hooks: Inventory
+-- ---------------------------------------------------------------------------
+
+-- REASON: Forces a bag layout refresh when bag-related settings (like sorting or size) are changed.
 local function UpdateBagStatus()
 	local inventoryModule = K:GetModule("Bags")
 	if inventoryModule and inventoryModule.UpdateAllBags then
@@ -1488,9 +1543,14 @@ local function UpdateBagStatus()
 	end
 end
 
--- Register extra configurations
+-- ---------------------------------------------------------------------------
+-- Configuration Registration: Examples & Built-ins
+-- ---------------------------------------------------------------------------
+
+-- NOTE: This function populates the ExtraGUI with standard configurations for core addon features.
 function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar1", function(parent)
+		-- NOTE: Individual bar configurations allow for granular control over size, layout, and appearance.
 		local yOffset = -10
 
 		local bar1SizeSlider = self:CreateSlider(parent, "ActionBar.Bar1Size", L["Button Size"], 20, 80, 1, L["Bar1Size Desc"], UpdateActionBar1Scale)
@@ -1705,9 +1765,10 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Bar 8")
 
-	-- (Removed earlier simple Nameplate Auras registration to avoid duplicate key)
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Chat
+	-- ---------------------------------------------------------------------------
 
-	-- Example: Chat Extra Config using widget system
 	self:RegisterExtraConfig("Chat.General", function(parent)
 		local yOffset = -10
 
@@ -1745,7 +1806,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Chat Settings")
 
-	-- Updated Inventory Filters Extra Config - Only filters and gather empty slots
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Inventory
+	-- ---------------------------------------------------------------------------
+
+	-- REASON: Provides granular filtering options for the unified bag system.
 	self:RegisterExtraConfig("Inventory.ItemFilter", function(parent)
 		local yOffset = -10
 
@@ -1873,6 +1938,214 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Inventory Filters")
 
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Miscellaneous (Mute)
+	-- ---------------------------------------------------------------------------
+
+	-- NOTE: Allows users to suppress specific game sounds by their SoundKit ID.
+	self:RegisterExtraConfig("Misc.MuteSoundIDs", function(parent)
+		local yOffset = -10
+		local contentWidth = GetExtraContentWidth()
+
+		-- Header
+		local header = parent:CreateFontString(nil, "OVERLAY")
+		header:SetFontObject(K.UIFont)
+		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		header:SetText(L["Custom Mute Sound IDs"] or "Custom Mute Sound IDs")
+		header:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		-- Description
+		local desc = parent:CreateFontString(nil, "OVERLAY")
+		desc:SetFontObject(K.UIFont)
+		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		desc:SetJustifyH("LEFT")
+		desc:SetWidth(contentWidth - 20)
+		desc:SetText(L["MuteSoundIDsDesc"] or "Add SoundKit IDs to mute. KkthnxUI already mutes a built-in set; this list only adds your extra IDs.")
+		desc:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 45
+
+		-- Add ID input
+		local addInput = self:CreateTextInput(parent, nil, (L["Add Sound ID"] or "Add Sound ID"), (L["Enter a numeric SoundKit ID to add"] or "Enter a numeric SoundKit ID to add"))
+		addInput:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Add button
+		local addButton
+		if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+			addButton = K.GUIHelpers.CreateButton(parent, (L["Add"] or "Add"), 90, 24)
+			addButton:SetPoint("TOPLEFT", 0, yOffset)
+		else
+			addButton = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+			addButton:SetSize(90, 24)
+			addButton:SetText(L["Add"] or "Add")
+			addButton:SetPoint("TOPLEFT", 0, yOffset)
+		end
+
+		-- Clear button
+		local clearButton
+		if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+			clearButton = K.GUIHelpers.CreateButton(parent, (L["Clear"] or "Clear"), 90, 24)
+			clearButton:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
+		else
+			clearButton = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+			clearButton:SetSize(90, 24)
+			clearButton:SetText(L["Clear"] or "Clear")
+			clearButton:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
+		end
+
+		yOffset = yOffset - 35
+
+		-- List frame
+		local listFrame = CreateFrame("Frame", nil, parent)
+		listFrame:SetPoint("TOPLEFT", 10, yOffset)
+		listFrame:SetPoint("TOPRIGHT", -10, yOffset)
+		listFrame:SetHeight(200)
+
+		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
+		listBg:SetAllPoints()
+		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+
+		-- Scroll frame
+		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
+		scrollFrame:SetPoint("TOPLEFT", 5, -5)
+		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
+		scrollFrame:EnableMouseWheel(true)
+
+		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+		scrollChild:SetWidth(contentWidth - 30)
+		scrollChild:SetHeight(1)
+		scrollFrame:SetScrollChild(scrollChild)
+
+		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+		end
+
+		local rows = {}
+
+		local function parseConfigString()
+			local current = tostring(C["Misc"].MuteSoundIDs or "")
+			local numeric = {}
+			for w in string.gmatch(current, "%S+") do
+				local id = tonumber(w)
+				if id then
+					numeric[id] = true
+				end
+			end
+			return numeric
+		end
+
+		local function saveNumericSet(numeric)
+			local ids = {}
+			for id in pairs(numeric) do
+				ids[#ids + 1] = id
+			end
+			table.sort(ids)
+
+			local parts = {}
+			for i = 1, #ids do
+				parts[i] = tostring(ids[i])
+			end
+
+			local newString = table.concat(parts, " ")
+			SetExtraConfigValue("Misc.MuteSoundIDs", newString, "Mute Sound IDs")
+
+			-- Apply immediately when possible
+			local miscModule = K and K.GetModule and K:GetModule("Miscellaneous")
+			if miscModule and miscModule.CreateMuteSounds then
+				miscModule:CreateMuteSounds()
+			end
+		end
+
+		local function clearRows()
+			for i = 1, #rows do
+				rows[i]:Hide()
+				rows[i]:SetParent(nil)
+			end
+			wipe(rows)
+		end
+
+		local function createRow(y, id, numeric)
+			local row = CreateFrame("Frame", nil, scrollChild)
+			row:SetPoint("TOPLEFT", 0, y)
+			row:SetPoint("TOPRIGHT", 0, y)
+			row:SetHeight(24)
+
+			local text = row:CreateFontString(nil, "OVERLAY")
+			text:SetFontObject(K.UIFont)
+			text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+			text:SetPoint("LEFT", 6, 0)
+			text:SetText(tostring(id))
+
+			local removeBtn
+			if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
+				removeBtn = K.GUIHelpers.CreateButton(row, (L["Remove"] or "Remove"), 80, 20)
+			else
+				removeBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+				removeBtn:SetSize(80, 20)
+				removeBtn:SetText(L["Remove"] or "Remove")
+			end
+			removeBtn:SetPoint("RIGHT", -6, 0)
+			removeBtn:SetScript("OnClick", function()
+				numeric[id] = nil
+				saveNumericSet(numeric)
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			end)
+
+			return row
+		end
+
+		local function refreshRows()
+			clearRows()
+
+			local numeric = parseConfigString()
+			local ids = {}
+			for id in pairs(numeric) do
+				ids[#ids + 1] = id
+			end
+			table.sort(ids)
+
+			local y = -2
+			for i = 1, #ids do
+				local row = createRow(y, ids[i], numeric)
+				rows[#rows + 1] = row
+				y = y - 26
+			end
+
+			scrollChild:SetHeight(math.abs(y) + 10)
+		end
+
+		addButton:SetScript("OnClick", function()
+			local inputText = addInput and addInput.GetText and addInput:GetText() or ""
+			local id = tonumber(inputText)
+			if not id then
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+				return
+			end
+
+			local numeric = parseConfigString()
+			numeric[id] = true
+			saveNumericSet(numeric)
+
+			if addInput and addInput.SetText then
+				addInput:SetText("")
+			end
+
+			refreshRows()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end)
+
+		clearButton:SetScript("OnClick", function()
+			saveNumericSet({})
+			refreshRows()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end)
+
+		refreshRows()
+		parent:SetHeight(math.abs(yOffset) + 230)
+	end, "Mute Sound IDs")
+
 	-- Provide a small cache for NPC names learned from nearby units
 	K.NPCNameCache = K.NPCNameCache or {}
 
@@ -1896,7 +2169,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		return "Unknown"
 	end
 
-	-- Nameplate Custom Units (IDs) Manager
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Nameplates
+	-- ---------------------------------------------------------------------------
+
+	-- REASON: Enables custom coloring for specific NPCs identified by their internal ID.
 	self:RegisterExtraConfig("Nameplate.CustomUnitList", function(parent)
 		local yOffset = -10
 		local contentWidth = GetExtraContentWidth()
@@ -2223,7 +2500,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Custom Units")
 
-	-- Nameplate Power Units (IDs) Manager
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Nameplate Power
+	-- ---------------------------------------------------------------------------
+
+	-- REASON: Allows specific NPC IDs to display a power bar on their nameplate.
 	self:RegisterExtraConfig("Nameplate.PowerUnitList", function(parent)
 		local yOffset = -10
 		local contentWidth = GetExtraContentWidth()
@@ -2516,7 +2797,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Power Units")
 
-	-- Nameplate Aura Management System
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Nameplate Auras
+	-- ---------------------------------------------------------------------------
+
+	-- NOTE: High-performance aura management using whitelists, blacklists, and category-based filtering.
 	self:RegisterExtraConfig("Nameplate.PlateAuras", function(parent)
 		local yOffset = -10
 		local contentWidth = GetExtraContentWidth()
@@ -2887,7 +3172,10 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Nameplate Auras")
 
-	-- Player Level Extra Config
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Unit Frame Options
+	-- ---------------------------------------------------------------------------
+
 	self:RegisterExtraConfig("Unitframe.ShowPlayerLevel", function(parent)
 		local yOffset = -10
 
@@ -2900,7 +3188,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Player Level Options")
 
-	-- Simple Party Frames Extra Config (accessed via Party.Enable cogwheel)
+	-- REASON: Configuration for raid-style party frames; includes layout and power bar logic.
 	self:RegisterExtraConfig("Party.Enable", function(parent)
 		local yOffset = -10
 		local contentWidth = GetExtraContentWidth()
@@ -3087,7 +3375,11 @@ function ExtraGUI:RegisterExampleConfigs()
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Simple Party Frames")
 
-	-- Auto-Quest Ignore NPCs Manager
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Automation
+	-- ---------------------------------------------------------------------------
+
+	-- REASON: Manage NPC IDs to ignore during auto-questing; maintains character-specific overrides.
 	self:RegisterExtraConfig("Automation.AutoQuestIgnoreNPC", function(parent)
 		local yOffset = -10
 		local contentWidth = GetExtraContentWidth()
@@ -3342,7 +3634,11 @@ function ExtraGUI:RegisterExampleConfigs()
 	end, "Auto-Quest Ignore NPCs")
 end
 
--- Color Picker Widget for ExtraGUI
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Color Picker
+-- ---------------------------------------------------------------------------
+
+-- REASON: Provides a button that opens the system color picker; supports live updates via hooks.
 function ExtraGUI:CreateColorPicker(parent, configPath, text, tooltip, hookFunction, isNew)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(GetExtraContentWidth(), 28)
@@ -3424,7 +3720,11 @@ function ExtraGUI:CreateColorPicker(parent, configPath, text, tooltip, hookFunct
 	return widget
 end
 
--- Checkbox Group Widget for ExtraGUI
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Checkbox Group
+-- ---------------------------------------------------------------------------
+
+-- REASON: Handles multiple boolean values stored as a table in the config; ideal for multi-selection.
 function ExtraGUI:CreateCheckboxGroup(parent, configPath, text, options, tooltip, hookFunction, isNew)
 	local widget = CreateFrame("Frame", nil, parent)
 
@@ -3581,7 +3881,11 @@ function ExtraGUI:CreateCheckboxGroup(parent, configPath, text, options, tooltip
 	return widget
 end
 
--- Text Input Widget for ExtraGUI
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Text Input
+-- ---------------------------------------------------------------------------
+
+-- REASON: Multi-functional text input; supports placeholders, ESC to revert, and an explicit apply button.
 function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip, hookFunction, isNew, customWidth)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(customWidth or GetExtraContentWidth(), 28)
@@ -3629,11 +3933,14 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 
 	-- Text Input EditBox
 	local editBox = CreateFrame("EditBox", nil, widget)
-	editBox:SetSize(120, 16) -- Smaller for extra panel
+	editBox:SetSize(140, 20) -- Comment: Taller so text/placeholder doesn't overflow
 	editBox:SetPoint("RIGHT", -28, 0) -- Leave space for apply button
 	editBox:SetFontObject(K.UIFont)
 	editBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 	editBox:SetAutoFocus(false)
+	editBox:SetMultiLine(false)
+	editBox:SetMaxLetters(255)
+	editBox:SetTextInsets(6, 6, 0, 0) -- Comment: Keep text inside the box
 
 	-- Input background
 	local inputBg = editBox:CreateTexture(nil, "BACKGROUND")
@@ -3641,39 +3948,46 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	inputBg:SetTexture(C["Media"].Textures.White8x8Texture)
 	inputBg:SetVertexColor(0.2, 0.2, 0.2, 1)
 
-	-- Placeholder text
+	-- Placeholder text (Comment: constrain width so it can't draw outside)
+	local placeholderText
+	local function UpdatePlaceholder()
+		if not placeholderText then
+			return
+		end
+
+		if editBox:GetText() == "" and not editBox:HasFocus() then
+			placeholderText:Show()
+		else
+			placeholderText:Hide()
+		end
+	end
+
 	if placeholder then
-		local placeholderText = editBox:CreateFontString(nil, "OVERLAY")
+		placeholderText = editBox:CreateFontString(nil, "OVERLAY")
 		placeholderText:SetFontObject(K.UIFont)
 		placeholderText:SetTextColor(0.5, 0.5, 0.5, 1)
 		placeholderText:SetText(placeholder)
-		placeholderText:SetPoint("LEFT", editBox, "LEFT", 4, 0)
 
-		editBox:SetScript("OnTextChanged", function(self)
-			local text = self:GetText()
-			if text == "" then
-				placeholderText:Show()
-			else
-				placeholderText:Hide()
-			end
-		end)
+		placeholderText:SetPoint("LEFT", editBox, "LEFT", 6, 0)
+		placeholderText:SetPoint("RIGHT", editBox, "RIGHT", -6, 0) -- Comment: hard width constraint
+		placeholderText:SetJustifyH("LEFT")
+		placeholderText:SetJustifyV("MIDDLE")
+		placeholderText:SetWordWrap(false)
+		placeholderText:SetMaxLines(1)
 
-		editBox:SetScript("OnEditFocusGained", function()
-			placeholderText:Hide()
-		end)
+		-- Comment: HookScript so we don't clobber save handlers below
+		editBox:HookScript("OnTextChanged", UpdatePlaceholder)
+		editBox:HookScript("OnEditFocusGained", UpdatePlaceholder)
+		editBox:HookScript("OnEditFocusLost", UpdatePlaceholder)
 
-		editBox:SetScript("OnEditFocusLost", function(self)
-			if self:GetText() == "" then
-				placeholderText:Show()
-			end
-		end)
+		UpdatePlaceholder()
 	end
 
 	-- Update function
 	function widget:UpdateValue()
 		if not self.ConfigPath then
-			-- For widgets without config paths, keep empty
 			editBox:SetText("")
+			UpdatePlaceholder()
 			return
 		end
 
@@ -3681,17 +3995,20 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		if value ~= nil and value ~= "" then
 			editBox:SetText(tostring(value))
 		else
-			editBox:SetText("") -- Set to empty string instead of showing "nil"
+			editBox:SetText("")
 		end
+
+		UpdatePlaceholder()
 	end
 
 	-- Save on enter/focus lost
 	editBox:SetScript("OnEnterPressed", function(self)
-		local newValue = self:GetText()
-		-- Only persist and trigger hooks when a configPath is provided
+		local newValue = self:GetText() or ""
+
 		if configPath then
 			SetExtraConfigValue(configPath, newValue, cleanText)
 		end
+
 		self:ClearFocus()
 
 		-- Call hook function if provided
@@ -3699,40 +4016,48 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 			hookFunction(newValue, widget.PreviousValue or "", configPath)
 		end
 		widget.PreviousValue = newValue
+
+		UpdatePlaceholder()
 	end)
 
 	editBox:SetScript("OnEditFocusLost", function(self)
-		local newValue = self:GetText()
-		-- Only persist and trigger hooks when a configPath is provided
+		local newValue = self:GetText() or ""
+
 		if configPath then
 			SetExtraConfigValue(configPath, newValue, cleanText)
 		end
 
-		-- Call hook function if provided
 		if hookFunction and type(hookFunction) == "function" then
 			hookFunction(newValue, widget.PreviousValue or "", configPath)
 		end
 		widget.PreviousValue = newValue
+
+		UpdatePlaceholder()
 	end)
 
 	-- ESC to reset to default for ExtraGUI: fallback to current saved value from C
 	editBox:SetScript("OnEscapePressed", function(self)
-		-- Prefer default if available; fallback to current stored value in C
 		if widget.ConfigPath then
 			local defaultValue
 			if K.Defaults then
 				defaultValue = K.GetValueByPath(K.Defaults, widget.ConfigPath)
 			end
+
 			local revertValue = defaultValue
 			if revertValue == nil then
 				revertValue = K.GetValueByPath(C, widget.ConfigPath)
 			end
+
 			if revertValue ~= nil then
 				editBox:SetText(tostring(revertValue))
 				SetExtraConfigValue(widget.ConfigPath, revertValue)
+			else
+				editBox:SetText("")
 			end
 		end
+
 		self:ClearFocus()
+		UpdatePlaceholder()
 	end)
 
 	-- Apply checkmark button
@@ -3796,14 +4121,19 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 	return widget
 end
 
--- Button Widget for ExtraGUI
+-- ---------------------------------------------------------------------------
+-- Widget Creation: Button
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Delegates button creation to the unified K.WidgetFactory for visual consistency across the UI.
 function ExtraGUI:CreateButton(parent, text, width, height, onClick)
 	-- Use unified widget factory from K.WidgetFactory
 	return K.WidgetFactory.CreateButton(parent, text, width, height, onClick)
 end
 
+-- ---------------------------------------------------------------------------
 -- Module Exports
+-- ---------------------------------------------------------------------------
 
--- Export to global for use
 K.ExtraGUI = ExtraGUI
 _G.KkthnxUI_ExtraGUI = ExtraGUI

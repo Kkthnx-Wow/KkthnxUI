@@ -51,37 +51,6 @@ local hooksecurefunc = hooksecurefunc
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 
--- Profiling support (disabled by default). Enable via Module:EnableNameplateProfiling() in-game
-local debugprofilestop = debugprofilestop
-local profilingEnabled = false
-local profileStats = {}
-
-function Module:EnableNameplateProfiling()
-	profilingEnabled = true
-	K.Print("Nameplate profiling: ON")
-end
-
-function Module:DisableNameplateProfiling()
-	profilingEnabled = false
-	K.Print("Nameplate profiling: OFF")
-end
-
-function Module:PrintNameplateProfiling()
-	local sortable = {}
-	for tag, s in pairs(profileStats) do
-		sortable[#sortable + 1] = { tag = tag, total = s.total or 0, count = s.count or 0, max = s.max or 0 }
-	end
-	table.sort(sortable, function(a, b)
-		return a.total > b.total
-	end)
-	K.Print("Nameplate profiling (ms): tag avg total count max")
-	for i = 1, #sortable do
-		local e = sortable[i]
-		local avg = e.count > 0 and (e.total / e.count) or 0
-		K.Print(string_format("%s: avg=%.3f total=%.3f count=%d max=%.3f", e.tag, avg, e.total, e.count, e.max))
-	end
-end
-
 -- Custom data
 local mdtCacheData = {} -- Cache for data of abilities used by players
 local customUnits = {} -- Custom unit data
@@ -188,7 +157,11 @@ function Module:SetupCVars()
 	}
 
 	for cvar, value in pairs(settings) do
-		SetCVar(cvar, value)
+		local cur = GetCVar(cvar)
+		local want = tostring(value)
+		if cur ~= want then
+			SetCVar(cvar, value)
+		end
 	end
 
 	Module:UpdateClickableSize()
@@ -315,11 +288,6 @@ function Module:UpdateColor(_, unit)
 		return
 	end
 
-	local t0
-	if profilingEnabled then
-		t0 = debugprofilestop()
-	end
-
 	local element = self.Health
 	local name = self.unitName
 	local npcID = self.npcID
@@ -419,17 +387,6 @@ function Module:UpdateColor(_, unit)
 			self.nameText:SetTextColor(1, 1, 1)
 		end
 	end
-
-	if profilingEnabled then
-		local dt = debugprofilestop() - t0
-		local s = profileStats.UpdateColor or { total = 0, count = 0, max = 0 }
-		s.total = s.total + dt
-		s.count = s.count + 1
-		if dt > s.max then
-			s.max = dt
-		end
-		profileStats.UpdateColor = s
-	end
 end
 
 function Module:UpdateThreatColor(_, unit)
@@ -476,11 +433,6 @@ function Module:UpdateTargetChange()
 end
 
 function Module:UpdateTargetIndicator()
-	local t0
-	if profilingEnabled then
-		t0 = debugprofilestop()
-	end
-
 	local style = C["Nameplate"].TargetIndicator
 	local element = self.TargetIndicator
 	local isNameOnly = self.plateType == "NameOnly"
@@ -500,17 +452,6 @@ function Module:UpdateTargetIndicator()
 	element.Glow:SetShown(showGlow)
 	element.nameGlow:SetShown(showNameGlow)
 	element:Show()
-
-	if profilingEnabled then
-		local dt = debugprofilestop() - t0
-		local s = profileStats.UpdateTargetIndicator or { total = 0, count = 0, max = 0 }
-		s.total = s.total + dt
-		s.count = s.count + 1
-		if dt > s.max then
-			s.max = dt
-		end
-		profileStats.UpdateTargetIndicator = s
-	end
 end
 
 local points = { -15, -5, 0, 5, 0 }
@@ -655,6 +596,7 @@ function Module:AddQuestIcon(self)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -3, 0)
 
 	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)
@@ -1156,11 +1098,6 @@ function Module:ToggleNameplateAuras()
 end
 
 function Module:UpdateNameplateAuras()
-	local t0
-	if profilingEnabled then
-		t0 = debugprofilestop()
-	end
-
 	Module.ToggleNameplateAuras(self)
 
 	if not C["Nameplate"].PlateAuras then
@@ -1181,17 +1118,6 @@ function Module:UpdateNameplateAuras()
 	element:SetHeight((element.size + element.spacing) * 2)
 
 	element:ForceUpdate()
-
-	if profilingEnabled then
-		local dt = debugprofilestop() - t0
-		local s = profileStats.UpdateNameplateAuras or { total = 0, count = 0, max = 0 }
-		s.total = s.total + dt
-		s.count = s.count + 1
-		if dt > s.max then
-			s.max = dt
-		end
-		profileStats.UpdateNameplateAuras = s
-	end
 end
 
 function Module:UpdateNameplateSize()
@@ -1240,10 +1166,6 @@ local DisabledElements = {
 	"ThreatIndicator",
 }
 function Module:UpdatePlateByType()
-	local t0
-	if profilingEnabled then
-		t0 = debugprofilestop()
-	end
 	local name = self.nameText
 	local level = self.levelText
 	local hpval = self.healthValue
@@ -1335,17 +1257,6 @@ function Module:UpdatePlateByType()
 	Module.UpdateNameplateSize(self)
 	Module.UpdateTargetIndicator(self)
 	Module.ToggleNameplateAuras(self)
-
-	if profilingEnabled then
-		local dt = debugprofilestop() - t0
-		local s = profileStats.UpdatePlateByType or { total = 0, count = 0, max = 0 }
-		s.total = s.total + dt
-		s.count = s.count + 1
-		if dt > s.max then
-			s.max = dt
-		end
-		profileStats.UpdatePlateByType = s
-	end
 end
 
 function Module:RefreshPlateType(unit)
@@ -1401,11 +1312,6 @@ function Module:RefreshPlateOnFactionChanged()
 end
 
 function Module:PostUpdatePlates(event, unit)
-	local t0
-	if profilingEnabled then
-		t0 = debugprofilestop()
-	end
-
 	if not self then
 		return
 	end
@@ -1455,17 +1361,6 @@ function Module:PostUpdatePlates(event, unit)
 		Module:UpdateTargetClassPower()
 
 		self.tarName:SetShown(ShowTargetNPCs[self.npcID])
-	end
-
-	if profilingEnabled then
-		local dt = debugprofilestop() - t0
-		local s = profileStats.PostUpdatePlates or { total = 0, count = 0, max = 0 }
-		s.total = s.total + dt
-		s.count = s.count + 1
-		if dt > s.max then
-			s.max = dt
-		end
-		profileStats.PostUpdatePlates = s
 	end
 end
 

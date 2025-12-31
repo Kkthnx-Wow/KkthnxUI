@@ -92,6 +92,8 @@ C.AutoQuestData = {
 		[93188] = true, -- Mongar, Rogue Class Hall
 		[107486] = true, -- Stars' Private Investigator
 		[167839] = true, -- Soul Residue, Tower Climb
+		[120555] = true, -- Awakening The Machine
+		[120733] = true, -- Theater Troupe
 	},
 
 	-- Instances where auto gossip select should be disabled

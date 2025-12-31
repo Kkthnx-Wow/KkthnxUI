@@ -202,12 +202,17 @@ QuickQuest:Register("GOSSIP_CONFIRM", function(index)
 end)
 
 QuickQuest:Register("QUEST_DETAIL", function()
+	local questID = GetQuestID()
+	if questID == 82449 then -- Call of the Worldsoul
+		return
+	end
+
 	if QuestIsFromAreaTrigger() then
 		AcceptQuest()
 	elseif QuestGetAutoAccept() then
 		AcknowledgeAutoAcceptQuest()
-	elseif not C_QuestLog_IsQuestTrivial(GetQuestID()) or C_Minimap.IsTrackingHiddenQuests() then
-		if not C.IgnoreQuestNPC[GetNPCID()] then
+	elseif not C_QuestLog_IsQuestTrivial(questID) or C_Minimap.IsTrackingHiddenQuests() then
+		if not C.IgnoreQuestNPC[GetNPCID()] and not IsAccountCompleted(questID) then
 			AcceptQuest()
 		end
 	end
@@ -229,13 +234,17 @@ end)
 
 QuickQuest:Register("QUEST_PROGRESS", function()
 	if IsQuestCompletable() then
-		local info = C_QuestLog_GetQuestTagInfo(GetQuestID())
+		local questID = GetQuestID()
+		if questID == 82449 then -- Call of the Worldsoul
+			return
+		end
+
+		local info = C_QuestLog_GetQuestTagInfo(questID)
 		if info and (info.tagID == 153 or info.worldQuestType) then
 			return
 		end
 
-		local npcID = GetNPCID()
-		if C.IgnoreQuestNPC[npcID] then
+		if C.IgnoreQuestNPC[GetNPCID()] then
 			return
 		end
 
@@ -264,6 +273,11 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 end)
 
 QuickQuest:Register("QUEST_COMPLETE", function()
+	local questID = GetQuestID()
+	if questID == 82449 then -- Call of the Worldsoul
+		return
+	end
+
 	-- Blingtron 6000 only!
 	local npcID = GetNPCID()
 	if npcID == 43929 or npcID == 77789 then
@@ -272,7 +286,7 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 
 	local choices = GetNumQuestChoices()
 	if choices <= 1 then
-		GetQuestReward(1)
+		GetQuestReward(choices)
 	elseif choices > 1 then
 		local bestValue, bestIndex = 0
 

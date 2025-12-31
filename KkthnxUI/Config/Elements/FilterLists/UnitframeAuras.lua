@@ -595,7 +595,7 @@ C.DebuffsTracking_PvE = {
 
 		-- Kin'garoth
 		[233062] = Priority(3), -- Infernal Burning
-		[230345] = Priority(3), -- Crashing Comet
+		-- [230345] = Priority(3), -- Crashing Comet
 		[244312] = Priority(5), -- Forging Strike
 		[246840] = Priority(3), -- Ruiner
 		[248061] = Priority(3), -- Purging Protocol
@@ -754,7 +754,7 @@ C.DebuffsTracking_PvE = {
 		[206875] = Priority(3), -- Fel Obelisk
 		-- Trial of Valor
 		-- Odyn
-		[198088] = Priority(3), -- Glowing Fragment
+		-- [198088] = Priority(3), -- Glowing Fragment
 		[228915] = Priority(3), -- Stormforged Spear
 		[227959] = Priority(3), -- Storm of Justice
 		[227475] = Priority(3), -- Cleansing Flame
@@ -833,7 +833,7 @@ C.DebuffsTracking_PvE = {
 		[194969] = Priority(3), -- Soul Echoes
 		[225962] = Priority(3), -- Bloodthirsty Leap
 		[200261] = Priority(3), -- Bonebreaking Strike
-		[222397] = Priority(3), -- Boulder Crush
+		-- [222397] = Priority(3), -- Boulder Crush
 		[214001] = Priority(3), -- Raven's Dive
 		-- Illysanna Ravencrest
 		[197546] = Priority(3), -- Brutal Glaive
@@ -954,7 +954,7 @@ C.DebuffsTracking_PvE = {
 		[201488] = Priority(3), -- Frightening Shout
 		[225416] = Priority(3), -- Intercept
 		[214804] = Priority(3), -- Seed of Corruption
-		[201488] = Priority(3), -- Frightening Shout
+		-- [201488] = Priority(3), -- Frightening Shout
 		-- Glazer
 		[194945] = Priority(3), -- Lingering Gaze
 		-- Ash'Golm

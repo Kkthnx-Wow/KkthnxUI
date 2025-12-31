@@ -262,7 +262,7 @@ function Module:CreateSpecDataText()
 
 	SpecDataText.Texture = SpecDataText:CreateTexture(nil, "ARTWORK")
 	SpecDataText.Texture:SetPoint("LEFT", SpecDataText, "LEFT", 0, 2)
-	SpecDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\talents.blp")
+	SpecDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\talents")
 	SpecDataText.Texture:SetSize(24, 24)
 	SpecDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 

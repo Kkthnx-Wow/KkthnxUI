@@ -863,9 +863,19 @@ function Module:AuraWatch_UpdateInt(event, ...)
 			end
 		end
 	else
-		local timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID = ...
+		-- Comment: COMBAT_LOG_EVENT_UNFILTERED fires extremely often; do the least work possible unless this spellID is tracked
+		local timestamp = ...
+		local eventType = select(2, ...)
+		local spellID = select(12, ...)
 		local value = IntCD.List[spellID]
-		if value and cache[timestamp] ~= spellID and Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags) then
+		if not value or cache[timestamp] == spellID then
+			return
+		end
+
+		local sourceGUID, sourceName, sourceFlags = select(4, ...)
+		local destGUID, destName, destFlags = select(8, ...)
+
+		if Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags) then
 			local guid, name = destGUID, destName
 			if value.OnSuccess then
 				guid, name = sourceGUID, sourceName
@@ -978,18 +988,27 @@ function Module.AuraWatch_OnEvent(event, ...)
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 		end
 		K:UnregisterEvent(event, Module.AuraWatch_OnEvent)
-	elseif (event == "UNIT_AURA" and UnitIDTable[...]) or (event == "PLAYER_TARGET_CHANGED" and UnitIDTable["target"]) then
-		Module:AuraWatch_PreCleanup()
-		Module:AuraWatch_UpdateCD()
-		local inCombat = InCombatLockdown()
-		for unitID in pairs(UnitIDTable) do
-			Module:UpdateAuraWatch(unitID, inCombat)
-		end
-		Module:AuraWatch_PostCleanup()
-		Module:AuraWatch_Centralize()
-	else
-		Module:AuraWatch_UpdateInt(event, ...)
+		Module:AuraWatch_RequestUpdate()
+		return
 	end
+
+	if event == "UNIT_AURA" then
+		local unit = ...
+		if not UnitIDTable[unit] then
+			return
+		end
+		Module:AuraWatch_RequestUpdate()
+		return
+	end
+
+	if event == "PLAYER_TARGET_CHANGED" then
+		if UnitIDTable["target"] then
+			Module:AuraWatch_RequestUpdate()
+		end
+		return
+	end
+
+	Module:AuraWatch_UpdateInt(event, ...)
 end
 K:RegisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
 K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.AuraWatch_OnEvent)
@@ -1015,26 +1034,48 @@ function Module:AuraWatch_Centralize(force)
 	end
 end
 
+-- Throttle full AuraWatch rebuilds; UNIT_AURA can fire extremely often
+local AURAWATCH_UPDATE_INTERVAL = 0.10
+
+function Module:AuraWatch_RequestUpdate()
+	if auraWatchUpdater.moving then
+		return
+	end
+
+	auraWatchUpdater.dirty = true
+	if not auraWatchUpdater:GetScript("OnUpdate") then
+		auraWatchUpdater.elapsed = 0
+		auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
+	end
+end
+
 function Module:AuraWatch_OnUpdate(elapsed)
 	if type(elapsed) ~= "number" then
 		return
 	end
 
 	self.elapsed = (self.elapsed or 0) + elapsed
-	if self.elapsed > 0.1 then
-		self.elapsed = 0
-
-		Module:AuraWatch_PreCleanup()
-		Module:AuraWatch_UpdateCD()
-
-		local inCombat = InCombatLockdown()
-		for unit in pairs(UnitIDTable) do
-			Module:UpdateAuraWatch(unit, inCombat)
-		end
-
-		Module:AuraWatch_PostCleanup()
-		Module:AuraWatch_Centralize()
+	if self.elapsed < AURAWATCH_UPDATE_INTERVAL then
+		return
 	end
+	self.elapsed = 0
+
+	if not self.dirty then
+		self:SetScript("OnUpdate", nil)
+		return
+	end
+	self.dirty = nil
+
+	Module:AuraWatch_PreCleanup()
+	Module:AuraWatch_UpdateCD()
+
+	local inCombat = InCombatLockdown()
+	for unitID in pairs(UnitIDTable) do
+		Module:UpdateAuraWatch(unitID, inCombat)
+	end
+
+	Module:AuraWatch_PostCleanup()
+	Module:AuraWatch_Centralize()
 end
 
 -- Ensure the updater script is set correctly
@@ -1044,6 +1085,7 @@ end
 SlashCmdList.AuraWatch = function(msg)
 	if msg:lower() == "move" then
 		auraWatchUpdater:SetScript("OnUpdate", nil)
+		auraWatchUpdater.moving = true
 		for _, value in pairs(FrameList) do
 			for i = 1, 6 do
 				if value[i] then
@@ -1110,6 +1152,8 @@ SlashCmdList.AuraWatch = function(msg)
 		for _, value in pairs(FrameList) do
 			value[1].MoveHandle:Hide()
 		end
+		auraWatchUpdater.moving = nil
+		Module:AuraWatch_RequestUpdate()
 		--auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 		if IntCD.MoveHandle then
@@ -1121,21 +1165,5 @@ SlashCmdList.AuraWatch = function(msg)
 			end
 			table_wipe(IntTable)
 		end
-	end
-end
-
--- Performance monitoring (optional - can be disabled)
-local performanceMode = false
-local updateCount = 0
-local lastUpdateTime = 0
-
-local function LogPerformance(operation, startTime)
-	if not performanceMode then
-		return
-	end
-
-	local elapsed = GetTime() - startTime
-	if elapsed > 0.016 then -- Log if taking more than 16ms (60fps threshold)
-		K.Print(string.format("AuraWatch %s took %.3fms", operation, elapsed * 1000))
 	end
 end
