@@ -1,6 +1,18 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins various Blizzard UI fonts.
+-- - Design: Replaces default fonts with KkthnxUI fonts and adjusts sizes/styles.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local table_insert = table.insert
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local select = _G.select
+local table_insert = _G.table.insert
 
 local GetKkthnxUIFont = select(1, _G.KkthnxUIFont:GetFont())
 local GetKkthnxUIFontSize = select(2, _G.KkthnxUIFont:GetFont())
@@ -36,6 +48,7 @@ end
 
 local lastFont = {}
 local chatFontHeights = { 12, 13, 14, 15, 16, 17, 18, 19, 20 }
+-- REASON: Main entry point for Blizzard Fonts skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

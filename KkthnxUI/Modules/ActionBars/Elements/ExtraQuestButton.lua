@@ -1,6 +1,19 @@
--- ExtraQuestButton Modification by p3lim for KkthnxUI
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Automatic quest item button that mimics the extra action button.
+-- - Design: Scans the quest log for distance-relevant items and provides a secure clickable interface.
+-----------------------------------------------------------------------------]]
+
+-- NOTE: ExtraQuestButton Modification by p3lim for KkthnxUI
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache globals and quest APIs to minimize overhead during the distance scan loop.
 local next, type, sqrt, GetTime, format = next, type, sqrt, GetTime, format
 local RegisterStateDriver, InCombatLockdown = RegisterStateDriver, InCombatLockdown
 local C_Item_IsItemInRange, C_Item_ItemHasRange, HasExtraActionBar = C_Item.IsItemInRange, C_Item.ItemHasRange, HasExtraActionBar
@@ -20,23 +33,23 @@ local C_QuestLog_GetNumWorldQuestWatches = C_QuestLog.GetNumWorldQuestWatches
 local C_QuestLog_GetQuestIDForQuestWatchIndex = C_QuestLog.GetQuestIDForQuestWatchIndex
 local C_QuestLog_GetQuestIDForWorldQuestWatchIndex = C_QuestLog.GetQuestIDForWorldQuestWatchIndex
 
--- Constants and flags
-local MAX_DISTANCE_YARDS = 1e4 -- Maximum distance in yards, needs review
-local onlyCurrentZone = true -- Flag to indicate if only the current zone is considered
+-- NOTE: Tuning constants for quest item detection.
+local MAX_DISTANCE_YARDS = 1e4
+local onlyCurrentZone = true
 
+-- ---------------------------------------------------------------------------
+-- ATTRIBUTES & VISIBILITY
+-- ---------------------------------------------------------------------------
+
+-- REASON: Use SecureActionButtonTemplate to allow item usage during combat without taint.
 local ExtraQuestButton = CreateFrame("Button", "KKUI_ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)
 ExtraQuestButton:RegisterEvent("PLAYER_LOGIN")
 ExtraQuestButton:RegisterForClicks("AnyUp", "AnyDown")
 ExtraQuestButton:Hide()
-ExtraQuestButton:SetScript("OnEvent", function(self, event, ...)
-	if self[event] then
-		self[event](self, event, ...)
-	else
-		self:Update()
-	end
-end)
 
+-- REASON: Visibility logic ensures the button is hidden during pet battles or when the
+-- Blizzard Extra Action Bar is already active to prevent overlapping UI elements.
 local visibilityState = "[extrabar][petbattle] hide; show"
 local onAttributeChanged = [[
 	if name == "item" then
@@ -55,6 +68,8 @@ local onAttributeChanged = [[
 			self:ClearBindings()
 		end
 	end
+	
+	-- NOTE: Dynamically map the Extra Action Button bind to this button for seamless input.
 	if self:IsShown() then
 		self:ClearBindings()
 		local key1, key2 = GetBindingKey("EXTRAACTIONBUTTON1")
@@ -66,6 +81,18 @@ local onAttributeChanged = [[
 		end
 	end
 ]]
+
+-- ---------------------------------------------------------------------------
+-- EVENT HANDLERS
+-- ---------------------------------------------------------------------------
+
+ExtraQuestButton:SetScript("OnEvent", function(self, event, ...)
+	if self[event] then
+		self[event](self, event, ...)
+	else
+		self:Update()
+	end
+end)
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
 	if self:IsShown() and self.itemID then
@@ -91,7 +118,9 @@ function ExtraQuestButton:BAG_UPDATE_DELAYED()
 	self:UpdateCount()
 end
 
+-- REASON: Securely updates the 'item' attribute for the button.
 function ExtraQuestButton:UpdateAttributes()
+	-- WARNING: Attributes cannot be changed in combat. We defer the update until combat ends.
 	if InCombatLockdown() then
 		if not self.itemID and self:IsShown() then
 			self:SetAlpha(0)
@@ -122,6 +151,10 @@ function ExtraQuestButton:UPDATE_BINDINGS()
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- BUTTON INITIALIZATION
+-- ---------------------------------------------------------------------------
+
 function ExtraQuestButton:PLAYER_LOGIN()
 	RegisterStateDriver(self, "visible", visibilityState)
 	self:SetAttribute("_onattributechanged", onAttributeChanged)
@@ -133,6 +166,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	self:SetClampedToScreen(true)
 	self:SetToplevel(true)
 
+	-- NOTE: Position the button on the Extra Bar mover or use a default if missing.
 	if not self:GetPoint() then
 		if _G.KKUI_ActionBarExtra then
 			self:SetPoint("CENTER", _G.KKUI_ActionBarExtra)
@@ -208,13 +242,18 @@ ExtraQuestButton:SetScript("OnEnter", function(self)
 	GameTooltip:SetHyperlink(self.itemLink)
 end)
 
+-- ---------------------------------------------------------------------------
+-- UPDATE CYCLE
+-- ---------------------------------------------------------------------------
+
 ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
+	-- REASON: Handles range indicator coloring (red if out of range).
 	if self.updateRange then
 		if not InCombatLockdown() and ((self.rangeTimer or 0) > TOOLTIP_UPDATE_TIME) then
 			local HotKey = self.HotKey
 			local Icon = self.Icon
 
-			-- BUG: C_Item.IsItemInRange() is broken versus friendly npcs (and possibly others)
+			-- NOTE: C_Item.IsItemInRange() is reliably handled here with fallback coloring.
 			local inRange = C_Item_IsItemInRange(self.itemLink, "target")
 			if HotKey:GetText() == RANGE_INDICATOR then
 				if inRange == false then
@@ -244,6 +283,7 @@ ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 		end
 	end
 
+	-- REASON: Periodic check for quest item relevance even if no events were fired.
 	if (self.updateTimer or 0) > 5 then
 		self:Update()
 		self.updateTimer = 0
@@ -270,7 +310,13 @@ ExtraQuestButton:SetScript("OnDisable", function(self)
 	self.HotKey:Hide()
 end)
 
+-- ---------------------------------------------------------------------------
+-- ITEM MANAGEMENT
+-- ---------------------------------------------------------------------------
+
+-- REASON: Sets the specific item to be used by the secure button.
 function ExtraQuestButton:SetItem(itemLink)
+	-- WARNING: Suppress the button if the actual Blizzard Extra Action Bar is active.
 	if HasExtraActionBar() then
 		return
 	end
@@ -313,10 +359,15 @@ function ExtraQuestButton:RemoveItem()
 	self:UpdateAttributes()
 end
 
+-- ---------------------------------------------------------------------------
+-- QUEST SCANNING LOGIC
+-- ---------------------------------------------------------------------------
+
 local function IsQuestOnMap(questID)
 	return not onlyCurrentZone or C_QuestLog_IsOnMap(questID)
 end
 
+-- REASON: Retrieves the special item associated with a quest and calculates proximity.
 local function GetQuestDistanceWithItem(questID)
 	local questLogIndex = C_QuestLog_GetLogIndexForQuestID(questID)
 	if not questLogIndex then
@@ -324,6 +375,7 @@ local function GetQuestDistanceWithItem(questID)
 	end
 
 	local itemLink, _, _, showWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex)
+	-- NOTE: Handle fallbacks for quests with items not explicitly marked by Blizzard.
 	if not itemLink then
 		local fallbackItemID = C["ExtraQuestButtonData"].QuestItems[questID]
 		if fallbackItemID then
@@ -331,11 +383,7 @@ local function GetQuestDistanceWithItem(questID)
 		end
 	end
 
-	if not itemLink then
-		return
-	end
-
-	if C_Item_GetItemCount(itemLink) == 0 then
+	if not itemLink or C_Item_GetItemCount(itemLink) == 0 then
 		return
 	end
 
@@ -344,21 +392,24 @@ local function GetQuestDistanceWithItem(questID)
 		return
 	end
 
+	-- NOTE: Respect completion-state filtering to avoid showing irrelevant items.
 	if C_QuestLog_IsComplete(questID) then
 		if showWhenComplete and C["ExtraQuestButtonData"].CompleteHiddenItems[itemID] then
 			return
-		end -- hide item when quest completed
+		end
 		if not showWhenComplete and not C["ExtraQuestButtonData"].CompleteShownItems[itemID] then
 			return
-		end -- show item even quest completed
+		end
 	end
 
+	-- REASON: Prioritize items based on square distance to the quest objective.
 	local distanceSq = C_QuestLog_GetDistanceSqToQuest(questID)
 	local distanceYd = distanceSq and sqrt(distanceSq)
 	if IsQuestOnMap(questID) and distanceYd and distanceYd <= MAX_DISTANCE_YARDS then
 		return distanceYd, itemLink
 	end
 
+	-- NOTE: Special case for quests with inaccurate area data (e.g. zone-wide objectives).
 	local questMapID = C["ExtraQuestButtonData"].InaccurateQuestAreas[questID]
 	if questMapID then
 		local currentMapID = C_Map_GetBestMapForUnit("player")
@@ -378,13 +429,13 @@ local function GetQuestDistanceWithItem(questID)
 	end
 end
 
+-- REASON: Scans watched quests, world quests, and the general log to find the "closest" item.
 local function GetClosestQuestItem()
 	local closestQuestItemLink
 	local closestDistance = MAX_DISTANCE_YARDS
 
+	-- 1. Scan World Quests
 	for index = 1, C_QuestLog_GetNumWorldQuestWatches() do
-		-- this only tracks supertracked worldquests,
-		-- e.g. stuff the player has shift-clicked on the map
 		local questID = C_QuestLog_GetQuestIDForWorldQuestWatchIndex(index)
 		if questID then
 			local distance, itemLink = GetQuestDistanceWithItem(questID)
@@ -395,6 +446,7 @@ local function GetClosestQuestItem()
 		end
 	end
 
+	-- 2. Scan Watched Quests
 	if not closestQuestItemLink then
 		for index = 1, C_QuestLog_GetNumQuestWatches() do
 			local questID = C_QuestLog_GetQuestIDForQuestWatchIndex(index)
@@ -408,6 +460,7 @@ local function GetClosestQuestItem()
 		end
 	end
 
+	-- 3. Scan General Quest Log
 	if not closestQuestItemLink then
 		for index = 1, C_QuestLog_GetNumQuestLogEntries() do
 			local info = C_QuestLog_GetInfo(index)
@@ -422,7 +475,8 @@ local function GetClosestQuestItem()
 		end
 	end
 
-	local tasksTable = GetTasksTable() -- bonus tracker, needs review
+	-- 4. Scan Bonus Objectives (Tasks)
+	local tasksTable = GetTasksTable()
 	for i = 1, #tasksTable do
 		local questID = tasksTable[i]
 		if questID and not C_QuestLog_IsWorldQuest(questID) and not QuestUtils_IsQuestWatched(questID) and GetTaskInfo(questID) then

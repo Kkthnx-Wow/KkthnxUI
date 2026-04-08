@@ -1,31 +1,34 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Collects minimap buttons into a pop-out "Recycle Bin" to reduce clutter.
+-- - Design: Scans Minimap children, reskins buttons, and reparents them to a custom frame.
+-- - Events: Scanned periodically via CollectRubbish.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Minimap")
 
--- Sourced: NDui (Siweia)
--- Edited: KkthnxUI (Kkthnx)
+-- PERF: Localize global functions and environment for faster lookups.
+local ipairs = _G.ipairs
+local pairs = _G.pairs
+local select = _G.select
+local string_find = _G.string.find
+local string_match = _G.string.match
+local string_upper = _G.string.upper
+local table_insert = _G.table.insert
+local table_wipe = _G.table.wipe
+local type = _G.type
 
--- Lua
 local _G = _G
-local pairs = pairs
-local ipairs = ipairs
-local select = select
-local type = type
-
-local string_find = string.find
-local string_match = string.match
-local string_upper = string.upper
-
-local table_insert = table.insert
-local table_wipe = table.wipe
-
--- WoW
-local CreateFrame = CreateFrame
-local Minimap = Minimap
-local PlaySound = PlaySound
-local UIParent = UIParent
-local UIFrameFadeIn = UIFrameFadeIn
-local UIFrameFadeOut = UIFrameFadeOut
-local C_Timer_NewTimer = C_Timer and C_Timer.NewTimer
+local C_Timer_NewTimer = _G.C_Timer and _G.C_Timer.NewTimer
+local CreateFrame = _G.CreateFrame
+local Minimap = _G.Minimap
+local PlaySound = _G.PlaySound
+local UIFrameFadeIn = _G.UIFrameFadeIn
+local UIFrameFadeOut = _G.UIFrameFadeOut
+local UIParent = _G.UIParent
 
 -- Constants
 local SOUNDKIT_IG_MAINMENU_OPTION_CHECKBOX_ON = 825
@@ -35,7 +38,7 @@ local ROW_MULT = ICONS_PER_ROW / 2 - 1
 local PENDING_TIME, TIME_THRESHOLD = 5, 12
 local AUTO_CLOSE_SECONDS = 6
 
--- Buttons/frames we never want to collect
+-- REASON: Buttons/frames we never want to collect to avoid breaking core UI or map functionality.
 local BLACKLIST = {
 	["BattlefieldMinimap"] = true,
 	["FeedbackUIButton"] = true,
@@ -51,26 +54,26 @@ local BLACKLIST = {
 	["TimeManagerClockButton"] = true,
 }
 
--- Patterns for "pins"/buttons that shouldn't be moved
+-- REASON: Patterns for "pins"/buttons that shouldn't be moved to the bin as they are part of the map display.
 local IGNORED_BUTTONS = {
 	["GatherMatePin"] = true,
 	["HandyNotes.-Pin"] = true,
 	["TTMinimapButton"] = true,
 }
 
--- Some addons already provide good-looking square icons
+-- REASON: Addons that already provide high-quality square icons; we skip standard texcoord adjustments for these.
 local GOOD_LOOKING_ICON = {
 	["Narci_MinimapButton"] = true,
 	["ZygorGuidesViewerMapIcon"] = true,
 }
 
--- Textures we strip (fileIDs)
+-- REASON: Textures (fileIDs) we strip from collected buttons to achieve a clean look.
 local REMOVED_TEXTURES = {
 	[136430] = true,
 	[136467] = true,
 }
 
-local function IsButtonIgnored(name)
+local function isButtonIgnored(name)
 	for pattern in pairs(IGNORED_BUTTONS) do
 		if string_match(name, pattern) then
 			return true
@@ -78,35 +81,33 @@ local function IsButtonIgnored(name)
 	end
 end
 
-local function GetToggleAnchor(position)
-	if position == 1 then
-		return "BOTTOMLEFT", -7, -7
-	elseif position == 2 then
-		return "BOTTOMRIGHT", 7, -7
-	elseif position == 3 then
-		return "TOPLEFT", -7, 7
-	elseif position == 4 then
-		return "TOPRIGHT", 7, 7
-	end
+local toggleAnchors = {
+	[1] = { "BOTTOMLEFT", -7, -7 },
+	[2] = { "BOTTOMRIGHT", 7, -7 },
+	[3] = { "TOPLEFT", -7, 7 },
+	[4] = { "TOPRIGHT", 7, 7 },
+}
 
-	-- Default to bottom-left if the config value is invalid
-	return "BOTTOMLEFT", -7, -7
+local function getToggleAnchor(position)
+	local anchor = toggleAnchors[position] or toggleAnchors[1]
+	return unpack(anchor)
 end
 
-local function GetBinAnchor(position)
-	if position == 1 or position == 2 then
-		return "BOTTOMRIGHT", -3, 7
-	elseif position == 3 or position == 4 then
-		return "BOTTOMRIGHT", -3, -21
-	end
+local binAnchors = {
+	[1] = { "BOTTOMRIGHT", -3, 7 },
+	[2] = { "BOTTOMRIGHT", -3, 7 },
+	[3] = { "BOTTOMRIGHT", -3, -21 },
+	[4] = { "BOTTOMRIGHT", -3, -21 },
+}
 
-	-- Default bin anchor if the config value is invalid
-	return "BOTTOMRIGHT", -3, 7
+local function getBinAnchor(position)
+	local anchor = binAnchors[position] or binAnchors[1]
+	return unpack(anchor)
 end
 
 function Module:CreateRecycleBin()
 	if not C["Minimap"].ShowRecycleBin then
-		-- Feature disabled: stop timers and hide frames
+		-- REASON: Feature disabled: safely cancel timers and hide frames to free resources.
 		if _G.RecycleBinFrame and _G.RecycleBinFrame.Cleanup then
 			_G.RecycleBinFrame:Cleanup()
 		end
@@ -119,7 +120,7 @@ function Module:CreateRecycleBin()
 		return
 	end
 
-	-- Reuse existing frames if they were already created
+	-- REASON: Reuses existing frames if they were already created during a session toggling.
 	if _G.RecycleBinFrame then
 		_G.RecycleBinFrame:Show()
 	end
@@ -128,55 +129,55 @@ function Module:CreateRecycleBin()
 		return
 	end
 
-	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
-	bu:SetAlpha(0.6)
-	bu:SetSize(16, 16)
-	bu:ClearAllPoints()
+	local toggleButton = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
+	toggleButton:SetAlpha(0.6)
+	toggleButton:SetSize(16, 16)
+	toggleButton:ClearAllPoints()
 	do
-		local point, x, y = GetToggleAnchor(C["Minimap"].RecycleBinPosition)
-		bu:SetPoint(point, x, y)
+		local point, x, y = getToggleAnchor(C["Minimap"].RecycleBinPosition)
+		toggleButton:SetPoint(point, x, y)
 	end
 
-	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-	bu.Icon:SetAllPoints()
-	bu.Icon:SetTexture("Interface\\COMMON\\Indicator-Gray")
-	bu:SetHighlightTexture("Interface\\COMMON\\Indicator-Yellow")
-	bu:SetPushedTexture("Interface\\COMMON\\Indicator-Green")
-	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin|n|nCollects minimap buttons and makes them accessible through a pop out menu", "white")
+	toggleButton.Icon = toggleButton:CreateTexture(nil, "ARTWORK")
+	toggleButton.Icon:SetAllPoints()
+	toggleButton.Icon:SetTexture("Interface\\COMMON\\Indicator-Gray")
+	toggleButton:SetHighlightTexture("Interface\\COMMON\\Indicator-Yellow")
+	toggleButton:SetPushedTexture("Interface\\COMMON\\Indicator-Green")
+	K.AddTooltip(toggleButton, "ANCHOR_LEFT", "Minimap RecycleBin|n|nCollects minimap buttons and makes them accessible through a pop out menu", "white")
 
-	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
-	bin:ClearAllPoints()
+	local recycleBinFrame = CreateFrame("Frame", "RecycleBinFrame", UIParent)
+	recycleBinFrame:ClearAllPoints()
 	do
-		local point, x, y = GetBinAnchor(C["Minimap"].RecycleBinPosition)
-		bin:SetPoint(point, bu, "BOTTOMLEFT", x, y)
+		local point, x, y = getBinAnchor(C["Minimap"].RecycleBinPosition)
+		recycleBinFrame:SetPoint(point, toggleButton, "BOTTOMLEFT", x, y)
 	end
-	bin:SetSize(BIN_WIDTH, BIN_HEIGHT)
-	bin:Hide()
+	recycleBinFrame:SetSize(BIN_WIDTH, BIN_HEIGHT)
+	recycleBinFrame:Hide()
 
 	local autoCloseTimer
 	local currentIndex = 0
 	local numMinimapChildren = 0
-	local buttons, shownButtons = {}, {}
+	local binButtons, shownButtons = {}, {}
 
-	local function StopAutoCloseTimer()
+	local function stopAutoCloseTimer()
 		if autoCloseTimer then
 			autoCloseTimer:Cancel()
 			autoCloseTimer = nil
 		end
 	end
 
-	local function HideBin()
-		bin:Hide()
+	local function hideBin()
+		recycleBinFrame:Hide()
 	end
 
-	local function CloseBin()
+	local function closeBin()
 		PlaySound(SOUNDKIT_IG_MAINMENU_OPTION_CHECKBOX_ON)
-		UIFrameFadeOut(bin, 0.5, bin:GetAlpha(), 0)
-		K.Delay(0.5, HideBin)
+		UIFrameFadeOut(recycleBinFrame, 0.5, recycleBinFrame:GetAlpha(), 0)
+		K.Delay(0.5, hideBin)
 	end
 
-	local function StartAutoCloseTimer()
-		-- Timer API missing on very old clients: skip auto-close
+	local function startAutoCloseTimer()
+		-- REASON: Guard against older clients missing the C_Timer API to avoid LUA errors.
 		if not C_Timer_NewTimer then
 			return
 		end
@@ -186,46 +187,32 @@ function Module:CreateRecycleBin()
 		end
 
 		autoCloseTimer = C_Timer_NewTimer(AUTO_CLOSE_SECONDS, function()
-			if bin:IsShown() then
-				CloseBin()
+			if recycleBinFrame:IsShown() then
+				closeBin()
 			end
 		end)
 	end
 
-	-- Expose cleanup so we can cancel timers immediately when disabling the feature
-	bin.Cleanup = function()
-		table_wipe(buttons)
+	-- REASON: Expose cleanup to facilitate immediate session-level disabling without reload.
+	recycleBinFrame.Cleanup = function()
+		table_wipe(binButtons)
 		table_wipe(shownButtons)
 		numMinimapChildren = 0
 		currentIndex = 0
-		StopAutoCloseTimer()
+		stopAutoCloseTimer()
 	end
 
-	bin:SetScript("OnEnter", StopAutoCloseTimer)
-	bin:SetScript("OnLeave", StartAutoCloseTimer)
-	bu:SetScript("OnEnter", StopAutoCloseTimer)
-	bu:SetScript("OnLeave", StartAutoCloseTimer)
+	recycleBinFrame:SetScript("OnEnter", stopAutoCloseTimer)
+	recycleBinFrame:SetScript("OnLeave", startAutoCloseTimer)
+	toggleButton:SetScript("OnEnter", stopAutoCloseTimer)
+	toggleButton:SetScript("OnLeave", startAutoCloseTimer)
 
-	local function ReskinMinimapButton(child, name)
-		-- Remove common border/mask textures and normalize icon texcoords
+	local function reskinMinimapButton(child, name)
 		for i = 1, child:GetNumRegions() do
 			local region = select(i, child:GetRegions())
 			if region and region.IsObjectType and region:IsObjectType("Texture") then
 				local texture = region:GetTexture()
-
-				local shouldRemove = false
-				if texture ~= nil then
-					-- GetTexture can be a fileID (number) or file path (string)
-					if REMOVED_TEXTURES[texture] then
-						shouldRemove = true
-					elseif type(texture) == "string" then
-						if string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap") then
-							shouldRemove = true
-						end
-					end
-				end
-
-				if shouldRemove then
+				if texture and (REMOVED_TEXTURES[texture] or (type(texture) == "string" and (string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap")))) then
 					region:SetTexture(nil)
 					region:Hide()
 				else
@@ -234,7 +221,7 @@ function Module:CreateRecycleBin()
 						region:SetAllPoints()
 					end
 					if not GOOD_LOOKING_ICON[name] then
-						region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+						region:SetTexCoord(unpack(K.TexCoords))
 					end
 				end
 			end
@@ -242,7 +229,7 @@ function Module:CreateRecycleBin()
 
 		child:SetSize(22, 22)
 
-		-- Avoid creating multiple borders if this is run more than once
+		-- REASON: Defensive check to avoid creating redundant borders during multiple scans.
 		if not child.__kkthnx_recyclebin_border then
 			if child.CreateBorder then
 				child:CreateBorder()
@@ -250,14 +237,15 @@ function Module:CreateRecycleBin()
 			child.__kkthnx_recyclebin_border = true
 		end
 
-		table_insert(buttons, child)
+		table_insert(binButtons, child)
 	end
 
-	local function KillMinimapButtons()
-		for _, child in ipairs(buttons) do
+	local function killMinimapButtons()
+		for _, child in ipairs(binButtons) do
 			if child and not child.styled then
-				child:SetParent(bin)
+				child:SetParent(recycleBinFrame)
 
+				-- REASON: Strip dragging scripts to prevent the bin from becoming unusable or cluttered.
 				if child:HasScript("OnDragStop") then
 					child:SetScript("OnDragStop", nil)
 				end
@@ -266,7 +254,7 @@ function Module:CreateRecycleBin()
 				end
 
 				if child:HasScript("OnClick") then
-					child:HookScript("OnClick", CloseBin)
+					child:HookScript("OnClick", closeBin)
 				end
 
 				if child:IsObjectType("Button") then
@@ -282,13 +270,13 @@ function Module:CreateRecycleBin()
 					child.highlight:SetColorTexture(1, 1, 1, 0.25)
 				end
 
-				-- Some addons behave oddly on minimap buttons; patch known offenders
+				-- REASON: Handle specific addons that behave non-standardly when their parent is changed.
 				local name = child.GetName and child:GetName()
 				if name == "DBMMinimapButton" then
 					child:SetScript("OnMouseDown", nil)
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
-					child:HookScript("OnMouseUp", CloseBin)
+					child:HookScript("OnMouseUp", closeBin)
 				elseif name == "WIM3MinimapButton" then
 					child.SetParent = K.Noop
 					child:SetFrameStrata("DIALOG")
@@ -300,14 +288,14 @@ function Module:CreateRecycleBin()
 		end
 	end
 
-	local function SortRubbish()
-		if #buttons == 0 then
+	local function sortRubbish()
+		if #binButtons == 0 then
 			return
 		end
 
 		table_wipe(shownButtons)
-		for _, button in ipairs(buttons) do
-			-- Some addons create unusual objects here; guard defensively
+		for _, button in ipairs(binButtons) do
+			-- REASON: Guard defensively as some addons create unusual/uninitialized objects.
 			if button and button.IsShown and button:IsShown() then
 				table_insert(shownButtons, button)
 			end
@@ -315,13 +303,13 @@ function Module:CreateRecycleBin()
 
 		local numShown = #shownButtons
 		local row = (numShown == 0) and 1 or K.Round((numShown + ROW_MULT) / ICONS_PER_ROW)
-		bin:SetHeight(row * 37 + 3)
+		recycleBinFrame:SetHeight(row * 37 + 3)
 
 		for index, button in ipairs(shownButtons) do
 			button:ClearAllPoints()
 
 			if index == 1 then
-				button:SetPoint("BOTTOMRIGHT", bin, -6, 6)
+				button:SetPoint("BOTTOMRIGHT", recycleBinFrame, -6, 6)
 			elseif row == 1 or (row > 1 and ((index - 1) % row) == 0) then
 				button:SetPoint("RIGHT", shownButtons[index - row], "LEFT", -6, 0)
 			else
@@ -330,24 +318,24 @@ function Module:CreateRecycleBin()
 		end
 	end
 
-	local function CollectRubbish()
+	local function collectRubbish()
 		if not C["Minimap"].ShowRecycleBin then
-			-- Disabled mid-scan: wipe state and cancel timers
-			bin:Cleanup()
+			-- REASON: Wipe state if the feature is disabled during a collection pass.
+			recycleBinFrame:Cleanup()
 			return
 		end
 
 		local numChildren = Minimap:GetNumChildren()
 		if numChildren ~= numMinimapChildren then
-			-- Minimap:GetChildren() returns varargs; pack once to avoid repeated calls
+			-- REASON: Pack children once to avoid multiple costly GetChildren calls.
 			local children = { Minimap:GetChildren() }
 			for i = 1, numChildren do
 				local child = children[i]
 				local name = child and child.GetName and child:GetName()
 
 				if name and not child.isExamed and not BLACKLIST[name] then
-					if (child:IsObjectType("Button") or string_match(string_upper(name), "BUTTON")) and not IsButtonIgnored(name) then
-						ReskinMinimapButton(child, name)
+					if (child:IsObjectType("Button") or string_find(string_upper(name), "BUTTON")) and not isButtonIgnored(name) then
+						reskinMinimapButton(child, name)
 					end
 					child.isExamed = true
 				end
@@ -356,25 +344,26 @@ function Module:CreateRecycleBin()
 			numMinimapChildren = numChildren
 		end
 
-		KillMinimapButtons()
+		killMinimapButtons()
 
+		-- REASON: Throttles scanning to ensure we don't waste CPU after the initial login flurry.
 		currentIndex = currentIndex + 1
 		if currentIndex < TIME_THRESHOLD then
-			K.Delay(PENDING_TIME, CollectRubbish)
+			K.Delay(PENDING_TIME, collectRubbish)
 		end
 	end
 
-	bu:SetScript("OnClick", function()
-		if bin:IsShown() then
-			StopAutoCloseTimer()
-			CloseBin()
+	toggleButton:SetScript("OnClick", function()
+		if recycleBinFrame:IsShown() then
+			stopAutoCloseTimer()
+			closeBin()
 		else
 			PlaySound(SOUNDKIT_IG_MAINMENU_OPTION_CHECKBOX_ON)
-			SortRubbish()
-			UIFrameFadeIn(bin, 0.5, bin:GetAlpha(), 1)
-			StartAutoCloseTimer()
+			sortRubbish()
+			UIFrameFadeIn(recycleBinFrame, 0.5, recycleBinFrame:GetAlpha(), 1)
+			startAutoCloseTimer()
 		end
 	end)
 
-	CollectRubbish()
+	collectRubbish()
 end

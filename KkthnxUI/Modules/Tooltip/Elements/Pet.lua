@@ -1,10 +1,28 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays pet battle icons and IDs in unit tooltips.
+-- - Design: Hooks unit tooltips to add pet species icons and IDs for battle pets.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("Tooltip")
 
-local UnitBattlePetType, UnitBattlePetSpeciesID = UnitBattlePetType, UnitBattlePetSpeciesID
-local PET, ID, UNKNOWN = PET, ID, UNKNOWN
-local PET_TYPE_SUFFIX = PET_TYPE_SUFFIX
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local UnitBattlePetSpeciesID = _G.UnitBattlePetSpeciesID
+local UnitBattlePetType = _G.UnitBattlePetType
+local UnitIsBattlePet = _G.UnitIsBattlePet
+local GameTooltip = _G.GameTooltip
 
+local ID = _G.ID
+local PET = _G.PET
+local UNKNOWN = _G.UNKNOWN
+local PET_TYPE_SUFFIX = _G.PET_TYPE_SUFFIX
+
+-- REASON: Updates the pet species icon in the tooltip.
 function Module:UpdatePetInfo(petType)
 	if not self.petIcon then
 		local f = self:CreateTexture(nil, "OVERLAY")
@@ -21,6 +39,7 @@ function Module:UpdatePetInfo(petType)
 	end
 end
 
+-- REASON: Resets the pet icon visibility when the tooltip is cleared.
 function Module:ResetPetInfo()
 	if self.petIcon and self.petIcon:GetAlpha() ~= 0 then
 		self.petIcon:SetAlpha(0)
@@ -28,10 +47,12 @@ function Module:ResetPetInfo()
 end
 GameTooltip:HookScript("OnTooltipCleared", Module.ResetPetInfo)
 
+-- REASON: Main entry point for adding pet-specific information to unit tooltips.
 function Module:CreatePetInfo(unit)
 	if not unit then
 		return
 	end
+
 	if not UnitIsBattlePet(unit) then
 		return
 	end

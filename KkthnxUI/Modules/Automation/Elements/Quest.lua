@@ -1,79 +1,146 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Automatically interacts with quest NPCs for faster questing.
+-- - Design: Hooks quest and gossip events to automate acceptance, progress, and turn-ins.
+-- - Events: GOSSIP_SHOW, QUEST_GREETING, QUEST_DETAIL, QUEST_PROGRESS, QUEST_COMPLETE, etc.
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
-local next, ipairs, select = next, ipairs, select
-local IsAltKeyDown = IsAltKeyDown
-local UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink = UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink
-local GetInstanceInfo, GetQuestID = GetInstanceInfo, GetQuestID
-local GetNumActiveQuests, GetActiveTitle, GetActiveQuestID, SelectActiveQuest = GetNumActiveQuests, GetActiveTitle, GetActiveQuestID, SelectActiveQuest
-local IsQuestCompletable, GetNumQuestItems, GetQuestItemLink, QuestIsFromAreaTrigger = IsQuestCompletable, GetNumQuestItems, GetQuestItemLink, QuestIsFromAreaTrigger
-local QuestGetAutoAccept, AcceptQuest, CloseQuest, CompleteQuest, AcknowledgeAutoAcceptQuest = QuestGetAutoAccept, AcceptQuest, CloseQuest, CompleteQuest, AcknowledgeAutoAcceptQuest
-local GetNumQuestChoices, GetQuestReward, GetQuestItemInfo = GetNumQuestChoices, GetQuestReward, GetQuestItemInfo
-local GetNumAvailableQuests, GetAvailableQuestInfo, SelectAvailableQuest = GetNumAvailableQuests, GetAvailableQuestInfo, SelectAvailableQuest
-local GetNumAutoQuestPopUps, GetAutoQuestPopUp, ShowQuestOffer, ShowQuestComplete = GetNumAutoQuestPopUps, GetAutoQuestPopUp, ShowQuestOffer, ShowQuestComplete
-local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
-local C_QuestLog_IsQuestTrivial = C_QuestLog.IsQuestTrivial
-local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
-local C_GossipInfo_GetOptions = C_GossipInfo.GetOptions
-local C_GossipInfo_SelectOption = C_GossipInfo.SelectOption
+-- PERF: Localize globals and API functions to minimize lookup overhead.
+local _G = _G
+local AcknowledgeAutoAcceptQuest = AcknowledgeAutoAcceptQuest
+local AcceptQuest = AcceptQuest
 local C_GossipInfo_GetActiveQuests = C_GossipInfo.GetActiveQuests
-local C_GossipInfo_SelectActiveQuest = C_GossipInfo.SelectActiveQuest
 local C_GossipInfo_GetAvailableQuests = C_GossipInfo.GetAvailableQuests
 local C_GossipInfo_GetNumActiveQuests = C_GossipInfo.GetNumActiveQuests
-local C_GossipInfo_SelectAvailableQuest = C_GossipInfo.SelectAvailableQuest
 local C_GossipInfo_GetNumAvailableQuests = C_GossipInfo.GetNumAvailableQuests
-local QuestLabelPrepend = Enum.GossipOptionRecFlags.QuestLabelPrepend
+local C_GossipInfo_GetOptions = C_GossipInfo.GetOptions
+local C_GossipInfo_SelectActiveQuest = C_GossipInfo.SelectActiveQuest
+local C_GossipInfo_SelectAvailableQuest = C_GossipInfo.SelectAvailableQuest
+local C_GossipInfo_SelectOption = C_GossipInfo.SelectOption
+local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Minimap_IsFilteredOut = C_Minimap.IsFilteredOut
+local C_Minimap_IsTrackingHiddenQuests = C_Minimap.IsTrackingHiddenQuests
+local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
+local C_QuestLog_IsQuestFlaggedCompletedOnAccount = C_QuestLog.IsQuestFlaggedCompletedOnAccount
+local C_QuestLog_IsQuestTrivial = C_QuestLog.IsQuestTrivial
+local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
+local CloseQuest = CloseQuest
+local CompleteQuest = CompleteQuest
+local CreateFrame = CreateFrame
+local GetActiveQuestID = GetActiveQuestID
+local GetActiveTitle = GetActiveTitle
+local GetAutoQuestPopUp = GetAutoQuestPopUp
+local GetInstanceInfo = GetInstanceInfo
+local GetItemInfoFromHyperlink = GetItemInfoFromHyperlink
+local GetNumActiveQuests = GetNumActiveQuests
+local GetNumAutoQuestPopUps = GetNumAutoQuestPopUps
+local GetNumAvailableQuests = GetNumAvailableQuests
+local GetNumQuestChoices = GetNumQuestChoices
+local GetNumQuestItems = GetNumQuestItems
+local GetQuestGetAutoAccept = QuestGetAutoAccept
+local GetQuestID = GetQuestID
+local GetQuestItemInfo = GetQuestItemInfo
+local GetQuestItemLink = GetQuestItemLink
+local GetQuestReward = GetQuestReward
+local GetQuestIsFromAreaTrigger = QuestIsFromAreaTrigger
+local IsAltKeyDown = IsAltKeyDown
+local IsQuestCompletable = IsQuestCompletable
+local IsShiftKeyDown = IsShiftKeyDown
+local RemoveAutoQuestPopUp = RemoveAutoQuestPopUp
+local SelectActiveQuest = SelectActiveQuest
+local SelectAvailableQuest = SelectAvailableQuest
+local ShowQuestComplete = ShowQuestComplete
+local ShowQuestOffer = ShowQuestOffer
+local StaticPopup_Hide = StaticPopup_Hide
+local UnitGUID = UnitGUID
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local ipairs = ipairs
+local next = next
+local select = select
+local string_find = string.find
+local string_sub = string.sub
+local string_upper = string.upper
+local table_wipe = table.wipe
+
+-- ---------------------------------------------------------------------------
+-- Constants & State
+-- ---------------------------------------------------------------------------
+local QUEST_LABEL_PREPEND = Enum.GossipOptionRecFlags.QuestLabelPrepend
+local MINIMAP_ACCOUNT_COMPLETED = Enum.MinimapTrackingFilter.AccountCompletedQuests
+local QUEST_STRING = "cFF0000FF.-" .. _G.TRANSMOG_SOURCE_2
+local IGNORED_TEXT = _G.IGNORED
 
 local choiceQueue
-
--- Minimap checkbox
 local created
+
+-- ---------------------------------------------------------------------------
+-- Minimap / WorldMap Integration
+-- ---------------------------------------------------------------------------
 local function setupCheckButton()
+	-- REASON: Adds a toggle button to the World Map for easy access to AutoQuest settings.
 	if created then
 		return
 	end
-	local mono = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame.TitleContainer, "OptionsBaseCheckButtonTemplate")
+
+	local worldMapFrame = _G.WorldMapFrame
+	if not worldMapFrame then
+		return
+	end
+
+	local mono = CreateFrame("CheckButton", nil, worldMapFrame.BorderFrame.TitleContainer, "OptionsBaseCheckButtonTemplate")
 	mono:SetHitRectInsets(-5, -5, -5, -5)
 	mono:SetPoint("TOPRIGHT", -140, 0)
 	mono:SetSize(24, 24)
 	mono:SetFrameLevel(999)
 	mono.text = K.CreateFontString(mono, 12, "Auto Quest", "", "system", "LEFT", 24, 0)
-	mono:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest)
+	mono:SetChecked(K.GetCharVars().AutoQuest)
 	mono:SetScript("OnClick", function(self)
-		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
+		K.GetCharVars().AutoQuest = self:GetChecked()
 	end)
 	K.AddTooltip(mono, "ANCHOR_BOTTOMLEFT", "Automatically interact with quests.|n|nSingle-option gossip will be selected automatically.|n|nHold SHIFT to temporarily pause automation.|n|nTo block an NPC from auto-interaction, hold ALT and click their name in the Gossip or Quest frame.", "info", true)
 
 	created = true
 end
-WorldMapFrame:HookScript("OnShow", setupCheckButton)
+_G.WorldMapFrame:HookScript("OnShow", setupCheckButton)
 
--- Main
+-- ---------------------------------------------------------------------------
+-- Core Automation Engine
+-- ---------------------------------------------------------------------------
 local QuickQuest = CreateFrame("Frame")
 QuickQuest:SetScript("OnEvent", function(self, event, ...)
 	self[event](...)
 end)
 
 function QuickQuest:Register(event, func)
+	-- REASON: Wraps event handlers with automation checks (AutoQuest setting and Shift key bypass).
 	self:RegisterEvent(event)
 	self[event] = function(...)
-		if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest and not IsShiftKeyDown() then
+		if K.GetCharVars().AutoQuest and not IsShiftKeyDown() then
 			func(...)
 		end
 	end
 end
 
-local function GetNPCID()
+local function getNPCID()
 	return K.GetNPCID(UnitGUID("npc"))
 end
 
-local function IsAccountCompleted(questID)
-	return C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.AccountCompletedQuests) and C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)
+local function isAccountCompleted(questID)
+	-- REASON: Checks if the quest is already completed on account and if the minimap is filtering them.
+	return C_Minimap_IsFilteredOut(MINIMAP_ACCOUNT_COMPLETED) and C_QuestLog_IsQuestFlaggedCompletedOnAccount(questID)
 end
 
 C.IgnoreQuestNPC = {}
 
+-- ---------------------------------------------------------------------------
+-- Event Handlers
+-- ---------------------------------------------------------------------------
 QuickQuest:Register("QUEST_GREETING", function()
-	local npcID = GetNPCID()
+	local npcID = getNPCID()
 	if C.IgnoreQuestNPC[npcID] then
 		return
 	end
@@ -93,18 +160,15 @@ QuickQuest:Register("QUEST_GREETING", function()
 	if available > 0 then
 		for index = 1, available do
 			local isTrivial, _, _, _, questID = GetAvailableQuestInfo(index)
-			if not IsAccountCompleted(questID) and (not isTrivial or C_Minimap.IsTrackingHiddenQuests()) then
+			if not isAccountCompleted(questID) and (not isTrivial or C_Minimap_IsTrackingHiddenQuests()) then
 				SelectAvailableQuest(index)
 			end
 		end
 	end
 end)
 
-local QUEST_STRING = "cFF0000FF.-" .. TRANSMOG_SOURCE_2
-
--- If any gossip option contains color codes or
--- angle-bracketed subtext (eg. Skip campaign), suspend automation.
-local function ShouldSuspendForSkipGossip()
+local function shouldSuspendForSkipGossip()
+	-- REASON: Suspends automation if the gossip text implies a "Skip" or "Campaign" choice that requires user attention.
 	local gossipInfoTable = C_GossipInfo_GetOptions()
 	if not gossipInfoTable then
 		return false
@@ -112,13 +176,13 @@ local function ShouldSuspendForSkipGossip()
 	for i = 1, #gossipInfoTable do
 		local nameText = gossipInfoTable[i].name
 		if nameText then
-			-- Explicit red "<...>" prefix used for Skip options
-			if nameText:sub(1, 11) == "|cFFFF0000<" then
+			-- Explicit red "<...>" prefix used for Skip options in Dragonflight/War Within
+			if string_sub(nameText, 1, 11) == "|cFFFF0000<" then
 				return true
 			end
 			-- Any colored or angle-bracketed line (except known purple DMF quests)
-			local upper = strupper(nameText)
-			if (strfind(upper, "|C", 1, true) or strfind(upper, "<", 1, true)) and not strfind(nameText, "FF0008E8", 1, true) then
+			local upper = string_upper(nameText)
+			if (string_find(upper, "|C", 1, true) or string_find(upper, "<", 1, true)) and not string_find(nameText, "FF0008E8", 1, true) then
 				return true
 			end
 		end
@@ -127,14 +191,14 @@ local function ShouldSuspendForSkipGossip()
 end
 
 QuickQuest:Register("GOSSIP_SHOW", function()
-	local npcID = GetNPCID()
+	local npcID = getNPCID()
 	if C.IgnoreQuestNPC[npcID] then
 		return
 	end
 
 	local active = C_GossipInfo_GetNumActiveQuests()
 	if active > 0 then
-		for index, questInfo in ipairs(C_GossipInfo_GetActiveQuests()) do
+		for _, questInfo in ipairs(C_GossipInfo_GetActiveQuests()) do
 			local questID = questInfo.questID
 			local isWorldQuest = questID and C_QuestLog_IsWorldQuest(questID)
 			if questInfo.isComplete and not isWorldQuest then
@@ -145,11 +209,11 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 
 	local available = C_GossipInfo_GetNumAvailableQuests()
 	if available > 0 then
-		for index, questInfo in ipairs(C_GossipInfo_GetAvailableQuests()) do
+		for _, questInfo in ipairs(C_GossipInfo_GetAvailableQuests()) do
 			local trivial = questInfo.isTrivial
 			local questID = questInfo.questID
-			if not IsAccountCompleted(questID) and (not trivial or C_Minimap.IsTrackingHiddenQuests() or (trivial and npcID == 64337)) then
-				C_GossipInfo_SelectAvailableQuest(questInfo.questID)
+			if not isAccountCompleted(questID) and (not trivial or C_Minimap_IsTrackingHiddenQuests() or (trivial and npcID == 64337)) then
+				C_GossipInfo_SelectAvailableQuest(questID)
 			end
 		end
 	end
@@ -159,7 +223,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 		return
 	end
 
-	if ShouldSuspendForSkipGossip() then
+	if shouldSuspendForSkipGossip() then
 		return
 	end
 
@@ -179,12 +243,12 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 		end
 	end
 
-	-- 自动选择只有一个带有任务选项的任务
+	-- REASON: Automatically select gossip option if it's the only quest-related interaction.
 	local numQuestGossips = 0
 	local questGossipID
 	for i = 1, numOptions do
 		local option = gossipInfoTable[i]
-		if option.name and (strfind(option.name, QUEST_STRING) or option.flags == QuestLabelPrepend) then
+		if option.name and (string_find(option.name, QUEST_STRING) or option.flags == QUEST_LABEL_PREPEND) then
 			numQuestGossips = numQuestGossips + 1
 			questGossipID = option.gossipOptionID
 		end
@@ -195,7 +259,8 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 end)
 
 QuickQuest:Register("GOSSIP_CONFIRM", function(index)
-	if C["AutoQuestData"].SkipConfirmNPCs[GetNPCID()] then
+	-- REASON: Skips confirmation dialogs for specific NPCs (e.g., flight masters, transporters).
+	if C["AutoQuestData"].SkipConfirmNPCs[getNPCID()] then
 		C_GossipInfo_SelectOption(index, "", true)
 		StaticPopup_Hide("GOSSIP_CONFIRM")
 	end
@@ -203,16 +268,16 @@ end)
 
 QuickQuest:Register("QUEST_DETAIL", function()
 	local questID = GetQuestID()
-	if questID == 82449 then -- Call of the Worldsoul
+	if questID == 82449 then -- REASON: Call of the Worldsoul - requires manual choice.
 		return
 	end
 
-	if QuestIsFromAreaTrigger() then
+	if GetQuestIsFromAreaTrigger() then
 		AcceptQuest()
-	elseif QuestGetAutoAccept() then
+	elseif GetQuestGetAutoAccept() then
 		AcknowledgeAutoAcceptQuest()
-	elseif not C_QuestLog_IsQuestTrivial(questID) or C_Minimap.IsTrackingHiddenQuests() then
-		if not C.IgnoreQuestNPC[GetNPCID()] and not IsAccountCompleted(questID) then
+	elseif not C_QuestLog_IsQuestTrivial(questID) or C_Minimap_IsTrackingHiddenQuests() then
+		if not C.IgnoreQuestNPC[getNPCID()] and not isAccountCompleted(questID) then
 			AcceptQuest()
 		end
 	end
@@ -221,7 +286,8 @@ end)
 QuickQuest:Register("QUEST_ACCEPT_CONFIRM", AcceptQuest)
 
 QuickQuest:Register("QUEST_ACCEPTED", function()
-	if QuestFrame:IsShown() and QuestGetAutoAccept() then
+	-- REASON: Auto-closes the quest frame if the quest was automatically accepted.
+	if _G.QuestFrame:IsShown() and GetQuestGetAutoAccept() then
 		CloseQuest()
 	end
 end)
@@ -244,10 +310,11 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 			return
 		end
 
-		if C.IgnoreQuestNPC[GetNPCID()] then
+		if C.IgnoreQuestNPC[getNPCID()] then
 			return
 		end
 
+		-- REASON: Checks for blacklisted items in quest requirements to prevent accidental turn-ins.
 		local requiredItems = GetNumQuestItems()
 		if requiredItems > 0 then
 			for index = 1, requiredItems do
@@ -278,8 +345,8 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 		return
 	end
 
-	-- Blingtron 6000 only!
-	local npcID = GetNPCID()
+	-- WARNING: Protect specific NPCs (Blingtron) from auto-turn-in to avoid wasting daily lockouts.
+	local npcID = getNPCID()
 	if npcID == 43929 or npcID == 77789 then
 		return
 	end
@@ -288,12 +355,13 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 	if choices <= 1 then
 		GetQuestReward(choices)
 	elseif choices > 1 then
+		-- REASON: Automatically pick the reward with the highest sell price.
 		local bestValue, bestIndex = 0
 
 		for index = 1, choices do
 			local link = GetQuestItemLink("choice", index)
 			if link then
-				local value = select(11, C_Item.GetItemInfo(link))
+				local value = select(11, C_Item_GetItemInfo(link))
 				local itemID = GetItemInfoFromHyperlink(link)
 				value = C["AutoQuestData"].CashRewards[itemID] or value
 
@@ -306,14 +374,15 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 			end
 		end
 
-		local button = bestIndex and QuestInfoRewardsFrame.RewardButtons[bestIndex]
+		local button = bestIndex and _G.QuestInfoRewardsFrame.RewardButtons[bestIndex]
 		if button then
-			QuestInfoItem_OnClick(button)
+			_G.QuestInfoItem_OnClick(button)
 		end
 	end
 end)
 
 local function AttemptAutoComplete(event)
+	-- REASON: Handles automatic quest offers and completions that pop up without NPC interaction.
 	if GetNumAutoQuestPopUps() > 0 then
 		if UnitIsDeadOrGhost("player") then
 			QuickQuest:Register("PLAYER_REGEN_ENABLED", AttemptAutoComplete)
@@ -327,7 +396,7 @@ local function AttemptAutoComplete(event)
 			elseif popUpType == "COMPLETE" then
 				ShowQuestComplete(questID)
 			end
-			RemoveAutoQuestPopUp(questID) -- needs review, taint?
+			_G.RemoveAutoQuestPopUp(questID)
 		end
 	end
 
@@ -337,46 +406,51 @@ local function AttemptAutoComplete(event)
 end
 QuickQuest:Register("QUEST_LOG_UPDATE", AttemptAutoComplete)
 
--- Handle ignore list
-local function UpdateIgnoreList()
-	wipe(C.IgnoreQuestNPC)
+-- ---------------------------------------------------------------------------
+-- Ignore List Management
+-- ---------------------------------------------------------------------------
+local function updateIgnoreList()
+	-- REASON: Syncs the local ignore list with both project defaults and user-defined ignores.
+	table_wipe(C.IgnoreQuestNPC)
 
-	for npcID, value in pairs(C["AutoQuestData"].IgnoreQuestNPC) do
+	for npcID, value in next, C["AutoQuestData"].IgnoreQuestNPC do
 		C.IgnoreQuestNPC[npcID] = value
 	end
 
-	for npcID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC) do
+	for npcID, value in next, K.GetCharVars().AutoQuestIgnoreNPC do
 		if value and C["AutoQuestData"].IgnoreQuestNPC[npcID] then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
+			K.GetCharVars().AutoQuestIgnoreNPC[npcID] = nil
 		else
 			C.IgnoreQuestNPC[npcID] = value
 		end
 	end
 end
 
-local function UnitQuickQuestStatus(self)
+local function unitQuickQuestStatus(self)
+	-- REASON: Displays an "IGNORED" label on NPC frames if they are in the auto-quest ignore list.
 	if not self.__ignore then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetSize(100, 14)
 		frame:SetPoint("TOP", self, "BOTTOM", 0, -6)
 		K.AddTooltip(frame, "ANCHOR_RIGHT", L["AutoQuest Ignored Tooltip"], "info", true)
-		K.CreateFontString(frame, 14, IGNORED):SetTextColor(1, 0, 0)
+		K.CreateFontString(frame, 14, IGNORED_TEXT):SetTextColor(1, 0, 0)
 
 		self.__ignore = frame
 
-		UpdateIgnoreList()
+		updateIgnoreList()
 	end
 
-	local npcID = GetNPCID()
-	local isIgnored = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest and npcID and C.IgnoreQuestNPC[npcID]
+	local npcID = getNPCID()
+	local isIgnored = K.GetCharVars().AutoQuest and npcID and C.IgnoreQuestNPC[npcID]
 	self.__ignore:SetShown(isIgnored)
 end
 
-local function ToggleQuickQuestStatus(self)
+local function toggleQuickQuestStatus(self)
+	-- REASON: Allows users to Alt-click NPC names to toggle them on/off the auto-quest ignore list.
 	if not self.__ignore then
 		return
 	end
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest then
+	if not K.GetCharVars().AutoQuest then
 		return
 	end
 	if not IsAltKeyDown() then
@@ -384,29 +458,33 @@ local function ToggleQuickQuestStatus(self)
 	end
 
 	self.__ignore:SetShown(not self.__ignore:IsShown())
-	local npcID = GetNPCID()
+	local npcID = getNPCID()
 	if self.__ignore:IsShown() then
 		if C["AutoQuestData"].IgnoreQuestNPC[npcID] then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
+			K.GetCharVars().AutoQuestIgnoreNPC[npcID] = nil
 		else
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = true
+			K.GetCharVars().AutoQuestIgnoreNPC[npcID] = true
 		end
 	else
 		if C["AutoQuestData"].IgnoreQuestNPC[npcID] then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = false
+			K.GetCharVars().AutoQuestIgnoreNPC[npcID] = false
 		else
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
+			K.GetCharVars().AutoQuestIgnoreNPC[npcID] = nil
 		end
 	end
 
-	UpdateIgnoreList()
+	updateIgnoreList()
 end
 
-QuestNpcNameFrame:HookScript("OnShow", UnitQuickQuestStatus)
-QuestNpcNameFrame:HookScript("OnMouseDown", ToggleQuickQuestStatus)
-local frame = GossipFrame.TitleContainer
-if frame then
-	GossipFrameCloseButton:SetFrameLevel(frame:GetFrameLevel() + 1) -- fix clicking on gossip close button
-	frame:HookScript("OnShow", UnitQuickQuestStatus)
-	frame:HookScript("OnMouseDown", ToggleQuickQuestStatus)
+-- ---------------------------------------------------------------------------
+-- Hooks
+-- ---------------------------------------------------------------------------
+_G.QuestNpcNameFrame:HookScript("OnShow", unitQuickQuestStatus)
+_G.QuestNpcNameFrame:HookScript("OnMouseDown", toggleQuickQuestStatus)
+
+local gossipTitleFrame = _G.GossipFrame and _G.GossipFrame.TitleContainer
+if gossipTitleFrame then
+	_G.GossipFrameCloseButton:SetFrameLevel(gossipTitleFrame:GetFrameLevel() + 1)
+	gossipTitleFrame:HookScript("OnShow", unitQuickQuestStatus)
+	gossipTitleFrame:HookScript("OnMouseDown", toggleQuickQuestStatus)
 end

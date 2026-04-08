@@ -1,23 +1,37 @@
--- Character Frame Skin
--- Purpose: Reskins the player character paper doll, equipment slots, and stats pane.
--- Performance: Optimized ScrollBox iteration and global caching.
--- Maintainer: WoW AddOn Forge
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the player Character frame, paper doll, and equipment slots.
+-- - Design: Applies custom borders, textures, and class-specific backgrounds for the character UI.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
--- Cache Lua Globals
+-- REASON: Localize globals for performance and stack safety.
 local _G = _G
-local ipairs = ipairs
-local select = select
-local table_insert = table.insert
+local ipairs = _G.ipairs
+local select = _G.select
+local table_insert = _G.table.insert
 
--- Cache WoW API
-local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
-local CreateFrame = CreateFrame
-local GetInventoryItemLink = GetInventoryItemLink
-local InCombatLockdown = InCombatLockdown
-local hooksecurefunc = hooksecurefunc
+local C_Item_IsCosmeticItem = _G.C_Item.IsCosmeticItem
+local CreateFrame = _G.CreateFrame
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local InCombatLockdown = _G.InCombatLockdown
+local hooksecurefunc = _G.hooksecurefunc
+
+local CharacterFrame = _G.CharacterFrame
+local CharacterHeadSlot = _G.CharacterHeadSlot
+local CharacterHandsSlot = _G.CharacterHandsSlot
+local CharacterMainHandSlot = _G.CharacterMainHandSlot
+local CharacterSecondaryHandSlot = _G.CharacterSecondaryHandSlot
+local CharacterModelScene = _G.CharacterModelScene
+local CharacterStatsPane = _G.CharacterStatsPane
+local CharacterLevelText = _G.CharacterLevelText
+local CharacterFrameInsetRight = _G.CharacterFrameInsetRight
+local PaperDollFrame = _G.PaperDollFrame
 
 -- Constants
 local SLOT_SIZE = 36
@@ -218,10 +232,12 @@ end
 
 -- Main Theme Registration
 
+-- REASON: Main entry point for Blizzard Character Frame skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
+
 	if CharacterFrame and CharacterFrame.KKUI_Skinned then
 		return
 	end

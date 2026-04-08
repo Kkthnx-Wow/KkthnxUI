@@ -1,11 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Creates and updates the Boss unit frames.
+-- - Design: Features Health, Power, Portrait, Castbar, and Aura tracking specifically for Boss encounters.
+-- - Events: UNIT_HEALTH, UNIT_POWER, UNIT_AURA, etc. handled by oUF.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- Lua functions
-local select = select
+-- REASON: Localize C-functions (Snake Case)
+local select = _G.select
 
--- WoW API
-local CreateFrame = CreateFrame
+-- REASON: Localize Globals
+local CreateFrame = _G.CreateFrame
+local UnitIsUnit = _G.UnitIsUnit
 
 function Module:CreateBoss()
 	self.mystyle = "boss"
@@ -15,14 +25,15 @@ function Module:CreateBoss()
 	local bossPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	-- REASON: Overlay frame for borders and indicators.
+	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(6)
 
 	Module.CreateHeader(self)
 
+	-- REASON: Health Bar Setup
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetHeight(bossHeight)
 	self.Health:SetPoint("TOPLEFT")
@@ -34,7 +45,7 @@ function Module:CreateBoss()
 	self.Health.frequentUpdates = true
 
 	if C["Party"].Smooth then
-		K:SmoothBar(self.Health)
+		-- K:SmoothBar(self.Health)
 	end
 
 	if C["Party"].HealthbarColor == 3 then
@@ -58,6 +69,7 @@ function Module:CreateBoss()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Boss"].PowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
@@ -69,7 +81,7 @@ function Module:CreateBoss()
 	self.Power.SetFrequentUpdates = true
 
 	if C["Boss"].Smooth then
-		K:SmoothBar(self.Power)
+		-- K:SmoothBar(self.Power)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -92,23 +104,24 @@ function Module:CreateBoss()
 		end
 	end
 
+	-- REASON: Portrait Setup (2D/3D support)
 	if bossPortraitStyle ~= 0 then
 		local Portrait
 
 		if bossPortraitStyle == 4 then
-			Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self)
+			Portrait = CreateFrame("PlayerModel", nil, self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
 		elseif bossPortraitStyle == 5 then
-			Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self.Health)
+			Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
 		else
-			Portrait = self.Health:CreateTexture("KKUI_BossPortrait", "BACKGROUND", nil, 1)
+			Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -141,6 +154,7 @@ function Module:CreateBoss()
 	self:Tag(self.Level, "[nplevel]")
 
 	--if C["Boss"].ShowBuffs then
+	-- REASON: Aura Buffs
 	self.Buffs = CreateFrame("Frame", nil, self)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
@@ -157,8 +171,8 @@ function Module:CreateBoss()
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateButton = Module.PostCreateButton
 	self.Buffs.PostUpdateButton = Module.PostUpdateButton
-	--end
 
+	-- REASON: Aura Debuffs
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "RIGHT"
@@ -173,8 +187,9 @@ function Module:CreateBoss()
 	self.Debuffs.PostCreateButton = Module.PostCreateButton
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
+	-- REASON: Castbar configuration
 	if C["Boss"].Castbars then
-		local Castbar = CreateFrame("StatusBar", "oUF_CastbarBoss", self)
+		local Castbar = CreateFrame("StatusBar", nil, self)
 		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		Castbar:SetFrameLevel(10)
 		Castbar:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
@@ -258,6 +273,7 @@ function Module:CreateBoss()
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateBossTargetGlow, true)
 	end
 
+	-- REASON: Raid Target Indicator
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
@@ -266,6 +282,7 @@ function Module:CreateBoss()
 	end
 	self.RaidTargetIndicator:SetSize(14, 14)
 
+	-- REASON: Resurrection Indicator
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
 	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
@@ -291,6 +308,7 @@ function Module:CreateBoss()
 		Override = Module.UpdateThreat,
 	}
 
+	-- REASON: Range Fader Settings
 	self.RangeFader = {
 		insideAlpha = 1,
 		outsideAlpha = 0.55,

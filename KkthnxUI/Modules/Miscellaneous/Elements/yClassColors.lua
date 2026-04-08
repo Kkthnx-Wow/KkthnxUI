@@ -1,272 +1,265 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Colors player names by class and levels by difficulty in guild, friends, and WHO lists.
+-- - Design: Hooks Blizzard's social list update functions to inject class-colored strings and formatted zone text.
+-- - Events: ADDON_LOADED (Blizzard_GuildUI), Social list updates.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
--- Localize frequently used APIs and globals for performance (Lua 5.1)
-local select = select
-local format = string.format
-local ipairs = ipairs
-local unpack = unpack
-local GetGuildRosterInfo = GetGuildRosterInfo
-local FRIENDS_BUTTON_TYPE_WOW = FRIENDS_BUTTON_TYPE_WOW
-local FRIENDS_BUTTON_TYPE_BNET = FRIENDS_BUTTON_TYPE_BNET
-local BNET_CLIENT_WOW = BNET_CLIENT_WOW
+-- PERF: Localize global functions and environment for faster lookups.
+local ipairs = _G.ipairs
+local select = _G.select
+local string_format = _G.string.format
+local string_gsub = _G.string.gsub
+local unpack = _G.unpack
 
--- Cache K tables
+local _G = _G
+local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
+local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
+local C_FriendList_GetWhoInfo = _G.C_FriendList.GetWhoInfo
+local GetCVar = _G.GetCVar
+local GetGuildRosterInfo = _G.GetGuildRosterInfo
+local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
+local GetRealZoneText = _G.GetRealZoneText
+local HookSecureFunc = _G.hooksecurefunc
+
+-- SG: Constants
+local FRIENDS_BUTTON_TYPE_WOW = _G.FRIENDS_BUTTON_TYPE_WOW
+local FRIENDS_BUTTON_TYPE_BNET = _G.FRIENDS_BUTTON_TYPE_BNET
+local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
+
+-- REASON: Cache K tables for performance in high-frequency list updates.
 local ClassColors = K.ClassColors
 local ClassList = K.ClassList
 
--- Cache some Blizzard API calls that may be used frequently
-local getRealZoneText = GetRealZoneText
-local C_FriendList_GetWhoInfo = C_FriendList.GetWhoInfo
-local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
-local C_BattleNet_GetFriendAccountInfo = C_BattleNet.GetFriendAccountInfo
-
--- Returns a class-colored string or RGB values.
-local function classColor(class, showRGB)
-	local color = ClassColors[ClassList[class] or class]
-	if not color then
-		color = ClassColors["PRIEST"]
+-- SG: Returns a class-colored string or RGB values based on class filename.
+local function getClassColoredString(classIdentifier, returnRGBValues)
+	local colorData = ClassColors[ClassList[classIdentifier] or classIdentifier]
+	if not colorData then
+		colorData = ClassColors["PRIEST"]
 	end
-	if showRGB then
-		return color.r, color.g, color.b
+
+	if returnRGBValues then
+		return colorData.r, colorData.g, colorData.b
 	else
-		return "|c" .. color.colorStr
+		return "|c" .. colorData.colorStr
 	end
 end
 
--- Returns a difficulty-colored level hex string.
-local function diffColor(level)
-	return K.RGBToHex(GetQuestDifficultyColor(level))
+-- SG: Returns a difficulty-colored level hex string.
+local function getLevelDifficultyColorHex(levelValue)
+	return K.RGBToHex(GetQuestDifficultyColor(levelValue))
 end
 
--- Gradually modifies color based on cur/max; used for ranks/reputations.
-local function smoothColor(cur, max, color)
-	local r, g, b = K.oUF:RGBColorGradient(cur, max, unpack(color))
+-- SG: Gradually modifies color based on current/max progression.
+local function getSmoothGradientColorHex(currentProgress, maxProgress, colorTable)
+	local r, g, b = K.oUF:RGBColorGradient(currentProgress, maxProgress, unpack(colorTable))
 	return K.RGBToHex(r, g, b)
 end
 
--- Colors a zone green if it matches the player's current area.
-local function applyZoneColor(text, zone, playerArea)
-	return zone == playerArea and format("|cff00ff00%s|r", text) or text
+-- SG: Colors zone text green if it matches the player's current area.
+local function applyZoneColoring(zoneText, targetZone, currentPlayerZone)
+	return targetZone == currentPlayerZone and string_format("|cff00ff00%s|r", zoneText) or zoneText
 end
 
-local rankColor = { 1, 0, 0, 1, 1, 0, 0, 1, 0 }
-local repColor = { 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1 }
+local GUILD_RANK_COLOR_GRADIENT = { 1, 0, 0, 1, 1, 0, 0, 1, 0 }
+local GUILD_REPUTATION_COLOR_GRADIENT = { 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1 }
 
--- Tracks the current guild view (playerStatus, guildStatus, achievement, reputation, etc.)
-local currentView
-
--- Sets the current guild view, e.g., 'playerStatus' or 'guildStatus'.
-local function setView(view)
+local currentRosterViewType
+local function setGuildRosterView(rosterViewType)
 	if not C["Misc"].YClassColors then
 		return
 	end
-	currentView = view
+	currentRosterViewType = rosterViewType
 end
 
--- Updates a single guild roster button with class colors and zone color.
-local function updateGuildInfo(button, view, playerArea, rank, rankIndex, level, zone, repStanding)
-	if not C["Misc"].YClassColors then
-		return
-	end
-
-	if view == "playerStatus" then
-		button.string1:SetText(diffColor(level) .. level)
-		button.string3:SetText(applyZoneColor(zone, zone, playerArea))
-	elseif view == "guildStatus" and rankIndex and rank then
-		button.string2:SetText(smoothColor(rankIndex, 10, rankColor) .. rank)
-	elseif view == "achievement" then
-		button.string1:SetText(diffColor(level) .. level)
-	elseif view == "reputation" and repStanding then
-		button.string1:SetText(diffColor(level) .. level)
-		button.string3:SetText(smoothColor(repStanding - 4, 5, repColor) .. _G["FACTION_STANDING_LABEL" .. repStanding])
-	end
-end
-
--- Called whenever the guild roster view updates to apply our custom coloring.
-local function updateGuildView()
+-- REASON: Updates individual guild roster rows with colored level, rank, and zone information.
+local function updateGuildRosterButton(rosterButton, rosterViewType, currentPlayerZone, rankName, rankIndex, levelValue, zoneName, reputationStandingID)
 	if not C["Misc"].YClassColors then
 		return
 	end
 
-	currentView = currentView or GetCVar("guildRosterView")
-	local playerArea = getRealZoneText()
-	if not GuildRosterContainer or not GuildRosterContainer.buttons then
+	if rosterViewType == "playerStatus" then
+		rosterButton.string1:SetText(getLevelDifficultyColorHex(levelValue) .. levelValue)
+		rosterButton.string3:SetText(applyZoneColoring(zoneName, zoneName, currentPlayerZone))
+	elseif rosterViewType == "guildStatus" and rankIndex and rankName then
+		rosterButton.string2:SetText(getSmoothGradientColorHex(rankIndex, 10, GUILD_RANK_COLOR_GRADIENT) .. rankName)
+	elseif rosterViewType == "achievement" then
+		rosterButton.string1:SetText(getLevelDifficultyColorHex(levelValue) .. levelValue)
+	elseif rosterViewType == "reputation" and reputationStandingID then
+		rosterButton.string1:SetText(getLevelDifficultyColorHex(levelValue) .. levelValue)
+		rosterButton.string3:SetText(getSmoothGradientColorHex(reputationStandingID - 4, 5, GUILD_REPUTATION_COLOR_GRADIENT) .. _G["FACTION_STANDING_LABEL" .. reputationStandingID])
+	end
+end
+
+-- SG: Iterates through visible guild roster buttons to apply custom colors.
+local function refreshGuildRosterView()
+	if not C["Misc"].YClassColors then
 		return
 	end
 
-	local buttons = GuildRosterContainer.buttons
-	for _, button in ipairs(buttons) do
-		if button:IsShown() and button.online and button.guildIndex then
-			-- Avoid table allocation per row by reading only used fields
-			local _, rank, rankIndex, level, _, zone, _, _, _, _, _, _, _, _, _, repStanding = GetGuildRosterInfo(button.guildIndex)
-			updateGuildInfo(button, currentView, playerArea, rank, rankIndex, level, zone, repStanding)
+	currentRosterViewType = currentRosterViewType or GetCVar("guildRosterView")
+	local currentPlayerZone = GetRealZoneText()
+	local rosterContainer = _G.GuildRosterContainer
+	if not rosterContainer or not rosterContainer.buttons then
+		return
+	end
+
+	for _, rosterButton in ipairs(rosterContainer.buttons) do
+		if rosterButton:IsShown() and rosterButton.online and rosterButton.guildIndex then
+			local _, rankName, rankIndex, levelValue, _, zoneName, _, _, _, _, _, _, _, _, _, reputationStandingID = GetGuildRosterInfo(rosterButton.guildIndex)
+			updateGuildRosterButton(rosterButton, currentRosterViewType, currentPlayerZone, rankName, rankIndex, levelValue, zoneName, reputationStandingID)
 		end
 	end
 end
 
--- Only call hooks for GuildRoster_* after Blizzard_GuildUI is loaded.
-local function updateGuildUI(event, addon)
-	if not C["Misc"].YClassColors then
+local function onGuildUIAddonLoaded(eventName, addonName)
+	if not C["Misc"].YClassColors or addonName ~= "Blizzard_GuildUI" then
 		return
 	end
 
-	if addon ~= "Blizzard_GuildUI" then
-		return
-	end
-
-	-- Wrap these hooks with a quick check, in case of disable
-	hooksecurefunc("GuildRoster_SetView", function(view)
+	HookSecureFunc("GuildRoster_SetView", function(rosterViewType)
 		if not C["Misc"].YClassColors then
 			return
 		end
-		setView(view)
+		setGuildRosterView(rosterViewType)
 	end)
 
-	hooksecurefunc("GuildRoster_Update", function()
+	HookSecureFunc("GuildRoster_Update", function()
 		if not C["Misc"].YClassColors then
 			return
 		end
-		updateGuildView()
+		refreshGuildRosterView()
 	end)
 
-	hooksecurefunc(GuildRosterContainer, "update", function()
+	HookSecureFunc(_G.GuildRosterContainer, "update", function()
 		if not C["Misc"].YClassColors then
 			return
 		end
-		updateGuildView()
+		refreshGuildRosterView()
 	end)
 
-	K:UnregisterEvent(event, updateGuildUI)
+	K:UnregisterEvent(eventName, onGuildUIAddonLoaded)
 end
 
--- Build a local friends level template; avoid mutating Blizzard globals
-local FRIENDS_LEVEL_TEMPLATE_L = (FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s"):gsub("%$d", "%$s"))
+-- REASON: Local localized version of the friends level template to avoid modifying Blizzard's global string.
+local FRIENDS_LEVEL_TEMPLATE_LOCAL = string_gsub(string_gsub(_G.FRIENDS_LEVEL_TEMPLATE, "%%d", "%%s"), "%$d", "%$s")
 
--- Updates a single friend-list button with class and zone colors.
-local function updateFriendButton(button, playerArea)
-	if not C["Misc"].YClassColors or not button or not playerArea then
+local function updateFriendListButton(friendButton, currentPlayerZone)
+	if not C["Misc"].YClassColors or not friendButton or not currentPlayerZone then
 		return
 	end
 
-	local nameText, infoText
-	-- WoW friend
-	if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
-		local info = C_FriendList_GetFriendInfoByIndex(button.id)
-		if info and info.connected then
-			nameText = classColor(info.className) .. info.name .. "|r, " .. format(FRIENDS_LEVEL_TEMPLATE_L, diffColor(info.level) .. info.level .. "|r", info.className)
-			infoText = applyZoneColor(info.area, info.area, playerArea)
+	local nameTextContent, infoTextContent
+	if friendButton.buttonType == FRIENDS_BUTTON_TYPE_WOW then
+		local friendInfo = C_FriendList_GetFriendInfoByIndex(friendButton.id)
+		if friendInfo and friendInfo.connected then
+			nameTextContent = getClassColoredString(friendInfo.className) .. friendInfo.name .. "|r, " .. string_format(FRIENDS_LEVEL_TEMPLATE_LOCAL, getLevelDifficultyColorHex(friendInfo.level) .. friendInfo.level .. "|r", friendInfo.className)
+			infoTextContent = applyZoneColoring(friendInfo.area, friendInfo.area, currentPlayerZone)
 		end
-	-- BNET friend
-	elseif button.buttonType == FRIENDS_BUTTON_TYPE_BNET then
-		local accountInfo = C_BattleNet_GetFriendAccountInfo(button.id)
-		if accountInfo and accountInfo.gameAccountInfo then
-			local gameAccountInfo = accountInfo.gameAccountInfo
-			if gameAccountInfo.isOnline and gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
-				local charName = gameAccountInfo.characterName
-				local class = gameAccountInfo.className or UNKNOWN
-				local zoneName = gameAccountInfo.areaName or UNKNOWN
-				if charName and class then
-					nameText = accountInfo.accountName .. " " .. FRIENDS_WOW_NAME_COLOR_CODE .. "(" .. classColor(class) .. charName .. FRIENDS_WOW_NAME_COLOR_CODE .. ")"
-					infoText = applyZoneColor(zoneName, zoneName, playerArea)
+	elseif friendButton.buttonType == FRIENDS_BUTTON_TYPE_BNET then
+		local bnetAccountInfo = C_BattleNet_GetFriendAccountInfo(friendButton.id)
+		if bnetAccountInfo and bnetAccountInfo.gameAccountInfo then
+			local bnetGameAccountInfo = bnetAccountInfo.gameAccountInfo
+			if bnetGameAccountInfo.isOnline and bnetGameAccountInfo.clientProgram == BNET_CLIENT_WOW then
+				local characterNameStr = bnetGameAccountInfo.characterName
+				local classIdentifier = bnetGameAccountInfo.className or _G.UNKNOWN
+				local zoneNameStr = bnetGameAccountInfo.areaName or _G.UNKNOWN
+				if characterNameStr and classIdentifier then
+					nameTextContent = bnetAccountInfo.accountName .. " " .. _G.FRIENDS_WOW_NAME_COLOR_CODE .. "(" .. getClassColoredString(classIdentifier) .. characterNameStr .. _G.FRIENDS_WOW_NAME_COLOR_CODE .. ")"
+					infoTextContent = applyZoneColoring(zoneNameStr, zoneNameStr, currentPlayerZone)
 				end
 			end
 		end
 	end
 
-	if nameText then
-		button.name:SetText(nameText)
+	if nameTextContent then
+		friendButton.name:SetText(nameTextContent)
 	end
-	if infoText then
-		button.info:SetText(infoText)
+	if infoTextContent then
+		friendButton.info:SetText(infoTextContent)
 	end
 end
 
--- Called whenever the friends list updates (including BNet friends).
-local function UpdateFriendsList()
+local function refreshFriendsList()
 	if not C["Misc"].YClassColors then
 		return
 	end
 
-	local playerArea = getRealZoneText()
-	if not playerArea then
+	local currentPlayerZone = GetRealZoneText()
+	local friendScrollTarget = _G.FriendsListFrame.ScrollBox and _G.FriendsListFrame.ScrollBox.ScrollTarget
+	if not friendScrollTarget or not currentPlayerZone then
 		return
 	end
 
-	local scrollTarget = FriendsListFrame.ScrollBox and FriendsListFrame.ScrollBox.ScrollTarget
-	if not scrollTarget then
-		return
-	end
-
-	local numChildren = scrollTarget:GetNumChildren()
-	for friendIndex = 1, numChildren do
-		local button = select(friendIndex, scrollTarget:GetChildren())
-		if button and button:IsShown() then
-			updateFriendButton(button, playerArea)
+	local childCount = friendScrollTarget:GetNumChildren()
+	for friendIndex = 1, childCount do
+		local friendButton = select(friendIndex, friendScrollTarget:GetChildren())
+		if friendButton and friendButton:IsShown() then
+			updateFriendListButton(friendButton, currentPlayerZone)
 		end
 	end
 end
 
-local columnTable = {
+local WHO_COLUMN_DATA_MAP = {
 	["zone"] = "",
 	["guild"] = "",
 	["race"] = "",
 }
-local currentType = "zone"
+local currentWhoSortType = "zone"
+local isSocialHookInstalled = false
 
-local hooksInstalled = false
-
-function Module:UpdateYClassColors()
+function Module:createYClassColorsInfrastructure()
 	if not C["Misc"].YClassColors then
-		-- Remove event registrations
-		K:UnregisterEvent("ADDON_LOADED", updateGuildUI)
+		K:UnregisterEvent("ADDON_LOADED", onGuildUIAddonLoaded)
+		return
+	end
 
-		-- print("yClassColors: Disabled.")
-	else
-		if not hooksInstalled then
-			hooksInstalled = true
+	if not isSocialHookInstalled then
+		isSocialHookInstalled = true
 
-			-- Listen for Blizzard_GuildUI
-			K:RegisterEvent("ADDON_LOADED", updateGuildUI)
+		K:RegisterEvent("ADDON_LOADED", onGuildUIAddonLoaded)
 
-			-- Friends list
-			hooksecurefunc(FriendsListFrame.ScrollBox, "Update", function()
-				if C["Misc"].YClassColors then
-					UpdateFriendsList()
+		HookSecureFunc(_G.FriendsListFrame.ScrollBox, "Update", function()
+			if C["Misc"].YClassColors then
+				refreshFriendsList()
+			end
+		end)
+
+		HookSecureFunc(_G.C_FriendList, "SortWho", function(sortType)
+			currentWhoSortType = sortType
+		end)
+
+		HookSecureFunc(_G.WhoFrame.ScrollBox, "Update", function(whoScrollBox)
+			if not C["Misc"].YClassColors then
+				return
+			end
+
+			local scrollChildCount = whoScrollBox.ScrollTarget:GetNumChildren()
+			if not scrollChildCount then
+				return
+			end
+
+			for whoIndex = 1, scrollChildCount do
+				local whoRosterButton = select(whoIndex, whoScrollBox.ScrollTarget:GetChildren())
+				local whoInfoData = C_FriendList_GetWhoInfo(whoRosterButton.index)
+				if whoInfoData then
+					local guildName, levelValue, raceStr, areaName, classIdentifier = whoInfoData.fullGuildName, whoInfoData.level, whoInfoData.raceStr, whoInfoData.area, whoInfoData.filename
+					WHO_COLUMN_DATA_MAP.zone = areaName or ""
+					WHO_COLUMN_DATA_MAP.guild = guildName or ""
+					WHO_COLUMN_DATA_MAP.race = raceStr or ""
+
+					whoRosterButton.Name:SetTextColor(getClassColoredString(classIdentifier, true))
+					whoRosterButton.Level:SetText(getLevelDifficultyColorHex(levelValue) .. levelValue)
+					whoRosterButton.Variable:SetText(WHO_COLUMN_DATA_MAP[currentWhoSortType])
 				end
-			end)
-
-			-- SortWho (used in the WhoFrame)
-			hooksecurefunc(C_FriendList, "SortWho", function(sortType)
-				currentType = sortType
-			end)
-
-			-- WhoFrame updates
-			hooksecurefunc(WhoFrame.ScrollBox, "Update", function(self)
-				if not C["Misc"].YClassColors then
-					return
-				end
-
-				local numChildren = self.ScrollTarget:GetNumChildren()
-				if not numChildren then
-					return
-				end
-				for whoIndex = 1, numChildren do
-					local button = select(whoIndex, self.ScrollTarget:GetChildren())
-					local info = C_FriendList_GetWhoInfo(button.index)
-					if info then
-						local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
-						columnTable.zone = zone or ""
-						columnTable.guild = guild or ""
-						columnTable.race = race or ""
-						button.Name:SetTextColor(classColor(class, true))
-						button.Level:SetText(diffColor(level) .. level)
-						button.Variable:SetText(columnTable[currentType])
-					end
-				end
-			end)
-		end
-
-		-- print("yClassColors: Enabled.")
+			end
+		end)
 	end
 end
+
+Module:RegisterMisc("yClassColors", Module.createYClassColorsInfrastructure)

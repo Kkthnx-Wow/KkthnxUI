@@ -1,22 +1,35 @@
--- KkthnxUI Namespace
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Adds copyable Wowhead links to the Achievement and World Map frames.
+-- - Design: Creates small edit boxes that automatically populate with Wowhead URLs.
+-- - Events: ADDON_LOADED (for Blizzard_AchievementUI), SUPER_TRACKING_CHANGED
+-----------------------------------------------------------------------------]]
+
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("WorldMap")
 
--- WoW API Functions
-local GameTooltip = GameTooltip
-local GetAchievementLink = GetAchievementLink
-local GetQuestLink = GetQuestLink
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local GetSuperTrackedQuestID = C_SuperTrack.GetSuperTrackedQuestID
-local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
-local setmetatable = setmetatable
+-- PERF: Localize global functions and environment for faster lookups.
+local setmetatable = _G.setmetatable
+local string_match = _G.string.match
+local unpack = _G.unpack
 
--- Internal singletons to avoid duplicate frames/hooks
-local _achievementEditBox
-local _questEditBox
+local _G = _G
+local C_AddOns = _G.C_AddOns
+local C_SuperTrack = _G.C_SuperTrack
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local GetAchievementLink = _G.GetAchievementLink
+local GetQuestLink = _G.GetQuestLink
+local WorldMapFrame = _G.WorldMapFrame
+local hooksecurefunc = _G.hooksecurefunc
 
--- Wowhead URL Components
+-- REASON: Internal singletons to avoid duplicate frames/hooks across sessions.
+local achievementEditBoxGlobal
+local questEditBoxGlobal
+
+-- REASON: Map locales to Wowhead subdomains for localized links.
 local subDomain = (setmetatable({
 	ruRU = "ru",
 	frFR = "fr",
@@ -34,58 +47,68 @@ local subDomain = (setmetatable({
 		return "www"
 	end,
 }))[K.Locale]
+
 local wowheadLoc = subDomain .. ".wowhead.com"
 local urlQuestIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t"
 
--- Achievement Frame Functionality
-local function InitializeAchievementLink()
-	if _achievementEditBox then
-		return
-	end
-	local achievementEditBox = CreateFrame("EditBox", nil, AchievementFrame)
-	achievementEditBox:ClearAllPoints()
-	achievementEditBox:SetPoint("BOTTOMRIGHT", -50, 1)
-	achievementEditBox:SetHeight(16)
-	achievementEditBox:SetFontObject("GameFontNormalSmall")
-	achievementEditBox:SetBlinkSpeed(0)
-	achievementEditBox:SetJustifyH("RIGHT")
-	achievementEditBox:SetAutoFocus(false)
-	achievementEditBox:EnableKeyboard(false)
-	achievementEditBox:SetHitRectInsets(90, 0, 0, 0)
-	achievementEditBox:SetScript("OnKeyDown", function() end)
-	achievementEditBox:SetScript("OnMouseUp", function()
-		if achievementEditBox:IsMouseOver() then
-			achievementEditBox:HighlightText()
+-- PERF: Helper to create copyable link editboxes with consistent behavior.
+local function createLinkEditBox(parent, point, x, y, fontObject)
+	local eb = CreateFrame("EditBox", nil, parent)
+	eb:SetHeight(16)
+	eb:SetPoint(point, x, y)
+	eb:SetFontObject(fontObject)
+	eb:SetBlinkSpeed(0)
+	eb:SetAutoFocus(false)
+	eb:EnableKeyboard(false)
+	eb:SetScript("OnKeyDown", K.Noop)
+
+	eb.hiddenText = eb:CreateFontString(nil, "ARTWORK", fontObject)
+	eb.hiddenText:Hide()
+
+	eb:SetScript("OnMouseUp", function()
+		if eb:IsMouseOver() then
+			eb:HighlightText()
 		else
-			achievementEditBox:HighlightText(0, 0)
+			eb:HighlightText(0, 0)
 		end
 	end)
 
-	-- Create hidden font string (used for setting width of editbox)
-	achievementEditBox.hiddenText = achievementEditBox:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-	achievementEditBox.hiddenText:Hide()
+	return eb
+end
+
+local function formatWowheadLink(id, type)
+	return urlQuestIcon .. "https://" .. wowheadLoc .. "/" .. type .. "=" .. id
+end
+
+-- REASON: Achievement Frame Interface. Adds an edit box to the Achievement Frame for easy link copying.
+local function initializeAchievementLink()
+	if achievementEditBoxGlobal then
+		return
+	end
+
+	local achievementEditBox = createLinkEditBox(_G.AchievementFrame, "BOTTOMRIGHT", -50, 1, "GameFontNormalSmall")
+	achievementEditBox:SetJustifyH("RIGHT")
+	achievementEditBox:SetHitRectInsets(90, 0, 0, 0)
 
 	local lastAchievementLink
 
-	local function SetAchievementLink(self, achievementID)
+	local function setAchievementLink(_, achievementID)
 		if achievementID then
-			local achievementURL = urlQuestIcon .. "https://" .. wowheadLoc .. "/achievement=" .. achievementID
+			local achievementURL = formatWowheadLink(achievementID, "achievement")
 			achievementEditBox:SetText(achievementURL)
 			achievementEditBox.hiddenText:SetText(achievementURL)
 			achievementEditBox:SetWidth(achievementEditBox.hiddenText:GetStringWidth() + 90)
 
-			local achievementTitle = GetAchievementLink(achievementID)
-			if achievementTitle then
-				achievementEditBox.tooltipText = achievementTitle:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
-			end
+			local achievementLink = GetAchievementLink(achievementID)
+			achievementEditBox.tooltipText = achievementLink and (string_match(achievementLink, "%[(.-)%]") .. "|n" .. L["Press To Copy"]) or ""
 
 			achievementEditBox:Show()
 			lastAchievementLink = achievementEditBox:GetText()
 		end
 	end
 
-	hooksecurefunc(AchievementTemplateMixin, "DisplayObjectives", SetAchievementLink)
-	hooksecurefunc("AchievementFrameComparisonTab_OnClick", function(self)
+	hooksecurefunc(_G.AchievementTemplateMixin, "DisplayObjectives", setAchievementLink)
+	hooksecurefunc("AchievementFrameComparisonTab_OnClick", function()
 		achievementEditBox:Hide()
 	end)
 
@@ -106,75 +129,44 @@ local function InitializeAchievementLink()
 		GameTooltip:Hide()
 	end)
 
-	_achievementEditBox = achievementEditBox
+	achievementEditBoxGlobal = achievementEditBox
 end
 
--- World Map Functionality
-local function InitializeQuestLink()
-	if _questEditBox then
+-- REASON: World Map Interface. Adds an edit box to the World Map for quest links.
+local function initializeQuestLink()
+	if questEditBoxGlobal then
 		return
 	end
-	local questEditBox = CreateFrame("EditBox", nil, WorldMapFrame.BorderFrame)
+
+	local questEditBox = createLinkEditBox(WorldMapFrame.BorderFrame, "TOPLEFT", 100, -4, "GameFontNormal")
 	questEditBox:SetFrameLevel(501)
-	questEditBox:ClearAllPoints()
-	questEditBox:SetPoint("TOPLEFT", 100, -4)
-	questEditBox:SetHeight(16)
-	questEditBox:SetFontObject("GameFontNormal")
-	questEditBox:SetBlinkSpeed(0)
-	questEditBox:SetAutoFocus(false)
-	questEditBox:EnableKeyboard(false)
 	questEditBox:SetHitRectInsets(0, 90, 0, 0)
-	questEditBox:SetScript("OnKeyDown", function() end)
-	questEditBox:SetScript("OnMouseUp", function()
-		if questEditBox:IsMouseOver() then
-			questEditBox:HighlightText()
-		else
-			questEditBox:HighlightText(0, 0)
-		end
-	end)
 
-	-- Create hidden font string (used for setting width of editbox)
-	questEditBox.hiddenText = questEditBox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	questEditBox.hiddenText:Hide()
-
-	local function SetQuestLink()
-		local questID
-		if QuestMapFrame.DetailsFrame:IsShown() then
-			questID = QuestMapFrame_GetDetailQuestID()
-		else
-			questID = GetSuperTrackedQuestID()
-		end
-
-		if questID then
-			if questID == 0 then
-				questEditBox:Hide()
-			else
-				questEditBox:Show()
-			end
-
-			local questURL = urlQuestIcon .. "https://" .. wowheadLoc .. "/quest=" .. questID
+	local function updateQuestURL()
+		local questID = _G.QuestMapFrame.DetailsFrame:IsShown() and _G.QuestMapFrame_GetDetailQuestID() or C_SuperTrack.GetSuperTrackedQuestID()
+		if questID and questID ~= 0 then
+			local questURL = formatWowheadLink(questID, "quest")
 			questEditBox:SetText(questURL)
 			questEditBox.hiddenText:SetText(questURL)
 			questEditBox:SetWidth(questEditBox.hiddenText:GetStringWidth() + 90)
 
-			local questTitle = GetQuestLink(questID)
-			if questTitle then
-				questEditBox.tooltipText = questTitle:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
-			else
-				questEditBox.tooltipText = ""
-				if questEditBox:IsMouseOver() and GameTooltip:IsShown() then
-					GameTooltip:Hide()
-				end
+			local questLink = GetQuestLink(questID)
+			questEditBox.tooltipText = questLink and (string_match(questLink, "%[(.-)%]") .. "|n" .. L["Press To Copy"]) or ""
+			if not questLink and questEditBox:IsMouseOver() then
+				GameTooltip:Hide()
 			end
+			questEditBox:Show()
+		else
+			questEditBox:Hide()
 		end
 	end
 
 	questEditBox:RegisterEvent("SUPER_TRACKING_CHANGED")
-	questEditBox:SetScript("OnEvent", SetQuestLink)
-	SetQuestLink()
+	questEditBox:SetScript("OnEvent", updateQuestURL)
+	updateQuestURL()
 
-	hooksecurefunc("QuestMapFrame_ShowQuestDetails", SetQuestLink)
-	hooksecurefunc("QuestMapFrame_CloseQuestDetails", SetQuestLink)
+	hooksecurefunc("QuestMapFrame_ShowQuestDetails", updateQuestURL)
+	hooksecurefunc("QuestMapFrame_CloseQuestDetails", updateQuestURL)
 
 	questEditBox:SetScript("OnEnter", function()
 		questEditBox:HighlightText()
@@ -188,44 +180,44 @@ local function InitializeQuestLink()
 		questEditBox:HighlightText(0, 0)
 		questEditBox:ClearFocus()
 		GameTooltip:Hide()
-		SetQuestLink()
+		updateQuestURL()
 	end)
 
-	_questEditBox = questEditBox
+	questEditBoxGlobal = questEditBox
 end
 
--- Main Function
 function Module:CreateWowHeadLinks()
-	if not C["Misc"].ShowWowHeadLinks or IsAddOnLoaded("Leatrix_Maps") then
-		-- If previously created, hide and unregister to avoid leaks
-		if _questEditBox then
-			_questEditBox:UnregisterEvent("SUPER_TRACKING_CHANGED")
-			_questEditBox:SetScript("OnEvent", nil)
-			_questEditBox:Hide()
+	if not C["Misc"].ShowWowHeadLinks or C_AddOns.IsAddOnLoaded("Leatrix_Maps") then
+		-- REASON: Features disabled or Leatrix Maps conflict: unregister events and hide frames.
+		if questEditBoxGlobal then
+			questEditBoxGlobal:UnregisterEvent("SUPER_TRACKING_CHANGED")
+			questEditBoxGlobal:SetScript("OnEvent", nil)
+			questEditBoxGlobal:Hide()
 		end
-		if _achievementEditBox then
-			_achievementEditBox:Hide()
+		if achievementEditBoxGlobal then
+			achievementEditBoxGlobal:Hide()
 		end
 		return
 	end
 
+	-- REASON: Achievements UI is lod, so we wait for its loading event.
 	if C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
-		InitializeAchievementLink()
+		initializeAchievementLink()
 	else
-		local waitAchievementsFrame = CreateFrame("FRAME")
-		waitAchievementsFrame:RegisterEvent("ADDON_LOADED")
-		waitAchievementsFrame:SetScript("OnEvent", function(self, _, addon)
+		local achievementsWaiter = CreateFrame("Frame")
+		achievementsWaiter:RegisterEvent("ADDON_LOADED")
+		achievementsWaiter:SetScript("OnEvent", function(self, _, addon)
 			if addon == "Blizzard_AchievementUI" then
-				InitializeAchievementLink()
+				initializeAchievementLink()
 				self:UnregisterAllEvents()
 			end
 		end)
 	end
 
-	InitializeQuestLink()
+	initializeQuestLink()
 
-	-- Hide the title text
-	if WorldMapFrameTitleText then
-		WorldMapFrameTitleText:Hide()
+	-- REASON: Hide the default WorldMap title text to make room for our Wowhead link editbox.
+	if _G.WorldMapFrameTitleText then
+		_G.WorldMapFrameTitleText:Hide()
 	end
 end

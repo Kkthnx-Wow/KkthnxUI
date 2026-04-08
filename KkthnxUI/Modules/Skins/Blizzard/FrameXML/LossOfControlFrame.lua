@@ -1,13 +1,27 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Loss of Control frame.
+-- - Design: Applies custom borders, icon coordinates, and positions the frame with a mover.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local CreateFrame = CreateFrame
-local UIParent = UIParent
-local hooksecurefunc = hooksecurefunc
-local select = select
-local table_insert = table.insert
-local unpack = unpack
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local hooksecurefunc = _G.hooksecurefunc
+local select = _G.select
+local table_insert = _G.table.insert
+local unpack = _G.unpack
+
+local LossOfControlFrame = _G.LossOfControlFrame
 
 -- Function to skin the LossOfControl frame
+-- REASON: Main entry point for Blizzard Loss of Control Frame skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

@@ -30,23 +30,6 @@ local function CreateActionBarsCategory()
 		K:GetModule("ActionBar"):UpdateBarVisibility()
 	end
 
-	local function SetABFaderState()
-		local ActionBarModule = K:GetModule("ActionBar")
-		if not ActionBarModule.fadeParent then
-			return
-		end
-		ActionBarModule.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
-	end
-
-	local function UpdateABFaderState()
-		local ActionBarModule = K:GetModule("ActionBar")
-		if not ActionBarModule.fadeParent then
-			return
-		end
-		ActionBarModule:UpdateFaderState()
-		ActionBarModule.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
-	end
-
 	local function UpdateActionbarHotkeys()
 		K:GetModule("ActionBar"):UpdateBarConfig()
 	end
@@ -101,7 +84,6 @@ local function CreateActionBarsCategory()
 	GUI:CreateSlider(petBarSection, "ActionBar.BarPetSize", L["Button Size"], 20, 80, 1, L["BarPetSize Desc"], UpdateActionBarPetScale)
 	GUI:CreateSlider(petBarSection, "ActionBar.BarPetPerRow", L["Button PerRow"], 1, 12, 1, L["BarPetPerRow Desc"], UpdateActionBarPetScale)
 	GUI:CreateSlider(petBarSection, "ActionBar.BarPetFont", L["Button FontSize"], 8, 20, 1, L["BarPetFont Desc"], UpdateActionBarPetScale)
-	GUI:CreateSwitch(petBarSection, "ActionBar.BarPetFade", L["Enable Fade for Pet Bar"], L["Allows the Pet Bar to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- Stance Bar
 	local stanceBarSection = GUI:AddSection(actionBarCategory, L["ActionBar Stance"])
@@ -109,7 +91,6 @@ local function CreateActionBarsCategory()
 	GUI:CreateSlider(stanceBarSection, "ActionBar.BarStanceSize", L["Button Size"], 20, 80, 1, L["BarStanceSize Desc"], UpdateActionBarStance)
 	GUI:CreateSlider(stanceBarSection, "ActionBar.BarStancePerRow", L["Button PerRow"], 1, 12, 1, L["BarStancePerRow Desc"], UpdateActionBarStance)
 	GUI:CreateSlider(stanceBarSection, "ActionBar.BarStanceFont", L["Button FontSize"], 8, 20, 1, L["BarStanceFont Desc"], UpdateActionBarStance)
-	GUI:CreateSwitch(stanceBarSection, "ActionBar.BarStanceFade", L["Enable Fade for Stance Bar"], L["Allows the Stance Bar to fade based on the specified conditions"], UpdateABFaderState)
 
 	-- Vehicle Button
 	local vehicleSection = GUI:AddSection(actionBarCategory, L["ActionBar Vehicle"])
@@ -129,17 +110,6 @@ local function CreateActionBarsCategory()
 	GUI:CreateSwitch(togglesSection, "ActionBar.OverrideWA", L["Enable OverrideWA"], L["OverrideWA Desc"])
 	GUI:CreateSlider(togglesSection, "ActionBar.MmssTH", L["MMSSThreshold"], 60, 600, 1, L["MMSSThresholdTip"])
 	GUI:CreateSlider(togglesSection, "ActionBar.TenthTH", L["TenthThreshold"], 0, 60, 1, L["TenthThresholdTip"])
-
-	-- Fader Options
-	local faderSection = GUI:AddSection(actionBarCategory, L["Fader Options"])
-	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeGlobal", L["Enable Global Fade"], L["BarFadeGlobal Desc"])
-	GUI:CreateSlider(faderSection, "ActionBar.BarFadeAlpha", L["Fade Alpha"], 0, 1, 0.1, L["BarFadeAlpha Desc"], SetABFaderState)
-	GUI:CreateSlider(faderSection, "ActionBar.BarFadeDelay", L["Fade Delay"], 0, 3, 0.1, L["BarFadeDelay Desc"])
-	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeCombat", L["Fade Out of Combat"], L["BarFadeCombat Desc"])
-	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeTarget", L["Fade without Target"], L["BarFadeTarget Desc"])
-	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeCasting", L["Fade While Casting"], L["BarFadeCasting Desc"])
-	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeHealth", L["Fade on Full Health"], L["BarFadeHealth Desc"])
-	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeVehicle", L["Fade in Vehicle"], L["BarFadeVehicle Desc"])
 end
 
 -- Announcements
@@ -317,6 +287,7 @@ local function CreateAutomationCategory()
 
 	-- Miscellaneous
 	local miscSection = GUI:AddSection(category, L["Miscellaneous Options"] or "Miscellaneous Options")
+	GUI:CreateSwitch(miscSection, "Automation.AutoDelves", L["Auto Accept Delve Powers"], L["AutoDelves Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoGoodbye", L["Say Goodbye After Dungeon Completion"], L["AutoGoodbye Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoKeystone", L["Auto Place Mythic Keystones"], L["AutoKeystone Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoRelease", L["Auto Release in Battlegrounds & Arenas"], L["AutoRelease Desc"])
@@ -1078,6 +1049,13 @@ local function CreateNameplateCategory()
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.AKSProgress", L["Show AngryKeystones Progress"], "Display AngryKeystones progress information on nameplates", refreshNameplates)
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.PlateAuras", "Target Nameplate Auras", "Show auras on target nameplates", refreshNameplates)
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.QuestIndicator", L["Quest Progress Indicator"], "Show quest progress indicators on nameplates", refreshNameplates)
+
+	local questIndicatorStyleOptions = {
+		{ text = "Standard", value = 1 },
+		{ text = "Enhanced (Icons)", value = 2 },
+	}
+	GUI:CreateDropdown(miscellaneousNameplateSection, "Nameplate.QuestIconStyle", "Quest Icon Style", questIndicatorStyleOptions, "Choose the visual style for quest icons", refreshNameplates)
+
 	GUI:CreateSwitch(miscellaneousNameplateSection, "Nameplate.Smooth", L["Smooth Bars Transition"], "Enable smooth animations for nameplate bars", refreshNameplates)
 
 	-- Sizes
@@ -1090,6 +1068,7 @@ local function CreateNameplateCategory()
 	GUI:CreateSlider(sizesNameplateSection, "Nameplate.PlateWidth", L["Nameplate Width"], 80, 240, 1, "Width of nameplate bars", refreshNameplates)
 	GUI:CreateSlider(sizesNameplateSection, "Nameplate.VerticalSpacing", L["Nameplate Vertical Spacing"], 0.5, 2.5, 0.1, "Vertical spacing between stacked nameplates", refreshNameplates)
 	GUI:CreateSlider(sizesNameplateSection, "Nameplate.SelectedScale", L["Selected Nameplate Scale"], 1, 1.4, 0.1, L["SelectedScale Desc"], refreshNameplates)
+	GUI:CreateSlider(sizesNameplateSection, "Nameplate.ExecuteRatio", "Execute Ratio", 0, 50, 1, "Health percentage for execute range coloring", refreshNameplates)
 
 	-- Player Nameplate Toggles
 	local playerTogglesSection = GUI:AddSection(nameplateCategory, L["Player Nameplate Toggles"])
@@ -1112,6 +1091,10 @@ local function CreateNameplateCategory()
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.SecureColor", L["Secure Color"], "Color for secure threat level", refreshNameplates)
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.TargetColor", "Selected Target Coloring", "Color for targeted nameplates", refreshNameplates)
 	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.TransColor", L["Transition Color"], "Color for threat transition states", refreshNameplates)
+	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.ExecuteColor", "Execute Color", "Color for health bars in execute range", refreshNameplates)
+	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.QuestSkullColor", "Quest Kill Color", "Color for quest kill objectives", refreshNameplates)
+	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.QuestItemColor", "Quest Item Color", "Color for quest item objectives", refreshNameplates)
+	GUI:CreateColorPicker(colorsNameplateSection, "Nameplate.QuestChatColor", "Quest Chat Color", "Color for quest interaction objectives", refreshNameplates)
 end
 
 -- Party
@@ -1537,14 +1520,6 @@ local function CreateUnitframeCategory()
 	GUI:CreateSwitch(generalUnitframeSection, "Unitframe.Stagger", L["Show |CFF00FF96Monk|r Stagger Bar"], "Display the stagger bar for Monk tanks")
 	GUI:CreateSlider(generalUnitframeSection, "Unitframe.AllTextScale", L["(TEST) Scale All Unitframe Texts"], 0.8, 1.5, 0.05, L["AllTextScale Desc"], UpdateUFTextScale)
 
-	-- Combat Text
-	local combatTextSection = GUI:AddSection(unitframeCategory, L["Combat Text"])
-	GUI:CreateSwitch(combatTextSection, "Unitframe.CombatText", enableTextColor .. L["Enable Simple CombatText"], "Enable floating combat text display")
-	GUI:CreateSwitch(combatTextSection, "Unitframe.AutoAttack", L["Show AutoAttack Damage"], "Display auto-attack damage in combat text")
-	GUI:CreateSwitch(combatTextSection, "Unitframe.FCTOverHealing", L["Show Full OverHealing"], "Show full overhealing amounts in combat text")
-	GUI:CreateSwitch(combatTextSection, "Unitframe.HotsDots", L["Show Hots and Dots"], "Display heal over time and damage over time effects")
-	GUI:CreateSwitch(combatTextSection, "Unitframe.PetCombatText", L["Pet's Healing/Damage"], "Show combat text for pet damage and healing")
-
 	-- Player - General
 	local playerGeneralSection = GUI:AddSection(unitframeCategory, PLAYER .. " - General")
 	GUI:CreateSwitch(playerGeneralSection, "Unitframe.AdditionalPower", L["Show Additional Mana Power (|CFFFF7D0ADruid|r, |CFFFFFFFFPriest|r, |CFF0070DEShaman|r)"], "Display additional power bars for classes that use multiple resources")
@@ -1571,14 +1546,6 @@ local function CreateUnitframeCategory()
 	GUI:CreateSlider(playerFrameSection, "Unitframe.PlayerHealthHeight", L["Player Frame Height"], 20, 75, 1, "Height of the player health bar", UpdateUnitPlayerSize)
 	GUI:CreateSlider(playerFrameSection, "Unitframe.PlayerHealthWidth", L["Player Frame Width"], 100, 300, 1, "Width of the player frame", UpdateUnitPlayerSize)
 	GUI:CreateSlider(playerFrameSection, "Unitframe.PlayerPowerHeight", L["Player Power Bar Height"], 10, 40, 1, L["PlayerPowerHeight Desc"], UpdateUnitPlayerSize)
-
-	-- Player - Swing Bar
-	local playerSwingSection = GUI:AddSection(unitframeCategory, PLAYER .. " - Swing Bar")
-	GUI:CreateSwitch(playerSwingSection, "Unitframe.SwingBar", L["Unitframe Swingbar"], "Enable swing timer bar for melee attacks")
-	GUI:CreateSwitch(playerSwingSection, "Unitframe.SwingTimer", L["Unitframe Swingbar Timer"], "Show timer text on the swing bar")
-	GUI:CreateSwitch(playerSwingSection, "Unitframe.OffOnTop", L["Offhand timer on top"], L["OffOnTop Desc"])
-	GUI:CreateSlider(playerSwingSection, "Unitframe.SwingWidth", L["Unitframe SwingBar Width"], 50, 1000, 1, L["SwingWidth Desc"])
-	GUI:CreateSlider(playerSwingSection, "Unitframe.SwingHeight", L["Unitframe SwingBar Height"], 1, 50, 1, L["SwingHeight Desc"])
 
 	-- Target
 	local targetUnitframeSection = GUI:AddSection(unitframeCategory, TARGET)

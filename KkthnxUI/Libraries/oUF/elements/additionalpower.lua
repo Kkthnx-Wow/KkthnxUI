@@ -10,7 +10,7 @@ AdditionalPower - A `StatusBar` that is used to display the player's additional 
 
 ## Sub-Widgets
 
-.bg - A `Texture` used as a background. Inherits the widget's color.
+.CostPrediction - A `StatusBar` used to represent the power cost of spells on top of the AdditionalPower element.
 
 ## Notes
 
@@ -20,20 +20,14 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 .frequentUpdates - Indicates whether to use UNIT_POWER_FREQUENT instead UNIT_POWER_UPDATE to update the bar (boolean)
 .displayPairs    - Use to override display pairs. (table)
-.smoothGradient  - 9 color values to be used with the .colorSmooth option (table)
+.smoothing       - Which status bar smoothing method to use, defaults to `Enum.StatusBarInterpolation.Immediate` (number)
 
 The following options are listed by priority. The first check that returns true decides the color of the bar.
 
-.colorPower  - Use `self.colors.power[token]` to color the bar based on the player's additional power type
-               (boolean)
-.colorClass  - Use `self.colors.class[class]` to color the bar based on unit class. `class` is defined by the
-               second return of [UnitClass](https://warcraft.wiki.gg/wiki/API_UnitClass) (boolean)
-.colorSmooth - Use `self.colors.smooth` to color the bar with a smooth gradient based on the player's current
-               additional power percentage (boolean)
-
-## Sub-Widget Options
-
-.multiplier - Used to tint the background based on the widget's R, G and B values. Defaults to 1 (number)[0-1]
+.colorPower       - Use `self.colors.power[token]` to color the bar based on the player's additional power type
+                    (boolean)
+.colorPowerSmooth - Use color curve from `self.colors.power[token]` to color the bar with a smooth gradient based on the
+                    player's current power percentage. Requires `.colorPower` to be enabled (boolean)
 
 ## Examples
 
@@ -44,20 +38,22 @@ The following options are listed by priority. The first check that returns true 
     AdditionalPower:SetPoint('LEFT')
     AdditionalPower:SetPoint('RIGHT')
 
-    -- Add a background
-    local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
-    Background:SetAllPoints(AdditionalPower)
-    Background:SetTexture(1, 1, 1, .5)
+    -- Optionally add CostPrediction sub-widget
+    local CostPrediction = CreateFrame('StatusBar', nil, AdditionalPower)
+    CostPrediction:SetReverseFill(true)
+    CostPrediction:SetPoint('TOP')
+    CostPrediction:SetPoint('BOTTOM')
+    CostPrediction:SetPoint('RIGHT', AdditionalPower:GetStatusBarTexture())
+    AdditionalPower.CostPrediction = CostPrediction
 
     -- Register it with oUF
-    AdditionalPower.bg = Background
     self.AdditionalPower = AdditionalPower
 --]]
 
 local _, ns = ...
 local oUF = ns.oUF
 
-local _, playerClass = UnitClass('player')
+local playerClass = UnitClassBase('player')
 
 -- sourced from Blizzard_UnitFrame/AlternatePowerBar.lua
 local ALT_POWER_BAR_PAIR_DISPLAY_INFO = _G.ALT_POWER_BAR_PAIR_DISPLAY_INFO
@@ -69,39 +65,27 @@ local function UpdateColor(self, event, unit, powerType)
 	if(not (unit and UnitIsUnit(unit, 'player') and powerType == ADDITIONAL_POWER_BAR_NAME)) then return end
 	local element = self.AdditionalPower
 
-	local r, g, b, color
+	local color
 	if(element.colorPower) then
 		color = self.colors.power[ADDITIONAL_POWER_BAR_INDEX]
-	elseif(element.colorClass) then
-		color = self.colors.class[playerClass]
-	elseif(element.colorSmooth) then
-		r, g, b = self:ColorGradient(element.cur or 1, element.max or 1, unpack(element.smoothGradient or self.colors.smooth))
-	end
 
-	if(color) then
-		r, g, b = color[1], color[2], color[3]
-	end
-
-	if(b) then
-		element:SetStatusBarColor(r, g, b)
-
-		local bg = element.bg
-		if(bg) then
-			local mu = bg.multiplier or 1
-			bg:SetVertexColor(r * mu, g * mu, b * mu)
+		if(element.colorPowerSmooth and color and color:GetCurve()) then
+			color = UnitPowerPercent(unit, true, color:GetCurve())
 		end
 	end
 
-	--[[ Callback: AdditionalPower:PostUpdateColor(r, g, b)
+	if(color) then
+		element:SetStatusBarColor(color:GetRGB())
+	end
+
+	--[[ Callback: AdditionalPower:PostUpdateColor(color)
 	Called after the element color has been updated.
 
-	* self - the AdditionalPower element
-	* r    - the red component of the used color (number)[0-1]
-	* g    - the green component of the used color (number)[0-1]
-	* b    - the blue component of the used color (number)[0-1]
+	* self  - the AdditionalPower element
+	* color - the used ColorMixin-based object (table?)
 	--]]
 	if(element.PostUpdateColor) then
-		element:PostUpdateColor(r, g, b)
+		element:PostUpdateColor(color)
 	end
 end
 
@@ -121,7 +105,7 @@ local function Update(self, event, unit, powerType)
 
 	local cur, max = UnitPower('player', ADDITIONAL_POWER_BAR_INDEX), UnitPowerMax('player', ADDITIONAL_POWER_BAR_INDEX)
 	element:SetMinMaxValues(0, max)
-	element:SetValue(cur)
+	element:SetValue(cur, element.smoothing)
 
 	element.cur = cur
 	element.max = max
@@ -138,6 +122,85 @@ local function Update(self, event, unit, powerType)
 	end
 end
 
+local function UpdatePrediction(self, event, unit)
+	if(self.unit ~= unit) then return end
+
+	local element = self.AdditionalPower
+
+	--[[ Callback: AdditionalPower:PreUpdatePrediction(unit)
+	Called before the element has been updated.
+
+	* self - the AdditionalPower element
+	* unit - the unit for which the update has been triggered (string)
+	--]]
+	if(element.PreUpdatePrediction) then
+		element:PreUpdatePrediction(unit)
+	end
+
+	local _, _, _, startTime, endTime, _, _, _, spellID = UnitCastingInfo(unit)
+	local cost = 0
+
+	if(event == 'UNIT_SPELLCAST_START' and startTime ~= endTime) then
+		local costTable = C_Spell.GetSpellPowerCost(spellID)
+		if(not costTable) then return end
+
+		-- hasRequiredAura is always false if there's only 1 subtable
+		local checkRequiredAura = #costTable > 1
+
+		for _, costInfo in next, costTable do
+			if(not checkRequiredAura or costInfo.hasRequiredAura) then
+				if(costInfo.type == ADDITIONAL_POWER_BAR_INDEX) then
+					cost = costInfo.cost
+					element.cost = cost
+
+					break
+				end
+			end
+		end
+	elseif(spellID) then
+		-- if we try to cast a spell while casting another one we need to avoid
+		-- resetting the element
+		cost = element.cost or 0
+	else
+		element.cost = cost
+	end
+
+	element.CostPrediction:SetMinMaxValues(0, UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX))
+	element.CostPrediction:SetValue(cost)
+	element.CostPrediction:Show()
+
+	--[[ Callback: AdditionalPower:PostUpdatePrediction(unit, cost)
+	Called after the element has been updated.
+
+	* self - the AdditionalPower element
+	* unit - the unit for which the update has been triggered (string)
+	* cost - the power type cost of the cast ability (number)
+	--]]
+	if(element.PostUpdatePrediction) then
+		return element:PostUpdatePrediction(unit, cost)
+	end
+end
+
+local function UpdatePredictionSize(self, event, unit)
+	local element = self.AdditionalPower
+	if(element.CostPrediction and element.__size) then
+		element.CostPrediction[element.__isHoriz and 'SetWidth' or 'SetHeight'](element.CostPrediction, element.__size)
+	end
+end
+
+local function shouldUpdatePredictionSize(self)
+	local element = self.AdditionalPower
+
+	local isHoriz = element:GetOrientation() == 'HORIZONTAL'
+	local newSize = element[isHoriz and 'GetWidth' or 'GetHeight'](element)
+	if(isHoriz ~= element.__isHoriz or newSize ~= element.__size) then
+		element.__isHoriz = isHoriz
+		element.__size = newSize
+
+		return true
+	end
+end
+
 local function Path(self, ...)
 	--[[ Override: AdditionalPower.Override(self, event, unit, ...)
 	Used to completely override the element's update process.
@@ -147,7 +210,9 @@ local function Path(self, ...)
 	* unit  - the unit accompanying the event (string)
 	* ...   - the arguments accompanying the event
 	--]]
-	(self.AdditionalPower.Override or Update) (self, ...);
+	do
+		(self.AdditionalPower.Override or Update) (self, ...)
+	end
 
 	--[[ Override: AdditionalPower.UpdateColor(self, event, unit, ...)
 	Used to completely override the internal function for updating the widgets' colors.
@@ -158,6 +223,32 @@ local function Path(self, ...)
 	* ...   - the arguments accompanying the event
 	--]]
 	(self.AdditionalPower.UpdateColor or UpdateColor) (self, ...)
+end
+
+local function PredictionPath(self, ...)
+	--[[ Override: AdditionalPower.UpdatePredictionSize(self, event, unit, ...)
+	Used to completely override the internal function for updating the cost prediction sub-widget's size.
+
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event (string)
+	* ...   - the arguments accompanying the event
+	--]]
+	if(shouldUpdatePredictionSize(self)) then
+		(self.AdditionalPower.UpdatePredictionSize or UpdatePredictionSize) (self, ...)
+	end
+
+	--[[ Override: AdditionalPower.OverridePrediction(self, event, unit, ...)
+	Used to completely override the internal update function.
+
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event (string)
+	* ...   - the arguments accompanying the event
+	--]]
+	do
+		(self.AdditionalPower.OverridePrediction or UpdatePrediction) (self, ...)
+	end
 end
 
 local function ElementEnable(self)
@@ -173,6 +264,13 @@ local function ElementEnable(self)
 
 	element:Show()
 
+	if(element.CostPrediction) then
+		self:RegisterEvent('UNIT_SPELLCAST_START', PredictionPath)
+		self:RegisterEvent('UNIT_SPELLCAST_STOP', PredictionPath)
+		self:RegisterEvent('UNIT_SPELLCAST_FAILED', PredictionPath)
+		self:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED', PredictionPath)
+	end
+
 	element.__isEnabled = true
 	Path(self, 'ElementEnable', 'player', ADDITIONAL_POWER_BAR_NAME)
 end
@@ -185,6 +283,15 @@ local function ElementDisable(self)
 	self:UnregisterEvent('UNIT_POWER_UPDATE', Path)
 
 	element:Hide()
+
+	if(element.CostPrediction) then
+		element.CostPrediction:Hide()
+
+		self:UnregisterEvent('UNIT_SPELLCAST_START', PredictionPath)
+		self:UnregisterEvent('UNIT_SPELLCAST_STOP', PredictionPath)
+		self:UnregisterEvent('UNIT_SPELLCAST_FAILED', PredictionPath)
+		self:UnregisterEvent('UNIT_SPELLCAST_SUCCEEDED', PredictionPath)
+	end
 
 	element.__isEnabled = false
 	Path(self, 'ElementDisable', 'player', ADDITIONAL_POWER_BAR_NAME)
@@ -241,6 +348,10 @@ end
 
 local function ForceUpdate(element)
 	VisibilityPath(element.__owner, 'ForceUpdate', element.__owner.unit)
+
+	if(element.__isEnabled and element.CostPrediction) then
+		PredictionPath(element.__owner, 'ForceUpdate', element.__owner.unit)
+	end
 end
 
 --[[ Power:SetFrequentUpdates(state, isForced)
@@ -270,6 +381,10 @@ local function Enable(self, unit)
 		element.ForceUpdate = ForceUpdate
 		element.SetFrequentUpdates = SetFrequentUpdates
 
+		if(not element.smoothing) then
+			element.smoothing = Enum.StatusBarInterpolation.Immediate
+		end
+
 		self:RegisterEvent('UNIT_DISPLAYPOWER', VisibilityPath)
 
 		if(not element.displayPairs) then
@@ -278,6 +393,14 @@ local function Enable(self, unit)
 
 		if(element:IsObjectType('StatusBar') and not element:GetStatusBarTexture()) then
 			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
+		end
+
+		if(element.CostPrediction) then
+			element.CostPrediction:Hide()
+
+			if(element.CostPrediction:IsObjectType('StatusBar') and not element.CostPrediction:GetStatusBarTexture()) then
+				element.CostPrediction:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
+			end
 		end
 
 		return true

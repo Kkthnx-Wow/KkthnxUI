@@ -1,7 +1,19 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Announces the placement or use of critical group items and spells (Feasts, Jeeves, Bloodlust, Engi CR).
+-- - Design: Monitors UNIT_SPELLCAST_SUCCEEDED for group units against a pre-defined whitelist.
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
--- Localize WoW API functions
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache API references for frequent spellcast event filtering.
 local string_format = string.format
 local C_Spell_GetSpellLink = C_Spell.GetSpellLink
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
@@ -9,7 +21,7 @@ local IsInGroup = IsInGroup
 local SendChatMessage = SendChatMessage
 local UnitName = UnitName
 
--- Define player GUID and group units
+-- NOTE: Pre-populated table for efficient lookup of group unit IDs.
 local groupUnits = { ["player"] = true, ["pet"] = true }
 for i = 1, 4 do
 	groupUnits["party" .. i] = true
@@ -21,7 +33,12 @@ for i = 1, 40 do
 	groupUnits["raidpet" .. i] = true
 end
 
--- Define important spells with IDs
+-- ---------------------------------------------------------------------------
+-- WHITELISTS
+-- ---------------------------------------------------------------------------
+
+-- NOTE: whitelist of critical spells/items to announce.
+-- Includes summons, feasts, raid-wide utilities, and Lust effects.
 local importantSpells = {
 	[698] = true, -- Ritual of Summoning
 	[29893] = true, -- Create Soulwell
@@ -73,19 +90,29 @@ local importantSpells = {
 	[462213] = true, -- Hearty Midnight Gala Feast (Warband)
 }
 
--- Function to handle spell cast alerts
+-- ---------------------------------------------------------------------------
+-- EVENT HANDLERS
+-- ---------------------------------------------------------------------------
+
 function Module:UpdateItemAlert(unit, castID, spellID)
+	-- REASON: Filters by group unit residency and whitelist presence.
+	-- Compares spellID to castID to handle potential duplicates or re-triggers.
 	if groupUnits[unit] and importantSpells[spellID] and importantSpells[spellID] ~= castID then
 		local spellLink = C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)
 		if spellLink then
 			SendChatMessage(string_format(L["%s used %s"] or "%s used %s", UnitName(unit), spellLink), K.CheckChat())
+			-- NOTE: Store the castID for this spellID to prevent redundant alerts from the same cast events.
 			importantSpells[spellID] = castID
 		end
 	end
 end
 
--- Function to check if the player is in a group and register/unregister events accordingly
+-- ---------------------------------------------------------------------------
+-- UTILITY & REGISTRATION
+-- ---------------------------------------------------------------------------
+
 function Module:CheckGroupStatus()
+	-- REASON: Manage event registration based on group state to reduce solo CPU usage.
 	if IsInGroup() then
 		K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
 	else
@@ -93,8 +120,8 @@ function Module:CheckGroupStatus()
 	end
 end
 
--- Main function to handle spell and item alerts
 function Module:CreateItemAnnounce()
+	-- NOTE: Pre-set faction-specific lust link for potential future logic usage.
 	Module.factionSpell = (K.Faction == "Alliance" and 32182 or 2825)
 	Module.factionSpell = C_Spell_GetSpellLink(Module.factionSpell) or C_Spell_GetSpellInfo(Module.factionSpell)
 

@@ -1,20 +1,40 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Central orchestration for the Skins module.
+-- - Design: Registers and loads skins for Blizzard UI and external addons.
+-- - Events: ADDON_LOADED
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Skins")
 
-local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local table_wipe = table.wipe
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local geterrorhandler = _G.geterrorhandler
+local ipairs = _G.ipairs
+local next = _G.next
+local pairs = _G.pairs
+local pcall = _G.pcall
+local type = _G.type
+local xpcall = _G.xpcall
 
--- Tables to store default themes, registered themes and other skins
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local table_wipe = _G.table.wipe
+local tostring = _G.tostring
+
+-- REASON: Store themes in C namespace for cross-module accessibility.
 C.defaultThemes = {}
 C.themes = {}
 C.otherSkins = {}
 
--- Function to register a skin for an external addon
+-- REASON: Provide a hook for external modules to register their own skins.
 function Module:RegisterSkin(addonName, skinFunction)
 	C.otherSkins[addonName] = skinFunction
 end
 
--- Function to load skins from a given list
+-- REASON: Iteratively load skins for addons that are confirmed as loaded.
 function Module:LoadSkins(skinList)
 	if not next(skinList) then
 		return
@@ -31,8 +51,9 @@ function Module:LoadSkins(skinList)
 	end
 end
 
--- Function to load default skins
+-- REASON: Initialize default and registered skins, and setup listener for future addon loads.
 function Module:LoadDefaultSkins()
+	-- WARNING: Abort if other skinning engines are detected to avoid conflicts/double-skinning.
 	if C_AddOns_IsAddOnLoaded("AuroraClassic") or C_AddOns_IsAddOnLoaded("Aurora") then
 		return
 	end
@@ -84,7 +105,7 @@ function Module:OnEnable()
 		if type(func) == "function" then
 			local success, err = pcall(func, self)
 			if not success then
-				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+				_G.error("Error in function " .. funcName .. ": " .. tostring(err), 2)
 			end
 		end
 	end

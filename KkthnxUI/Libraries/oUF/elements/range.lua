@@ -41,30 +41,25 @@ local function Update(self, event)
 		element:PreUpdate()
 	end
 
-	local inRange, checkedRange
-	local connected = UnitIsConnected(unit)
-	if(connected) then
-		inRange, checkedRange = UnitInRange(unit)
-		if(checkedRange and not inRange) then
-			self:SetAlpha(element.outsideAlpha)
-		else
-			self:SetAlpha(element.insideAlpha)
-		end
+	local inRange
+	local isEligible = UnitIsConnected(unit) and UnitInParty(unit)
+	if(isEligible) then
+		inRange = UnitInRange(unit)
+		self:SetAlphaFromBoolean(inRange, element.insideAlpha, element.outsideAlpha)
 	else
 		self:SetAlpha(element.insideAlpha)
 	end
 
-	--[[ Callback: Range:PostUpdate(object, inRange, checkedRange, isConnected)
+	--[[ Callback: Range:PostUpdate(object, inRange, isEligible)
 	Called after the element has been updated.
 
-	* self         - the Range element
-	* object       - the parent object
-	* inRange      - indicates if the unit was within 40 yards of the player (boolean)
-	* checkedRange - indicates if the range check was actually performed (boolean)
-	* isConnected  - indicates if the unit is online (boolean)
+	* self       - the Range element
+	* object     - the parent object
+	* inRange    - indicates if the unit is within 40 yards of the player (boolean)
+	* isEligible - indicates if the unit is eligible for the range check (boolean)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(self, inRange, checkedRange, connected)
+		return element:PostUpdate(self, inRange, isEligible)
 	end
 end
 
@@ -78,7 +73,7 @@ local function Path(self, ...)
 	return (self.Range.Override or Update) (self, ...)
 end
 
-local function Enable(self)
+local function Enable(self, unit)
 	local element = self.Range
 	if(element) then
 		element.__owner = self
@@ -86,6 +81,12 @@ local function Enable(self)
 		element.outsideAlpha = element.outsideAlpha or 0.55
 
 		self:RegisterEvent('UNIT_IN_RANGE_UPDATE', Path)
+		self:RegisterEvent('UNIT_CONNECTION', Path)
+
+		if(unit == 'party' or unit == 'raid') then
+			self:RegisterEvent('PARTY_MEMBER_ENABLE', Path)
+			self:RegisterEvent('PARTY_MEMBER_DISABLE', Path)
+		end
 
 		return true
 	end
@@ -97,6 +98,9 @@ local function Disable(self)
 		self:SetAlpha(element.insideAlpha)
 
 		self:UnregisterEvent('UNIT_IN_RANGE_UPDATE', Path)
+		self:UnregisterEvent('UNIT_CONNECTION', Path)
+		self:UnregisterEvent('PARTY_MEMBER_ENABLE', Path)
+		self:UnregisterEvent('PARTY_MEMBER_DISABLE', Path)
 	end
 end
 

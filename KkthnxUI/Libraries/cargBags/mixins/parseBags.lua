@@ -43,9 +43,9 @@ local bagStrings = {
 	["bankframe"] = { -1 },
 	["bankframe+bank"] = { -1, 6, 7, 8, 9, 10, 11, 12 },
 	["bankreagent"] = { -3 },
-	["bank"] = { 6, 7, 8, 9, 10, 11 },
+	["bank"] = { 6, 7, 8, 9, 10, 11, 12 },
 	["keyring"] = { -2 },
-	["accountbank"] = { 12, 13, 14, 15, 16 },
+	["accountbank"] = { 13, 14, 15, 16, 17 },
 }
 cargBags.BagStrings = bagStrings
 

@@ -1,8 +1,20 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Universal action button styling and hotkey formatting.
+-- - Design: Unified skinning for all action bars, including pet, stance, and extra bars.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
--- 1. Define Localized Globals (Cache them to avoid nil errors if WoW changes keys)
--- We use "or" to fallback to English if the Global is missing in a specific client version.
+-- ---------------------------------------------------------------------------
+-- LOCALIZED GLOBALS
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Reference localized strings for keybinds to ensure compatibility across all game clients.
+-- Fallback to hardcoded English strings if the global is missing in a specific WoW version.
 local L_BUTTON = _G.KEY_BUTTON3:gsub("3", "") or "Button"
 local L_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP or "Mouse Wheel Up"
 local L_MOUSEWHEELDN = _G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down"
@@ -14,8 +26,12 @@ local L_INSERT = _G.KEY_INSERT or "Insert"
 local L_HOME = _G.KEY_HOME or "Home"
 local L_DELETE = _G.KEY_DELETE or "Delete"
 
--- 2. The Master Replacement Table
--- Ordered specifically: Modifiers first, then specific keys, then generic patterns.
+-- ---------------------------------------------------------------------------
+-- HOTKEY REPLACEMENTS
+-- ---------------------------------------------------------------------------
+
+-- REASON: Standardize and shorten keybind text to fit within the small hotkey area of action buttons.
+-- Order matters: Modifiers first, then specific keys, then generic patterns.
 local replacements = {
 	-- >> Modifiers (Handle various casings and localized formats)
 	{ "(CTRL%-)", "c" },
@@ -24,7 +40,7 @@ local replacements = {
 	{ "(Alt%-)", "a" },
 	{ "(SHIFT%-)", "s" },
 	{ "(Shift%-)", "s" },
-	{ "(META%-)", "m" }, -- macOS Command Key
+	{ "(META%-)", "m" }, -- NOTE: macOS Command Key
 	{ "(Meta%-)", "m" },
 
 	-- >> Mouse (Localized & English)
@@ -35,14 +51,14 @@ local replacements = {
 	{ L_BUTTON, "M" }, -- Localized "Button"
 	{ "BUTTON", "M" }, -- English "BUTTON"
 
-	-- >> Navigation & Editing (The missing items)
+	-- >> Navigation & Editing
 	{ L_PAGEUP, "PU" },
 	{ "PAGEUP", "PU" },
 	{ L_PAGEDOWN, "PD" },
 	{ "PAGEDOWN", "PD" },
 	{ L_HOME, "Hm" },
 	{ "HOME", "Hm" },
-	{ "END", "End" }, -- Usually same in Locales, but safe to keep
+	{ "END", "End" },
 	{ L_INSERT, "Ins" },
 	{ "INSERT", "Ins" },
 	{ L_DELETE, "Del" },
@@ -69,12 +85,14 @@ local replacements = {
 	{ "NUMPAD", "N" }, -- English "NUMPAD"
 }
 
+-- REASON: Formats the hotkey display on action buttons using the replacement table defined above.
 function Module:UpdateHotKey()
 	local text = self:GetText()
 	if not text then
 		return
 	end
 
+	-- NOTE: Range indicators (dots) are removed for a cleaner look.
 	if text == RANGE_INDICATOR then
 		text = ""
 	else
@@ -85,11 +103,13 @@ function Module:UpdateHotKey()
 	self:SetFormattedText("%s", text)
 end
 
+-- REASON: Dynamically updates the border color based on the button's combat or range state.
 function Module:UpdateBarBorderColor(button)
 	if not button.__bg then
 		return
 	end
 
+	-- NOTE: Highlight the border when the action is currently active/usable.
 	if button.Border:IsShown() then
 		button.__bg.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
 	else
@@ -97,12 +117,10 @@ function Module:UpdateBarBorderColor(button)
 	end
 end
 
+-- REASON: Apply unified KkthnxUI skinning to a specific action button.
+-- This hides default Blizzard elements and applies custom borders and textures.
 function Module:StyleActionButton(button)
-	if not button then
-		return
-	end
-
-	if button.__styled then
+	if not button or button.__styled then
 		return
 	end
 
@@ -126,6 +144,7 @@ function Module:StyleActionButton(button)
 	local petShine = _G[buttonName .. "Shine"]
 	local autoCastable = button.AutoCastable
 
+	-- NOTE: Hide original Blizzard textures to prevent visual overlaps.
 	if normal then
 		normal:SetAlpha(0)
 	end
@@ -158,6 +177,7 @@ function Module:StyleActionButton(button)
 		button.style:SetAlpha(0)
 	end
 
+	-- NOTE: Reposition shine and autocast textures for pet buttons.
 	if petShine then
 		petShine:SetAllPoints()
 	end
@@ -168,6 +188,7 @@ function Module:StyleActionButton(button)
 		autoCastable:SetAllPoints()
 	end
 
+	-- REASON: Setup custom icon and background border.
 	if icon then
 		icon:SetAllPoints()
 		if not icon.__lockdown then
@@ -187,6 +208,7 @@ function Module:StyleActionButton(button)
 		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 	end
 
+	-- NOTE: Apply custom textures for interaction states (Pushed, Checked, Highlight).
 	if pushed then
 		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
 		pushed:SetDesaturated(true)
@@ -214,6 +236,7 @@ function Module:StyleActionButton(button)
 		spellHighlight:SetAllPoints()
 	end
 
+	-- NOTE: Apply hotkey shortening and ensure it persists via hooks.
 	if hotkey then
 		Module.UpdateHotKey(hotkey)
 		hooksecurefunc(hotkey, "SetText", Module.UpdateHotKey)
@@ -222,30 +245,30 @@ function Module:StyleActionButton(button)
 	button.__styled = true
 end
 
+-- REASON: Iterates through all detectable action bars and applies skinning.
 function Module:ReskinBars()
+	-- NOTE: Main action bars (1-8, 12 buttons each).
 	for i = 1, 8 do
 		for j = 1, 12 do
 			Module:StyleActionButton(_G["KKUI_ActionBar" .. i .. "Button" .. j])
 		end
 	end
 
-	-- petbar buttons
+	-- NOTE: Pet bar buttons.
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		Module:StyleActionButton(_G["PetActionButton" .. i])
 	end
 
-	-- stancebar buttons
+	-- NOTE: Stance/Shape-shift bar buttons.
 	for i = 1, 10 do
 		Module:StyleActionButton(_G["StanceButton" .. i])
 	end
 
-	-- leave vehicle
+	-- NOTE: Miscellaneous and extra buttons.
 	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"])
-
-	-- extra action button
 	Module:StyleActionButton(ExtraActionButton1)
 
-	-- spell flyout
+	-- NOTE: Handle dynamically generated spell flyout buttons via scripts.
 	SpellFlyout.Background:SetAlpha(0)
 	local numFlyouts = 1
 	local function checkForFlyoutButtons()

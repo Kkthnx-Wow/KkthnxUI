@@ -5,18 +5,16 @@ local Private = oUF.Private
 local argcheck = Private.argcheck
 
 local queue = {}
-local factory = CreateFrame("Frame")
-factory:SetScript("OnEvent", function(self, event, ...)
+local factory = CreateFrame('Frame')
+factory:SetScript('OnEvent', function(self, event, ...)
 	return self[event](self, event, ...)
 end)
 
-factory:RegisterEvent("PLAYER_LOGIN")
+factory:RegisterEvent('PLAYER_LOGIN')
 factory.active = true
 
 function factory:PLAYER_LOGIN()
-	if not self.active then
-		return
-	end
+	if(not self.active) then return end
 
 	for _, func in next, queue do
 		func(oUF)
@@ -34,10 +32,10 @@ queued up to be executed at a later time (upon PLAYER_LOGIN by default).
 * func - function to be executed or delayed (function)
 --]]
 function oUF:Factory(func)
-	argcheck(func, 2, "function")
+	argcheck(func, 2, 'function')
 
 	-- Call the function directly if we're active and logged in.
-	if IsLoggedIn() and factory.active then
+	if(IsLoggedIn() and factory.active) then
 		return func(self)
 	else
 		table.insert(queue, func)

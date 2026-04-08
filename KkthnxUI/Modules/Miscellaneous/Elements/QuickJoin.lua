@@ -1,110 +1,131 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Enhances the Quick Join and Premade Groups UI with automation and extra information.
+-- - Design: Hooks LFG frames for double-click signup, auto-invites, and displays leader scores/faction icons.
+-- - Events: LFG_LIST_APPLICANT_LIST_UPDATED
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
-local TT = K:GetModule("Tooltip")
+local TooltipModule = K:GetModule("Tooltip")
 
-local StaticPopup_Hide, HideUIPanel, GetTime = StaticPopup_Hide, HideUIPanel, GetTime
-local UnitIsGroupLeader = UnitIsGroupLeader
-local IsAltKeyDown = IsAltKeyDown
-local C_LFGList_GetSearchResultInfo = C_LFGList.GetSearchResultInfo
-local C_LFGList_GetActivityInfoTable = C_LFGList.GetActivityInfoTable
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+-- PERF: Localize global functions and environment for faster lookups.
+local GetTime = _G.GetTime
+local gsub = _G.string.gsub
+local IsAltKeyDown = _G.IsAltKeyDown
+local table_insert = _G.table.insert
+local tostring = _G.tostring
+local type = _G.type
 
-local HEADER_COLON = _G.HEADER_COLON
+local _G = _G
+local C_LFGList_GetActivityInfoTable = _G.C_LFGList.GetActivityInfoTable
+local C_LFGList_GetSearchResultInfo = _G.C_LFGList.GetSearchResultInfo
+local CreateFrame = _G.CreateFrame
+local HookSecureFunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local StaticPopup_Hide = _G.StaticPopup_Hide
+local UnitIsGroupLeader = _G.UnitIsGroupLeader
+
+-- SG: Constants
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME or 1
-local scoreFormat = K.GreyColor .. "(%s) |r%s"
+local SCORE_DISPLAY_FORMAT = K.GreyColor .. "(%s) |r%s"
+local FACTION_LOGOS = {
+	[0] = "Horde",
+	[1] = "Alliance",
+}
 
-local LFGListFrame = _G.LFGListFrame
-local ApplicationViewerFrame = LFGListFrame.ApplicationViewer
-local searchPanel = LFGListFrame.SearchPanel
-local categorySelection = LFGListFrame.CategorySelection
-
-function Module:HookApplicationClick()
-	if LFGListFrame.SearchPanel.SignUpButton:IsEnabled() then
-		LFGListFrame.SearchPanel.SignUpButton:Click()
+-- REASON: Facilitates quick sign-ups by automating the click operation on LFG sign-up buttons.
+function Module:onQuickJoinApplicationClick()
+	local searchPanel = _G.LFGListFrame.SearchPanel
+	if searchPanel.SignUpButton:IsEnabled() then
+		searchPanel.SignUpButton:Click()
 	end
-	if (not IsAltKeyDown()) and LFGListApplicationDialog:IsShown() and LFGListApplicationDialog.SignUpButton:IsEnabled() then
-		LFGListApplicationDialog.SignUpButton:Click()
+
+	local applicationDialog = _G.LFGListApplicationDialog
+	if (not IsAltKeyDown()) and applicationDialog:IsShown() and applicationDialog.SignUpButton:IsEnabled() then
+		applicationDialog.SignUpButton:Click()
 	end
 end
 
-local pendingFrame
-function Module:DialogHideInSecond()
-	if not pendingFrame then
+local autoHidePendingFrame
+function Module:onDialogAutoHideDelay()
+	if not autoHidePendingFrame then
 		return
 	end
 
-	if pendingFrame.informational then
-		StaticPopupSpecial_Hide(pendingFrame)
-	elseif pendingFrame == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" then
-		StaticPopup_Hide(pendingFrame)
+	if autoHidePendingFrame.informational then
+		_G.StaticPopupSpecial_Hide(autoHidePendingFrame)
+	elseif autoHidePendingFrame == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" then
+		StaticPopup_Hide(autoHidePendingFrame)
 	end
-	pendingFrame = nil
+	autoHidePendingFrame = nil
 end
 
-function Module:HookDialogOnShow()
-	pendingFrame = self
-	K.Delay(1, Module.DialogHideInSecond)
+function Module:onQuickJoinDialogShow()
+	autoHidePendingFrame = self
+	K.Delay(1, Module.onDialogAutoHideDelay)
 end
 
-function Module:AddAutoAcceptButton()
-	local bu = CreateFrame("CheckButton", nil, ApplicationViewerFrame, "InterfaceOptionsCheckButtonTemplate")
-	bu:SetSize(24, 24)
-	bu:SetHitRectInsets(0, -130, 0, 0)
-	bu:SetPoint("BOTTOMLEFT", ApplicationViewerFrame.InfoBackground, 12, 5)
-	K.CreateFontString(bu, 13, _G.LFG_LIST_AUTO_ACCEPT, "", "system", "LEFT", 24, 0)
+-- REASON: Adds an 'Auto Accept' checkbox to the LFG application viewer for group leaders to automate applicant invites.
+function Module:createAutoAcceptButton()
+	local applicationViewer = _G.LFGListFrame.ApplicationViewer
+	local autoAcceptButton = CreateFrame("CheckButton", nil, applicationViewer, "InterfaceOptionsCheckButtonTemplate")
+	autoAcceptButton:SetSize(24, 24)
+	autoAcceptButton:SetHitRectInsets(0, -130, 0, 0)
+	autoAcceptButton:SetPoint("BOTTOMLEFT", applicationViewer.InfoBackground, 12, 5)
+	K.CreateFontString(autoAcceptButton, 13, _G.LFG_LIST_AUTO_ACCEPT, "", "system", "LEFT", 24, 0)
 
-	local lastTime = 0
-	local function clickInviteButton(button)
-		if button.applicantID and button.InviteButton:IsEnabled() then
-			C_LFGList.InviteApplicant(button.applicantID)
+	local lastAutoRefreshTime = 0
+	local function inviteApplicantFromButton(applicantButton)
+		if applicantButton.applicantID and applicantButton.InviteButton:IsEnabled() then
+			_G.C_LFGList.InviteApplicant(applicantButton.applicantID)
 		end
 	end
 
 	K:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED", function()
-		if not bu:GetChecked() then
+		if not autoAcceptButton:GetChecked() then
 			return
 		end
 		if not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) then
 			return
 		end
 
-		ApplicationViewerFrame.ScrollBox:ForEachFrame(clickInviteButton)
+		applicationViewer.ScrollBox:ForEachFrame(inviteApplicantFromButton)
 
-		if ApplicationViewerFrame:IsShown() then
-			local now = GetTime()
-			if now - lastTime > 1 then
-				lastTime = now
-				ApplicationViewerFrame.RefreshButton:Click()
+		if applicationViewer:IsShown() then
+			local currentTime = GetTime()
+			if currentTime - lastAutoRefreshTime > 1 then
+				lastAutoRefreshTime = currentTime
+				applicationViewer.RefreshButton:Click()
 			end
 		end
 	end)
 
-	hooksecurefunc("LFGListApplicationViewer_UpdateInfo", function(self)
-		bu:SetShown(UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) and not self.AutoAcceptButton:IsShown())
+	HookSecureFunc("LFGListApplicationViewer_UpdateInfo", function(self)
+		autoAcceptButton:SetShown(UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) and not self.AutoAcceptButton:IsShown())
 	end)
 end
 
-local factionStr = {
-	[0] = "Horde",
-	[1] = "Alliance",
-}
-function Module:ShowLeaderOverallScore()
-	local resultID = self.resultID
-	local searchResultInfo = resultID and C_LFGList_GetSearchResultInfo(resultID)
+-- REASON: Displays the group leader's Mythic+ score or PvP rating directly on the search result entry for easier group filtering.
+function Module:displayLeaderOverallScore()
+	local searchResultID = self.resultID
+	local searchResultInfo = searchResultID and C_LFGList_GetSearchResultInfo(searchResultID)
 	if searchResultInfo then
 		local activityInfo = C_LFGList_GetActivityInfoTable(searchResultInfo.activityIDs[1], nil, searchResultInfo.isWarMode)
 		if activityInfo then
-			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
-			if showScore then
-				local oldName = self.ActivityName:GetText()
-				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
-				self.ActivityName:SetFormattedText(scoreFormat, TT.GetDungeonScore(showScore), oldName)
+			local leaderScoreValue = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
+			if leaderScoreValue then
+				local currentActivityName = self.ActivityName:GetText()
+				currentActivityName = gsub(currentActivityName, ".-" .. _G.HEADER_COLON, "")
+				self.ActivityName:SetFormattedText(SCORE_DISPLAY_FORMAT, TooltipModule.GetDungeonScore(leaderScoreValue), currentActivityName)
 
 				if not self.crossFactionLogo then
-					local logo = self:CreateTexture(nil, "OVERLAY")
-					logo:SetPoint("TOPLEFT", -6, 5)
-					logo:SetSize(24, 24)
-					self.crossFactionLogo = logo
+					local logoTexture = self:CreateTexture(nil, "OVERLAY")
+					logoTexture:SetPoint("TOPLEFT", -6, 5)
+					logoTexture:SetSize(24, 24)
+					self.crossFactionLogo = logoTexture
 				end
 			end
 		end
@@ -113,109 +134,115 @@ function Module:ShowLeaderOverallScore()
 			if searchResultInfo.crossFactionListing then
 				self.crossFactionLogo:Hide()
 			else
-				self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
+				self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. FACTION_LOGOS[searchResultInfo.leaderFactionGroup] .. "-Logo")
 				self.crossFactionLogo:Show()
 			end
 		end
 	end
 end
 
-function Module:ReplaceFindGroupButton()
+-- REASON: Replaces the standard category selection button when PremadeGroupsFilter is loaded to bypass unnecessary menus.
+function Module:replaceFindGroupButton()
 	if not IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
+	local categorySelection = _G.LFGListFrame.CategorySelection
 	categorySelection.FindGroupButton:Hide()
 
-	local bu = CreateFrame("Button", nil, categorySelection, "LFGListMagicButtonTemplate")
-	bu:SetText(LFG_LIST_FIND_A_GROUP)
-	bu:SetSize(135, 22)
-	bu:SetPoint("BOTTOMRIGHT", -3, 4)
+	local findGroupButton = CreateFrame("Button", nil, categorySelection, "LFGListMagicButtonTemplate")
+	findGroupButton:SetText(_G.LFG_LIST_FIND_A_GROUP)
+	findGroupButton:SetSize(135, 22)
+	findGroupButton:SetPoint("BOTTOMRIGHT", -3, 4)
 
-	local lastCategory = 0
-	bu:SetScript("OnClick", function()
-		local selectedCategory = categorySelection.selectedCategory
-		if not selectedCategory then
+	local lastSelectedCategory = 0
+	findGroupButton:SetScript("OnClick", function()
+		local currentCategoryID = categorySelection.selectedCategory
+		if not currentCategoryID then
 			return
 		end
 
-		if lastCategory ~= selectedCategory then
+		local searchPanel = _G.LFGListFrame.SearchPanel
+		if lastSelectedCategory ~= currentCategoryID then
 			categorySelection.FindGroupButton:Click()
 		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			LFGListSearchPanel_SetCategory(searchPanel, selectedCategory, categorySelection.selectedFilters, LFGListFrame.baseFilters)
-			LFGListSearchPanel_DoSearch(searchPanel)
-			LFGListFrame_SetActivePanel(LFGListFrame, searchPanel)
+			_G.PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			_G.LFGListSearchPanel_SetCategory(searchPanel, currentCategoryID, categorySelection.selectedFilters, _G.LFGListFrame.baseFilters)
+			_G.LFGListSearchPanel_DoSearch(searchPanel)
+			_G.LFGListFrame_SetActivePanel(_G.LFGListFrame, searchPanel)
 		end
-		lastCategory = selectedCategory
+		lastSelectedCategory = currentCategoryID
 	end)
 end
 
-local function clickSortButton(self)
-	self.__owner.Sorting.Expression:SetText(self.sortStr)
-	self.__parent.RefreshButton:Click()
+local function onSortingButtonSortingClick(sortingButton)
+	sortingButton.ownerExpressionFrame.Sorting.Expression:SetText(sortingButton.sortingExpression)
+	sortingButton.parentFrame.RefreshButton:Click()
 end
 
-local function createSortButton(parent, texture, sortStr, panel)
-	local bu = CreateFrame("Button", nil, parent, "BackdropTemplate")
-	bu:SetSize(24, 24)
-	bu.texture = bu:CreateTexture(nil, "ARTWORK")
-	bu.texture:SetTexture(texture)
-	bu.texture:SetAllPoints()
-	bu.texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	bu:CreateBorder()
-	bu.sortStr = sortStr
-	bu.__parent = parent
-	bu.__owner = panel
-	bu:SetScript("OnClick", clickSortButton)
-	K.AddTooltip(bu, "ANCHOR_RIGHT", CLUB_FINDER_SORT_BY)
+local function createPGFSortButton(parentFrame, iconTexturePath, sortingExpression, ownerExpressionFrame)
+	local sortButton = CreateFrame("Button", nil, parentFrame, "BackdropTemplate")
+	sortButton:SetSize(24, 24)
+	sortButton.texture = sortButton:CreateTexture(nil, "ARTWORK")
+	sortButton.texture:SetTexture(iconTexturePath)
+	sortButton.texture:SetAllPoints()
+	sortButton.texture:SetTexCoord(_G.unpack(K.TexCoords))
+	sortButton:CreateBorder()
+	sortButton.sortingExpression = sortingExpression
+	sortButton.parentFrame = parentFrame
+	sortButton.ownerExpressionFrame = ownerExpressionFrame
+	sortButton:SetScript("OnClick", onSortingButtonSortingClick)
+	K.AddTooltip(sortButton, "ANCHOR_RIGHT", _G.CLUB_FINDER_SORT_BY)
 
-	tinsert(parent.__sortBu, bu)
+	table_insert(parentFrame.pgfSortButtons, sortButton)
 end
 
-function Module:AddPGFSortingExpression()
+-- REASON: Injects custom sorting shortcuts for Mythic+, PvP rating, and listing age into PremadeGroupsFilter.
+function Module:addPGFSortingShortcuts()
 	if not IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
-	local PGFDialog = _G.PremadeGroupsFilterDialog
-	local ExpressionPanel = _G.PremadeGroupsFilterMiniPanel
-	PGFDialog.__sortBu = {}
+	local pgfDialogFrame = _G.PremadeGroupsFilterDialog
+	local pgfExpressionPanel = _G.PremadeGroupsFilterMiniPanel
+	pgfDialogFrame.pgfSortButtons = {}
 
-	createSortButton(PGFDialog, 525134, "mprating desc", ExpressionPanel)
-	createSortButton(PGFDialog, 1455894, "pvprating desc", ExpressionPanel)
-	createSortButton(PGFDialog, 237538, "age asc", ExpressionPanel)
+	createPGFSortButton(pgfDialogFrame, 525134, "mprating desc", pgfExpressionPanel)
+	createPGFSortButton(pgfDialogFrame, 1455894, "pvprating desc", pgfExpressionPanel)
+	createPGFSortButton(pgfDialogFrame, 237538, "age asc", pgfExpressionPanel)
 
-	for i = 1, #PGFDialog.__sortBu do
-		local bu = PGFDialog.__sortBu[i]
+	for i = 1, #pgfDialogFrame.pgfSortButtons do
+		local sortButton = pgfDialogFrame.pgfSortButtons[i]
 		if i == 1 then
-			bu:SetPoint("BOTTOMLEFT", PGFDialog, "BOTTOMRIGHT", 3, 0)
+			sortButton:SetPoint("BOTTOMLEFT", pgfDialogFrame, "BOTTOMRIGHT", 3, 0)
 		else
-			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i - 1], "TOP", 0, 3)
+			sortButton:SetPoint("BOTTOM", pgfDialogFrame.pgfSortButtons[i - 1], "TOP", 0, 3)
 		end
 	end
 
-	if PremadeGroupsFilterSettings then
-		PremadeGroupsFilterSettings.classBar = false
-		PremadeGroupsFilterSettings.classCircle = false
-		PremadeGroupsFilterSettings.leaderCrown = false
-		PremadeGroupsFilterSettings.ratingInfo = false
-		PremadeGroupsFilterSettings.oneClickSignUp = false
+	local pgfSettings = _G.PremadeGroupsFilterSettings
+	if pgfSettings then
+		pgfSettings.classBar = false
+		pgfSettings.classCircle = false
+		pgfSettings.leaderCrown = false
+		pgfSettings.ratingInfo = false
+		pgfSettings.oneClickSignUp = false
 	end
 end
 
-function Module:FixListingTaint() -- From PremadeGroupsFilter
+-- REASON: Workaround for LFG listing taints caused by standard playstyle strings; necessary for secure frame interactions.
+function Module:fixLFGListingTaint()
 	if IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
-	local activityIdOfArbitraryMythicPlusDungeon = 1160 -- Algeth'ar Academy
-	if not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon) then
+	local arbitraryMythicPlusActivityID = 1160 -- Algeth'ar Academy
+	if not _G.C_LFGList.IsPlayerAuthenticatedForLFG(arbitraryMythicPlusActivityID) then
 		return
 	end
 
-	C_LFGList.GetPlaystyleString = function(playstyle, activityInfo)
-		if not (activityInfo and playstyle and playstyle ~= 0 and C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID).showPlaystyleDropdown) then
+	_G.C_LFGList.GetPlaystyleString = function(playstyleID, activityInfo)
+		if not (activityInfo and playstyleID and playstyleID ~= 0 and _G.C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID).showPlaystyleDropdown) then
 			return nil
 		end
 		local globalStringPrefix
@@ -228,44 +255,45 @@ function Module:FixListingTaint() -- From PremadeGroupsFilter
 		elseif activityInfo.isMythicActivity then
 			globalStringPrefix = "GROUP_FINDER_PVE_MYTHICZERO_PLAYSTYLE"
 		end
-		return globalStringPrefix and _G[globalStringPrefix .. tostring(playstyle)] or nil
+		return globalStringPrefix and _G[globalStringPrefix .. tostring(playstyleID)] or nil
 	end
 
-	-- Disable automatic group titles to prevent tainting errors
-	LFGListEntryCreation_SetTitleFromActivityInfo = function(_) end
+	_G.LFGListEntryCreation_SetTitleFromActivityInfo = K.Noop
 end
 
-function Module:QuickJoin()
+function Module:CreateQuickJoin()
 	if not C["Misc"].QuickJoin then
 		return
 	end
 
-	hooksecurefunc(LFGListFrame.SearchPanel.ScrollBox, "Update", function(self)
+	local searchPanel = _G.LFGListFrame.SearchPanel
+	HookSecureFunc(searchPanel.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local child = select(i, self.ScrollTarget:GetChildren())
-			if child.Name and not child.hooked then
-				child.Name:SetFontObject(Game14Font)
-				child.ActivityName:SetFontObject(Game12Font)
-				child:HookScript("OnDoubleClick", Module.HookApplicationClick)
+			local childFrame = select(i, self.ScrollTarget:GetChildren())
+			if childFrame.Name and not childFrame.isQuickJoinHooked then
+				childFrame.Name:SetFontObject(_G.Game14Font)
+				childFrame.ActivityName:SetFontObject(_G.Game12Font)
+				childFrame:HookScript("OnDoubleClick", Module.onQuickJoinApplicationClick)
 
-				child.hooked = true
+				childFrame.isQuickJoinHooked = true
 			end
 		end
 	end)
 
-	hooksecurefunc("LFGListInviteDialog_Accept", function()
-		if PVEFrame:IsShown() then
-			HideUIPanel(PVEFrame)
+	HookSecureFunc("LFGListInviteDialog_Accept", function()
+		if _G.PVEFrame:IsShown() then
+			_G.HideUIPanel(_G.PVEFrame)
 		end
 	end)
 
-	hooksecurefunc("StaticPopup_Show", Module.HookDialogOnShow)
-	hooksecurefunc("LFGListInviteDialog_Show", Module.HookDialogOnShow)
-	hooksecurefunc("LFGListSearchEntry_Update", Module.ShowLeaderOverallScore)
+	HookSecureFunc("StaticPopup_Show", Module.onQuickJoinDialogShow)
+	HookSecureFunc("LFGListInviteDialog_Show", Module.onQuickJoinDialogShow)
+	HookSecureFunc("LFGListSearchEntry_Update", Module.displayLeaderOverallScore)
 
-	Module:AddAutoAcceptButton()
-	Module:ReplaceFindGroupButton()
-	Module:AddPGFSortingExpression()
-	Module:FixListingTaint()
+	Module:createAutoAcceptButton()
+	Module:replaceFindGroupButton()
+	Module:addPGFSortingShortcuts()
+	Module:fixLFGListingTaint()
 end
-Module:RegisterMisc("QuickJoin", Module.QuickJoin)
+
+Module:RegisterMisc("QuickJoin", Module.CreateQuickJoin)

@@ -1,6 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Death Recap frame.
+-- - Design: Applies custom borders and skins buttons/events within the Death Recap UI.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local select = select
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local select = _G.select
+local unpack = _G.unpack
+
+local DeathRecapFrame = _G.DeathRecapFrame
+local NUM_DEATH_RECAP_EVENTS = _G.NUM_DEATH_RECAP_EVENTS
 
 local function SkinDeathRecapFrame()
 	local DeathRecapFrame = DeathRecapFrame
@@ -33,6 +48,7 @@ local function SkinRecapEvents()
 	end
 end
 
+-- REASON: Main entry point for Blizzard Death Recap skinning.
 C.themes["Blizzard_DeathRecap"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return

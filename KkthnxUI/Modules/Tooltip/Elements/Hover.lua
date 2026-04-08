@@ -1,11 +1,33 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Handles hover tooltips for hyperlinks in chat frames.
+-- - Design: Hooks OnHyperlinkEnter/Leave to show relevant tooltips (item, spell, pet, etc.).
+-- - Events: ADDON_LOADED
+-----------------------------------------------------------------------------]]
+
 local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
-local strmatch, strsplit, tonumber = string.match, string.split, tonumber
-local INSTANCE, BOSS = INSTANCE, BOSS
-local BattlePetToolTip_Show = BattlePetToolTip_Show
-local C_EncounterJournal_GetSectionInfo = C_EncounterJournal.GetSectionInfo
-local EJ_GetInstanceInfo, EJ_GetEncounterInfo, GetDifficultyInfo = EJ_GetInstanceInfo, EJ_GetEncounterInfo, GetDifficultyInfo
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local tonumber = _G.tonumber
+local string_match = _G.string.match
+local string_split = _G.string.split
+
+local BattlePetToolTip_Show = _G.BattlePetToolTip_Show
+local BattlePetTooltip = _G.BattlePetTooltip
+local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
+local CommunitiesFrame = _G.CommunitiesFrame
+local EJ_GetEncounterInfo = _G.EJ_GetEncounterInfo
+local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
+local GameTooltip = _G.GameTooltip
+local GetDifficultyInfo = _G.GetDifficultyInfo
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+
+local BOSS = _G.BOSS
+local INSTANCE = _G.INSTANCE
 
 local orig1, orig2, sectionInfo = {}, {}, {}
 local linkTypes = {
@@ -26,13 +48,16 @@ local linkTypes = {
 	unit = true,
 }
 
+-- REASON: Handles pet battle hyperlinks by extracting species and stats.
 function Module:HyperLink_SetPet(link)
 	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -3, 5)
 	GameTooltip:Show()
-	local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link)
+
+	local _, speciesID, level, breedQuality, maxHealth, power, speed = string_split(":", link)
 	BattlePetToolTip_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed))
 end
 
+-- REASON: Caches encounter journal section info to avoid repeated API calls.
 function Module:HyperLink_GetSectionInfo(id)
 	local info = sectionInfo[id]
 	if not info then
@@ -42,9 +67,11 @@ function Module:HyperLink_GetSectionInfo(id)
 	return info
 end
 
+-- REASON: Handles journal hyperlinks for instances, bosses, and abilities.
 function Module:HyperLink_SetJournal(link)
-	local _, idType, id, diffID = strsplit(":", link)
+	local _, idType, id, diffID = string_split(":", link)
 	local name, description, icon, idString
+
 	if idType == "0" then
 		name, description = EJ_GetInstanceInfo(id)
 		idString = INSTANCE .. "ID:"
@@ -57,6 +84,7 @@ function Module:HyperLink_SetJournal(link)
 		name = icon and "|T" .. icon .. ":20:20:0:0:64:64:5:59:5:59:20|t " .. name or name
 		idString = L["Section"] .. "ID:"
 	end
+
 	if not name then
 		return
 	end
@@ -77,7 +105,7 @@ function Module:HyperLink_SetTypes(link)
 end
 
 function Module:HyperLink_OnEnter(link, ...)
-	local linkType = strmatch(link, "^([^:]+)")
+	local linkType = string_match(link, "^([^:]+)")
 	if linkType then
 		if linkType == "battlepet" then
 			Module.HyperLink_SetPet(self, link)
@@ -103,19 +131,24 @@ function Module:HyperLink_OnLeave(_, ...)
 	end
 end
 
+-- REASON: Hooks ChatFrames to enable hover tooltips on hyperlinks.
 for i = 1, NUM_CHAT_WINDOWS do
 	local frame = _G["ChatFrame" .. i]
-	orig1[frame] = frame:GetScript("OnHyperlinkEnter")
-	frame:SetScript("OnHyperlinkEnter", Module.HyperLink_OnEnter)
-	orig2[frame] = frame:GetScript("OnHyperlinkLeave")
-	frame:SetScript("OnHyperlinkLeave", Module.HyperLink_OnLeave)
+	if frame then
+		orig1[frame] = frame:GetScript("OnHyperlinkEnter")
+		frame:SetScript("OnHyperlinkEnter", Module.HyperLink_OnEnter)
+		orig2[frame] = frame:GetScript("OnHyperlinkLeave")
+		frame:SetScript("OnHyperlinkLeave", Module.HyperLink_OnLeave)
+	end
 end
 
+-- REASON: Hooks CommunitiesFrame message frame once the addon is loaded.
 local function hookCommunitiesFrame(event, addon)
 	if addon == "Blizzard_Communities" then
-		CommunitiesFrame.Chat.MessageFrame:SetScript("OnHyperlinkEnter", Module.HyperLink_OnEnter)
-		CommunitiesFrame.Chat.MessageFrame:SetScript("OnHyperlinkLeave", Module.HyperLink_OnLeave)
-
+		if CommunitiesFrame and CommunitiesFrame.Chat and CommunitiesFrame.Chat.MessageFrame then
+			CommunitiesFrame.Chat.MessageFrame:SetScript("OnHyperlinkEnter", Module.HyperLink_OnEnter)
+			CommunitiesFrame.Chat.MessageFrame:SetScript("OnHyperlinkLeave", Module.HyperLink_OnLeave)
+		end
 		K:UnregisterEvent(event, hookCommunitiesFrame)
 	end
 end

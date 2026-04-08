@@ -1,113 +1,92 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays item levels, enchantments, and gems/essences on character and inspection frame slots.
+-- - Design: Hooks into character and inspect frames to inject custom font strings and icons based on item data.
+-- - Events: PLAYER_EQUIPMENT_CHANGED, INSPECT_READY, ADDON_LOADED
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
-local TT = K:GetModule("Tooltip")
+local TooltipModule = K:GetModule("Tooltip")
 
--- LUA LOCALS
+-- PERF: Localize global functions and environment for faster lookups.
+local ipairs = _G.ipairs
+local math_floor = _G.math.floor
+local next = _G.next
+local pairs = _G.pairs
+local select = _G.select
+local string_gsub = _G.string.gsub
+local string_match = _G.string.match
+local string_sub = _G.string.sub
+local string_upper = _G.string.upper
+local table_insert = _G.table.insert
+local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
+local type = _G.type
+
 local _G = _G
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local C_AzeriteEmpoweredItem_IsPowerSelected = _G.C_AzeriteEmpoweredItem.IsPowerSelected
+local C_Item_GetItemInfoInstant = _G.C_Item.GetItemInfoInstant
+local C_Spell_GetSpellInfo = _G.C_Spell.GetSpellInfo
+local C_Spell_GetSpellName = _G.C_Spell.GetSpellName
+local CreateFrame = _G.CreateFrame
+local GetCurrentGuildBankTab = _G.GetCurrentGuildBankTab
+local GetGuildBankItemLink = _G.GetGuildBankItemLink
+local GetInspectSpecialization = _G.GetInspectSpecialization
+local GetInventoryItemID = _G.GetInventoryItemID
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local GetLootSlotInfo = _G.GetLootSlotInfo
+local GetLootSlotLink = _G.GetLootSlotLink
+local GetTradePlayerItemLink = _G.GetTradePlayerItemLink
+local GetTradeTargetItemLink = _G.GetTradeTargetItemLink
+local HookSecureFunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local IsSpellKnown = _G.IsSpellKnown
+local ItemLocation = _G.ItemLocation
+local ItemObject = _G.Item
+local UnitClass = _G.UnitClass
+local UnitExists = _G.UnitExists
+local UnitGUID = _G.UnitGUID
 
-local pairs = pairs
-local ipairs = ipairs
-local select = select
-local next = next
-local type = type
-local tonumber = tonumber
+-- SG: Constants
+local ITEM_LEVEL_STRING = _G.ITEM_LEVEL
+local EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION = _G.EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION
+local INVSLOT_MAINHAND = _G.INVSLOT_MAINHAND
+local INVSLOT_OFFHAND = _G.INVSLOT_OFFHAND
+local INVSLOT_FIRST_EQUIPPED = _G.INVSLOT_FIRST_EQUIPPED
+local INVSLOT_LAST_EQUIPPED = _G.INVSLOT_LAST_EQUIPPED
+local INVSLOT_BODY = _G.INVSLOT_BODY
+local INVSLOT_TABARD = _G.INVSLOT_TABARD
 
-local math_floor = math.floor
-
-local strsub = string.sub
-local strmatch = string.match
-local strupper = string.upper
-local gsub = string.gsub
-
-local tinsert = table.insert
-local wipe = wipe
-
--- WOW API LOCALS
-local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
-local GameTooltip = GameTooltip
-
-local UnitGUID = UnitGUID
-local UnitExists = UnitExists
-local UnitClass = UnitClass
-
-local GetInventoryItemID = GetInventoryItemID
-local GetInventoryItemLink = GetInventoryItemLink
-local GetTradePlayerItemLink = GetTradePlayerItemLink
-local GetTradeTargetItemLink = GetTradeTargetItemLink
-local GetLootSlotInfo = GetLootSlotInfo
-local GetLootSlotLink = GetLootSlotLink
-local GetCurrentGuildBankTab = GetCurrentGuildBankTab
-local GetGuildBankItemLink = GetGuildBankItemLink
-
-local IsSpellKnown = IsSpellKnown
-local GetInspectSpecialization = GetInspectSpecialization
-
-local EquipmentManager_UnpackLocation = EquipmentManager_UnpackLocation
-local EquipmentManager_GetItemInfoByLocation = EquipmentManager_GetItemInfoByLocation
-
-local INVSLOT_FIRST_EQUIPPED = INVSLOT_FIRST_EQUIPPED
-local INVSLOT_LAST_EQUIPPED = INVSLOT_LAST_EQUIPPED
-local INVSLOT_BODY = INVSLOT_BODY
-local INVSLOT_TABARD = INVSLOT_TABARD
-local INVSLOT_MAINHAND = INVSLOT_MAINHAND
-local INVSLOT_OFFHAND = INVSLOT_OFFHAND
-local EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION = EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION
-
-local C_Item = C_Item
-local C_Spell = C_Spell
-local C_Timer = C_Timer
-local C_TooltipInfo = C_TooltipInfo
-local C_AddOns = C_AddOns
-local Item = Item
-local ItemLocation = ItemLocation
-
-local C_AzeriteEmpoweredItem_IsPowerSelected = C_AzeriteEmpoweredItem.IsPowerSelected
-
--- GetItemInfo COMPAT
-local _GetItemInfo = GetItemInfo
-local C_Item_GetItemInfo = C_Item and C_Item.GetItemInfo
-
-local function GetItemInfoCompat(item)
-	if _GetItemInfo then
-		return _GetItemInfo(item)
-	end
-	if C_Item_GetItemInfo then
-		return C_Item_GetItemInfo(item)
+-- REASON: Fallback logic for retrieving item info across different WoW versions/expansions.
+local function getItemInfoCompat(itemIdentifier)
+	local getItemInfoFunc = _G.C_Item and _G.C_Item.GetItemInfo or _G.GetItemInfo
+	if getItemInfoFunc then
+		return getItemInfoFunc(itemIdentifier)
 	end
 end
 
-local C_Item_GetItemInfoInstant = C_Item and C_Item.GetItemInfoInstant
-
--- GLOBAL STRINGS
-local ITEM_LEVEL = ITEM_LEVEL
-
--- SPELL INFO COMPAT
-local GetSpellInfo
-do
-	local Classic_GetSpellInfo = _G.GetSpellInfo
-	local C_Spell_GetSpellInfo = C_Spell and C_Spell.GetSpellInfo
+-- REASON: Wrapper for retrieving spell info with fallback for older API versions.
+local function getSpellInfoWrapper(spellIdentifier)
+	if not spellIdentifier then
+		return
+	end
 
 	if C_Spell_GetSpellInfo then
-		GetSpellInfo = function(spell)
-			if not spell then
-				return
-			end
-
-			local info = C_Spell_GetSpellInfo(spell)
-			if not info then
-				return
-			end
-
-			return info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+		local spellInfoData = C_Spell_GetSpellInfo(spellIdentifier)
+		if not spellInfoData then
+			return
 		end
+		return spellInfoData.name, spellInfoData.rank, spellInfoData.iconID, spellInfoData.castTime, spellInfoData.minRange, spellInfoData.maxRange, spellInfoData.spellID, spellInfoData.originalIconID
 	else
-		GetSpellInfo = Classic_GetSpellInfo
+		return _G.GetSpellInfo(spellIdentifier)
 	end
 end
 
--- SLOTS
-local inspectSlots = {
+local INVENTORY_SLOT_NAMES = {
 	"Head",
 	"Neck",
 	"Shoulder",
@@ -127,247 +106,233 @@ local inspectSlots = {
 	"SecondaryHand",
 }
 
-local function GetSlotDisplayName(slotToken)
+local function getInventorySlotDisplayName(slotToken)
 	if not slotToken then
 		return ""
 	end
 
-	local key = strupper(slotToken) .. "SLOT"
-	local name = _G[key]
-	if name and name ~= "" then
-		return name
+	local slotKey = string_upper(slotToken) .. "SLOT"
+	local localizedName = _G[slotKey]
+	if localizedName and localizedName ~= "" then
+		return localizedName
 	end
 
-	return gsub(slotToken, "(%l)(%u)", "%1 %2")
+	return string_gsub(slotToken, "(%l)(%u)", "%1 %2")
 end
 
--- ANCHORS
-function Module:GetSlotAnchor(index)
-	if not index then
+function Module:getInventorySlotAnchor(slotIndex)
+	if not slotIndex then
 		return
 	end
 
-	if index <= 5 or index == 9 or index == 15 then
+	if slotIndex <= 5 or slotIndex == 9 or slotIndex == 15 then
 		return "BOTTOMLEFT", 40, 20
-	elseif index == 16 then
+	elseif slotIndex == 16 then
 		return "BOTTOMRIGHT", -40, 2
-	elseif index == 17 then
+	elseif slotIndex == 17 then
 		return "BOTTOMLEFT", 40, 2
 	else
 		return "BOTTOMRIGHT", -40, 20
 	end
 end
 
--- TEXTURE HELPERS
-function Module:CreateItemTexture(slot, point, x, y)
-	local icon = slot:CreateTexture(nil, "OVERLAY")
-	icon:SetPoint(point, x, y)
-	icon:SetSize(14, 14)
-	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+function Module:createSlotIconTexture(parentSlotFrame, anchorPoint, offsetX, offsetY)
+	local iconTexture = parentSlotFrame:CreateTexture(nil, "OVERLAY")
+	iconTexture:SetPoint(anchorPoint, offsetX, offsetY)
+	iconTexture:SetSize(14, 14)
+	iconTexture:SetTexCoord(_G.unpack(K.TexCoords))
 
-	icon.bg = CreateFrame("Frame", nil, slot)
-	icon.bg:SetAllPoints(icon)
-	icon.bg:SetFrameLevel(3)
-	icon.bg:CreateBorder()
-	icon.bg:Hide()
+	iconTexture.bg = CreateFrame("Frame", nil, parentSlotFrame)
+	iconTexture.bg:SetAllPoints(iconTexture)
+	iconTexture.bg:SetFrameLevel(101)
+	iconTexture.bg:CreateBorder()
+	iconTexture.bg:Hide()
 
-	return icon
+	return iconTexture
 end
 
--- ITEM STRING (HOVER EXPAND)
-local function ItemString_OnEnter(self)
-	self:SetWidth(0)
+local function onItemStringEnter(stringFrame)
+	stringFrame:SetWidth(0)
 end
 
-local function ItemString_OnLeave(self)
-	self:SetWidth(120)
+local function onItemStringLeave(stringFrame)
+	stringFrame:SetWidth(120)
 end
 
--- MISSING ENCHANT INDICATOR
-local MISSING_ENCHANT_ICON_SIZE = 12
-local MISSING_ENCHANT_ICON_DX_LEFT = 4
-local MISSING_ENCHANT_ICON_DX_RIGHT = -4
+-- SG: Missing Enchant Indicator Constants
+local MISSING_ENCHANT_ICON_SIZE = 14
+local MISSING_ENCHANT_ICON_DX_LEFT = 5
+local MISSING_ENCHANT_ICON_DX_RIGHT = -5
 local MISSING_ENCHANT_ICON_DY = 2
 
-local MissingEnchantOffsets = {
-	[16] = { dx = -4, dy = -2 }, -- MainHand example
-	[17] = { dx = 4, dy = -2 }, -- OffHand example
+local MISSING_ENCHANT_OFFSETS = {
+	[16] = { dx = -4, dy = -2 },
+	[17] = { dx = 4, dy = -2 },
 }
 
-local function MissingEnchant_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+local function onMissingEnchantIconEnter(hitFrame)
+	_G.GameTooltip:SetOwner(hitFrame, "ANCHOR_RIGHT")
 
-	local slotName = self.KKUI_SlotName
-	if slotName and slotName ~= "" then
-		GameTooltip:AddLine("Missing Enchant: " .. slotName, 1, 0.1, 0.1)
+	local slotDisplayName = hitFrame.KKUI_SlotName
+	if slotDisplayName and slotDisplayName ~= "" then
+		_G.GameTooltip:AddLine("Missing Enchant: " .. slotDisplayName, 1, 0.1, 0.1)
 	else
-		GameTooltip:AddLine("Missing Enchant", 1, 0.1, 0.1)
+		_G.GameTooltip:AddLine("Missing Enchant", 1, 0.1, 0.1)
 	end
 
-	GameTooltip:Show()
+	_G.GameTooltip:Show()
 end
 
-local function MissingEnchant_OnLeave()
-	GameTooltip:Hide()
+local function onMissingEnchantIconLeave()
+	_G.GameTooltip:Hide()
 end
 
-function Module:GetMissingEnchantAnchor(index, point, x, y)
-	local dx = (x and x > 0) and MISSING_ENCHANT_ICON_DX_LEFT or MISSING_ENCHANT_ICON_DX_RIGHT
+function Module:getMissingEnchantAnchor(slotIndex, anchorPoint, offsetX, offsetY)
+	local dx = (offsetX and offsetX > 0) and MISSING_ENCHANT_ICON_DX_LEFT or MISSING_ENCHANT_ICON_DX_RIGHT
 	local dy = MISSING_ENCHANT_ICON_DY
 
-	local o = index and MissingEnchantOffsets[index]
-	if o then
-		if o.dx ~= nil then
-			dx = o.dx
+	local offsetData = slotIndex and MISSING_ENCHANT_OFFSETS[slotIndex]
+	if offsetData then
+		if offsetData.dx ~= nil then
+			dx = offsetData.dx
 		end
-		if o.dy ~= nil then
-			dy = o.dy
+		if offsetData.dy ~= nil then
+			dy = offsetData.dy
 		end
 	end
 
-	return point, (x or 0) + dx, (y or 0) + dy
+	return anchorPoint, (offsetX or 0) + dx, (offsetY or 0) + dy
 end
 
-function Module:EnsureMissingEnchantIcon(slotFrame, slotToken, point, x, y)
-	local tex = slotFrame.noEnchantTexture
-	if not tex then
-		tex = slotFrame:CreateTexture(nil, "OVERLAY")
-		tex:SetSize(MISSING_ENCHANT_ICON_SIZE, MISSING_ENCHANT_ICON_SIZE)
-		tex:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		tex:Hide()
+function Module:ensureMissingEnchantIcon(parentSlotFrame, slotToken, anchorPoint, offsetX, offsetY)
+	local enchantIcon = parentSlotFrame.noEnchantTexture
+	if not enchantIcon then
+		enchantIcon = parentSlotFrame:CreateTexture(nil, "OVERLAY")
+		enchantIcon:SetSize(MISSING_ENCHANT_ICON_SIZE, MISSING_ENCHANT_ICON_SIZE)
+		enchantIcon:SetTexCoord(_G.unpack(K.TexCoords))
+		enchantIcon:Hide()
 
-		local hit = CreateFrame("Frame", nil, slotFrame)
-		hit:SetAllPoints(tex)
-		hit:SetFrameLevel(slotFrame:GetFrameLevel())
-		hit:CreateBorder()
-		hit:EnableMouse(true)
-		hit:SetScript("OnEnter", MissingEnchant_OnEnter)
-		hit:SetScript("OnLeave", MissingEnchant_OnLeave)
-		hit:Hide()
+		local hitFrame = CreateFrame("Frame", nil, parentSlotFrame)
+		hitFrame:SetAllPoints(enchantIcon)
+		hitFrame:SetFrameLevel(parentSlotFrame:GetFrameLevel())
+		hitFrame:CreateBorder()
+		hitFrame:EnableMouse(true)
+		hitFrame:SetScript("OnEnter", onMissingEnchantIconEnter)
+		hitFrame:SetScript("OnLeave", onMissingEnchantIconLeave)
+		hitFrame:Hide()
 
-		tex.bg = hit
-		slotFrame.noEnchantTexture = tex
+		enchantIcon.bg = hitFrame
+		parentSlotFrame.noEnchantTexture = enchantIcon
 	end
 
-	tex.bg.KKUI_SlotName = GetSlotDisplayName(slotToken)
+	enchantIcon.bg.KKUI_SlotName = getInventorySlotDisplayName(slotToken)
+	enchantIcon:ClearAllPoints()
+	enchantIcon:SetPoint(anchorPoint, parentSlotFrame, offsetX, offsetY)
+	enchantIcon.bg:SetAllPoints(enchantIcon)
 
-	tex:ClearAllPoints()
-	tex:SetPoint(point, slotFrame, x, y)
-	tex.bg:SetAllPoints(tex)
-
-	return tex
+	return enchantIcon
 end
 
--- CREATE STRINGS/ICONS ON SLOTS
-function Module:CreateItemString(frame, strType)
-	if frame.fontCreated then
+function Module:createSlotItemLevelStrings(parentFrame, prefixName)
+	if parentFrame.fontCreated then
 		return
 	end
 
-	for index, slot in ipairs(inspectSlots) do
-		if index ~= 4 then
-			local slotFrame = _G[strType .. slot .. "Slot"]
+	for slotIndex, slotToken in ipairs(INVENTORY_SLOT_NAMES) do
+		if slotIndex ~= 4 then
+			local slotFrame = _G[prefixName .. slotToken .. "Slot"]
+			if slotFrame then
+				slotFrame.iLvlText = K.CreateFontString(slotFrame, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+				slotFrame.iLvlText:ClearAllPoints()
+				slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
 
-			slotFrame.iLvlText = K.CreateFontString(slotFrame, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
-			slotFrame.iLvlText:ClearAllPoints()
-			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
+				local anchorPoint, offsetX, offsetY = Module:getInventorySlotAnchor(slotIndex)
 
-			local point, x, y = Module:GetSlotAnchor(index)
+				slotFrame.enchantText = K.CreateFontString(slotFrame, 11)
+				slotFrame.enchantText:ClearAllPoints()
+				slotFrame.enchantText:SetPoint(anchorPoint, slotFrame, offsetX, offsetY)
+				slotFrame.enchantText:SetJustifyH(string_sub(anchorPoint, 7))
+				slotFrame.enchantText:SetWidth(120)
+				slotFrame.enchantText:EnableMouse(true)
+				slotFrame.enchantText:HookScript("OnEnter", onItemStringEnter)
+				slotFrame.enchantText:HookScript("OnLeave", onItemStringLeave)
+				slotFrame.enchantText:HookScript("OnShow", onItemStringLeave)
 
-			slotFrame.enchantText = K.CreateFontString(slotFrame, 11)
-			slotFrame.enchantText:ClearAllPoints()
-			slotFrame.enchantText:SetPoint(point, slotFrame, x, y)
-			slotFrame.enchantText:SetJustifyH(strsub(point, 7))
-			slotFrame.enchantText:SetWidth(120)
-			slotFrame.enchantText:EnableMouse(true)
-			slotFrame.enchantText:HookScript("OnEnter", ItemString_OnEnter)
-			slotFrame.enchantText:HookScript("OnLeave", ItemString_OnLeave)
-			slotFrame.enchantText:HookScript("OnShow", ItemString_OnLeave)
+				local enchantPoint, enchantOffsetX, enchantOffsetY = Module:getMissingEnchantAnchor(slotIndex, anchorPoint, offsetX, offsetY)
+				Module:ensureMissingEnchantIcon(slotFrame, slotToken, enchantPoint, enchantOffsetX, enchantOffsetY)
 
-			local ePoint, eX, eY = Module:GetMissingEnchantAnchor(index, point, x, y)
-			Module:EnsureMissingEnchantIcon(slotFrame, slot, ePoint, eX, eY)
-
-			for i = 1, 10 do
-				local offset = (i - 1) * 20 + 5
-				local iconX = x > 0 and x + offset or x - offset
-				local iconY = index > 15 and 20 or 2
-				slotFrame["textureIcon" .. i] = Module:CreateItemTexture(slotFrame, point, iconX, iconY)
+				for i = 1, 10 do
+					local horizontalOffset = (i - 1) * 20 + 5
+					local iconOffsetX = offsetX > 0 and offsetX + horizontalOffset or offsetX - horizontalOffset
+					local iconOffsetY = slotIndex > 15 and 20 or 2
+					slotFrame["textureIcon" .. i] = Module:createSlotIconTexture(slotFrame, anchorPoint, iconOffsetX, iconOffsetY)
+				end
 			end
 		end
 	end
 
-	frame.fontCreated = true
+	parentFrame.fontCreated = true
 end
 
--- AZERITE TRAITS
-local azeriteSlots = {
+-- SG: Azerite Trait Detection Logic
+local AZERITE_SLOTS = {
 	[1] = true,
 	[3] = true,
 	[5] = true,
 }
 
--- CACHE
-local locationCache = {}
-local itemCache = {}
-local ITEM_CACHE_MAX_SIZE = 500
-local itemCacheSize = 0
-
-local function ClearCaches()
-	wipe(locationCache)
-	wipe(itemCache)
-	itemCacheSize = 0
-end
-
-local function GetSlotItemLocation(id)
-	if not azeriteSlots[id] then
+local slotLocationCache = {}
+local function getInventorySlotItemLocation(slotIndex)
+	if not AZERITE_SLOTS[slotIndex] then
 		return
 	end
 
-	local loc = locationCache[id]
-	if not loc then
-		loc = ItemLocation:CreateFromEquipmentSlot(id)
-		locationCache[id] = loc
+	local itemLoc = slotLocationCache[slotIndex]
+	if not itemLoc then
+		itemLoc = ItemLocation:CreateFromEquipmentSlot(slotIndex)
+		slotLocationCache[slotIndex] = itemLoc
 	end
-	return loc
+	return itemLoc
 end
 
-function Module:ItemLevel_UpdateTraits(button, id, link)
+-- REASON: Scans Azerite gear for selected powers and displays corresponding spell icons on the gear slot.
+function Module:updateAzeriteTraitIcons(parentSlotFrame, slotIndex, itemLink)
 	if not C["Misc"].AzeriteTraits then
 		return
 	end
 
-	local empoweredItemLocation = GetSlotItemLocation(id)
+	local empoweredItemLocation = getInventorySlotItemLocation(slotIndex)
 	if not empoweredItemLocation then
 		return
 	end
 
-	local allTierInfo = TT:Azerite_UpdateTier(link)
-	if not allTierInfo then
+	local tierPowerInfo = TooltipModule:Azerite_UpdateTier(itemLink)
+	if not tierPowerInfo then
 		return
 	end
 
 	for i = 1, 2 do
-		local powerIDs = allTierInfo[i] and allTierInfo[i].azeritePowerIDs
-		if not powerIDs or powerIDs[1] == 13 then
+		local azeritePowerIDs = tierPowerInfo[i] and tierPowerInfo[i].azeritePowerIDs
+		if not azeritePowerIDs or azeritePowerIDs[1] == 13 then
 			break
 		end
 
-		for _, powerID in pairs(powerIDs) do
+		for _, powerID in pairs(azeritePowerIDs) do
 			if C_AzeriteEmpoweredItem_IsPowerSelected(empoweredItemLocation, powerID) then
-				local spellID = TT:Azerite_PowerToSpell(powerID)
-				local name, _, icon = GetSpellInfo(spellID)
-				local texture = button["textureIcon" .. i]
-				if name and texture then
-					texture:SetTexture(icon)
-					texture.bg:Show()
+				local azeriteSpellID = TooltipModule:Azerite_PowerToSpell(powerID)
+				local spellNameText, _, spellIconID = getSpellInfoWrapper(azeriteSpellID)
+				local traitIconTexture = parentSlotFrame["textureIcon" .. i]
+				if spellNameText and traitIconTexture then
+					traitIconTexture:SetTexture(spellIconID)
+					traitIconTexture.bg:Show()
 				end
 			end
 		end
 	end
 end
 
--- ENCHANTABLE SLOTS
-local IsEnchantableSlots = {
+-- SG: Enchantable Slot List
+local ENCHANT_TARGET_SLOTS = {
 	INVTYPE_CHEST = true,
 	INVTYPE_ROBE = true,
 	INVTYPE_LEGS = true,
@@ -383,564 +348,546 @@ local IsEnchantableSlots = {
 	INVTYPE_WEAPONOFFHAND = true,
 }
 
-local function IsOffhandEnchantable(unit, slot)
-	local link = GetInventoryItemLink(unit, slot)
-	if link then
-		local itemEquipLoc = select(4, C_Item_GetItemInfoInstant(link))
-		return itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_SHIELD"
+local function isOffhandEnchantable(targetUnit, slotIndex)
+	local itemLink = GetInventoryItemLink(targetUnit, slotIndex)
+	if itemLink then
+		local equipLocation = select(4, C_Item_GetItemInfoInstant(itemLink))
+		return equipLocation ~= "INVTYPE_HOLDABLE" and equipLocation ~= "INVTYPE_SHIELD"
 	end
 	return false
 end
 
-function Module:CanEnchantSlot(unit, slot)
-	if slot == INVSLOT_OFFHAND then
-		return IsOffhandEnchantable(unit, slot)
+function Module:isSlotEnchantable(targetUnit, slotIndex)
+	if slotIndex == INVSLOT_OFFHAND then
+		return isOffhandEnchantable(targetUnit, slotIndex)
 	end
 
-	local link = GetInventoryItemLink(unit, slot)
-	if link then
-		local itemEquipLoc = select(4, C_Item_GetItemInfoInstant(link))
-		return IsEnchantableSlots[itemEquipLoc] or false
+	local itemLink = GetInventoryItemLink(targetUnit, slotIndex)
+	if itemLink then
+		local equipLocation = select(4, C_Item_GetItemInfoInstant(itemLink))
+		return ENCHANT_TARGET_SLOTS[equipLocation] or false
 	end
 
 	return false
 end
 
--- UPDATE SLOT DISPLAY
-function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
-	local infoType = type(info)
-	local level = (infoType == "table") and info.iLvl or info
+-- REASON: Updates the item level text and iconography (enchantments, gems) for a specific gear slot.
+function Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQuality)
+	local infoType = type(gearLevelInfo)
+	local itemLevelValue = (infoType == "table") and gearLevelInfo.iLvl or gearLevelInfo
 
-	if level and level > 1 and quality and quality > 1 then
-		local color = K.QualityColors[quality]
-		slotFrame.iLvlText:SetText(level)
-		slotFrame.iLvlText:SetTextColor(color.r, color.g, color.b)
+	if itemLevelValue and itemLevelValue > 1 and itemQuality and itemQuality > 1 then
+		local qualityColorData = K.QualityColors[itemQuality]
+		parentSlotFrame.iLvlText:SetText(itemLevelValue)
+		parentSlotFrame.iLvlText:SetTextColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 	else
-		slotFrame.iLvlText:SetText("")
+		parentSlotFrame.iLvlText:SetText("")
 	end
 
 	if infoType ~= "table" then
 		return
 	end
 
-	-- ENCHANT TEXT / MISSING ENCHANT ICON
-	local enchant = info.enchantText
-	if enchant and enchant ~= "" then
-		slotFrame.enchantText:SetText(enchant)
-		slotFrame.enchantText:SetTextColor(0, 1, 0)
+	local enchantTextContent = gearLevelInfo.enchantText
+	if enchantTextContent and enchantTextContent ~= "" then
+		parentSlotFrame.enchantText:SetText(enchantTextContent)
+		parentSlotFrame.enchantText:SetTextColor(0, 1, 0)
 
-		slotFrame.noEnchantTexture:Hide()
-		slotFrame.noEnchantTexture.bg:Hide()
-	elseif Module:CanEnchantSlot("player", slotFrame:GetID()) then
-		slotFrame.enchantText:SetText("")
+		parentSlotFrame.noEnchantTexture:Hide()
+		parentSlotFrame.noEnchantTexture.bg:Hide()
+	elseif Module:isSlotEnchantable("player", parentSlotFrame:GetID()) then
+		parentSlotFrame.enchantText:SetText("")
 
-		slotFrame.noEnchantTexture:SetTexture("Interface\\Icons\\inv_enchant_formulasuperior_01")
-		slotFrame.noEnchantTexture:SetVertexColor(1, 0.1, 0.1, 1)
-		slotFrame.noEnchantTexture:SetDesaturated(true)
-		slotFrame.noEnchantTexture:Show()
-
-		-- if slotFrame.noEnchantTexture.bg and slotFrame.noEnchantTexture.bg.KKUI_Border then
-		-- 	slotFrame.noEnchantTexture.bg.KKUI_Border:SetVertexColor(1, 0.1, 0.1)
-		-- end
-		slotFrame.noEnchantTexture.bg:Show()
+		parentSlotFrame.noEnchantTexture:SetTexture("Interface\\Icons\\inv_enchant_formulasuperior_01")
+		parentSlotFrame.noEnchantTexture:SetVertexColor(1, 0.1, 0.1, 1)
+		parentSlotFrame.noEnchantTexture:SetDesaturated(true)
+		parentSlotFrame.noEnchantTexture:Show()
+		parentSlotFrame.noEnchantTexture.bg:Show()
 	else
-		slotFrame.enchantText:SetText("")
-		slotFrame.noEnchantTexture:Hide()
-		slotFrame.noEnchantTexture.bg:Hide()
+		parentSlotFrame.enchantText:SetText("")
+		parentSlotFrame.noEnchantTexture:Hide()
+		parentSlotFrame.noEnchantTexture.bg:Hide()
 	end
 
-	-- GEMS / ESSENCES
-	local gemStep, essenceStep = 1, 1
+	local currentGemIndex, currentEssenceIndex = 1, 1
 	for i = 1, 10 do
-		local texture = slotFrame["textureIcon" .. i]
-		local bg = texture.bg
+		local slotIconTexture = parentSlotFrame["textureIcon" .. i]
+		local iconBackgroundFrame = slotIconTexture.bg
 
-		local gem = info.gems and info.gems[gemStep]
-		local color = info.gemsColor and info.gemsColor[gemStep]
-		local essence = (not gem) and (info.essences and info.essences[essenceStep])
+		local gemTextureID = gearLevelInfo.gems and gearLevelInfo.gems[currentGemIndex]
+		local gemColorData = gearLevelInfo.gemsColor and gearLevelInfo.gemsColor[currentGemIndex]
+		local essenceData = (not gemTextureID) and (gearLevelInfo.essences and gearLevelInfo.essences[currentEssenceIndex])
 
-		if gem then
-			texture:SetTexture(gem)
-			if color then
-				bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+		if gemTextureID then
+			slotIconTexture:SetTexture(gemTextureID)
+			if gemColorData then
+				iconBackgroundFrame.KKUI_Border:SetVertexColor(gemColorData.r, gemColorData.g, gemColorData.b)
 			else
-				bg.KKUI_Border:SetVertexColor(1, 1, 1)
+				iconBackgroundFrame.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
-			bg:Show()
-
-			gemStep = gemStep + 1
-		elseif essence and next(essence) then
-			local r, g, b = essence[4], essence[5], essence[6]
-			if r and g and b then
-				bg.KKUI_Border:SetVertexColor(r, g, b)
+			iconBackgroundFrame:Show()
+			currentGemIndex = currentGemIndex + 1
+		elseif essenceData and next(essenceData) then
+			local colorR, colorG, colorB = essenceData[4], essenceData[5], essenceData[6]
+			if colorR and colorG and colorB then
+				iconBackgroundFrame.KKUI_Border:SetVertexColor(colorR, colorG, colorB)
 			else
-				bg.KKUI_Border:SetVertexColor(1, 1, 1)
+				iconBackgroundFrame.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 
-			texture:SetTexture(essence[1])
-			bg:Show()
-
-			essenceStep = essenceStep + 1
+			slotIconTexture:SetTexture(essenceData[1])
+			iconBackgroundFrame:Show()
+			currentEssenceIndex = currentEssenceIndex + 1
 		else
-			texture:SetTexture(nil)
-			bg:Hide()
+			slotIconTexture:SetTexture(nil)
+			iconBackgroundFrame:Hide()
 		end
 	end
 end
 
-function Module:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
-	C_Timer.After(0.1, function()
-		local quality = select(3, GetItemInfoCompat(link))
-		local info = K.GetItemLevel(link, unit, index, C["Misc"].GemEnchantInfo)
-		if info == "tooSoon" then
+function Module:refreshSlotItemLevelDisplay(itemLink, targetUnit, slotIndex, parentSlotFrame)
+	_G.C_Timer.After(0.1, function()
+		local itemQuality = select(3, getItemInfoCompat(itemLink))
+		local gearLevelInfo = K.GetItemLevel(itemLink, targetUnit, slotIndex, C["Misc"].GemEnchantInfo)
+		if gearLevelInfo == "tooSoon" then
 			return
 		end
-		Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
+		Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQuality)
 	end)
 end
 
-function Module:ItemLevel_SetupLevel(frame, strType, unit)
-	if not UnitExists(unit) then
+function Module:setupGearItemLevelDisplay(parentFrame, prefixName, targetUnit)
+	if not UnitExists(targetUnit) then
 		return
 	end
 
-	Module:CreateItemString(frame, strType)
+	Module:createSlotItemLevelStrings(parentFrame, prefixName)
 
-	for index, slot in ipairs(inspectSlots) do
-		if index ~= 4 then
-			local slotFrame = _G[strType .. slot .. "Slot"]
+	for slotIndex, slotToken in ipairs(INVENTORY_SLOT_NAMES) do
+		if slotIndex ~= 4 then
+			local slotFrame = _G[prefixName .. slotToken .. "Slot"]
+			if slotFrame then
+				slotFrame.iLvlText:SetText("")
+				slotFrame.enchantText:SetText("")
 
-			slotFrame.iLvlText:SetText("")
-			slotFrame.enchantText:SetText("")
+				for i = 1, 10 do
+					local iconTexture = slotFrame["textureIcon" .. i]
+					iconTexture:SetTexture(nil)
+					iconTexture.bg:Hide()
+				end
 
-			for i = 1, 10 do
-				local texture = slotFrame["textureIcon" .. i]
-				texture:SetTexture(nil)
-				texture.bg:Hide()
-			end
+				local itemLink = GetInventoryItemLink(targetUnit, slotIndex)
+				if itemLink then
+					local itemQuality = select(3, getItemInfoCompat(itemLink))
+					local gearLevelInfo = K.GetItemLevel(itemLink, targetUnit, slotIndex, C["Misc"].GemEnchantInfo)
 
-			local link = GetInventoryItemLink(unit, index)
-			if link then
-				local quality = select(3, GetItemInfoCompat(link))
-				local info = K.GetItemLevel(link, unit, index, C["Misc"].GemEnchantInfo)
+					if gearLevelInfo == "tooSoon" then
+						Module:refreshSlotItemLevelDisplay(itemLink, targetUnit, slotIndex, slotFrame)
+					else
+						Module:updateSlotItemLevelDisplay(slotFrame, gearLevelInfo, itemQuality)
+					end
 
-				if info == "tooSoon" then
-					Module:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
+					if prefixName == "Character" then
+						Module:updateAzeriteTraitIcons(slotFrame, slotIndex, itemLink)
+					end
 				else
-					Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
+					slotFrame.noEnchantTexture:Hide()
+					slotFrame.noEnchantTexture.bg:Hide()
 				end
-
-				if strType == "Character" then
-					Module:ItemLevel_UpdateTraits(slotFrame, index, link)
-				end
-			else
-				slotFrame.noEnchantTexture:Hide()
-				slotFrame.noEnchantTexture.bg:Hide()
 			end
 		end
 	end
 end
 
--- PLAYER_EQUIPMENT_CHANGED can fire in bursts (swap sets, multi-slot updates).
--- Coalesce to a single update to keep spikes down.
-local queuedPlayerILvlUpdate = false
-local function UpdatePlayerItemLevelNow()
-	queuedPlayerILvlUpdate = false
-	Module:ItemLevel_SetupLevel(CharacterFrame, "Character", "player")
+-- REASON: Coalesces rapid equipment change events to prevent excessive UI updates and performance spikes.
+local isPlayerGearUpdateQueued = false
+local function updatePlayerGearItemLevelNow()
+	isPlayerGearUpdateQueued = false
+	Module:setupGearItemLevelDisplay(_G.CharacterFrame, "Character", "player")
 end
 
-local function QueuePlayerItemLevelUpdate()
-	if queuedPlayerILvlUpdate then
+local function queuePlayerGearItemLevelUpdate()
+	if isPlayerGearUpdateQueued then
 		return
 	end
 
-	queuedPlayerILvlUpdate = true
-	C_Timer.After(0.05, UpdatePlayerItemLevelNow)
+	isPlayerGearUpdateQueued = true
+	_G.C_Timer.After(0.05, updatePlayerGearItemLevelNow)
 end
 
--- AVG ITEM LEVEL (INSPECT)
-local itemsTable = {}
-
-local function CalculateAverageItemLevel(unit, fontstring)
-	if not fontstring then
+local gearItemListTable = {}
+-- REASON: Manually calculates the average item level of a unit (player or target) for display on the inspection window.
+local function calculateAverageGearLevel(targetUnit, displayFontString)
+	if not displayFontString then
 		return
 	end
 
-	fontstring:Hide()
-	wipe(itemsTable)
+	displayFontString:Hide()
+	table_wipe(gearItemListTable)
 
-	local mainhandEquipLoc, offhandEquipLoc
+	local mainHandEquipLoc, offHandEquipLoc
+	for slotIndex = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		if slotIndex ~= INVSLOT_BODY and slotIndex ~= INVSLOT_TABARD then
+			local itemIDValue = GetInventoryItemID(targetUnit, slotIndex)
+			local itemLinkStr = GetInventoryItemLink(targetUnit, slotIndex)
 
-	for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		if slot ~= INVSLOT_BODY and slot ~= INVSLOT_TABARD then
-			local itemID = GetInventoryItemID(unit, slot)
-			local itemLink = GetInventoryItemLink(unit, slot)
+			if itemLinkStr or itemIDValue then
+				local gearItemObject = itemLinkStr and ItemObject:CreateFromItemLink(itemLinkStr) or ItemObject:CreateFromItemID(itemIDValue)
+				table_insert(gearItemListTable, gearItemObject)
 
-			if itemLink or itemID then
-				local item = itemLink and Item:CreateFromItemLink(itemLink) or Item:CreateFromItemID(itemID)
-				tinsert(itemsTable, item)
-
-				local equipLoc = select(4, C_Item_GetItemInfoInstant(itemLink or itemID))
-				if slot == INVSLOT_MAINHAND then
-					mainhandEquipLoc = equipLoc
-				elseif slot == INVSLOT_OFFHAND then
-					offhandEquipLoc = equipLoc
+				local equipLocation = select(4, C_Item_GetItemInfoInstant(itemLinkStr or itemIDValue))
+				if slotIndex == INVSLOT_MAINHAND then
+					mainHandEquipLoc = equipLocation
+				elseif slotIndex == INVSLOT_OFFHAND then
+					offHandEquipLoc = equipLocation
 				end
 			end
 		end
 	end
 
-	local numSlots = (mainhandEquipLoc and offhandEquipLoc) and 16 or 15
-
-	local _, className = UnitClass(unit)
-	if className == "WARRIOR" then
-		local isFury
-		if unit == "player" then
-			isFury = IsSpellKnown(46917) -- Titan's Grip
+	local totalScannedSlots = (mainHandEquipLoc and offHandEquipLoc) and 16 or 15
+	local _, classFilename = UnitClass(targetUnit)
+	if classFilename == "WARRIOR" then
+		local isFurySpecialization
+		if targetUnit == "player" then
+			isFurySpecialization = IsSpellKnown(46917) -- Titan's Grip
 		else
-			isFury = GetInspectSpecialization and (GetInspectSpecialization(unit) == 72)
+			isFurySpecialization = GetInspectSpecialization and (GetInspectSpecialization(targetUnit) == 72)
 		end
 
-		if isFury then
-			numSlots = 16
-		end
-	end
-
-	local totalLevel = 0
-	for i = 1, #itemsTable do
-		local itemLevel = itemsTable[i]:GetCurrentItemLevel()
-		if itemLevel then
-			totalLevel = totalLevel + itemLevel
+		if isFurySpecialization then
+			totalScannedSlots = 16
 		end
 	end
 
-	fontstring:SetFormattedText(ITEM_LEVEL, totalLevel / numSlots)
-	fontstring:Show()
+	local totalGearItemLevel = 0
+	for i = 1, #gearItemListTable do
+		local itemLevelValue = gearItemListTable[i]:GetCurrentItemLevel()
+		if itemLevelValue then
+			totalGearItemLevel = totalGearItemLevel + itemLevelValue
+		end
+	end
+
+	displayFontString:SetFormattedText(ITEM_LEVEL_STRING, totalGearItemLevel / totalScannedSlots)
+	displayFontString:Show()
 end
 
-function Module:ItemLevel_UpdateInspect(...)
-	local guid = ...
-	local InspectFrame = _G.InspectFrame
-	if InspectFrame and InspectFrame.unit and UnitGUID(InspectFrame.unit) == guid then
-		Module:ItemLevel_SetupLevel(InspectFrame, "Inspect", InspectFrame.unit)
+function Module:updateInspectFrameGearInfo(targetGUID)
+	local inspectFrame = _G.InspectFrame
+	if inspectFrame and inspectFrame.unit and UnitGUID(inspectFrame.unit) == targetGUID then
+		Module:setupGearItemLevelDisplay(inspectFrame, "Inspect", inspectFrame.unit)
 
-		if not InspectFrame.AvgItemLevelText then
-			local InspectModelFrame = _G.InspectModelFrame
-			if InspectModelFrame then
-				InspectFrame.AvgItemLevelText = K.CreateFontString(InspectModelFrame, 12, "", "OUTLINE", false, "BOTTOM", 0, 46)
+		if not inspectFrame.AvgItemLevelText then
+			local inspectModelFrame = _G.InspectModelFrame
+			if inspectModelFrame then
+				inspectFrame.AvgItemLevelText = K.CreateFontString(inspectModelFrame, 12, "", "OUTLINE", false, "BOTTOM", 0, 46)
 			end
 		end
 
-		if InspectFrame.AvgItemLevelText then
-			CalculateAverageItemLevel(InspectFrame.unit or "target", InspectFrame.AvgItemLevelText)
+		if inspectFrame.AvgItemLevelText then
+			calculateAverageGearLevel(inspectFrame.unit or "target", inspectFrame.AvgItemLevelText)
 		end
 
-		local InspectModelFrameControlFrame = _G.InspectModelFrameControlFrame
-		if InspectModelFrameControlFrame then
-			InspectModelFrameControlFrame:HookScript("OnShow", InspectModelFrameControlFrame.Hide)
+		local modelControlFrame = _G.InspectModelFrameControlFrame
+		if modelControlFrame then
+			modelControlFrame:HookScript("OnShow", modelControlFrame.Hide)
 		end
 	end
 end
 
--- FLYOUT
-local function Flyout_Update(button, bag, slot, quality)
-	if not button.iLvl then
-		button.iLvl = K.CreateFontString(button, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+local function onFlyoutButtonUpdate(flyoutButton, bagIndex, slotIndex, itemQuality)
+	if not flyoutButton.iLvl then
+		flyoutButton.iLvl = K.CreateFontString(flyoutButton, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 	end
 
-	if quality and quality <= 1 then
-		button.iLvl:SetText("")
+	if itemQuality and itemQuality <= 1 then
+		flyoutButton.iLvl:SetText("")
 		return
 	end
 
-	local link, level
-	if bag then
-		link = C_Container.GetContainerItemLink(bag, slot)
-		level = K.GetItemLevel(link, bag, slot)
+	local itemLinkStr, itemLevelValue
+	if bagIndex then
+		itemLinkStr = _G.C_Container.GetContainerItemLink(bagIndex, slotIndex)
+		itemLevelValue = K.GetItemLevel(itemLinkStr, bagIndex, slotIndex)
 	else
-		link = GetInventoryItemLink("player", slot)
-		level = K.GetItemLevel(link, "player", slot)
+		itemLinkStr = GetInventoryItemLink("player", slotIndex)
+		itemLevelValue = K.GetItemLevel(itemLinkStr, "player", slotIndex)
 	end
 
-	local color = K.QualityColors[quality or 0]
-	button.iLvl:SetText(level or "")
-	button.iLvl:SetTextColor(color.r, color.g, color.b)
+	local qualityColorData = K.QualityColors[itemQuality or 0]
+	flyoutButton.iLvl:SetText(itemLevelValue or "")
+	flyoutButton.iLvl:SetTextColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 end
 
-local function Flyout_Setup(button)
-	if button.iLvl then
-		button.iLvl:SetText("")
+local function setupFlyoutGearDisplay(flyoutButton)
+	if flyoutButton.iLvl then
+		flyoutButton.iLvl:SetText("")
 	end
 
-	local location = button.location
-	if not location then
+	local flyoutLocation = flyoutButton.location
+	if not flyoutLocation then
 		return
 	end
 
-	if tonumber(location) then
-		if location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
+	if tonumber(flyoutLocation) then
+		if flyoutLocation >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
 			return
 		end
 
-		local _, _, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location)
-		if voidStorage then
+		local _, _, isBags, isVoidStorage, slotIndex, bagIndex = _G.EquipmentManager_UnpackLocation(flyoutLocation)
+		if isVoidStorage then
 			return
 		end
 
-		local quality = select(13, EquipmentManager_GetItemInfoByLocation(location))
-		if bags then
-			Flyout_Update(button, bag, slot, quality)
+		local itemQuality = select(13, _G.EquipmentManager_GetItemInfoByLocation(flyoutLocation))
+		if isBags then
+			onFlyoutButtonUpdate(flyoutButton, bagIndex, slotIndex, itemQuality)
 		else
-			Flyout_Update(button, nil, slot, quality)
+			onFlyoutButtonUpdate(flyoutButton, nil, slotIndex, itemQuality)
 		end
 	else
-		local itemLocation = button:GetItemLocation()
-		local quality = itemLocation and C_Item.GetItemQuality(itemLocation)
-		if itemLocation and itemLocation:IsBagAndSlot() then
-			local bag, slot = itemLocation:GetBagAndSlot()
-			Flyout_Update(button, bag, slot, quality)
-		elseif itemLocation and itemLocation:IsEquipmentSlot() then
-			local slot = itemLocation:GetEquipmentSlot()
-			Flyout_Update(button, nil, slot, quality)
+		local itemLocationObject = flyoutButton:GetItemLocation()
+		local itemQuality = itemLocationObject and _G.C_Item.GetItemQuality(itemLocationObject)
+		if itemLocationObject and itemLocationObject:IsBagAndSlot() then
+			local bagIndex, slotIndex = itemLocationObject:GetBagAndSlot()
+			onFlyoutButtonUpdate(flyoutButton, bagIndex, slotIndex, itemQuality)
+		elseif itemLocationObject and itemLocationObject:IsEquipmentSlot() then
+			local slotIndex = itemLocationObject:GetEquipmentSlot()
+			onFlyoutButtonUpdate(flyoutButton, nil, slotIndex, itemQuality)
 		end
 	end
 end
 
--- SCRAPPING
-local function Scrapping_Update(button)
-	if not button.iLvl then
-		button.iLvl = K.CreateFontString(button, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+local function onScrappingButtonUpdate(scrappingButton)
+	if not scrappingButton.iLvl then
+		scrappingButton.iLvl = K.CreateFontString(scrappingButton, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 	end
 
-	if not button.itemLink then
-		button.iLvl:SetText("")
+	if not scrappingButton.itemLink then
+		scrappingButton.iLvl:SetText("")
 		return
 	end
 
-	local quality = 1
-	if button.itemLocation and button.item and not button.item:IsItemEmpty() and button.item:GetItemName() then
-		quality = button.item:GetItemQuality()
+	local itemQuality = 1
+	if scrappingButton.itemLocation and scrappingButton.item and not scrappingButton.item:IsItemEmpty() and scrappingButton.item:GetItemName() then
+		itemQuality = scrappingButton.item:GetItemQuality()
 	end
 
-	local level = K.GetItemLevel(button.itemLink)
-	if level then
-		local color = K.QualityColors[quality]
-		button.iLvl:SetText(level)
-		button.iLvl:SetTextColor(color.r, color.g, color.b)
+	local itemLevelValue = K.GetItemLevel(scrappingButton.itemLink)
+	if itemLevelValue then
+		local qualityColorData = K.QualityColors[itemQuality]
+		scrappingButton.iLvl:SetText(itemLevelValue)
+		scrappingButton.iLvl:SetTextColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 	else
-		button.iLvl:SetText("")
+		scrappingButton.iLvl:SetText("")
 	end
 end
 
-local function Scrapping_Setup(frame)
-	if not frame or not frame.ItemSlots then
+local function setupScrappingGearDisplay(scrappingFrame)
+	if not scrappingFrame or not scrappingFrame.ItemSlots then
 		return
 	end
 
-	for button in frame.ItemSlots.scrapButtons:EnumerateActive() do
-		if button and not button.iLvlHooked then
-			hooksecurefunc(button, "RefreshIcon", Scrapping_Update)
-			button.iLvlHooked = true
+	for scrappingButton in scrappingFrame.ItemSlots.scrapButtons:EnumerateActive() do
+		if scrappingButton and not scrappingButton.iLvlHooked then
+			HookSecureFunc(scrappingButton, "RefreshIcon", onScrappingButtonUpdate)
+			scrappingButton.iLvlHooked = true
 		end
 	end
 end
 
-local function Scrapping_OnAddonLoaded(event, addon)
-	if addon == "Blizzard_ScrappingMachineUI" then
-		local ScrappingMachineFrame = _G.ScrappingMachineFrame
-		if ScrappingMachineFrame then
-			hooksecurefunc(ScrappingMachineFrame, "SetupScrapButtonPool", Scrapping_Setup)
-			Scrapping_Setup(ScrappingMachineFrame)
+local function onScrappingMachineLoaded(eventName, addonName)
+	if addonName == "Blizzard_ScrappingMachineUI" then
+		local machineFrame = _G.ScrappingMachineFrame
+		if machineFrame then
+			HookSecureFunc(machineFrame, "SetupScrapButtonPool", setupScrappingGearDisplay)
+			setupScrappingGearDisplay(machineFrame)
 		end
-
-		K:UnregisterEvent(event, Scrapping_OnAddonLoaded)
+		K:UnregisterEvent(eventName, onScrappingMachineLoaded)
 	end
 end
 
--- MERCHANT / TRADE
-local function Merchant_UpdateQuality(button, link)
-	if not button or not button.GetName then
+local function updateMerchantItemQuality(merchantButton, itemLinkStr)
+	if not merchantButton or not merchantButton.GetName then
 		return
 	end
 
-	if not button.iLvl then
-		button.iLvl = K.CreateFontString(_G[button:GetName() .. "ItemButton"], 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+	if not merchantButton.iLvl then
+		merchantButton.iLvl = K.CreateFontString(_G[merchantButton:GetName() .. "ItemButton"], 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 	end
 
-	local quality = link and select(3, GetItemInfoCompat(link)) or nil
-	if quality and quality > 1 then
-		local level = K.GetItemLevel(link)
-		local color = K.QualityColors[quality]
-		button.iLvl:SetText(level or "")
-		button.iLvl:SetTextColor(color.r, color.g, color.b)
+	local itemQuality = itemLinkStr and select(3, getItemInfoCompat(itemLinkStr)) or nil
+	if itemQuality and itemQuality > 1 then
+		local itemLevelValue = K.GetItemLevel(itemLinkStr)
+		local qualityColorData = K.QualityColors[itemQuality]
+		merchantButton.iLvl:SetText(itemLevelValue or "")
+		merchantButton.iLvl:SetTextColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 	else
-		button.iLvl:SetText("")
+		merchantButton.iLvl:SetText("")
 	end
 end
 
-local function Trade_UpdatePlayerItem(index)
-	local button = _G["TradePlayerItem" .. index]
-	local link = GetTradePlayerItemLink(index)
-	Merchant_UpdateQuality(button, link)
+local function updateTradePlayerItemLevel(itemIndex)
+	local tradeButton = _G["TradePlayerItem" .. itemIndex]
+	local itemLinkStr = GetTradePlayerItemLink(itemIndex)
+	updateMerchantItemQuality(tradeButton, itemLinkStr)
 end
 
-local function Trade_UpdateTargetItem(index)
-	local button = _G["TradeRecipientItem" .. index]
-	local link = GetTradeTargetItemLink(index)
-	Merchant_UpdateQuality(button, link)
+local function updateTradeTargetItemLevel(itemIndex)
+	local tradeButton = _G["TradeRecipientItem" .. itemIndex]
+	local itemLinkStr = GetTradeTargetItemLink(itemIndex)
+	updateMerchantItemQuality(tradeButton, itemLinkStr)
 end
 
--- CHAT LINK REPLACE
-local chatModule = K:GetModule("Chat")
+local ChatModule = K:GetModule("Chat")
+local gearLevelChatCache = {}
+local gearCacheItemCount = 0
 
-local function AddToItemCache(link, modLink)
-	if itemCacheSize >= ITEM_CACHE_MAX_SIZE then
-		wipe(itemCache)
-		itemCacheSize = 0
+local function addItemToGearLevelCache(itemLinkStr, modifiedChatLink)
+	if gearCacheItemCount >= 500 then
+		table_wipe(gearLevelChatCache)
+		gearCacheItemCount = 0
 	end
 
-	itemCache[link] = modLink
-	itemCacheSize = itemCacheSize + 1
+	gearLevelChatCache[itemLinkStr] = modifiedChatLink
+	gearCacheItemCount = gearCacheItemCount + 1
 end
 
-local function ReplaceItemLink(link, name)
-	if not chatModule or not link then
+local function replaceChatLinkWithItemLevel(itemLinkStr, itemNameText)
+	if not ChatModule or not itemLinkStr then
 		return
 	end
 
-	local modLink = itemCache[link]
-	if not modLink then
-		local itemLevel = K.GetItemLevel(link)
-		if itemLevel then
-			modLink = gsub(link, "|h%[(.-)%]|h", "|h(" .. itemLevel .. chatModule.IsItemHasGem(link) .. ")" .. name .. "|h")
-			AddToItemCache(link, modLink)
+	local modifiedChatLink = gearLevelChatCache[itemLinkStr]
+	if not modifiedChatLink then
+		local itemLevelValue = K.GetItemLevel(itemLinkStr)
+		if itemLevelValue then
+			modifiedChatLink = _G.gsub(itemLinkStr, "|h%[(.-)%]|h", "|h(" .. itemLevelValue .. ChatModule.IsItemHasGem(itemLinkStr) .. ")" .. itemNameText .. "|h")
+			addItemToGearLevelCache(itemLinkStr, modifiedChatLink)
 		end
 	end
 
-	return modLink
+	return modifiedChatLink
 end
 
-local function GuildNews_ReplaceText(button)
-	if not button or not button.text or not button.text.GetText then
+function Module:onGuildNewsTextUpdate(newsButton)
+	if not newsButton or not newsButton.text or not newsButton.text.GetText then
 		return
 	end
 
-	local newText = gsub(button.text:GetText(), "(|Hitem:%d+:.-|h%[(.-)%]|h)", ReplaceItemLink)
-	if newText then
-		button.text:SetText(newText)
+	local updatedNewsText = _G.gsub(newsButton.text:GetText(), "(|Hitem:%d+:.-|h%[(.-)%]|h)", replaceChatLinkWithItemLevel)
+	if updatedNewsText then
+		newsButton.text:SetText(updatedNewsText)
 	end
 end
 
--- LOOT
-local lootChildrenTable = {}
-
-local function Loot_Update(scrollBox)
-	if not scrollBox or not scrollBox.ScrollTarget then
+local lootButtonTable = {}
+local function onLootScrollUpdate(scrollBoxFrame)
+	if not scrollBoxFrame or not scrollBoxFrame.ScrollTarget then
 		return
 	end
 
-	local numChildren = scrollBox.ScrollTarget:GetNumChildren()
-	if numChildren == 0 then
+	local childCountCount = scrollBoxFrame.ScrollTarget:GetNumChildren()
+	if childCountCount == 0 then
 		return
 	end
 
-	wipe(lootChildrenTable)
-	local temp = { scrollBox.ScrollTarget:GetChildren() }
-	for i = 1, numChildren do
-		lootChildrenTable[i] = temp[i]
+	table_wipe(lootButtonTable)
+	local scrollTargetChildren = { scrollBoxFrame.ScrollTarget:GetChildren() }
+	for i = 1, childCountCount do
+		lootButtonTable[i] = scrollTargetChildren[i]
 	end
 
-	for i = 1, numChildren do
-		local button = lootChildrenTable[i]
-		if button and button.Item and button.GetElementData then
-			if not button.iLvl then
-				button.iLvl = K.CreateFontString(button.Item, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+	for i = 1, childCountCount do
+		local lootButton = lootButtonTable[i]
+		if lootButton and lootButton.Item and lootButton.GetElementData then
+			if not lootButton.iLvl then
+				lootButton.iLvl = K.CreateFontString(lootButton.Item, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 			end
 
-			local slotIndex = button:GetSlotIndex()
-			local quality = select(5, GetLootSlotInfo(slotIndex))
-			if quality and quality > 1 then
-				local level = K.GetItemLevel(GetLootSlotLink(slotIndex))
-				local color = K.QualityColors[quality]
-				button.iLvl:SetText(level or "")
-				button.iLvl:SetTextColor(color.r, color.g, color.b)
+			local lootSlotIndex = lootButton:GetSlotIndex()
+			local itemQuality = select(5, GetLootSlotInfo(lootSlotIndex))
+			if itemQuality and itemQuality > 1 then
+				local itemLevelValue = K.GetItemLevel(GetLootSlotLink(lootSlotIndex))
+				local qualityColorData = K.QualityColors[itemQuality]
+				lootButton.iLvl:SetText(itemLevelValue or "")
+				lootButton.iLvl:SetTextColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 			else
-				button.iLvl:SetText("")
+				lootButton.iLvl:SetText("")
 			end
 		end
 	end
 end
 
--- GUILD BANK
-local NUM_SLOTS_PER_GUILDBANK_GROUP = 14
-local PET_CAGE = 82800
+local GUILD_BANK_SLOTS_PER_COLUMN = 14
+local PET_CAGE_ITEM_ID = 82800
 
-local function GuildBank_OnAddonLoaded(event, addon)
-	if addon ~= "Blizzard_GuildBankUI" then
+-- REASON: Injects item levels for standard gear and battle-pet levels for caged pets within the guild bank columns.
+local function onGuildBankLoaded(eventName, addonName)
+	if addonName ~= "Blizzard_GuildBankUI" then
 		return
 	end
 
-	hooksecurefunc(_G.GuildBankFrame, "Update", function(self)
+	HookSecureFunc(_G.GuildBankFrame, "Update", function(self)
 		if self.mode ~= "bank" then
 			return
 		end
 
-		local tab = GetCurrentGuildBankTab()
-		local numColumns = #self.Columns
-		local totalSlots = numColumns * NUM_SLOTS_PER_GUILDBANK_GROUP
+		local currentBankTab = GetCurrentGuildBankTab()
+		local columnCount = #self.Columns
+		local totalBankSlots = columnCount * GUILD_BANK_SLOTS_PER_COLUMN
 
-		for i = 1, totalSlots do
-			local index = ((i - 1) % NUM_SLOTS_PER_GUILDBANK_GROUP) + 1
-			local column = math_floor((i - 1) / NUM_SLOTS_PER_GUILDBANK_GROUP) + 1
-			local button = self.Columns[column].Buttons[index]
+		for i = 1, totalBankSlots do
+			local slotIndexInColumn = ((i - 1) % GUILD_BANK_SLOTS_PER_COLUMN) + 1
+			local columnIndex = math_floor((i - 1) / GUILD_BANK_SLOTS_PER_COLUMN) + 1
+			local itemButton = self.Columns[columnIndex].Buttons[slotIndexInColumn]
 
-			if button and button:IsShown() then
-				local link = GetGuildBankItemLink(tab, i)
-				if link then
-					if not button.iLvl then
-						button.iLvl = K.CreateFontString(button, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+			if itemButton and itemButton:IsShown() then
+				local itemLinkStr = GetGuildBankItemLink(currentBankTab, i)
+				if itemLinkStr then
+					if not itemButton.iLvl then
+						itemButton.iLvl = K.CreateFontString(itemButton, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 					end
 
-					local level, quality
-					local itemID = tonumber(strmatch(link, "Hitem:(%d+):"))
+					local itemLevelStr, itemQualityID
+					local itemIDValue = tonumber(string_match(itemLinkStr, "Hitem:(%d+):"))
 
-					if itemID == PET_CAGE then
-						local data = C_TooltipInfo.GetGuildBankItem(tab, i)
-						if data then
-							local speciesID = data.battlePetSpeciesID
-							if speciesID and speciesID > 0 then
-								level = data.battlePetLevel
-								quality = data.battlePetBreedQuality
+					if itemIDValue == PET_CAGE_ITEM_ID then
+						local bankItemData = _G.C_TooltipInfo.GetGuildBankItem(currentBankTab, i)
+						if bankItemData then
+							local petSpeciesID = bankItemData.battlePetSpeciesID
+							if petSpeciesID and petSpeciesID > 0 then
+								itemLevelStr = bankItemData.battlePetLevel
+								itemQualityID = bankItemData.battlePetBreedQuality
 							end
 						end
 					else
-						level = K.GetItemLevel(link)
-						quality = select(3, GetItemInfoCompat(link))
+						itemLevelStr = K.GetItemLevel(itemLinkStr)
+						itemQualityID = select(3, getItemInfoCompat(itemLinkStr))
 					end
 
-					if level and quality then
-						local color = K.QualityColors[quality]
-						button.iLvl:SetText(level)
-						button.iLvl:SetTextColor(color.r, color.g, color.b)
+					if itemLevelStr and itemQualityID then
+						local qualityColorData = K.QualityColors[itemQualityID]
+						itemButton.iLvl:SetText(itemLevelStr)
+						itemButton.iLvl:SetTextColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 
-						if button.KKUI_Border and itemID == PET_CAGE then
-							button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+						if itemButton.KKUI_Border and itemIDValue == PET_CAGE_ITEM_ID then
+							itemButton.KKUI_Border:SetVertexColor(qualityColorData.r, qualityColorData.g, qualityColorData.b)
 						end
 					else
-						button.iLvl:SetText("")
+						itemButton.iLvl:SetText("")
 					end
-				elseif button.iLvl then
-					button.iLvl:SetText("")
+				elseif itemButton.iLvl then
+					itemButton.iLvl:SetText("")
 				end
 			end
 		end
 	end)
 
-	K:UnregisterEvent(event, GuildBank_OnAddonLoaded)
+	K:UnregisterEvent(eventName, onGuildBankLoaded)
 end
 
--- INIT
-function Module.CreateSlotItemLevel()
+function Module:createImprovedSlotItemLevelDisplay()
 	if not C["Misc"].ItemLevel then
 		return
 	end
@@ -949,45 +896,38 @@ function Module.CreateSlotItemLevel()
 		return
 	end
 
-	-- iLvl on CharacterFrame
-	CharacterFrame:HookScript("OnShow", QueuePlayerItemLevelUpdate)
-	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", QueuePlayerItemLevelUpdate)
+	_G.CharacterFrame:HookScript("OnShow", queuePlayerGearItemLevelUpdate)
+	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", queuePlayerGearItemLevelUpdate)
 
-	-- iLvl on InspectFrame
-	K:RegisterEvent("INSPECT_READY", Module.ItemLevel_UpdateInspect)
+	K:RegisterEvent("INSPECT_READY", Module.updateInspectFrameGearInfo)
 
-	-- iLvl on FlyoutButtons
-	hooksecurefunc("EquipmentFlyout_UpdateItems", function()
-		for _, button in pairs(EquipmentFlyoutFrame.buttons) do
-			if button:IsShown() then
-				Flyout_Setup(button)
+	HookSecureFunc("EquipmentFlyout_UpdateItems", function()
+		for _, flyoutButton in pairs(_G.EquipmentFlyoutFrame.buttons) do
+			if flyoutButton:IsShown() then
+				setupFlyoutGearDisplay(flyoutButton)
 			end
 		end
 	end)
 
-	-- iLvl on ScrappingMachineFrame
-	K:RegisterEvent("ADDON_LOADED", Scrapping_OnAddonLoaded)
+	K:RegisterEvent("ADDON_LOADED", onScrappingMachineLoaded)
 
-	-- iLvl on MerchantFrame
-	hooksecurefunc("MerchantFrameItem_UpdateQuality", Merchant_UpdateQuality)
+	HookSecureFunc("MerchantFrameItem_UpdateQuality", updateMerchantItemQuality)
 
-	-- iLvl on TradeFrame
-	hooksecurefunc("TradeFrame_UpdatePlayerItem", Trade_UpdatePlayerItem)
-	hooksecurefunc("TradeFrame_UpdateTargetItem", Trade_UpdateTargetItem)
+	HookSecureFunc("TradeFrame_UpdatePlayerItem", updateTradePlayerItemLevel)
+	HookSecureFunc("TradeFrame_UpdateTargetItem", updateTradeTargetItemLevel)
 
-	-- iLvl on GuildNews
-	hooksecurefunc("GuildNewsButton_SetText", GuildNews_ReplaceText)
+	HookSecureFunc("GuildNewsButton_SetText", Module.onGuildNewsTextUpdate)
 
-	-- iLvl on LootFrame
-	if LootFrame and LootFrame.ScrollBox then
-		hooksecurefunc(LootFrame.ScrollBox, "Update", Loot_Update)
+	if _G.LootFrame and _G.LootFrame.ScrollBox then
+		HookSecureFunc(_G.LootFrame.ScrollBox, "Update", onLootScrollUpdate)
 	end
 
-	-- iLvl on GuildBankFrame
-	K:RegisterEvent("ADDON_LOADED", GuildBank_OnAddonLoaded)
+	K:RegisterEvent("ADDON_LOADED", onGuildBankLoaded)
 
-	-- Clear caches on logout
-	K:RegisterEvent("PLAYER_LOGOUT", ClearCaches)
+	K:RegisterEvent("PLAYER_LOGOUT", function()
+		table_wipe(slotLocationCache)
+		table_wipe(gearLevelChatCache)
+	end)
 end
 
-Module:RegisterMisc("GearInfo", Module.CreateSlotItemLevel)
+Module:RegisterMisc("GearInfo", Module.createImprovedSlotItemLevelDisplay)

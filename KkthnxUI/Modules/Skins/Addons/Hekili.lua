@@ -1,6 +1,19 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins Hekili action buttons.
+-- - Design: Hooks Hekili's button creation to apply KkthnxUI border styling.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+
+-- REASON: Main entry point for Hekili skinning.
 function Module:ReskinHekili()
 	if not C["Skins"].Hekili then
 		return

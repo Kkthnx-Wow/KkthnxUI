@@ -1,21 +1,35 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Handles castbar functionality including ticks, latency, and visual updates.
+-- - Design: Modular element for oUF unitframes, handling both player and unit castbars.
+-- - Events: UNIT_SPELLCAST_START, UNIT_SPELLCAST_STOP, UNIT_SPELLCAST_CHANNEL_START, etc.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local string_format = string.format
-local string_upper = string.upper
-local math_min = math.min
-local math_floor = math.floor
+-- REASON: Localize C-functions (Snake Case)
+local math_floor = _G.math.floor
+local math_min = _G.math.min
+local string_format = _G.string.format
+local string_upper = _G.string.upper
+local tonumber = _G.tonumber
+local unpack = _G.unpack
 
-local GetTime = GetTime
-local IsPlayerSpell = IsPlayerSpell
-local UnitExists = UnitExists
-local UnitInVehicle = UnitInVehicle
-local UnitIsUnit = UnitIsUnit
-local UnitName = UnitName
-local UnitIsPlayer = UnitIsPlayer
-local UnitClass = UnitClass
-local UnitReaction = UnitReaction
-local YOU = YOU
+-- REASON: Localize Globals
+local GetTime = _G.GetTime
+local IsPlayerSpell = _G.IsPlayerSpell
+local UnitCanAttack = _G.UnitCanAttack
+local UnitClass = _G.UnitClass
+local UnitExists = _G.UnitExists
+local UnitInVehicle = _G.UnitInVehicle
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitName = _G.UnitName
+local UnitReaction = _G.UnitReaction
+local YOU = _G.YOU
 
 local channelingTicks = {
 	[740] = 4, -- Tranquility
@@ -52,10 +66,12 @@ if K.Class == "PRIEST" then
 		channelingTicks[47758] = numTicks
 	end
 
+	-- REASON: Update ticks on login and talent changes to account for Haste/Talent effects.
 	K:RegisterEvent("PLAYER_LOGIN", updateTicks)
 	K:RegisterEvent("PLAYER_TALENT_UPDATE", updateTicks)
 end
 
+-- REASON: Creates or updates the visual tick marks on the castbar for channeled spells.
 local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
 	for i = 1, #ticks do
 		local t = ticks[i]
@@ -86,6 +102,7 @@ local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
 	end
 end
 
+-- REASON: Main update loop for castbar. Handles duration, texts, sparks, and pips.
 function Module:OnCastbarUpdate(elapsed)
 	if self.casting or self.channeling or self.empowering then
 		local isCasting = self.casting or self.empowering
@@ -99,6 +116,7 @@ function Module:OnCastbarUpdate(elapsed)
 			return
 		end
 
+		-- REASON: Display logic differs for player (with latency) vs other units.
 		if self.__owner.unit == "player" then
 			if self.delay ~= 0 then
 				self.Time:SetFormattedText(decimal .. " - |cffff0000" .. decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
@@ -116,6 +134,7 @@ function Module:OnCastbarUpdate(elapsed)
 		self:SetValue(duration)
 		self.Spark:SetPoint("CENTER", self, "LEFT", (duration / self.max) * self:GetWidth(), 0)
 
+		-- REASON: Handle Empowered spells (pips/stages).
 		if self.stageString then
 			self.stageString:SetText("")
 			if self.empowering then
@@ -149,6 +168,7 @@ function Module:OnCastbarUpdate(elapsed)
 	end
 end
 
+-- REASON: Captures the time a cast was sent to calculate latency.
 function Module:OnCastSent()
 	local element = self.Castbar
 	if not element.SafeZone then
@@ -163,6 +183,7 @@ local function ResetSpellTarget(self)
 	end
 end
 
+-- REASON: Updates the spell target text, localized YOU if targeting player.
 local function UpdateSpellTarget(self, unit)
 	if not C["Nameplate"].CastTarget then
 		return
@@ -178,6 +199,7 @@ local function UpdateSpellTarget(self, unit)
 		if UnitIsUnit(unitTarget, "player") then
 			nameString = string_format("|cffff0000%s|r", ">" .. string_upper(YOU) .. "<")
 		else
+			-- REASON: Class color the name if possible.
 			nameString = K.RGBToHex(K.UnitColor(unitTarget)) .. UnitName(unitTarget)
 		end
 		if self._lastSpellTarget ~= nameString then
@@ -189,10 +211,11 @@ local function UpdateSpellTarget(self, unit)
 	end
 end
 
+-- REASON: Updates the castbar color based on class, reaction, or interruptible status.
 local function UpdateCastBarColor(self, unit)
 	local color = K.Colors.castbar.CastingColor
 
-	-- Check if the casting should be colored with class colors or reaction colors
+	-- REASON: Prioritize class color, then reaction color, then default.
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
 		local _, class = UnitClass(unit)
 		color = class and K.Colors.class[class]
@@ -203,10 +226,35 @@ local function UpdateCastBarColor(self, unit)
 		color = K.Colors.castbar.notInterruptibleColor
 	end
 
-	-- Set the bar color (no caching to avoid missed updates)
+	-- REASON: Grayish color for non-interruptible casts on nameplates.
+	if self.__owner.mystyle == "nameplate" and self.notInterruptible then
+		color = { 0.7, 0.7, 0.7 }
+	end
+
+	-- REASON: Apply color immediately.
 	self:SetStatusBarColor(color[1], color[2], color[3])
+
+	-- REASON: Visual feedback for nameplate shields/icon desaturation.
+	if self.__owner.mystyle == "nameplate" then
+		if self.notInterruptible then
+			if self.Icon then
+				self.Icon:SetDesaturated(true)
+			end
+			if self.Shield then
+				self.Shield:Show()
+			end
+		else
+			if self.Icon then
+				self.Icon:SetDesaturated(false)
+			end
+			if self.Shield then
+				self.Shield:Hide()
+			end
+		end
+	end
 end
 
+-- REASON: Handler for when a cast starts. Sets up latency safezone and visual indicators.
 function Module:PostCastStart(unit)
 	self:SetAlpha(1)
 	self.Spark:Show()
@@ -220,6 +268,7 @@ function Module:PostCastStart(unit)
 			lagString:Hide()
 		end
 	elseif unit == "player" then
+		-- REASON: Calculate and display latency safezone for player.
 		if safeZone then
 			local sendTime = self.__sendTime
 			local timeDiff = sendTime and math_min((GetTime() - sendTime), self.max)
@@ -257,14 +306,13 @@ function Module:PostCastStart(unit)
 	UpdateCastBarColor(self, unit)
 
 	if self.__owner.mystyle == "nameplate" then
-		-- Major spells
+		-- REASON: Support "Major Spells" glow on nameplates.
 		if C.MajorSpells[self.spellID] then
 			K.ShowOverlayGlow(self.glowFrame)
 		else
 			K.HideOverlayGlow(self.glowFrame)
 		end
 
-		-- Spell target
 		UpdateSpellTarget(self, unit)
 	end
 end
@@ -277,6 +325,7 @@ function Module:PostUpdateInterruptible(unit)
 	UpdateCastBarColor(self, unit)
 end
 
+-- REASON: Reset bar color and target text on cast stop.
 function Module:PostCastStop()
 	if not self.fadeOut then
 		self:SetStatusBarColor(K.Colors.castbar.CompleteColor[1], K.Colors.castbar.CompleteColor[2], K.Colors.castbar.CompleteColor[3])
@@ -287,6 +336,7 @@ function Module:PostCastStop()
 	ResetSpellTarget(self)
 end
 
+-- REASON: Visual feedback for failed casts.
 function Module:PostCastFailed()
 	self:SetStatusBarColor(K.Colors.castbar.FailColor[1], K.Colors.castbar.FailColor[2], K.Colors.castbar.FailColor[3])
 	self:SetValue(self.max)
@@ -302,6 +352,8 @@ Module.PipColors = {
 	[4] = { 0.1, 0.7, 0.7, 0.3 },
 	[5] = { 0, 1, 1, 0.3 },
 }
+
+-- REASON: Creates individual pip frames for multi-stage casts (Empowered spells).
 function Module:CreatePip(stage)
 	local _, height = self:GetSize()
 
@@ -317,9 +369,10 @@ function Module:CreatePip(stage)
 	return pip
 end
 
+-- REASON: Updates pip positions and states based on current cast stage.
 function Module:PostUpdatePips(numStages)
 	local pips = self.Pips
-	local numStages = self.numStages
+	local numStages = self.numStages -- REASON: Shadow numStages for safer access/performance.
 
 	for stage = 1, numStages do
 		local pip = pips[stage]

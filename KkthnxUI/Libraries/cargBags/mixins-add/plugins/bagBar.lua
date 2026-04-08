@@ -64,7 +64,7 @@ local buttonNum = 0
 function BagButton:Create(bagID)
 	buttonNum = buttonNum + 1
 	local name = addon .. "BagButton" .. buttonNum
-	local isBankBag = bagID > 5 and bagID < 13
+	local isBankBag = bagID > 5 and bagID < 18
 	local button = setmetatable(CreateFrame("ItemButton", name, nil, "BackdropTemplate"), self.__index)
 
 	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
@@ -249,6 +249,7 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 	end
 
 	self.implementation:RegisterEvent("BAG_UPDATE", bar, updater)
+	self.implementation:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
 	self.implementation:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
 
 	return bar

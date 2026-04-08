@@ -1,15 +1,24 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Professions Book (Spellbook tab).
+-- - Design: Applies custom status bar textures, borders, and icon coordinates to profession tabs.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- Lua APIs
-local pairs = pairs
-local unpack = unpack
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local pairs = _G.pairs
+local unpack = _G.unpack
 
--- WoW APIs
-local CreateColor = CreateColor
-local CreateFrame = CreateFrame
-local GetProfessionInfo = GetProfessionInfo
-local InCombatLockdown = InCombatLockdown
-local hooksecurefunc = hooksecurefunc
+local CreateColor = _G.CreateColor
+local CreateFrame = _G.CreateFrame
+local GetProfessionInfo = _G.GetProfessionInfo
+local InCombatLockdown = _G.InCombatLockdown
+local hooksecurefunc = _G.hooksecurefunc
 
 --- Applies KkthnxUI styling to individual profession spell buttons.
 -- @param button The spell button frame to style (e.g., SpellButton1, SpellButton2).
@@ -134,6 +143,7 @@ end
 --- Main skin function for Blizzard's Professions Book (called when addon loads).
 -- Styles all profession frames (primary + secondary professions) with KkthnxUI theme.
 -- This is registered in the C.themes table and called by the skinning system.
+-- REASON: Main entry point for Blizzard Professions Book skinning.
 C.themes["Blizzard_ProfessionsBook"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return

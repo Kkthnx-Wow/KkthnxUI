@@ -1,7 +1,19 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Quick keybinding system for action buttons, spells, and macros.
+-- - Design: Uses a transparent overlay frame to intercept and map input to actions.
+-----------------------------------------------------------------------------]]
+
 local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
--- Cache global functions and constants
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache globals and binding APIs to maintain responsiveness in keybind mode.
 local _G = _G
 local C_SpellBook_GetSpellBookItemName = _G.C_SpellBook.GetSpellBookItemName
 local CreateFrame = _G.CreateFrame
@@ -29,7 +41,11 @@ local tonumber = _G.tonumber
 local Enum = _G.Enum
 local C_AddOns = _G.C_AddOns
 
--- Button types
+-- ---------------------------------------------------------------------------
+-- BUTTON HOOKS
+-- ---------------------------------------------------------------------------
+
+-- REASON: Hooks OnEnter script of target buttons to reposition the keybind overlay.
 local function hookActionButton(self)
 	local pet = self.commandName and strfind(self.commandName, "^BONUSACTION") and "PET"
 	local stance = self.commandName and strfind(self.commandName, "^SHAPESHIFT") and "STANCE"
@@ -45,6 +61,7 @@ local function hookSpellButton(self)
 end
 
 function Module:Bind_RegisterButton(button)
+	-- NOTE: Only hook protected buttons (action buttons) as they are the primary targets.
 	if button.IsProtected and button.IsObjectType and button:IsObjectType("CheckButton") and button:IsProtected() then
 		button:HookScript("OnEnter", hookActionButton)
 	end
@@ -52,14 +69,11 @@ end
 
 local macroInit
 function Module:Bind_RegisterMacro()
-	if self ~= "Blizzard_MacroUI" then
+	if self ~= "Blizzard_MacroUI" or macroInit then
 		return
 	end
 
-	if macroInit then
-		return
-	end
-
+	-- NOTE: Dynamically hook macro selector buttons as they are rendered in the scroll box.
 	hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
 			local button = self.ScrollTarget:GetChildren()[i]
@@ -73,6 +87,11 @@ function Module:Bind_RegisterMacro()
 	macroInit = true
 end
 
+-- ---------------------------------------------------------------------------
+-- OVERLAY FRAME CREATION
+-- ---------------------------------------------------------------------------
+
+-- REASON: Creates the transparent intersection frame that listens for keyboard/mouse events.
 function Module:Bind_Create()
 	if Module.keybindFrame then
 		return
@@ -118,10 +137,12 @@ function Module:Bind_Create()
 		end
 	end)
 
+	-- NOTE: Pre-register all standard KkthnxUI action buttons.
 	for _, button in ipairs(Module.buttons) do
 		Module:Bind_RegisterButton(button)
 	end
 
+	-- NOTE: Hook spellbook buttons for direct ability binding.
 	for i = 1, 12 do
 		local button = _G["SpellButton" .. i]
 		if button then
@@ -129,6 +150,7 @@ function Module:Bind_Create()
 		end
 	end
 
+	-- NOTE: Wait for Macro UI to load if it hasn't already.
 	if not C_AddOns.IsAddOnLoaded("Blizzard_MacroUI") then
 		hooksecurefunc(C_AddOns, "LoadAddOn", Module.Bind_RegisterMacro)
 	else
@@ -138,6 +160,12 @@ function Module:Bind_Create()
 	Module.keybindFrame = frame
 end
 
+-- ---------------------------------------------------------------------------
+-- BINDING LOGIC
+-- ---------------------------------------------------------------------------
+
+-- REASON: Identifies the specific action/spell/macro under the cursor and resolves
+-- the required command string for Blizzard's SetBinding API.
 function Module:Bind_Update(button, spellmacro)
 	local frame = Module.keybindFrame
 	if not frame.enabled or InCombatLockdown() then
@@ -150,6 +178,7 @@ function Module:Bind_Update(button, spellmacro)
 	frame:SetAllPoints(button)
 	frame:Show()
 
+	-- NOTE: Logic branches for different action types (Spellbook, Macro, Pet, Stance, Bar).
 	if spellmacro == "SPELL" then
 		frame.id = SpellBook_GetSpellBookSlot(button)
 		frame.name = C_SpellBook_GetSpellBookItemName(frame.id, Enum.SpellBookSpellBank.Player)
@@ -188,6 +217,7 @@ function Module:Bind_Update(button, spellmacro)
 		elseif not frame.action or frame.action < 1 or frame.action > 180 then
 			frame.bindstring = "CLICK " .. frame.name .. ":LeftButton"
 		else
+			-- NOTE: Map internal bar IDs to standard Blizzard action button identifiers.
 			local modact = 1 + (frame.action - 1) % 12
 			if frame.name == "ExtraActionButton1" then
 				frame.bindstring = "EXTRAACTIONBUTTON1"
@@ -206,7 +236,7 @@ function Module:Bind_Update(button, spellmacro)
 		frame.bindings = { GetBindingKey(frame.bindstring) }
 	end
 
-	-- Refresh tooltip
+	-- NOTE: Refresh tooltips to show updated binding info.
 	frame:GetScript("OnEnter")
 end
 
@@ -221,14 +251,14 @@ local ignoreKeys = {
 	["LeftButton"] = true,
 }
 
--- Key mapping table
 local mappingKeys = {
 	MiddleButton = "BUTTON3",
-	-- Add other mappings as necessary
 }
 
+-- REASON: Processes active input to either unbind (ESC/RightClick) or assign a new key.
 function Module:Bind_Listener(key)
 	local frame = Module.keybindFrame
+	-- NOTE: Escape or Right-click clears all existing bindings for this specific action.
 	if key == "ESCAPE" or key == "RightButton" then
 		if frame.bindings then
 			for i = 1, #frame.bindings do
@@ -246,7 +276,6 @@ function Module:Bind_Listener(key)
 		return
 	end
 
-	-- Use the mapping table to replace specific key values
 	key = mappingKeys[key] or key
 
 	if strfind(key, "Button%d") then
@@ -258,6 +287,7 @@ function Module:Bind_Listener(key)
 	local shift = IsShiftKeyDown() and "SHIFT-" or ""
 	local meta = IsMetaKeyDown() and "META-" or ""
 
+	-- NOTE: Apply the binding using modifiers + key. Handles direct spell strings for spellbook items.
 	if not frame.spellmacro or frame.spellmacro == "PET" or frame.spellmacro == "STANCE" then
 		SetBinding(alt .. ctrl .. shift .. meta .. key, frame.bindstring)
 	else
@@ -267,6 +297,10 @@ function Module:Bind_Listener(key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
 end
+
+-- ---------------------------------------------------------------------------
+-- DIALOG UI
+-- ---------------------------------------------------------------------------
 
 function Module:Bind_HideFrame()
 	local frame = Module.keybindFrame
@@ -279,15 +313,16 @@ end
 
 function Module:Bind_Activate()
 	Module.keybindFrame.enabled = true
+	-- WARNING: Force exit keybind mode if combat starts to prevent UI errors/taint.
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.Bind_Deactivate)
 end
 
 function Module:Bind_Deactivate(save)
 	if save == true then
-		SaveBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
+		SaveBindings(K.GetCharVars().BindType)
 		K.Print(" |cff00ff00" .. L["Save KeyBinds"] .. "|r")
 	else
-		LoadBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
+		LoadBindings(K.GetCharVars().BindType)
 		K.Print(" |cffffff00" .. L["Discard KeyBinds"] .. "|r")
 	end
 
@@ -297,6 +332,7 @@ function Module:Bind_Deactivate(save)
 	Module.keybindDialog:Hide()
 end
 
+-- REASON: Creates the on-screen dialog to confirm or discard binding changes.
 function Module:Bind_CreateDialog()
 	local dialog = Module.keybindDialog
 	if dialog then
@@ -362,10 +398,10 @@ function Module:Bind_CreateDialog()
 	local checkBox = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsBaseCheckButtonTemplate")
 	checkBox:SetSize(20, 20)
 	checkBox:SkinCheckBox()
-	checkBox:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].BindType == 2)
+	checkBox:SetChecked(K.GetCharVars().BindType == 2)
 	checkBox:SetPoint("RIGHT", frame.bottom, "LEFT", -6, 0)
 	checkBox:SetScript("OnClick", function(self)
-		KkthnxUIDB.Variables[K.Realm][K.Name].BindType = self:GetChecked() and 2 or 1
+		K.GetCharVars().BindType = self:GetChecked() and 2 or 1
 	end)
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -376,7 +412,12 @@ function Module:Bind_CreateDialog()
 	Module.keybindDialog = frame
 end
 
-SlashCmdList["KKUI_KEYBIND"] = function()
+-- ---------------------------------------------------------------------------
+-- INITIALIZATION
+-- ---------------------------------------------------------------------------
+
+_G.SlashCmdList["KKUI_KEYBIND"] = function()
+	-- NOTE: Disable entering keybind mode while in combat to avoid taint/errors.
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 		return

@@ -1,15 +1,38 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins DeadlyBossMods (DBM) bars, icons, and frames.
+-- - Design: Hooks into DBM create/style functions and enforces custom bar/icon styling.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 local TT = K:GetModule("Tooltip")
 
-local string_find = string.find
-local string_gsub = string.gsub
-local string_match = string.match
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
+local select = _G.select
 
-local CreateFrame = CreateFrame
-local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local hooksecurefunc = hooksecurefunc
+local string_find = _G.string.find
+local string_gsub = _G.string.gsub
+local string_match = _G.string.match
 
+-- local DBT = _G.DBT
+-- local DBM = _G.DBM
+-- local DBMInfoFrame = _G.DBMInfoFrame
+-- local DBMRangeCheck = _G.DBMRangeCheck
+-- local DBMRangeCheckRadar = _G.DBMRangeCheckRadar
+-- local DBM_AllSavedOptions = _G.DBM_AllSavedOptions
+-- local DBT_AllPersistentOptions = _G.DBT_AllPersistentOptions
+-- local RaidNotice_AddMessage = _G.RaidNotice_AddMessage
+
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+
+-- REASON: Constants for skinning.
 local buttonsize = 24
 
 local function ReskinDBMIcon(icon, frame)
@@ -112,10 +135,11 @@ local function ApplyDBMStyle(self)
 	timer:SetShadowColor(0, 0, 0, 0)
 end
 
+-- REASON: Main entry point for DBM skinning.
 function Module:ReskinDeadlyBossMods()
-	-- Default notice message
+	-- REASON: Skin DBM notice messages.
 	local RaidNotice_AddMessage_ = RaidNotice_AddMessage
-	RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
+	_G.RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
 		if string_find(textString, "|T") then
 			if string_match(textString, ":(%d+):(%d+)") then
 				local size1, size2 = string_match(textString, ":(%d+):(%d+)")
@@ -139,7 +163,7 @@ function Module:ReskinDeadlyBossMods()
 		return
 	end
 
-	hooksecurefunc(DBT, "CreateBar", function(self)
+	hooksecurefunc(_G.DBT, "CreateBar", function(self)
 		for bar in self:GetBarIterator() do
 			if not bar.injected then
 				hooksecurefunc(bar, "Update", HideDBMSpark)
@@ -151,40 +175,40 @@ function Module:ReskinDeadlyBossMods()
 		end
 	end)
 
-	hooksecurefunc(DBM.RangeCheck, "Show", function()
-		if DBMRangeCheckRadar and not DBMRangeCheckRadar.styled then
-			TT.ReskinTooltip(DBMRangeCheckRadar)
-			DBMRangeCheckRadar.styled = true
+	hooksecurefunc(_G.DBM.RangeCheck, "Show", function()
+		if _G.DBMRangeCheckRadar and not _G.DBMRangeCheckRadar.styled then
+			TT.ReskinTooltip(_G.DBMRangeCheckRadar)
+			_G.DBMRangeCheckRadar.styled = true
 		end
 
-		if DBMRangeCheck and not DBMRangeCheck.styled then
-			TT.ReskinTooltip(DBMRangeCheck)
-			DBMRangeCheck.styled = true
+		if _G.DBMRangeCheck and not _G.DBMRangeCheck.styled then
+			TT.ReskinTooltip(_G.DBMRangeCheck)
+			_G.DBMRangeCheck.styled = true
 		end
 	end)
 
-	if DBM.InfoFrame then
-		DBM.InfoFrame:Show(5, "test")
-		DBM.InfoFrame:Hide()
-		DBMInfoFrame:HookScript("OnShow", TT.ReskinTooltip)
+	if _G.DBM.InfoFrame then
+		_G.DBM.InfoFrame:Show(5, "test")
+		_G.DBM.InfoFrame:Hide()
+		_G.DBMInfoFrame:HookScript("OnShow", TT.ReskinTooltip)
 	end
 
-	-- Force Settings
-	if not DBM_AllSavedOptions["Default"] then
-		DBM_AllSavedOptions["Default"] = {}
+	-- REASON: Force recommended settings for DBM.
+	if not _G.DBM_AllSavedOptions["Default"] then
+		_G.DBM_AllSavedOptions["Default"] = {}
 	end
-	DBM_AllSavedOptions["Default"]["BlockVersionUpdateNotice"] = true
-	DBM_AllSavedOptions["Default"]["EventSoundVictory"] = "None"
-	if C_AddOns.IsAddOnLoaded("DBM-VPYike") then
-		DBM_AllSavedOptions["Default"]["CountdownVoice"] = "VP:Yike"
-		DBM_AllSavedOptions["Default"]["ChosenVoicePack"] = "Yike"
+	_G.DBM_AllSavedOptions["Default"]["BlockVersionUpdateNotice"] = true
+	_G.DBM_AllSavedOptions["Default"]["EventSoundVictory"] = "None"
+	if C_AddOns_IsAddOnLoaded("DBM-VPYike") then
+		_G.DBM_AllSavedOptions["Default"]["CountdownVoice"] = "VP:Yike"
+		_G.DBM_AllSavedOptions["Default"]["ChosenVoicePack"] = "Yike"
 	end
 
-	if not DBT_AllPersistentOptions["Default"] then
-		DBT_AllPersistentOptions["Default"] = {}
+	if not _G.DBT_AllPersistentOptions["Default"] then
+		_G.DBT_AllPersistentOptions["Default"] = {}
 	end
-	DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 10
-	DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 10
-	DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwards = true
-	DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwardsLarge = true
+	_G.DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 10
+	_G.DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 10
+	_G.DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwards = true
+	_G.DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwardsLarge = true
 end

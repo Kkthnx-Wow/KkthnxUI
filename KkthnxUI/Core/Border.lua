@@ -15,7 +15,6 @@ local Module = {}
 
 local type = type
 local unpack = unpack
-local ipairs = ipairs
 local error = error
 
 -- ---------------------------------------------------------------------------
@@ -24,17 +23,6 @@ local error = error
 
 -- REASON: Border is stored directly on the parent frame to prevent table growth and avoid weak-table pitfalls.
 local BORDER_KEY = "__kkthnx_border"
-
-local borderSections = {
-	{ name = "TOPLEFT", coord = { 0.5, 0.625, 0, 1 } },
-	{ name = "TOPRIGHT", coord = { 0.625, 0.75, 0, 1 } },
-	{ name = "BOTTOMLEFT", coord = { 0.75, 0.875, 0, 1 } },
-	{ name = "BOTTOMRIGHT", coord = { 0.875, 1, 0, 1 } },
-	{ name = "TOP", coord = { 0.25, 0.375, 0, 1 } },
-	{ name = "BOTTOM", coord = { 0.375, 0.5, 0, 1 } },
-	{ name = "LEFT", coord = { 0, 0.125, 0, 1 } },
-	{ name = "RIGHT", coord = { 0.125, 0.25, 0, 1 } },
-}
 
 local function GetDefaultBorderSize()
 	local style = C and C["General"] and C["General"].BorderStyle or "KkthnxUI"
@@ -106,16 +94,16 @@ function Module:SetTexture(texture)
 
 	-- NOTE: Case 2: Texture is a file path string.
 	if type(texture) == "string" then
-		for i = 1, #borderSections do
-			local section = borderSections[i]
-			local tex = self[section.name]
-			if i > 4 then
-				-- REASON: Straight edges allow wrap behavior for coords outside [0..1] to facilitate tiling.
-				tex:SetTexture(texture, "REPEAT", "REPEAT")
-			else
-				tex:SetTexture(texture)
-			end
-		end
+		self.TOPLEFT:SetTexture(texture)
+		self.TOPRIGHT:SetTexture(texture)
+		self.BOTTOMLEFT:SetTexture(texture)
+		self.BOTTOMRIGHT:SetTexture(texture)
+
+		-- REASON: Straight edges allow wrap behavior for coords outside [0..1] to facilitate tiling.
+		self.TOP:SetTexture(texture, "REPEAT", "REPEAT")
+		self.BOTTOM:SetTexture(texture, "REPEAT", "REPEAT")
+		self.LEFT:SetTexture(texture, "REPEAT", "REPEAT")
+		self.RIGHT:SetTexture(texture, "REPEAT", "REPEAT")
 	end
 end
 
@@ -126,38 +114,41 @@ function Module:SetSize(size)
 
 	self.__size = size
 
-	for i = 1, #borderSections do
-		local name = borderSections[i].name
-		local tex = self[name]
+	self.TOPLEFT:SetSize(size, size)
+	self.TOPRIGHT:SetSize(size, size)
+	self.BOTTOMLEFT:SetSize(size, size)
+	self.BOTTOMRIGHT:SetSize(size, size)
 
-		if name == "TOP" or name == "BOTTOM" then
-			tex:SetHeight(size)
-		elseif name == "LEFT" or name == "RIGHT" then
-			tex:SetWidth(size)
-		else
-			tex:SetSize(size, size)
-		end
-	end
+	self.TOP:SetHeight(size)
+	self.BOTTOM:SetHeight(size)
+	self.LEFT:SetWidth(size)
+	self.RIGHT:SetWidth(size)
 
 	OnBorderResize(self.__parent)
 end
 
 function Module:SetVertexColor(r, g, b, a)
-	for i = 1, #borderSections do
-		self[borderSections[i].name]:SetVertexColor(r, g, b, a)
-	end
+	self.TOPLEFT:SetVertexColor(r, g, b, a)
+	self.TOPRIGHT:SetVertexColor(r, g, b, a)
+	self.BOTTOMLEFT:SetVertexColor(r, g, b, a)
+	self.BOTTOMRIGHT:SetVertexColor(r, g, b, a)
+	self.TOP:SetVertexColor(r, g, b, a)
+	self.BOTTOM:SetVertexColor(r, g, b, a)
+	self.LEFT:SetVertexColor(r, g, b, a)
+	self.RIGHT:SetVertexColor(r, g, b, a)
 end
 
--- REASON: Dynamically maps standard Frame methods to all 8 border segments.
+-- REASON: Dynamically maps standard Frame methods to all 8 border segments directly.
 local function CreateProxyMethod(methodName)
 	Module[methodName] = function(self, ...)
-		for i = 1, #borderSections do
-			local tex = self[borderSections[i].name]
-			local fn = tex and tex[methodName]
-			if fn then
-				fn(tex, ...)
-			end
-		end
+		self.TOPLEFT[methodName](self.TOPLEFT, ...)
+		self.TOPRIGHT[methodName](self.TOPRIGHT, ...)
+		self.BOTTOMLEFT[methodName](self.BOTTOMLEFT, ...)
+		self.BOTTOMRIGHT[methodName](self.BOTTOMRIGHT, ...)
+		self.TOP[methodName](self.TOP, ...)
+		self.BOTTOM[methodName](self.BOTTOM, ...)
+		self.LEFT[methodName](self.LEFT, ...)
+		self.RIGHT[methodName](self.RIGHT, ...)
 	end
 end
 
@@ -167,12 +158,15 @@ CreateProxyMethod("SetShown")
 CreateProxyMethod("SetAlpha")
 
 function Module:SetIgnoreParentAlpha(ignore)
-	for i = 1, #borderSections do
-		local tex = self[borderSections[i].name]
-		if tex and tex.SetIgnoreParentAlpha then
-			tex:SetIgnoreParentAlpha(ignore and true or false)
-		end
-	end
+	local state = ignore and true or false
+	self.TOPLEFT:SetIgnoreParentAlpha(state)
+	self.TOPRIGHT:SetIgnoreParentAlpha(state)
+	self.BOTTOMLEFT:SetIgnoreParentAlpha(state)
+	self.BOTTOMRIGHT:SetIgnoreParentAlpha(state)
+	self.TOP:SetIgnoreParentAlpha(state)
+	self.BOTTOM:SetIgnoreParentAlpha(state)
+	self.LEFT:SetIgnoreParentAlpha(state)
+	self.RIGHT:SetIgnoreParentAlpha(state)
 end
 
 function Module:IsObjectType(t)
@@ -197,12 +191,20 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	local subLevel = type(drawSubLevel) == "number" and drawSubLevel or 1
 
 	-- REASON: Create all 8 sections (4 corners, 4 edges).
-	for i = 1, #borderSections do
-		local section = borderSections[i]
+	local function CreateEdge(c1, c2, c3, c4)
 		local tex = self:CreateTexture(nil, layer, nil, subLevel)
-		tex:SetTexCoord(unpack(section.coord))
-		border[section.name] = tex
+		tex:SetTexCoord(c1, c2, c3, c4)
+		return tex
 	end
+
+	border.TOPLEFT = CreateEdge(0.5, 0.625, 0, 1)
+	border.TOPRIGHT = CreateEdge(0.625, 0.75, 0, 1)
+	border.BOTTOMLEFT = CreateEdge(0.75, 0.875, 0, 1)
+	border.BOTTOMRIGHT = CreateEdge(0.875, 1, 0, 1)
+	border.TOP = CreateEdge(0.25, 0.375, 0, 1)
+	border.BOTTOM = CreateEdge(0.375, 0.5, 0, 1)
+	border.LEFT = CreateEdge(0, 0.125, 0, 1)
+	border.RIGHT = CreateEdge(0.125, 0.25, 0, 1)
 
 	-- REASON: Link edges to corners to ensure they scale and move together.
 	border.TOP:SetPoint("TOPLEFT", border.TOPLEFT, "TOPRIGHT", 0, 0)

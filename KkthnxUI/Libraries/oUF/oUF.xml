@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="init.lua"/>
+	<Script file="enums.lua"/>
 	<Script file="private.lua"/>
 	<Script file="ouf.lua"/>
 	<Script file="events.lua"/>
-	<Script file="combatevents.lua"/>
 	<Script file="factory.lua"/>
 	<Script file="blizzard.lua"/>
 	<Script file="units.lua"/>
@@ -23,6 +23,7 @@
 	<Script file="elements\phaseindicator.lua"/>
 	<Script file="elements\portrait.lua"/>
 	<Script file="elements\power.lua"/>
+	<Script file="elements\privateauras.lua"/>
 	<Script file="elements\pvpclassificationindicator.lua"/>
 	<Script file="elements\questindicator.lua"/>
 	<Script file="elements\raidroleindicator.lua"/>

@@ -1,54 +1,59 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Monitors player buffs and items to provide visual reminders for missing essentials.
+-- - Design: Uses a periodic scan and event-driven updates to show/hide reminder icons.
+-- - Events: UNIT_AURA, PLAYER_ENTERING_WORLD, WEAPON_ENCHANT_CHANGED, etc.
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Auras")
 
--- Lua
-local next = next
-local pairs = pairs
+-- PERF: Localize globals and C-functions to minimize global lookup overhead.
+local _G = _G
+local ipairs, next, pairs, table_insert, table_wipe = _G.ipairs, _G.next, _G.pairs, _G.table.insert, _G.table.wipe
 
-local table_insert = table.insert
-local table_wipe = table.wipe
-
--- WoW
 local CreateFrame = CreateFrame
-local UIParent = UIParent
-
-local InCombatLockdown = InCombatLockdown
-local IsInInstance = IsInInstance
 local GetNumGroupMembers = GetNumGroupMembers
 local GetSpecialization = GetSpecialization
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
-local UnitInVehicle = UnitInVehicle
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local InCombatLockdown = InCombatLockdown
+local IsInInstance = IsInInstance
 local IsPlayerSpell = IsPlayerSpell
+local UIParent = UIParent
+local UnitEnteredVehicle = UnitEnteredVehicle
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 local C_Item_GetItemCooldown = C_Item.GetItemCooldown
 local C_Item_GetItemCount = C_Item.GetItemCount
 local C_Item_GetItemIconByID = C_Item.GetItemIconByID
 local C_Item_IsEquippedItem = C_Item.IsEquippedItem
-
 local C_PvP_GetZonePVPInfo = C_PvP.GetZonePVPInfo
 local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
 local C_UnitAuras_GetBuffDataByIndex = C_UnitAuras.GetBuffDataByIndex
 
--- Config
+-- ---------------------------------------------------------------------------
+-- Configuration & State
+-- ---------------------------------------------------------------------------
 local iconSize = C["Auras"].DebuffSize + 4
-
--- State
 local frames = {}
 local parentFrame
-
 local isRegistered = false
 local itemsMerged = false
 local activeBuffs = {}
 local state = {}
 
--- Ensure the class table exists (some client forks can omit a class key)
+-- REASON: Ensure the class table exists; some client forks can omit a class key.
 local groups = C.SpellReminderBuffs[K.Class]
 if not groups then
 	groups = {}
 	C.SpellReminderBuffs[K.Class] = groups
 end
 
+-- ---------------------------------------------------------------------------
+-- Utility Logic
+-- ---------------------------------------------------------------------------
 local function IsItemReady(itemID)
 	if not itemID then
 		return true
@@ -58,7 +63,8 @@ local function IsItemReady(itemID)
 		return false
 	end
 
-	-- Reason: GetItemCooldown returns (startTime, duration, enable). Comparing the call directly to 0 is wrong.
+	-- REASON: C_Item.GetItemCooldown returns (startTime, duration, enable).
+	-- Using direct comparison ensures we only show reminders for available items.
 	local startTime, duration, enable = C_Item_GetItemCooldown(itemID)
 	if not enable then
 		return false
@@ -70,6 +76,7 @@ end
 local function BuildActiveBuffSet()
 	table_wipe(activeBuffs)
 
+	-- PERF: Scan up to 40 buffs once per update cycle to avoid repeated iterations.
 	for i = 1, 40 do
 		local auraData = C_UnitAuras_GetBuffDataByIndex("player", i, "HELPFUL")
 		if not auraData then
@@ -91,12 +98,11 @@ local function UpdateState()
 	state.zonePvp = C_PvP_GetZonePVPInfo()
 
 	state.spec = GetSpecialization()
-	state.inVehicle = UnitInVehicle("player")
+	state.inVehicle = UnitEnteredVehicle("player")
 	state.isDead = UnitIsDeadOrGhost("player")
 end
 
 local function PlayerHasAnyReminderBuff(cfg)
-	-- Reason: Avoid repeated aura scanning for every cfg; we build a set once per event.
 	for spellID in pairs(cfg.spells) do
 		if activeBuffs[spellID] then
 			return true
@@ -107,7 +113,7 @@ local function PlayerHasAnyReminderBuff(cfg)
 end
 
 local function ShouldShowReminder(cfg)
-	-- Basic sanity
+	-- REASON: Core filtering logic to determine if a reminder icon should be displayed.
 	if not cfg or cfg.disable or not cfg.spells then
 		return false
 	end
@@ -134,13 +140,13 @@ local function ShouldShowReminder(cfg)
 
 	local isEquipped = true
 	if cfg.equip then
-		-- Reason: Guard against bad config entries (equip=true but missing itemID).
+		-- WARNING: Guard against bad config entries where equip=true but itemID is missing.
 		isEquipped = cfg.itemID and C_Item_IsEquippedItem(cfg.itemID) or false
 	end
 
 	local isNotOnCooldown = IsItemReady(cfg.itemID)
 
-	-- Weapon enchants (temporary)
+	-- Temporary weapon enchants logic
 	local weaponIndex = cfg.weaponIndex
 	if weaponIndex then
 		local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo()
@@ -152,6 +158,9 @@ local function ShouldShowReminder(cfg)
 	return inGroup and inCombat and inInst and inPVP and isKnownSpell and isRightSpec and isEquipped and isNotOnCooldown and not state.inVehicle and not state.isDead
 end
 
+-- ---------------------------------------------------------------------------
+-- Core Module Functions
+-- ---------------------------------------------------------------------------
 function Module:Reminder_Update(cfg)
 	local frame = cfg.frame
 	if not frame then
@@ -166,7 +175,7 @@ function Module:Reminder_Update(cfg)
 end
 
 function Module:Reminder_Create(cfg)
-	-- Reason: Reminder frames live under parentFrame, which is created only when the feature is enabled.
+	-- REASON: Reminder frames live under parentFrame, created only when the feature is enabled.
 	if not parentFrame then
 		return
 	end
@@ -198,7 +207,8 @@ function Module:Reminder_UpdateAnchor()
 	local index = 0
 	local offset = iconSize + 6
 
-	for _, frame in next, frames do
+	-- PERF: Use ipairs for array iteration.
+	for _, frame in ipairs(frames) do
 		if frame:IsShown() then
 			frame:ClearAllPoints()
 			frame:SetPoint("LEFT", offset * index, 0)
@@ -206,7 +216,7 @@ function Module:Reminder_UpdateAnchor()
 		end
 	end
 
-	-- Reason: Keep the frame a sane size even if nothing is currently shown.
+	-- REASON: Dynamically resize parent container to center/align current icons.
 	parentFrame:SetWidth(index > 0 and (offset * index) or iconSize)
 end
 
@@ -218,7 +228,8 @@ function Module:Reminder_OnEvent()
 	BuildActiveBuffSet()
 	UpdateState()
 
-	for _, cfg in pairs(groups) do
+	-- PERF: Use ipairs for array iteration.
+	for _, cfg in ipairs(groups) do
 		if not cfg.frame then
 			Module:Reminder_Create(cfg)
 		end
@@ -234,16 +245,18 @@ function Module:Reminder_AddItemGroup()
 		return
 	end
 
-	-- Reason: Prevent duplicating ITEMS entries if CreateReminder is called multiple times.
+	-- REASON: Prevent duplicating item entries if CreateReminder is called multiple times.
 	local added = {}
 
-	for _, cfg in pairs(groups) do
+	-- PERF: Use ipairs for array iteration.
+	for _, cfg in ipairs(groups) do
 		if cfg and cfg.itemID then
 			added[cfg.itemID] = true
 		end
 	end
 
-	for _, value in pairs(C.SpellReminderBuffs["ITEMS"]) do
+	-- PERF: Use ipairs for array iteration.
+	for _, value in ipairs(C.SpellReminderBuffs["ITEMS"]) do
 		if value and not value.disable and value.itemID and not added[value.itemID] and (C_Item_GetItemCount(value.itemID) > 0) then
 			value.texture = value.texture or C_Item_GetItemIconByID(value.itemID)
 			table_insert(groups, value)
@@ -308,7 +321,8 @@ function Module:CreateReminder()
 			parentFrame:Hide()
 		end
 
-		for _, frame in next, frames do
+		-- PERF: Use ipairs for array iteration.
+		for _, frame in ipairs(frames) do
 			frame:Hide()
 		end
 

@@ -1,9 +1,20 @@
--- Based on oUF_GCD(by ALZA)
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays a Global Cooldown (GCD) spark on the player's power bar.
+-- - Design: Based on oUF_GCD by ALZA.
+-- - Events: SPELL_UPDATE_COOLDOWN.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
+-- REASON: Localize frequently used APIs and utilities for performance
+local GetTime = _G.GetTime
+local GetSpellCooldown = _G.C_Spell.GetSpellCooldown
+
 local starttime, duration, usingspell
-local GetTime = GetTime
 
 local function OnUpdateSpark(self)
 	local elapsed = GetTime() - starttime
@@ -26,7 +37,7 @@ end
 
 local function Update(self)
 	local bar = self.GCD
-	local spellCooldownInfo = C_Spell.GetSpellCooldown(61304)
+	local spellCooldownInfo = GetSpellCooldown(61304)
 	if spellCooldownInfo then
 		local start, dur = spellCooldownInfo.startTime, spellCooldownInfo.duration
 		if dur and dur > 0 and dur <= 2 then

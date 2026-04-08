@@ -1,11 +1,20 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Creates and updates the Focus Target unit frame.
+-- - Design: Features Health, Power, Portrait, and Debuffs.
+-- - Events: UNIT_HEALTH, UNIT_POWER, UNIT_AURA, etc. handled by oUF.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- Lua functions
-local select = select
+-- REASON: Localize C-functions (Snake Case)
+local select = _G.select
 
--- WoW API
-local CreateFrame = CreateFrame
+-- REASON: Localize Globals
+local CreateFrame = _G.CreateFrame
 
 function Module:CreateFocusTarget()
 	self.mystyle = "focustarget"
@@ -16,12 +25,14 @@ function Module:CreateFocusTarget()
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	-- REASON: Overlay frame for borders and indicators.
+	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(5)
 
 	Module.CreateHeader(self)
 
+	-- REASON: Health Bar Setup
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetHeight(focusTargetHeight)
 	self.Health:SetPoint("TOPLEFT")
@@ -54,6 +65,7 @@ function Module:CreateFocusTarget()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Unitframe"].FocusTargetPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
@@ -85,15 +97,16 @@ function Module:CreateFocusTarget()
 	end
 	self.Name:SetShown(not C["Unitframe"].HideFocusTargetName)
 
+	-- REASON: Portrait Setup (2D/3D support)
 	if focusTargetPortraitStyle ~= 0 then
 		if focusTargetPortraitStyle == 4 then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusTargetPortrait", self)
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			self.Portrait:SetAlpha(0.6)
 		elseif focusTargetPortraitStyle == 5 then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusTargetPortrait", self.Health)
+			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -103,7 +116,7 @@ function Module:CreateFocusTarget()
 				Module:ApplyPortraitAlphaFix(self)
 			end
 		elseif focusTargetPortraitStyle ~= 5 and focusTargetPortraitStyle ~= 4 then
-			self.Portrait = self.Health:CreateTexture("KKUI_FocusTargetPortrait", "BACKGROUND", nil, 1)
+			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -129,6 +142,7 @@ function Module:CreateFocusTarget()
 	self.Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
 	self:Tag(self.Level, "[fulllevel]")
 
+	-- REASON: Aura Debuffs
 	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPLEFT"

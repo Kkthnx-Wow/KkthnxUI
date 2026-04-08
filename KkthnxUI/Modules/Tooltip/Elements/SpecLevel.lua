@@ -1,13 +1,50 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Inspects units to display their average item level and tier sets.
+-- - Design: Hooks tooltip and uses NotifyInspect with a local cache/throttle.
+-- - Events: INSPECT_READY, UNIT_INVENTORY_CHANGED
+-----------------------------------------------------------------------------]]
+
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
--- Credit: Cloudy Unit Info, by Cloudyfa
-local select, max, strfind, format, strsplit = select, math.max, string.find, string.format, string.split
-local GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown = GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown
-local UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi = UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi
-local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local math_max = _G.math.max
+local select = _G.select
+local string_find = _G.string.find
+local string_format = _G.string.format
+local string_split = _G.string.split
+local GetTime = _G.GetTime
+
+local C_Item = _G.C_Item
+local CanInspect = _G.CanInspect
+local ClearInspectPlayer = _G.ClearInspectPlayer
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local InspectFrame = _G.InspectFrame
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local NotifyInspect = _G.NotifyInspect
+local UnitClass = _G.UnitClass
+local UnitGUID = _G.UnitGUID
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitIsVisible = _G.UnitIsVisible
+local UnitOnTaxi = _G.UnitOnTaxi
+
+local GetAverageItemLevel = _G.GetAverageItemLevel
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local GetItemGem = _G.GetItemGem
+local GetItemInfo = _G.GetItemInfo
+local HEIRLOOMS = _G.HEIRLOOMS
+local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
+local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
+
 local C_Item_GetItemInfoInstant = C_Item and C_Item.GetItemInfoInstant
-local HEIRLOOMS = HEIRLOOMS
 
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
 local isPending = LFG_LIST_LOADING
@@ -103,16 +140,19 @@ local formatSets = {
 	[5] = " |cffc745f9(5/5)", -- purple
 }
 
+-- REASON: Throttles inspect requests to prevent server spam and Blizzard API limits.
 function Module:InspectOnUpdate(elapsed)
 	self.elapsed = (self.elapsed or frequency) + elapsed
 	if self.elapsed > frequency then
 		self.elapsed = 0
 		self.retries = (self.retries or 0) + 1
+
 		if self.retries > 10 then -- safety: stop after ~5s (10 * 0.5)
 			self:Hide()
 			self.retries = 0
 			return
 		end
+
 		self:Hide()
 		ClearInspectPlayer()
 
@@ -128,6 +168,7 @@ updater:SetScript("OnUpdate", Module.InspectOnUpdate)
 updater:Hide()
 
 local lastTime = 0
+-- REASON: Event handler for inspect results and inventory updates.
 function Module:GetInspectInfo(...)
 	if self == "UNIT_INVENTORY_CHANGED" then
 		local thisTime = GetTime()
@@ -157,6 +198,7 @@ function Module:GetInspectInfo(...)
 end
 K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
 
+-- REASON: Injects or updates the item level line in the GameTooltip.
 function Module:SetupItemLevel(level)
 	local _, unit = GameTooltip:GetUnit()
 	if not unit or UnitGUID(unit) ~= currentGUID then
@@ -167,7 +209,8 @@ function Module:SetupItemLevel(level)
 	for i = 2, GameTooltip:NumLines() do
 		local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
 		local text = line:GetText()
-		if text and strfind(text, levelPrefix) then
+
+		if text and string_find(text, levelPrefix) then
 			levelLineFound = true
 			line:SetText(levelPrefix .. (level or isPending))
 			break
@@ -219,7 +262,7 @@ function Module:GetUnitItemLevel(unit)
 							elseif i > 15 and quality == Enum.ItemQuality.Artifact then
 								-- Legacy artifact relic scan; skip if API removed
 								if GetItemGem then
-									local relics = { select(4, strsplit(":", itemLink)) }
+									local relics = { select(4, string_split(":", itemLink)) }
 									for i = 1, 3 do
 										local relicID = relics[i] ~= "" and relics[i]
 										local relicLink = select(2, GetItemGem(itemLink, i))
@@ -262,7 +305,7 @@ function Module:GetUnitItemLevel(unit)
 			ilvl = select(2, GetAverageItemLevel())
 		else
 			if hasArtifact or twohand == 2 then
-				local higher = max(weapon[1], weapon[2])
+				local higher = math_max(weapon[1], weapon[2])
 				total = total + higher * 2
 			elseif twohand == 1 and haveWeapon == 1 then
 				total = total + weapon[1] * 2 + weapon[2] * 2
@@ -281,7 +324,7 @@ function Module:GetUnitItemLevel(unit)
 		end
 
 		if ilvl and ilvl > 0 then -- Add a check for nil before comparing
-			ilvl = format("%.1f", ilvl)
+			ilvl = string_format("%.1f", ilvl)
 		end
 		if boa > 0 then
 			ilvl = ilvl .. " - |cff00ccff" .. boa .. " " .. HEIRLOOMS

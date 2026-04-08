@@ -1,47 +1,17 @@
---[[
-# Element: Debuff Indicator
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays important raid debuffs on unit frames (e.g. for healers).
+-- - Design: Priority-based debuff filtering with class-specific dispel capabilities.
+-- - Events: SPELLS_CHANGED, UNIT_AURA.
+-----------------------------------------------------------------------------]]
 
-	Shows a Debuff icon, duration and debuff type indication for debuffs the player can dispel.
-
-## Widget
-
-	RaidDebuffs    - A 'Frame' used to display the debuff.
-
-## Sub-Widgets
-
-	.icon          - The 'Texture' of the debuff
-	.cd            - A 'Frame' with 'CooldownFrameTemplate'
-	.timer         - A 'FontString' showing the remaining duration
-	.count         - A 'FontString' showing the number of stacks
-	.Backdrop      - Backdrops border is used to indicate the debuff type
-
-## Notes
-
-	Sub-Widgets will be created if not provided. The font options are only used in that case.
-	Font defaults to (NumberFontNormal, 12, nil)
-
-## Options
-
-	.font          - Font used for timer and stacks (Font?)
-	.fontheight    - Font height (number?)
-	.fontFlags     - Font flags (string?)
-
-## Examples
-
-	-- position and size
-	local RaidDebuffs = CreateFrame("Frame", nil, Health)
-	RaidDebuffs:SetHeight(DebuffSize)
-	RaidDebuffs:SetWidth(DebuffSize)
-	RaidDebuffs:SetPoint("CENTER", Health)
-	RaidDebuffs:SetFrameLevel(Health:GetFrameLevel() + 10)
-
-	-- Register it with oUF
-	self.RaidDebuffs = RaidDebuffs
---]]
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
--- Localize globals for performance
+-- REASON: Localize globals for performance
+local _G = _G
 local IsPlayerSpell = _G.IsPlayerSpell
 local UnitCanAssist = _G.UnitCanAssist
 local GetTime = _G.GetTime

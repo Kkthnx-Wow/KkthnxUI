@@ -1,5 +1,18 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Developer-focused frame debugging and utility tools.
+-- - Design: Provides slash commands for inspecting frames, spells, and game state.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 
+-- ---------------------------------------------------------------------------
+-- LOCALS & GLOBAL CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache frequent APIs and globals to minimize table lookups.
 local math_ceil = math.ceil
 local math_floor = math.floor
 local print = print
@@ -24,8 +37,12 @@ local UNKNOWN = UNKNOWN
 local UnitGUID = UnitGUID
 local UnitName = UnitName
 
--- KKUI DevTools (slash commands):
--- Basics
+-- ---------------------------------------------------------------------------
+-- SLASH COMMANDS: DEVTOOLS
+-- ---------------------------------------------------------------------------
+
+-- NOTE: Command Overview
+-- Basics:
 --   /getencounter        - Print tier/instance and boss indices (auto-loads EJ)
 --   /getinstance         - Print instance name, type, difficulty, InstanceID, group size
 --   /getnpc              - Print current target name and NPC ID
@@ -33,28 +50,23 @@ local UnitName = UnitName
 --   /getspell <id|name>  - Print spell icon, name, and description
 --   /getfont <Global>    - Print font object path, size, flags
 --   /getpatch            - Print build info (aliases: /getbuild, /getinterface)
--- Grid overlay
+-- Grid overlay:
 --   /grid, /align, /showgrid  - Toggle alignment grid (optionally pass box size)
--- Tooling (Blizzard Debug)
+-- Tooling (Blizzard Debug):
 --   /taintlog [0|1|2|11|on|off|get]  - Set or get CVar taintLog
 --   /kkfstack [/args]                - Toggle FrameStack (alias: /kkfs)
 --   /kkeventtrace [mark <text>]      - Toggle EventTrace or add a mark (alias: /kket)
--- Tooltips
+-- Tooltips:
 --   /gettip, /gettooltip   - List tooltip-like frames currently on screen
 
--- Commands
 _G.SlashCmdList["KKUI_ENUMTIP"] = function()
-	-- Enumerate all frames on the screen
+	-- REASON: Iterates all game frames to locate active tooltips for debugging anchored content.
 	local enumf = EnumerateFrames()
 	while enumf do
-		-- Check if the frame is a GameTooltip or has "tip" in its name (case-insensitive)
-		-- and if it is visible and has a defined position
+		-- NOTE: Case-insensitive match for frames typically used as tooltips.
 		if (enumf:GetObjectType() == "GameTooltip" or string.find((enumf:GetName() or ""):lower(), "tip")) and enumf:IsVisible() and enumf:GetPoint() then
-			-- Print the name of the frame
 			print(enumf:GetName())
 		end
-
-		-- Get the next frame
 		enumf = EnumerateFrames(enumf)
 	end
 end
@@ -63,6 +75,7 @@ _G.SLASH_KKUI_ENUMTIP2 = "/gettooltip"
 _G.SLASH_KKUI_ENUMTIP3 = "/kt"
 
 _G.SlashCmdList["KKUI_ENUMFRAME"] = function()
+	-- REASON: Identifies all visible frames under the mouse cursor for UI inspection.
 	local frame = EnumerateFrames()
 	local chatModule = K:GetModule("Chat")
 	local shown = 0
@@ -70,6 +83,7 @@ _G.SlashCmdList["KKUI_ENUMFRAME"] = function()
 		if frame:IsVisible() and MouseIsOver(frame) then
 			print(frame:GetName() or string_format(UNKNOWN .. ": [%s]", tostring(frame)))
 			shown = shown + 1
+			-- NOTE: Trigger chat copy if the module is enabled to easily extract frame names.
 			if chatModule and chatModule.ChatCopy_OnClick then
 				chatModule:ChatCopy_OnClick("LeftButton")
 			end
@@ -85,6 +99,7 @@ _G.SLASH_KKUI_ENUMFRAME1 = "/getframe"
 _G.SLASH_KKUI_ENUMFRAME2 = "/kf"
 
 _G.SlashCmdList["KKUI_DUMPSPELL"] = function(arg)
+	-- REASON: Resolves spell data for debugging icons, metadata, and descriptions.
 	local name = C_Spell_GetSpellInfo(arg)
 	if not name then
 		print("Usage: /getspell <spellID|name>")
@@ -102,6 +117,7 @@ _G.SLASH_KKUI_DUMPSPELL1 = "/getspell"
 _G.SLASH_KKUI_DUMPSPELL2 = "/ks"
 
 _G.SlashCmdList["INSTANCEID"] = function()
+	-- NOTE: Displays verbose instance info including internal IDs and LFG metadata.
 	local name, instanceType, difficultyID, difficultyName, maxPlayers, _, _, instanceID, groupSize, lfgID = GetInstanceInfo()
 	print(K.InfoColor .. "Instance:", name or "?")
 	print("Type:", tostring(instanceType), "Diff:", tostring(difficultyID) .. " (" .. (difficultyName or "?") .. ")")
@@ -110,6 +126,7 @@ end
 _G.SLASH_INSTANCEID1 = "/getinstance"
 
 _G.SlashCmdList["KKUI_NPCID"] = function()
+	-- REASON: Resolves the numeric NPC ID from the target's GUID; useful for database entry.
 	local name = UnitName("target")
 	local guid = UnitGUID("target")
 	if name and guid then
@@ -124,17 +141,15 @@ _G.SLASH_KKUI_NPCID2 = "/kknpc"
 _G.SLASH_KKUI_NPCID3 = "/npcid"
 
 _G.SlashCmdList["KKUI_GETFONT"] = function(msg)
-	-- Get the global variable stored in the variable msg
+	-- REASON: Probes global font objects to verify file paths and formatting attributes.
 	local font = _G[msg]
 
-	-- Check if the font variable is not defined
 	if not font then
-		-- If it's not defined, print an error message and exit the function
 		print(msg, "not found.")
 		return
 	end
 
-	-- Ensure it's a FontObject
+	-- WARNING: Ensure the object is actually a FontObject before calling GetFont.
 	if not font.GetFont then
 		print(msg, "is not a FontObject")
 		return
@@ -147,6 +162,7 @@ _G.SLASH_KKUI_GETFONT1 = "/getfont"
 _G.SLASH_KKUI_GETFONT2 = "/kkfont"
 
 _G.SlashCmdList["KKUI_GET_ENCOUNTERS"] = function()
+	-- REASON: Dumps boss IDs and metadata from the Encounter Journal for dungeon/raid module logic.
 	if not _G.EncounterJournal then
 		_G.UIParentLoadAddOn("Blizzard_EncounterJournal")
 		if not _G.EncounterJournal then
@@ -180,7 +196,7 @@ _G.SLASH_KKUI_GET_ENCOUNTERS1 = "/getencounter"
 _G.SLASH_KKUI_GET_ENCOUNTERS2 = "/getenc"
 _G.SLASH_KKUI_GET_ENCOUNTERS3 = "/kkenc"
 
--- Inform us of the patch info we play on.
+-- NOTE: Quick reference for current WoW build and Toc definitions.
 _G.SlashCmdList["WOWVERSION"] = function()
 	print(K.InfoColor .. "------------------------")
 	K.Print("Build: ", K.WowBuild)
@@ -195,9 +211,14 @@ _G.SLASH_WOWVERSION4 = "/kkpatch"
 _G.SLASH_WOWVERSION5 = "/kkbuild"
 _G.SLASH_WOWVERSION6 = "/kkinterface"
 
--- Grids
+-- ---------------------------------------------------------------------------
+-- SLASH COMMANDS: GRID OVERLAY
+-- ---------------------------------------------------------------------------
+
 local grid
 local boxSize = 32
+
+-- REASON: Creates a visual alignment grid to assist with pixel-perfect UI positioning.
 local function Grid_Create()
 	grid = CreateFrame("Frame", nil, UIParent)
 	grid.boxSize = boxSize
@@ -211,6 +232,7 @@ local function Grid_Create()
 	local wStep = width / boxSize
 	local hStep = height / boxSize
 
+	-- NOTE: Vertical lines; central axis is colored red for better orientation.
 	for i = 0, boxSize do
 		local tx = grid:CreateTexture(nil, "BACKGROUND")
 		if i == boxSize / 2 then
@@ -223,6 +245,7 @@ local function Grid_Create()
 	end
 	height = GetScreenHeight()
 
+	-- NOTE: Horizontal central axis.
 	do
 		local tx = grid:CreateTexture(nil, "BACKGROUND")
 		tx:SetColorTexture(1, 0, 0, 0.5)
@@ -230,6 +253,7 @@ local function Grid_Create()
 		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + size / 2))
 	end
 
+	-- NOTE: Horizontal grid lines relative to center.
 	for i = 1, math_floor((height / 2) / hStep) do
 		local tx = grid:CreateTexture(nil, "BACKGROUND")
 		tx:SetColorTexture(0, 0, 0, 0.5)
@@ -246,6 +270,7 @@ local function Grid_Create()
 end
 
 local function Grid_Show()
+	-- NOTE: Lazy creation; recreates grid if boxSize changes to update texture geometry.
 	if not grid then
 		Grid_Create()
 	elseif grid.boxSize ~= boxSize then
@@ -264,6 +289,7 @@ SlashCmdList["KKUI_TOGGLEGRID"] = function(arg)
 		end
 		isAligning = false
 	else
+		-- REASON: Snaps box size to multiples of 32 for cleaner grid scaling.
 		boxSize = (math_ceil((tonumber(arg) or boxSize) / 32) * 32)
 		if boxSize > 256 then
 			boxSize = 256
@@ -277,9 +303,13 @@ _G.SLASH_KKUI_TOGGLEGRID2 = "/align"
 _G.SLASH_KKUI_TOGGLEGRID3 = "/grid"
 _G.SLASH_KKUI_TOGGLEGRID4 = "/kkgrid"
 
--- Developer shortcuts (best-practice: no caching of secure globals)
+-- ---------------------------------------------------------------------------
+-- SLASH COMMANDS: BLIZZARD DEBUG TOOLS
+-- ---------------------------------------------------------------------------
 
--- Taint logging helper: /taintlog [0|1|2|11] or /taint get
+-- NOTE: Developer shortcuts; these interact with internal Blizzard debug CVars and frames.
+
+-- REASON: Taint logging is essential for tracing secure UI errors; logs to Logs/taint.log.
 SlashCmdList["KKUI_TAINTLOG"] = function(msg)
 	local input = (msg or ""):match("^%s*(.-)%s*$"):lower()
 	if input == "get" or input == "" then
@@ -303,7 +333,7 @@ _G.SLASH_KKUI_TAINTLOG1 = "/taintlog"
 _G.SLASH_KKUI_TAINTLOG2 = "/taint"
 _G.SLASH_KKUI_TAINTLOG3 = "/kktaint"
 
--- Frame stack helper: /kkfstack [t|f] [t|f] [t|f]
+-- REASON: Wraps Blizzard's FrameStack tool for easier access via multiple aliases.
 SlashCmdList["KKUI_FSTACK"] = function(msg)
 	if not _G.FrameStackTooltip then
 		_G.UIParentLoadAddOn("Blizzard_DebugTools")
@@ -323,9 +353,10 @@ _G.SLASH_KKUI_FSTACK3 = "/kkstack"
 _G.SLASH_KKUI_FSTACK4 = "/fstack"
 _G.SLASH_KKUI_FSTACK5 = "/framestack"
 
--- Event trace helper: /kkeventtrace [mark <text>] or no args to toggle
+-- REASON: Wraps Blizzard's EventTrace tool for easier access and marker insertion.
 SlashCmdList["KKUI_ETRACE"] = function(msg)
 	local function ensure()
+		-- NOTE: Blizzard moved EventTrace across different modules in recent patches.
 		if not (_G.EventTrace or _G.EventTraceFrame) then
 			_G.UIParentLoadAddOn("Blizzard_EventTrace")
 			if not (_G.EventTrace or _G.EventTraceFrame) then
@@ -339,15 +370,13 @@ SlashCmdList["KKUI_ETRACE"] = function(msg)
 	local txt = (msg or ""):match("^%s*(.-)%s*$")
 	local sl = _G.SlashCmdList
 	if sl and (sl.EVENTTRACE or sl.ETRACE) then
-		-- Prefer Blizzard's slash handler if present
 		local fn = sl.EVENTTRACE or sl.ETRACE
 		fn(txt)
 	else
-		-- Fallbacks: toggle using API if available
+		-- NOTE: Support both old (Retail) and newer C-API toggles if possible.
 		if _G.EventTrace and _G.EventTrace.Toggle then
 			_G.EventTrace:Toggle()
 		elseif _G.EventTrace then
-			-- Try pause toggle if toggle missing
 			_G.EventTrace:TogglePause()
 		else
 			print("EventTrace not available.")

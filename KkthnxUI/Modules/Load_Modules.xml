@@ -50,7 +50,6 @@
    <Script file="ActionBars\Keybind.lua" />
    <Script file="ActionBars\ButtonStyle.lua" />
    <Script file="ActionBars\Cooldown.lua" />
-   <Script file="ActionBars\Fader.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />
@@ -66,11 +65,8 @@
    <!-- Unitframes Plugins -->
    <Script file="UnitFrames\Plugins\oUF_AuraTrack.lua" />
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
-   <Script file="UnitFrames\Plugins\oUF_Fader.lua" />
-   <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
    <Script file="UnitFrames\Plugins\oUF_GCD.lua" />
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
-   <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
    <!-- Unitframes -->
    <Script file="UnitFrames\Core.lua" />
@@ -132,6 +128,7 @@
    <Script file="Announcements\Elements\Sapped.lua" />
    <!-- Automation -->
    <Script file="Automation\Core.lua" />
+   <Script file="Automation\Elements\AutoDelves.lua" />
    <Script file="Automation\Elements\AutoHideTracker.lua" />
    <Script file="Automation\Elements\AutoKeystone.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
@@ -159,6 +156,7 @@
    <Script file="Skins\Blizzard\AchievementUI.lua" />
    <Script file="Skins\Blizzard\ArchaeologyUI.lua" />
    <Script file="Skins\Blizzard\Collections.lua" />
+   <Script file="Skins\Blizzard\CooldownViewer.lua" />
    <Script file="Skins\Blizzard\DeathRecap.lua" />
    <Script file="Skins\Blizzard\InspectUI.lua" />
    <Script file="Skins\Blizzard\ProfessionsBook.lua" />

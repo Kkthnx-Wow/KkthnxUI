@@ -1,9 +1,23 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins Raider.IO tooltip and dropdown frames.
+-- - Design: Reskins Raider.IO tooltips using the KkthnxUI tooltip module.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("Skins")
 local ModuleTooltip = K:GetModule("Tooltip")
 
-local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local RaiderIO_CustomDropDownListMenuBackdrop = _G.RaiderIO_CustomDropDownListMenuBackdrop
+local RaiderIO_ProfileTooltip = _G.RaiderIO_ProfileTooltip
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 
+-- REASON: Main entry point for Raider.IO skinning.
 function Module:ReskinRaiderIO()
 	if not C_AddOns_IsAddOnLoaded("RaiderIO") then
 		return

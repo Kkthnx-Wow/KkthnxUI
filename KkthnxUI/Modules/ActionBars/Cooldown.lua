@@ -1,25 +1,41 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: High-performance cooldown timer replacement.
+-- - Design: Provides custom font, scaling, and color coding for action button cooldowns.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Cooldown")
 
--- Localizing global functions and constants
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache globals and frequently used table functions.
 local _G = _G
 local pairs, format, floor, strfind = pairs, string.format, math.floor, string.find
 local GetTime, GetActionCooldown, tonumber = _G.GetTime, _G.GetActionCooldown, tonumber
 
--- Constants for cooldown display
+-- NOTE: Constants for visual consistency and logic thresholds.
 local FONT_SIZE = 19
-local MIN_DURATION = 2.5 -- Minimum duration to show cooldown text
-local MIN_SCALE = 0.5 -- Minimum scale to show cooldown counts
-local ICON_SIZE = 36 -- Standard icon size
+local MIN_DURATION = 2.5 -- REASON: Ignore short GCD-like durations to reduce visual clutter.
+local MIN_SCALE = 0.5 -- REASON: Hide numbers on buttons too small to read.
+local ICON_SIZE = 36
 
--- Time constants for formatting
 local day, hour, minute = 86400, 3600, 60
 
--- Tables for managing cooldowns
-local hideNumbers = {} -- Cooldowns to hide
-local active = {} -- Active cooldowns
-local hooked = {} -- Hooked cooldowns
+local hideNumbers = {}
+local active = {}
+local hooked = {}
 
+-- ---------------------------------------------------------------------------
+-- HELPER FUNCTIONS
+-- ---------------------------------------------------------------------------
+
+-- REASON: Converts seconds into a formatted string (Days, Hours, Minutes, Seconds).
+-- Includes color coding for urgency (Red for < 3s, Yellow for < 10s).
 function Module.FormattedTimer(s, modRate)
 	if s >= day then
 		return format("%d" .. K.MyClassColor .. "d", s / day + 0.5), s % day
@@ -51,6 +67,7 @@ function Module:ForceUpdate()
 	self:Show()
 end
 
+-- REASON: Dynamically adjust font size when the button is resized (e.g. during UI scaling).
 function Module:OnSizeChanged(width, height)
 	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
 	if fontScale == self.fontScale then
@@ -71,11 +88,18 @@ function Module:OnSizeChanged(width, height)
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- CORE TIMER LOGIC
+-- ---------------------------------------------------------------------------
+
+-- REASON: Main update loop for active cooldowns. Calculates remaining time and
+-- updates the text based on modRate (haste/slow effects).
 function Module:TimerOnUpdate(elapsed)
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
 	else
-		if self.modRate == 0 then -- prevent divide by zero
+		-- NOTE: Safety check for modRate to avoid arithmetic errors.
+		if self.modRate == 0 then
 			self.modRate = 1
 		end
 		local passTime = GetTime() - self.start
@@ -94,6 +118,7 @@ function Module:ScalerOnSizeChanged(...)
 	Module.OnSizeChanged(self.timer, ...)
 end
 
+-- REASON: Creates the internal timer frame and font string when a cooldown is first tracked.
 function Module:OnCreate()
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints(self)
@@ -116,7 +141,9 @@ function Module:OnCreate()
 	return timer
 end
 
+-- REASON: Main entry point for starting a cooldown timer. Hooks into Blizzard's SetCooldown.
 function Module:StartTimer(start, duration, modRate)
+	-- NOTE: Avoid forbidden frames (e.g. secure frames in combat that haven't been styled).
 	if self:IsForbidden() then
 		return
 	end
@@ -124,6 +151,7 @@ function Module:StartTimer(start, duration, modRate)
 		return
 	end
 
+	-- COMPAT: Option to ignore WeakAuras if they handle their own cooldown text.
 	local frameName = self.GetName and self:GetName()
 	if C["ActionBar"]["OverrideWA"] and frameName and strfind(frameName, "WeakAuras") then
 		self.noCooldownCount = true
@@ -143,7 +171,7 @@ function Module:StartTimer(start, duration, modRate)
 		timer.enabled = true
 		timer.nextUpdate = 0
 
-		-- wait for blizz to fix itself
+		-- NOTE: Cleanup logic for charge-based cooldowns to prevent overlapping timers.
 		local charge = parent and parent.chargeCooldown
 		local chargeTimer = charge and charge.timer
 		if chargeTimer and chargeTimer ~= timer then
@@ -157,7 +185,7 @@ function Module:StartTimer(start, duration, modRate)
 		Module.StopTimer(self.timer)
 	end
 
-	-- hide cooldown flash if barFader enabled
+	-- NOTE: Sync visibility with Action Bar Fader if it's currently hiding the bar.
 	if parent and parent.__faderParent then
 		if self:GetEffectiveAlpha() > 0 then
 			self:Show()
@@ -166,7 +194,7 @@ function Module:StartTimer(start, duration, modRate)
 		end
 	end
 
-	-- Disable blizzard cooldown numbers
+	-- REASON: Suppress Blizzard's default numbers to avoid double-display.
 	if self.SetHideCountdownNumbers then
 		self:SetHideCountdownNumbers(true)
 	end
@@ -210,15 +238,9 @@ function Module:ActionbarUpateCooldown()
 	end
 end
 
-function Module:RegisterActionButton()
-	local cooldown = self.cooldown
-	if not hooked[cooldown] then
-		cooldown:HookScript("OnShow", Module.CooldownOnShow)
-		cooldown:HookScript("OnHide", Module.CooldownOnHide)
-
-		hooked[cooldown] = true
-	end
-end
+-- ---------------------------------------------------------------------------
+-- INITIALIZATION
+-- ---------------------------------------------------------------------------
 
 function Module:OnSetHideCountdownNumbers(hide)
 	local disable = not (hide or self.noCooldownCount or self:IsForbidden())
@@ -232,12 +254,14 @@ function Module:OnEnable()
 		return
 	end
 
+	-- REASON: Hook the metatable of standard ActionButton cooldowns to catch all instances.
 	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
 	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
 	hooksecurefunc(cooldownIndex, "SetHideCountdownNumbers", Module.OnSetHideCountdownNumbers)
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
+
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
-	-- Hide Default Cooldown
+	-- WARNING: Ensure the Blizzard CVar is disabled to prevent native number rendering.
 	SetCVar("countdownForCooldowns", 0)
 end

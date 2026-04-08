@@ -1,54 +1,65 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Enhances the mail system with mass collection, contact management, and item highlighting.
+-- - Design: Hooks Inbox and Send Mail frames, implements an LRU cache for item info, and manages throttled collection.
+-- - Events: GET_ITEM_INFO_RECEIVED, MAIL_INBOX_UPDATE, UI_ERROR_MESSAGE
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
-local wipe, select, pairs = wipe, _G.select, _G.pairs
+-- PERF: Localize global functions and environment for faster lookups.
+local pairs = _G.pairs
+local select = _G.select
+local string_format = _G.string_format
+local table_remove = _G.table.remove
+local table_wipe = _G.table.wipe
 
-local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR
-local C_Mail_HasInboxMoney = C_Mail.HasInboxMoney
-local C_Mail_IsCommandPending = C_Mail.IsCommandPending
-local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, _G.GetInboxHeaderInfo, _G.GetInboxItem, _G.GetItemInfo
-local GetSendMailPrice, GetMoney = GetSendMailPrice, _G.GetMoney
-local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
-local NORMAL_STRING = GUILDCONTROL_OPTION16
-local OPENING_STRING = OPEN_ALL_MAIL_BUTTON_OPENING
-local GameTooltip = GameTooltip
-local CreateFrame, hooksecurefunc, unpack = _G.CreateFrame, _G.hooksecurefunc, _G.unpack
-local GetItemQualityColor, HasInboxItem = _G.GetItemQualityColor, _G.HasInboxItem
+local _G = _G
+local C_Mail_HasInboxMoney = _G.C_Mail.HasInboxMoney
+local C_Mail_IsCommandPending = _G.C_Mail.IsCommandPending
+local CreateFrame = _G.CreateFrame
+local DeleteInboxItem = _G.DeleteInboxItem
+local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
+local GetInboxItem = _G.GetInboxItem
+local GetInboxNumItems = _G.GetInboxNumItems
+local GetItemInfo = _G.GetItemInfo
+local GetItemQualityColor = _G.GetItemQualityColor
+local GetMoney = _G.GetMoney
+local GetSendMailPrice = _G.GetSendMailPrice
+local HookSecureFunc = _G.hooksecurefunc
+local InboxItemCanDelete = _G.InboxItemCanDelete
+local TakeInboxMoney = _G.TakeInboxMoney
+local TakeInboxItem = _G.TakeInboxItem
+local Unpack = _G.unpack
+
+-- ---------------------------------------------------------------------------
+local ATTACHMENTS_MAX_RECEIVE = _G.ATTACHMENTS_MAX_RECEIVE
+local ERR_MAIL_DELETE_ITEM_ERROR = _G.ERR_MAIL_DELETE_ITEM_ERROR
 local INBOX_ITEMS_PER_PAGE = _G.INBOXITEMS_TO_DISPLAY or 7
-local ATTACHMENTS_MAX = _G.ATTACHMENTS_MAX or ATTACHMENTS_MAX_RECEIVE or 12
+local INBOX_NORMAL_TEXT = _G.GUILDCONTROL_OPTION16
+local INBOX_OPENING_TEXT = _G.OPEN_ALL_MAIL_BUTTON_OPENING
+local INBOX_DELETE_ICON_ID = 136813
 
--- Lightweight profiling hooks (disabled by default)
-local PROFILING_ENABLED = false
-local function profileStart()
-	if PROFILING_ENABLED then
-	end
-end
+-- ---------------------------------------------------------------------------
+local ITEM_INFO_CACHE_LIMIT = 256
+local itemInfoCache = {}
+local itemInfoCacheOrder = {}
 
-local function profileEnd(startTime, label)
-	if not PROFILING_ENABLED or not startTime then
-		return
-	end
-	if K and K.Print then
-		K.Print(string.format("[ImprovedMail] %s: %.2f ms", label or "block", elapsed))
-	else
-		print(string.format("[ImprovedMail] %s: %.2f ms", label or "block", elapsed))
-	end
-end
-
--- Small, bounded cache for GetItemInfo
-local ITEMINFO_CACHE_LIMIT = 256
-local itemInfoCache, itemInfoCacheOrder = {}, {}
-local function GetItemInfoCached(itemID)
+-- REASON: Implements a Least Recently Used (LRU) cache to minimize repeated GetItemInfo calls during mass mail processing.
+local function getItemInfoCached(itemID)
 	if not itemID then
 		return
 	end
+
 	local cacheEntry = itemInfoCache[itemID]
 	if cacheEntry then
-		-- Move to most-recently-used position (LRU)
-		for idx = 1, #itemInfoCacheOrder do
-			if itemInfoCacheOrder[idx] == itemID then
-				if idx ~= #itemInfoCacheOrder then
-					table.remove(itemInfoCacheOrder, idx)
+		for i = 1, #itemInfoCacheOrder do
+			if itemInfoCacheOrder[i] == itemID then
+				if i ~= #itemInfoCacheOrder then
+					table_remove(itemInfoCacheOrder, i)
 					itemInfoCacheOrder[#itemInfoCacheOrder + 1] = itemID
 				end
 				break
@@ -56,288 +67,291 @@ local function GetItemInfoCached(itemID)
 		end
 		return cacheEntry.name, cacheEntry.quality, cacheEntry.texture
 	end
-	local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID)
-	if itemName then
-		itemInfoCache[itemID] = { name = itemName, quality = itemQuality, texture = itemTexture }
+
+	local name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemID)
+	if name then
+		itemInfoCache[itemID] = { name = name, quality = quality, texture = texture }
 		itemInfoCacheOrder[#itemInfoCacheOrder + 1] = itemID
-		if #itemInfoCacheOrder > ITEMINFO_CACHE_LIMIT then
-			local oldItemID = table.remove(itemInfoCacheOrder, 1)
-			itemInfoCache[oldItemID] = nil
+		if #itemInfoCacheOrder > ITEM_INFO_CACHE_LIMIT then
+			local oldestItemID = table_remove(itemInfoCacheOrder, 1)
+			itemInfoCache[oldestItemID] = nil
 		end
 	end
-	return itemName, itemQuality, itemTexture
+	return name, quality, texture
 end
 
--- Event-driven cache invalidation for item info updates
+-- REASON: Invalidates cache entries when the server provides updated item data to ensure fresh information.
 do
-	local EventFrame = CreateFrame("Frame")
-	EventFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-	EventFrame:SetScript("OnEvent", function(_, _, itemID, success)
-		if not itemID then
+	local cacheEventFrame = CreateFrame("Frame")
+	cacheEventFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+	cacheEventFrame:SetScript("OnEvent", function(_, _, itemID)
+		if not itemID or not itemInfoCache[itemID] then
 			return
 		end
-		-- Drop from cache so next access refreshes the data
-		if itemInfoCache[itemID] then
-			itemInfoCache[itemID] = nil
-			for idx = 1, #itemInfoCacheOrder do
-				if itemInfoCacheOrder[idx] == itemID then
-					table.remove(itemInfoCacheOrder, idx)
-					break
-				end
+		itemInfoCache[itemID] = nil
+		for i = 1, #itemInfoCacheOrder do
+			if itemInfoCacheOrder[i] == itemID then
+				table_remove(itemInfoCacheOrder, i)
+				break
 			end
 		end
 	end)
 end
 
-local mailIndex = 0
-local BASE_THROTTLE = (C and C.Misc and C.Misc.MailThrottle) or 0.25 -- seconds
-local NEAR_FULL_THROTTLE = 1.0 -- seconds when nearly full
-local NEAR_FULL_FREE_SLOTS = 1 -- if KeepFreeSpace is set, bump earlier
-local totalCash = 0
-local inboxItems = {}
-local isGoldCollecting
+-- ---------------------------------------------------------------------------
+local currentMailIndex = 0
+local MAIL_BASE_THROTTLE = (C and C.Misc and C.Misc.MailThrottle) or 0.25
+local MAIL_FULL_THROTTLE = 1.0
+local MAIL_FULL_THRESHOLD = 1
+local totalInboxCash = 0
+local inboxItemMap = {}
+local isCollectingGold = false
 local attachmentBlacklist = {}
-local firstMailDaysLeft
-local lastInboxCount, lastInboxTotal
-local KEEP_FREE_SPACE = 0 -- configurable if needed; 0 disables
+local firstMailDayRemaining = 0
+local lastInboxCount, lastInboxTotalCount = 0, 0
 
-local function computeThrottle(isNearlyFull)
-	if isNearlyFull then
-		return NEAR_FULL_THROTTLE
-	end
-	return BASE_THROTTLE
+local function getMailThrottle(isNearlyFull)
+	return isNearlyFull and MAIL_FULL_THROTTLE or MAIL_BASE_THROTTLE
 end
 
-function Module:MailBox_DeleteClick()
-	local selectedID = self.id + (InboxFrame.pageNum - 1) * INBOX_ITEMS_PER_PAGE
-	if InboxItemCanDelete(selectedID) then
-		DeleteInboxItem(selectedID)
+local function onMailDeleteButtonClick(self)
+	local targetMailID = self.id + (_G.InboxFrame.pageNum - 1) * INBOX_ITEMS_PER_PAGE
+	if InboxItemCanDelete(targetMailID) then
+		DeleteInboxItem(targetMailID)
 	else
-		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_MAIL_DELETE_ITEM_ERROR)
+		_G.UIErrorsFrame:AddMessage(K.InfoColor .. ERR_MAIL_DELETE_ITEM_ERROR)
 	end
 end
 
-function Module:MailItem_AddDelete(i)
-	local bu = CreateFrame("Button", nil, self)
-	bu:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -6, 5)
-	bu:SetSize(16, 16)
+local function addDeleteButtonToMailItem(button, index)
+	local deleteButton = CreateFrame("Button", nil, button)
+	deleteButton:SetPoint("BOTTOMRIGHT", button:GetParent(), "BOTTOMRIGHT", -6, 5)
+	deleteButton:SetSize(16, 16)
 
-	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-	bu.Icon:SetTexture(136813)
-	bu.Icon:SetAllPoints(bu)
+	deleteButton.Icon = deleteButton:CreateTexture(nil, "ARTWORK")
+	deleteButton.Icon:SetTexture(INBOX_DELETE_ICON_ID)
+	deleteButton.Icon:SetAllPoints(deleteButton)
 
-	bu:EnableMouse(true)
-	bu.HL = bu:CreateTexture(nil, "HIGHLIGHT")
-	bu.HL:SetTexture(136813)
-	bu.HL:SetAllPoints(bu.Icon)
-	bu.HL:SetBlendMode("ADD")
+	deleteButton:EnableMouse(true)
+	deleteButton.Highlight = deleteButton:CreateTexture(nil, "HIGHLIGHT")
+	deleteButton.Highlight:SetTexture(INBOX_DELETE_ICON_ID)
+	deleteButton.Highlight:SetAllPoints(deleteButton.Icon)
+	deleteButton.Highlight:SetBlendMode("ADD")
 
-	bu.id = i
-	bu:SetScript("OnClick", Module.MailBox_DeleteClick)
-	K.AddTooltip(bu, "ANCHOR_RIGHT", DELETE, "system")
+	deleteButton.id = index
+	deleteButton:SetScript("OnClick", onMailDeleteButtonClick)
+	K.AddTooltip(deleteButton, "ANCHOR_RIGHT", _G.DELETE, "system")
 end
 
-function Module:InboxItem_OnEnter()
-	local t = profileStart()
-	if not self.index then -- may receive fake mails from Narcissus
+local function onInboxItemEnter(self)
+	if not self.index then
 		return
 	end
-	wipe(inboxItems)
+	table_wipe(inboxItemMap)
 
-	local itemAttached = select(8, GetInboxHeaderInfo(self.index))
-	if itemAttached then
-		for attachID = 1, ATTACHMENTS_MAX_RECEIVE do
-			local _, itemID, _, itemCount = GetInboxItem(self.index, attachID)
+	local _, _, _, _, _, _, _, hasAttachment = GetInboxHeaderInfo(self.index)
+	if hasAttachment then
+		for i = 1, ATTACHMENTS_MAX_RECEIVE do
+			local _, itemID, _, itemCount = GetInboxItem(self.index, i)
 			if itemCount and itemCount > 0 then
-				inboxItems[itemID] = (inboxItems[itemID] or 0) + itemCount
+				inboxItemMap[itemID] = (inboxItemMap[itemID] or 0) + itemCount
 			end
 		end
 
-		if itemAttached > 1 then
-			GameTooltip:AddLine("Attach List")
-			for itemID, count in pairs(inboxItems) do
-				local itemName, itemQuality, itemTexture = GetItemInfoCached(itemID)
-				if itemName then
-					local r, g, b = GetItemQualityColor(itemQuality)
-					GameTooltip:AddDoubleLine(" |T" .. itemTexture .. ":12:12:0:0:50:50:4:46:4:46|t " .. itemName, count, r, g, b)
+		if hasAttachment > 1 then
+			_G.GameTooltip:AddLine("Attachment List")
+			for itemID, count in pairs(inboxItemMap) do
+				local name, quality, texture = getItemInfoCached(itemID)
+				if name then
+					local r, g, b = GetItemQualityColor(quality)
+					_G.GameTooltip:AddDoubleLine(string_format(" |T%s:12:12:0:0:50:50:4:46:4:46|t %s", texture, name), count, r, g, b)
 				end
 			end
-			GameTooltip:Show()
+			_G.GameTooltip:Show()
 		end
 	end
-	profileEnd(t, "InboxItem_OnEnter")
 end
 
-function Module:MailBox_CollectGold()
-	if mailIndex > 0 then
+function Module:collectMailGold()
+	if not _G.MailFrame or not _G.MailFrame:IsShown() then
+		isCollectingGold = false
+		Module:UpdateOpeningText()
+		return
+	end
+
+	if currentMailIndex > 0 then
 		if not C_Mail_IsCommandPending() then
-			if C_Mail_HasInboxMoney(mailIndex) then
-				TakeInboxMoney(mailIndex)
+			if C_Mail_HasInboxMoney(currentMailIndex) then
+				TakeInboxMoney(currentMailIndex)
 			end
-			mailIndex = mailIndex - 1
+			currentMailIndex = currentMailIndex - 1
 		end
-		K.Delay(computeThrottle(false), Module.MailBox_CollectGold)
+		K.Delay(getMailThrottle(false), Module.collectMailGold)
 	else
-		isGoldCollecting = false
+		isCollectingGold = false
 		Module:UpdateOpeningText()
 	end
 end
 
-function Module:MailBox_CollectAllGold()
-	if isGoldCollecting then
+function Module:collectAllMailGold()
+	if isCollectingGold then
 		return
 	end
 
-	if totalCash == 0 then
+	if totalInboxCash == 0 then
 		return
 	end
 
-	isGoldCollecting = true
-	local current, total = GetInboxNumItems()
-	mailIndex = current
-	firstMailDaysLeft = select(7, GetInboxHeaderInfo(1)) or 0
-	lastInboxCount, lastInboxTotal = current, total
+	isCollectingGold = true
+	local items, total = GetInboxNumItems()
+	currentMailIndex = items
+	firstMailDayRemaining = select(7, GetInboxHeaderInfo(1)) or 0
+	lastInboxCount, lastInboxTotalCount = items, total
 	Module:UpdateOpeningText(true)
-	Module:MailBox_CollectGold()
+	Module:collectMailGold()
 end
 
-function Module:TotalCash_OnEnter()
-	totalCash = 0
+local function onTotalCashEnter(self)
+	totalInboxCash = 0
 	local numItems = GetInboxNumItems()
 	if numItems == 0 then
 		return
 	end
 
 	for i = 1, numItems do
-		totalCash = totalCash + select(5, GetInboxHeaderInfo(i))
+		totalInboxCash = totalInboxCash + select(5, GetInboxHeaderInfo(i))
 	end
 
-	if totalCash > 0 then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:AddLine(L["Total Gold"])
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(K.FormatMoney(totalCash, true), 1, 1, 1)
-		GameTooltip:Show()
+	if totalInboxCash > 0 then
+		_G.GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		_G.GameTooltip:AddLine(L["Total Gold"])
+		_G.GameTooltip:AddLine(" ")
+		_G.GameTooltip:AddLine(K.FormatMoney(totalInboxCash, true), 1, 1, 1)
+		_G.GameTooltip:Show()
 	end
 end
 
-function Module:TotalCash_OnLeave()
-	K:HideTooltip()
-	totalCash = 0
+local function onTotalCashLeave()
+	_G.K.HideTooltip()
+	totalInboxCash = 0
 end
 
-function Module:UpdateOpeningText(opening)
-	if opening then
-		Module.GoldButton:SetText(OPENING_STRING)
+function Module:UpdateOpeningText(isOpening)
+	if not Module.GoldButton then return end
+	if isOpening then
+		Module.GoldButton:SetText(INBOX_OPENING_TEXT)
 	else
-		Module.GoldButton:SetText(NORMAL_STRING)
+		Module.GoldButton:SetText(INBOX_NORMAL_TEXT)
 	end
 end
 
-function Module:MailBox_CreateButton(parent, width, height, text, anchor)
-	local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-	button:SetSize(width, height)
-	button:SetPoint(unpack(anchor))
-	button:SetText(text)
+function Module:createMailControlButton(parentFrame, frameWidth, frameHeight, buttonText, frameAnchor)
+	local controlButton = CreateFrame("Button", nil, parentFrame, "UIPanelButtonTemplate")
+	controlButton:SetSize(frameWidth, frameHeight)
+	controlButton:SetPoint(Unpack(frameAnchor))
+	controlButton:SetText(buttonText)
 
-	return button
+	return controlButton
 end
 
-function Module:CollectGoldButton()
-	OpenAllMail:ClearAllPoints()
-	OpenAllMail:SetPoint("TOPLEFT", InboxFrame, "TOPLEFT", 70, -28)
+function Module:createCollectGoldButton()
+	local openAllMailButton = _G.OpenAllMail
+	local inboxFrame = _G.InboxFrame
 
-	local button = Module:MailBox_CreateButton(InboxFrame, 120, 24, "", { "LEFT", OpenAllMail, "RIGHT", 3, 0 })
-	button:SetScript("OnClick", Module.MailBox_CollectAllGold)
-	button:HookScript("OnEnter", Module.TotalCash_OnEnter)
-	button:HookScript("OnLeave", Module.TotalCash_OnLeave)
+	openAllMailButton:ClearAllPoints()
+	openAllMailButton:SetPoint("TOPLEFT", inboxFrame, "TOPLEFT", 70, -28)
 
-	Module.GoldButton = button
-	Module:UpdateOpeningText()
+	local collectGoldButton = Module:createMailControlButton(inboxFrame, 120, 24, "", { "LEFT", openAllMailButton, "RIGHT", 3, 0 })
+	collectGoldButton:SetScript("OnClick", Module.collectAllMailGold)
+	collectGoldButton:HookScript("OnEnter", onTotalCashEnter)
+	collectGoldButton:HookScript("OnLeave", onTotalCashLeave)
+
+	Module.GoldButton = collectGoldButton
+	Module:UpdateOpeningText(false)
 end
 
-function Module:MailBox_CollectAttachment()
-	local attachments = OpenMailFrame.OpenMailAttachments
-	local openMailID = InboxFrame.openMailID
-	if not openMailID or not attachments then
+-- REASON: Recursively collects attachments from the currently open mail, with logic to stop if inventory space is low.
+function Module:collectMailAttachments()
+	if not _G.MailFrame or not _G.MailFrame:IsShown() then
 		return
 	end
 
-	-- start attachment collection
+	local openMailFrame = _G.OpenMailFrame
+	local attachmentFrames = openMailFrame.OpenMailAttachments
+	local currentMailID = _G.InboxFrame.openMailID
+	if not currentMailID or not attachmentFrames then
+		return
+	end
 
-	-- KeepFreeSpace: stop if we have too few regular slots; track near-full
-	local nearlyFull = false
-	if KEEP_FREE_SPACE and KEEP_FREE_SPACE > 0 then
-		local free = 0
-		for bag = 0, NUM_BAG_SLOTS do
-			local bagFree, bagFam = C_Container.GetContainerNumFreeSlots(bag)
-			if bagFam == 0 then
-				free = free + (bagFree or 0)
-			end
-		end
-		nearlyFull = free <= (KEEP_FREE_SPACE + NEAR_FULL_FREE_SLOTS)
-		if free <= KEEP_FREE_SPACE then
-			-- stop collecting due to insufficient space
-			return
+	local isInventoryNearlyFull = false
+	local freeSlotsCount = 0
+	-- REASON: Check for standard inventory slots (excluding specialty bags)
+	for bagIndex = 0, _G.NUM_BAG_SLOTS do
+		local free, family = _G.C_Container.GetContainerNumFreeSlots(bagIndex)
+		if family == 0 then
+			freeSlotsCount = freeSlotsCount + (free or 0)
 		end
 	end
+
+	isInventoryNearlyFull = freeSlotsCount <= (MAIL_FULL_THRESHOLD + 1)
+	if freeSlotsCount <= 0 then
+		return
+	end
+
 	for i = 1, ATTACHMENTS_MAX_RECEIVE do
-		local attachmentButton = attachments[i]
-		if attachmentButton:IsShown() and not (attachmentBlacklist[openMailID] and attachmentBlacklist[openMailID][i]) then
-			TakeInboxItem(openMailID, i)
-			K.Delay(computeThrottle(nearlyFull), Module.MailBox_CollectAttachment)
+		local attachmentButton = attachmentFrames[i]
+		if attachmentButton:IsShown() and not (attachmentBlacklist[currentMailID] and attachmentBlacklist[currentMailID][i]) then
+			TakeInboxItem(currentMailID, i)
+			K.Delay(getMailThrottle(isInventoryNearlyFull), Module.collectMailAttachments)
 			return
 		end
 	end
-
-	-- Done with collection for this mail
 end
 
-function Module:MailBox_CollectCurrent()
-	if OpenMailFrame.cod then
-		UIErrorsFrame:AddMessage(K.InfoColor .. L["Mail Is COD"])
+function Module:collectCurrentMailAttachments()
+	local openMailFrame = _G.OpenMailFrame
+	if openMailFrame.cod then
+		_G.UIErrorsFrame:AddMessage(K.InfoColor .. L["Mail Is COD"])
 		return
 	end
 
-	local currentID = InboxFrame.openMailID
-	if C_Mail_HasInboxMoney(currentID) then
-		TakeInboxMoney(currentID)
+	local currentMailID = _G.InboxFrame.openMailID
+	if C_Mail_HasInboxMoney(currentMailID) then
+		TakeInboxMoney(currentMailID)
 	end
-	-- Reset blacklist for this mail before starting a new collection
-	attachmentBlacklist[currentID] = nil
-	Module:MailBox_CollectAttachment()
+
+	attachmentBlacklist[currentMailID] = nil
+	Module:collectMailAttachments()
 end
 
-function Module:CollectCurrentButton()
-	local button = Module:MailBox_CreateButton(OpenMailFrame, 82, 22, L["Take All"], { "RIGHT", "OpenMailReplyButton", "LEFT", -1, 0 })
-	button:SetScript("OnClick", Module.MailBox_CollectCurrent)
+function Module:createCollectCurrentButton()
+	local collectAllButton = Module:createMailControlButton(_G.OpenMailFrame, 82, 22, L["Take All"], { "RIGHT", "OpenMailReplyButton", "LEFT", -1, 0 })
+	collectAllButton:SetScript("OnClick", Module.collectCurrentMailAttachments)
 end
 
--- UI error handling: stop/skip on inventory full or item missing
+-- REASON: Monitors for inventory errors during mass collection to blacklist stuck items or stop the process.
 do
-	local ERR_INV_FULL, ERR_ITEM_NOT_FOUND = _G.ERR_INV_FULL, _G.ERR_ITEM_NOT_FOUND
-	local EventFrame = CreateFrame("Frame")
-	EventFrame:RegisterEvent("UI_ERROR_MESSAGE")
-	EventFrame:SetScript("OnEvent", function(_, _, _, message)
-		if not message then
+	local ERR_INV_FULL = _G.ERR_INV_FULL
+	local ERR_ITEM_NOT_FOUND = _G.ERR_ITEM_NOT_FOUND
+	local mailErrorFrame = CreateFrame("Frame")
+	mailErrorFrame:RegisterEvent("UI_ERROR_MESSAGE")
+	mailErrorFrame:SetScript("OnEvent", function(_, _, _, errorMessage)
+		if not errorMessage then
 			return
 		end
 
-		-- Inventory full: stop collecting attachments immediately
-		if message == ERR_INV_FULL then
+		if errorMessage == ERR_INV_FULL then
 			return
 		end
 
-		-- Item not found: blacklist the current attachment index for this mail and continue
-		if message == ERR_ITEM_NOT_FOUND then
-			local openMailID = InboxFrame and InboxFrame.openMailID
+		if errorMessage == ERR_ITEM_NOT_FOUND then
+			local openMailID = _G.InboxFrame and _G.InboxFrame.openMailID
 			if openMailID then
 				attachmentBlacklist[openMailID] = attachmentBlacklist[openMailID] or {}
-				-- Heuristic: find first visible attachment and skip it next pass
-				local attachments = OpenMailFrame and OpenMailFrame.OpenMailAttachments
-				if attachments then
+				local attachmentFrames = _G.OpenMailFrame and _G.OpenMailFrame.OpenMailAttachments
+				if attachmentFrames then
 					for i = 1, ATTACHMENTS_MAX_RECEIVE do
-						local attachmentButton = attachments[i]
+						local attachmentButton = attachmentFrames[i]
 						if attachmentButton and attachmentButton:IsShown() then
 							attachmentBlacklist[openMailID][i] = true
 							break
@@ -349,28 +363,28 @@ do
 	end)
 end
 
-function Module:ArrangeDefaultElements()
-	InboxTooMuchMail:ClearAllPoints()
-	InboxTooMuchMail:SetPoint("BOTTOM", MailFrame, "TOP", 0, 5)
+function Module:arrangeDefaultMailElements()
+	_G.InboxTooMuchMail:ClearAllPoints()
+	_G.InboxTooMuchMail:SetPoint("BOTTOM", _G.MailFrame, "TOP", 0, 5)
 
-	SendMailNameEditBox:SetWidth(155)
-	SendMailNameEditBoxMiddle:SetWidth(146)
-	SendMailCostMoneyFrame:SetAlpha(0)
+	_G.SendMailNameEditBox:SetWidth(155)
+	_G.SendMailNameEditBoxMiddle:SetWidth(146)
+	_G.SendMailCostMoneyFrame:SetAlpha(0)
 
-	SendMailMailButton:HookScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_TOP")
-		GameTooltip:ClearLines()
-		local sendPrice = GetSendMailPrice()
-		local colorStr = "|cffffffff"
-		if sendPrice > GetMoney() then
-			colorStr = "|cffff0000"
+	_G.SendMailMailButton:HookScript("OnEnter", function(self)
+		_G.GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		_G.GameTooltip:ClearLines()
+		local sendMailCost = GetSendMailPrice()
+		local costColorString = "|cffffffff"
+		if sendMailCost > GetMoney() then
+			costColorString = "|cffff0000"
 		end
 
-		GameTooltip:AddLine(SEND_MAIL_COST .. colorStr .. K.FormatMoney(sendPrice, true))
-		GameTooltip:Show()
+		_G.GameTooltip:AddLine(_G.SEND_MAIL_COST .. costColorString .. K.FormatMoney(sendMailCost, true))
+		_G.GameTooltip:Show()
 	end)
 
-	SendMailMailButton:HookScript("OnLeave", K.HideTooltip)
+	_G.SendMailMailButton:HookScript("OnLeave", K.HideTooltip)
 end
 
 function Module:CreateImprovedMail()
@@ -378,53 +392,51 @@ function Module:CreateImprovedMail()
 		return
 	end
 
-	if C_AddOns.IsAddOnLoaded("Postal") then
+	if _G.C_AddOns.IsAddOnLoaded("Postal") then
 		return
 	end
 
-	-- Delete buttons
 	for i = 1, INBOX_ITEMS_PER_PAGE do
-		local itemButton = _G["MailItem" .. i .. "Button"]
-		Module.MailItem_AddDelete(itemButton, i)
+		local mailItemButton = _G["MailItem" .. i .. "Button"]
+		addDeleteButtonToMailItem(mailItemButton, i)
 	end
 
-	-- Tooltips for multi-items
-	hooksecurefunc("InboxFrameItem_OnEnter", Module.InboxItem_OnEnter)
+	HookSecureFunc("InboxFrameItem_OnEnter", onInboxItemEnter)
 
-	-- Elements
-	Module:ArrangeDefaultElements()
-	Module:CollectGoldButton()
-	Module:CollectCurrentButton()
+	Module:arrangeDefaultMailElements()
+	Module:createCollectGoldButton()
+	Module:createCollectCurrentButton()
 
-	-- Restart-on-refresh guard (gold collection scenario)
-	local EventFrame = CreateFrame("Frame")
-	EventFrame:RegisterEvent("MAIL_INBOX_UPDATE")
-	EventFrame:SetScript("OnEvent", function()
-		if not isGoldCollecting then
+	-- REASON: Monitors the inbox for updates during mass gold collection to reset indices if the mailbox content changes.
+	local mailUpdateFrame = CreateFrame("Frame")
+	mailUpdateFrame:RegisterEvent("MAIL_INBOX_UPDATE")
+	mailUpdateFrame:SetScript("OnEvent", function()
+		if not isCollectingGold then
 			return
 		end
-		local currentFirstMailDaysLeft = select(7, GetInboxHeaderInfo(1)) or 0
-		local current, total = GetInboxNumItems()
-		if (currentFirstMailDaysLeft ~= 0 and currentFirstMailDaysLeft ~= firstMailDaysLeft) or (current ~= lastInboxCount or total ~= lastInboxTotal) then
-			firstMailDaysLeft = currentFirstMailDaysLeft
-			lastInboxCount, lastInboxTotal = current, total
-			mailIndex = current
+		local currentFirstMailDayRemaining = select(7, GetInboxHeaderInfo(1)) or 0
+		local currentCount, totalCount = GetInboxNumItems()
+		if (currentFirstMailDayRemaining ~= 0 and currentFirstMailDayRemaining ~= firstMailDayRemaining) or (currentCount ~= lastInboxCount or totalCount ~= lastInboxTotalCount) then
+			firstMailDayRemaining = currentFirstMailDayRemaining
+			lastInboxCount, lastInboxTotalCount = currentCount, totalCount
+			currentMailIndex = currentCount
 		end
 	end)
 end
 
 Module:RegisterMisc("ImprovedMail", Module.CreateImprovedMail)
 
--- Temp fix for GM mails
-function OpenAllMail:AdvanceToNextItem()
+-- REASON: Overrides standard OpenAllMail logic to handle GM mails and blacklisted items during mass processing.
+function _G.OpenAllMail:AdvanceToNextItem()
 	local foundAttachment = false
 	while not foundAttachment do
-		local _, _, _, _, _, CODAmount, _, _, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex)
-		local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex))
-		local hasBlacklistedItem = self:IsItemBlacklisted(itemID)
-		local hasCOD = CODAmount and CODAmount > 0
-		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex)
-		if not hasBlacklistedItem and not isGM and not hasCOD and hasMoneyOrItem then
+		local _, _, _, _, _, codAmount, _, _, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex)
+		local _, itemID = GetInboxItem(self.mailIndex, self.attachmentIndex)
+		local isBlacklisted = self:IsItemBlacklisted(itemID)
+		local hasCOD = codAmount and codAmount > 0
+		local hasMoneyOrItem = _G.C_Mail.HasInboxMoney(self.mailIndex) or _G.HasInboxItem(self.mailIndex, self.attachmentIndex)
+
+		if not isBlacklisted and not isGM and not hasCOD and hasMoneyOrItem then
 			foundAttachment = true
 		else
 			self.attachmentIndex = self.attachmentIndex - 1
@@ -436,7 +448,7 @@ function OpenAllMail:AdvanceToNextItem()
 
 	if not foundAttachment then
 		self.mailIndex = self.mailIndex + 1
-		self.attachmentIndex = ATTACHMENTS_MAX
+		self.attachmentIndex = _G.ATTACHMENTS_MAX or ATTACHMENTS_MAX_RECEIVE or 12
 		if self.mailIndex > GetInboxNumItems() then
 			return false
 		end

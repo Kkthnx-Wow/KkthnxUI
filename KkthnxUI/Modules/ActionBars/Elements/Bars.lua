@@ -1,9 +1,20 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Core Action Bar management and layout engine.
+-- - Design: Leverages LibActionButton and SecureStateDrivers for robust paging and visibility.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("ActionBar")
 
--- Cache global references
-local _G = _G
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
 
+-- PERF: Cache globals and math functions for frequent layout updates.
+local _G = _G
 local UIParent = UIParent
 local GetVehicleBarIndex = GetVehicleBarIndex
 local UnitExists = UnitExists
@@ -16,9 +27,14 @@ local min = math.min
 local select = select
 local GetCVarBool = GetCVarBool
 
--- Layout constants
+-- NOTE: Global layout constants for padding and spacing between buttons.
 local margin, padding = 6, 0
 
+-- ---------------------------------------------------------------------------
+-- BAR SIZING & LAYOUT
+-- ---------------------------------------------------------------------------
+
+-- REASON: Bulk update function to refresh all bar dimensions, usually called after configuration changes.
 function Module:UpdateAllSize()
 	if not C["ActionBar"].Enable then
 		return
@@ -37,6 +53,7 @@ function Module:UpdateAllSize()
 	Module:UpdateVehicleButton()
 end
 
+-- NOTE: Standardizes font settings across all button text elements.
 function Module:UpdateFontSize(button, fontSize)
 	button.Name:SetFontObject(K.UIFontOutline)
 	button.Name:SetFont(select(1, button.Name:GetFont()), fontSize, select(3, button.Name:GetFont()))
@@ -48,6 +65,8 @@ function Module:UpdateFontSize(button, fontSize)
 	button.HotKey:SetFont(select(1, button.HotKey:GetFont()), fontSize, select(3, button.HotKey:GetFont()))
 end
 
+-- REASON: Recalculates button positions and frame bounds based on rows and columns.
+-- Handles special split-logic for BarPet and Bar1.
 function Module:UpdateActionSize(name)
 	local frame = _G["KKUI_Action" .. name]
 	if not frame then
@@ -58,10 +77,12 @@ function Module:UpdateActionSize(name)
 	local fontSize = C["ActionBar"][name .. "Font"]
 	local num = C["ActionBar"][name .. "Num"]
 	local perRow = C["ActionBar"][name .. "PerRow"]
+
 	if name == "BarPet" then
 		num = 10
 	end
 
+	-- NOTE: Handle special composite layout where buttons are split into multiple frames.
 	if num == 0 then
 		local column = 3
 		local rows = 2
@@ -92,6 +113,7 @@ function Module:UpdateActionSize(name)
 			Module:UpdateFontSize(button, fontSize)
 		end
 	else
+		-- NOTE: Standard grid layout calculations for uniform rows/columns.
 		for i = 1, num do
 			local button = frame.buttons[i]
 			button:SetSize(size, size)
@@ -129,24 +151,21 @@ function Module:UpdateActionSize(name)
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- BAR CONFIGURATION
+-- ---------------------------------------------------------------------------
+
 local directions = { "UP", "DOWN", "LEFT", "RIGHT" }
+
+-- REASON: Synchronizes internal LibActionButton settings with the user's GUI preferences.
 function Module:UpdateButtonConfig(i)
 	if not self.buttonConfig then
 		self.buttonConfig = {
 			hideElements = {},
 			text = {
-				hotkey = {
-					font = {},
-					position = {},
-				},
-				count = {
-					font = {},
-					position = {},
-				},
-				macro = {
-					font = {},
-					position = {},
-				},
+				hotkey = { font = {}, position = {} },
+				count = { font = {}, position = {} },
+				macro = { font = {}, position = {} },
 			},
 		}
 	end
@@ -154,7 +173,7 @@ function Module:UpdateButtonConfig(i)
 	self.buttonConfig.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
 	self.buttonConfig.showGrid = C["ActionBar"].Grid
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
-	self.buttonConfig.actionButtonUI = true -- rotation highlight
+	self.buttonConfig.actionButtonUI = true
 
 	local hotkey = self.buttonConfig.text.hotkey
 	hotkey.font.font = K.UIFontOutline
@@ -205,6 +224,8 @@ function Module:UpdateButtonConfig(i)
 	end
 end
 
+-- NOTE: Defines the state-switching logic for the main bar (Bar 1) to handle
+-- vehicles, stances, and overriding bars.
 local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
@@ -235,8 +256,14 @@ function Module:UpdateBarConfig()
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- BINDING MANAGEMENT
+-- ---------------------------------------------------------------------------
+
+-- REASON: Forces the secure override system to recognize keybinds assigned to custom bars.
 function Module:ReassignBindings()
-	if InCombatLockdown() or Module.isHousing then
+	-- WARNING: Secure binding overrides CANNOT be changed in combat.
+	if InCombatLockdown() then
 		return
 	end
 
@@ -269,15 +296,11 @@ function Module:ClearBindings()
 	end
 end
 
-function Module:UpdateHousingState(state)
-	Module.isHousing = (state ~= 0)
-	if Module.isHousing then
-		Module:ClearBindings()
-	else
-		Module:ReassignBindings()
-	end
-end
+-- ---------------------------------------------------------------------------
+-- BAR CREATION
+-- ---------------------------------------------------------------------------
 
+-- REASON: Core initialization of all action bar frames and their associated LibActionButton elements.
 function Module:CreateBars()
 	Module.headers = {}
 	for index = 1, 8 do
@@ -286,22 +309,10 @@ function Module:CreateBars()
 
 	local BAR_DATA = {
 		[1] = { page = 1, bindName = "ACTIONBUTTON", anchor = { "BOTTOM", UIParent, "BOTTOM", 0, 4 } },
-		[2] = {
-			page = 6,
-			bindName = "MULTIACTIONBAR1BUTTON",
-			anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin },
-		},
-		[3] = {
-			page = 5,
-			bindName = "MULTIACTIONBAR2BUTTON",
-			anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin },
-		},
+		[2] = { page = 6, bindName = "MULTIACTIONBAR1BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin } },
+		[3] = { page = 5, bindName = "MULTIACTIONBAR2BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin } },
 		[4] = { page = 3, bindName = "MULTIACTIONBAR3BUTTON", anchor = { "RIGHT", UIParent, "RIGHT", -4, 0 } },
-		[5] = {
-			page = 4,
-			bindName = "MULTIACTIONBAR4BUTTON",
-			anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 },
-		},
+		[5] = { page = 4, bindName = "MULTIACTIONBAR4BUTTON", anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 } },
 		[6] = { page = 13, bindName = "MULTIACTIONBAR5BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 0 } },
 		[7] = { page = 14, bindName = "MULTIACTIONBAR6BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 40 } },
 		[8] = { page = 15, bindName = "MULTIACTIONBAR7BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 80 } },
@@ -317,11 +328,14 @@ function Module:CreateBars()
 		frame.buttons = {}
 
 		for i = 1, 12 do
+			-- NOTE: Initialize LibActionButton instance for each slot.
 			local button = K.LibActionButton:CreateButton(i, "$parentButton" .. i, frame)
 			button:SetState(0, "action", i)
 			for k = 1, 18 do
 				button:SetState(k, "action", (k - 1) * 12 + i)
 			end
+
+			-- NOTE: Explicit vehicle/pet exit button for accessibility.
 			if i == 12 then
 				button:SetState(GetVehicleBarIndex(), "custom", {
 					func = function()
@@ -331,7 +345,7 @@ function Module:CreateBars()
 							PetDismiss()
 						end
 					end,
-					texture = 136190, -- Spell_Shadow_SacrificialShield
+					texture = 136190,
 					tooltip = LEAVE_VEHICLE,
 				})
 			end
@@ -342,6 +356,7 @@ function Module:CreateBars()
 			tinsert(Module.buttons, button)
 		end
 
+		-- REASON: Bars 2-8 are hidden during special bar states (Vehicles, Override) to avoid clutter.
 		frame.visibility = index == 1 and "[petbattle] hide; show" or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 
 		frame:SetAttribute(
@@ -368,6 +383,7 @@ function Module:CreateBars()
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED", delayUpdate)
 	end
 
+	-- NOTE: Handle real-time CVar changes for bar locking.
 	K:RegisterEvent("CVAR_UPDATE", function(_, var)
 		if var == "lockActionBars" then
 			if InCombatLockdown() then
@@ -379,10 +395,15 @@ function Module:CreateBars()
 	end)
 end
 
+-- ---------------------------------------------------------------------------
+-- INITIALIZATION
+-- ---------------------------------------------------------------------------
+
 function Module:OnEnable()
 	Module.buttons = {}
 	Module:CreateMicroMenu()
 
+	-- COMPAT: Support ConsolePort without conflicts.
 	if C_AddOns.IsAddOnLoaded("ConsolePort") then
 		return
 	end
@@ -403,7 +424,6 @@ function Module:OnEnable()
 		"UpdateBarVisibility",
 		"UpdateAllSize",
 		"HideBlizz",
-		"CreateBarFadeGlobal",
 	}
 
 	for _, funcName in ipairs(loadActionBarModules) do
@@ -416,6 +436,7 @@ function Module:OnEnable()
 		end
 	end
 
+	-- NOTE: Sync bindings based on current battle state.
 	if C_PetBattles.IsInBattle() then
 		Module:ClearBindings()
 	else
@@ -424,7 +445,6 @@ function Module:OnEnable()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_CLOSE", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_OPENING_DONE", Module.ClearBindings)
-	K:RegisterEvent("HOUSE_EDITOR_MODE_CHANGED", Module.UpdateHousingState)
 
 	if AdiButtonAuras then
 		AdiButtonAuras:RegisterLAB("LibActionButton-1.0")

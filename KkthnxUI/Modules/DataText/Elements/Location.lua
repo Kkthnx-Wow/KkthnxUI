@@ -1,111 +1,123 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays the current zone and sub-zone names above the minimap.
+-- - Design: Hooks minimap events and registers for zone transitions to update text and color.
+-- - Events: PLAYER_ENTERING_WORLD, ZONE_CHANGED, ZONE_CHANGED_INDOORS, ZONE_CHANGED_NEW_AREA
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("DataText")
 
-local select = select
+-- PERF: Localize globals and API functions to reduce lookup overhead.
+local _G = _G
+local C_PvP_GetZonePVPInfo = _G.C_PvP.GetZonePVPInfo
+local CreateFrame = _G.CreateFrame
+local GetSubZoneText = _G.GetSubZoneText
+local GetZoneText = _G.GetZoneText
+local Minimap = _G.Minimap
+local UIParent = _G.UIParent
+local pairs = pairs
 local string_format = string.format
 local unpack = unpack
 
-local COMBAT_ZONE = COMBAT_ZONE
-local CONTESTED_TERRITORY = CONTESTED_TERRITORY
-local FACTION_CONTROLLED_TERRITORY = FACTION_CONTROLLED_TERRITORY
-local FACTION_STANDING_LABEL4 = FACTION_STANDING_LABEL4
-local FREE_FOR_ALL_TERRITORY = FREE_FOR_ALL_TERRITORY
-local GetSubZoneText = GetSubZoneText
-local GetZoneText = GetZoneText
-local SANCTUARY_TERRITORY = SANCTUARY_TERRITORY
-
-local LocationDataText
+-- ---------------------------------------------------------------------------
+-- State & Constants
+-- ---------------------------------------------------------------------------
+local locationDataText
 local pvpType
-local subZone
-local zone
+local subZoneName
+local zoneName
 
-local zoneInfo = {
-	arena = { FREE_FOR_ALL_TERRITORY, { 0.84, 0.03, 0.03 } },
-	combat = { COMBAT_ZONE, { 0.84, 0.03, 0.03 } },
-	contested = { CONTESTED_TERRITORY, { 0.9, 0.85, 0.05 } },
-	friendly = { FACTION_CONTROLLED_TERRITORY, { 0.05, 0.85, 0.03 } },
-	hostile = { FACTION_CONTROLLED_TERRITORY, { 0.84, 0.03, 0.03 } },
-	neutral = { string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), { 0.9, 0.85, 0.05 } },
-	sanctuary = { SANCTUARY_TERRITORY, { 0.035, 0.58, 0.84 } },
+local ZONE_INFO = {
+	arena = { _G.FREE_FOR_ALL_TERRITORY, { 0.84, 0.03, 0.03 } },
+	combat = { _G.COMBAT_ZONE, { 0.84, 0.03, 0.03 } },
+	contested = { _G.CONTESTED_TERRITORY, { 0.9, 0.85, 0.05 } },
+	friendly = { _G.FACTION_CONTROLLED_TERRITORY, { 0.05, 0.85, 0.03 } },
+	hostile = { _G.FACTION_CONTROLLED_TERRITORY, { 0.84, 0.03, 0.03 } },
+	neutral = { string_format(_G.FACTION_CONTROLLED_TERRITORY, _G.FACTION_STANDING_LABEL4), { 0.9, 0.85, 0.05 } },
+	sanctuary = { _G.SANCTUARY_TERRITORY, { 0.035, 0.58, 0.84 } },
 }
 
-local eventList = {
+local EVENT_LIST = {
 	"PLAYER_ENTERING_WORLD",
 	"ZONE_CHANGED",
 	"ZONE_CHANGED_INDOORS",
 	"ZONE_CHANGED_NEW_AREA",
 }
 
-local function OnEvent()
+-- ---------------------------------------------------------------------------
+-- Internal Logic
+-- ---------------------------------------------------------------------------
+local function onEvent()
+	-- REASON: Updates the zone labels based on the player's current coordinate and faction territory status.
 	if C["Minimap"].LocationText == 2 or not C["Minimap"].Enable then
 		return
 	end
 
-	zone = GetZoneText()
-	subZone = GetSubZoneText()
-	pvpType = C_PvP.GetZonePVPInfo()
+	zoneName = GetZoneText()
+	subZoneName = GetSubZoneText()
+	pvpType = C_PvP_GetZonePVPInfo()
 	pvpType = pvpType or "neutral"
 
-	local r, g, b = unpack(zoneInfo[pvpType][2])
-	LocationDataText.MainZoneText:SetText(zone)
-	LocationDataText.MainZoneText:SetTextColor(r, g, b)
-	LocationDataText.SubZoneText:SetText(subZone)
-	LocationDataText.SubZoneText:SetTextColor(r, g, b)
+	local color = ZONE_INFO[pvpType] and ZONE_INFO[pvpType][2] or { 1, 1, 1 }
+	local r, g, b = unpack(color)
+
+	locationDataText.MainZoneText:SetText(zoneName)
+	locationDataText.MainZoneText:SetTextColor(r, g, b)
+	locationDataText.SubZoneText:SetText(subZoneName)
+	locationDataText.SubZoneText:SetTextColor(r, g, b)
 end
 
+-- ---------------------------------------------------------------------------
+-- Initialization
+-- ---------------------------------------------------------------------------
 function Module:CreateLocationDataText()
-	if not C["DataText"].Location then
+	-- REASON: Main entry point for the location text; manages frames above the Minimap.
+	if not C["DataText"].Location or not Minimap then
 		return
 	end
 
-	if not Minimap then
-		return
-	end
-
+	-- REASON: Hover logic to show/hide location text if the user has chosen the "Show on Mouseover" setting.
 	Minimap:HookScript("OnEnter", function()
-		if C["Minimap"].LocationText ~= 3 or not C["Minimap"].Enable then
-			return
+		if C["Minimap"].LocationText == 3 and C["Minimap"].Enable then
+			locationDataText:Show()
 		end
-
-		LocationDataText:Show()
 	end)
 
 	Minimap:HookScript("OnLeave", function()
-		if C["Minimap"].LocationText ~= 3 or not C["Minimap"].Enable then
-			return
+		if C["Minimap"].LocationText == 3 and C["Minimap"].Enable then
+			locationDataText:Hide()
 		end
-
-		LocationDataText:Hide()
 	end)
 
-	LocationDataText = CreateFrame("Frame", nil, UIParent)
-	LocationDataText:SetPoint("TOP", Minimap, "TOP", 0, -4)
-	LocationDataText:SetSize(Minimap:GetWidth(), 13)
-	LocationDataText:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+	locationDataText = CreateFrame("Frame", nil, UIParent)
+	locationDataText:SetPoint("TOP", Minimap, "TOP", 0, -4)
+	locationDataText:SetSize(Minimap:GetWidth(), 13)
+	locationDataText:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+
+	-- REASON: Initial visibility state based on whether persistent display is enabled.
 	if C["Minimap"].LocationText ~= 1 or not C["Minimap"].Enable then
-		LocationDataText:Hide()
+		locationDataText:Hide()
 	end
 
-	LocationDataText.MainZoneText = K.CreateFontString(LocationDataText, 12)
-	LocationDataText.MainZoneText:SetAllPoints(LocationDataText)
-	LocationDataText.MainZoneText:SetWordWrap(true)
-	LocationDataText.MainZoneText:SetNonSpaceWrap(true)
-	LocationDataText.MainZoneText:SetMaxLines(2)
+	locationDataText.MainZoneText = K.CreateFontString(locationDataText, 12)
+	locationDataText.MainZoneText:SetAllPoints(locationDataText)
+	locationDataText.MainZoneText:SetWordWrap(true)
+	locationDataText.MainZoneText:SetNonSpaceWrap(true)
+	locationDataText.MainZoneText:SetMaxLines(2)
 
-	LocationDataText.SubZoneText = K.CreateFontString(LocationDataText, 11)
-	LocationDataText.SubZoneText:ClearAllPoints()
-	LocationDataText.SubZoneText:SetPoint("TOP", LocationDataText.MainZoneText, "BOTTOM", 0, -2)
-	LocationDataText.SubZoneText:SetWordWrap(true)
-	LocationDataText.SubZoneText:SetNonSpaceWrap(true)
-	LocationDataText.SubZoneText:SetMaxLines(2)
+	locationDataText.SubZoneText = K.CreateFontString(locationDataText, 11)
+	locationDataText.SubZoneText:ClearAllPoints()
+	locationDataText.SubZoneText:SetPoint("TOP", locationDataText.MainZoneText, "BOTTOM", 0, -2)
+	locationDataText.SubZoneText:SetWordWrap(true)
+	locationDataText.SubZoneText:SetNonSpaceWrap(true)
+	locationDataText.SubZoneText:SetMaxLines(2)
 
-	local function _OnEvent(...)
-		OnEvent(...) -- ??
+	for _, event in pairs(EVENT_LIST) do
+		locationDataText:RegisterEvent(event)
 	end
 
-	for _, event in pairs(eventList) do
-		LocationDataText:RegisterEvent(event)
-	end
-
-	LocationDataText:SetScript("OnEvent", _OnEvent)
+	locationDataText:SetScript("OnEvent", onEvent)
 end

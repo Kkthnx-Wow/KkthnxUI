@@ -1,35 +1,11 @@
---[[
-# Element: RangeFader, modify from oUF_Range
-
-Changes the opacity of a unit frame based on whether the frame's unit is in the player's range.
-
-## Widget
-
-RangeFader - A table containing opacity values.
-
-## Notes
-
-Offline units are handled as if they are in range.
-Supports multiple unit types: enemies, friends, pets, and dead units.
-Uses class-specific spells for accurate range checking.
-
-## Options
-
-.outsideAlpha - Opacity when the unit is out of range. Defaults to 0.55 (number)[0-1].
-.insideAlpha  - Opacity when the unit is within range. Defaults to 1 (number)[0-1].
-.MaxAlpha     - Maximum alpha value (in range). Falls back to insideAlpha if not set.
-.MinAlpha     - Minimum alpha value (out of range). Falls back to outsideAlpha if not set.
-
-## Examples
-
-	-- Register with oUF
-	self.RangeFader = {
-		insideAlpha = 1,
-		outsideAlpha = 1/2,
-		MaxAlpha = 1,
-		MinAlpha = 0.3,
-	}
---]]
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Manages unit opacity based on range from the player.
+-- - Design: Modified oUF_Range element supporting multiple unit types (friendly, enemy, pet).
+-- - Events: OnUpdate (throttled)
+-----------------------------------------------------------------------------]]
 
 local _, ns = ...
 local oUF = ns.oUF
@@ -38,27 +14,50 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local _FRAMES = {}
 local OnRangeFrame
 
-local next = next
-local strfind = strfind
-local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
-local InCombatLockdown, CheckInteractDistance, UnitCanAttack = InCombatLockdown, CheckInteractDistance, UnitCanAttack
-local UnitIsDeadOrGhost, UnitIsPlayer, UnitIsUnit, UnitIsFriend = UnitIsDeadOrGhost, UnitIsPlayer, UnitIsUnit, UnitIsFriend
-local UnitPhaseReason = UnitPhaseReason
-local UnitInParty, UnitInRaid = UnitInParty, UnitInRaid
-local GetNumGroupMembers, IsInRaid = GetNumGroupMembers, IsInRaid
-local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
+-- REASON: Localize C-functions (Snake Case)
+local strfind = _G.string.find
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local tonumber = _G.tonumber
+local next = _G.next
+local select = _G.select
+
+-- REASON: Localize Globals
+local C_Spell = _G.C_Spell
+local CheckInteractDistance = _G.CheckInteractDistance
+local CreateFrame = _G.CreateFrame
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local InCombatLockdown = _G.InCombatLockdown
+local IsInRaid = _G.IsInRaid
+local IsSpellKnownOrOverridesKnown = _G.IsSpellKnownOrOverridesKnown
+local UnitCanAttack = _G.UnitCanAttack
+local UnitClass = _G.UnitClass
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
+local UnitInRange = _G.UnitInRange
+local UnitIsConnected = _G.UnitIsConnected
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitPhaseReason = _G.UnitPhaseReason
+
 local IsSpellInRange = C_Spell.IsSpellInRange
 local myClass = select(2, UnitClass("player"))
 
+local PhaseReason = Enum.PhaseReason
+
+-- REASON: Returns the unit token (partyN/raidN) for a given unit GUID/name if they are in your group.
 local function GetGroupUnit(unit)
 	if UnitIsUnit(unit, "player") then
 		return
 	end
+
 	if strfind(unit, "party") or strfind(unit, "raid") then
 		return unit
 	end
 
-	-- returns the unit as raid# or party# when grouped
+	-- REASON: Only scan group if unit isn't already a token.
 	if UnitInParty(unit) or UnitInRaid(unit) then
 		local isInRaid = IsInRaid()
 		for i = 1, GetNumGroupMembers() do
@@ -252,44 +251,54 @@ local function UnitSpellRange(unit, spells)
 	end
 end
 
+-- REASON: Checks if a unit is within range of any spell in the 'which' category list.
 local function UnitInSpellsRange(unit, which)
 	local spells = list[which]
+	-- REASON: If list is empty, default to range=1 (true-ish) to fallback to interaction check.
 	local range = (not next(spells) and 1) or UnitSpellRange(unit, spells)
 
+	-- REASON: Fallback to InteractDistance(4) for follow range if spell check fails or is N/A, and not in combat.
 	if (not range or range == 1) and not InCombatLockdown() then
-		return CheckInteractDistance(unit, 4) -- check follow interact when not in combat
+		return CheckInteractDistance(unit, 4)
 	else
-		return (range == nil and 1) or range -- nil: various reason it cant be checked; ie: cant be cast on the unit
+		return (range == nil and 1) or range -- REASON: nil implies cant check, so assume in range to avoid ghosting.
 	end
 end
 
+-- REASON: Specific check for friendly units using PhaseReason and UnitInRange API.
 local function FriendlyInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
 	if UnitIsPlayer(unit) then
 		local phaseReason = UnitPhaseReason(unit)
-		if phaseReason == Enum.PhaseReason.TimerunningHwt then
-			if not IsInInstance() then -- phased in open world (hero / nonhero) but not phased in dungeons
+		if phaseReason == PhaseReason.TimerunningHwt then
+			if not IsInInstance() then -- Phased in open world (hero / nonhero) but not phased in dungeons
 				return false
 			end
 		elseif phaseReason then
 			return false
 		end
-	end
 
-	local range, checked = UnitInRange(unit)
-	if checked and not range then
-		return false -- blizz checked and unit is out of range
-	end
+		local inRange, wasChecked = UnitInRange(unit)
+		if K.IsSecretValue(wasChecked) then
+			if element and (UnitInParty(unit) or UnitInRaid(unit)) then -- if its eligible
+				element.isInRange, element.checkedRange = inRange, wasChecked
+				return -- will be handled by these values so no need to proceed
+			end
+		elseif wasChecked and not inRange then
+			return false -- blizz checked and unit is out of range
+		end
 
-	return UnitInSpellsRange(unit, 2)
+		return UnitInSpellsRange(unit, 2)
+	end
 end
 
+-- REASON: Main update function to determine alpha based on range status.
 local function Update(self, event)
 	local element = self.RangeFader
 	local unit = self.unit
 
-	-- Respect user setting to disable range fading
+	-- REASON: Respect globally disabled range setting.
 	if C and C["Unitframe"] and C["Unitframe"].Range == false then
 		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
 		self:SetAlpha(element.RangeAlpha)
@@ -325,31 +334,17 @@ local function Update(self, event)
 
 	self:SetAlpha(element.RangeAlpha)
 
-	--[[ Callback: Range:PostUpdate(object, inRange, checkedRange, isConnected)
-	Called after the element has been updated.
-
-	* self         - the Range element
-	* object       - the parent object
-	* inRange      - indicates if the unit was within 40 yards of the player (boolean)
-	* checkedRange - indicates if the range check was actually performed (boolean)
-	* isConnected  - indicates if the unit is online (boolean)
-	--]]
 	if element.PostUpdate then
 		return element:PostUpdate(self, element.RangeAlpha == (element.MaxAlpha or element.insideAlpha))
 	end
 end
 
+-- REASON: Overridable path for custom range checking logic.
 local function Path(self, ...)
-	--[[ Override: Range.Override(self, event)
-	Used to completely override the internal update function.
-
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	--]]
 	return (self.RangeFader.Override or Update)(self, ...)
 end
 
--- Internal updating method
+-- REASON: Internal throttled update loop (0.2s).
 local timer = 0
 local function OnRangeUpdate(_, elapsed)
 	timer = timer + elapsed
@@ -386,7 +381,7 @@ local function Enable(self)
 			OnRangeFrame:SetScript("OnUpdate", OnRangeUpdate)
 		end
 
-		table.insert(_FRAMES, self)
+		table_insert(_FRAMES, self)
 		OnRangeFrame:Show()
 
 		return true
@@ -398,7 +393,7 @@ local function Disable(self)
 	if element then
 		for index, frame in next, _FRAMES do
 			if frame == self then
-				table.remove(_FRAMES, index)
+				table_remove(_FRAMES, index)
 				break
 			end
 		end

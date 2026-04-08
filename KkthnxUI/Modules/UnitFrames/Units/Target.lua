@@ -1,11 +1,24 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Creates and updates the Target unit frame.
+-- - Design: Features Health, Power, Portrait, Castbar, Auras.
+-- - Events: UNIT_HEALTH, UNIT_POWER, UNIT_AURA, etc. handled by oUF.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- Lua functions
-local select = select
+-- PERF: Localize C-functions (Snake Case)
+local select = _G.select
+local unpack = _G.unpack
 
--- WoW API
-local CreateFrame = CreateFrame
+-- PERF: Localize Globals
+local CreateFrame = _G.CreateFrame
+local SetCVar = _G.SetCVar
+local C_AddOns = _G.C_AddOns
+local UIParent = _G.UIParent
 
 function Module:CreateTarget()
 	self.mystyle = "target"
@@ -19,163 +32,156 @@ function Module:CreateTarget()
 
 	Module.CreateHeader(self)
 
-	local Health = CreateFrame("StatusBar", nil, self)
-	Health:SetHeight(targetHeight)
-	Health:SetPoint("TOPLEFT")
-	Health:SetPoint("TOPRIGHT")
-	Health:SetStatusBarTexture(UnitframeTexture)
-	Health:CreateBorder()
+	self.Health = CreateFrame("StatusBar", nil, self)
+	self.Health:SetHeight(targetHeight)
+	self.Health:SetPoint("TOPLEFT")
+	self.Health:SetPoint("TOPRIGHT")
+	self.Health:SetStatusBarTexture(UnitframeTexture)
+	self.Health:CreateBorder()
 
-	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	Overlay:SetFrameStrata(self:GetFrameStrata())
-	Overlay:SetFrameLevel(6)
-	Overlay:SetAllPoints()
-	Overlay:EnableMouse(false)
+	-- REASON: Provides an independent strata layer to prevent border/indicator overlap issues.
+	self.Overlay = CreateFrame("Frame", nil, self)
+	self.Overlay:SetFrameStrata(self:GetFrameStrata())
+	self.Overlay:SetFrameLevel(6)
+	self.Overlay:SetAllPoints()
+	self.Overlay:EnableMouse(false)
 
-	Health.colorTapping = true
-	Health.colorDisconnected = true
-	Health.frequentUpdates = true
+	self.Health.colorTapping = true
+	self.Health.colorDisconnected = true
+	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K:SmoothBar(Health)
+		-- K:SmoothBar(self.Health)
 	end
 
 	if C["Unitframe"].HealthbarColor == 3 then
-		Health.colorSmooth = true
-		Health.colorClass = false
-		Health.colorReaction = false
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
 	elseif C["Unitframe"].HealthbarColor == 2 then
-		Health.colorSmooth = false
-		Health.colorClass = false
-		Health.colorReaction = false
-		Health:SetStatusBarColor(0.31, 0.31, 0.31)
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
 	else
-		Health.colorSmooth = false
-		Health.colorClass = true
-		Health.colorReaction = true
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
 	end
 
-	Health.Value = Health:CreateFontString(nil, "OVERLAY")
-	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
-	Health.Value:SetFontObject(K.UIFont)
-	self:Tag(Health.Value, "[hp]")
+	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
+	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+	self.Health.Value:SetFontObject(K.UIFont)
+	self:Tag(self.Health.Value, "[hp]")
 
-	local Power = CreateFrame("StatusBar", nil, self)
-	Power:SetHeight(C["Unitframe"].TargetPowerHeight)
-	Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -6)
-	Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -6)
-	Power:SetStatusBarTexture(UnitframeTexture)
-	Power:CreateBorder()
+	self.Power = CreateFrame("StatusBar", nil, self)
+	self.Power:SetHeight(C["Unitframe"].TargetPowerHeight)
+	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
+	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
+	self.Power:SetStatusBarTexture(UnitframeTexture)
+	self.Power:CreateBorder()
 
-	Power.colorPower = true
-	Power.frequentUpdates = true
+	self.Power.colorPower = true
+	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K:SmoothBar(Power)
+		-- K:SmoothBar(self.Power)
 	end
 
-	Power.Value = Power:CreateFontString(nil, "OVERLAY")
-	Power.Value:SetPoint("CENTER", Power, "CENTER", 0, 0)
-	Power.Value:SetFontObject(K.UIFont)
-	Power.Value:SetFont(select(1, Power.Value:GetFont()), 11, select(3, Power.Value:GetFont()))
-	self:Tag(Power.Value, "[power]")
+	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
+	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
+	self.Power.Value:SetFontObject(K.UIFont)
+	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
+	self:Tag(self.Power.Value, "[power]")
 
-	local Name = self:CreateFontString(nil, "OVERLAY")
-	Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 4)
-	Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
-	Name:SetFontObject(K.UIFont)
-	Name:SetWordWrap(false)
+	self.Name = self:CreateFontString(nil, "OVERLAY")
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
+	self.Name:SetFontObject(K.UIFont)
+	self.Name:SetWordWrap(false)
 
 	if targetPortraitStyle == 0 or targetPortraitStyle == 4 then
 		if C["Unitframe"].HealthbarColor == 1 then
-			self:Tag(Name, "[name] [fulllevel][afkdnd]")
+			self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
 		else
-			self:Tag(Name, "[color][name] [fulllevel][afkdnd]")
+			self:Tag(self.Name, "[color][name] [fulllevel][afkdnd]")
 		end
 	else
 		if C["Unitframe"].HealthbarColor == 1 then
-			self:Tag(Name, "[name][afkdnd]")
+			self:Tag(self.Name, "[name][afkdnd]")
 		else
-			self:Tag(Name, "[color][name][afkdnd]")
+			self:Tag(self.Name, "[color][name][afkdnd]")
 		end
 	end
 
 	if targetPortraitStyle ~= 0 then
-		local Portrait
-
 		if targetPortraitStyle == 4 then
-			Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self)
-			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
-			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
-			Portrait:SetAlpha(0.6)
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
+			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
+			self.Portrait:SetAlpha(0.6)
 		elseif targetPortraitStyle == 5 then
-			Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", Health)
-			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-			Portrait:CreateBorder()
+			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			self.Portrait:CreateBorder()
 		else
-			Portrait = Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
-			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
-			Portrait.Border = CreateFrame("Frame", nil, self)
-			Portrait.Border:SetAllPoints(Portrait)
-			Portrait.Border:CreateBorder()
+			self.Portrait.Border = CreateFrame("Frame", nil, self)
+			self.Portrait.Border:SetAllPoints(self.Portrait)
+			self.Portrait.Border:CreateBorder()
 
 			if targetPortraitStyle == 2 or targetPortraitStyle == 3 then
-				Portrait.PostUpdate = Module.UpdateClassPortraits
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
-
-		self.Portrait = Portrait
 
 		if targetPortraitStyle == 5 then
 			Module:ApplyPortraitAlphaFix(self)
 		end
 	end
 
-	if C["Unitframe"].TargetDebuffs then -- and C["Unitframe"].TargetDebuffsTop
-		local Debuffs = CreateFrame("Frame", nil, self)
-		Debuffs.spacing = 6
-		Debuffs.initialAnchor = "BOTTOMLEFT"
-		Debuffs["growth-x"] = "RIGHT"
-		Debuffs["growth-y"] = "UP"
-		Debuffs:SetPoint("BOTTOMLEFT", Name, "TOPLEFT", 0, 6)
-		Debuffs:SetPoint("BOTTOMRIGHT", Name, "TOPRIGHT", 0, 6)
-		Debuffs.num = 14
-		Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
+	if C["Unitframe"].TargetDebuffs then
+		self.Debuffs = CreateFrame("Frame", nil, self)
+		self.Debuffs.spacing = 6
+		self.Debuffs.initialAnchor = "BOTTOMLEFT"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
+		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
+		self.Debuffs.num = 14
+		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
-		Module:UpdateAuraContainer(targetWidth, Debuffs, Debuffs.num)
+		Module:UpdateAuraContainer(targetWidth, self.Debuffs, self.Debuffs.num)
 
-		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
-		Debuffs.PostCreateButton = Module.PostCreateButton
-		Debuffs.PostUpdateButton = Module.PostUpdateButton
-
-		self.Debuffs = Debuffs
+		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+		self.Debuffs.PostCreateButton = Module.PostCreateButton
+		self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 	end
 
-	if C["Unitframe"].TargetBuffs then -- and C["Unitframe"].TargetDebuffsTop
-		local Buffs = CreateFrame("Frame", nil, self)
-		Buffs:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
-		Buffs:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
-		Buffs.initialAnchor = "TOPLEFT"
-		Buffs["growth-x"] = "RIGHT"
-		Buffs["growth-y"] = "DOWN"
-		Buffs.num = 20
-		Buffs.spacing = 6
-		Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
-		Buffs.onlyShowPlayer = false
+	if C["Unitframe"].TargetBuffs then
+		self.Buffs = CreateFrame("Frame", nil, self)
+		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
+		self.Buffs.initialAnchor = "TOPLEFT"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs.num = 20
+		self.Buffs.spacing = 6
+		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
+		self.Buffs.onlyShowPlayer = false
 
-		Module:UpdateAuraContainer(targetWidth, Buffs, Buffs.num)
+		Module:UpdateAuraContainer(targetWidth, self.Buffs, self.Buffs.num)
 
-		Buffs.showStealableBuffs = true
-		Buffs.PostCreateButton = Module.PostCreateButton
-		Buffs.PostUpdateButton = Module.PostUpdateButton
-
-		self.Buffs = Buffs
+		self.Buffs.showStealableBuffs = true
+		self.Buffs.PostCreateButton = Module.PostCreateButton
+		self.Buffs.PostUpdateButton = Module.PostUpdateButton
 	end
 
 	if C["Unitframe"].TargetCastbar then
@@ -241,7 +247,7 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints(Health)
+		frame:SetAllPoints(self.Health)
 		local frameLevel = frame:GetFrameLevel()
 
 		local normalTexture = K.GetTexture(C["General"].Texture)
@@ -250,7 +256,7 @@ function Module:CreateTarget()
 		local myBar = CreateFrame("StatusBar", nil, frame)
 		myBar:SetPoint("TOP")
 		myBar:SetPoint("BOTTOM")
-		myBar:SetPoint("LEFT", Health:GetStatusBarTexture(), "RIGHT")
+		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(normalTexture)
 		myBar:SetStatusBarColor(0, 1, 0.5, 0.5)
 		myBar:SetFrameLevel(frameLevel)
@@ -287,45 +293,44 @@ function Module:CreateTarget()
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
 		overAbsorbBar:Hide()
-		local tex = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetHorizTile(true)
+		tex2:SetVertTile(true)
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		healAbsorbBar:SetPoint("TOP")
 		healAbsorbBar:SetPoint("BOTTOM")
-		healAbsorbBar:SetPoint("RIGHT", Health:GetStatusBarTexture())
+		healAbsorbBar:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
 		healAbsorbBar:SetReverseFill(true)
 		healAbsorbBar:SetStatusBarTexture(normalTexture)
 		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
 		healAbsorbBar:Hide()
-		local tex = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetHorizTile(true)
+		tex3:SetVertTile(true)
 
-		local overAbsorb = Health:CreateTexture(nil, "OVERLAY", nil, 2)
+		local overAbsorb = self.Health:CreateTexture(nil, "OVERLAY", nil, 2)
 		overAbsorb:SetWidth(8)
 		overAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 		overAbsorb:SetBlendMode("ADD")
-		overAbsorb:SetPoint("TOPLEFT", Health, "TOPRIGHT", -5, 0)
-		overAbsorb:SetPoint("BOTTOMLEFT", Health, "BOTTOMRIGHT", -5, -0)
+		overAbsorb:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 0)
+		overAbsorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -0)
 		overAbsorb:Hide()
 
 		local overHealAbsorb = frame:CreateTexture(nil, "OVERLAY")
 		overHealAbsorb:SetWidth(15)
 		overHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
 		overHealAbsorb:SetBlendMode("ADD")
-		overHealAbsorb:SetPoint("TOPRIGHT", Health, "TOPLEFT", 5, 2)
-		overHealAbsorb:SetPoint("BOTTOMRIGHT", Health, "BOTTOMLEFT", 5, -2)
+		overHealAbsorb:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
+		overHealAbsorb:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
 		overHealAbsorb:Hide()
 
-		-- Register with oUF
 		self.HealthPrediction = {
 			myBar = myBar,
 			otherBar = otherBar,
@@ -340,7 +345,6 @@ function Module:CreateTarget()
 		self.predicFrame = frame
 	end
 
-	-- Level
 	local Level = self:CreateFontString(nil, "OVERLAY")
 	if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
 		Level:Show()
@@ -351,107 +355,82 @@ function Module:CreateTarget()
 	end
 	Level:SetFontObject(K.UIFont)
 	self:Tag(Level, "[fulllevel]")
-
-	if C["Unitframe"].CombatText then
-		local parentFrame = CreateFrame("Frame", nil, UIParent)
-		local FloatingCombatFeedback = CreateFrame("Frame", "oUF_Target_CombatTextFrame", parentFrame)
-		FloatingCombatFeedback:SetSize(32, 32)
-		K.Mover(FloatingCombatFeedback, "CombatText", "TargetCombatText", { "BOTTOM", self, "TOPRIGHT", 0, 120 })
-
-		for i = 1, 36 do
-			FloatingCombatFeedback[i] = FloatingCombatFeedback:CreateFontString("$parentText", "OVERLAY")
-		end
-
-		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
-		FloatingCombatFeedback.fontFlags = "OUTLINE"
-		FloatingCombatFeedback.abbreviateNumbers = true
-		FloatingCombatFeedback:SetFrameStrata("HIGH")
-
-		self.FloatingCombatFeedback = FloatingCombatFeedback
-
-		-- Default CombatText
-		SetCVar("enableFloatingCombatText", 0)
-		-- K.HideInterfaceOption(_G.InterfaceOptionsCombatPanelEnableFloatingCombatText)
-	end
+	self.Level = Level
 
 	if C["Unitframe"].PvPIndicator then
-		local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-		PvPIndicator:SetSize(30, 33)
+		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.PvPIndicator:SetSize(30, 33)
 		if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
-			PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
+			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
 		else
-			PvPIndicator:SetPoint("LEFT", Health, "RIGHT", 2, 0)
+			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", 2, 0)
 		end
-		PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
-
-		self.PvPIndicator = PvPIndicator
+		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 	end
 
-	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	LeaderIndicator:SetSize(16, 16)
+	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetSize(16, 16)
 	if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
-		LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
 	else
-		LeaderIndicator:SetPoint("TOPRIGHT", Health, 0, 10)
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Health, 0, 10)
 	end
-	LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
+	self.LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
 
-	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	AssistantIndicator:SetSize(16, 16)
-	if AssistantIndicator ~= 0 and targetPortraitStyle ~= 4 then
-		AssistantIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
-	else
-		AssistantIndicator:SetPoint("TOPRIGHT", Health, 0, 10)
-	end
-
-	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetSize(16, 16)
 	if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
-		RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+		self.AssistantIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
 	else
-		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
+		self.AssistantIndicator:SetPoint("TOPRIGHT", self.Health, 0, 10)
 	end
-	RaidTargetIndicator:SetSize(16, 16)
 
-	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
-		ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
-		ReadyCheckIndicator:SetPoint("CENTER", Health)
+		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
 	end
-	ReadyCheckIndicator:SetSize(targetHeight - 4, targetHeight - 4)
+	self.RaidTargetIndicator:SetSize(16, 16)
 
-	local ResurrectIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	ResurrectIndicator:SetSize(44, 44)
+	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
-		ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	else
-		ResurrectIndicator:SetPoint("CENTER", Health)
+		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
+	end
+	self.ReadyCheckIndicator:SetSize(targetHeight - 4, targetHeight - 4)
+
+	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.ResurrectIndicator:SetSize(44, 44)
+	if targetPortraitStyle ~= 0 and targetPortraitStyle ~= 4 then
+		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+	else
+		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
 	end
 
-	local QuestIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	QuestIndicator:SetSize(20, 20)
-	QuestIndicator:SetPoint("TOPLEFT", Health, "TOPRIGHT", -6, 6)
+	self.QuestIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.QuestIndicator:SetSize(20, 20)
+	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -6, 6)
 
 	if C["Unitframe"].DebuffHighlight then
-		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")
-		DebuffHighlight:SetAllPoints(Health)
-		DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-		DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		DebuffHighlight:SetBlendMode("ADD")
-
-		self.DebuffHighlight = DebuffHighlight
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
 
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
 	end
 
-	local Highlight = Health:CreateTexture(nil, "OVERLAY")
-	Highlight:SetAllPoints()
-	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	Highlight:SetTexCoord(0, 1, 0.5, 1)
-	Highlight:SetVertexColor(0.6, 0.6, 0.6)
-	Highlight:SetBlendMode("ADD")
-	Highlight:Hide()
+	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.Highlight:SetAllPoints()
+	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
+	self.Highlight:SetTexCoord(0, 1, 0.5, 1)
+	self.Highlight:SetVertexColor(0.6, 0.6, 0.6)
+	self.Highlight:SetBlendMode("ADD")
+	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
 		IsObjectType = K.Noop,
@@ -461,26 +440,7 @@ function Module:CreateTarget()
 	self.RangeFader = {
 		insideAlpha = 1,
 		outsideAlpha = 0.55,
-	}
-
-	-- Register with oUF
-	self.RangeFader = {
-		insideAlpha = 1,
-		outsideAlpha = 0.55,
 		MaxAlpha = 1,
 		MinAlpha = 0.3,
 	}
-
-	self.Overlay = Overlay
-	self.Health = Health
-	self.Power = Power
-	self.Name = Name
-	self.Level = Level
-	self.LeaderIndicator = LeaderIndicator
-	self.AssistantIndicator = AssistantIndicator
-	self.RaidTargetIndicator = RaidTargetIndicator
-	self.ReadyCheckIndicator = ReadyCheckIndicator
-	self.ResurrectIndicator = ResurrectIndicator
-	self.QuestIndicator = QuestIndicator
-	self.Highlight = Highlight
 end

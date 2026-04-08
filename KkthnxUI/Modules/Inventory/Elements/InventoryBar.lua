@@ -1,6 +1,16 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Manages the visual bag bar and its configuration.
+-- - Design: Handles positioning, sizing, and skinning of the standard Blizzard bag buttons.
+-- - Events: PLAYER_REGEN_ENABLED, BAG_SLOT_FLAGS_UPDATED, BAG_UPDATE_DELAYED
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Bags")
 
+-- PERF: Localize global functions to avoid hashtable lookups in high-frequency path.
 local ipairs = ipairs
 local tinsert = tinsert
 local hooksecurefunc = hooksecurefunc
@@ -10,6 +20,7 @@ local GetCVarBool = GetCVarBool
 local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
 local NUM_BAG_FRAMES = NUM_BAG_FRAMES
 
+-- REASON: File-local storage for button references to avoid global queries.
 local buttonList = {}
 local bagBar
 local bagPosition
@@ -23,10 +34,16 @@ function Module:BagBar_OnLeave()
 end
 
 function Module:BagBar_OnEvent(event)
-	bagBar:UnregisterEvent(event)
+	if event == "PLAYER_REGEN_ENABLED" then
+		bagBar:UnregisterEvent(event)
+		-- REASON: Canvas modification and secure frame re-anchoring are blocked in combat.
+		-- We delay the execution until combat ends to avoid Lua errors and ensure layout consistency.
+		Module:SetSizeAndPositionBagBar()
+	end
 end
 
 function Module:SkinBag(bag)
+	-- COMPAT: Standardize icon texture for consistency with UI theme.
 	local icon = bag.icon or _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
 
@@ -42,6 +59,7 @@ function Module:SkinBag(bag)
 	icon:Show()
 
 	icon:SetAllPoints()
+	-- REASON: Fallback to custom backpack texture if original is missing or specific ID matches.
 	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
@@ -58,6 +76,7 @@ function Module:SetSizeAndPositionBagBar()
 	local justBackpack = C["Inventory"].JustBackpack
 
 	if InCombatLockdown() then
+		-- WARNING: Canvas modification is blocked in combat; queue for RegenEnabled.
 		bagBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
@@ -65,6 +84,7 @@ function Module:SetSizeAndPositionBagBar()
 
 	_G.MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
 
+	-- REASON: Loop through all managed buttons to apply positioning logic dynamically based on user config.
 	for i, button in ipairs(buttonList) do
 		button:SetSize(bagBarSize, bagBarSize)
 		button:ClearAllPoints()
@@ -113,6 +133,7 @@ end
 
 function Module:UpdateMainButtonCount()
 	local mainCount = buttonList[1].Count
+	-- COMPAT: Reflects CVar 'displayFreeBagSlots' state.
 	mainCount:SetShown(GetCVarBool("displayFreeBagSlots"))
 	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
 end
@@ -163,6 +184,7 @@ function Module:CreateInventoryBar()
 	backpackButton:HookScript("OnEnter", Module.BagBar_OnEnter)
 	backpackButton:HookScript("OnLeave", Module.BagBar_OnLeave)
 
+	-- COMPAT: Hook standard bag bar resizing functions.
 	hooksecurefunc(_G.BagsBar, "Layout", Module.SetSizeAndPositionBagBar)
 	hooksecurefunc(_G.MainMenuBarBagManager, "OnExpandBarChanged", Module.SetSizeAndPositionBagBar)
 
@@ -182,6 +204,7 @@ function Module:CreateInventoryBar()
 		tinsert(buttonList, b)
 	end
 
+	-- COMPAT: Reagent Bag (Bag 5) handling if present.
 	local ReagentSlot = CharacterReagentBag0Slot
 	if ReagentSlot then
 		ReagentSlot:SetParent(bagBar)
@@ -208,6 +231,8 @@ function Module:CreateInventoryBar()
 	Module:SetSizeAndPositionBagBar()
 
 	if _G.BagBarExpandToggle then
+		-- REASON: KkthnxUI provides its own bag bar layout logic and configuration.
+		-- We hide the default Blizzard expansion arrow to prevent visual clutter and conflicting behaviors.
 		K.HideInterfaceOption(_G.BagBarExpandToggle)
 	end
 end

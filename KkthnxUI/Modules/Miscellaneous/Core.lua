@@ -1,64 +1,99 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Main hub for miscellaneous features and utilities in KkthnxUI.
+-- - Design: Registers sub-modules and handles global miscellaneous settings like camera, delete dialogs, and more.
+-- - Events: PLAYER_ENTERING_WORLD, READY_CHECK, etc.
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
--- Localizing Lua built-in functions
-local tonumber = tonumber
-local next = next
-local type = type
-local ipairs = ipairs
-local pcall = pcall
-local error = error
-local tostring = tostring
-local print = print
-local format = string.format
-local gsub = string.gsub
+-- PERF: Localize global functions and environment for faster lookups.
+local error = _G.error
+local ipairs = _G.ipairs
+local math_atan2 = _G.math.atan2
+local math_cos = _G.math.cos
+local math_floor = _G.math.floor
+local math_max = _G.math.max
+local math_min = _G.math.min
+local math_sin = _G.math.sin
+local math_sqrt = _G.math.sqrt
+local next = _G.next
+local pcall = _G.pcall
+local string_format = _G.string.format
+local string_gsub = _G.string.gsub
+local string_match = _G.string.match
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local tonumber = _G.tonumber
+local tostring = _G.tostring
+local type = _G.type
 
--- Localizing math functions
-local atan2, cos, sin, max, min, sqrt = math.atan2, math.cos, math.sin, math.max, math.min, math.sqrt
+local _G = _G
+local BNToastFrame = _G.BNToastFrame
+local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_AddFriend = _G.C_FriendList.AddFriend
+local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
+local C_GuildInfo = _G.C_GuildInfo
+local C_Item_GetItemInfo = _G.C_Item.GetItemInfo
+local C_Item_GetItemQualityColor = _G.C_Item.GetItemQualityColor
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
+local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
+local C_Map_SetUserWaypoint = _G.C_Map.SetUserWaypoint
+local C_QuestLog_GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest
+local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
+local C_StorePublic = _G.C_StorePublic
+local C_SuperTrack_SetSuperTrackedUserWaypoint = _G.C_SuperTrack.SetSuperTrackedUserWaypoint
+local ChatEdit_ActivateChat = _G.ChatEdit_ActivateChat
+local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
+local CreateFrame = _G.CreateFrame
+local DurabilityFrame = _G.DurabilityFrame
+local GameMenuFrame = _G.GameMenuFrame
+local GameTooltip = _G.GameTooltip
+local GameTooltip_Hide = _G.GameTooltip_Hide
+local GetCursorPosition = _G.GetCursorPosition
+local GetGuildInfo = _G.GetGuildInfo
+local GetInstanceInfo = _G.GetInstanceInfo
+local GetMerchantItemLink = _G.GetMerchantItemLink
+local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
+local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
+local GetRewardXP = _G.GetRewardXP
+local HideUIPanel = _G.HideUIPanel
+local InCombatLockdown = _G.InCombatLockdown
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsGuildMember = _G.IsGuildMember
+local Minimap = _G.Minimap
+local MinimapCluster = _G.MinimapCluster
+local PlaySound = _G.PlaySound
+local QuestInfoXPFrame = _G.QuestInfoXPFrame
+local SettingsPanel = _G.SettingsPanel
+local StaticPopupDialogs = _G.StaticPopupDialogs
+local StaticPopup_Show = _G.StaticPopup_Show
+local TicketStatusFrame = _G.TicketStatusFrame
+local UIErrorsFrame = _G.UIErrorsFrame
+local UIParent = _G.UIParent
+local UiMapPoint_CreateFromCoordinates = _G.UiMapPoint.CreateFromCoordinates
+local UnitGUID = _G.UnitGUID
+local UnitXP = _G.UnitXP
+local UnitXPMax = _G.UnitXPMax
+local VehicleSeatIndicator = _G.VehicleSeatIndicator
+local hooksecurefunc = _G.hooksecurefunc
 
--- Localizing WoW API functions
-local CreateFrame = CreateFrame
-local PlaySound = PlaySound
-local StaticPopup_Show = StaticPopup_Show
-local hooksecurefunc = hooksecurefunc
-local UIParent = UIParent
-local GetCursorPosition = GetCursorPosition
-local GetInstanceInfo = GetInstanceInfo
-local SetCVar = SetCVar
-local UnitXP = UnitXP
-local UnitXPMax = UnitXPMax
-local UnitGUID = UnitGUID
-local GetMerchantItemLink = GetMerchantItemLink
-local GetMerchantItemMaxStack = GetMerchantItemMaxStack
-local GetRewardXP = GetRewardXP
-local GetQuestLogRewardXP = GetQuestLogRewardXP
-local IsAltKeyDown = IsAltKeyDown
-local InCombatLockdown = InCombatLockdown
-local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = C_FriendList.IsFriend
-local C_QuestLog_GetSelectedQuest = C_QuestLog.GetSelectedQuest
-local C_QuestLog_ShouldShowQuestRewards = C_QuestLog.ShouldShowQuestRewards
-local C_Item_GetItemInfo = C_Item.GetItemInfo
-local C_Item_GetItemQualityColor = C_Item.GetItemQualityColor
-local StaticPopupDialogs = StaticPopupDialogs
-local IsGuildMember = IsGuildMember
-local GetGuildInfo = GetGuildInfo
-local C_Map_GetMapInfo = C_Map.GetMapInfo
-local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
-local C_Map_SetUserWaypoint = C_Map.SetUserWaypoint
-local C_SuperTrack_SetSuperTrackedUserWaypoint = C_SuperTrack.SetSuperTrackedUserWaypoint
-local UiMapPoint_CreateFromCoordinates = UiMapPoint.CreateFromCoordinates
-
--- Localizing WoW UI constants
-local FRIEND = FRIEND
-local GUILD = GUILD
-local NO = NO
-local YES = YES
+local FRIEND = _G.FRIEND
+local GUILD = _G.GUILD
+local NO = _G.NO
+local YES = _G.YES
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local SOUNDKIT = _G.SOUNDKIT
+local COPY_NAME = _G.COPY_NAME
+local WHISPER = _G.WHISPER
+local ADD_CHARACTER_FRIEND = _G.ADD_CHARACTER_FRIEND
+local HEADER_COLON = _G.HEADER_COLON
 
 -- Miscellaneous Module Registry
 local KKUI_MISC_MODULE = {}
-
--- Lightweight profiling helpers (opt-in via C["General"].DebugProfiling)
 
 -- Register Miscellaneous Modules
 function Module:RegisterMisc(name, func)
@@ -71,27 +106,27 @@ end
 local function enableAutoBubbles()
 	if C["Misc"].AutoBubbles then
 		local function updateBubble()
-			local name, instType = GetInstanceInfo()
-			SetCVar("chatBubbles", (name and instType == "raid") and 1 or 0)
+			local _, instType = GetInstanceInfo()
+			_G.SetCVar("chatBubbles", instType == "raid" and 1 or 0)
 		end
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
 end
 
--- Readycheck sound on master channel
+-- REASON: Provides audio feedback for ready checks even if the master channel is otherwise muted.
 K:RegisterEvent("READY_CHECK", function()
 	PlaySound(SOUNDKIT.READY_CHECK, "Master")
 end)
 
 -- Modify Delete Dialog
 local function modifyDeleteDialog()
-	local DELETE_ITEM = K.CopyTable(StaticPopupDialogs.DELETE_ITEM)
-	DELETE_ITEM.timeout = 5 -- also add a timeout
-	StaticPopupDialogs.DELETE_GOOD_ITEM = DELETE_ITEM
+	local deleteItem = K.CopyTable(StaticPopupDialogs.DELETE_ITEM)
+	deleteItem.timeout = 5 -- also add a timeout
+	StaticPopupDialogs.DELETE_GOOD_ITEM = deleteItem
 
-	local DELETE_QUEST_ITEM = K.CopyTable(StaticPopupDialogs.DELETE_QUEST_ITEM)
-	DELETE_QUEST_ITEM.timeout = 5 -- also add a timeout
-	StaticPopupDialogs.DELETE_GOOD_QUEST_ITEM = DELETE_QUEST_ITEM
+	local deleteQuestItem = K.CopyTable(StaticPopupDialogs.DELETE_QUEST_ITEM)
+	deleteQuestItem.timeout = 5 -- also add a timeout
+	StaticPopupDialogs.DELETE_GOOD_QUEST_ITEM = deleteQuestItem
 end
 
 -- Enable Module and Initialize Miscellaneous Modules
@@ -118,8 +153,6 @@ function Module:OnEnable()
 		"CreateVehicleSeatMover",
 		"UpdateMaxCameraZoom",
 		"UpdateYClassColors",
-		-- "CreateObjectiveSizeUpdate",
-		-- "CreateQuestSizeUpdate",
 	}
 
 	for _, funcName in ipairs(loadMiscModules) do
@@ -144,11 +177,8 @@ function Module:OnEnable()
 	enableAutoBubbles()
 	modifyDeleteDialog()
 
-	-- Keep guild invite label up-to-date
 	if self.UpdateGuildInviteString then
 		self:UpdateGuildInviteString()
-		-- K:RegisterEvent("PLAYER_ENTERING_WORLD", self.UpdateGuildInviteString)
-		-- K:RegisterEvent("PLAYER_GUILD_UPDATE", self.UpdateGuildInviteString)
 	end
 end
 
@@ -156,35 +186,36 @@ end
 function Module:PostBNToastMove(_, anchor)
 	if anchor ~= BNToastFrame.mover then
 		BNToastFrame:ClearAllPoints()
-		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
+		local anchorPoint = BNToastFrame.mover.anchorPoint or "TOPLEFT"
+		BNToastFrame:SetPoint(anchorPoint, BNToastFrame.mover, anchorPoint)
 	end
 end
 
--- Update Drag Cursor for Minimap
-local function KKUI_UpdateDragCursor(self)
-	local mx, my = Minimap:GetCenter()
-	local px, py = GetCursorPosition()
+-- REASON: Calculates the position for the minimap button on a circular path around the minimap.
+local function updateDragCursor(self)
+	local centerX, centerY = Minimap:GetCenter()
+	local cursorX, cursorY = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
-	px, py = px / scale, py / scale
+	cursorX, cursorY = cursorX / scale, cursorY / scale
 
-	local angle = atan2(py - my, px - mx)
-	local x, y = cos(angle), sin(angle)
+	local angle = math_atan2(cursorY - centerY, cursorX - centerX)
+	local x, y = math_cos(angle), math_sin(angle)
 
-	local w = (Minimap:GetWidth() / 2) + 5
-	local h = (Minimap:GetHeight() / 2) + 5
-	local diagRadiusW = sqrt(2 * w ^ 2) - 10
-	local diagRadiusH = sqrt(2 * h ^ 2) - 10
-	x = max(-w, min(x * diagRadiusW, w))
-	y = max(-h, min(y * diagRadiusH, h))
+	local width = (Minimap:GetWidth() / 2) + 5
+	local height = (Minimap:GetHeight() / 2) + 5
+	local diagRadiusW = math_sqrt(2 * width ^ 2) - 10
+	local diagRadiusH = math_sqrt(2 * height ^ 2) - 10
+	x = math_max(-width, math_min(x * diagRadiusW, width))
+	y = math_max(-height, math_min(y * diagRadiusH, height))
 
 	self:ClearAllPoints()
 	self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
 -- Click Minimap Button Functionality
-local function KKUI_ClickMinimapButton(_, btn)
+local function minimapButtonOnClick(_, btn)
 	if btn == "LeftButton" then
-		if SettingsPanel:IsShown() or ChatConfigFrame:IsShown() then
+		if SettingsPanel:IsShown() or _G.ChatConfigFrame:IsShown() then
 			return
 		end
 		if InCombatLockdown() then
@@ -198,34 +229,34 @@ end
 
 -- Create Minimap Button
 function Module:CreateMinimapButtonToggle()
-	local mmb = CreateFrame("Button", "KKUI_MinimapButton", Minimap)
-	mmb:SetPoint("BOTTOMLEFT", -15, 20)
-	mmb:SetSize(32, 32)
-	mmb:SetMovable(true)
-	mmb:SetUserPlaced(true)
-	mmb:RegisterForDrag("LeftButton")
-	mmb:SetHighlightTexture(C["Media"].Textures.LogoSmallTexture)
-	mmb:GetHighlightTexture():SetSize(18, 9)
-	mmb:GetHighlightTexture():ClearAllPoints()
-	mmb:GetHighlightTexture():SetPoint("CENTER")
+	local minimapButton = CreateFrame("Button", "KKUI_MinimapButton", Minimap)
+	minimapButton:SetPoint("BOTTOMLEFT", -15, 20)
+	minimapButton:SetSize(32, 32)
+	minimapButton:SetMovable(true)
+	minimapButton:SetUserPlaced(true)
+	minimapButton:RegisterForDrag("LeftButton")
+	minimapButton:SetHighlightTexture(C["Media"].Textures.LogoSmallTexture)
+	minimapButton:GetHighlightTexture():SetSize(18, 9)
+	minimapButton:GetHighlightTexture():ClearAllPoints()
+	minimapButton:GetHighlightTexture():SetPoint("CENTER")
 
-	local overlay = mmb:CreateTexture(nil, "OVERLAY")
+	local overlay = minimapButton:CreateTexture(nil, "OVERLAY")
 	overlay:SetSize(53, 53)
-	overlay:SetTexture(136430)
+	overlay:SetTexture(136430) -- REASON: Blizzard's standard minimap button overlay border.
 	overlay:SetPoint("TOPLEFT")
 
-	local background = mmb:CreateTexture(nil, "BACKGROUND")
+	local background = minimapButton:CreateTexture(nil, "BACKGROUND")
 	background:SetSize(20, 20)
-	background:SetTexture(136467)
+	background:SetTexture(136467) -- REASON: Blizzard's standard minimap button background.
 	background:SetPoint("TOPLEFT", 7, -5)
 
-	local icon = mmb:CreateTexture(nil, "ARTWORK")
+	local icon = minimapButton:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(22, 11)
 	icon:SetPoint("CENTER")
 	icon:SetTexture(C["Media"].Textures.LogoSmallTexture)
 
-	mmb:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(mmb, "ANCHOR_LEFT")
+	minimapButton:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(minimapButton, "ANCHOR_LEFT")
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine("KkthnxUI", 1, 1, 1)
 		GameTooltip:AddLine(" ")
@@ -233,28 +264,28 @@ function Module:CreateMinimapButtonToggle()
 		GameTooltip:Show()
 	end)
 
-	mmb:SetScript("OnLeave", GameTooltip_Hide)
-	mmb:RegisterForClicks("AnyUp")
-	mmb:SetScript("OnClick", KKUI_ClickMinimapButton)
-	mmb:SetScript("OnDragStart", function(self)
-		self:SetScript("OnUpdate", KKUI_UpdateDragCursor)
+	minimapButton:SetScript("OnLeave", GameTooltip_Hide)
+	minimapButton:RegisterForClicks("AnyUp")
+	minimapButton:SetScript("OnClick", minimapButtonOnClick)
+	minimapButton:SetScript("OnDragStart", function(self)
+		self:SetScript("OnUpdate", updateDragCursor)
 	end)
-	mmb:SetScript("OnDragStop", function(self)
+	minimapButton:SetScript("OnDragStop", function(self)
 		self:SetScript("OnUpdate", nil)
 	end)
 
 	function Module:ToggleMinimapIcon()
 		if C["General"].MinimapIcon then
-			mmb:Show()
+			minimapButton:Show()
 		else
-			mmb:Hide()
+			minimapButton:Hide()
 		end
 	end
 
 	Module:ToggleMinimapIcon()
 end
 
--- Game Menu Setup
+-- REASON: Injected into the Blizzard Game Menu to provide quick access to KkthnxUI configuration.
 local gameMenuLastButtons = {
 	[_G.GAMEMENU_OPTIONS] = 1,
 	[_G.BLIZZARD_STORE] = 2,
@@ -293,13 +324,14 @@ function Module:CreateGUIGameMenuButton()
 	if GameMenuFrame.KkthnxUI then
 		return
 	end
-	local button = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "MainMenuFrameButtonTemplate")
-	button:SetScript("OnClick", function()
+
+	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "MainMenuFrameButtonTemplate")
+	gameMenuButton:SetScript("OnClick", function()
 		Module:ClickGameMenu()
 	end)
 
-	button:SkinButton()
-	GameMenuFrame.KkthnxUI = button
+	gameMenuButton:SkinButton()
+	GameMenuFrame.KkthnxUI = gameMenuButton
 	GameMenuFrame.MenuButtons = {}
 	hooksecurefunc(GameMenuFrame, "Layout", function()
 		Module:PositionGameMenuButton()
@@ -313,6 +345,7 @@ function Module:CreateQuestXPPercent()
 	if not playerMaxXP or playerMaxXP == 0 then
 		return
 	end
+
 	local questXP
 	local xpText
 	local xpFrame
@@ -321,13 +354,13 @@ function Module:CreateQuestXPPercent()
 		local selectedQuest = C_QuestLog_GetSelectedQuest()
 		if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
 			questXP = GetQuestLogRewardXP()
-			xpText = MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
+			xpText = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
 			xpFrame = _G.MapQuestInfoRewardsFrame.XPFrame.Name
 		end
 	else
 		questXP = GetRewardXP()
 		xpText = QuestInfoXPFrame.ValueText:GetText()
-		xpFrame = _G.QuestInfoXPFrame.ValueText
+		xpFrame = QuestInfoXPFrame.ValueText
 	end
 
 	if questXP and questXP > 0 and xpText then
@@ -336,21 +369,21 @@ function Module:CreateQuestXPPercent()
 	end
 end
 
--- Reanchor Vehicle Seat Indicator
+-- REASON: Moves the vehicle seat indicator away from its default position to fit the KkthnxUI layout.
 function Module:CreateVehicleSeatMover()
-	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
-	frame:SetSize(125, 125)
-	K.Mover(frame, "VehicleSeat", "VehicleSeat", { "BOTTOMRIGHT", UIParent, -400, 30 })
+	local seatMover = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
+	seatMover:SetSize(125, 125)
+	K.Mover(seatMover, "VehicleSeat", "VehicleSeat", { "BOTTOMRIGHT", UIParent, -400, 30 })
 
 	hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(self, _, parent)
-		if parent ~= frame then
+		if parent ~= seatMover then
 			self:ClearAllPoints()
-			self:SetPoint("TOPLEFT", frame)
+			self:SetPoint("TOPLEFT", seatMover)
 		end
 	end)
 end
 
--- Reanchor Durability Frame
+-- REASON: Moves the durability frame to a more sensible location below the minimap.
 function Module:CreateDurabilityFrameMove()
 	hooksecurefunc(DurabilityFrame, "SetPoint", function(self, _, parent)
 		if parent == "MinimapCluster" or parent == MinimapCluster then
@@ -360,7 +393,7 @@ function Module:CreateDurabilityFrameMove()
 	end)
 end
 
--- Reanchor Ticket Status Frame
+-- REASON: Reanchors the GM ticket status frame to avoid overlapping with other UI elements.
 function Module:CreateTicketStatusFrameMove()
 	hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, relF)
 		if relF == "TOPRIGHT" then
@@ -370,75 +403,61 @@ function Module:CreateTicketStatusFrameMove()
 	end)
 end
 
--- Hide Boss Banner
+-- REASON: Toggles the boss kill/loot banner based on user configuration.
 function Module:CreateBossBanner()
 	if C["Misc"].HideBanner and not C["Misc"].KillingBlow then
-		BossBanner:UnregisterAllEvents()
+		_G.BossBanner:UnregisterAllEvents()
 	else
-		BossBanner:RegisterEvent("BOSS_KILL")
-		BossBanner:RegisterEvent("ENCOUNTER_LOOT_RECEIVED")
+		_G.BossBanner:RegisterEvent("BOSS_KILL")
+		_G.BossBanner:RegisterEvent("ENCOUNTER_LOOT_RECEIVED")
 	end
 end
 
--- Hide Boss Emote
+-- REASON: Toggles the raid boss emote frame to reduce screen clutter during encounters.
 function Module:CreateBossEmote()
 	if C["Misc"].HideBossEmote then
-		RaidBossEmoteFrame:UnregisterAllEvents()
+		_G.RaidBossEmoteFrame:UnregisterAllEvents()
 	else
-		RaidBossEmoteFrame:RegisterEvent("RAID_BOSS_EMOTE")
-		RaidBossEmoteFrame:RegisterEvent("RAID_BOSS_WHISPER")
-		RaidBossEmoteFrame:RegisterEvent("CLEAR_BOSS_EMOTES")
+		_G.RaidBossEmoteFrame:RegisterEvent("RAID_BOSS_EMOTE")
+		_G.RaidBossEmoteFrame:RegisterEvent("RAID_BOSS_WHISPER")
+		_G.RaidBossEmoteFrame:RegisterEvent("CLEAR_BOSS_EMOTES")
 	end
 end
 
--- Error Frame Toggle Setup
-local function SetupErrorFrameToggle(event)
+-- REASON: Automatically hides UI error messages during combat to reduce distractions.
+local function setupErrorFrameToggle(event)
 	if event == "PLAYER_REGEN_DISABLED" then
 		_G.UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", SetupErrorFrameToggle)
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", setupErrorFrameToggle)
 	else
 		_G.UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
-		K:UnregisterEvent(event, SetupErrorFrameToggle)
+		K:UnregisterEvent(event, setupErrorFrameToggle)
 	end
 end
 
 function Module:CreateErrorFrameToggle()
 	if C["General"].NoErrorFrame then
-		K:RegisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
+		K:RegisterEvent("PLAYER_REGEN_DISABLED", setupErrorFrameToggle)
 	else
-		K:UnregisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
+		K:UnregisterEvent("PLAYER_REGEN_DISABLED", setupErrorFrameToggle)
 	end
 end
 
--- -- Create Quest Size Update
--- function Module:CreateQuestSizeUpdate()
--- 	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
--- 	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
--- 	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
--- end
-
--- -- Create Objective Size Update
--- function Module:CreateObjectiveSizeUpdate()
--- 	ObjectiveFont:SetFontObject(K.UIFont)
--- 	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
--- end
-
--- TradeFrame Hook
+-- REASON: Enhances the trade frame by showing if the target is a friend, guildy, or stranger.
 function Module:CreateTradeTargetInfo()
-	local infoText = K.CreateFontString(TradeFrame, 16, "", "")
-	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -8)
+	local infoText = K.CreateFontString(_G.TradeFrame, 16, "", "")
+	infoText:SetPoint("TOP", _G.TradeFrameRecipientNameText, "BOTTOM", 0, -8)
 
 	local function updateColor()
-		-- Color recipient name with NPC color
 		local r, g, b = K.UnitColor("NPC")
-		TradeFrameRecipientNameText:SetTextColor(r or 1, g or 1, b or 1)
+		_G.TradeFrameRecipientNameText:SetTextColor(r or 1, g or 1, b or 1)
 
-		-- Simple, reliable GUID fetch
 		local guid = UnitGUID("NPC")
 		if not guid then
 			infoText:SetText("|cffff0000" .. L["Stranger"])
 			return
 		end
+
 		local text = "|cffff0000" .. L["Stranger"]
 		if C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) then
 			text = "|cffffff00" .. FRIEND
@@ -449,61 +468,61 @@ function Module:CreateTradeTargetInfo()
 	end
 
 	updateColor()
-	TradeFrame:HookScript("OnShow", updateColor)
+	_G.TradeFrame:HookScript("OnShow", updateColor)
 end
 
--- ALT + Right Click to Buy a Stack
+-- REASON: Adds Alt+RightClick functionality to buy a full stack from a merchant instantly.
 do
-	local cache = {}
-	local itemLink, id
+	local sessionCache = {}
+	local pendingItemLink, pendingItemID
 
 	StaticPopupDialogs["BUY_STACK"] = {
 		text = L["Stack Buying Check"],
 		button1 = YES,
 		button2 = NO,
 		OnAccept = function()
-			if not itemLink then
+			if not pendingItemLink then
 				return
 			end
-			BuyMerchantItem(id, GetMerchantItemMaxStack(id))
-			cache[itemLink] = true
-			itemLink = nil
+			_G.BuyMerchantItem(pendingItemID, GetMerchantItemMaxStack(pendingItemID))
+			sessionCache[pendingItemLink] = true
+			pendingItemLink = nil
 		end,
 		hideOnEscape = 1,
 		hasItemFrame = 1,
 	}
 
-	local _MerchantItemButton_OnModifiedClick = MerchantItemButton_OnModifiedClick
-	function MerchantItemButton_OnModifiedClick(self, ...)
+	local originalMerchantItemButton_OnModifiedClick = _G.MerchantItemButton_OnModifiedClick
+	_G.MerchantItemButton_OnModifiedClick = function(self, ...)
 		if IsAltKeyDown() then
-			id = self:GetID()
-			itemLink = GetMerchantItemLink(id)
-			if not itemLink then
+			pendingItemID = self:GetID()
+			pendingItemLink = GetMerchantItemLink(pendingItemID)
+			if not pendingItemLink then
 				return
 			end
 
-			local name, _, quality, _, _, _, _, maxStack, _, texture = C_Item_GetItemInfo(itemLink)
+			local name, _, quality, _, _, _, _, maxStack, _, texture = C_Item_GetItemInfo(pendingItemLink)
 			if maxStack and maxStack > 1 then
-				if not cache[itemLink] then
+				if not sessionCache[pendingItemLink] then
 					local r, g, b = C_Item_GetItemQualityColor(quality or 1)
 					StaticPopup_Show("BUY_STACK", " ", " ", {
 						["texture"] = texture,
 						["name"] = name,
 						["color"] = { r, g, b, 1 },
-						["link"] = itemLink,
-						["index"] = id,
+						["link"] = pendingItemLink,
+						["index"] = pendingItemID,
 						["count"] = maxStack,
 					})
 				else
-					BuyMerchantItem(id, GetMerchantItemMaxStack(id))
+					_G.BuyMerchantItem(pendingItemID, GetMerchantItemMaxStack(pendingItemID))
 				end
 			end
 		end
-		_MerchantItemButton_OnModifiedClick(self, ...)
+		originalMerchantItemButton_OnModifiedClick(self, ...)
 	end
 end
 
--- Resurrect Sound on Request
+-- REASON: Plays a distinct sound when receiving a resurrection request.
 do
 	local function soundOnResurrect()
 		if C["Unitframe"].ResurrectSound then
@@ -514,35 +533,39 @@ do
 end
 
 -- Buttons to enhance popup menu
+-- REASON: Appends a "Add Friend" button to specific unit context menus.
 function Module:CustomMenu_AddFriend(rootDescription, data, name)
 	rootDescription:CreateButton(K.InfoColor .. ADD_CHARACTER_FRIEND, function()
 		local fullName = data.server and data.name .. "-" .. data.server or data.name
-		C_FriendList.AddFriend(name or fullName)
+		C_FriendList_AddFriend(name or fullName)
 	end)
 end
 
--- Build guild invite string: "Invite to <Guild Name>" when possible
+-- REASON: Dynamically builds the guild invite string based on the player's current guild.
 local guildInviteString
 function Module:UpdateGuildInviteString()
 	local base = _G.COMMUNITIES_INVITE_MANAGER_LABEL or "Invite to %s"
 	local guildName = GetGuildInfo("player")
 	if guildName and guildName ~= "" then
-		guildInviteString = format(base, guildName)
+		guildInviteString = string_format(base, guildName)
 	else
-		guildInviteString = gsub("Invite To Guild", HEADER_COLON, "")
+		guildInviteString = string_gsub("Invite To Guild", HEADER_COLON, "")
 	end
 end
+
+-- REASON: Appends a "Guild Invite" button to specific unit context menus.
 function Module:CustomMenu_GuildInvite(rootDescription, data, name)
 	rootDescription:CreateButton(K.InfoColor .. guildInviteString, function()
 		local fullName = data.server and data.name .. "-" .. data.server or data.name
-		C_GuildInfo.Invite(name or fullName)
+		_G.C_GuildInfo.Invite(name or fullName)
 	end)
 end
 
+-- REASON: Appends a "Copy Name" button to specific unit context menus for easy name extraction.
 function Module:CustomMenu_CopyName(rootDescription, data, name)
 	rootDescription:CreateButton(K.InfoColor .. COPY_NAME, function()
-		local editBox = ChatEdit_ChooseBoxForSend()
-		local hasText = (editBox:GetText() ~= "")
+		local editBox = _G.ChatEdit_ChooseBoxForSend()
+		local hasText = editBox:GetText() ~= ""
 		ChatEdit_ActivateChat(editBox)
 		editBox:Insert(name or data.name)
 		if not hasText then
@@ -551,40 +574,39 @@ function Module:CustomMenu_CopyName(rootDescription, data, name)
 	end)
 end
 
+-- REASON: Appends a "Whisper" button to specific unit context menus.
 function Module:CustomMenu_Whisper(rootDescription, data)
 	rootDescription:CreateButton(K.InfoColor .. WHISPER, function()
-		ChatFrameUtil.SendTell(data.name)
+		_G.ChatFrame_SendTell(data.name)
 	end)
 end
 
+-- REASON: Modifies the new WoW 10.0+ Menu System to inject custom KkthnxUI context menu options.
 function Module:CreateQuickMenuList()
 	if not C["Misc"].QuickMenuList then
 		return
 	end
 
-	--hooksecurefunc(UnitPopupManager, "OpenMenu", function(_, which)
-	--	print("MENU_UNIT_"..which)
-	--end)
-
-	Menu.ModifyMenu("MENU_UNIT_SELF", function(_, rootDescription, data)
+	local menu = _G.Menu
+	menu.ModifyMenu("MENU_UNIT_SELF", function(_, rootDescription, data)
 		Module:CustomMenu_CopyName(rootDescription, data)
 		Module:CustomMenu_Whisper(rootDescription, data)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_TARGET", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_TARGET", function(_, rootDescription, data)
 		Module:CustomMenu_CopyName(rootDescription, data)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_PLAYER", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_PLAYER", function(_, rootDescription, data)
 		Module:CustomMenu_GuildInvite(rootDescription, data)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_FRIEND", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_FRIEND", function(_, rootDescription, data)
 		Module:CustomMenu_AddFriend(rootDescription, data)
 		Module:CustomMenu_GuildInvite(rootDescription, data)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_BN_FRIEND", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_BN_FRIEND", function(_, rootDescription, data)
 		local fullName
 		local gameAccountInfo = data.accountInfo and data.accountInfo.gameAccountInfo
 		if gameAccountInfo then
@@ -599,112 +621,99 @@ function Module:CreateQuickMenuList()
 		Module:CustomMenu_CopyName(rootDescription, data, fullName)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_PARTY", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_PARTY", function(_, rootDescription, data)
 		Module:CustomMenu_GuildInvite(rootDescription, data)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_RAID", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_RAID", function(_, rootDescription, data)
 		Module:CustomMenu_AddFriend(rootDescription, data)
 		Module:CustomMenu_GuildInvite(rootDescription, data)
 		Module:CustomMenu_CopyName(rootDescription, data)
 		Module:CustomMenu_Whisper(rootDescription, data)
 	end)
 
-	Menu.ModifyMenu("MENU_UNIT_RAID_PLAYER", function(_, rootDescription, data)
+	menu.ModifyMenu("MENU_UNIT_RAID_PLAYER", function(_, rootDescription, data)
 		Module:CustomMenu_GuildInvite(rootDescription, data)
 	end)
 end
 
+-- REASON: Implements a custom waypoint system compatible with Blizzard's 9.0+ mapping API.
 function Module:CreateCustomWaypoint()
-	if hash_SlashCmdList["/WAY"] or hash_SlashCmdList["/GO"] then
+	if _G.hash_SlashCmdList["/WAY"] or _G.hash_SlashCmdList["/GO"] then
 		return
 	end
 
-	-- Disable our waypoint system entirely if TomTom is loaded
 	if C_AddOns.IsAddOnLoaded("TomTom") then
 		return
 	end
 
 	local debugMode = false
-	-- Use 1/10000 precision in hyperlink coords; display with one decimal place
 	local pointString = K.InfoColor .. "|Hworldmap:%d:%d:%d|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%.1f, %.1f)%s]|h|r"
+	local recentWaypoints = {}
 
-	-- Recent waypoints (session)
-	local recent = {}
-
-	-- Debugging function
-	local function DebugPrint(...)
+	local function debugPrint(...)
 		if debugMode then
-			print("|cFF00FF00[DEBUG]:|r", ...)
+			_G.print("|cFF00FF00[DEBUG]:|r", ...)
 		end
 	end
 
-	-- Ensures coordinates are valid and within bounds
-	local function GetCorrectCoord(coord)
-		DebugPrint("Validating coordinate:", coord)
+	local function getCorrectCoord(coord)
+		debugPrint("Validating coordinate:", coord)
+		-- Remove any accidental trailing dots that could break tonumber
+		coord = coord and coord:gsub("%.+$", "")
 		local num = tonumber(coord)
 		if not num then
 			return
 		end
-		if num > 100 then
-			return 100
-		end
-		if num < 0 then
-			return 0
-		end
-		return num
+		return math_max(0, math_min(num, 100))
 	end
 
-	local function CanWaypointOnMap(mapID)
+
+	local function canWaypointOnMap(mapID)
 		if not mapID then
 			return false
 		end
-		local ok = true
-		if C_Map and C_Map.CanSetUserWaypointOnMap then
-			ok = C_Map.CanSetUserWaypointOnMap(mapID)
+		local canSet = true
+		if _G.C_Map and _G.C_Map.CanSetUserWaypointOnMap then
+			canSet = _G.C_Map.CanSetUserWaypointOnMap(mapID)
 		end
-		return not not ok
+		return not not canSet
 	end
 
-	-- Formats the clickable waypoint message
-	local function FormatClickableWaypoint(mapID, x, y, mapName, desc)
+	local function formatClickableWaypoint(mapID, x, y, mapName, desc)
 		local descriptionPart = desc and (" " .. desc) or ""
-		-- World map hyperlink expects coordinates as percent * 100 (e.g., 50.0 -> 5000)
-		local hx = math.floor(x * 100 + 0.5)
-		local hy = math.floor(y * 100 + 0.5)
-		local formatted = string.format(pointString, mapID, hx, hy, mapName, x, y, descriptionPart)
-		DebugPrint("Formatted clickable waypoint message:", formatted)
+		local hx = math_floor(x * 100 + 0.5)
+		local hy = math_floor(y * 100 + 0.5)
+		local formatted = string_format(pointString, mapID, hx, hy, mapName, x, y, descriptionPart)
+		debugPrint("Formatted clickable waypoint message:", formatted)
 		return formatted
 	end
 
-	-- Sets the waypoint and supertracks it
-	local function SetWaypoint(mapID, x, y, desc)
+	local function setWaypoint(mapID, x, y, desc)
 		if not mapID or not x or not y then
 			return
 		end
-		local info = C_Map.GetMapInfo(mapID)
+
+		local info = C_Map_GetMapInfo(mapID)
 		local mapName = (info and info.name) or "Unknown"
-		DebugPrint("Setting waypoint - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
+		debugPrint("Setting waypoint - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
 
-		local message = FormatClickableWaypoint(mapID, x, y, mapName, desc)
-		print(message)
+		local message = formatClickableWaypoint(mapID, x, y, mapName, desc)
+		_G.print(message)
 
-		if CanWaypointOnMap(mapID) then
-			C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
-			-- Always supertrack our user waypoint
-			C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+		if canWaypointOnMap(mapID) then
+			C_Map_SetUserWaypoint(UiMapPoint_CreateFromCoordinates(mapID, x / 100, y / 100))
+			C_SuperTrack_SetSuperTrackedUserWaypoint(true)
 		end
 
-		-- Save recent (max 20)
-		recent[#recent + 1] = { mapID = mapID, x = x, y = y, desc = desc, name = mapName }
-		if #recent > 20 then
-			table.remove(recent, 1)
+		table_insert(recentWaypoints, { mapID = mapID, x = x, y = y, desc = desc, name = mapName })
+		if #recentWaypoints > 20 then
+			table_remove(recentWaypoints, 1)
 		end
 
-		-- Optionally open world map
 		if C["WorldMap"].AutoOpenWaypoint then
-			if C_Map.OpenWorldMap then
-				C_Map.OpenWorldMap(mapID)
+			if _G.C_Map.OpenWorldMap then
+				_G.C_Map.OpenWorldMap(mapID)
 			elseif WorldMapFrame then
 				if WorldMapFrame.SetMapID then
 					WorldMapFrame:SetMapID(mapID)
@@ -714,44 +723,42 @@ function Module:CreateCustomWaypoint()
 		end
 	end
 
-	-- Parses the input message for mapID, coordinates, and description
-	local function ParseInput(msg)
-		DebugPrint("Parsing input:", msg)
+	local function parseInput(msg)
+		debugPrint("Parsing input:", msg)
 		msg = (msg or ""):gsub("^%s+", ""):gsub("%s+$", "")
-		-- '/way here' -> player's current map and position
 		if msg == "" or msg:lower() == "here" then
-			local mapID = C_Map.GetBestMapForUnit("player")
+			local mapID = C_Map_GetBestMapForUnit("player")
 			if not mapID then
-				print("Unable to determine the current map.")
+				_G.print("Unable to determine the current map.")
 				return
 			end
-			local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+			local pos = _G.C_Map.GetPlayerMapPosition(mapID, "player")
 			if not pos then
-				print("Unable to determine player position on the current map.")
+				_G.print("Unable to determine player position on the current map.")
 				return
 			end
 			local px, py = pos:GetXY()
 			return mapID, px * 100, py * 100, nil
 		end
 
-		-- Normalize separators: allow 'x,y', 'x y', 'x; y', decimals with '.' or ','
-		msg = msg:gsub(",", ".")
-		msg = msg:gsub(";", " ")
-		msg = msg:gsub("%s+", " ")
+		-- Convert commas followed by spaces to just spaces (e.g. "51.29, 44.31" -> "51.29 44.31")
+		msg = msg:gsub(",%s+", " ")
+		-- Convert remaining commas to dots (for EU coordinate format)
+		msg = msg:gsub(",", "."):gsub(";", " "):gsub("%s+", " ")
 
-		-- Name-based: "Map Name" x y [desc] OR MapName x y [desc]
-		local mapName, nsx, nsy, ndesc = msg:match('^"([^"]+)"%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$')
+		local mapName, nsx, nsy, ndesc = string_match(msg, '^"([^"]+)"%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$')
 		if not mapName then
-			mapName, nsx, nsy, ndesc = msg:match("^([^#%d][^%d]*)%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$")
+			mapName, nsx, nsy, ndesc = string_match(msg, "^([^#%d][^%d]*)%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$")
 			if mapName then
 				mapName = mapName:gsub("%s+$", "")
 			end
 		end
+
 		if mapName and nsx and nsy then
-			local function FindRoot(id)
-				local info = C_Map.GetMapInfo(id)
-				while info and info.parentMapID do
-					local parent = C_Map.GetMapInfo(info.parentMapID)
+			local function findRoot(id)
+				local info = C_Map_GetMapInfo(id)
+				while info and info.parentMapID and info.parentMapID ~= 0 do
+					local parent = C_Map_GetMapInfo(info.parentMapID)
 					if not parent then
 						break
 					end
@@ -759,11 +766,12 @@ function Module:CreateCustomWaypoint()
 				end
 				return info and info.mapID
 			end
-			local function FindByName(rootID, name)
+
+			local function findByName(rootID, name)
 				if not rootID then
 					return
 				end
-				local children = C_Map.GetMapChildrenInfo(rootID, nil, true)
+				local children = _G.C_Map.GetMapChildrenInfo(rootID, nil, true)
 				if children then
 					local lname = name:lower()
 					for i = 1, #children do
@@ -774,119 +782,113 @@ function Module:CreateCustomWaypoint()
 					end
 				end
 			end
-			local current = C_Map.GetBestMapForUnit("player")
-			local root = current and FindRoot(current)
-			local found = root and FindByName(root, mapName)
+
+			local current = C_Map_GetBestMapForUnit("player")
+			local root = current and findRoot(current)
+			local found = root and findByName(root, mapName)
 			if found then
-				local xx = GetCorrectCoord(nsx)
-				local yy = GetCorrectCoord(nsy)
+				local xx = getCorrectCoord(nsx)
+				local yy = getCorrectCoord(nsy)
 				if xx and yy then
 					return found, xx, yy, (ndesc ~= "" and ndesc or nil)
 				end
 			end
-			-- fall through if not found
 		end
 
-		-- With explicit mapID: '#<mapID> x y [desc]'
-		local mapID, sx, sy, desc = msg:match("^#(%d+)%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$")
+		local mapID, sx, sy, desc = string_match(msg, "^#(%d+)%s+([%d%.]+)%s+([%d%.]+)%s*(.*)$")
 		if not mapID then
-			-- Without mapID: 'x y [desc]' -> default to player's map
-			sx, sy, desc = msg:match("^([%d%.]+)%s+([%d%.]+)%s*(.*)$")
+			sx, sy, desc = string_match(msg, "^([%d%.]+)%s+([%d%.]+)%s*(.*)$")
 			if sx and sy then
-				mapID = C_Map.GetBestMapForUnit("player")
+				mapID = C_Map_GetBestMapForUnit("player")
 				if not mapID then
-					print("Unable to determine the current map.")
+					_G.print("Unable to determine the current map.")
 					return
 				end
 			end
 		end
 
 		if not mapID or not sx or not sy then
-			print("Invalid input. Usage: /way [#<mapID>] <x> <y> [description]")
+			if mapName then
+				_G.print(string_format("Map '%s' not found.", mapName))
+			else
+				_G.print("Invalid input. Usage: /way [#<mapID>] <x> <y> [description]")
+			end
 			return
 		end
 
-		local x = GetCorrectCoord(sx)
-		local y = GetCorrectCoord(sy)
+		local x = getCorrectCoord(sx)
+		local y = getCorrectCoord(sy)
 		mapID = tonumber(mapID)
 
 		if not (x and y and mapID) then
-			print("Coordinates must be between 0 and 100, and mapID must be valid.")
+			_G.print("Coordinates must be between 0 and 100, and mapID must be valid.")
 			return
 		end
 
-		DebugPrint("Parsed values - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
+		debugPrint("Parsed values - MapID:", mapID, "X:", x, "Y:", y, "Description:", desc or "No description")
 		return mapID, x, y, (desc ~= "" and desc or nil)
 	end
 
-	-- Handles slash command inputs
-	local function HandleSlashCommand(msg, command)
-		DebugPrint("Handling /" .. command .. " command with input:", msg)
-		local lower = (msg or ""):lower():gsub("^%s+", "")
+	local function handleSlashCommand(msg, command)
+		debugPrint("Handling /" .. command .. " command with input:", msg)
+		local lowerInput = (msg or ""):lower():gsub("^%s+", "")
 
-		-- Manage
-		if lower == "clear" then
-			if C_Map.ClearUserWaypoint then
-				C_Map.ClearUserWaypoint()
+		if lowerInput == "clear" then
+			if _G.C_Map.ClearUserWaypoint then
+				_G.C_Map.ClearUserWaypoint()
 			end
-			C_SuperTrack.SetSuperTrackedUserWaypoint(false)
-			print("Waypoints cleared.")
+			C_SuperTrack_SetSuperTrackedUserWaypoint(false)
+			_G.print("Waypoints cleared.")
+			return
+		elseif lowerInput == "list" then
+			if #recentWaypoints == 0 then
+				_G.print("No recent waypoints.")
+			else
+				_G.print("Recent waypoints:")
+				for i, wp in ipairs(recentWaypoints) do
+					local message = formatClickableWaypoint(wp.mapID, wp.x, wp.y, wp.name, wp.desc)
+					_G.print(string_format(" [%d] %s", i, message))
+				end
+			end
 			return
 		else
-			local idx = lower:match("^remove%s+(%d+)$")
-			if idx then
-				idx = tonumber(idx)
-				if idx >= 1 and idx <= #recent then
-					table.remove(recent, idx)
-					print("Removed waypoint #" .. idx .. ".")
+			local removeIndex = lowerInput:match("^remove%s+(%d+)$")
+			if removeIndex then
+				removeIndex = tonumber(removeIndex)
+				if removeIndex >= 1 and removeIndex <= #recentWaypoints then
+					local wp = recentWaypoints[removeIndex]
+					local message = formatClickableWaypoint(wp.mapID, wp.x, wp.y, wp.name, wp.desc)
+					table_remove(recentWaypoints, removeIndex)
+					_G.print("Removed waypoint #" .. removeIndex .. ": " .. message)
 					return
 				end
-				print("Invalid index.")
+				_G.print("Invalid index.")
 				return
 			end
 		end
 
-		-- Option toggles
-		local key, val = lower:match("^(autoopen)%s+(on|off)$")
-		if key and val then
-			local enabled = (val == "on")
-			if key == "autoopen" then
-				options.autoOpenWorldMap = enabled
-			end
-			print("/way option '" .. key .. "' set to " .. val .. ".")
-			return
-		end
-
-		-- Regular
-		local mapID, x, y, desc = ParseInput(msg)
+		local mapID, x, y, desc = parseInput(msg)
 		if mapID then
-			SetWaypoint(mapID, x, y, desc)
+			setWaypoint(mapID, x, y, desc)
 		else
-			DebugPrint("Parsing failed for input:", msg)
+			debugPrint("Parsing failed for input:", msg)
 		end
 	end
 
-	-- Registers the /way and /go slash commands
-	local function RegisterSlashCommands()
-		DebugPrint("Registering /way and /go slash commands")
-
-		SlashCmdList["KKUI_WAY"] = function(msg)
-			HandleSlashCommand(msg, "way")
-		end
-		SLASH_KKUI_WAY1 = "/way"
-
-		SlashCmdList["KKUI_GO"] = function(msg)
-			HandleSlashCommand(msg, "go")
-		end
-		SLASH_KKUI_GO1 = "/go"
+	_G.SlashCmdList["KKUI_WAY"] = function(msg)
+		handleSlashCommand(msg, "way")
 	end
+	_G.SLASH_KKUI_WAY1 = "/way"
 
-	RegisterSlashCommands()
+	_G.SlashCmdList["KKUI_GO"] = function(msg)
+		handleSlashCommand(msg, "go")
+	end
+	_G.SLASH_KKUI_GO1 = "/go"
 end
 
 -- Update Max Camera Zoom
 function Module:UpdateMaxCameraZoom()
 	local value = tonumber(C["Misc"].MaxCameraZoom) or 2.6
-	value = min(max(value, 1), 2.6)
-	SetCVar("cameraDistanceMaxZoomFactor", value)
+	value = math_min(math_max(value, 1), 2.6)
+	_G.SetCVar("cameraDistanceMaxZoomFactor", value)
 end

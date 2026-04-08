@@ -1,20 +1,35 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Automatically removes undesirable buffs (e.g., click-off buffs like Neural Silencer).
+-- - Design: Scans player buffs on UNIT_AURA and uses CancelSpellByName to remove matching entries.
+-- - Events: UNIT_AURA (player), PLAYER_REGEN_ENABLED (deferred)
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
--- Global Caches
-local InCombatLockdown = InCombatLockdown
-local GetTime = GetTime
-local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+-- PERF: Localize globals to reduce lookup overhead.
 local C_Spell_GetSpellLink = C_Spell.GetSpellLink
+local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local CancelSpellByName = CancelSpellByName
+local GetTime = GetTime
+local InCombatLockdown = InCombatLockdown
 local next = next
 local string_format = string.format
 
+-- ---------------------------------------------------------------------------
 -- State
+-- ---------------------------------------------------------------------------
 local queuedAfterCombat = false
 local lastPrintAtBySpellId = {}
 
--- Matching
-local function IsBadAura(badList, aura)
+-- ---------------------------------------------------------------------------
+-- Internal Logic
+-- ---------------------------------------------------------------------------
+local function isBadAura(badList, aura)
+	-- REASON: Checks both spell ID and name against the bad list for maximum compatibility.
 	local spellId = aura.spellId
 	local name = aura.name
 	if spellId and badList[spellId] then
@@ -28,8 +43,8 @@ local function IsBadAura(badList, aura)
 	return false
 end
 
--- Chat Output
-local function PrintRemoved(aura)
+local function printRemoved(aura)
+	-- REASON: Throttles chat output for the same spell to avoid spamming the user.
 	local spellId = aura.spellId
 	if spellId then
 		local now = GetTime()
@@ -45,7 +60,7 @@ local function PrintRemoved(aura)
 	K.Print(K.SystemColor .. string_format(msgRemoved, link) .. "|r")
 end
 
-local function RemoveBadBuffsNow(_, unit)
+local function removeBadBuffsNow(_, unit)
 	if unit and unit ~= "player" then
 		return
 	end
@@ -59,39 +74,42 @@ local function RemoveBadBuffsNow(_, unit)
 		return
 	end
 
+	-- REASON: Defer buff removal if in combat to avoid potential taint or protected function blocks.
 	if InCombatLockdown() then
 		if not queuedAfterCombat then
 			queuedAfterCombat = true
-			K:RegisterEvent("PLAYER_REGEN_ENABLED", RemoveBadBuffsNow)
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", removeBadBuffsNow)
 		end
 		return
 	end
 
 	if queuedAfterCombat then
 		queuedAfterCombat = false
-		K:UnregisterEvent("PLAYER_REGEN_ENABLED", RemoveBadBuffsNow)
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", removeBadBuffsNow)
 	end
 
-	local scanCount = 0
+	-- PERF: Iterates backwards from 40 to safely handle buff removal shifts.
 	for i = 40, 1, -1 do
 		local aura = C_UnitAuras_GetAuraDataByIndex("player", i, "HELPFUL")
 		if aura then
-			scanCount = scanCount + 1
-			if IsBadAura(badList, aura) then
+			if isBadAura(badList, aura) then
 				CancelSpellByName(aura.name)
-				PrintRemoved(aura)
+				printRemoved(aura)
 			end
 		end
 	end
 end
 
--- Public
+-- ---------------------------------------------------------------------------
+-- Module Registration
+-- ---------------------------------------------------------------------------
 function Module:CreateAutoBadBuffs()
+	-- REASON: Entry point to enable/disable the bad buff removal automation.
 	if C["Automation"].NoBadBuffs then
-		K:RegisterEvent("UNIT_AURA", RemoveBadBuffsNow, "player")
+		K:RegisterEvent("UNIT_AURA", removeBadBuffsNow, "player")
 	else
-		K:UnregisterEvent("UNIT_AURA", RemoveBadBuffsNow)
-		K:UnregisterEvent("PLAYER_REGEN_ENABLED", RemoveBadBuffsNow)
+		K:UnregisterEvent("UNIT_AURA", removeBadBuffsNow)
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", removeBadBuffsNow)
 		queuedAfterCombat = false
 	end
 end

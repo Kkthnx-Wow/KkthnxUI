@@ -1,13 +1,9 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("VersionCheck")
 
---[[
-	KkthnxUI Version Check
-	Detects and notifies users when a newer version of KkthnxUI is available
-	by communicating with other users in guild or group via addon messages
-]]
+-- NOTE: Detects newer KkthnxUI versions by communicating with guild/group members via AddonMessages.
 
--- Localize frequently used functions
+-- PERF: Local caching for speed in hot loops and strict typing.
 local string_format = string.format
 local string_gsub = string.gsub
 local tonumber = tonumber
@@ -27,9 +23,9 @@ local StaticPopupDialogs = StaticPopupDialogs
 
 -- Constants
 local VERSION_CHECK_PREFIX = "KKUIVersionCheck"
-local VERSION_CHECK_THROTTLE = 10 -- Seconds between version broadcasts
+local VERSION_CHECK_THROTTLE = 10 -- NOTE: Seconds between broadcasts to limit spam.
 
--- Helper function to parse version string into major and minor numbers
+-- PERF: Helper to parse version string into major/minor numbers for comparison.
 local function ParseVersionTag(version)
 	if not version or type(version) ~= "string" then
 		return 0, 0
@@ -39,7 +35,7 @@ local function ParseVersionTag(version)
 	major = tonumber(major) or 0
 	minor = tonumber(minor) or 0
 
-	-- Validate version numbers
+	-- WARNING: Basic validation to reject malformed or malicious version strings.
 	if major < 0 or major > 999 or minor < 0 or minor > 999 then
 		if K.isDeveloper then
 			K.Print(string_format("Invalid version detected: %s", version))
@@ -50,8 +46,7 @@ local function ParseVersionTag(version)
 	return major, minor
 end
 
--- Compare two version strings
--- Returns: "IsNew" if new > old, "IsOld" if new < old, nil if equal
+-- NOTE: Compare two version strings. Returns "IsNew", "IsOld", or nil.
 function Module:CompareVersions(newVersion, oldVersion)
 	local newMajor, newMinor = ParseVersionTag(newVersion)
 	local oldMajor, oldMinor = ParseVersionTag(oldVersion)
@@ -65,13 +60,12 @@ function Module:CompareVersions(newVersion, oldVersion)
 	return nil
 end
 
--- Create a visual notification for outdated version
+-- NOTE: UI notification handling for outdated client.
 local function ShowVersionNotification(newerVersion)
 	if not C["General"].VersionCheck then
 		return
 	end
 
-	-- Use a simple StaticPopup for notification
 	local popupName = "KKUI_VERSION_OUTDATED"
 	if not StaticPopupDialogs[popupName] then
 		StaticPopupDialogs[popupName] = {
@@ -83,17 +77,15 @@ local function ShowVersionNotification(newerVersion)
 			preferredIndex = 3,
 		}
 	else
-		-- Update the text with the new version
+		-- NOTE: Update existing popup text if already initialized.
 		StaticPopupDialogs[popupName].text = string_format("|cff3c9bedKkthnxUI|r\n\nYour version is outdated!\n\nCurrent: |cffff0000%s|r\nLatest: |cff00ff00%s|r\n\nPlease update to get the latest features and bug fixes.", K.Version, newerVersion)
 	end
 
 	StaticPopup_Show(popupName)
 
-	-- Also print to chat
 	K.Print(string_format("A newer version (%s) is available! You are using version %s. Please update.", newerVersion, K.Version))
 end
 
--- Initialize version check (check stored version against current)
 function Module:InitializeVersionCheck()
 	if self.isInitialized then
 		return
@@ -107,18 +99,17 @@ function Module:InitializeVersionCheck()
 
 	local status = self:CompareVersions(KkthnxUIDB.DetectedVersion, K.Version)
 	if status == "IsNew" then
-		-- A newer version has been detected by others
+		-- REASON: Detected version is newer than local, notify user.
 		local releaseVersion = string_gsub(KkthnxUIDB.DetectedVersion, "(%d+)$", "0")
 		ShowVersionNotification(releaseVersion)
 	elseif status == "IsOld" then
-		-- Our version is newer, update the database
+		-- REASON: Local version is newer than DB, update DB.
 		KkthnxUIDB.DetectedVersion = K.Version
 	end
 
 	self.isInitialized = true
 end
 
--- Send version check message to specified channel
 function Module:SendVersionCheck(channel)
 	if not channel then
 		return
@@ -131,7 +122,7 @@ function Module:SendVersionCheck(channel)
 	end
 end
 
--- Get appropriate message channel based on group status
+-- COMPAT: Determine chat channel based on group type (Retail/Era agnostic).
 function Module:GetMessageChannel()
 	if IsInGroup(2) then -- LE_PARTY_CATEGORY_INSTANCE
 		return "INSTANCE_CHAT"
@@ -143,35 +134,32 @@ function Module:GetMessageChannel()
 	return nil
 end
 
--- Handle incoming version check messages
 function Module:OnVersionCheckMessage(event, prefix, message, channel, sender)
 	if prefix ~= VERSION_CHECK_PREFIX then
 		return
 	end
 
-	-- Ignore messages from ourselves
+	-- REASON: Ignore messages from self to prevent feedback loops.
 	local senderName = Ambiguate(sender, "none")
 	if senderName == K.Name then
 		return
 	end
 
-	-- Validate the received version
 	if not message or message == "" then
 		return
 	end
 
 	local status = self:CompareVersions(message, KkthnxUIDB.DetectedVersion or K.Version)
 	if status == "IsNew" then
-		-- Someone has a newer version
+		-- REASON: Remote peer has newer version, update tracking and re-init.
 		KkthnxUIDB.DetectedVersion = message
 		self:InitializeVersionCheck()
 	elseif status == "IsOld" then
-		-- We have a newer version, broadcast it
+		-- REASON: Remote peer has older version, broadcast ours to help them update.
 		self:SendVersionCheck(channel)
 	end
 end
 
--- Update version check when group roster changes
 function Module:OnGroupRosterUpdate()
 	if not IsInGroup() then
 		return
@@ -183,45 +171,35 @@ function Module:OnGroupRosterUpdate()
 	end
 end
 
--- Module OnEnable function (called by KkthnxUI module system)
 function Module:OnEnable()
-	-- Check if version checking is enabled
 	if not C["General"].VersionCheck then
 		return
 	end
 
-	-- Initialize module state
 	self.lastCheckTime = 0
 	self.isInitialized = false
 
-	-- Initialize database
 	KkthnxUIDB.DetectedVersion = KkthnxUIDB.DetectedVersion or K.Version
 
-	-- Register addon message prefix
 	C_ChatInfo_RegisterAddonMessagePrefix(VERSION_CHECK_PREFIX)
 
-	-- Register event for receiving messages
 	K:RegisterEvent("CHAT_MSG_ADDON", function(...)
 		self:OnVersionCheckMessage(...)
 	end)
 
-	-- Register for group roster updates
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", function()
 		self:OnGroupRosterUpdate()
 	end)
 
-	-- Delay initial check to ensure everything is loaded
+	-- REASON: Delay initial check to ensure addon loading churn has settled.
 	C_Timer_After(2, function()
-		-- Perform initial version check
 		self:InitializeVersionCheck()
 
-		-- Send initial version broadcast to guild if available
 		if IsInGuild() then
 			C_ChatInfo_SendAddonMessage(VERSION_CHECK_PREFIX, K.Version, "GUILD")
 			self.lastCheckTime = GetTime()
 		end
 
-		-- Check group and send to group channel
 		self:OnGroupRosterUpdate()
 	end)
 end

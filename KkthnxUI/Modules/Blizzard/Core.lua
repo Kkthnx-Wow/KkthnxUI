@@ -1,13 +1,31 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Main entry point for Blizzard UI enhancements and modifications.
+-- - Design: Dynamically loads Blizzard-related element modules.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:NewModule("Blizzard")
 
+-- PERF: Localize globals and API functions to minimize lookup overhead.
+local error = error
+local ipairs = ipairs
+local pcall = pcall
+local tostring = tostring
+local type = type
+
+-- ---------------------------------------------------------------------------
+-- Module Loading
+-- ---------------------------------------------------------------------------
 function Module:OnEnable()
 	local loadBlizzardModules = {
 		"CreateAlertFrames",
 		"CreateAltPowerbar",
 		"CreateColorPicker",
 		"CreateMirrorBars",
-		-- "CreateObjectiveFrame",
+		-- "CreateObjectiveFrame", -- REASON: Currently disabled or handled elsewhere.
 		"CreateOrderHallIcon",
 		"CreateTimerTracker",
 		"CreateTutorialDisabling",

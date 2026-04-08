@@ -1,9 +1,22 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Objective Tracker frame.
+-- - Design: Restyles headers, progress bars, and minimize buttons.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+-- REASON: Localize globals for performance and stack safety.
 local _G = _G
+local pairs = _G.pairs
+local tinsert = _G.table.insert
+local hooksecurefunc = _G.hooksecurefunc
 
-local tinsert = table.insert
-local pairs = pairs
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local ObjectiveTrackerFrame = _G.ObjectiveTrackerFrame
 
 local function SkinOjectiveTrackerHeaders(header)
 	if header and header.Background then
@@ -48,8 +61,9 @@ local function HandleTimers(tracker, key)
 	end
 end
 
+-- REASON: Main entry point for Blizzard Objective Tracker skinning.
 C.themes["Blizzard_ObjectiveTracker"] = function()
-	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
+	if C_AddOns_IsAddOnLoaded("!KalielsTracker") then
 		return
 	end
 

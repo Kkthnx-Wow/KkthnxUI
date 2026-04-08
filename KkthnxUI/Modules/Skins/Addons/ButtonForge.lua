@@ -1,5 +1,32 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins ButtonForge action buttons and toolbars.
+-- - Design: Uses ButtonForge API and hooks to style buttons to match KkthnxUI.
+-- - Events: BUTTON_ALLOCATED
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local hooksecurefunc = _G.hooksecurefunc
+local next = _G.next
+local select = _G.select
+
+local BFBar = _G.BFBar
+local BFBindingDialog = _G.BFBindingDialog
+local BFBindingDialogBinding = _G.BFBindingDialogBinding
+local BFBindingDialogUnbind = _G.BFBindingDialogUnbind
+local BFConfigPageToolbarToggle = _G.BFConfigPageToolbarToggle
+local BFConfigureLayer = _G.BFConfigureLayer
+local BFToolbar = _G.BFToolbar
+local BFToolbarToggle = _G.BFToolbarToggle
+local BFUtil = _G.BFUtil
+local ButtonForge_API1 = _G.ButtonForge_API1
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 
 local cfgFont = K.UIFontOutline
 local cfg = {
@@ -62,12 +89,13 @@ local cfg = {
 	},
 }
 
+-- REASON: Main entry point for ButtonForge skinning.
 function Module:ReskinButtonForge()
 	if not C["Skins"].ButtonForge then
 		return
 	end
 
-	if not C_AddOns.IsAddOnLoaded("ButtonForge") then
+	if not C_AddOns_IsAddOnLoaded("ButtonForge") then
 		return
 	end
 

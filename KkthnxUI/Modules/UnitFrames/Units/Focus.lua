@@ -1,11 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Creates and updates the Focus unit frame.
+-- - Design: Features Health, Power, Portrait, Auras, and optional Castbar.
+-- - Events: UNIT_HEALTH, UNIT_POWER, UNIT_AURA, etc. handled by oUF.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- Lua functions
-local select = select
+-- REASON: Localize C-functions (Snake Case)
+local select = _G.select
 
--- WoW API
-local CreateFrame = CreateFrame
+-- REASON: Localize Globals
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
 
 function Module:CreateFocus()
 	self.mystyle = "focus"
@@ -18,6 +28,7 @@ function Module:CreateFocus()
 
 	Module.CreateHeader(self)
 
+	-- REASON: Health Bar Setup
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetHeight(C["Unitframe"].FocusHealthHeight)
 	self.Health:SetPoint("TOPLEFT")
@@ -25,7 +36,8 @@ function Module:CreateFocus()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	-- REASON: Overlay frame for borders and indicators.
+	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints(self.Health)
 	self.Overlay:SetFrameLevel(5)
 
@@ -34,7 +46,7 @@ function Module:CreateFocus()
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K:SmoothBar(self.Health)
+		-- K:SmoothBar(self.Health)
 	end
 
 	if C["Unitframe"].HealthbarColor == 3 then
@@ -57,6 +69,7 @@ function Module:CreateFocus()
 	self.Health.Value:SetFontObject(K.UIFont)
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Unitframe"].FocusPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
@@ -68,7 +81,7 @@ function Module:CreateFocus()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K:SmoothBar(self.Power)
+		-- K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -97,15 +110,16 @@ function Module:CreateFocus()
 		end
 	end
 
+	-- REASON: Portrait Setup (2D/3D support)
 	if focusPortraitStyle ~= 0 then
 		if focusPortraitStyle == 4 then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusPortrait", self)
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			self.Portrait:SetAlpha(0.6)
 		elseif focusPortraitStyle == 5 then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusPortrait", self.Health)
+			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -115,7 +129,7 @@ function Module:CreateFocus()
 				Module:ApplyPortraitAlphaFix(self)
 			end
 		elseif focusPortraitStyle ~= 5 and focusPortraitStyle ~= 4 then
-			self.Portrait = self.Health:CreateTexture("KKUI_FocusPortrait", "BACKGROUND", nil, 1)
+			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -130,6 +144,7 @@ function Module:CreateFocus()
 		end
 	end
 
+	-- REASON: Aura Debuffs
 	if C["Unitframe"].FocusDebuffs then
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
@@ -148,6 +163,7 @@ function Module:CreateFocus()
 		self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 	end
 
+	-- REASON: Aura Buffs
 	if C["Unitframe"].FocusBuffs then
 		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
@@ -167,8 +183,9 @@ function Module:CreateFocus()
 		self.Buffs.PostUpdateButton = Module.PostUpdateButton
 	end
 
+	-- REASON: Castbar
 	if C["Unitframe"].FocusCastbar then
-		local Castbar = CreateFrame("StatusBar", "oUF_CastbarFocus", self)
+		local Castbar = CreateFrame("StatusBar", nil, self)
 		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		Castbar:SetFrameLevel(10)
 		Castbar:SetSize(C["Unitframe"].FocusCastbarWidth, C["Unitframe"].FocusCastbarHeight)
@@ -222,6 +239,7 @@ function Module:CreateFocus()
 		self.Castbar = Castbar
 	end
 
+	-- REASON: Heal Prediction
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetAllPoints(self.Health)
@@ -270,11 +288,11 @@ function Module:CreateFocus()
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
 		overAbsorbBar:Hide()
-		local tex = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetHorizTile(true)
+		tex2:SetVertTile(true)
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		healAbsorbBar:SetPoint("TOP")
@@ -286,11 +304,11 @@ function Module:CreateFocus()
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
 		healAbsorbBar:Hide()
-		local tex = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetHorizTile(true)
+		tex3:SetVertTile(true)
 
 		local overAbsorb = self.Health:CreateTexture(nil, "OVERLAY", nil, 2)
 		overAbsorb:SetWidth(8)
@@ -324,6 +342,7 @@ function Module:CreateFocus()
 	end
 
 	-- Level
+	-- REASON: Level Tag
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	if focusPortraitStyle ~= 0 and focusPortraitStyle ~= 4 then
 		self.Level:Show()
@@ -371,6 +390,7 @@ function Module:CreateFocus()
 	end
 	self.ReadyCheckIndicator:SetSize(C["Unitframe"].FocusHealthHeight - 4, C["Unitframe"].FocusHealthHeight - 4)
 
+	-- REASON: Resurrection Indicator
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)
 	if focusPortraitStyle ~= 0 and focusPortraitStyle ~= 4 then
@@ -379,6 +399,7 @@ function Module:CreateFocus()
 		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
 	end
 
+	-- REASON: Debuff Highlight (Magic, Poison, etc.)
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)

@@ -23,7 +23,7 @@ local CreateFrame = CreateFrame
 local UIParent = UIParent
 
 -- ---------------------------------------------------------------------------
--- Utility Helpers
+-- UTILITY HELPERS
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Simple helper to extract keys from a table for iteration or sorting.
@@ -36,7 +36,7 @@ local function tKeys(t)
 end
 
 -- ---------------------------------------------------------------------------
--- Static Event Handlers
+-- STATIC EVENT HANDLERS
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Handles cogwheel clicks in the main GUI to toggle the ExtraGUI panel.
@@ -114,7 +114,7 @@ local function OnCogwheelLeave(self)
 end
 
 -- ---------------------------------------------------------------------------
--- Configuration API
+-- CONFIGURATION API
 -- ---------------------------------------------------------------------------
 
 -- Get default value for a config path
@@ -179,7 +179,7 @@ local function SetExtraConfigValue(configPath, value, settingName)
 end
 
 -- ---------------------------------------------------------------------------
--- Reset to Default Functionality
+-- RESET TO DEFAULT FUNCTIONALITY
 -- ---------------------------------------------------------------------------
 
 -- REASON: Provides a way for users to revert individual settings without a full GUI reset.
@@ -238,48 +238,33 @@ local function ResetToDefault(configPath, widget, settingName)
 end
 
 -- ---------------------------------------------------------------------------
--- Control Key Checker (Reset Buttons)
+-- CONTROL KEY CHECKER (RESET BUTTONS)
 -- ---------------------------------------------------------------------------
 
--- NOTE: Global frame to track Ctrl key state; used to reveal hidden reset buttons on hover.
+-- NOTE: Global frame tracking Ctrl state without passive polling.
 local CtrlChecker = CreateFrame("Frame")
 local resetButtons = {}
 
-local function CtrlUpdate()
-	for widget, resetButton in pairs(resetButtons) do
-		if widget:IsMouseOver() then
-			if IsControlKeyDown() then
-				if not resetButton:IsShown() then
-					resetButton:Show()
+local function CtrlUpdate(_, _, key, state)
+	if key == "LCTRL" or key == "RCTRL" then
+		for widget, resetButton in pairs(resetButtons) do
+			if widget:IsMouseOver() then
+				if state == 1 then
+					if not resetButton:IsShown() then
+						resetButton:Show()
+					end
+				else
+					if resetButton:IsShown() then
+						resetButton:Hide()
+						GameTooltip:Hide()
+					end
 				end
-			else
-				if resetButton:IsShown() then
-					resetButton:Hide()
-					GameTooltip:Hide()
-				end
-			end
-		else
-			if resetButton:IsShown() then
-				resetButton:Hide()
-				GameTooltip:Hide()
+				break -- Only one widget can be moused over at a time
 			end
 		end
 	end
 end
-
-CtrlChecker.CtrlUpdate = CtrlUpdate
--- NOTE: Update logic is throttled to 0.12s to minimize CPU impact while the GUI is open.
-CtrlChecker:SetScript("OnUpdate", nil)
-
--- Throttled OnUpdate to reduce per-frame work
-local function CtrlChecker_OnUpdate(self, elapsed)
-	self._accum = (self._accum or 0) + (elapsed or 0)
-	if self._accum < 0.12 then
-		return
-	end
-	self._accum = 0
-	CtrlChecker:CtrlUpdate()
-end
+CtrlChecker:SetScript("OnEvent", CtrlUpdate)
 
 -- REASON: Attaches a hidden reset button to a widget that appears only when Ctrl is held.
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
@@ -337,6 +322,21 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 	-- Store reference for showing/hiding
 	widget.ResetButton = resetButton
 
+	-- Hook native widget events for zero-polling control states
+	widget:HookScript("OnEnter", function()
+		if IsControlKeyDown() then
+			resetButton:Show()
+		end
+	end)
+	
+	widget:HookScript("OnLeave", function()
+		C_Timer.After(0.01, function()
+			if resetButton:IsShown() and not widget:IsMouseOver() and not resetButton:IsMouseOver() then
+				resetButton:Hide()
+			end
+		end)
+	end)
+
 	-- Register with global checker
 	resetButtons[widget] = resetButton
 
@@ -344,7 +344,7 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 end
 
 -- ---------------------------------------------------------------------------
--- Constants & Layout Config
+-- CONSTANTS & LAYOUT CONFIG
 -- ---------------------------------------------------------------------------
 
 -- REASON: Panel dimensions are derived from the main GUI to ensure visual consistency.
@@ -360,7 +360,7 @@ local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
 -- ---------------------------------------------------------------------------
--- Internal Helpers
+-- INTERNAL HELPERS
 -- ---------------------------------------------------------------------------
 
 -- PERF: Use unified widget factory to reduce individual texture allocations.
@@ -388,7 +388,7 @@ local function CreateSectionHeader(parent, text, width, yOffset)
 end
 
 -- ---------------------------------------------------------------------------
--- ExtraGUI Module Core
+-- EXTRAGUI MODULE CORE
 -- ---------------------------------------------------------------------------
 
 local ExtraGUI = {
@@ -399,7 +399,7 @@ local ExtraGUI = {
 }
 
 -- ---------------------------------------------------------------------------
--- Configuration Registration
+-- CONFIGURATION REGISTRATION
 -- ---------------------------------------------------------------------------
 
 -- REASON: Allows other modules to hook into the GUI and provide supplemental settings.
@@ -425,7 +425,7 @@ function ExtraGUI:HasExtraConfig(configPath)
 end
 
 -- ---------------------------------------------------------------------------
--- UI Component: Side Panel Frame
+-- UI COMPONENT: SIDE PANEL FRAME
 -- ---------------------------------------------------------------------------
 
 -- REASON: Creates the physical frame for the side panel; lazy-loaded when needed.
@@ -551,7 +551,7 @@ function ExtraGUI:CreateFrame()
 end
 
 -- ---------------------------------------------------------------------------
--- Panel Positioning Logic
+-- PANEL POSITIONING LOGIC
 -- ---------------------------------------------------------------------------
 
 -- REASON: Ensures the panel is always flush with the main GUI's right edge.
@@ -580,7 +580,7 @@ function ExtraGUI:PositionPanel()
 end
 
 -- ---------------------------------------------------------------------------
--- Visibility Control
+-- VISIBILITY CONTROL
 -- ---------------------------------------------------------------------------
 
 -- REASON: Main entry point for displaying a specific configuration module.
@@ -704,14 +704,14 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	self.Frame:Show()
 	self.IsVisible = true
 
-	-- Enable CtrlChecker updates while ExtraGUI is visible
+	-- Enable CtrlChecker zero-polling modifiers while ExtraGUI is visible
 	if CtrlChecker then
-		CtrlChecker:SetScript("OnUpdate", CtrlChecker_OnUpdate)
+		CtrlChecker:RegisterEvent("MODIFIER_STATE_CHANGED")
 	end
 end
 
 -- ---------------------------------------------------------------------------
--- GUI Hooks
+-- GUI HOOKS
 -- ---------------------------------------------------------------------------
 
 -- REASON: Automatically closes the side panel when the main GUI is hidden.
@@ -749,7 +749,7 @@ function ExtraGUI:Hide()
 
 	-- Disable CtrlChecker when ExtraGUI is hidden
 	if CtrlChecker then
-		CtrlChecker:SetScript("OnUpdate", nil)
+		CtrlChecker:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	end
 end
 
@@ -771,7 +771,7 @@ function ExtraGUI:Toggle()
 end
 
 -- ---------------------------------------------------------------------------
--- Cogwheel Management
+-- COGWHEEL MANAGEMENT
 -- ---------------------------------------------------------------------------
 
 -- REASON: Injects a clickable icon into main GUI widgets to link to extra settings.
@@ -860,7 +860,7 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 end
 
 -- ---------------------------------------------------------------------------
--- Module Initialization
+-- MODULE INITIALIZATION
 -- ---------------------------------------------------------------------------
 
 -- REASON: Ensures the module is only enabled once and pulls in initial configs.
@@ -878,7 +878,7 @@ function ExtraGUI:Enable()
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Helpers
+-- WIDGET HELPERS
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Standardizes spacing within the side panel.
@@ -914,7 +914,7 @@ local function AddNewTag(parent, anchor)
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Switch
+-- WIDGET CREATION: SWITCH
 -- ---------------------------------------------------------------------------
 
 -- REASON: Toggle-based setting widget; features visual feedback and support for 'NEW' tags.
@@ -1051,7 +1051,7 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 end
 
 -- ---------------------------------------------------------------------------
--- Dependency Management
+-- DEPENDENCY MANAGEMENT
 -- ---------------------------------------------------------------------------
 
 -- REASON: Allows widgets to be shown/hidden based on the value of another setting.
@@ -1063,7 +1063,7 @@ function ExtraGUI:DependsOn(childWidget, parentConfigPath, expectedValue, predic
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Slider
+-- WIDGET CREATION: SLIDER
 -- ---------------------------------------------------------------------------
 
 -- REASON: Range-based setting widget; supports fine adjustment via mousewheel.
@@ -1270,7 +1270,7 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Dropdown
+-- WIDGET CREATION: DROPDOWN
 -- ---------------------------------------------------------------------------
 
 -- REASON: Selection-based setting widget; utilizes a shared overlay menu system.
@@ -1485,7 +1485,7 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 end
 
 -- ---------------------------------------------------------------------------
--- Module Hooks: ActionBars
+-- MODULE HOOKS: ACTIONBARS
 -- ---------------------------------------------------------------------------
 
 -- REASON: These helpers bridge the GUI settings to the ActionBar module's internal scaling logic.
@@ -1521,18 +1521,10 @@ local function UpdateActionBar8Scale()
 	K:GetModule("ActionBar"):UpdateActionSize("Bar8")
 end
 
--- REASON: Updates the fader state to ensure changes to visibility/alpha are applied immediately.
-local function UpdateABFaderState()
-	local ActionBarModule = K:GetModule("ActionBar")
-	if not ActionBarModule.fadeParent then
-		return
-	end
-	ActionBarModule:UpdateFaderState()
-	ActionBarModule.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
-end
+
 
 -- ---------------------------------------------------------------------------
--- Module Hooks: Inventory
+-- MODULE HOOKS: INVENTORY
 -- ---------------------------------------------------------------------------
 
 -- REASON: Forces a bag layout refresh when bag-related settings (like sorting or size) are changed.
@@ -1544,7 +1536,7 @@ local function UpdateBagStatus()
 end
 
 -- ---------------------------------------------------------------------------
--- Configuration Registration: Examples & Built-ins
+-- CONFIGURATION REGISTRATION: EXAMPLES & BUILT-INS
 -- ---------------------------------------------------------------------------
 
 -- NOTE: This function populates the ExtraGUI with standard configurations for core addon features.
@@ -1567,10 +1559,6 @@ function ExtraGUI:RegisterExampleConfigs()
 
 		local bar1FontSlider = self:CreateSlider(parent, "ActionBar.Bar1Font", L["Button FontSize"], 8, 20, 1, L["Bar1Font Desc"], UpdateActionBar1Scale)
 		bar1FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar1FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar1Fade", L["Enable Fade for Bar 1"], L["Allows Bar 1 to fade based on the specified conditions"], UpdateABFaderState)
-		bar1FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Set parent height based on content
@@ -1596,10 +1584,6 @@ function ExtraGUI:RegisterExampleConfigs()
 		bar2FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar2FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar2Fade", L["Enable Fade for Bar 2"], L["Allows Bar 2 to fade based on the specified conditions"], UpdateABFaderState)
-		bar2FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
 		-- Set parent height based on content
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Bar 2")
@@ -1623,10 +1607,6 @@ function ExtraGUI:RegisterExampleConfigs()
 		bar3FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar3FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar3Fade", L["Enable Fade for Bar 3"], L["Allows Bar 3 to fade based on the specified conditions"], UpdateABFaderState)
-		bar3FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Bar 3")
 
@@ -1647,10 +1627,6 @@ function ExtraGUI:RegisterExampleConfigs()
 
 		local bar4FontSlider = self:CreateSlider(parent, "ActionBar.Bar4Font", L["Button FontSize"], 8, 20, 1, L["Bar4Font Desc"], UpdateActionBar4Scale)
 		bar4FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar4FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar4Fade", L["Enable Fade for Bar 4"], L["Allows Bar 4 to fade based on the specified conditions"], UpdateABFaderState)
-		bar4FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Set parent height based on content
@@ -1676,10 +1652,6 @@ function ExtraGUI:RegisterExampleConfigs()
 		bar5FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar5FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar5Fade", L["Enable Fade for Bar 5"], L["Allows Bar 5 to fade based on the specified conditions"], UpdateABFaderState)
-		bar5FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
 		-- Set parent height based on content
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Bar 5")
@@ -1701,10 +1673,6 @@ function ExtraGUI:RegisterExampleConfigs()
 
 		local bar6FontSlider = self:CreateSlider(parent, "ActionBar.Bar6Font", L["Button FontSize"], 8, 20, 1, L["Bar6Font Desc"], UpdateActionBar6Scale)
 		bar6FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar6FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar6Fade", L["Enable Fade for Bar 6"], L["Allows Bar 6 to fade based on the specified conditions"], UpdateABFaderState)
-		bar6FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Set parent height based on content
@@ -1730,10 +1698,6 @@ function ExtraGUI:RegisterExampleConfigs()
 		bar7FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar7FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar7Fade", L["Enable Fade for Bar 7"], L["Allows Bar 7 to fade based on the specified conditions"], UpdateABFaderState)
-		bar7FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
 		-- Set parent height based on content
 		parent:SetHeight(math.abs(yOffset) + 20)
 	end, "Bar 7")
@@ -1755,10 +1719,6 @@ function ExtraGUI:RegisterExampleConfigs()
 
 		local bar8FontSlider = self:CreateSlider(parent, "ActionBar.Bar8Font", L["Button FontSize"], 8, 20, 1, L["Bar8Font Desc"], UpdateActionBar8Scale)
 		bar8FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar8FadeSwitch = self:CreateSwitch(parent, "ActionBar.Bar8Fade", L["Enable Fade for Bar 8"], L["Allows Bar 8 to fade based on the specified conditions"], UpdateABFaderState)
-		bar8FadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Set parent height based on content
@@ -3635,7 +3595,7 @@ function ExtraGUI:RegisterExampleConfigs()
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Color Picker
+-- WIDGET CREATION: COLOR PICKER
 -- ---------------------------------------------------------------------------
 
 -- REASON: Provides a button that opens the system color picker; supports live updates via hooks.
@@ -3721,7 +3681,7 @@ function ExtraGUI:CreateColorPicker(parent, configPath, text, tooltip, hookFunct
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Checkbox Group
+-- WIDGET CREATION: CHECKBOX GROUP
 -- ---------------------------------------------------------------------------
 
 -- REASON: Handles multiple boolean values stored as a table in the config; ideal for multi-selection.
@@ -3882,7 +3842,7 @@ function ExtraGUI:CreateCheckboxGroup(parent, configPath, text, options, tooltip
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Text Input
+-- WIDGET CREATION: TEXT INPUT
 -- ---------------------------------------------------------------------------
 
 -- REASON: Multi-functional text input; supports placeholders, ESC to revert, and an explicit apply button.
@@ -4122,7 +4082,7 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 end
 
 -- ---------------------------------------------------------------------------
--- Widget Creation: Button
+-- WIDGET CREATION: BUTTON
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Delegates button creation to the unified K.WidgetFactory for visual consistency across the UI.
@@ -4132,7 +4092,7 @@ function ExtraGUI:CreateButton(parent, text, width, height, onClick)
 end
 
 -- ---------------------------------------------------------------------------
--- Module Exports
+-- MODULE EXPORTS
 -- ---------------------------------------------------------------------------
 
 K.ExtraGUI = ExtraGUI

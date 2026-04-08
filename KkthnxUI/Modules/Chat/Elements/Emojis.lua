@@ -1,11 +1,27 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Replaces text-based emojis (e.g., :smile:) with graphical textures in chat.
+-- - Design: Uses ChatFrame message filters to iterate over words and match them against an emoji database.
+-- - Events: CHAT_MSG_SAY, CHAT_MSG_WHISPER, CHAT_MSG_GUILD, etc.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Chat")
 
--- Simplify string functions usage
-local gmatch, gsub, match, trim = string.gmatch, string.gsub, string.match, string.trim
+-- PERF: Localize globals and API functions to reduce lookup overhead.
+local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local ipairs = ipairs
+local string_gmatch = string.gmatch
+local string_gsub = string.gsub
+local string_match = string.match
+local string_trim = string.trim
 
--- List of chat events
-local chatEvents = {
+-- ---------------------------------------------------------------------------
+-- Constants
+-- ---------------------------------------------------------------------------
+local CHAT_EVENTS = {
 	"CHAT_MSG_BN_WHISPER",
 	"CHAT_MSG_BN_WHISPER_INFORM",
 	"CHAT_MSG_CHANNEL",
@@ -24,36 +40,43 @@ local chatEvents = {
 	"CHAT_MSG_YELL",
 }
 
--- Function to replace emojis in chat messages
+-- ---------------------------------------------------------------------------
+-- Emoji Logic
+-- ---------------------------------------------------------------------------
 function Module:SetupEmojis(_, msg)
-	for word in gmatch(msg, "%s-%S+%s*") do
-		word = trim(word)
-		local pattern = gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
-		local emoji = C.SetEmojiTexture[pattern]
+	-- REASON: Scans the message for words that match defined emoji patterns and replaces them with textures.
+	for word in string_gmatch(msg, "%s-%S+%s*") do
+		word = string_trim(word)
+		local pattern = string_gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
+		local emojiTexture = C.SetEmojiTexture[pattern]
 
-		if emoji and match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
-			emoji = "|T" .. emoji .. ":14:14|t"
-			local base64 = K.LibBase64:Encode(word)
-			local replacement = base64 and ("%1|Helvmoji:%%" .. base64 .. "|h|cFFffffff|r|h") or "%1"
-			msg = gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", replacement .. emoji .. "%2")
+		if emojiTexture and string_match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
+			-- REASON: Wraps the texture in a hyperlinked invisible tag to allow the original text to be copied.
+			local textureString = "|T" .. emojiTexture .. ":14:14|t"
+			local base64Code = K.LibBase64:Encode(word)
+			local replacementFormat = base64Code and ("%1|Helvmoji:%%" .. base64Code .. "|h|cFFffffff|r|h") or "%1"
+			msg = string_gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", replacementFormat .. textureString .. "%2")
 		end
 	end
 	return msg
 end
 
--- Function to filter and apply emojis to chat messages
 function Module:ApplyEmojis(event, msg, ...)
+	-- REASON: Interface for the ChatFrame filter system; returns the modified message.
 	msg = Module:SetupEmojis(event, msg)
 	return false, msg, ...
 end
 
--- Function to initialize emoji application in chat
+-- ---------------------------------------------------------------------------
+-- Initialization
+-- ---------------------------------------------------------------------------
 function Module:CreateEmojis()
+	-- REASON: Registration entry point; hooks all specified chat events to the emoji filter.
 	if not C["Chat"].Emojis then
 		return
 	end
 
-	for _, event in ipairs(chatEvents) do
+	for _, event in ipairs(CHAT_EVENTS) do
 		ChatFrame_AddMessageEventFilter(event, self.ApplyEmojis)
 	end
 end

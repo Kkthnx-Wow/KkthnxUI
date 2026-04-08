@@ -1,7 +1,19 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Manages and skins the Class Stance/Shapeshift Bar.
+-- - Design: Reparents Blizzard's StanceButtons and provides custom layout controls.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
--- WoW / Lua locals
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache globals and shapeshift APIs for performance during stance switching.
 local _G = _G
 local tinsert = tinsert
 local math_ceil = math.ceil
@@ -17,28 +29,37 @@ local RegisterStateDriver = RegisterStateDriver
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
--- Constants
 local MARGIN, PADDING = 6, 0
 local NUM_SLOTS = NUM_STANCE_SLOTS or 10
+
+-- ---------------------------------------------------------------------------
+-- STANCE BAR UTILITIES
+-- ---------------------------------------------------------------------------
 
 local function GetStanceFrame()
 	return _G.KKUI_ActionBarStance
 end
 
--- Comment: Normalize GetShapeshiftFormInfo return values across clients/patches
--- Comment: Some sources include a name return, others omit it. We only need texture/isActive/isCastable.
+-- COMPAT: Normalizes GetShapeshiftFormInfo return values across Retail and Classic clients.
+-- REASON: Blizzard changed the return signature in newer patches; we wrap it to ensure
+-- consistent access to texture, active state, and castability.
 local function GetNormalizedShapeshiftFormInfo(index)
 	local a, b, c, d, e = GetShapeshiftFormInfo(index)
-	-- Comment: Retail-style: icon, active, castable, spellID
+	-- NOTE: Detect Retail-style returns (starts with icon, then active boolean).
 	if type(b) == "boolean" or type(b) == "number" then
 		return a, b and true or false, c and true or false, d or e
 	end
-	-- Comment: Classic-style: icon, name, active, castable, spellID
+	-- NOTE: Detect Classic-style returns (starts with icon, then name string).
 	return a, c and true or false, d and true or false, e
 end
 
--- Layout: Update stance bar size, layout, and button positions
+-- ---------------------------------------------------------------------------
+-- LAYOUT & UPDATES
+-- ---------------------------------------------------------------------------
+
+-- REASON: Recalculates the stance bar size and button positions based on user settings.
 function Module:UpdateStanceBar()
+	-- WARNING: Secure movement/layout is restricted in combat to prevent taints.
 	if InCombatLockdown() then
 		return
 	end
@@ -52,7 +73,7 @@ function Module:UpdateStanceBar()
 	local fontSize = C["ActionBar"].BarStanceFont
 	local perRow = C["ActionBar"].BarStancePerRow
 
-	-- Comment: Clamp to avoid divide-by-zero / bad layouts if config is corrupted
+	-- NOTE: Safe clamp to prevent divide-by-zero if configuration is invalid.
 	if not perRow or perRow < 1 then
 		perRow = NUM_SLOTS
 	end
@@ -83,7 +104,7 @@ function Module:UpdateStanceBar()
 	frame.mover:SetSize(size, size)
 end
 
--- Helpers: Split hot-path updates to avoid running full layout on frequent events
+-- NOTE: Lightweight update path for cooldown refreshes.
 function Module:UpdateStanceCooldowns(frame)
 	frame = frame or GetStanceFrame()
 	if not frame or not frame.buttons then
@@ -105,6 +126,7 @@ function Module:UpdateStanceCooldowns(frame)
 	end
 end
 
+-- NOTE: Lightweight update path for mana/energy availability.
 function Module:UpdateStanceUsable(frame)
 	frame = frame or GetStanceFrame()
 	if not frame or not frame.buttons then
@@ -130,6 +152,7 @@ function Module:UpdateStanceUsable(frame)
 	end
 end
 
+-- NOTE: Lightweight update path for current active form (checked state).
 function Module:UpdateStanceActive(frame)
 	frame = frame or GetStanceFrame()
 	if not frame or not frame.buttons then
@@ -148,7 +171,7 @@ function Module:UpdateStanceActive(frame)
 	end
 end
 
--- Full update: Texture/visibility + cooldown + active + usable
+-- REASON: Performs a full refresh of all stance button properties (texture, visibility, state).
 function Module:UpdateStance(frame)
 	frame = frame or GetStanceFrame()
 	if not frame or not frame.buttons then
@@ -174,7 +197,8 @@ function Module:UpdateStance(frame)
 				icon:SetTexture(texture)
 			end
 
-			-- Comment: Showing/hiding secure buttons can taint in combat, so only do it out of combat
+			-- WARNING: Toggling button visibility (Show/Hide) triggers secure logic.
+			-- We defer this until combat ends to avoid taints.
 			if texture then
 				if not inCombat then
 					button:Show()
@@ -213,13 +237,18 @@ function Module:UpdateStance(frame)
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- EVENT HANDLERS
+-- ---------------------------------------------------------------------------
+
 function Module.StanceBarOnEvent(event)
 	local frame = GetStanceFrame()
 	if not frame then
 		return
 	end
 
-	-- Comment: Only do layout work when forms change (hot events only update what they need)
+	-- REASON: Distinguish between layout-altering events and state-altering events
+	-- to minimize redundant calculations.
 	if event == "UPDATE_SHAPESHIFT_FORMS" then
 		Module:UpdateStanceBar()
 		Module:UpdateStance(frame)
@@ -241,9 +270,12 @@ function Module.StanceBarOnEvent(event)
 		return
 	end
 
-	-- Comment: Initial call or unknown event; do a safe full refresh
 	Module:UpdateStance(frame)
 end
+
+-- ---------------------------------------------------------------------------
+-- BAR CREATION
+-- ---------------------------------------------------------------------------
 
 function Module:CreateStancebar()
 	local buttonList = {}
@@ -252,6 +284,7 @@ function Module:CreateStancebar()
 	frame.mover = K.Mover(frame, "Stance Bar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, MARGIN })
 	Module.movers[9] = frame.mover
 
+	-- NOTE: Hijack Blizzard's stance buttons for our custom layout.
 	for i = 1, NUM_SLOTS do
 		local button = _G["StanceButton" .. i]
 		if not button then
@@ -266,13 +299,14 @@ function Module:CreateStancebar()
 
 	frame.buttons = buttonList
 
+	-- NOTE: Determine visibility based on vehicle/override states.
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", not C["ActionBar"].ShowStance and "hide" or frame.frameVisibility)
 
-	-- Comment: Do one full layout+refresh at creation
 	Module:UpdateStanceBar()
 	Module:UpdateStance(frame)
 
+	-- Register class-specific stance events.
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORM", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)

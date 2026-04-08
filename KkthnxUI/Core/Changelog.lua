@@ -146,23 +146,27 @@ local function BuildChangelogText(highlightLatestOnly)
 			end
 
 			if hasSection then
-				for section, items in pairs(entry.changes) do
-					local color = useGrey and greyColor or (sectionColors[section] or "|cffFFFFFF")
-					local icon = sectionIcons[section] or "•"
-					lines[#lines + 1] = color .. icon .. " " .. section .. ":|r"
+				local sectionOrder = { "Bug Fixes", "New Features", "Performance", "Improvements", "General", "API" }
+				for _, section in ipairs(sectionOrder) do
+					local items = entry.changes[section]
+					if items then
+						local color = useGrey and greyColor or (sectionColors[section] or "|cffFFFFFF")
+						local icon = sectionIcons[section] or "•"
+						lines[#lines + 1] = color .. icon .. " " .. section .. ":|r"
 
-					for j = 1, #items do
-						-- REASON: Alternate shades slightly for better readability in long lists.
-						local bulletColor = useGrey and greyColor or K.SystemColor
-						local textColor
-						if useGrey then
-							textColor = greyColor
-						else
-							textColor = (j % 2 == 1) and "|cffEEEEEE" or "|cffCCCCCC"
+						for j = 1, #items do
+							-- REASON: Alternate shades slightly for better readability in long lists.
+							local bulletColor = useGrey and greyColor or K.SystemColor
+							local textColor
+							if useGrey then
+								textColor = greyColor
+							else
+								textColor = (j % 2 == 1) and "|cffEEEEEE" or "|cffCCCCCC"
+							end
+							lines[#lines + 1] = "  " .. bulletColor .. "• |r" .. textColor .. items[j] .. "|r"
 						end
-						lines[#lines + 1] = "  " .. bulletColor .. "• |r" .. textColor .. items[j] .. "|r"
+						lines[#lines + 1] = " "
 					end
-					lines[#lines + 1] = " "
 				end
 			else
 				for j = 1, #entry.changes do
@@ -211,6 +215,7 @@ local function CreateChangelogFrame()
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
 	frame:RegisterForDrag("LeftButton")
+	frame:SetClampedToScreen(true)
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 	frame:Hide()
@@ -412,10 +417,6 @@ SLASH_KKUI_CHANGELOG2 = "/kkchangelog"
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Automated check on login; respects user's "don't show" preference.
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("PLAYER_LOGIN")
-eventFrame:SetScript("OnEvent", function(_, event)
-	if event == "PLAYER_LOGIN" then
-		K:ShowChangelog(false)
-	end
+K:RegisterEvent("PLAYER_LOGIN", function()
+	K:ShowChangelog(false)
 end)

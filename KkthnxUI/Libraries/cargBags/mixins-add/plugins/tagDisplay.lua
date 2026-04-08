@@ -112,7 +112,7 @@ local function GetNumFreeSlots(name)
 		return totalFree
 	elseif name == "Bank" then
 		local numFreeSlots = GetContainerNumFreeSlots(-1)
-		for bagID = 6, 11 do
+		for bagID = 6, 12 do
 			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots

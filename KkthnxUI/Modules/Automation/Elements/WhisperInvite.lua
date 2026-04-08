@@ -1,24 +1,41 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Automatically invites players to a group when they whisper a specific keyword.
+-- - Design: Monitors chat messages and cross-references senders with friends/guild lists.
+-- - Events: CHAT_MSG_WHISPER, CHAT_MSG_BN_WHISPER
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
--- Cache WoW API functions
-local IsInGuild = IsInGuild
-local GetNumGuildMembers = GetNumGuildMembers
-local GetGuildRosterInfo = GetGuildRosterInfo
+-- PERF: Localize globals and WoW API functions to minimize lookup overhead.
+local _G = _G
 local Ambiguate = Ambiguate
-local C_FriendList_IsFriend = C_FriendList.IsFriend
-local C_BattleNet_GetAccountInfoByID = C_BattleNet.GetAccountInfoByID
-local CanCooperateWithGameAccount = CanCooperateWithGameAccount
-local C_PartyInfo_InviteUnit = C_PartyInfo.InviteUnit
 local BNInviteFriend = BNInviteFriend
+local C_BattleNet_GetAccountInfoByID = C_BattleNet.GetAccountInfoByID
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+local C_PartyInfo_InviteUnit = C_PartyInfo.InviteUnit
+local CanCooperateWithGameAccount = CanCooperateWithGameAccount
+local GetGuildRosterInfo = GetGuildRosterInfo
+local GetNumGuildMembers = GetNumGuildMembers
+local IsInGuild = IsInGuild
 
+-- ---------------------------------------------------------------------------
+-- State
+-- ---------------------------------------------------------------------------
 local autoInviteKeyword
 
--- Check if a player is in the same guild
+-- ---------------------------------------------------------------------------
+-- Internal Checkers
+-- ---------------------------------------------------------------------------
 local function isPlayerInGuild(unitName)
+	-- REASON: Scans the guild roster to verify if the whispering unit is a guild mate.
 	if not unitName or not IsInGuild() then
 		return false
 	end
+
 	unitName = Ambiguate(unitName, "none")
 	for i = 1, GetNumGuildMembers() do
 		if Ambiguate(GetGuildRosterInfo(i), "none") == unitName then
@@ -28,42 +45,49 @@ local function isPlayerInGuild(unitName)
 	return false
 end
 
--- Check if the player is either a guild member or a friend
 local function isPlayerGuildOrFriend(name)
+	-- REASON: Checks if the user has restricted invites to guild/friends only.
 	if not C["Automation"].WhisperInviteRestriction then
-		return true -- Allow everyone if restriction is disabled
+		return true
 	end
 	return isPlayerInGuild(name) or C_FriendList_IsFriend(name)
 end
 
--- Handle whispers and send invites if keyword matches
+-- ---------------------------------------------------------------------------
+-- Chat Handling
+-- ---------------------------------------------------------------------------
 local function onChatWhisper(event, message, sender, _, _, _, _, _, _, _, _, _, _, presenceID)
-	if QueueStatusButton:IsShown() then
+	-- REASON: Prevents sending invites if the player is currently in a queue to avoid social awkwardness/bugs.
+	local queueStatusButton = _G.QueueStatusButton
+	if queueStatusButton and queueStatusButton:IsShown() then
 		return
-	end -- Ignore if the player is in a queue
+	end
 
 	if autoInviteKeyword and message:lower() == autoInviteKeyword:lower() and isPlayerGuildOrFriend(sender) then
 		if event == "CHAT_MSG_WHISPER" then
 			C_PartyInfo_InviteUnit(sender)
 		elseif event == "CHAT_MSG_BN_WHISPER" then
+			-- REASON: Handles BNet-specific invites which require account/game ID lookups.
 			local accountInfo = C_BattleNet_GetAccountInfoByID(presenceID)
 			if accountInfo and CanCooperateWithGameAccount(accountInfo) then
-				local gameID = accountInfo.gameAccountInfo.gameAccountID
-				if gameID then
-					BNInviteFriend(gameID)
+				local gameAccountInfo = accountInfo.gameAccountInfo
+				if gameAccountInfo and gameAccountInfo.gameAccountID then
+					BNInviteFriend(gameAccountInfo.gameAccountID)
 				end
 			end
 		end
 	end
 end
 
--- Update the keyword for auto invite
 local function onUpdateInviteKeyword()
 	autoInviteKeyword = C["Automation"].WhisperInvite
 end
 
--- Initialize the auto whisper invite feature
+-- ---------------------------------------------------------------------------
+-- Module Registration
+-- ---------------------------------------------------------------------------
 function Module:CreateAutoWhisperInvite()
+	-- REASON: Feature entry point; registers for whisper events based on user configuration.
 	if C["Automation"].WhisperInvite then
 		onUpdateInviteKeyword()
 		K:RegisterEvent("CHAT_MSG_WHISPER", onChatWhisper)

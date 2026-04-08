@@ -1,22 +1,29 @@
--- Inspect Frame Skin
--- Purpose: Reskins the inspection frame, equipment slots, and model viewer.
--- Performance: Cached texture paths and optimized tab switching logic.
--- Maintainer: WoW AddOn Forge
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Inspect frame and equipment slots.
+-- - Design: Applies custom borders, textures, and class-specific backgrounds for inspection.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
--- Cache Lua Globals
+-- REASON: Localize globals for performance and stack safety.
 local _G = _G
-local ipairs = ipairs
-local table_insert = table.insert
+local ipairs = _G.ipairs
+local pairs = _G.pairs
+local hooksecurefunc = _G.hooksecurefunc
 
--- Cache WoW API
-local C_Item_IsCosmeticItem = C_Item.IsCosmeticItem
-local GetInventoryItemLink = GetInventoryItemLink
-local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
-local UnitClass = UnitClass
-local hooksecurefunc = hooksecurefunc
+local C_Item_IsCosmeticItem = _G.C_Item.IsCosmeticItem
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
+local UnitClass = _G.UnitClass
+
+-- NOTE: InspectFrame globals are NOT cached here because Blizzard_InspectUI is load-on-demand.
+-- The frames don't exist at file parse time, so caching would result in nil values.
+-- Access them directly via _G inside the theme function instead.
 
 -- Constants
 local SLOT_SIZE = 36
@@ -63,7 +70,7 @@ end
 -- Helper Functions
 
 local function UpdateCosmetic(self)
-	local unit = InspectFrame.unit
+	local unit = _G.InspectFrame and _G.InspectFrame.unit
 	if not unit then
 		return
 	end
@@ -137,7 +144,7 @@ local function StyleEquipmentSlot(slotName)
 end
 
 local function ApplyInspectFrameLayout()
-	local inspectFrame = InspectFrame
+	local inspectFrame = _G.InspectFrame
 	if not inspectFrame or not inspectFrame.Inset then
 		return
 	end
@@ -177,10 +184,22 @@ end
 
 -- Main Theme Registration
 
+-- REASON: Main entry point for Blizzard Inspect UI skinning.
 C.themes["Blizzard_InspectUI"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
+
+	-- REASON: Access via _G because these frames don't exist at file parse time (load-on-demand addon).
+	local InspectFrame = _G.InspectFrame
+	local InspectFrameInset = _G.InspectFrameInset
+	local InspectHandsSlot = _G.InspectHandsSlot
+	local InspectHeadSlot = _G.InspectHeadSlot
+	local InspectMainHandSlot = _G.InspectMainHandSlot
+	local InspectModelFrame = _G.InspectModelFrame
+	local InspectPaperDollItemsFrame = _G.InspectPaperDollItemsFrame
+	local InspectSecondaryHandSlot = _G.InspectSecondaryHandSlot
+
 	if InspectFrame and InspectFrame.KKUI_Skinned then
 		return
 	end

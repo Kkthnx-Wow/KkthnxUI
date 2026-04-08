@@ -1,4 +1,18 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard TradeSkill UI.
+-- - Design: Restyles the rank bar and adjusts optional reagent list positioning.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local TradeSkillFrame = _G.TradeSkillFrame
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 
 -- Function to skin the TradeSkillFrame Rank Bar
 local function SkinTradeSkillRankBar()
@@ -29,8 +43,14 @@ local function AdjustOptionalReagentListPosition()
 end
 
 -- Main function to apply custom skin for the Blizzard TradeSkill UI
+-- REASON: Main entry point for Blizzard TradeSkill UI skinning.
 C.themes["Blizzard_TradeSkillUI"] = function()
 	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
+	-- REASON: Abort if TradeSkillUI is not loaded.
+	if not TradeSkillFrame then
 		return
 	end
 

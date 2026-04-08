@@ -1,5 +1,17 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Replaces the default Blizzard micro menu with a KkthnxUI styled version.
+-- - Design: Reparents existing micro buttons and applies custom square textures.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
+
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
 
 local insert = table.insert
 local table_wipe = table.wipe
@@ -15,17 +27,24 @@ local MAINMENU_BUTTON = MAINMENU_BUTTON
 
 local MicroButtons = {}
 
+-- ---------------------------------------------------------------------------
+-- MICRO MENU UTILITIES
+-- ---------------------------------------------------------------------------
+
+-- REASON: Ensures the button stays anchored to its custom parent frame even if the Blizzard UI tries to move it.
 local function ResetButtonProperties(button)
 	button:ClearAllPoints()
 	button:SetAllPoints(button.__owner)
 end
 
+-- NOTE: Standardizes the texture coordinates and positioning to fit the square KkthnxUI aesthetic.
 local function SetTextureProperties(button, texture)
 	texture:SetTexCoord(0.2, 0.80, 0.22, 0.8)
 	texture:SetPoint("TOPLEFT", button, "TOPLEFT", 3, -5)
 	texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 5)
 end
 
+-- REASON: Replaces Blizzard's rounded or irregular highlight/normal textures with uniform square ones.
 local function SetupMicroButtonTextures(button)
 	local highlight, normal, pushed, disabled, flash = button:GetHighlightTexture(), button:GetNormalTexture(), button:GetPushedTexture(), button:GetDisabledTexture(), button.FlashBorder
 	local flashTexture = K.MediaFolder .. "Skins\\HighlightMicroButtonWhite"
@@ -78,6 +97,10 @@ local function SetupMicroButtonTextures(button)
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- FADING LOGIC
+-- ---------------------------------------------------------------------------
+
 local function FadeOutMicroMenu()
 	local KKUI_MenuBar = _G.KKUI_MenuBar
 	if KKUI_MenuBar then
@@ -85,7 +108,7 @@ local function FadeOutMicroMenu()
 	end
 end
 
--- Improved mouse detection using timer instead of OnUpdate
+-- PERF: Use C_Timer instead of OnUpdate to reduce CPU cycles while handling menu fading.
 local fadeTimer
 local function StartFadeTimer()
 	if fadeTimer then
@@ -120,6 +143,12 @@ local function OnMicroButtonLeave()
 	StartFadeTimer()
 end
 
+-- ---------------------------------------------------------------------------
+-- MICRO MENU CREATION
+-- ---------------------------------------------------------------------------
+
+-- REASON: Wraps individual buttons (either existing Blizzard ones or new custom ones)
+-- into a styled parent frame with border support.
 local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 	local method, tooltip = unpack(data)
 	local buttonFrame = CreateFrame("Frame", nil, parent)
@@ -137,6 +166,7 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 		button:SetParent(buttonFrame)
 		button.__owner = buttonFrame
 
+		-- NOTE: We use a safe hook to force properties back if the game resets them on state change.
 		local hooking = false
 		local function SafeReset()
 			if hooking then
@@ -160,8 +190,6 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 			button:HookScript("OnLeave", OnMicroButtonLeave)
 		end
 
-		-- Keep highlight active; SetupMicroButtonTextures configures it to brighten without resizing
-
 		SetupMicroButtonTextures(button)
 	else
 		buttonFrame:SetScript("OnMouseUp", method)
@@ -181,7 +209,7 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 end
 
 function Module:CreateMicroMenu()
-	-- Disable KkthnxUI MicroMenu when ConsolePort is loaded
+	-- COMMENT: Verification - disable if conflicting or unneeded.
 	if C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("ConsolePort") then
 		if _G.KKUI_MenuBar then
 			_G.KKUI_MenuBar:Hide()
@@ -189,8 +217,8 @@ function Module:CreateMicroMenu()
 		self:CleanupMicroMenu()
 		return
 	end
+
 	if not C["ActionBar"].MicroMenu then
-		-- Clean up if feature is disabled
 		if _G.KKUI_MenuBar then
 			_G.KKUI_MenuBar:Hide()
 		end
@@ -198,7 +226,6 @@ function Module:CreateMicroMenu()
 		return
 	end
 
-	-- Show existing frame if it exists
 	if _G.KKUI_MenuBar then
 		_G.KKUI_MenuBar:Show()
 		return
@@ -207,10 +234,10 @@ function Module:CreateMicroMenu()
 	local FadeMicroMenuEnabled = C["ActionBar"].FadeMicroMenu
 
 	local KKUI_MenuBar = CreateFrame("Frame", "KKUI_MenuBar", K.PetBattleFrameHider)
-	KKUI_MenuBar:SetSize(330, 30)
+	KKUI_MenuBar:SetSize(302, 30)
 	KKUI_MenuBar:SetAlpha(FadeMicroMenuEnabled and not KKUI_MenuBar.IsMouseOvered and 0 or 1)
 	KKUI_MenuBar:EnableMouse(false)
-	K.Mover(KKUI_MenuBar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
+	K.Mover(KKUI_MenuBar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -32, 4 })
 
 	local buttonInfo = {
 		{ "CharacterMicroButton" },
@@ -236,6 +263,7 @@ function Module:CreateMicroMenu()
 		end
 	end
 
+	-- NOTE: Skin the performance bar (latency/fps display) in the main menu button.
 	local MainMenuMicroButton = _G.MainMenuMicroButton
 	if MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar then
 		MainMenuMicroButton.MainMenuBarPerformanceBar:SetTexture(K.GetTexture(C["General"].Texture))
@@ -243,6 +271,7 @@ function Module:CreateMicroMenu()
 		MainMenuMicroButton.MainMenuBarPerformanceBar:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 0)
 	end
 
+	-- NOTE: Character Portrait requires special scaling to fit the square crop.
 	local CharacterMicroButton = _G.CharacterMicroButton
 	if CharacterMicroButton then
 		local function SkinCharacterPortrait(self)
@@ -254,6 +283,7 @@ function Module:CreateMicroMenu()
 		hooksecurefunc(CharacterMicroButton, "SetNormal", SkinCharacterPortrait)
 	end
 
+	-- REASON: Purge Blizzard legacy elements and hooks to prevent UI clutter.
 	if MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar then
 		K.HideInterfaceOption(MainMenuMicroButton.MainMenuBarPerformanceBar)
 	end
@@ -278,7 +308,7 @@ function Module:CreateMicroMenu()
 		MicroMenu.UpdateHelpTicketButtonAnchor = K.Noop
 	end
 
-	-- Add mouse enter/leave handlers for the entire menu bar
+	-- NOTE: Handle interactive area for the entire menu bar for auto-fading.
 	if FadeMicroMenuEnabled then
 		KKUI_MenuBar:EnableMouse(true)
 		KKUI_MenuBar:HookScript("OnEnter", OnMicroButtonEnter)
@@ -286,7 +316,10 @@ function Module:CreateMicroMenu()
 	end
 end
 
--- Add cleanup function for when feature is disabled
+-- ---------------------------------------------------------------------------
+-- CLEANUP
+-- ---------------------------------------------------------------------------
+
 function Module:CleanupMicroMenu()
 	table_wipe(MicroButtons)
 	StopFadeTimer()

@@ -1,12 +1,26 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins Nekometer frame.
+-- - Design: Applies border styling and enforces a default position for Nekometer.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("Skins")
 
--- Localize global functions for better performance
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local CreateFrame = CreateFrame
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
 
-local function ReskinNekometer()
-	if not IsAddOnLoaded("nekometer") or not NekometerMainFrame then
+local NekometerMainFrame = _G.NekometerMainFrame
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+
+-- REASON: Main entry point for Nekometer skinning.
+function Module:ReskinNekometer()
+	if not C_AddOns_IsAddOnLoaded("nekometer") or not NekometerMainFrame then
 		return
 	end
 
@@ -22,6 +36,7 @@ local function ReskinNekometer()
 		end
 	end
 
+	-- REASON: Enforce a standardized position for the Nekometer frame.
 	local point, relativeTo, relativePoint, xOfs, yOfs = NekometerMainFrame:GetPoint()
 	if not (point == "BOTTOMRIGHT" and relativeTo == UIParent and relativePoint == "BOTTOMRIGHT" and xOfs == -500 and yOfs == 4) then
 		NekometerMainFrame:ClearAllPoints()
@@ -29,4 +44,4 @@ local function ReskinNekometer()
 	end
 end
 
-Module:RegisterSkin("nekometer", ReskinNekometer)
+Module:RegisterSkin("nekometer", Module.ReskinNekometer)

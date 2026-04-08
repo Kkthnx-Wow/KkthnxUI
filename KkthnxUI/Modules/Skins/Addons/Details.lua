@@ -1,5 +1,20 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins Details! Damage Meter instances and windows.
+-- - Design: Configures Details instances with KkthnxUI styling and handles auto-embedding.
+-- - Events: DETAILS_INSTANCE_OPEN
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local abs = _G.math.abs
+local Details = _G.Details
+local UIParent = _G.UIParent
 
 local function SetupInstance(instance)
 	if instance.styled then
@@ -57,8 +72,8 @@ local function IsDefaultAnchor(instance)
 	return (relF == "CENTER" and relT == "CENTER" and isDefaultOffset(x) and isDefaultOffset(y))
 end
 
+-- REASON: Re-anchor Details windows according to KkthnxUI standards.
 function Module:ResetDetailsAnchor(force)
-	local Details = Details
 	if not Details then
 		return
 	end
@@ -77,13 +92,17 @@ function Module:ResetDetailsAnchor(force)
 	return instance1
 end
 
+-- REASON: Main entry point for Details skinning.
 local function ReskinDetails()
 	if not C["Skins"].Details then
 		return
 	end
 
-	local Details = Details
-	-- instance table can be nil sometimes
+	if not Details then
+		return
+	end
+
+	-- REASON: Ensure instance tables are initialized.
 	Details.tabela_instancias = Details.tabela_instancias or {}
 	Details.instances_amount = Details.instances_amount or 5
 
@@ -95,7 +114,7 @@ local function ReskinDetails()
 		instance = Details:GetInstance(index)
 	end
 
-	-- Reanchor
+	-- REASON: Automatically re-anchor instances.
 	local instance1 = Module:ResetDetailsAnchor()
 
 	local listener = Details:CreateEventListener()
@@ -110,14 +129,14 @@ local function ReskinDetails()
 		end
 	end
 
-	-- Numberize
+	-- REASON: Align numerical system with KkthnxUI settings.
 	local current = C["General"].NumberPrefixStyle
 	if current < 3 then
 		Details.numerical_system = current
 		Details:SelectNumericalSystem()
 	end
 
-	-- Reset to one window
+	-- REASON: Override welcome window logic to apply custom styling.
 	Details.OpenWelcomeWindow = function()
 		if instance1 then
 			EmbedWindow(instance1, -370, 4, 260, 126)

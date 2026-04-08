@@ -1,53 +1,78 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Re-anchors Blizzard's UI widget containers (e.g., power bars, info frames).
+-- - Design: Creates mover frames and hooks SetPoint methods to force custom positions.
+-- - Events: UPDATE_UI_WIDGET
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("Blizzard")
 
+-- PERF: Localize globals and API functions to reduce lookup overhead.
+local _G = _G
 local CreateFrame = CreateFrame
+local InCombatLockdown = InCombatLockdown
+local Minimap = _G.Minimap
+local UIParent = _G.UIParent
+local UIWidgetBelowMinimapContainerFrame = _G.UIWidgetBelowMinimapContainerFrame
+local UIWidgetPowerBarContainerFrame = _G.UIWidgetPowerBarContainerFrame
 local hooksecurefunc = hooksecurefunc
-local UIParent = UIParent
 
--- Reanchor UIWidgets
+-- ---------------------------------------------------------------------------
+-- UI Widget Anchoring
+-- ---------------------------------------------------------------------------
 function Module:CreateUIWidgets()
-	-- Create a frame to move the UIWidgetFrame to a more desirable location
-	local frame1 = CreateFrame("Frame", "KKUI_WidgetMover", UIParent)
-	frame1:SetSize(200, 50)
-	K.Mover(frame1, "UIWidgetFrame", "UIWidgetFrame", { "TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -28 })
+	-- REASON: Manages widgets typically placed below the Minimap (e.g., scenario objectives).
+	local minimapWidgetMover = CreateFrame("Frame", "KKUI_WidgetMover", UIParent)
+	minimapWidgetMover:SetSize(200, 50)
+	K.Mover(minimapWidgetMover, "UIWidgetFrame", "UIWidgetFrame", { "TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -28 })
 
-	-- Hook the SetPoint method of UIWidgetBelowMinimapContainerFrame to make sure it's always positioned correctly
-	hooksecurefunc(UIWidgetBelowMinimapContainerFrame, "SetPoint", function(self, _, parent)
-		if parent ~= frame1 then
-			self:ClearAllPoints()
-			self:SetPoint("TOPRIGHT", frame1)
-		end
-	end)
+	-- WARNING: Hook SetPoint to override Blizzard's internal frame management which often resets positions during scenarios.
+	if UIWidgetBelowMinimapContainerFrame then
+		hooksecurefunc(UIWidgetBelowMinimapContainerFrame, "SetPoint", function(self, _, parent)
+			if parent ~= minimapWidgetMover then
+				self:ClearAllPoints()
+				self:SetPoint("TOPRIGHT", minimapWidgetMover)
+			end
+		end)
+	end
 
-	-- Create a frame to move the UIWidgetPowerBar to a more desirable location
-	local frame2 = CreateFrame("Frame", "KKUI_WidgetPowerBarMover", UIParent)
-	frame2:SetSize(260, 40)
-	K.Mover(frame2, "UIWidgetPowerBar", "UIWidgetPowerBar", { "BOTTOM", UIParent, "BOTTOM", 0, 250 })
+	-- REASON: Manages widgets that act as power bars (e.g., encounter-specific energy).
+	local powerBarWidgetMover = CreateFrame("Frame", "KKUI_WidgetPowerBarMover", UIParent)
+	powerBarWidgetMover:SetSize(260, 40)
+	K.Mover(powerBarWidgetMover, "UIWidgetPowerBar", "UIWidgetPowerBar", { "BOTTOM", UIParent, "BOTTOM", 0, 250 })
 
-	-- Hook the SetPoint method of UIWidgetPowerBarContainerFrame to make sure it's always positioned correctly
 	local isUpdating = false
-	local WidgetPositionFrame = CreateFrame("Frame", "WidgetPositionFrame")
+	local widgetPositionFrame = CreateFrame("Frame", "WidgetPositionFrame")
 
-	local function UpdateWidgetPosition()
-		if isUpdating or InCombatLockdown() or not UIWidgetPowerBarContainerFrame or not frame2 then
+	local function updateWidgetPosition()
+		-- REASON: Throttles position updates to prevent infinite recursions and combat-related errors.
+		if isUpdating or InCombatLockdown() or not UIWidgetPowerBarContainerFrame or not powerBarWidgetMover then
 			return
 		end
+
 		local widget = UIWidgetPowerBarContainerFrame
-		local point, relativeTo, relativePoint, x, y = widget:GetPoint()
+		local point, relativeTo, _, x, y = widget:GetPoint()
 		local scale = widget:GetScale()
-		if point ~= "CENTER" or relativeTo ~= frame2 or x ~= 0 or y ~= 0 or scale ~= 0.8 then
+
+		-- REASON: Enforces a consistent center-anchor and custom scale (0.8) for encounter power bars.
+		if point ~= "CENTER" or relativeTo ~= powerBarWidgetMover or x ~= 0 or y ~= 0 or scale ~= 0.8 then
 			isUpdating = true
 			widget:ClearAllPoints()
-			widget:SetPoint("CENTER", frame2)
+			widget:SetPoint("CENTER", powerBarWidgetMover)
 			widget:SetScale(0.8)
 			isUpdating = false
 		else
-			WidgetPositionFrame:UnregisterEvent("UPDATE_UI_WIDGET")
+			-- REASON: Avoid unnecessary event processing once the correct position is reached.
+			widgetPositionFrame:UnregisterEvent("UPDATE_UI_WIDGET")
 		end
 	end
 
-	hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", UpdateWidgetPosition)
-	WidgetPositionFrame:RegisterEvent("UPDATE_UI_WIDGET")
-	WidgetPositionFrame:SetScript("OnEvent", UpdateWidgetPosition)
+	if UIWidgetPowerBarContainerFrame then
+		hooksecurefunc(UIWidgetPowerBarContainerFrame, "SetPoint", updateWidgetPosition)
+		widgetPositionFrame:RegisterEvent("UPDATE_UI_WIDGET")
+		widgetPositionFrame:SetScript("OnEvent", updateWidgetPosition)
+	end
 end

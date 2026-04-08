@@ -1,8 +1,18 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Creates and updates the Party Pet unit frame.
+-- - Design: Features Health, Portrait, and basic indicators.
+-- - Events: UNIT_HEALTH, UNIT_AURA, etc. handled by oUF.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local CreateFrame = CreateFrame
-local UnitIsUnit = UnitIsUnit
+-- REASON: Localize Globals
+local CreateFrame = _G.CreateFrame
+local UnitIsUnit = _G.UnitIsUnit
 
 function Module:CreatePartyPet()
 	self.mystyle = "partypet"
@@ -10,7 +20,8 @@ function Module:CreatePartyPet()
 	local PartyPetframeFont = K.UIFont
 	local PartyPetframeTexture = K.GetTexture(C["General"].Texture)
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	-- REASON: Overlay frame for borders and indicators.
+	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(6)
 
@@ -18,6 +29,7 @@ function Module:CreatePartyPet()
 
 	self:CreateBorder()
 
+	-- REASON: Health Bar Setup
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetFrameLevel(self:GetFrameLevel())
 	self.Health:SetAllPoints(self)
@@ -41,22 +53,6 @@ function Module:CreatePartyPet()
 		self.Health.colorReaction = true
 	end
 
-	-- self.Power = CreateFrame("StatusBar", nil, self)
-	-- self.Power:SetFrameStrata("LOW")
-	-- self.Power:SetFrameLevel(self:GetFrameLevel())
-	-- self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
-	-- self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-	-- self.Power:SetHeight(5.5)
-	-- self.Power:SetStatusBarTexture(PartyPetframeTexture)
-
-	-- self.Power.colorPower = true
-	-- self.Power.frequentUpdates = false
-
-	-- self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
-	-- self.Power.Background:SetAllPoints(self.Power)
-	-- self.Power.Background:SetColorTexture(0.2, 0.2, 0.2)
-	-- self.Power.Background.multiplier = 0.3
-
 	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
 	self.Portrait:SetAllPoints()
@@ -73,6 +69,7 @@ function Module:CreatePartyPet()
 	self.RaidTargetIndicator:SetSize(16, 16)
 	self.RaidTargetIndicator:SetPoint("TOP", self, 0, 8)
 
+	-- REASON: Target Highlight
 	if C["Party"].TargetHighlight then
 		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.PartyPetHighlight:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })

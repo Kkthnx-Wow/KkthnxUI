@@ -1,31 +1,20 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Installer")
 
--- Sourced: NDui (siweia)
--- Edited: KkthnxUI (Kkthnx)
+-- NOTE: Sourced from NDui (siweia), modified for KkthnxUI.
 
--- Local Variable Caching - Performance Optimization
-
--- Basic Lua functions
+-- PERF: Local caching for speed in hot loops and strict typing.
 local _G = _G
-
--- Table functions
 local tinsert = table.insert
 local wipe = wipe
-
--- String functions
 local format = format or string.format
-
--- Frame and UI Elements
 local CreateFrame = CreateFrame
 local UIParent = UIParent
-
--- Chat Functions and Variables
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
-local ChatFrame1_AddChannel = ChatFrame1.AddChannel
-local ChatFrame1_AddMessageGroup = ChatFrame1.AddMessageGroup
-local ChatFrame1_RemoveAllMessageGroups = ChatFrame1.RemoveAllMessageGroups
-local ChatFrame1_RemoveChannel = ChatFrame1.RemoveChannel
+local ChatFrame_AddChannel = ChatFrame_AddChannel
+local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
+local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
+local ChatFrame_RemoveChannel = ChatFrame_RemoveChannel
 local ChatTypeInfo = ChatTypeInfo
 local FCF_DockFrame = FCF_DockFrame
 local FCF_OpenNewWindow = FCF_OpenNewWindow
@@ -37,8 +26,6 @@ local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
 local FCF_StopDragging = FCF_StopDragging
 local CHAT_FRAMES = CHAT_FRAMES
-
--- Game and System Settings
 local C_Timer = C_Timer
 local InCombatLockdown = InCombatLockdown
 local PlaySound = PlaySound
@@ -46,11 +33,7 @@ local ReloadUI = ReloadUI
 local SetCVar = SetCVar
 local StaticPopup_Show = StaticPopup_Show
 local StopSound = StopSound
-
--- Tooltips
 local GameTooltip = GameTooltip
-
--- Constants and Miscellaneous
 local APPLY = APPLY
 local CHAT = CHAT
 local COMPLETE = COMPLETE
@@ -63,21 +46,22 @@ local START = START
 local TRADE = TRADE
 local UI_SCALE = UI_SCALE
 
--- Sound IDs
+-- SOUNDKIT IDs
 local SOUNDKIT_ACHIEVEMENT = 21968
 local SOUNDKIT_UI_BNET_TOAST = 140268
 local SOUNDKIT_READY_CHECK = 166318
 
--- Reusable Tables - Memory Management
-
+-- PERF: Reuse tables to reduce garbage collection churn.
 local chatColorTypes = {}
 local defaultCVarsCache = {}
 local combatCVarsCache = {}
 local developerCVarsCache = {}
 
--- Helper Functions
+-- ---------------------------------------------------------------------------
+-- HELPER FUNCTIONS
+-- ---------------------------------------------------------------------------
 
--- Apply CVars from a cached table
+-- REASON: Batch apply CVars to avoid code repetition and ensure consistency.
 local function ApplyCVars(cvarTable)
 	if not cvarTable or #cvarTable == 0 then
 		return
@@ -89,19 +73,18 @@ local function ApplyCVars(cvarTable)
 	end
 end
 
--- Initialize CVar caches (called once)
+-- PERF: Initialize once to avoid rebuilding table on every call.
 local function InitializeCVarCaches()
-	-- Only initialize once
 	if #defaultCVarsCache > 0 then
 		return
 	end
 
-	-- Default CVars
+	-- NOTE: Opinionated defaults for KkthnxUI gameplay feel.
 	defaultCVarsCache = {
 		{ "RotateMinimap", 0 },
 		{ "ShowClassColorInNameplate", 1 },
-		{ "UberTooltips", 1 },
-		{ "WholeChatWindowClickable", 0 },
+		{ "UberTooltips", 1 }, -- Enhanced tooltips
+		{ "WholeChatWindowClickable", 0 }, -- Click-through chat background
 		{ "alwaysCompareItems", 1 },
 		{ "autoLootDefault", 1 },
 		{ "autoOpenLootHistory", 0 },
@@ -109,7 +92,7 @@ local function InitializeCVarCaches()
 		{ "autoQuestWatch", 1 },
 		{ "autoSelfCast", 1 },
 		{ "buffDurations", 1 },
-		{ "cameraDistanceMaxZoomFactor", 2.6 },
+		{ "cameraDistanceMaxZoomFactor", 2.6 }, -- COMPAT: Dragonflight max zoom cap.
 		{ "cameraSmoothStyle", 0 },
 		{ "colorblindMode", 0 },
 		{ "floatingCombatTextCombatDamage", 1 },
@@ -122,11 +105,11 @@ local function InitializeCVarCaches()
 		{ "lockActionBars", 1 },
 		{ "lootUnderMouse", 1 },
 		{ "lossOfControl", 0 },
-		{ "overrideArchive", 0 },
+		{ "overrideArchive", 0 }, -- Prevent harmonious archive override
 		{ "profanityFilter", 0 },
 		{ "removeChatDelay", 1 },
-		{ "screenshotQuality", 10 },
-		{ "scriptErrors", 1 },
+		{ "screenshotQuality", 10 }, -- Max quality
+		{ "scriptErrors", 1 }, -- REASON: User needs to see errors to report them.
 		{ "showArenaEnemyFrames", 0 },
 		{ "showLootSpam", 1 },
 		{ "showTutorials", 0 },
@@ -135,34 +118,35 @@ local function InitializeCVarCaches()
 		{ "taintLog", 0 },
 		{ "violenceLevel", 5 },
 		{ "whisperMode", "inline" },
-		{ "ActionButtonUseKeyDown", 1 },
+		{ "ActionButtonUseKeyDown", 1 }, -- PREF: Cast on press down, not release.
 		{ "fstack_preferParentKeys", 0 },
 		{ "showNPETutorials", 0 },
 		{ "statusTextDisplay", "BOTH" },
 		{ "threatWarning", 3 },
 	}
 
-	-- Combat CVars
+	-- CVars restricted by combat state.
 	combatCVarsCache = {
 		{ "nameplateShowEnemyMinions", 1 },
 		{ "nameplateShowEnemyMinus", 1 },
 		{ "nameplateShowFriendlyMinions", 0 },
 		{ "nameplateShowFriends", 0 },
-		{ "nameplateMotion", 1 },
+		{ "nameplateMotion", 1 }, -- Stacked nameplates
 		{ "nameplateShowAll", 1 },
 		{ "nameplateShowEnemies", 1 },
 		{ "alwaysShowActionBars", 1 },
 	}
 
-	-- Developer CVars
 	developerCVarsCache = {
-		{ "ffxGlow", 0 },
+		{ "ffxGlow", 0 }, -- Disable full screen glow
 		{ "WorldTextScale", 1 },
-		{ "SpellQueueWindow", 25 },
+		{ "SpellQueueWindow", 25 }, -- PERF: Lower latency tolerance for high APM.
 	}
 end
 
--- Module Functions
+-- ---------------------------------------------------------------------------
+-- MODULE FUNCTIONS
+-- ---------------------------------------------------------------------------
 
 function Module:ResetSettings()
 	KkthnxUIDB.Settings[K.Realm][K.Name] = {}
@@ -173,6 +157,7 @@ function Module:ResetData()
 
 	FCF_ResetChatWindows()
 
+	-- REASON: Ensure chat config frame updates to reflect reset.
 	if _G.ChatConfigFrame and _G.ChatConfigFrame:IsShown() then
 		ChatConfig_UpdateChatSettings()
 	end
@@ -183,24 +168,21 @@ function Module:ResetData()
 end
 
 function Module:ForceDefaultCVars()
-	-- Initialize caches if needed
 	InitializeCVarCaches()
 
-	-- Apply default CVars
 	ApplyCVars(defaultCVarsCache)
 
-	-- Apply combat-related CVars if not in combat
+	-- WARNING: Changing combat CVars while in combat will fail or taint.
 	if not InCombatLockdown() then
 		ApplyCVars(combatCVarsCache)
 	end
 
-	-- Apply developer-specific CVars if K.isDeveloper is true
 	if K.isDeveloper then
 		ApplyCVars(developerCVarsCache)
 	end
 end
 
--- Reusable raid frame configuration
+-- WARNING: Protected frame manipulation. Must not run in combat.
 local function ForceRaidFrame()
 	if InCombatLockdown() then
 		return
@@ -220,7 +202,7 @@ local function ForceRaidFrame()
 	_G.CompactUnitFrameProfiles_UpdateCurrentPanel()
 end
 
--- General message groups (cached)
+-- COMPAT: List of standard message groups for ChatFrame1.
 local generalMessageGroups = {
 	"SAY",
 	"EMOTE",
@@ -254,23 +236,21 @@ local generalMessageGroups = {
 }
 
 function Module:ForceChatSettings()
-	-- Reset chat windows
 	FCF_ResetChatWindows()
 
-	-- Set positions and fonts for all chat frames
+	-- REASON: Iterate all chat frames to standardize font and position.
 	for i = 1, #CHAT_FRAMES do
 		local frameName = CHAT_FRAMES[i]
 		local frame = _G[frameName]
 		if frame then
 			local id = frame:GetID()
 
-			-- Set the position for ChatFrame1 (General)
+			-- NOTE: Hardcoded position for General Chat (Frame 1).
 			if id == 1 then
 				frame:ClearAllPoints()
 				frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
 			end
 
-			-- Common configurations for all frames
 			FCF_SetChatWindowFontSize(nil, frame, 12)
 			FCF_SavePositionAndDimensions(frame)
 			FCF_StopDragging(frame)
@@ -283,18 +263,17 @@ function Module:ForceChatSettings()
 	FCF_SetWindowName(ChatFrame1, L["General"])
 	ChatFrame1:Show()
 
-	-- Remove channels and message groups from ChatFrame1
-	ChatFrame1_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame1_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame1_RemoveChannel(ChatFrame1, GENERAL)
-	ChatFrame1_RemoveChannel(ChatFrame1, "LocalDefense")
-	ChatFrame1_RemoveChannel(ChatFrame1, "GuildRecruitment")
-	ChatFrame1_RemoveChannel(ChatFrame1, "LookingForGroup")
-	ChatFrame1_RemoveChannel(ChatFrame1, "Services")
+	-- REASON: Clean up default spam channels.
+	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
+	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
+	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(ChatFrame1, "LocalDefense")
+	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
+	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
+	ChatFrame_RemoveChannel(ChatFrame1, "Services")
 
-	-- Add message groups to ChatFrame1
 	for i = 1, #generalMessageGroups do
-		ChatFrame1_AddMessageGroup(ChatFrame1, generalMessageGroups[i])
+		ChatFrame_AddMessageGroup(ChatFrame1, generalMessageGroups[i])
 	end
 
 	-- Configure ChatFrame2 (Combat Log)
@@ -304,40 +283,39 @@ function Module:ForceChatSettings()
 	FCF_SetWindowName(ChatFrame2, L["Combat"])
 	ChatFrame2:Show()
 
-	-- Configure Whispers Window
+	-- Configure Whispers Window (New)
 	local Whispers = FCF_OpenNewWindow("Whispers")
 	FCF_SetLocked(Whispers, true)
 	FCF_DockFrame(Whispers)
-	ChatFrame1_RemoveAllMessageGroups(Whispers)
-	ChatFrame1_AddMessageGroup(Whispers, "WHISPER")
-	ChatFrame1_AddMessageGroup(Whispers, "BN_WHISPER")
-	ChatFrame1_AddMessageGroup(Whispers, "BN_CONVERSATION")
+	ChatFrame_RemoveAllMessageGroups(Whispers)
+	ChatFrame_AddMessageGroup(Whispers, "WHISPER")
+	ChatFrame_AddMessageGroup(Whispers, "BN_WHISPER")
+	ChatFrame_AddMessageGroup(Whispers, "BN_CONVERSATION")
 
-	-- Configure Trade Window
+	-- Configure Trade Window (New)
 	local Trade = FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
-	ChatFrame1_RemoveAllMessageGroups(Trade)
-	ChatFrame1_AddChannel(Trade, TRADE)
-	ChatFrame1_AddChannel(Trade, GENERAL)
-	ChatFrame1_AddChannel(Trade, L["Services"])
+	ChatFrame_RemoveAllMessageGroups(Trade)
+	ChatFrame_AddChannel(Trade, TRADE)
+	ChatFrame_AddChannel(Trade, GENERAL)
+	ChatFrame_AddChannel(Trade, L["Services"])
 
-	-- Configure Loot Window
+	-- Configure Loot Window (New)
 	local Loot = FCF_OpenNewWindow(L["Loot"])
 	FCF_SetLocked(Loot, true)
 	FCF_DockFrame(Loot)
-	ChatFrame1_RemoveAllMessageGroups(Loot)
-	ChatFrame1_AddMessageGroup(Loot, "COMBAT_XP_GAIN")
-	ChatFrame1_AddMessageGroup(Loot, "COMBAT_HONOR_GAIN")
-	ChatFrame1_AddMessageGroup(Loot, "COMBAT_FACTION_CHANGE")
-	ChatFrame1_AddMessageGroup(Loot, "LOOT")
-	ChatFrame1_AddMessageGroup(Loot, "MONEY")
-	ChatFrame1_AddMessageGroup(Loot, "SKILL")
+	ChatFrame_RemoveAllMessageGroups(Loot)
+	ChatFrame_AddMessageGroup(Loot, "COMBAT_XP_GAIN")
+	ChatFrame_AddMessageGroup(Loot, "COMBAT_HONOR_GAIN")
+	ChatFrame_AddMessageGroup(Loot, "COMBAT_FACTION_CHANGE")
+	ChatFrame_AddMessageGroup(Loot, "LOOT")
+	ChatFrame_AddMessageGroup(Loot, "MONEY")
+	ChatFrame_AddMessageGroup(Loot, "SKILL")
 
-	-- Finalize
 	FCF_SelectDockFrame(ChatFrame1)
 
-	-- Build class color chat types table (cached)
+	-- PERF: Build cache once.
 	if #chatColorTypes == 0 then
 		wipe(chatColorTypes)
 		local baseTypes = {
@@ -361,18 +339,16 @@ function Module:ForceChatSettings()
 			"GUILD_ACHIEVEMENT",
 		}
 
-		-- Add base types
 		for i = 1, #baseTypes do
 			tinsert(chatColorTypes, baseTypes[i])
 		end
 
-		-- Add channel types
 		for i = 1, 20 do
 			tinsert(chatColorTypes, "CHANNEL" .. i)
 		end
 	end
 
-	-- Enable class color for chat types
+	-- REASON: Force class colors on all chat types for better visibility.
 	for i = 1, #chatColorTypes do
 		local chatType = chatColorTypes[i]
 		if ChatTypeInfo[chatType] then
@@ -381,7 +357,10 @@ function Module:ForceChatSettings()
 	end
 end
 
--- Fake Achievement Popup (Optimized)
+-- ---------------------------------------------------------------------------
+-- FAKE ACHIEVEMENT POPUP
+-- ---------------------------------------------------------------------------
+-- NOTE: Purely cosmetic feedback loop for the user during install steps.
 
 local fakeAchievementPopup
 local achievementAnimationGroup
@@ -409,27 +388,23 @@ local function CreateFakeAchievementPopup()
 	popup.iconFrame:SetAllPoints(popup.icon)
 	popup.iconFrame:CreateBorder(nil, nil, nil, nil, nil, nil, "")
 
-	-- Title
 	popup.title = popup:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	popup.title:SetPoint("TOP", popup, "TOP", 0, 18)
 
-	-- Description
 	popup.description = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	popup.description:SetPoint("LEFT", popup.icon, "RIGHT", 14, 0)
 	popup.description:SetPoint("RIGHT", popup, "RIGHT", -8, 0)
 	popup.description:SetJustifyH("LEFT")
 	popup.description:SetWordWrap(true)
 
-	-- Create animation group once and reuse
+	-- PERF: Reuse animation group to avoid creating updated objects excessively.
 	achievementAnimationGroup = popup:CreateAnimationGroup()
 
-	-- Move animation
 	local move = achievementAnimationGroup:CreateAnimation("Translation")
 	move:SetOffset(0, -50)
 	move:SetDuration(0.5)
 	move:SetSmoothing("OUT")
 
-	-- Fade animation
 	local fade = achievementAnimationGroup:CreateAnimation("Alpha")
 	fade:SetFromAlpha(1)
 	fade:SetToAlpha(0)
@@ -448,7 +423,6 @@ end
 local function ShowFakeAchievement(title, description)
 	local popup = CreateFakeAchievementPopup()
 
-	-- Stop any running animation
 	if achievementAnimationGroup:IsPlaying() then
 		achievementAnimationGroup:Stop()
 	end
@@ -457,18 +431,18 @@ local function ShowFakeAchievement(title, description)
 	popup.description:SetText(description)
 	popup:Show()
 
-	-- Play animation
 	achievementAnimationGroup:Play()
 end
 
--- Tutorial Frame (Optimized)
+-- ---------------------------------------------------------------------------
+-- TUTORIAL FRAME
+-- ---------------------------------------------------------------------------
 
 local tutor
 local tutorProgressBar
 local tutorTicker
 local currentPage = 0
 
--- Tutorial page titles (cached)
 local tutorialTitles = {
 	DEFAULT .. " " .. SETTINGS,
 	CHAT,
@@ -477,7 +451,7 @@ local tutorialTitles = {
 	"Tips",
 }
 
--- Fallback tutorial text in case localization fails (color-coded, concise)
+-- COMPAT: Fallback text if localization is missing.
 local tutorialFallbackText = {
 	"|cff5C8BCFOptimize Game Settings|r\n\nApplies |cff4CAF50recommended settings|r:\n\n|cffFFD700• Nameplates, Camera, Combat Text, Raid Frames|r\n\n|cffFF6B6BNote:|r QoL improvements.\n\nClick |cff4CAF50'Apply'|r or |cffFF6B6B'Decline'|r.",
 	"|cff5C8BCFOrganize Chat|r\n\nCreates |cff4CAF50five windows|r:\n\n|cffFFD700General, Combat, Whispers, Trade, Loot|r\n\n|cff4CAF50Bonus:|r Class colors!\n\nClick |cff4CAF50'Apply'|r or |cffFF6B6B'Decline'|r.",
@@ -493,7 +467,6 @@ local function RefreshTutorText(page)
 
 	tutor.title:SetText(tutorialTitles[page])
 
-	-- Use localization with fallback
 	local bodyText = L["Tutorial Page" .. page] or tutorialFallbackText[page] or "No description available."
 	tutor.body:SetText(bodyText)
 
@@ -533,7 +506,7 @@ local function ApplyTutorialStep(page)
 		ShowFakeAchievement("Achievement Earned", "You have successfully applied the relevant AddOn Settings.")
 		PlaySound(SOUNDKIT_ACHIEVEMENT)
 	elseif page == 5 then
-		Module:ForceDefaultCVars() -- Set these one more time
+		Module:ForceDefaultCVars() -- REASON: Ensure defaults are locked in.
 		StopSound(SOUNDKIT_ACHIEVEMENT)
 		StopSound(SOUNDKIT_UI_BNET_TOAST)
 		KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = true
@@ -552,7 +525,7 @@ local function StartCountdown(button, callback)
 		return
 	end
 
-	-- Cancel any existing ticker
+	-- Cancel any existing ticker to prevent overlaps
 	if tutorTicker then
 		tutorTicker:Cancel()
 		tutorTicker = nil
@@ -623,7 +596,7 @@ local function YesTutor()
 	tutorProgressBar:SetPoint("TOP", tutor, "BOTTOM", 0, -6)
 	tutorProgressBar:SetSize(480, 22)
 	tutorProgressBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	K:SmoothBar(tutorProgressBar)
+	-- K:SmoothBar(tutorProgressBar)
 
 	tutorProgressBar.text = K.CreateFontString(tutorProgressBar, 13, "", "", false, "CENTER", 0, -1)
 
@@ -694,7 +667,9 @@ local function YesTutor()
 	end)
 end
 
--- Welcome Frame (Optimized)
+-- ---------------------------------------------------------------------------
+-- WELCOME FRAME
+-- ---------------------------------------------------------------------------
 
 local welcome
 
@@ -843,7 +818,7 @@ local function HelloWorld()
 end
 
 -- ====================================================
--- Slash Command and OnEnable
+-- SLASH COMMAND AND ONENABLE
 -- ====================================================
 
 _G.SlashCmdList["KKUI_INSTALLER"] = HelloWorld

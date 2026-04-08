@@ -1,6 +1,23 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins Bartender4 action buttons and bars.
+-- - Design: Hooks and styles Bartender4 buttons to match KkthnxUI aesthetics.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local hooksecurefunc = _G.hooksecurefunc
+
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+
+-- REASON: Main entry point for Bartender4 skinning.
 function Module:ReskinBartender4()
 	if not C["Skins"].Bartender4 then
 		return

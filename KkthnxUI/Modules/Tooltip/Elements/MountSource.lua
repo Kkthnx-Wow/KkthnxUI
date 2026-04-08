@@ -1,15 +1,37 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays mount source information in aura tooltips.
+-- - Design: Hooks aura tooltips to append collection status and source info.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("Tooltip")
 
-local select = select
-local UnitIsPlayer = UnitIsPlayer
-local UnitName = UnitName
-local IsShiftKeyDown = IsShiftKeyDown
-local hooksecurefunc = hooksecurefunc
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local select = _G.select
+local hooksecurefunc = _G.hooksecurefunc
+
+local AuraUtil = _G.AuraUtil
+local C_AddOns = _G.C_AddOns
+local C_MountJournal = _G.C_MountJournal
+local C_UnitAuras = _G.C_UnitAuras
+local GameTooltip = _G.GameTooltip
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitName = _G.UnitName
+
+local COLLECTED = _G.COLLECTED
+local NOT_COLLECTED = _G.NOT_COLLECTED
+local SOURCE = _G.SOURCE
 
 local MountTable = {}
 
 -- Function to check if a mount is collected
+-- REASON: Logic to check if a mount is already collected by the player.
 local function IsCollected(spell)
 	local mountInfo = MountTable[spell]
 	if mountInfo then
@@ -32,6 +54,7 @@ local function GetMountInfoBySpell(spell)
 	return MountTable[spell]
 end
 
+-- REASON: Appends mount information to the tooltip.
 local function AddLine(self, source, isCollectedText, type, noadd)
 	for i = 1, self:NumLines() do
 		local line = _G[self:GetName() .. "TextLeft" .. i]

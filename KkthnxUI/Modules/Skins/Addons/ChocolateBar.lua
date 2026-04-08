@@ -1,6 +1,20 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins ChocolateBar frames.
+-- - Design: Iterates through ChocolateBar frames and applies KkthnxUI border styling.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local RaidUtility_ShowButton = _G.RaidUtility_ShowButton
+
+-- REASON: Main entry point for ChocolateBar skinning.
 function Module:ReskinChocolateBar()
 	if not C["Skins"].ChocolateBar then
 		return

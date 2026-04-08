@@ -92,6 +92,12 @@ C.NameplateCustomUnits = {
 	[165251] = true, -- 幻影仙狐，仙林
 }
 
+C.NameplateForceShow = {
+	-- [npcID] = true, -- Example
+
+	[666667] = true, -- Firestorm Easter Eggs
+}
+
 C.NameplateShowPowerList = {
 	[56792] = true, -- Temple of the Jade Serpent, Doubtful Delusion
 	[171557] = true, -- Huntsman Altimor, Bargast's Shadow

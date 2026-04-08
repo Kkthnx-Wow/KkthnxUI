@@ -1,57 +1,52 @@
---[[
-	Tracking.lua - Debuff Tracking UI for KkthnxUI
-	
-	This module provides an interface for managing custom PvE and PvP debuff tracking.
-	Players can add/remove spell IDs to track on raid frames.
-	
-	Features:
-	- Add custom PvE debuffs
-	- Add custom PvP debuffs
-	- Browse tracked debuffs
-	- Remove tracked debuffs
-	- Combat lockdown safe
-	- Taint-free implementation
-]]
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Provides an interface for managing custom PvE and PvP debuff tracking.
+-- - Design: Allows players to add/remove spell IDs to track on raid frames via a popup UI.
+-- - Events: N/A (UI triggered via Slash Command)
+-----------------------------------------------------------------------------]]
 
--- Localized globals
-local _G = _G
-local pairs = pairs
-local tonumber = tonumber
-local CreateFrame = CreateFrame
-local InCombatLockdown = InCombatLockdown
-local StaticPopup_Show = StaticPopup_Show
-local SetClampedTextureRotation = SetClampedTextureRotation
-
--- KkthnxUI namespace
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Unitframes")
 
--- Module constants
-local ARROW_UP_TEXTURE = "Interface\\Buttons\\Arrow-Up-Down"
-local ARROW_DOWN_TEXTURE = "Interface\\Buttons\\Arrow-Down-Down"
-local QUESTION_MARK_ICON = [[Interface\Icons\Inv_misc_questionmark]]
+-- REASON: Localize C-functions (Snake Case)
+local pairs = _G.pairs
+local select = _G.select
+local string_format = _G.string.format
+local tonumber = _G.tonumber
+local unpack = _G.unpack
 
--- Localized Blizzard globals
+-- REASON: Localize Globals
+local CreateFrame = _G.CreateFrame
+local InCombatLockdown = _G.InCombatLockdown
+local SetClampedTextureRotation = _G.SetClampedTextureRotation
+local StaticPopup_Show = _G.StaticPopup_Show
+
+-- REASON: Localized Blizzard globals
 local ACCEPT = _G.ACCEPT
 local CANCEL = _G.CANCEL
 
--- Color constants
-local COLOR_GREEN = "|CFF00FF00"
+-- REASON: Module constants
+local ARROW_DOWN_TEXTURE = "Interface\\Buttons\\Arrow-Down-Down"
+local ARROW_UP_TEXTURE = "Interface\\Buttons\\Arrow-Up-Down"
+local QUESTION_MARK_ICON = [[Interface\Icons\Inv_misc_questionmark]]
+
+-- REASON: Color constants
 local COLOR_BLUE = "|CFF567AFF"
+local COLOR_END = "|r"
+local COLOR_GREEN = "|CFF00FF00"
+local COLOR_ORANGE = "|cffff8800"
 local COLOR_RED = "|CFFFF5252"
 local COLOR_YELLOW = "|CFFFFFF00"
-local COLOR_ORANGE = "|cffff8800"
-local COLOR_END = "|r"
 
--- Spell Info Compatibility Layer
+-- REASON: Spell Info Compatibility Layer for Retail/Classic.
 do
 	local GetSpellInfo = _G.GetSpellInfo
 	local C_Spell_GetSpellInfo = _G.C_Spell and _G.C_Spell.GetSpellInfo
 	local spellCache = {}
 
-	--- Get spell information with caching
-	-- @param spell Spell ID or name
-	-- @return name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID
+	-- REASON: Get spell information with caching to reduce API calls.
 	Module.GetSpellInfo = function(spell)
 		if not spell then
 			return
@@ -68,15 +63,7 @@ do
 			-- Modern retail API (preferred)
 			local info = C_Spell_GetSpellInfo(spell)
 			if info then
-				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID =
-					info.name,
-					info.rank,
-					info.iconID,
-					info.castTime,
-					info.minRange,
-					info.maxRange,
-					info.spellID,
-					info.originalIconID
+				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
 			end
 		elseif GetSpellInfo then
 			-- Classic / fallback API
@@ -97,6 +84,7 @@ end
 --- Create static popup dialog for tracking
 -- @param category "PvE" or "PvP"
 -- @return dialog configuration table
+-- REASON: Create static popup dialog for inputting spell IDs.
 local function CreateTrackingDialog(category)
 	local categoryUpper = category:upper()
 	local categoryColor = category == "PvE" and COLOR_BLUE or COLOR_RED
@@ -111,7 +99,7 @@ local function CreateTrackingDialog(category)
 				return
 			end
 
-			local db = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[category]
+			local db = K.GetCharVars().Tracking[category]
 			local name, _, icon = Module.GetSpellInfo(spellID)
 
 			local trackingTitle = COLOR_GREEN .. L["DEBUFF TRACKING"] .. " " .. COLOR_END
@@ -123,7 +111,7 @@ local function CreateTrackingDialog(category)
 			end
 
 			if db[spellID] then
-				K.Print(trackingTitle .. categoryTitle .. string.format(L["Sorry, %s is already tracked"], COLOR_YELLOW .. name .. COLOR_END))
+				K.Print(trackingTitle .. categoryTitle .. string_format(L["Sorry, %s is already tracked"], COLOR_YELLOW .. name .. COLOR_END))
 				return
 			end
 
@@ -134,7 +122,7 @@ local function CreateTrackingDialog(category)
 				stackThreshold = 0,
 			}
 
-			K.Print(trackingTitle .. categoryTitle .. string.format(L["You have added %s"], COLOR_YELLOW .. name .. COLOR_END))
+			K.Print(trackingTitle .. categoryTitle .. string_format(L["You have added %s"], COLOR_YELLOW .. name .. COLOR_END))
 
 			-- Update UI if frame exists
 			local trackingFrame = _G.KKUI_Tracking
@@ -166,10 +154,11 @@ Tracking.__index = Tracking
 -- @param button UI button reference
 -- @param category "PvE" or "PvP"
 -- @return spellID, name, iconPath
+-- REASON: Get spell from tracking database by button ID.
 function Tracking:GetSpell(button, category)
 	local count = 0
 	local id = button.ID
-	local db = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[category]
+	local db = K.GetCharVars().Tracking[category]
 
 	for spellID in pairs(db) do
 		count = count + 1
@@ -182,15 +171,16 @@ end
 
 --- Remove spell from tracking
 -- Handler for clicking on spell name button
+-- REASON: Handler for clicking on spell name button to remove tracking.
 function Tracking:RemoveSpell()
 	if InCombatLockdown() then
-		K.Print(L["Sorry, our raid module is currently disabled"]) -- Using existing string, ideally add "Cannot modify during combat"
+		K.Print(L["Sorry, our raid module is currently disabled"])
 		return
 	end
 
 	local category = self.Cat
 	local spellID = self.SpellID
-	local db = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[category]
+	local db = K.GetCharVars().Tracking[category]
 
 	if spellID and db[spellID] then
 		db[spellID] = nil
@@ -204,6 +194,7 @@ end
 
 --- Update displayed spell in UI
 -- Handler for navigation arrows
+-- REASON: Updates the displayed spell info based on current selection index.
 function Tracking:UpdateSpellDisplay()
 	local button = self:GetParent()
 	local category = button.Cat
@@ -257,6 +248,7 @@ end
 -- @param rotation Texture rotation in degrees
 -- @param isDecrease Whether this decreases the ID
 -- @return button frame
+-- REASON: Create navigation button (arrow) for browsing spell list.
 local function CreateNavigationButton(parent, texture, point, relativeFrame, relativePoint, offsetX, offsetY, rotation, isDecrease)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(26, 26)
@@ -289,6 +281,7 @@ end
 -- @param titleOffsetY Y offset for title
 -- @param popupName Static popup name
 -- @return category frame
+-- REASON: Helper to create PvE/PvP category sections in the UI.
 local function CreateCategorySection(trackingFrame, category, titleText, buttonText, titlePoint, titleRelative, titleOffsetY, popupName)
 	-- Title
 	local title = trackingFrame:CreateFontString(nil, "OVERLAY")
@@ -346,6 +339,7 @@ end
 
 --- Setup tracking UI frame
 -- @param self Tracking frame
+-- REASON: Setup the main tracking UI frame.
 function Tracking:Setup()
 	self:SetSize(460, 280)
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 64)
@@ -407,8 +401,7 @@ end
 	Module Integration
 -------------------------------------------------------------------------------]]
 
---- Create tracking UI
--- Called by the unitframes module during initialization
+-- REASON: Create tracking UI called by main module.
 function Module:CreateTracking()
 	if _G.KKUI_Tracking then
 		-- Already created
@@ -425,9 +418,7 @@ function Module:CreateTracking()
 	trackingFrame:Setup()
 end
 
--- Slash Command
-
---- Slash command handler for /debufftrack
+-- REASON: Slash command handler to open tracking UI.
 SlashCmdList["KKUI_TRACKING"] = function()
 	if not C["Unitframe"].Enable or not C["Raid"].Enable then
 		K.Print(L["Sorry, our raid module is currently disabled"])

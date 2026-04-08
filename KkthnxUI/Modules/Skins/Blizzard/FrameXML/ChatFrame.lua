@@ -1,6 +1,26 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Chat Frame buttons and notifications.
+-- - Design: Applies custom buttons, borders, and textures for chat-related UI elements.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local table_insert = table.insert
-local hooksecurefunc = hooksecurefunc
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local table_insert = _G.table.insert
+local hooksecurefunc = _G.hooksecurefunc
+
+local BNToastFrame = _G.BNToastFrame
+local QuickJoinToastButton = _G.QuickJoinToastButton
+local ChatFrameChannelButton = _G.ChatFrameChannelButton
+local ChatFrameToggleVoiceDeafenButton = _G.ChatFrameToggleVoiceDeafenButton
+local ChatFrameToggleVoiceMuteButton = _G.ChatFrameToggleVoiceMuteButton
+local ChatFrameMenuButton = _G.ChatFrameMenuButton
+local VoiceChatChannelActivatedNotification = _G.VoiceChatChannelActivatedNotification
 
 local FRIEND_TEXTURE = "Battlenet-ClientIcon-App"
 local QUEUE_TEXTURE = "groupfinder-eye-frame"
@@ -31,6 +51,7 @@ local function SkinQuickJoinToastButton(button)
 end
 
 -- Theme Application
+-- REASON: Main entry point for Blizzard Chat Frame skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

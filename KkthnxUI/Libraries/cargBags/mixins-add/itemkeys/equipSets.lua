@@ -27,6 +27,7 @@ local _, ns = ...
 local cargBags = ns.cargBags
 
 local ItemKeys = cargBags.itemKeys
+local wipe = wipe or table.wipe
 
 local setItems, isUpdating
 
@@ -40,13 +41,16 @@ local function initUpdater()
 		setItems = setItems or {}
 		wipe(setItems)
 
-		for setID = 0, C_EquipmentSet.GetNumEquipmentSets() do
-			local locations = C_EquipmentSet.GetItemLocations(setID)
-			if locations then
-				for _, location in pairs(locations) do
-					local _, bank, bags, _, slot, bag = EquipmentManager_UnpackLocation(location)
-					if (bank or bags) and slot and bag then
-						setItems[bag .. ":" .. slot] = true
+		local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
+		if setIDs then
+			for _, setID in next, setIDs do
+				local locations = C_EquipmentSet.GetItemLocations(setID)
+				if locations then
+					for _, location in pairs(locations) do
+						local _, bank, bags, _, slot, bag = EquipmentManager_UnpackLocation(location)
+						if (bank or bags) and slot and bag then
+							setItems[bag .. ":" .. slot] = true
+						end
 					end
 				end
 			end

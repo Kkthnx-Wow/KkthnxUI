@@ -1,9 +1,22 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins WeakAuras icons and bars.
+-- - Design: Hooks WeakAuras region prototypes to apply custom borders and texcoords.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
-local unpack = unpack
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
+local unpack = _G.unpack
 
-local hooksecurefunc = hooksecurefunc
+local WeakAuras = _G.WeakAuras
 
 -- local function IconBgOnUpdate(self)
 -- 	self:SetAlpha(self.__icon:GetAlpha())
@@ -71,8 +84,13 @@ local function Skin_WeakAuras(f, fType)
 	end
 end
 
+-- REASON: Main entry point for WeakAuras skinning.
 local function ReskinWeakAuras()
 	if not C["Skins"].WeakAuras then
+		return
+	end
+
+	if not WeakAuras then
 		return
 	end
 

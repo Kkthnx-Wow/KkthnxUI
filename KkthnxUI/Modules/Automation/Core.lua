@@ -1,12 +1,29 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Main entry point for the Automation module, handles loading of various sub-features.
+-- - Design: Dispatches Create calls for all registered automation elements.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:NewModule("Automation")
 
+-- PERF: Localize globals to reduce lookup overhead.
+local error = error
+local ipairs = ipairs
+local pcall = pcall
+local tostring = tostring
+local type = type
+
+-- REASON: Dynamically invokes initialization functions for sub-modules to keep Core light.
 function Module:OnEnable()
 	local loadAutomationModules = {
 		"CreateAutoAcceptSummon",
 		"CreateAutoBadBuffs",
 		"CreateAutoBestReward",
 		"CreateAutoDeclineDuels",
+		"CreateAutoDelves",
 		"CreateAutoGoodbye",
 		"CreateAutoInvite",
 		"CreateAutoKeystone",

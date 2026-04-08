@@ -6,14 +6,11 @@ local addon, ns = ...
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 local pairs = pairs
-local ipairs = ipairs
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
-local BANK_TAB1 = Enum.BagIndex.CharacterBankTab_1 or 6
-local ACCOUNT_TAB1 = Enum.BagIndex.AccountBankTab_1 or 12
-local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
-local tabButtons = {}
+local AccountBankPanel = AccountBankPanel
+local BANK_TAB1 = Enum.BagIndex.AccountBankTab_1 or 13
 
 function Implementation:GetBagTabClass()
 	return self:GetClass("BagTab", true, "BagTab")
@@ -42,10 +39,11 @@ local function AddBankTabSettingsToTooltip(tooltip, depositFlags)
 end
 
 local function UpdateTooltip(self, id)
-	if not BankFrame.BankPanel.purchasedBankTabData then
+	if not AccountBankPanel.purchasedBankTabData then
 		return
 	end
-	local data = BankFrame.BankPanel.purchasedBankTabData[id]
+
+	local data = AccountBankPanel.purchasedBankTabData[id]
 	if not data then
 		return
 	end
@@ -57,12 +55,13 @@ local function UpdateTooltip(self, id)
 	GameTooltip:Show()
 end
 
-function BagTab:Create(bagID, i, account)
-	local bagId = (account and ACCOUNT_TAB1 or BANK_TAB1) + i - 1
-	local name = addon .. "_BagTab_ID" .. bagId
+local buttonNum = 0
+function BagTab:Create(bagID)
+	buttonNum = buttonNum + 1
+	local name = addon .. "BagTab" .. buttonNum
 	local button = setmetatable(CreateFrame("Button", name, nil, "BackdropTemplate"), self.__index)
-	button.bagId = bagId
-	button:SetID(i)
+	button:SetID(buttonNum)
+	button.bagId = buttonNum + BANK_TAB1 - 1
 
 	button:CreateBorder()
 	button:StyleButton()
@@ -150,12 +149,12 @@ function BagTab:UpdateButton()
 end
 
 function BagTab:OnClick(btn)
-	if not BankFrame.BankPanel.purchasedBankTabData then
+	if not AccountBankPanel.purchasedBankTabData then
 		return
 	end
 
 	local currentTabID = self:GetID()
-	local data = BankFrame.BankPanel.purchasedBankTabData[currentTabID]
+	local data = AccountBankPanel.purchasedBankTabData[currentTabID]
 	if not data then
 		return
 	end
@@ -163,7 +162,7 @@ function BagTab:OnClick(btn)
 	if btn == "LeftButton" then
 		self.bar.buttons[currentTabID]:UpdateButton()
 	else -- right button
-		local menu = BankFrame.BankPanel.TabSettingsMenu
+		local menu = AccountBankPanel.TabSettingsMenu
 		if menu then
 			if menu:IsShown() then
 				menu:Hide()
@@ -172,7 +171,6 @@ function BagTab:OnClick(btn)
 			menu:ClearAllPoints()
 			menu:SetPoint("CENTER", 0, 100)
 			menu:EnableMouse(true)
-			menu:SetFrameStrata("DIALOG")
 			menu:TriggerEvent(BankPanelTabSettingsMenuMixin.Event.OpenTabSettingsRequested, self.bagId)
 		end
 	end
@@ -186,7 +184,9 @@ end
 
 -- Register the plugin
 local hooked
-cargBags:RegisterPlugin("BagTab", function(self, bags, account)
+
+-- Register the plugin
+cargBags:RegisterPlugin("BagTab", function(self, bags)
 	if cargBags.ParseBags then
 		bags = cargBags:ParseBags(bags)
 	end
@@ -200,7 +200,7 @@ cargBags:RegisterPlugin("BagTab", function(self, bags, account)
 	local buttonClass = self.implementation:GetBagTabClass()
 	bar.buttons = {}
 	for i = 1, #bags do
-		local button = buttonClass:Create(bags[i], i, account)
+		local button = buttonClass:Create(bags[i])
 		button:SetParent(bar)
 		button.hidden = true
 		button.bar = bar
@@ -209,16 +209,13 @@ cargBags:RegisterPlugin("BagTab", function(self, bags, account)
 
 	if not hooked then
 		hooked = true
-
-		hooksecurefunc(BankFrame.BankPanel, "RefreshBankTabs", function(self)
-			if not self.purchasedBankTabData then
+		hooksecurefunc(AccountBankPanel, "RefreshBankTabs", function(self)
+			if not AccountBankPanel.purchasedBankTabData then
 				return
 			end
 
-			for _, data in pairs(self.purchasedBankTabData) do
-				if _G["KKUI_BagTab_ID" .. data.ID] then
-					_G["KKUI_BagTab_ID" .. data.ID].Icon:SetTexture(data.icon)
-				end
+			for index, data in pairs(self.purchasedBankTabData) do
+				bar.buttons[index].Icon:SetTexture(data.icon)
 			end
 		end)
 	end

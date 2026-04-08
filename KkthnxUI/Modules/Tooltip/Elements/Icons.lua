@@ -1,14 +1,44 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Adds icons to tooltips for items, spells, etc.
+-- - Design: Hooks tooltip data processor to prepend icons to the first line.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Tooltip")
 
-local gsub = gsub
-local GetItemIcon, GetSpellTexture = C_Item.GetItemIconByID, C_Spell.GetSpellTexture
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local gsub = _G.gsub
+local next = _G.next
+local select = _G.select
+local strfind = _G.strfind
+local hooksecurefunc = _G.hooksecurefunc
+
+local C_Item = _G.C_Item
+local C_MountJournal = _G.C_MountJournal
+local C_Spell = _G.C_Spell
+local CreateFrame = _G.CreateFrame
+local Enum = _G.Enum
+local GameTooltip = _G.GameTooltip
+local ItemRefTooltip = _G.ItemRefTooltip
+local EmbeddedItemTooltip = _G.EmbeddedItemTooltip
+local TooltipDataProcessor = _G.TooltipDataProcessor
+
+local GetItemIcon = C_Item.GetItemIconByID
+local GetSpellTexture = C_Spell.GetSpellTexture
 local C_MountJournal_GetMountInfoByID = C_MountJournal.GetMountInfoByID
+
 local newString = "0:0:64:64:5:59:5:59"
 
+-- REASON: Prepends an icon to the first line of the tooltip and scales others.
 function Module:SetupTooltipIcon(icon)
 	local title = icon and _G[self:GetName() .. "TextLeft1"]
 	local titleText = title and title:GetText()
+
 	if titleText and not strfind(titleText, ":20:20:") then
 		title:SetFormattedText("|T%s:20:20:" .. newString .. ":%d|t %s", icon, 20, titleText)
 	end
@@ -18,6 +48,7 @@ function Module:SetupTooltipIcon(icon)
 		if not line then
 			break
 		end
+
 		local text = line:GetText()
 		if text and text ~= " " then
 			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T%1:14:14:" .. newString .. "|t")
@@ -36,6 +67,7 @@ function Module:HookTooltipMethod()
 	self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
 end
 
+-- REASON: Applies KkthnxUI border styling to tooltip reward icons.
 function Module:ReskinRewardIcon()
 	self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 

@@ -1,8 +1,23 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard UIDropDownMenu levels.
+-- - Design: Hooks UIDropDownMenu_CreateFrames to apply custom borders to drop-down backdrops.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local C = KkthnxUI[2]
 
-local table_insert = table.insert
-local hooksecurefunc = hooksecurefunc
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local next = _G.next
+local hooksecurefunc = _G.hooksecurefunc
+local table_insert = _G.table.insert
 
+local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
+
+-- REASON: Main entry point for Blizzard Dropdown Menu skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

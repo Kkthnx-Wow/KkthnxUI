@@ -1,5 +1,22 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins BigWigs bars and timer frames.
+-- - Design: Implements a custom BigWigs bar style and skins the queue timer.
+-- - Events: BigWigs_FrameCreated
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
+
+local BigWigsAPI = _G.BigWigsAPI
+local BigWigsLoader = _G.BigWigsLoader
 
 local function removeStyle(bar)
 	bar.candyBarBackdrop:Hide()
@@ -101,6 +118,7 @@ local styleData = {
 	end,
 }
 
+-- REASON: Register the custom bar style with BigWigs.
 function Module:RegisterBigWigs()
 	if not C["Skins"].BigWigs then
 		return
@@ -123,6 +141,7 @@ function Module:RegisterBigWigs()
 	end)
 end
 
+-- REASON: Skin miscellaneous BigWigs frames like the QueueTimer.
 function Module:ReskinBigWigs()
 	if not C["Skins"].BigWigs then
 		return
@@ -140,7 +159,6 @@ function Module:ReskinBigWigs()
 					frame.spark:SetHeight(18)
 					frame.spark:SetBlendMode("ADD")
 					frame.spark:SetPoint("CENTER", frame:GetStatusBarTexture(), "RIGHT", 0, 0)
-					frame.spark = true
 				end
 
 				frame:SetStatusBarTexture(K.GetTexture(C["General"].Texture))

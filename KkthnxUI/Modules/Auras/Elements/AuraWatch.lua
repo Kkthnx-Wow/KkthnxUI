@@ -1,12 +1,26 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Tracks and displays specific auras (buffs/debuffs) and cooldowns.
+-- - Design: Uses a table-driven approach to monitor UNIT_AURA and render bars/icons.
+-- - Events: UNIT_AURA, PLAYER_TARGET_CHANGED, COMBAT_LOG_EVENT_UNFILTERED, PLAYER_TALENT_UPDATE
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Auras")
 
-local pairs = pairs
-local select = select
-local string_find = string.find
-local table_insert = table.insert
-local table_remove = table.remove
-local table_wipe = table.wipe
+-- PERF: Cache frequent APIs and globals to reduce table lookups in hot paths.
+local _G = _G
+local ipairs, next, pairs, select, type = _G.ipairs, _G.next, _G.pairs, _G.select, _G.type
+local math_floor = _G.math.floor
+local string_find = _G.string.find
+local string_format = _G.string.format
+local string_match = _G.string.match
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
 
 local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Item_GetItemCooldown = C_Item.GetItemCooldown
@@ -33,21 +47,24 @@ local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
 local UnitName = UnitName
 
--- Constants
+-- ---------------------------------------------------------------------------
+-- Constants & Tables
+-- ---------------------------------------------------------------------------
 local maxFrames = 12
 local hasCentralize
 
--- Pre-allocate tables
+-- REASON: Pre-allocate tables to reduce garbage collection overhead during high-frequency events.
 local auraWatchUpdater = CreateFrame("Frame")
-local AuraList = {}
-local FrameList = {}
-local UnitIDTable = {}
-local IntTable = {}
-local IntCD = {}
+local auraList = {}
+local frameList = {}
+local unitIDTable = {}
+local intTable = {}
+local intCD = {}
 local myTable = {}
 local cooldownTable = {}
 
 -- Data conversion
+-- REASON: Normalizes mixed-format aura data into a consistent internal structure.
 local function DataAnalyze(v)
 	local newTable = {}
 	if type(v[1]) == "number" then
@@ -75,7 +92,7 @@ local function DataAnalyze(v)
 end
 
 local function InsertData(index, target)
-	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
+	if K.GetCharVars().AuraWatchList.Switcher[index] then
 		table_wipe(target)
 	end
 
@@ -95,7 +112,7 @@ local function ConvertTable()
 		end
 		myTable[i] = myTable[i] or {}
 
-		local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
+		local value = K.GetCharVars().AuraWatchList[i]
 		if value and next(value) then
 			for spellID, v in pairs(value) do
 				myTable[i][spellID] = DataAnalyze(v)
@@ -103,7 +120,7 @@ local function ConvertTable()
 		end
 	end
 
-	local internalCD = KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD
+	local internalCD = K.GetCharVars().InternalCD
 	if next(internalCD) then
 		for spellID, v in pairs(internalCD) do
 			myTable[10][spellID] = DataAnalyze(v)
@@ -111,7 +128,8 @@ local function ConvertTable()
 	end
 
 	local auraWatchList = C.AuraWatchList[K.Class]
-	for _, v in pairs(auraWatchList) do
+	-- PERF: Use ipairs for array-like table iteration.
+	for _, v in ipairs(auraWatchList) do
 		if v.Name == "Special Aura" then
 			InsertData(1, v.List)
 		elseif v.Name == "Focus Aura" then
@@ -122,7 +140,8 @@ local function ConvertTable()
 	end
 
 	local allAuras = C.AuraWatchList["ALL"]
-	for i, v in pairs(allAuras) do
+	-- PERF: Use ipairs for array-like table iteration.
+	for i, v in ipairs(allAuras) do
 		if v.Name == "Enchant Aura" then
 			InsertData(5, v.List)
 		elseif v.Name == "Raid Buff" then
@@ -133,32 +152,36 @@ local function ConvertTable()
 			InsertData(2, v.List)
 		elseif v.Name == "InternalCD" then
 			InsertData(8, v.List)
-			IntCD = v
+			intCD = v
 			table_remove(allAuras, i)
 		end
 	end
 end
 
+-- REASON: Aggregates class-specific and global auras into a single master list for monitoring.
 local function BuildAuraList()
-	AuraList = {}
+	auraList = {}
 
-	AuraList = C.AuraWatchList["ALL"] or {}
+	auraList = C.AuraWatchList["ALL"] or {}
 	local classAuras = C.AuraWatchList[K.Class]
-	for _, value in pairs(classAuras) do
-		table_insert(AuraList, value)
+	-- PERF: Use ipairs for array-like table iteration.
+	for _, value in ipairs(classAuras) do
+		table_insert(auraList, value)
 	end
 
 	C.AuraWatchList = {}
 end
 
+-- PERF: Pre-calculated lookup table for UnitIDs to avoid iterating full aura lists during UNIT_AURA.
 local function BuildUnitIDTable()
-	UnitIDTable = {}
+	unitIDTable = {}
 
-	for _, VALUE in pairs(AuraList) do
+	-- PERF: Use ipairs for master aura list iteration.
+	for _, VALUE in ipairs(auraList) do
 		if VALUE.List then
 			for _, value in pairs(VALUE.List) do
 				if value.UnitID then
-					UnitIDTable[value.UnitID] = true
+					unitIDTable[value.UnitID] = true
 				end
 			end
 		end
@@ -168,7 +191,8 @@ end
 local function BuildCooldownTable()
 	cooldownTable = {}
 
-	for KEY, VALUE in pairs(AuraList) do
+	-- PERF: Use ipairs for master aura list iteration.
+	for KEY, VALUE in ipairs(auraList) do
 		if VALUE.List then
 			for spellID, value in pairs(VALUE.List) do
 				if (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
@@ -193,7 +217,9 @@ local function MakeMoveHandle(frame, text, value, anchor)
 	return mover
 end
 
--- Aurawatch style
+-- ---------------------------------------------------------------------------
+-- Tooltip & Interaction Logic
+-- ---------------------------------------------------------------------------
 local function tooltipOnEnter(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 3)
@@ -215,8 +241,8 @@ end
 
 function Module:RemoveSpellFromAuraList()
 	if IsAltKeyDown() and IsControlKeyDown() and self.type == 4 and self.spellID then
-		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = true
-		K.Print(string.format(L["AddToIgnoreList"], "", self.spellID))
+		K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] = true
+		K.Print(string_format(L["AddToIgnoreList"], "", self.spellID))
 	end
 end
 
@@ -234,61 +260,64 @@ local function enableTooltip(self)
 	self:SetScript("OnMouseDown", Module.RemoveSpellFromAuraList)
 end
 
--- Icon mode
-local function BuildICON(iconSize)
-	iconSize = iconSize * C["AuraWatch"].IconScale
-
+-- ---------------------------------------------------------------------------
+-- Display Templates (Icon & Bar)
+-- ---------------------------------------------------------------------------
+-- PERF: Helper to create the base elements for both icons and bars.
+local function CreateBaseAuraFrame(iconSize)
 	local frame = CreateFrame("Frame", nil, K.PetBattleFrameHider)
 	frame:SetSize(iconSize, iconSize)
+
+	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
+	frame.Icon:SetAllPoints()
+	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+	frame.Count = K.CreateFontString(frame, iconSize * 0.40, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+
+	if not C["AuraWatch"].ClickThrough then
+		enableTooltip(frame)
+	end
+
+	return frame
+end
+
+-- REASON: Icon template for classic buff/debuff visualization.
+local function BuildICON(iconSize)
+	iconSize = iconSize * C["AuraWatch"].IconScale
+	local frame = CreateBaseAuraFrame(iconSize)
 
 	frame.bg = CreateFrame("Frame", nil, frame)
 	frame.bg:SetAllPoints(frame)
 	frame.bg:SetFrameLevel(frame:GetFrameLevel())
 	frame.bg:CreateBorder()
 
-	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
+	frame.Icon:SetParent(frame.bg)
 	frame.Icon:SetAllPoints(frame.bg)
-	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	frame.Cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
 	frame.Cooldown:SetAllPoints(frame.bg)
 	frame.Cooldown:SetReverse(true)
 
-	local parentFrame = CreateFrame("Frame", nil, frame)
-	parentFrame:SetAllPoints()
-	parentFrame:SetFrameLevel(frame:GetFrameLevel() + 6)
+	local textParent = CreateFrame("Frame", nil, frame)
+	textParent:SetAllPoints()
+	textParent:SetFrameLevel(frame:GetFrameLevel() + 6)
 
-	frame.Spellname = K.CreateFontString(parentFrame, 13, "", "OUTLINE", false, "TOP", 0, 5)
-	frame.Count = K.CreateFontString(parentFrame, iconSize * 0.40, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+	frame.Spellname = K.CreateFontString(textParent, 13, "", "OUTLINE", false, "TOP", 0, 5)
+	frame.Count:SetParent(textParent)
 
 	frame.glowFrame = CreateFrame("Frame", nil, frame)
 	frame.glowFrame:SetPoint("TOPLEFT", frame, -4, 4)
 	frame.glowFrame:SetPoint("BOTTOMRIGHT", frame, 4, -4)
-	frame.glowFrame:SetSize(iconSize, iconSize)
 	frame.glowFrame:SetFrameLevel(frame:GetFrameLevel())
 
-	if not C["AuraWatch"].ClickThrough then
-		enableTooltip(frame)
-	end
-
 	frame:Hide()
-
 	return frame
 end
 
--- Bar mode
+-- REASON: Bar template for detailed cooldown and duration tracking.
 local function BuildBAR(barWidth, iconSize)
-	if not barWidth or not iconSize or type(barWidth) ~= "number" or type(iconSize) ~= "number" then
-		return nil
-	end
-
-	local frame = CreateFrame("Frame", nil, K.PetBattleFrameHider)
-	frame:SetSize(iconSize, iconSize)
+	local frame = CreateBaseAuraFrame(iconSize)
 	frame:CreateBorder()
-
-	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
-	frame.Icon:SetAllPoints()
-	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	frame.Statusbar = CreateFrame("StatusBar", nil, frame)
 	frame.Statusbar:SetSize(barWidth, iconSize / 1.6)
@@ -305,24 +334,22 @@ local function BuildBAR(barWidth, iconSize)
 	frame.Statusbar.Spark:SetBlendMode("ADD")
 	frame.Statusbar.Spark:SetPoint("CENTER", frame.Statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-	frame.Count = K.CreateFontString(frame, 12, "", "", false, "BOTTOMRIGHT", 3, -1)
 	frame.Time = K.CreateFontString(frame.Statusbar, 12, "", "", false, "RIGHT", 0, 8)
 	frame.Spellname = K.CreateFontString(frame.Statusbar, 12, "", "", false, "LEFT", 2, 8)
-	frame.Spellname:SetWidth(frame.Statusbar:GetWidth() * 0.6)
+	frame.Spellname:SetWidth(barWidth * 0.6)
 	frame.Spellname:SetJustifyH("LEFT")
 
-	if not C["AuraWatch"].ClickThrough then
-		enableTooltip(frame)
-	end
-
 	frame:Hide()
-
 	return frame
 end
 
--- List and anchor
+-- ---------------------------------------------------------------------------
+-- Anchor & Frame Management
+-- ---------------------------------------------------------------------------
+-- REASON: Dynamically creates and positions aura frames based on configuration.
 local function BuildAura()
-	for key, value in pairs(AuraList) do
+	-- PERF: Use ipairs for master aura list iteration.
+	for key, value in ipairs(auraList) do
 		local frameTable = {}
 		for i = 1, maxFrames do
 			if value.Mode == "ICON" then
@@ -341,13 +368,13 @@ local function BuildAura()
 		end
 		frameTable.Index = 1
 
-		table_insert(FrameList, frameTable)
+		table_insert(frameList, frameTable)
 	end
 end
 
 local function SetupAnchor()
-	for key, VALUE in pairs(FrameList) do
-		local value = AuraList[key]
+	for key, VALUE in pairs(frameList) do
+		local value = auraList[key]
 		local direction, interval = value.Direction, value.Interval
 		-- check whether using CENTER direction
 		if value.Mode == "BAR" and direction == "CENTER" then
@@ -387,11 +414,11 @@ end
 -- Add proper cleanup function for global tables
 local function CleanupGlobalTables()
 	-- Properly clear all global tables for reuse
-	AuraList = {}
-	FrameList = {}
-	UnitIDTable = {}
-	IntTable = {}
-	IntCD = {}
+	auraList = {}
+	frameList = {}
+	unitIDTable = {}
+	intTable = {}
+	intCD = {}
 	cooldownTable = {}
 end
 
@@ -408,38 +435,49 @@ local function InitSetup()
 	SetupAnchor()
 end
 
--- Update timer
-function Module:AuraWatch_UpdateTimer()
-	if self.expires then
-		self.elapsed = self.expires - GetTime()
+-- ---------------------------------------------------------------------------
+-- Logic Updates
+-- ---------------------------------------------------------------------------
+-- PERF: Optimized timer update to handle visual state transitions (colors, spark, formatting) efficiently.
+-- PERF: Unified timer update for both standard auras and internal cooldowns.
+function Module:AuraWatch_UpdateTimer(elapsed)
+	if self.isIntCD then
+		self.elapsed = (self.elapsed or 0) + (elapsed or 0)
+		self.timerValue = self.duration - self.elapsed
 	else
-		self.elapsed = self.start + self.duration - GetTime()
+		if self.expires then
+			self.timerValue = self.expires - GetTime()
+		else
+			self.timerValue = self.start + self.duration - GetTime()
+		end
 	end
 
-	local timer = self.elapsed
+	local timer = self.timerValue
 	if timer < 0 then
-		if self.Time then
-			self.Time:SetText("N/A")
-		end
-
-		self.Statusbar:SetMinMaxValues(0, 1)
-		self.Statusbar:SetValue(0)
-		self.Statusbar.Spark:Hide()
-
-		-- Clean up OnUpdate script when timer expires
 		self:SetScript("OnUpdate", nil)
+		if self.isIntCD then
+			self:Hide()
+			table_remove(intTable, self.ID)
+			Module:AuraWatch_SortBars()
+		else
+			if self.Time then
+				self.Time:SetText("N/A")
+			end
+			self.Statusbar:SetMinMaxValues(0, 1)
+			self.Statusbar:SetValue(0)
+			self.Statusbar.Spark:Hide()
+		end
 	elseif timer < 60 then
 		if self.Time then
 			self.Time:SetFormattedText("%.1f", timer)
 		end
-
 		self.Statusbar:SetMinMaxValues(0, self.duration)
 		self.Statusbar:SetValue(timer)
 		self.Statusbar.Spark:Show()
 	else
 		if self.Time then
-			local mins = math.floor(timer / 60)
-			local secs = math.floor(timer - mins * 60)
+			local mins = math_floor(timer / 60)
+			local secs = math_floor(timer - mins * 60)
 			self.Time:SetFormattedText("%d:%02d", mins, secs)
 		end
 		self.Statusbar:SetMinMaxValues(0, self.duration)
@@ -449,7 +487,7 @@ function Module:AuraWatch_UpdateTimer()
 end
 
 function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, id, charges)
-	local frames = FrameList[index]
+	local frames = frameList[index]
 	if not frames then
 		return
 	end
@@ -497,10 +535,11 @@ Module.IgnoredItems = {
 	[193757] = true,
 }
 
+-- REASON: Scans and updates cooldown states for all tracked spells/items; throttled by event triggers.
 function Module:AuraWatch_UpdateCD()
 	for KEY, VALUE in pairs(cooldownTable) do
 		for spellID in pairs(VALUE) do
-			local group = AuraList[KEY]
+			local group = auraList[KEY]
 			local value = group.List[spellID]
 			if value then
 				if value.SpellID then
@@ -556,7 +595,10 @@ function Module:AuraWatch_UpdateCD()
 	end
 end
 
--- UpdateAura
+-- ---------------------------------------------------------------------------
+-- Internal Texture Handling
+-- ---------------------------------------------------------------------------
+-- REASON: Override textures for specific spells to improve visual clarity (e.g., matching common ability icons).
 local replacedTexture = {
 	[336892] = 135130, -- Change (Unyielding Vigil) to the Aimed Shot icon
 	[378770] = 236174, -- Change (Killing Strike) to the Kill Shot icon
@@ -570,7 +612,7 @@ function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count,
 		return
 	end
 
-	local frames = FrameList[KEY]
+	local frames = frameList[KEY]
 	local frame = frames[frames.Index]
 	if frame then
 		frame:Show()
@@ -618,11 +660,12 @@ function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count,
 end
 
 function Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, duration, expires, caster, spellID, number, inCombat)
-	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[spellID] then -- ignore spells
+	if K.GetCharVars().AuraWatchList.IgnoreSpells[spellID] then -- ignore spells
 		return
 	end
 
-	for KEY, VALUE in pairs(AuraList) do
+	-- PERF: Use ipairs for master aura list iteration.
+	for KEY, VALUE in ipairs(auraList) do
 		local value = VALUE.List[spellID]
 		if value and value.AuraID and value.UnitID == unit then
 			if value.Combat and not inCombat then
@@ -659,6 +702,7 @@ function Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, dur
 	end
 end
 
+-- REASON: Iterates through unit auras (HELPFUL/HARMFUL) and triggers updates for tracked spells.
 function Module:UpdateAuraWatchByFilter(unit, filter, inCombat)
 	local index = 1
 	local auraData
@@ -685,69 +729,44 @@ function Module:UpdateAuraWatch(unit, inCombat)
 	Module:UpdateAuraWatchByFilter(unit, "HARMFUL", inCombat)
 end
 
--- Update InternalCD
+-- ---------------------------------------------------------------------------
+-- Internal Cooldown Management
+-- ---------------------------------------------------------------------------
+-- REASON: Manages internal cooldowns (ICD) for items and procs, including bar sorting.
 function Module:AuraWatch_SortBars()
-	if not IntCD.MoveHandle then
-		IntCD.MoveHandle = MakeMoveHandle(IntTable[1], L[IntCD.Name], "InternalCD", IntCD.Pos)
+	if not intCD.MoveHandle then
+		intCD.MoveHandle = MakeMoveHandle(intTable[1], L[intCD.Name], "InternalCD", intCD.Pos)
 	end
 
-	for i = 1, #IntTable do
-		IntTable[i]:ClearAllPoints()
+	for i = 1, #intTable do
+		intTable[i]:ClearAllPoints()
 		if i == 1 then
-			IntTable[i]:SetPoint("CENTER", IntCD.MoveHandle)
-		elseif IntCD.Direction == "RIGHT" then
-			IntTable[i]:SetPoint("LEFT", IntTable[i - 1], "RIGHT", IntCD.Interval, 0)
-		elseif IntCD.Direction == "LEFT" then
-			IntTable[i]:SetPoint("RIGHT", IntTable[i - 1], "LEFT", -IntCD.Interval, 0)
-		elseif IntCD.Direction == "UP" then
-			IntTable[i]:SetPoint("BOTTOM", IntTable[i - 1], "TOP", 0, IntCD.Interval)
-		elseif IntCD.Direction == "DOWN" then
-			IntTable[i]:SetPoint("TOP", IntTable[i - 1], "BOTTOM", 0, -IntCD.Interval)
+			intTable[i]:SetPoint("CENTER", intCD.MoveHandle)
+		elseif intCD.Direction == "RIGHT" then
+			intTable[i]:SetPoint("LEFT", intTable[i - 1], "RIGHT", intCD.Interval, 0)
+		elseif intCD.Direction == "LEFT" then
+			intTable[i]:SetPoint("RIGHT", intTable[i - 1], "LEFT", -intCD.Interval, 0)
+		elseif intCD.Direction == "UP" then
+			intTable[i]:SetPoint("BOTTOM", intTable[i - 1], "TOP", 0, intCD.Interval)
+		elseif intCD.Direction == "DOWN" then
+			intTable[i]:SetPoint("TOP", intTable[i - 1], "BOTTOM", 0, -intCD.Interval)
 		end
 
-		IntTable[i].ID = i
+		intTable[i].ID = i
 	end
 end
 
-function Module:AuraWatch_IntTimer(elapsed)
-	self.elapsed = self.elapsed or 0
-
-	if type(elapsed) ~= "number" then
-		return
-	end
-
-	self.elapsed = self.elapsed + elapsed
-	local timer = self.duration - self.elapsed
-
-	if timer < 0 then
-		self:SetScript("OnUpdate", nil)
-		self:Hide()
-		table_remove(IntTable, self.ID)
-		Module:AuraWatch_SortBars()
-	elseif timer < 60 then
-		if self.Time then
-			self.Time:SetFormattedText("%.1f", timer)
-		end
-		self.Statusbar:SetValue(timer)
-		self.Statusbar.Spark:Show()
-	else
-		if self.Time then
-			self.Time:SetFormattedText("%d:%.2d", timer / 60, timer % 60)
-		end
-		self.Statusbar:SetValue(timer)
-		self.Statusbar.Spark:Show()
-	end
-end
+-- DEPRECATED: Consolidated into AuraWatch_UpdateTimer.
 
 function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, sourceName)
 	if not K.PetBattleFrameHider:IsShown() then
 		return
 	end
 
-	local frame = BuildBAR(IntCD.BarWidth, IntCD.IconSize)
+	local frame = BuildBAR(intCD.BarWidth, intCD.IconSize)
 	if frame then
 		frame:Show()
-		table_insert(IntTable, frame)
+		table_insert(intTable, frame)
 		Module:AuraWatch_SortBars()
 	end
 
@@ -794,9 +813,10 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 	if frame.Statusbar then
 		frame.Statusbar:SetStatusBarColor(K.ColorClass(class))
 		frame.Statusbar:SetMinMaxValues(0, duration)
+		frame.isIntCD = true
 		frame.elapsed = 0
 		frame.duration = duration
-		frame:SetScript("OnUpdate", Module.AuraWatch_IntTimer)
+		frame:SetScript("OnUpdate", Module.AuraWatch_UpdateTimer)
 	end
 end
 
@@ -840,13 +860,13 @@ local cacheSize = 0
 local maxCacheSize = 666
 
 function Module:AuraWatch_UpdateInt(event, ...)
-	if not IntCD.List then
+	if not intCD.List then
 		return
 	end
 
 	if event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local unit, _, spellID = ...
-		local value = IntCD.List[spellID]
+		local value = intCD.List[spellID]
 		if value and value.CastSucceed and unit then
 			local unitID = value.UnitID:lower()
 			local guid = UnitGUID(unit)
@@ -867,7 +887,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 		local timestamp = ...
 		local eventType = select(2, ...)
 		local spellID = select(12, ...)
-		local value = IntCD.List[spellID]
+		local value = intCD.List[spellID]
 		if not value or cache[timestamp] == spellID then
 			return
 		end
@@ -895,83 +915,63 @@ function Module:AuraWatch_UpdateInt(event, ...)
 	end
 end
 
--- CleanUp
+-- ---------------------------------------------------------------------------
+-- Resource Cleanup
+-- ---------------------------------------------------------------------------
+-- REASON: Properly hides and resets frames when no longer tracked to save resources.
+local function ResetAuraFrame(frame)
+	if not frame or not frame:IsShown() then
+		return
+	end
+
+	frame:Hide()
+	frame:SetScript("OnUpdate", nil)
+
+	if frame.Icon then
+		frame.Icon:SetTexture(nil)
+	end
+
+	if frame.Count then
+		frame.Count:SetText("")
+	end
+
+	if frame.Spellname then
+		frame.Spellname:SetText("")
+	end
+
+	if frame.glowFrame then
+		K.HideOverlayGlow(frame.glowFrame)
+	end
+end
+
 function Module:AuraWatch_Cleanup()
-	for _, value in pairs(FrameList) do
+	for _, value in ipairs(frameList) do
 		for i = 1, maxFrames do
-			local frame = value[i]
-			if not frame:IsShown() then
-				break
-			end
-
-			if frame then
-				frame:Hide()
-				frame:SetScript("OnUpdate", nil)
-			end
-
-			-- Batch texture and text operations
-			if frame.Icon then
-				frame.Icon:SetTexture(nil)
-			end
-
-			if frame.Count then
-				frame.Count:SetText("")
-			end
-
-			if frame.Spellname then
-				frame.Spellname:SetText("")
-			end
-
-			if frame.glowFrame then
-				K.HideOverlayGlow(frame.glowFrame)
-			end
+			ResetAuraFrame(value[i])
 		end
-
 		value.Index = 1
 	end
 end
 
 function Module:AuraWatch_PreCleanup()
-	for _, value in pairs(FrameList) do
+	for _, value in ipairs(frameList) do
 		value.Index = 1
 	end
 end
 
 function Module:AuraWatch_PostCleanup()
-	for _, value in pairs(FrameList) do
+	for _, value in ipairs(frameList) do
 		local currentIndex = value.Index == maxFrames and maxFrames + 1 or value.Index
 		for i = currentIndex, maxFrames do
-			local frame = value[i]
-			if not frame:IsShown() then
-				break
-			end
-
-			if frame then
-				frame:Hide()
-				frame:SetScript("OnUpdate", nil)
-			end
-
-			-- Batch texture and text operations
-			if frame.Icon then
-				frame.Icon:SetTexture(nil)
-			end
-
-			if frame.Count then
-				frame.Count:SetText("")
-			end
-
-			if frame.Spellname then
-				frame.Spellname:SetText("")
-			end
-
-			if frame.glowFrame then
-				K.HideOverlayGlow(frame.glowFrame)
-			end
+			ResetAuraFrame(value[i])
 		end
 	end
 end
 
--- Event
+-- ---------------------------------------------------------------------------
+-- Event Handling
+-- ---------------------------------------------------------------------------
+-- REASON: Dispatches events to appropriate update logic; handles player entering and targeting.
 function Module.AuraWatch_OnEvent(event, ...)
 	if not C["AuraWatch"].Enable then
 		K:UnregisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
@@ -984,7 +984,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 
 	if event == "PLAYER_ENTERING_WORLD" then
 		InitSetup()
-		if not IntCD.MoveHandle then
+		if not intCD.MoveHandle then
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 		end
 		K:UnregisterEvent(event, Module.AuraWatch_OnEvent)
@@ -994,7 +994,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 
 	if event == "UNIT_AURA" then
 		local unit = ...
-		if not UnitIDTable[unit] then
+		if not unitIDTable[unit] then
 			return
 		end
 		Module:AuraWatch_RequestUpdate()
@@ -1002,7 +1002,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 	end
 
 	if event == "PLAYER_TARGET_CHANGED" then
-		if UnitIDTable["target"] then
+		if unitIDTable["target"] then
 			Module:AuraWatch_RequestUpdate()
 		end
 		return
@@ -1021,8 +1021,9 @@ function Module:AuraWatch_Centralize(force)
 		return
 	end
 
-	for i = 1, #FrameList do
-		local frames = FrameList[i]
+	-- PERF: Use ipairs for frame list iteration.
+	for i = 1, #frameList do
+		local frames = frameList[i]
 		local frame1 = frames and frames[1]
 		if frame1.__direction == "CENTER" and frame1:IsShown() then
 			local numIndex = force and 7 or frames.Index
@@ -1034,9 +1035,13 @@ function Module:AuraWatch_Centralize(force)
 	end
 end
 
--- Throttle full AuraWatch rebuilds; UNIT_AURA can fire extremely often
+-- ---------------------------------------------------------------------------
+-- Update Throttling
+-- ---------------------------------------------------------------------------
+-- REASON: Throttles full AuraWatch rebuilds to reduce CPU impact; UNIT_AURA fires frequently.
 local AURAWATCH_UPDATE_INTERVAL = 0.10
 
+-- PERF: Throttled request system to batch multiple events into a single update cycle.
 function Module:AuraWatch_RequestUpdate()
 	if auraWatchUpdater.moving then
 		return
@@ -1070,7 +1075,7 @@ function Module:AuraWatch_OnUpdate(elapsed)
 	Module:AuraWatch_UpdateCD()
 
 	local inCombat = InCombatLockdown()
-	for unitID in pairs(UnitIDTable) do
+	for unitID in pairs(unitIDTable) do
 		Module:UpdateAuraWatch(unitID, inCombat)
 	end
 
@@ -1081,12 +1086,16 @@ end
 -- Ensure the updater script is set correctly
 --auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
--- Mover
+-- ---------------------------------------------------------------------------
+-- Slash Commands & Mover
+-- ---------------------------------------------------------------------------
+-- REASON: Provides user controls for moving and locking AuraWatch frames.
 SlashCmdList.AuraWatch = function(msg)
 	if msg:lower() == "move" then
 		auraWatchUpdater:SetScript("OnUpdate", nil)
 		auraWatchUpdater.moving = true
-		for _, value in pairs(FrameList) do
+		-- PERF: Use ipairs for frame list iteration.
+		for _, value in ipairs(frameList) do
 			for i = 1, 6 do
 				if value[i] then
 					value[i]:SetScript("OnUpdate", nil)
@@ -1121,14 +1130,14 @@ SlashCmdList.AuraWatch = function(msg)
 			value[1].MoveHandle:Show()
 		end
 
-		if IntCD.MoveHandle then
-			IntCD.MoveHandle:Show()
-			for i = 1, #IntTable do
-				if IntTable[i] then
-					IntTable[i]:Hide()
+		if intCD.MoveHandle then
+			intCD.MoveHandle:Show()
+			for i = 1, #intTable do
+				if intTable[i] then
+					intTable[i]:Hide()
 				end
 			end
-			table_wipe(IntTable)
+			table_wipe(intTable)
 
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
@@ -1137,33 +1146,34 @@ SlashCmdList.AuraWatch = function(msg)
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 
-			for i = 1, #IntTable do
-				IntTable[i]:SetScript("OnUpdate", nil)
-				IntTable[i]:Show()
-				IntTable[i].Spellname:SetText("")
-				IntTable[i].Time:SetText("59")
-				IntTable[i].Statusbar:SetMinMaxValues(0, 1)
-				IntTable[i].Statusbar:SetValue(1)
-				IntTable[i].Icon:SetColorTexture(0, 0, 0, 0.25)
+			for i = 1, #intTable do
+				intTable[i]:SetScript("OnUpdate", nil)
+				intTable[i]:Show()
+				intTable[i].Spellname:SetText("")
+				intTable[i].Time:SetText("59")
+				intTable[i].Statusbar:SetMinMaxValues(0, 1)
+				intTable[i].Statusbar:SetValue(1)
+				intTable[i].Icon:SetColorTexture(0, 0, 0, 0.25)
 			end
 		end
 	elseif msg:lower() == "lock" then
 		Module:AuraWatch_Cleanup()
-		for _, value in pairs(FrameList) do
+		-- PERF: Use ipairs for frame list iteration.
+		for _, value in ipairs(frameList) do
 			value[1].MoveHandle:Hide()
 		end
 		auraWatchUpdater.moving = nil
 		Module:AuraWatch_RequestUpdate()
 		--auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
-		if IntCD.MoveHandle then
-			IntCD.MoveHandle:Hide()
-			for i = 1, #IntTable do
-				if IntTable[i] then
-					IntTable[i]:Hide()
+		if intCD.MoveHandle then
+			intCD.MoveHandle:Hide()
+			for i = 1, #intTable do
+				if intTable[i] then
+					intTable[i]:Hide()
 				end
 			end
-			table_wipe(IntTable)
+			table_wipe(intTable)
 		end
 	end
 end

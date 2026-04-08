@@ -1,13 +1,30 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Game Menu frame and buttons.
+-- - Design: Applies custom borders and skins buttons within the Game Menu UI.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local table_insert = table.insert
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local table_insert = _G.table.insert
+local hooksecurefunc = _G.hooksecurefunc
 
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local GameMenuFrame = _G.GameMenuFrame
+local Game16Font = _G.Game16Font
+
+-- REASON: Main entry point for Blizzard Game Menu skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
 
-	if not C_AddOns.IsAddOnLoaded("ConsolePort_Menu") then
+	if not C_AddOns_IsAddOnLoaded("ConsolePort_Menu") then
 		local GameMenuFrame = _G.GameMenuFrame
 		GameMenuFrame:StripTextures()
 		GameMenuFrame:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10 or nil)
@@ -41,7 +58,7 @@ table_insert(C.defaultThemes, function()
 		end)
 	end
 
-	if C_AddOns.IsAddOnLoaded("OptionHouse") then
+	if C_AddOns_IsAddOnLoaded("OptionHouse") then
 		_G.GameMenuButtonOptionHouse:SkinButton()
 	end
 end)

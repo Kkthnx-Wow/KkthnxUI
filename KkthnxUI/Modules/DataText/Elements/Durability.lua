@@ -1,36 +1,63 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Displays durability information for equipped items on the character frame.
+-- - Design: Integrates with the PaperDollFrame and uses HelpTips for low durability warnings.
+-- - Events: UPDATE_INVENTORY_DURABILITY, PLAYER_ENTERING_WORLD, PLAYER_REGEN_ENABLED
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
+-- PERF: Localize globals and API functions to reduce lookup overhead.
+local _G = _G
+local C_TooltipInfo_GetInventoryItem = _G.C_TooltipInfo.GetInventoryItem
+local CreateFrame = _G.CreateFrame
+local DURABILITY = _G.DURABILITY
+local GetAverageItemLevel = _G.GetAverageItemLevel
+local GetInventoryItemDurability = _G.GetInventoryItemDurability
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local HelpTip = _G.HelpTip
+local InCombatLockdown = _G.InCombatLockdown
+local PaperDollFrame = _G.PaperDollFrame
+local UIParent = _G.UIParent
 local math_floor = math.floor
-local string_gsub = string.gsub
+local pairs = pairs
 local string_format = string.format
+local string_gsub = string.gsub
 local table_sort = table.sort
+local unpack = unpack
 
-local GetInventoryItemLink = GetInventoryItemLink
-local GetInventoryItemDurability = GetInventoryItemDurability
-local GetInventoryItemTexture = GetInventoryItemTexture
-
-local DurabilityDataText
-local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
-local lowDurabilityCap = 0.25
+-- ---------------------------------------------------------------------------
+-- State & Constants
+-- ---------------------------------------------------------------------------
+local durabilityDataText
+local repairCostString = string_gsub(_G.REPAIR_COST, _G.HEADER_COLON, ":")
+local LOW_DURABILITY_CAP = 0.25
 
 local localSlots = {
-	[1] = { 1, INVTYPE_HEAD, 1000 },
-	[2] = { 3, INVTYPE_SHOULDER, 1000 },
-	[3] = { 5, INVTYPE_CHEST, 1000 },
-	[4] = { 6, INVTYPE_WAIST, 1000 },
-	[5] = { 9, INVTYPE_WRIST, 1000 },
-	[6] = { 10, INVTYPE_HAND, 1000 },
-	[7] = { 7, INVTYPE_LEGS, 1000 },
-	[8] = { 8, INVTYPE_FEET, 1000 },
-	[9] = { 16, INVTYPE_WEAPONMAINHAND, 1000 },
-	[10] = { 17, INVTYPE_WEAPONOFFHAND, 1000 },
+	[1] = { 1, _G.INVTYPE_HEAD, 1000 },
+	[2] = { 3, _G.INVTYPE_SHOULDER, 1000 },
+	[3] = { 5, _G.INVTYPE_CHEST, 1000 },
+	[4] = { 6, _G.INVTYPE_WAIST, 1000 },
+	[5] = { 9, _G.INVTYPE_WRIST, 1000 },
+	[6] = { 10, _G.INVTYPE_HAND, 1000 },
+	[7] = { 7, _G.INVTYPE_LEGS, 1000 },
+	[8] = { 8, _G.INVTYPE_FEET, 1000 },
+	[9] = { 16, _G.INVTYPE_WEAPONMAINHAND, 1000 },
+	[10] = { 17, _G.INVTYPE_WEAPONOFFHAND, 1000 },
 }
 
+-- ---------------------------------------------------------------------------
+-- Internal Logic
+-- ---------------------------------------------------------------------------
 local function hideAlertWhileCombat()
+	-- REASON: Suppress durability alerts during combat to prevent UI clutter and potential layout issues.
 	if InCombatLockdown() then
-		DurabilityDataText:RegisterEvent("PLAYER_REGEN_ENABLED")
-		DurabilityDataText:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
+		durabilityDataText:RegisterEvent("PLAYER_REGEN_ENABLED")
+		durabilityDataText:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
 	end
 end
 
@@ -43,12 +70,14 @@ local lowDurabilityInfo = {
 }
 
 local function sortSlots(a, b)
+	-- REASON: Sorts slots by durability percentage (lowest first) for the primary display and tooltip.
 	if a and b then
 		return (a[3] == b[3] and a[1] < b[1]) or (a[3] < b[3])
 	end
 end
 
-local function UpdateAllSlots()
+local function updateAllSlots()
+	-- REASON: Scans all relevant equipment slots and updates their durability and icon data in the local cache.
 	local numSlots = 0
 	for i = 1, #localSlots do
 		localSlots[i][3] = 1000
@@ -60,7 +89,7 @@ local function UpdateAllSlots()
 				numSlots = numSlots + 1
 			end
 			local iconTexture = GetInventoryItemTexture("player", index) or 134400
-			localSlots[i][4] = ("|T" .. iconTexture .. ":13:15:0:0:50:50:4:46:4:46|t ") or ""
+			localSlots[i][4] = "|T" .. iconTexture .. ":13:15:0:0:50:50:4:46:4:46|t "
 		end
 	end
 	table_sort(localSlots, sortSlots)
@@ -68,69 +97,70 @@ local function UpdateAllSlots()
 	return numSlots
 end
 
-local function isLowDurability()
+local function hasLowDurability()
+	-- REASON: Checks if any equipped item's durability has fallen below the defined threshold.
 	for i = 1, 10 do
-		if localSlots[i][3] < lowDurabilityCap then
+		if localSlots[i][3] < LOW_DURABILITY_CAP then
 			return true
 		end
 	end
+	return false
 end
 
 local function getDurabilityColor(cur, max)
-	local r, g, b = K.oUF:RGBColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 0, 1, 0)
+	-- REASON: Generates a color gradient (red to green) based on the current durability percentage.
+	local r, g, b = K.RGBColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 	return r, g, b
 end
 
-local eventList = {
-	"UPDATE_INVENTORY_DURABILITY",
-	"PLAYER_ENTERING_WORLD",
-}
-
-local function OnEvent(event)
+local function onEvent(self, event)
+	-- REASON: Manages durability updates and triggers HelpTips when equipment is damaged.
 	if event == "PLAYER_ENTERING_WORLD" then
-		DurabilityDataText:UnregisterEvent(event)
+		self:UnregisterEvent(event)
 	end
 
-	local numSlots = UpdateAllSlots()
-	local isLow = isLowDurability()
+	local numSlots = updateAllSlots()
+	local isLow = hasLowDurability()
 
 	if event == "PLAYER_REGEN_ENABLED" then
-		DurabilityDataText:UnregisterEvent(event)
-		DurabilityDataText:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
+		self:UnregisterEvent(event)
+		self:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 	else
 		if numSlots > 0 then
-			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			local yellowColor = "|cFFF0C500" -- Hexadecimal color code for yellow, the closest I could find/get to match other tabs
-			-- Set the text color to yellow and format the durability text
-			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), yellowColor .. DURABILITY)
+			local currentDurabilityPercent = math_floor(localSlots[1][3] * 100)
+			local r, g, b = getDurabilityColor(currentDurabilityPercent, 100)
+			local yellowColor = "|cFFF0C500"
+			-- REASON: Formats the DataText string with the lowest durability item's status.
+			self.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. currentDurabilityPercent, yellowColor .. DURABILITY)
 		else
-			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
+			self.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. _G.NONE)
 		end
 	end
 
 	if isLow then
-		HelpTip:Show(DurabilityDataText, lowDurabilityInfo)
+		HelpTip:Show(self, lowDurabilityInfo)
 	else
-		HelpTip:Hide(DurabilityDataText, L["DurabilityHelpTip"])
+		HelpTip:Hide(self, L["DurabilityHelpTip"])
 	end
 end
 
-local function OnEnter()
-	local total, equipped = GetAverageItemLevel()
-	GameTooltip:SetOwner(DurabilityDataText, "ANCHOR_NONE")
-	GameTooltip:SetPoint("BOTTOMLEFT", DurabilityDataText, "TOPRIGHT", 0, 0)
-	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", STAT_AVERAGE_ITEM_LEVEL, equipped, total), 0.4, 0.6, 1, 0.4, 0.6, 1)
+local function onEnter(self)
+	-- REASON: Populates the durability tooltip with per-slot breakdowns and total repair costs.
+	local totalItemLevel, equippedItemLevel = GetAverageItemLevel()
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0)
+	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", _G.STAT_AVERAGE_ITEM_LEVEL, equippedItemLevel, totalItemLevel), 0.4, 0.6, 1, 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local totalCost = 0
 	for i = 1, 10 do
 		if localSlots[i][3] ~= 1000 then
 			local slot = localSlots[i][1]
-			local cur = math_floor(localSlots[i][3] * 100)
+			local curPercent = math_floor(localSlots[i][3] * 100)
 			local slotIcon = localSlots[i][4]
-			GameTooltip:AddDoubleLine(slotIcon .. localSlots[i][2], cur .. "%", 1, 1, 1, getDurabilityColor(cur, 100))
+			GameTooltip:AddDoubleLine(slotIcon .. localSlots[i][2], curPercent .. "%", 1, 1, 1, getDurabilityColor(curPercent, 100))
 
-			local data = C_TooltipInfo.GetInventoryItem("player", slot)
+			local data = C_TooltipInfo_GetInventoryItem("player", slot)
 			if data then
 				local argVal = data.args and data.args[7]
 				if argVal and argVal.field == "repairCost" then
@@ -148,34 +178,40 @@ local function OnEnter()
 	GameTooltip:Show()
 end
 
-local function OnLeave()
+local function onLeave()
 	GameTooltip:Hide()
 end
 
+-- ---------------------------------------------------------------------------
+-- Initialization
+-- ---------------------------------------------------------------------------
 function Module:CreateDurabilityDataText()
+	-- REASON: Entry point for durability DataText; attaches a stylized button to the Character Frame.
 	if not C["Misc"].SlotDurability then
 		return
 	end
 
-	DurabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
-	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
-	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
-	DurabilityDataText:SetParent(PaperDollFrame)
-	DurabilityDataText:Disable()
+	durabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
+	durabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
+	durabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
+	durabilityDataText:SetParent(PaperDollFrame)
+	durabilityDataText:Disable()
 
-	DurabilityDataText.LeftActive:Hide()
-	DurabilityDataText.MiddleActive:Hide()
-	DurabilityDataText.RightActive:Hide()
+	-- REASON: Clean up Blizzard's default tab textures for a custom look.
+	durabilityDataText.LeftActive:Hide()
+	durabilityDataText.MiddleActive:Hide()
+	durabilityDataText.RightActive:Hide()
 
-	local function _OnEvent(...)
-		OnEvent(...)
-	end
+	local eventList = {
+		"UPDATE_INVENTORY_DURABILITY",
+		"PLAYER_ENTERING_WORLD",
+	}
 
 	for _, event in pairs(eventList) do
-		DurabilityDataText:RegisterEvent(event)
+		durabilityDataText:RegisterEvent(event)
 	end
 
-	DurabilityDataText:SetScript("OnEvent", _OnEvent)
-	DurabilityDataText:SetScript("OnEnter", OnEnter)
-	DurabilityDataText:SetScript("OnLeave", OnLeave)
+	durabilityDataText:SetScript("OnEvent", onEvent)
+	durabilityDataText:SetScript("OnEnter", onEnter)
+	durabilityDataText:SetScript("OnLeave", onLeave)
 end

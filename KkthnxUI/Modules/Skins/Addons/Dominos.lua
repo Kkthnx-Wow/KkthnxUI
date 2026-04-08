@@ -1,8 +1,27 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins Dominos action buttons and bars.
+-- - Design: Hooks and styles Dominos buttons to match KkthnxUI aesthetics.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local hooksecurefunc = _G.hooksecurefunc
+
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+
+-- REASON: Main entry point for Dominos skinning.
 function Module:ReskinDominos()
-	if not C["Skins"].Dominos or not C_AddOns.IsAddOnLoaded("Dominos") then
+	if not C["Skins"].Dominos or not C_AddOns_IsAddOnLoaded("Dominos") then
 		return
 	end
 
@@ -149,8 +168,8 @@ function Module:ReskinDominos()
 			StyleSmallDominosButton(button, icon, name, hotkey, true)
 		end
 
-		if DominosFrameexp then
-			DominosFrameexp:CreateBorder()
+		if _G.DominosFrameexp then
+			_G.DominosFrameexp:CreateBorder()
 		end
 	end
 end

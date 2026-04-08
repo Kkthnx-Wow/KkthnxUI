@@ -1,5 +1,17 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins BugSack frames.
+-- - Design: Currently a placeholder for future BugSack skinning.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
 
 -- local C_AddOns.IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 -- local hooksecurefunc = hooksecurefunc

@@ -1,11 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Creates and updates the Arena unit frames.
+-- - Design: Features Health, Power, Portrait, Castbar, and Aura tracking specifically for PVP.
+-- - Events: UNIT_HEALTH, UNIT_POWER, UNIT_AURA, etc. handled by oUF.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- Lua functions
-local select = select
+-- REASON: Localize C-functions (Snake Case)
+local select = _G.select
 
--- WoW API
-local CreateFrame = CreateFrame
+-- REASON: Localize Globals
+local CreateFrame = _G.CreateFrame
+local UnitIsUnit = _G.UnitIsUnit
 
 function Module:CreateArena()
 	self.mystyle = "arena"
@@ -15,14 +25,15 @@ function Module:CreateArena()
 	local arenaPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	-- REASON: Overlay frame for borders and indicators.
+	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(6)
 
 	Module.CreateHeader(self)
 
+	-- REASON: Health Bar Setup
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetHeight(arenaHeight)
 	self.Health:SetPoint("TOPLEFT")
@@ -34,7 +45,7 @@ function Module:CreateArena()
 	self.Health.frequentUpdates = true
 
 	if C["Arena"].Smooth then
-		K:SmoothBar(self.Health)
+		-- K:SmoothBar(self.Health)
 	end
 
 	if C["Arena"].HealthbarColor == 3 then
@@ -58,6 +69,7 @@ function Module:CreateArena()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Arena"].PowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
@@ -69,7 +81,7 @@ function Module:CreateArena()
 	self.Power.SetFrequentUpdates = true
 
 	if C["Arena"].Smooth then
-		K:SmoothBar(self.Power)
+		-- K:SmoothBar(self.Power)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -90,25 +102,23 @@ function Module:CreateArena()
 		end
 	end
 
+	-- REASON: Portrait Setup (Supports 2D/3D styles)
 	if arenaPortraitStyle ~= 0 then
 		if arenaPortraitStyle == 4 then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self)
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			self.Portrait:SetAlpha(0.6)
 		elseif arenaPortraitStyle == 5 then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self.Health)
+			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-
-			if arenaPortraitStyle == 5 then
-				Module:ApplyPortraitAlphaFix(self)
-			end
+			Module:ApplyPortraitAlphaFix(self)
 		elseif arenaPortraitStyle ~= 5 and arenaPortraitStyle ~= 4 then
-			self.Portrait = self.Health:CreateTexture("KKUI_ArenaPortrait", "BACKGROUND", nil, 1)
+			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -134,12 +144,12 @@ function Module:CreateArena()
 	self.Level:SetFontObject(K.UIFont)
 	self:Tag(self.Level, "[nplevel]")
 
-	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self)
+	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 	self.Trinket:SetPoint("RIGHT", self, "LEFT", -6, 0)
 	self.Trinket:CreateBorder()
 
-	--if C["Arena"].ShowBuffs then
+	-- REASON: Aura Buffs
 	self.Buffs = CreateFrame("Frame", nil, self)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
@@ -156,8 +166,8 @@ function Module:CreateArena()
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateButton = Module.PostCreateButton
 	self.Buffs.PostUpdateButton = Module.PostUpdateButton
-	--end
 
+	-- REASON: Aura Debuffs
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPRIGHT"
@@ -172,8 +182,9 @@ function Module:CreateArena()
 	self.Debuffs.PostCreateButton = Module.PostCreateButton
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
+	-- REASON: Castbar configuration
 	if C["Arena"].Castbars then
-		self.Castbar = CreateFrame("StatusBar", "ArenaCastbar", self)
+		self.Castbar = CreateFrame("StatusBar", nil, self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetClampedToScreen(true)
 		self.Castbar:CreateBorder()
@@ -207,7 +218,6 @@ function Module:CreateArena()
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		-- self.Castbar.UpdatePips = K.Noop -- use my own code
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 		self.Castbar.Text:SetFontObject(K.UIFont)
@@ -259,6 +269,7 @@ function Module:CreateArena()
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateArenaTargetGlow, true)
 	end
 
+	-- REASON: Raid Target Indicator
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
@@ -267,6 +278,7 @@ function Module:CreateArena()
 	end
 	self.RaidTargetIndicator:SetSize(14, 14)
 
+	-- REASON: Resurrection Indicator
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
 	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
@@ -287,6 +299,7 @@ function Module:CreateArena()
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")
 
+	-- REASON: Range Fader Settings
 	self.RangeFader = {
 		insideAlpha = 1,
 		outsideAlpha = 0.55,

@@ -1,228 +1,246 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Replaces standard queue timers with enhanced, more visible versions and warning sounds.
+-- - Design: Hooks LFG and PVP ready dialogs, injects custom font strings, and tracks PvE pop times for persistent countdowns.
+-- - Events: LFG_PROPOSAL_SHOW, LFG_PROPOSAL_SUCCEEDED, UPDATE_BATTLEFIELD_STATUS
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
--- Cached Globals
-local SecondsToTime = SecondsToTime
-local CreateFrame = CreateFrame
-local PlaySoundFile = PlaySoundFile
-local GetTime = GetTime
-local hooksecurefunc = hooksecurefunc
-local math_max = math.max
-local type = type
+-- PERF: Localize global functions and environment for faster lookups.
+local ipairs = _G.ipairs
+local math_max = _G.math.max
+local select = _G.select
+local string_format = _G.string_format
+local type = _G.type
 
-local LFGDungeonReadyDialog = LFGDungeonReadyDialog
-local PVPReadyDialog = PVPReadyDialog
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local GetBattlefieldPortExpiration = _G.GetBattlefieldPortExpiration
+local GetBattlefieldStatus = _G.GetBattlefieldStatus
+local GetTime = _G.GetTime
+local HookSecureFunc = _G.hooksecurefunc
+local PlaySoundFile = _G.PlaySoundFile
+local SecondsToTime = _G.SecondsToTime
 
-local SOUND_ID = 567458
-local WARNING_THRESHOLD = 6
-local PVE_BASE_EXPIRE = 40
+-- SG: Constants
+local QUEUE_WARNING_SOUND_ID = 567458
+local QUEUE_WARNING_THRESHOLD = 6
+local PVE_QUEUE_EXPIRE_BASE = 40
+local QUEUE_UPDATE_INTERVAL = 0.2
 
-local pveRemaining = 0
-local pvpQueueIndex
-local updateFrame
-local soundPlayed
-local updateInterval = 0.2
-local elapsedStamp = 0
+-- SG: State Variables
+local remainingPvETime = 0
+local activePvPQueueIndex
+local queueUpdateFrame
+local hasPlayedWarningSound = false
+local elapsedSinceLastUpdate = 0
 
-local function HideOtherTimers()
+-- REASON: Hides default Blizzard queue timer status bars to prevent UI clutter when custom timers are active.
+local function hideDefaultQueueTimers()
 	if not C["Misc"].QueueTimerHideOtherTimers then
 		return
 	end
-	local popup = LFGDungeonReadyPopup
-	if not popup then
+	local queuePopup = _G.LFGDungeonReadyPopup
+	if not queuePopup then
 		return
 	end
-	local children = { popup:GetChildren() }
-	for _, child in ipairs(children) do
-		if child.GetObjectType and child:GetObjectType() == "StatusBar" then
-			child:Hide()
+	local childFrameList = { queuePopup:GetChildren() }
+	for _, childFrame in ipairs(childFrameList) do
+		if childFrame.GetObjectType and childFrame:GetObjectType() == "StatusBar" then
+			childFrame:Hide()
 		end
 	end
 end
 
-local function EnsureCustomLabels(dialog)
-	if not dialog or not dialog.label then
+-- REASON: Injects custom font strings into a ready dialog frame for displaying remaining time and instance information.
+local function createCustomQueueLabels(dialogFrame)
+	if not dialogFrame or not dialogFrame.label or dialogFrame.queueTimerLabels then
 		return
 	end
-	if dialog.queueTimerLabels then
-		return
-	end
 
-	local maxWidth = dialog:GetWidth()
+	local frameWidth = dialogFrame:GetWidth()
 
-	dialog.customLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	dialog.customLabel:SetPoint("TOP", dialog.label, "TOP", 0, 0)
-	dialog.customLabel:SetText("Queue expires in")
-	local fontFile = select(1, dialog.customLabel:GetFont())
-	dialog.customLabel:SetFont(fontFile, 15, "")
-	dialog.customLabel:SetShadowOffset(1, -1)
-	dialog.customLabel:SetWidth(maxWidth)
+	dialogFrame.customLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.customLabel:SetPoint("TOP", dialogFrame.label, "TOP", 0, 0)
+	dialogFrame.customLabel:SetText("Queue expires in")
+	local fontPath = select(1, dialogFrame.customLabel:GetFont())
+	dialogFrame.customLabel:SetFont(fontPath, 15, "")
+	dialogFrame.customLabel:SetShadowOffset(1, -1)
+	dialogFrame.customLabel:SetWidth(frameWidth)
 
-	dialog.timerLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	dialog.timerLabel:SetPoint("TOP", dialog.customLabel, "BOTTOM", 0, -5)
-	fontFile = select(1, dialog.timerLabel:GetFont())
-	dialog.timerLabel:SetFont(fontFile, 24, "")
-	dialog.timerLabel:SetShadowOffset(1, -1)
-	dialog.timerLabel:SetWidth(maxWidth)
+	dialogFrame.timerLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.timerLabel:SetPoint("TOP", dialogFrame.customLabel, "BOTTOM", 0, -5)
+	fontPath = select(1, dialogFrame.timerLabel:GetFont())
+	dialogFrame.timerLabel:SetFont(fontPath, 24, "")
+	dialogFrame.timerLabel:SetShadowOffset(1, -1)
+	dialogFrame.timerLabel:SetWidth(frameWidth)
 
-	dialog.bgLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	dialog.bgLabel:SetPoint("TOP", dialog.timerLabel, "BOTTOM", 0, -4)
-	fontFile = select(1, dialog.bgLabel:GetFont())
-	dialog.bgLabel:SetFont(fontFile, 15, "")
-	dialog.bgLabel:SetShadowOffset(1, -1)
-	dialog.bgLabel:SetWidth(maxWidth)
+	dialogFrame.bgLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.bgLabel:SetPoint("TOP", dialogFrame.timerLabel, "BOTTOM", 0, -4)
+	fontPath = select(1, dialogFrame.bgLabel:GetFont())
+	dialogFrame.bgLabel:SetFont(fontPath, 15, "")
+	dialogFrame.bgLabel:SetShadowOffset(1, -1)
+	dialogFrame.bgLabel:SetWidth(frameWidth)
 
-	dialog.statusTextLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	dialog.statusTextLabel:SetPoint("TOP", dialog.bgLabel, "BOTTOM", 0, -3)
-	fontFile = select(1, dialog.statusTextLabel:GetFont())
-	dialog.statusTextLabel:SetFont(fontFile, 11, "")
-	dialog.statusTextLabel:SetShadowOffset(1, -1)
-	dialog.statusTextLabel:SetWidth(maxWidth)
+	dialogFrame.statusTextLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.statusTextLabel:SetPoint("TOP", dialogFrame.bgLabel, "BOTTOM", 0, -3)
+	fontPath = select(1, dialogFrame.statusTextLabel:GetFont())
+	dialogFrame.statusTextLabel:SetFont(fontPath, 11, "")
+	dialogFrame.statusTextLabel:SetShadowOffset(1, -1)
+	dialogFrame.statusTextLabel:SetWidth(frameWidth)
 
-	dialog.queueTimerLabels = true
+	dialogFrame.queueTimerLabels = true
 end
 
-local function FormatExpiresText(seconds)
-	local secs = (seconds and seconds > 0) and seconds or 1
-	local colorHex = (secs > 20) and "20ff20" or (secs > 10) and "ffff00" or "ff0000"
-	return string.format("|cff%s%s|r", colorHex, SecondsToTime(secs))
+local function getQueueExpiresText(secondsUntilExpiration)
+	local secondsRemaining = (secondsUntilExpiration and secondsUntilExpiration > 0) and secondsUntilExpiration or 1
+	local expirationColorHex = (secondsRemaining > 20) and "20ff20" or (secondsRemaining > 10) and "ffff00" or "ff0000"
+	return string_format("|cff%s%s|r", expirationColorHex, SecondsToTime(secondsRemaining))
 end
 
-local function SetExpiresText(timeRemaining, dialog, isPvP)
-	if not dialog then
+function Module:updateQueueExpiresDisplay(timeRemaining, dialogFrame, isPvPQueue)
+	if not dialogFrame then
 		return
 	end
-	EnsureCustomLabels(dialog)
+	createCustomQueueLabels(dialogFrame)
 
-	local secs = timeRemaining or 0
-	if dialog.label then
-		dialog.label:SetText("")
+	local secondsRemaining = timeRemaining or 0
+	if dialogFrame.label then
+		dialogFrame.label:SetText("")
 	end
-	if dialog.instanceInfo and dialog.instanceInfo.SetAlpha then
-		dialog.instanceInfo:SetAlpha(0)
-	end
-
-	if dialog.timerLabel then
-		dialog.timerLabel:SetText(FormatExpiresText(secs))
+	if dialogFrame.instanceInfo and dialogFrame.instanceInfo.SetAlpha then
+		dialogFrame.instanceInfo:SetAlpha(0)
 	end
 
-	if dialog.bgLabel and dialog.statusTextLabel and dialog.instanceInfo and dialog.instanceInfo.name and (dialog.instanceInfo:IsShown() or isPvP) then
-		dialog.bgLabel:SetText(dialog.instanceInfo.name:GetText() or "")
-		dialog.statusTextLabel:SetText(dialog.instanceInfo.statusText and dialog.instanceInfo.statusText:GetText() or "")
+	if dialogFrame.timerLabel then
+		dialogFrame.timerLabel:SetText(getQueueExpiresText(secondsRemaining))
+	end
+
+	if dialogFrame.bgLabel and dialogFrame.statusTextLabel and dialogFrame.instanceInfo and dialogFrame.instanceInfo.name and (dialogFrame.instanceInfo:IsShown() or isPvPQueue) then
+		dialogFrame.bgLabel:SetText(dialogFrame.instanceInfo.name:GetText() or "")
+		dialogFrame.statusTextLabel:SetText(dialogFrame.instanceInfo.statusText and dialogFrame.instanceInfo.statusText:GetText() or "")
 	else
-		if dialog.bgLabel then
-			dialog.bgLabel:SetText("")
+		if dialogFrame.bgLabel then
+			dialogFrame.bgLabel:SetText("")
 		end
-		if dialog.statusTextLabel then
-			dialog.statusTextLabel:SetText("")
+		if dialogFrame.statusTextLabel then
+			dialogFrame.statusTextLabel:SetText("")
 		end
 	end
 end
 
-local function SavePVEPopTime()
-	KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer = KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer.PVEPopTime = GetTime()
+-- REASON: Persists the PvE queue pop timestamp to the character database to allow for accurate countdowns across UI refreshes.
+local function savePvEQueuePopTime()
+	local charData = K.GetCharVars()
+	charData.QueueTimer = charData.QueueTimer or {}
+	charData.QueueTimer.PVEPopTime = GetTime()
 end
 
-local function LoadPVEPopTime()
-	local t = KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer
-	return t and t.PVEPopTime or nil
+local function loadPvEQueuePopTime()
+	local queueData = K.GetCharVars().QueueTimer
+	return queueData and queueData.PVEPopTime or nil
 end
 
-local function ClearPVEPopTime()
-	local t = KkthnxUIDB.Variables[K.Realm][K.Name].QueueTimer
-	if t then
-		t.PVEPopTime = nil
+local function clearPvEQueuePopTime()
+	local queueData = K.GetCharVars().QueueTimer
+	if queueData then
+		queueData.PVEPopTime = nil
 	end
 end
 
--- FIX: Added defensive check for table values
-local function RecalcPVERemaining()
-	local pop = LoadPVEPopTime()
+-- REASON: Recalculates the remaining PvE queue time based on the persisted pop timestamp to maintain countdown accuracy.
+local function recalculateRemainingPvETime()
+	local popTimeValue = loadPvEQueuePopTime()
 
-	-- Handle cases where 'pop' might be a table (Blizzard Info Table) or nil
-	if type(pop) == "table" then
-		pop = pop.timeAdded or pop.value or pop[1] -- Extraction logic
+	if type(popTimeValue) == "table" then
+		popTimeValue = popTimeValue.timeAdded or popTimeValue.value or popTimeValue[1]
 	end
 
-	if not pop or type(pop) ~= "number" then
-		pveRemaining = PVE_BASE_EXPIRE
+	if not popTimeValue or type(popTimeValue) ~= "number" then
+		remainingPvETime = PVE_QUEUE_EXPIRE_BASE
 		return
 	end
 
-	local delta = GetTime() - pop
-	local remain = PVE_BASE_EXPIRE - delta
-	if remain < 0 or remain > PVE_BASE_EXPIRE then
-		pveRemaining = PVE_BASE_EXPIRE
+	local timeDelta = GetTime() - popTimeValue
+	local timeRemain = PVE_QUEUE_EXPIRE_BASE - timeDelta
+	if timeRemain < 0 or timeRemain > PVE_QUEUE_EXPIRE_BASE then
+		remainingPvETime = PVE_QUEUE_EXPIRE_BASE
 	else
-		pveRemaining = remain
+		remainingPvETime = timeRemain
 	end
 end
 
-local function BeepWarningIfNeeded(seconds)
+-- REASON: Plays a triple-beep warning sound when the queue is close to expiration to alert the player.
+local function warnOnQueueExpiration(secondsUntilExpiration)
 	if not C["Misc"].QueueTimerWarning then
 		return
 	end
-	if seconds <= WARNING_THRESHOLD and not soundPlayed then
-		PlaySoundFile(SOUND_ID, "master")
-		C_Timer.After(0.1, function()
-			PlaySoundFile(SOUND_ID, "master")
+	if secondsUntilExpiration <= QUEUE_WARNING_THRESHOLD and not hasPlayedWarningSound then
+		PlaySoundFile(QUEUE_WARNING_SOUND_ID, "master")
+		_G.C_Timer.After(0.1, function()
+			PlaySoundFile(QUEUE_WARNING_SOUND_ID, "master")
 		end)
-		C_Timer.After(0.2, function()
-			PlaySoundFile(SOUND_ID, "master")
+		_G.C_Timer.After(0.2, function()
+			PlaySoundFile(QUEUE_WARNING_SOUND_ID, "master")
 		end)
-		soundPlayed = true
+		hasPlayedWarningSound = true
 	end
 end
 
-local function UpdatePvE()
-	if LFGDungeonReadyDialog and LFGDungeonReadyDialog:IsShown() then
-		local secs = math_max(pveRemaining or 0, 0)
-		BeepWarningIfNeeded(secs)
-		SetExpiresText(secs, LFGDungeonReadyDialog)
+local function updatePvEQueueUI()
+	local lfgDialog = _G.LFGDungeonReadyDialog
+	if lfgDialog and lfgDialog:IsShown() then
+		local displaySeconds = math_max(remainingPvETime or 0, 0)
+		warnOnQueueExpiration(displaySeconds)
+		Module:updateQueueExpiresDisplay(displaySeconds, lfgDialog)
 	end
 end
 
-local function UpdatePvP()
-	if pvpQueueIndex and PVPReadyDialog and PVPReadyDialog_Showing(pvpQueueIndex) then
-		local seconds = GetBattlefieldPortExpiration(pvpQueueIndex)
-		if seconds and seconds > 0 then
-			BeepWarningIfNeeded(seconds)
-			SetExpiresText(seconds, PVPReadyDialog, true)
+local function updatePvPQueueUI()
+	local pvpDialog = _G.PVPReadyDialog
+	if activePvPQueueIndex and pvpDialog and _G.PVPReadyDialog_Showing(activePvPQueueIndex) then
+		local secondsValue = GetBattlefieldPortExpiration(activePvPQueueIndex)
+		if secondsValue and secondsValue > 0 then
+			warnOnQueueExpiration(secondsValue)
+			Module:updateQueueExpiresDisplay(secondsValue, pvpDialog, true)
 		else
-			pvpQueueIndex = nil
-			soundPlayed = false
+			activePvPQueueIndex = nil
+			hasPlayedWarningSound = false
 		end
 	end
 end
 
-local function OnUpdate(_, elapsed)
-	elapsedStamp = elapsedStamp + elapsed
-	if elapsedStamp < updateInterval then
+local function onUpdateTick(_, elapsed)
+	elapsedSinceLastUpdate = elapsedSinceLastUpdate + elapsed
+	if elapsedSinceLastUpdate < QUEUE_UPDATE_INTERVAL then
 		return
 	end
-	elapsedStamp = 0
+	elapsedSinceLastUpdate = 0
 
-	if pveRemaining and pveRemaining > 0 then
-		pveRemaining = pveRemaining - updateInterval
-		UpdatePvE()
+	if remainingPvETime and remainingPvETime > 0 then
+		remainingPvETime = remainingPvETime - QUEUE_UPDATE_INTERVAL
+		updatePvEQueueUI()
 	end
-	UpdatePvP()
+	updatePvPQueueUI()
 end
 
-local function StartUpdater()
-	if not updateFrame then
-		updateFrame = CreateFrame("Frame")
-		updateFrame:SetScript("OnUpdate", OnUpdate)
+local function startQueueUpdateFrame()
+	if not queueUpdateFrame then
+		queueUpdateFrame = CreateFrame("Frame")
+		queueUpdateFrame:SetScript("OnUpdate", onUpdateTick)
 	end
-	updateFrame:Show()
+	queueUpdateFrame:Show()
 end
 
-local function StopUpdater()
-	if updateFrame then
-		updateFrame:Hide()
+local function stopQueueUpdateFrame()
+	if queueUpdateFrame then
+		queueUpdateFrame:Hide()
 	end
-	soundPlayed = false
+	hasPlayedWarningSound = false
 end
 
 function Module:CreateQueueTimers()
@@ -231,43 +249,43 @@ function Module:CreateQueueTimers()
 	end
 
 	K:RegisterEvent("LFG_PROPOSAL_SHOW", function()
-		pveRemaining = PVE_BASE_EXPIRE
-		RecalcPVERemaining()
-		SetExpiresText(pveRemaining, LFGDungeonReadyDialog)
-		SavePVEPopTime()
-		soundPlayed = false
-		StartUpdater()
-		HideOtherTimers()
+		remainingPvETime = PVE_QUEUE_EXPIRE_BASE
+		recalculateRemainingPvETime()
+		Module:updateQueueExpiresDisplay(remainingPvETime, _G.LFGDungeonReadyDialog)
+		savePvEQueuePopTime()
+		hasPlayedWarningSound = false
+		startQueueUpdateFrame()
+		hideDefaultQueueTimers()
 	end)
 
-	local function LFG_DONE()
-		StopUpdater()
-		ClearPVEPopTime()
+	local function onLfgQueueDone()
+		stopQueueUpdateFrame()
+		clearPvEQueuePopTime()
 	end
 
-	K:RegisterEvent("LFG_PROPOSAL_SUCCEEDED", LFG_DONE)
-	K:RegisterEvent("LFG_PROPOSAL_DONE", LFG_DONE)
-	K:RegisterEvent("LFG_PROPOSAL_FAILED", LFG_DONE)
+	K:RegisterEvent("LFG_PROPOSAL_SUCCEEDED", onLfgQueueDone)
+	K:RegisterEvent("LFG_PROPOSAL_DONE", onLfgQueueDone)
+	K:RegisterEvent("LFG_PROPOSAL_FAILED", onLfgQueueDone)
 
-	if PVPReadyDialog_Display then
-		hooksecurefunc("PVPReadyDialog_Display", function(_, index)
-			pvpQueueIndex = index
-			SetExpiresText(GetBattlefieldPortExpiration(index) or 0, PVPReadyDialog, true)
-			soundPlayed = false
-			StartUpdater()
+	if _G.PVPReadyDialog_Display then
+		HookSecureFunc("PVPReadyDialog_Display", function(_, pvpIndex)
+			activePvPQueueIndex = pvpIndex
+			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
+			hasPlayedWarningSound = false
+			startQueueUpdateFrame()
 		end)
 	end
 
-	K:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function(_, index)
-		if GetBattlefieldStatus(index) == "confirm" then
-			pvpQueueIndex = index
-			SetExpiresText(GetBattlefieldPortExpiration(index) or 0, PVPReadyDialog, true)
-			soundPlayed = false
-			StartUpdater()
+	K:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function(_, pvpIndex)
+		if _G.GetBattlefieldStatus(pvpIndex) == "confirm" then
+			activePvPQueueIndex = pvpIndex
+			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
+			hasPlayedWarningSound = false
+			startQueueUpdateFrame()
 		else
-			if not pveRemaining or pveRemaining <= 0 then
-				pvpQueueIndex = nil
-				StopUpdater()
+			if not remainingPvETime or remainingPvETime <= 0 then
+				activePvPQueueIndex = nil
+				stopQueueUpdateFrame()
 			end
 		end
 	end)

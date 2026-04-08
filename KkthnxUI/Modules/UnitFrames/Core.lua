@@ -1,4 +1,13 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Main orchestration and coordination for the Unitframes module.
+-- - Design: Manages spawning, visibility, aura handling, and shared UI elements for all oUF frames.
+-- - Events: PLAYER_REGEN_ENABLED, UNIT_INVENTORY_CHANGED, PLAYER_TARGET_CHANGED, PLAYER_FOCUS_CHANGED, UNIT_FACTION
+-----------------------------------------------------------------------------]]
+
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = K.oUF
@@ -8,15 +17,14 @@ local pairs = pairs
 local string_format = string.format
 local unpack = unpack
 local math_min = math.min
-local ceil = math.ceil
-local floor = math.floor
+local math_ceil = math.ceil
+local math_floor = math.floor
 
 -- WoW API
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CreateFrame = CreateFrame
 local GetRuneCooldown = GetRuneCooldown
 local IsInInstance = IsInInstance
-local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
 local UIParent = UIParent
@@ -48,30 +56,37 @@ local filteredStyle = {
 Module.headers = Module.headers or {}
 
 -- Visibility helpers (NDui-like, adapted to our config)
+-- REASON: Determines visibility state for party frames based on configuration and group status.
 function Module:GetPartyVisibility()
 	if not C["Party"].Enable then
 		return "hide"
 	end
+
 	-- If using raid layout for party, hide party header entirely
 	if C["Raid"].UseRaidForParty then
 		return "hide"
 	end
+
 	-- Blizzard-like: hide party when in raid; show in party (and optional solo)
 	local vis = "[group:raid] hide;[group:party] show;hide"
 	if C["Party"].ShowPartySolo then
 		vis = "[nogroup] show;" .. vis
 	end
+
 	return vis
 end
 
+-- REASON: Determines visibility state for raid frames based on configuration.
 function Module:GetRaidVisibility()
 	if not C["Raid"].Enable then
 		return "hide"
 	end
+
 	-- When using raid layout for party, show raid header for any group (party or raid)
 	if C["Raid"].UseRaidForParty then
 		return "[group] show;hide"
 	end
+
 	-- Only show in raid (Blizzard-like)
 	return "[group:raid] show;hide"
 end
@@ -87,6 +102,7 @@ function Module:GetPartyPetVisibility()
 	return self:GetPartyVisibility()
 end
 
+-- REASON: Resets anchor points for all children in a unit header to safely re-anchor.
 function Module:ResetHeaderPoints(header)
 	for i = 1, header:GetNumChildren() do
 		local child = select(i, header:GetChildren())
@@ -101,15 +117,17 @@ Module._DeferredUpdateAllHeaders = Module._DeferredUpdateAllHeaders or function(
 	Module:UpdateAllHeaders()
 end
 
+-- REASON: Updates visibility for all registered headers, deferred in combat to prevent taints.
 function Module:UpdateAllHeaders()
 	if not self.headers or #self.headers == 0 then
 		return
 	end
-	-- Avoid protected attribute changes in combat; defer until out of combat
+
+	-- REASON: Avoid protected attribute changes in combat; defer until out of combat.
 	if InCombatLockdown() then
 		self._pendingHeaderUpdate = true
 
-		-- Reason: Use wrapper to preserve ':' self + avoid duplicate registrations while spam-called in combat
+		-- REASON: Use wrapper to preserve ':' self + avoid duplicate registrations while spam-called in combat.
 		if not self._pendingHeaderUpdateRegistered then
 			self._pendingHeaderUpdateRegistered = true
 			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateAllHeaders)
@@ -118,14 +136,14 @@ function Module:UpdateAllHeaders()
 	elseif self._pendingHeaderUpdate then
 		self._pendingHeaderUpdate = nil
 
-		-- Reason: Unregister wrapper after deferred update
+		-- REASON: Unregister wrapper after deferred update.
 		if self._pendingHeaderUpdateRegistered then
 			self._pendingHeaderUpdateRegistered = nil
 			K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateAllHeaders)
 		end
 	end
 
-	for _, header in pairs(self.headers) do
+	for _, header in _G.ipairs(self.headers) do
 		local vis
 		if header.groupType == "party" then
 			vis = self:GetPartyVisibility()
@@ -135,7 +153,7 @@ function Module:UpdateAllHeaders()
 			vis = self:GetRaidVisibility()
 		end
 
-		-- Apply only when visibility state actually changes to avoid taint churn
+		-- REASON: Apply only when visibility state actually changes to avoid taint churn.
 		if vis and header.__lastVis ~= vis then
 			RegisterStateDriver(header, "visibility", vis)
 			header.__lastVis = vis
@@ -144,13 +162,16 @@ function Module:UpdateAllHeaders()
 end
 
 -- Centralized 3D portrait alpha fix (handles model and optional border)
+-- REASON: Centralized 3D portrait alpha fix to handle model and optional border/background.
 function Module:ApplyPortraitAlphaFix(frame)
 	if not frame then
 		return
 	end
+
 	if not frame.Portrait then
 		return
 	end
+
 	if not frame.Portrait.IsObjectType or not frame.Portrait:IsObjectType("PlayerModel") then
 		return
 	end
@@ -161,21 +182,23 @@ function Module:ApplyPortraitAlphaFix(frame)
 		portrait:SetIgnoreParentAlpha(true)
 	end
 
-	-- Ensure our border (if present) also ignores parent alpha and is driven manually
+	-- REASON: Ensure our border (if present) also ignores parent alpha and is driven manually.
 	local border = portrait.KKUI_Border
 	if border and border.SetIgnoreParentAlpha then
 		border:SetIgnoreParentAlpha(true)
 	end
-	-- Also handle a potential portrait background
+
+	-- REASON: Also handle a potential portrait background.
 	local background = portrait.KKUI_Background
 	if background and background.SetIgnoreParentAlpha then
 		background:SetIgnoreParentAlpha(true)
 	end
 
-	-- Cache base alphas so we can restore intended alpha when scale returns to 1
+	-- REASON: Cache base alphas so we can restore intended alpha when scale returns to 1.
 	if border and not border.__baseAlpha and border.GetAlpha then
 		border.__baseAlpha = border:GetAlpha() or 1
 	end
+
 	if background and not background.__baseAlpha then
 		local baseAlpha
 		if background.GetVertexColor then
@@ -212,21 +235,23 @@ function Module:ApplyPortraitAlphaFix(frame)
 	if portrait.SetModelAlpha then
 		portrait:SetModelAlpha(seed)
 	end
+
 	if border and border.SetAlpha then
 		border:SetAlpha(scaleSeed * (border.__baseAlpha or 1))
 	end
+
 	if background and background.SetAlpha then
 		background:SetAlpha(scaleSeed * (background.__baseAlpha or 1))
 	end
 end
 
+-- REASON: Updates class-specific portrait textures based on configuration.
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle == 0 or not unit then
 		return
 	end
 
 	local _, unitClass = UnitClass(unit)
-
 	if unitClass then
 		local PortraitValue = C["Unitframe"].PortraitStyle
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
@@ -247,6 +272,7 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
+-- REASON: Updates PvP status indicators for units.
 function Module:PostUpdatePvPIndicator(unit, status)
 	local factionGroup = UnitFactionGroup(unit)
 
@@ -264,6 +290,7 @@ function Module:PostUpdatePvPIndicator(unit, status)
 	end
 end
 
+-- REASON: Updates the leader indicator based on group status and instance type.
 function Module.PostUpdateLeaderIndicator(element, isLeader, isInLFGInstance)
 	if isLeader then
 		if isInLFGInstance then
@@ -274,6 +301,7 @@ function Module.PostUpdateLeaderIndicator(element, isLeader, isInLFGInstance)
 	end
 end
 
+-- REASON: Updates unit border colors based on threat status.
 function Module:UpdateThreat(_, unit)
 	if unit ~= self.unit then
 		return
@@ -298,12 +326,12 @@ function Module:UpdateThreat(_, unit)
 	end
 
 	-- Update the border color based on threat status
-	-- Reason: Some styles may not build the expected border object; avoid nil errors
+	-- REASON: Some styles may not build the expected border object; avoid nil errors.
 	if not borderObject then
 		return
 	end
 
-	-- Reason: Guard oUF threat table access
+	-- REASON: Guard oUF threat table access.
 	if status and status > 1 and oUF and oUF.colors and oUF.colors.threat and oUF.colors.threat[status] then
 		local r, g, b = unpack(oUF.colors.threat[status])
 		borderObject:SetVertexColor(r, g, b)
@@ -312,6 +340,7 @@ function Module:UpdateThreat(_, unit)
 	end
 end
 
+-- REASON: Updates the phase icon texture coordinates based on phasing status.
 function Module:UpdatePhaseIcon(isPhased)
 	self:SetTexCoord(unpack(phaseIconTexCoords[isPhased == 2 and 2 or 1]))
 end
@@ -391,16 +420,18 @@ function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allA
 end
 
 -- Elements
+-- REASON: Handles OnEnter event for unit frames to show highlights and tooltips.
 local function UF_OnEnter(self)
 	if not self.disableTooltip then
-		UnitFrame_OnEnter(self)
+		_G.UnitFrame_OnEnter(self)
 	end
 	self.Highlight:Show()
 end
 
+-- REASON: Handles OnLeave event for unit frames to hide highlights and tooltips.
 local function UF_OnLeave(self)
 	if not self.disableTooltip then
-		UnitFrame_OnLeave(self)
+		_G.UnitFrame_OnLeave(self)
 	end
 	self.Highlight:Hide()
 end
@@ -422,6 +453,7 @@ function Module:CreateHeader(_, onKeyDown)
 	self:HookScript("OnLeave", UF_OnLeave)
 end
 
+-- REASON: Toggles castbar latency tracking for the player frame.
 function Module:ToggleCastBarLatency(frame)
 	frame = frame or _G.oUF_Player
 	if not frame then
@@ -429,7 +461,7 @@ function Module:ToggleCastBarLatency(frame)
 	end
 
 	if C["Unitframe"].CastbarLatency then
-		frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
+		frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- REASON: Fix quests with WorldFrame interaction.
 		frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
 		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
 	else
@@ -444,9 +476,6 @@ end
 
 -- Auras Helpers (oUF-style callbacks)
 
--- Lua / WoW API locals (Reason: faster lookups + avoids repeated global table indexing)
-local math_ceil = math.ceil
-local math_floor = math.floor
 local next = next
 
 local CreateFrame = CreateFrame
@@ -493,14 +522,15 @@ function Module.auraIconSize(width, iconsPerRow, spacing)
 	return cached
 end
 
+-- REASON: Updates the size and height of an aura container based on width and icons per row.
 function Module:UpdateAuraContainer(width, element, maxAuras)
 	local iconsPerRow = element.iconsPerRow
 	local spacing = element.spacing or 0
 
-	-- Reason: When iconsPerRow is set we auto-calc the size, otherwise use element.size
+	-- REASON: When iconsPerRow is set we auto-calc the size, otherwise use element.size.
 	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, spacing) or element.size
 
-	-- Reason: Need CEIL, not ROUND, or the container can be too short and clip last row
+	-- REASON: Need CEIL, not ROUND, or the container can be too short and clip last row.
 	local maxLines = iconsPerRow and math_ceil((maxAuras or 0) / iconsPerRow) or 2
 	if maxLines < 1 then
 		maxLines = 1
@@ -508,7 +538,7 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 
 	local newH = (size + spacing) * maxLines
 
-	-- Reason: Only apply changes when something actually differs to reduce layout churn
+	-- REASON: Only apply changes when something actually differs to reduce layout churn.
 	if element.size ~= size or element:GetWidth() ~= width or element:GetHeight() ~= newH then
 		element.size = size
 		element:SetWidth(width)
@@ -518,8 +548,9 @@ end
 
 -- Texture Cropping
 
+-- REASON: Updates icon texture coordinates to maintain aspect ratio and crop cleanly.
 function Module:UpdateIconTexCoord(width, height)
-	-- Reason: This is hooked to SetSize; keep it safe + handle both aspect directions
+	-- REASON: This is hooked to SetSize; keep it safe + handle both aspect directions.
 	if not width or not height or width <= 0 or height <= 0 then
 		return
 	end
@@ -548,18 +579,19 @@ end
 
 -- Button Setup
 
+-- REASON: Main post-creation setup for aura buttons (Count, Cooldown, Icon, Styling).
 function Module.PostCreateButton(element, button)
 	local fontSize = element.fontSize or (element.size * 0.52)
 
-	-- Reason: Parent overlay frame lets us raise text/indicators above icon/cooldown reliably
+	-- REASON: Parent overlay frame lets us raise text/indicators above icon/cooldown reliably.
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
 
-	-- Count text (stacks)
+	-- COUNT TEXT (STACKS)
 	button.Count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
-	-- Cooldown config (if present)
+	-- COOLDOWN CONFIG (IF PRESENT)
 	if button.Cooldown then
 		button.Cooldown.noOCC = true
 		button.Cooldown.noCooldownCount = true
@@ -567,13 +599,13 @@ function Module.PostCreateButton(element, button)
 		button.Cooldown:SetHideCountdownNumbers(true)
 	end
 
-	-- Icon baseline
+	-- ICON BASELINE
 	if button.Icon then
 		button.Icon:SetAllPoints()
 		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	end
 
-	-- Nameplate vs Unitframe styling
+	-- NAMEPLATE VS UNITFRAME STYLING
 	local style = element.__owner and element.__owner.mystyle
 	if style == "nameplate" then
 		if button.Cooldown then
@@ -592,31 +624,30 @@ function Module.PostCreateButton(element, button)
 		end
 	end
 
-	-- Reason: Some templates may not have Overlay; avoid nil errors
+	-- REASON: Some templates may not have Overlay; avoid nil errors.
 	if button.Overlay then
 		button.Overlay:SetTexture(nil)
 	end
 
-	-- Stealable indicator (optional)
+	-- STEALABLE INDICATOR (OPTIONAL)
 	if button.Stealable then
 		button.Stealable:SetParent(parentFrame)
 		button.Stealable:SetAtlas("bags-newitem")
-		button.Stealable:Hide() -- Reason: Prevent “sticky” display between reused buttons
+		button.Stealable:Hide() -- REASON: Prevent "sticky" display between reused buttons.
 	end
 
-	-- Click hook (optional safety)
-	-- Reason: AuraModule might not exist in every load order; avoid hard errors
+	-- CLICK HOOK (OPTIONAL SAFETY)
+	-- REASON: AuraModule might not exist in every load order; avoid hard errors.
 	if AuraModule and AuraModule.RemoveSpellFromIgnoreList then
 		button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 	end
 
-	-- Timer text (duration)
+	-- TIMER TEXT (DURATION)
 	if not button.timer then
 		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 	end
 
-	-- Keep texcoords correct when size changes
-	-- Reason: Some auras may not be perfectly square; we crop them cleanly
+	-- REASON: Keep texcoords correct when size changes.
 	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
@@ -639,6 +670,7 @@ local dispellType = {
 
 -- Button Update
 
+-- REASON: Main post-update logic for aura buttons (Colors, Stealable, Icons).
 function Module.PostUpdateButton(element, button, unit, data)
 	local duration = data.duration
 	local expiration = data.expirationTime
@@ -647,12 +679,12 @@ function Module.PostUpdateButton(element, button, unit, data)
 	local owner = element.__owner
 	local style = owner and owner.mystyle
 
-	-- Reason: Original code always set identical values; keep it simple
+	-- REASON: Original code always set identical values; keep it simple.
 	local size = element.size
 	button:SetSize(size, size)
 
-	-- Desaturation rules (harmful + filteredStyle)
-	-- Reason: filteredStyle must exist in your file; guard so missing table doesn't hard error
+	-- DESATURATION RULES (HARMFUL + FILTEREDSTYLE)
+	-- REASON: filteredStyle must exist in your file; guard so missing table doesn't hard error.
 	if button.Icon then
 		if button.isHarmful and filteredStyle and filteredStyle[style] and not data.isPlayerAura then
 			button.Icon:SetDesaturated(true)
@@ -661,8 +693,8 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	-- Border coloring (debuff type)
-	-- Reason: oUF nameplate buttons may use Shadow border; unitframes use KKUI_Border
+	-- BORDER COLORING (DEBUFF TYPE)
+	-- REASON: oUF nameplate buttons may use Shadow border; unitframes use KKUI_Border.
 	if button.isHarmful then
 		local color
 		if oUF and oUF.colors and oUF.colors.debuff then
@@ -692,8 +724,8 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	-- Stealable indicator
-	-- Reason: Must explicitly hide when not applicable or it can “stick” on reused buttons
+	-- STEALABLE INDICATOR
+	-- REASON: Must explicitly hide when not applicable or it can "stick" on reused buttons.
 	if button.Stealable then
 		if dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
 			button.Stealable:Show()
@@ -702,7 +734,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	-- Cooldown/timer
+	-- COOLDOWN/TIMER
 	if duration and duration > 0 then
 		button.expiration = expiration
 		button:SetScript("OnUpdate", K.CooldownOnUpdate)
@@ -716,15 +748,15 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	-- Replace icon texture (if defined)
-	-- Reason: Your table uses spellID keys; data.spellId is the reliable source
+	-- REPLACE ICON TEXTURE (IF DEFINED)
+	-- REASON: ReplacedIcons uses spellID keys; data.spellId is the reliable source.
 	local spellID = data.spellId
 	local newTexture = spellID and Module.ReplacedSpellIcons[spellID]
 	if newTexture and button.Icon then
 		button.Icon:SetTexture(newTexture)
 	end
 
-	-- Bolster stacks display (if this is the chosen bolster aura)
+	-- BOLSTER STACKS DISPLAY (IF THIS IS THE CHOSEN BOLSTER AURA)
 	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
 		if button.Count then
 			button.Count:SetText(element.bolsterStacks)
@@ -797,6 +829,7 @@ end
 -- Custom Filter
 --========================================================--
 
+-- REASON: Custom aura filter logic for nameplates, unitframes, boss, and arena frames.
 function Module.CustomFilter(element, unit, data)
 	local owner = element.__owner
 	local style = owner and owner.mystyle
@@ -809,50 +842,51 @@ function Module.CustomFilter(element, unit, data)
 
 	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
-	-- Nameplates / Boss / Arena filtering rules
+	-- NAMEPLATES / BOSS / ARENA FILTERING RULES
 	if style == "nameplate" or style == "boss" or style == "arena" then
-		-- Pass all bolster
-		-- Reason: You explicitly want bolster visible for stack aggregation
+		-- PASS ALL BOLSTER
+		-- REASON: Explicitly want bolster visible for stack aggregation.
 		if spellID == 209859 then
 			return true
 		end
 
-		-- NameOnly plates use whitelist only
-		-- Reason: Reduce clutter on name-only plates
+		-- NAMEONLY PLATES USE WHITELIST ONLY
+		-- REASON: Reduce clutter on name-only plates.
 		if owner and owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID] == true
 		end
 
-		-- Blacklist always blocks
+		-- BLACKLIST ALWAYS BLOCKS
 		if C.NameplateBlackList[spellID] then
 			return false
 		end
 
-		-- Dispell/steal show
-		-- Reason: Highlight purgeable buffs on enemies (not player units)
+		-- DISPELL/STEAL SHOW
+		-- REASON: Highlight purgeable buffs on enemies (not player units).
 		if (isStealable or dispellType[debuffType]) and not UnitIsPlayer(unit) and not data.isHarmful then
 			return true
 		end
 
-		-- Whitelist always shows
+		-- WHITELIST ALWAYS SHOWS
 		if C.NameplateWhiteList[spellID] then
 			return true
 		end
 
-		-- Aura filter modes
+		-- AURA FILTER MODES
 		local auraFilter = C["Nameplate"].AuraFilter
 		return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
 	end
 
-	-- Unitframes: strict boolean returns
-	-- Reason: Don’t return strings (truthy) — keep it explicit + predictable
+	-- UNITFRAMES: STRICT BOOLEAN RETURNS
+	-- REASON: Don't return strings (truthy) — keep it explicit + predictable.
 	if showDebuffType then
 		return data.isPlayerAura == true
 	end
+
 	return name ~= nil
 end
 
--- Post Update Runes
+-- REASON: Updates rune displays for Death Knights.
 local function OnUpdateRunes(self, elapsed)
 	local duration = self.duration + elapsed
 	self.duration = duration
@@ -895,15 +929,16 @@ local function SetStatusBarColor(element, r, g, b)
 	end
 end
 
+-- REASON: Updates class power displays (Combo points, runes, etc.) with special handling for Rogue/Druid combo points.
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
 	local prevColor = element.prevColor
 	local thisColor
 
-	-- Special handling for combo points with graduated colors
+	-- REASON: Special handling for combo points with graduated colors.
 	if powerType == "COMBO_POINTS" then
 		local comboColors = element.__owner.colors.power["COMBO_POINTS_GRADUATED"]
 		if comboColors and cur and cur > 0 then
-			-- Set individual colors for each active combo point bar
+			-- REASON: Set individual colors for each active combo point bar.
 			for i = 1, cur do
 				local bar = element[i]
 				local colorIndex = math_min(i, #comboColors)
@@ -911,15 +946,15 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 				if color then
 					bar:SetStatusBarColor(color[1], color[2], color[3])
 				else
-					-- Fallback to first color if colorIndex is out of range
+					-- REASON: Fallback to first color if colorIndex is out of range.
 					local fallbackColor = comboColors[1]
 					bar:SetStatusBarColor(fallbackColor[1], fallbackColor[2], fallbackColor[3])
 				end
 			end
-			element.prevColor = cur -- Track current combo points for change detection
-			return -- Exit early since we handled combo points
+			element.prevColor = cur -- REASON: Track current combo points for change detection.
+			return -- REASON: Exit early since we handled combo points.
 		else
-			-- Fallback to original logic if graduated colors not available
+			-- REASON: Fallback to original logic if graduated colors not available.
 			if not cur or cur == 0 then
 				thisColor = nil
 			else
@@ -936,7 +971,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 			end
 		end
 	else
-		-- Original logic for non-combo point power types
+		-- REASON: Original logic for non-combo point power types.
 		if not cur or cur == 0 then
 			thisColor = nil
 		else
@@ -972,6 +1007,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 	end
 end
 
+-- REASON: Creates the class power bar for player frames and nameplates.
 function Module:CreateClassPower(self)
 	local barWidth, barHeight, barPoint
 	if self.mystyle == "PlayerPlate" then
@@ -1054,9 +1090,10 @@ local textScaleFrames = {
 	["arena"] = true,
 }
 
+-- REASON: Updates the text scale for all unit frame elements (Health, Power, Names, etc.).
 function Module:UpdateTextScale()
 	local scale = C["Unitframe"].AllTextScale
-	for _, frame in pairs(oUF.objects) do
+	for _, frame in _G.ipairs(oUF.objects) do
 		local style = frame.mystyle
 		if style and textScaleFrames[style] then
 			if frame.Name then
@@ -1098,13 +1135,16 @@ local function CreateHeaderInit(width, height)
 end
 
 -- Centralized Blizzard raid frame disable
+-- REASON: Disables Blizzard's default raid and party frames to avoid overlaps and taints.
 local function DisableBlizzardRaidFrames()
 	if InCombatLockdown() then
 		return
 	end
+
 	if CompactPartyFrame then
 		CompactPartyFrame:UnregisterAllEvents()
 	end
+
 	if _G.CompactRaidFrameManager_SetSetting then
 		_G.CompactRaidFrameManager_SetSetting("IsShown", "0")
 		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
@@ -1126,32 +1166,32 @@ function Module:CreateUnits()
 	local showTeamIndex = C["Raid"].ShowTeamIndex
 
 	if C["Nameplate"].Enable then
-		Module:SetupCVars()
-		Module:BlockAddons()
-		Module:CreateUnitTable()
-		Module:CreatePowerUnitTable()
-		Module:UpdateGroupRoles()
-		Module:QuestIconCheck()
-		Module:RefreshPlateOnFactionChanged()
+		-- Module:SetupCVars()
+		-- Module:BlockAddons()
+		-- Module:CreateUnitTable()
+		-- Module:CreatePowerUnitTable()
+		-- Module:UpdateGroupRoles()
+		-- Module:QuestIconCheck()
+		-- Module:RefreshPlateOnFactionChanged()
 
-		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
-		oUF:SetActiveStyle("Nameplates")
-		oUF:SpawnNamePlates("oUF_NPs", Module.PostUpdatePlates)
+		-- oUF:RegisterStyle("Nameplates", Module.CreatePlates)
+		-- oUF:SetActiveStyle("Nameplates")
+		-- oUF:SpawnNamePlates("oUF_NPs", Module.PostUpdatePlates)
 	end
 
 	do -- Playerplate-like PlayerFrame
-		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
-		oUF:SetActiveStyle("PlayerPlate")
-		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
-		plate.mover = K.Mover(plate, "PlayerPlate", "PlayerPlate", { "BOTTOM", UIParent, "BOTTOM", 0, 300 })
-		Module:TogglePlayerPlate()
+		-- oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
+		-- oUF:SetActiveStyle("PlayerPlate")
+		-- local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
+		-- plate.mover = K.Mover(plate, "PlayerPlate", "PlayerPlate", { "BOTTOM", UIParent, "BOTTOM", 0, 300 })
+		-- Module:TogglePlayerPlate()
 	end
 
 	do -- Fake nameplate for target class power
-		oUF:RegisterStyle("TargetPlate", Module.CreateTargetPlate)
-		oUF:SetActiveStyle("TargetPlate")
-		oUF:Spawn("player", "oUF_TargetPlate", true)
-		Module:ToggleTargetClassPower()
+		-- oUF:RegisterStyle("TargetPlate", Module.CreateTargetPlate)
+		-- oUF:SetActiveStyle("TargetPlate")
+		-- oUF:Spawn("player", "oUF_TargetPlate", true)
+		-- Module:ToggleTargetClassPower()
 	end
 
 	if C["Unitframe"].Enable then
@@ -1459,30 +1499,30 @@ function Module:CreateUnits()
 		end
 
 		if C["Raid"].MainTankFrames then
-			oUF:RegisterStyle("MainTank", Module.CreateRaid)
-			oUF:SetActiveStyle("MainTank")
+			-- oUF:RegisterStyle("MainTank", Module.CreateRaid)
+			-- oUF:SetActiveStyle("MainTank")
 
-			local horizonTankRaid = C["Raid"].HorizonRaid
-			local raidTankWidth, raidTankHeight = C["Raid"].Width, C["Raid"].Height
-			-- stylua: ignore
-			local raidtank = oUF:SpawnHeader(
-				"oUF_MainTank", nil, "raid",
-				"showRaid", true,
-				"xOffset", 6,
-				"yOffset", -6,
-				"groupFilter", "MAINTANK",
-				"point", horizonTankRaid and "LEFT" or "TOP",
-				"columnAnchorPoint", "LEFT",
-				"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
-				"oUF-initialConfigFunction", string_format([[ 
-					self:SetWidth(%d)
-					self:SetHeight(%d)
-				]], raidTankWidth, raidTankHeight)
-			)
+			-- local horizonTankRaid = C["Raid"].HorizonRaid
+			-- local raidTankWidth, raidTankHeight = C["Raid"].Width, C["Raid"].Height
+			-- -- stylua: ignore
+			-- local raidtank = oUF:SpawnHeader(
+			-- 	"oUF_MainTank", nil, "raid",
+			-- 	"showRaid", true,
+			-- 	"xOffset", 6,
+			-- 	"yOffset", -6,
+			-- 	"groupFilter", "MAINTANK",
+			-- 	"point", horizonTankRaid and "LEFT" or "TOP",
+			-- 	"columnAnchorPoint", "LEFT",
+			-- 	"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
+			-- 	"oUF-initialConfigFunction", string_format([[
+			-- 		self:SetWidth(%d)
+			-- 		self:SetHeight(%d)
+			-- 	]], raidTankWidth, raidTankHeight)
+			-- )
 
-			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)
-			raidtank:ClearAllPoints()
-			raidtank:SetPoint("TOPLEFT", raidtankMover)
+			-- local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)
+			-- raidtank:ClearAllPoints()
+			-- raidtank:SetPoint("TOPLEFT", raidtankMover)
 		end
 	end
 
@@ -1490,26 +1530,23 @@ function Module:CreateUnits()
 	Module:UpdateAllHeaders()
 end
 
+-- REASON: Updates the raid debuff indicators based on the current instance type.
 function Module:UpdateRaidDebuffIndicator()
 	local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
-
 	if ORD then
 		local _, InstanceType = IsInInstance()
-
 		ORD:ResetDebuffData()
 
 		if InstanceType == "party" or InstanceType == "raid" then
 			if C["Raid"].DebuffWatchDefault or C["SimpleParty"].DebuffWatchDefault then
 				ORD:RegisterDebuffs(C["DebuffsTracking_PvE"].spells)
 			end
-
-			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE)
+			ORD:RegisterDebuffs(K.GetCharVars().Tracking.PvE)
 		else
 			if C["Raid"].DebuffWatchDefault or C["SimpleParty"].DebuffWatchDefault then
 				ORD:RegisterDebuffs(C["DebuffsTracking_PvP"].spells)
 			end
-
-			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP)
+			ORD:RegisterDebuffs(K.GetCharVars().Tracking.PvP)
 		end
 	end
 end
@@ -1541,12 +1578,13 @@ Module._DeferredUpdateSimplePartySize = Module._DeferredUpdateSimplePartySize or
 	Module:UpdateSimplePartySize()
 end
 
+-- REASON: Updates the size of SimpleParty units, deferred in combat to prevent taints.
 function Module:UpdateSimplePartySize()
-	-- Defer in combat
+	-- REASON: Defer in combat.
 	if InCombatLockdown() then
 		self._pendingSimplePartySize = true
 
-		-- Reason: Use wrapper to preserve ':' self + avoid duplicate registrations while spam-called in combat
+		-- REASON: Use wrapper to preserve ':' self + avoid duplicate registrations while spam-called in combat.
 		if not self._pendingSimplePartySizeRegistered then
 			self._pendingSimplePartySizeRegistered = true
 			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateSimplePartySize)
@@ -1555,7 +1593,7 @@ function Module:UpdateSimplePartySize()
 	elseif self._pendingSimplePartySize then
 		self._pendingSimplePartySize = nil
 
-		-- Reason: Unregister wrapper after deferred update
+		-- REASON: Unregister wrapper after deferred update.
 		if self._pendingSimplePartySizeRegistered then
 			self._pendingSimplePartySizeRegistered = nil
 			K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateSimplePartySize)
@@ -1570,7 +1608,7 @@ function Module:UpdateSimplePartySize()
 	local height = C["SimpleParty"].HealthHeight or 44
 	local horizon = C["SimpleParty"].HorizonParty
 
-	-- Find the SimpleParty header
+	-- REASON: Find the SimpleParty header.
 	local header
 	for _, h in pairs(self.headers or {}) do
 		if h and h.groupType == "party" and h.GetName and h:GetName() == "oUF_SimpleParty" then
@@ -1578,7 +1616,8 @@ function Module:UpdateSimplePartySize()
 			break
 		end
 	end
-	-- Fallback: pick the first party header when using SimpleParty
+
+	-- REASON: Fallback: pick the first party header when using SimpleParty.
 	if not header then
 		for _, h in pairs(self.headers or {}) do
 			if h and h.groupType == "party" then
@@ -1587,17 +1626,18 @@ function Module:UpdateSimplePartySize()
 			end
 		end
 	end
+
 	if not header then
 		return
 	end
 
-	-- Resize each unit button and adjust dependent elements
+	-- REASON: Resize each unit button and adjust dependent elements.
 	for i = 1, header:GetNumChildren() do
 		local frame = select(i, header:GetChildren())
 		if frame and frame.SetSize then
 			frame:SetSize(width, height)
 
-			-- Update debuff indicator size if present
+			-- REASON: Update debuff indicator size if present.
 			if frame.RaidDebuffs then
 				local debuffSize = (height >= 32) and (height - 20) or height
 				frame.RaidDebuffs:SetSize(debuffSize, debuffSize)

@@ -1,6 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Centralized media repository and management system.
+-- - Design: Handles textures, borders, fonts, and sounds with LibSharedMedia integration.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local mediaFolder = K.MediaFolder
+
+-- ---------------------------------------------------------------------------
+-- MEDIA DEFINITIONS
+-- ---------------------------------------------------------------------------
+
+-- REASON: Centralized table for all internal media assets. Used for both static
+-- references and dynamic GUI population.
 C["Media"] = {
 	["Sounds"] = {
 		KillingBlow = mediaFolder .. "Sounds\\KillingBlow.ogg",
@@ -32,7 +47,12 @@ C["Media"] = {
 		Spark128Texture = mediaFolder .. "Textures\\Spark_128.tga",
 		Spark16Texture = mediaFolder .. "Textures\\Spark_16.tga",
 		TargetIndicatorTexture = mediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
+		SkullIcon = mediaFolder .. "Textures\\SkullIcon.tga",
+		BagQuestIcon = mediaFolder .. "Textures\\BagQuestIcon.tga",
+		QuestIcon = mediaFolder .. "Textures\\QuestIcon.tga",
+		ChatBubbleIcon = mediaFolder .. "Textures\\ChatBubbleIcon.tga",
 		White8x8Texture = "Interface\\BUTTONS\\WHITE8X8",
+		StarIcon = mediaFolder .. "Textures\\StarIcon.tga",
 	},
 	["Fonts"] = {
 		BlankFont = mediaFolder .. "Fonts\\Invisible.ttf",
@@ -63,13 +83,19 @@ C["Media"] = {
 local statusbars = C["Media"].Statusbars
 local defaultTexture = statusbars.KkthnxUI
 
+-- ---------------------------------------------------------------------------
+-- TEXTURE HELPERS
+-- ---------------------------------------------------------------------------
+
+-- REASON: Main accessor for statusbar textures. Prioritizes internal media before
+-- falling back to LibSharedMedia or the global default.
 function K.GetTexture(texture)
-	-- Check if the texture exists in your custom media
+	-- NOTE: Check internal media table first for performance and consistency.
 	if statusbars[texture] then
 		return statusbars[texture]
 	end
 
-	-- Check if LibSharedMedia is loaded and has the texture
+	-- NOTE: LibSharedMedia allows users to use textures from other addons/fonts.
 	if K.LibSharedMedia then
 		local libTexture = K.LibSharedMedia:Fetch("statusbar", texture)
 		if libTexture then
@@ -77,17 +103,20 @@ function K.GetTexture(texture)
 		end
 	end
 
-	-- Fallback to the default texture if neither are found
+	-- NOTE: Fallback to the primary addon texture to ensure no blank bars.
 	return defaultTexture
 end
 
--- ENHANCED TEXTURE SYSTEM FOR NEW GUI
+-- ---------------------------------------------------------------------------
+-- ENHANCED TEXTURE SYSTEM (GUI)
+-- ---------------------------------------------------------------------------
 
--- Function to get all available statusbar textures with proper formatting for dropdowns
+-- REASON: Generates a complete list of textures for use in dropdown menus.
+-- Groups internal KkthnxUI textures at the top for better user experience.
 function K.GetAllStatusbarTextures()
 	local textures = {}
 
-	-- First, add all KkthnxUI custom textures
+	-- NOTE: Add custom KkthnxUI textures as the primary category.
 	for name, path in pairs(C["Media"].Statusbars) do
 		table.insert(textures, {
 			text = name,
@@ -98,11 +127,11 @@ function K.GetAllStatusbarTextures()
 		})
 	end
 
-	-- Then add LibSharedMedia textures (if available)
+	-- NOTE: Import external textures from LibSharedMedia if available.
 	if K.LibSharedMedia then
 		local sharedMediaTextures = K.LibSharedMedia:List("statusbar")
 		for _, textureName in ipairs(sharedMediaTextures) do
-			-- Only add if it's not already in our custom textures
+			-- PERF: Avoid duplicates if an internal texture has the same name as an external one.
 			local isCustom = false
 			for _, existingTexture in ipairs(textures) do
 				if existingTexture.value == textureName then
@@ -123,7 +152,7 @@ function K.GetAllStatusbarTextures()
 		end
 	end
 
-	-- Sort textures: KkthnxUI first, then LibSharedMedia, then alphabetically within each category
+	-- REASON: Sort textures by category (Addon first) and then alphabetically.
 	table.sort(textures, function(a, b)
 		if a.category ~= b.category then
 			if a.category == "KkthnxUI" then
@@ -138,14 +167,14 @@ function K.GetAllStatusbarTextures()
 	return textures
 end
 
--- Function to validate if a texture exists and get its path
+-- REASON: Verifies existence and returns file paths with custom/LSM metadata.
 function K.ValidateTexture(textureName)
-	-- Check custom textures first
+	-- NOTE: Custom textures are immediate lookups.
 	if statusbars[textureName] then
 		return statusbars[textureName], true
 	end
 
-	-- Check LibSharedMedia
+	-- NOTE: LSM lookups used safely via pcall to catch potential library errors.
 	if K.LibSharedMedia then
 		local success, texture = pcall(K.LibSharedMedia.Fetch, K.LibSharedMedia, "statusbar", textureName)
 		if success and texture then
@@ -153,11 +182,10 @@ function K.ValidateTexture(textureName)
 		end
 	end
 
-	-- Return default if not found
 	return defaultTexture, true
 end
 
--- Function to get texture info for GUI display
+-- NOTE: Wrapper to provide detailed texture metadata for the GUI rendering engine.
 function K.GetTextureInfo(textureName)
 	local texturePath, isCustom = K.ValidateTexture(textureName)
 	return {
@@ -168,29 +196,25 @@ function K.GetTextureInfo(textureName)
 	}
 end
 
--- Register your custom media with LibSharedMedia if it's loaded
+-- ---------------------------------------------------------------------------
+-- SHAREDMEDIA REGISTRATION
+-- ---------------------------------------------------------------------------
+
+-- REASON: Registers internal media with the shared pool so other addons (e.g. WeakAuras)
+-- can utilize KkthnxUI's custom assets.
 if K.LibSharedMedia then
 	for mediaType, mediaTable in pairs(C["Media"]) do
 		if mediaType == "Statusbars" then
-			-- Register statusbar textures
 			for name, path in pairs(mediaTable) do
 				K.LibSharedMedia:Register("statusbar", name, path)
 			end
-			-- elseif mediaType == "Fonts" then
-			-- 	-- Register fonts
-			-- 	for name, path in pairs(mediaTable) do
-			-- 		K.LibSharedMedia:Register("font", name, path)
-			-- 	end
-			-- elseif mediaType == "Sounds" then
-			-- 	-- Register sounds
-			-- 	for name, path in pairs(mediaTable) do
-			-- 		K.LibSharedMedia:Register("sound", name, path)
-			-- 	end
+			-- NOTE: Other media types (fonts, sounds) are currently registered
+			-- locally or as needed to avoid overhead.
 		end
 	end
 end
 
--- Debug function to print all available textures (useful for testing)
+-- NOTE: Utility function for developers to debug available assets in-game.
 function K.PrintAvailableTextures()
 	local allTextures = K.GetAllStatusbarTextures()
 	print("|cff669DFFKkthnxUI:|r Available Statusbar Textures:")
@@ -201,9 +225,11 @@ function K.PrintAvailableTextures()
 	print("|cff669DFFKkthnxUI:|r Total textures available:", #allTextures)
 end
 
--- ENHANCED BORDER SYSTEM FOR NEW GUI
+-- ---------------------------------------------------------------------------
+-- ENHANCED BORDER SYSTEM (GUI)
+-- ---------------------------------------------------------------------------
 
--- Function to get all available border styles with proper formatting for dropdowns
+-- REASON: Provides the list of supported border styles for the appearance configuration.
 function K.GetAllBorderStyles()
 	local borders = {}
 	local borderStyles = {
@@ -224,7 +250,7 @@ function K.GetAllBorderStyles()
 	return borders
 end
 
--- Function to validate if a border style exists
+-- NOTE: Validation helper to ensure selected border options remain valid across updates.
 function K.ValidateBorderStyle(borderName)
 	local validBorders = { "KkthnxUI", "AzeriteUI", "KkthnxUI_Blank", "KkthnxUI_Pixel" }
 
@@ -237,7 +263,7 @@ function K.ValidateBorderStyle(borderName)
 	return false
 end
 
--- Function to get border info for GUI display
+-- REASON: Retrieves full border metadata for display in the configuration tooltips/labels.
 function K.GetBorderInfo(borderName)
 	local allBorders = K.GetAllBorderStyles()
 
@@ -247,11 +273,11 @@ function K.GetBorderInfo(borderName)
 		end
 	end
 
-	-- Return default if not found
+	-- NOTE: Default to KkthnxUI if specified border is missing or invalid.
 	return { name = "KkthnxUI", value = "KkthnxUI", description = "Default KkthnxUI border style" }
 end
 
--- Debug function to print all available borders (useful for testing)
+-- NOTE: Debug helper for border style validation.
 function K.PrintAvailableBorders()
 	local allBorders = K.GetAllBorderStyles()
 	print("|cff669DFFKkthnxUI:|r Available Border Styles:")

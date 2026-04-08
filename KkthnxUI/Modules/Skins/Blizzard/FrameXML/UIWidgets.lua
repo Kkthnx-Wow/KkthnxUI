@@ -1,4 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard UI Widgets (Status Bars, Capture Bars, etc.).
+-- - Design: Hooks into widget layout updates to restyle icons, borders, and textures.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local pairs = _G.pairs
+local tinsert = _G.table.insert
+local hooksecurefunc = _G.hooksecurefunc
+
+local CreateFrame = _G.CreateFrame
 
 local Type_StatusBar = _G.Enum.UIWidgetVisualizationType.StatusBar
 local Type_CaptureBar = _G.Enum.UIWidgetVisualizationType.CaptureBar
@@ -162,6 +179,7 @@ local function ReskinWidgetGroups(self)
 	end
 end
 
+-- REASON: Main entry point for Blizzard UI Widgets skinning.
 tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

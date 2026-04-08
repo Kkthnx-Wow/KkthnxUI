@@ -1,20 +1,37 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the RareScanner button and loot frames.
+-- - Design: Applies custom borders and skins close/filter buttons for RareScanner.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 local Tooltip = K:GetModule("Tooltip")
 
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local floor = _G.math.floor
+local hooksecurefunc = _G.hooksecurefunc
+local pairs = _G.pairs
+local unpack = _G.unpack
+
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+
 -- Function to skin the RareScanner addon
+-- REASON: Main entry point for RareScanner skinning.
 function Module:ReskinRareScanner()
-	-- Check if RareScanner is loaded
-	if not C_AddOns.IsAddOnLoaded("RareScanner") then
+	-- REASON: Abort if addon is not loaded or skinning is disabled.
+	if not C_AddOns_IsAddOnLoaded("RareScanner") then
 		return
 	end
 
-	-- Check if the RareScanner skin is enabled
 	if not C["Skins"].RareScanner then
 		return
 	end
 
-	-- Check if the scanner button exists and has a ModelView component
 	local scannerButton = _G["scanner_button"]
 	if not scannerButton or not scannerButton.ModelView then
 		return

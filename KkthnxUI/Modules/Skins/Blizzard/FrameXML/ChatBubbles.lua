@@ -1,13 +1,24 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins chat bubbles for various chat channels.
+-- - Design: Hooks into chat message events to identify and reskin chat bubbles with custom borders.
+-- - Events: CHAT_MSG_SAY, CHAT_MSG_YELL, etc.
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- Localize frequently used globals
-local table_insert = table.insert
-local pairs = pairs
-local ipairs = ipairs
-local CreateFrame = CreateFrame
-local GetCVarBool = GetCVarBool
-local UIParent = UIParent
-local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local ipairs = _G.ipairs
+local pairs = _G.pairs
+local table_insert = _G.table.insert
+
+local CreateFrame = _G.CreateFrame
+local GetCVarBool = _G.GetCVarBool
+local UIParent = _G.UIParent
+local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
 	if chatbubble.styled then
@@ -50,6 +61,7 @@ local function reskinChatBubble(chatbubble)
 	chatbubble.styled = true
 end
 
+-- REASON: Main entry point for Blizzard Chat Bubbles skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].ChatBubbles then
 		return

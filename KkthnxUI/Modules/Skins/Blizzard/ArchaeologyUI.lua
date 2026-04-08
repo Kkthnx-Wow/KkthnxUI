@@ -1,4 +1,17 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the archaeology digsite progress bar.
+-- - Design: Applies custom status bar textures, sparks, and borders for archaeology progress.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local ArcheologyDigsiteProgressBar = _G.ArcheologyDigsiteProgressBar
 
 local function SetupArchaeologyBar(archaeologyBar)
 	-- Remove any existing textures from the bar
@@ -27,6 +40,7 @@ local function SetupArchaeologyBar(archaeologyBar)
 	end
 end
 
+-- REASON: Main entry point for Blizzard Archaeology UI skinning.
 C.themes["Blizzard_ArchaeologyUI"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return

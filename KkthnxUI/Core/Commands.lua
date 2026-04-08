@@ -1,15 +1,15 @@
 --[[-----------------------------------------------------------------------------
-Addon: KkthnxUI
-Author: Josh "Kkthnx" Russell
-Notes:
-- Purpose: Slash command registration and handler logic.
-- Combat: Most commands are safe; volume and gui toggles may have restrictions.
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Slash command registration and handler logic.
+-- - Combat: Most commands are safe; volume and gui toggles may have restrictions.
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 -- ---------------------------------------------------------------------------
--- Locals & Global Caching
+-- LOCALS & GLOBAL CACHING
 -- ---------------------------------------------------------------------------
 
 -- PERF: Cache frequent APIs and globals to minimize table lookups.
@@ -31,7 +31,7 @@ local PlaySound = PlaySound
 local UIErrorsFrame = UIErrorsFrame
 
 -- ---------------------------------------------------------------------------
--- Event Trace (Debug State)
+-- EVENT TRACE (DEBUG STATE)
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Used for real-time event monitoring in the console.
@@ -44,8 +44,9 @@ EventTrace:SetScript("OnEvent", function(_, event)
 end)
 
 -- ---------------------------------------------------------------------------
--- Command Logic Helpers
+-- COMMAND LOGIC HELPERS
 -- ---------------------------------------------------------------------------
+
 local function ToggleEventTrace()
 	if EventTraceEnabled then
 		EventTrace:UnregisterAllEvents()
@@ -83,7 +84,7 @@ local function DoReadyCheckCommand()
 end
 
 -- ---------------------------------------------------------------------------
--- Quest Information Helpers
+-- QUEST INFORMATION HELPERS
 -- ---------------------------------------------------------------------------
 
 -- REASON: Maps locales to WoWHead subdomains for easier reference links.
@@ -212,7 +213,7 @@ local function AbandonZoneQuests()
 end
 
 -- ---------------------------------------------------------------------------
--- Addon Debugging & Restoration
+-- ADDON DEBUGGING & RESTORATION
 -- ---------------------------------------------------------------------------
 
 -- REASON: Disables all addons except KkthnxUI to isolate issues.
@@ -292,13 +293,13 @@ local function DebugMode(msg)
 end
 
 -- ---------------------------------------------------------------------------
--- UI Component: Command List
+-- UI COMPONENT: COMMAND LIST
 -- ---------------------------------------------------------------------------
 
 -- REASON: Creates a scrollable window listing all available slash commands.
 local function CreateCommandWindow()
 	if _G.KKUICommandWindow then
-		_G.KKUICommandWindow:Show() -- Show the window if it already exists
+		_G.KKUICommandWindow:Show()
 		return
 	end
 
@@ -312,7 +313,6 @@ local function CreateCommandWindow()
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
-	-- Title Text
 	frame.title = frame:CreateFontString(nil, "OVERLAY")
 	frame.title:SetFontObject("GameFontHighlightLarge")
 	frame.title:SetPoint("TOP", frame, "TOP", 0, -8)
@@ -326,18 +326,15 @@ local function CreateCommandWindow()
 	frameLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
 
-	-- Scroll Frame
 	local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetSize(594, 440)
 	scrollFrame:SetPoint("CENTER")
 
-	-- Scroll Child Frame
 	local scrollChild = CreateFrame("Frame")
 	scrollChild:SetSize(594, 440)
 	scrollFrame:SetScrollChild(scrollChild)
 	scrollFrame.ScrollBar:SkinScrollBar()
 
-	-- List of commands and descriptions
 	local commandsList = {
 		{ "KkthnxUI Commands", "" }, -- NOTE: Section headers have an empty description.
 		{ "/kk allquests", "Abandons all active quests." },
@@ -354,7 +351,7 @@ local function CreateCommandWindow()
 		{ "/kk resetinstance", "Resets the current instance." },
 		{ "/kk volume [value]", "Sets the master volume level (0 to 1)." },
 		{ "/kk zonequests", "Abandons all quests from the current zone." },
-		{ "General Commands", "" }, -- Section title
+		{ "General Commands", "" },
 		{ "/debufftrack", "Opens the debuff tracking interface to manage and track debuffs in PvE and PvP." },
 		{ "/getfont", "Prints the font name, size, and flags of a specified global font object." },
 		{ "/getframe", "Gets the frame names under the mouse." },
@@ -373,11 +370,9 @@ local function CreateCommandWindow()
 		{ "/way [x] [y]", "Create a custom waypoint with the specified coordinates." },
 	}
 
-	-- Start positioning for the text
 	local yOffset = -10
 
 	for _, cmd in ipairs(commandsList) do
-		-- Create the font string for command text
 		local commandText = scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		commandText:SetPoint("TOPLEFT", 0, yOffset)
 		commandText:SetWidth(594)
@@ -388,18 +383,15 @@ local function CreateCommandWindow()
 			commandText:SetFontObject("GameFontNormalLarge")
 			commandText:SetText(K.InfoColorTint .. cmd[1] .. "|r")
 		else
-			-- Regular command with hyphen and description
 			commandText:SetFontObject("GameFontHighlight")
 			commandText:SetText(K.InfoColor .. cmd[1] .. "|r - " .. K.SystemColor .. cmd[2] .. "|r")
 		end
 
-		-- Adjust the yOffset for the next line
 		yOffset = yOffset - 26
 	end
 
 	frame:Hide()
 
-	-- Close Button
 	frame.closeButton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
 	frame.closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
 	frame.closeButton:SkinCloseButton()
@@ -408,14 +400,13 @@ local function CreateCommandWindow()
 	_G.KKUICommandWindow = frame
 end
 
--- Open Command Window with /kkhelp
 local function OpenCommandWindow()
 	CreateCommandWindow()
 	_G.KKUICommandWindow:Show()
 end
 
 -- ---------------------------------------------------------------------------
--- Mapping & Handler Registration
+-- MAPPING & HANDLER REGISTRATION
 -- ---------------------------------------------------------------------------
 
 -- REASON: Table-based command mapping for better performance and maintainability.
@@ -436,11 +427,10 @@ local commandMap = {
 	allquests = AbandonAllQuests,
 	zonequests = AbandonZoneQuests,
 	help = OpenCommandWindow,
-	-- Add more commands as needed...
 }
 
 -- ---------------------------------------------------------------------------
--- Slash Commands
+-- SLASH COMMANDS
 -- ---------------------------------------------------------------------------
 
 -- REASON: Splitting input into command and arguments for modular handling.
@@ -507,7 +497,7 @@ _G.SLASH_KKUI_PROFILE2 = "/kprofile"
 _G.SLASH_KKUI_PROFILE3 = "/kkthnxprofile"
 
 -- ---------------------------------------------------------------------------
--- Event Handling
+-- EVENT HANDLING
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Automated check on login; respects user's "don't show" preference in K:ShowChangelog.

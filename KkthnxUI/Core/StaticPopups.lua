@@ -1,5 +1,9 @@
 local K, L = KkthnxUI[1], KkthnxUI[3]
 
+-- ---------------------------------------------------------------------------
+-- STATIC POPUPS
+-- ---------------------------------------------------------------------------
+
 local ACCEPT = ACCEPT
 local CANCEL = CANCEL
 local ReloadUI = ReloadUI
@@ -12,7 +16,7 @@ StaticPopupDialogs["KKUI_RESET_DATA"] = {
 	OnAccept = function()
 		K:GetModule("Installer"):ResetSettings()
 		K:GetModule("Installer"):ResetData()
-		ReloadUI()
+		ReloadUI() -- REASON: Full reload required to purge cached DB values and re-init modules.
 	end,
 }
 
@@ -22,7 +26,7 @@ StaticPopupDialogs["KKUI_RESET_CVARS"] = {
 	button2 = CANCEL,
 	OnAccept = function()
 		K:GetModule("Installer"):ForceDefaultCVars()
-		ReloadUI()
+		ReloadUI() -- REASON: CVar updates often require a fresh engine session to apply correctly.
 	end,
 }
 
@@ -68,24 +72,26 @@ StaticPopupDialogs["KKUI_QUEST_CHECK_ID"] = {
 	preferredIndex = 3,
 }
 
+-- NOTE: Used for manual link/URL copy-pasting since WoW cannot open external browsers.
 StaticPopupDialogs["KKUI_POPUP_LINK"] = {
 	text = format("|cff5C8BCF%s |r", "KkthnxUI Popup"),
 	button1 = OKAY,
 	hasEditBox = 1,
 	OnShow = function(self, data)
-		data = data or "" -- Ensure data is valid
-		self.EditBox:SetAutoFocus(false)
-		self.EditBox.width = self.EditBox:GetWidth()
-		self.EditBox:SetWidth(280)
-		self.EditBox:AddHistoryLine("text")
-		self.EditBox.temptxt = data
-		self.EditBox:SetText(data)
-		self.EditBox:HighlightText() -- Text highlighted on show
-		self.EditBox:SetJustifyH("CENTER")
+		data = data or ""
+		self.editBox:SetAutoFocus(false)
+		self.editBox.width = self.editBox:GetWidth()
+		self.editBox:SetWidth(280)
+		self.editBox:AddHistoryLine("text")
+		self.editBox.temptxt = data
+		self.editBox:SetText(data)
+		self.editBox:HighlightText()
+		self.editBox:SetJustifyH("CENTER")
 	end,
 	OnHide = function(self)
-		self.EditBox:SetWidth(self.EditBox.width or 50)
-		self.EditBox.width = nil
+		-- REASON: Restore original width to prevent size leaks to subsequent popups.
+		self.editBox:SetWidth(self.editBox.width or 50)
+		self.editBox.width = nil
 		self.temptxt = nil
 	end,
 	EditBoxOnEnterPressed = function(self)
@@ -95,6 +101,7 @@ StaticPopupDialogs["KKUI_POPUP_LINK"] = {
 		self:GetParent():Hide()
 	end,
 	EditBoxOnTextChanged = function(self)
+		-- REASON: Maintain read-only behavior by snapping text back to original value.
 		if self:GetText() ~= self.temptxt then
 			self:SetText(self.temptxt)
 			self:HighlightText()

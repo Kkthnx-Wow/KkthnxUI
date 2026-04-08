@@ -1,5 +1,13 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Provides the core framework for the in-game configuration interface.
+-- - Design: Manages widget creation, settings persistence, and real-time UI updates via hooks.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
 
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 -- Cache frequently used functions for performance
 local select = select
 
@@ -47,6 +55,7 @@ Reload Management:
 -- Module Initialization
 
 -- Modern GUI System inspired by NDui, enhanced and redesigned for KkthnxUI
+-- REASON: Initialize modern GUI framework ("NewGUI") to replace legacy configuration panels.
 local Module = K:NewModule("NewGUI")
 
 -- API Declarations
@@ -85,7 +94,7 @@ local HEADER_HEIGHT = 40
 local CATEGORY_HEIGHT = 32
 
 -- Colors (use KkthnxUI's established color system)
-local ACCENT_COLOR = { K.r, K.g, K.b }
+local ACCENT_COLOR = { K.r * 0.7, K.g * 0.7, K.b * 0.7 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
 local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
@@ -105,17 +114,18 @@ end
 -- Helper function to check and strip NEW tags from names
 local function ProcessNewTag(name)
 	-- Handle nil or empty strings gracefully
-	if not name or name == "" then
+	if type(name) ~= "string" or name == "" then
 		return "", false
 	end
 
 	local cleanName, hasNewTag = gsub(name, IsNew, "")
-	return cleanName, (hasNewTag > 0)
+	return cleanName, (hasNewTag and hasNewTag > 0)
 end
 
 -- Reload Tracking System
 
 -- Settings without hooks require reload
+-- REASON: Tracks pending reload requirements to prevent spamming popups for multiple setting changes.
 local ReloadTracker = {
 	PendingReloads = {}, -- Settings that have been changed and require reload
 	IsShowing = false, -- Prevent multiple popups
@@ -255,6 +265,7 @@ local GUI = Module.GUI
 
 -- Real-Time Update Hook System
 
+-- REASON: Registry for real-time update callbacks, allowing settings to apply without reloading UI.
 local function RegisterUpdateHook(configPath, hookFunction)
 	DebugLog("Registering hook for: " .. configPath .. " (function type: " .. type(hookFunction) .. ")")
 
@@ -314,6 +325,7 @@ end
 local SetConfigValue
 
 -- Set configuration value with hook execution and reload tracking
+-- WARNING: Modifies persistent DB directly; ensures hooked functions fire to update UI state.
 function SetConfigValue(configPath, value, requiresReload, settingName)
 	DebugLog("SetConfigValue called: " .. configPath .. " = " .. tostring(value) .. " (requiresReload: " .. tostring(requiresReload) .. ")")
 
@@ -588,44 +600,31 @@ end
 
 -- Reset To Default System
 
--- Global Ctrl key checker for reset buttons (prevents conflicts with widget scripts)
+-- REASON: Global Ctrl key checker for reset buttons prevents collision with widget scripts.
+-- Global Ctrl key checker for reset buttons (event-driven, zero polling overhead)
 local CtrlChecker = CreateFrame("Frame")
 local resetButtons = {}
 
-local function CtrlUpdate()
-	for widget, resetButton in pairs(resetButtons) do
-		if widget:IsMouseOver() then
-			if IsControlKeyDown() then
-				if not resetButton:IsShown() then
-					resetButton:Show()
+local function CtrlUpdate(_, _, key, state)
+	if key == "LCTRL" or key == "RCTRL" then
+		for widget, resetButton in pairs(resetButtons) do
+			if widget:IsMouseOver() then
+				if state == 1 then
+					if not resetButton:IsShown() then
+						resetButton:Show()
+					end
+				else
+					if resetButton:IsShown() then
+						resetButton:Hide()
+						GameTooltip:Hide()
+					end
 				end
-			else
-				if resetButton:IsShown() then
-					resetButton:Hide()
-					GameTooltip:Hide()
-				end
-			end
-		else
-			if resetButton:IsShown() then
-				resetButton:Hide()
-				GameTooltip:Hide()
+				break -- Only one widget can be moused over at a time
 			end
 		end
 	end
 end
-CtrlChecker.CtrlUpdate = CtrlUpdate
--- Disabled by default; enabled while GUI is visible
-CtrlChecker:SetScript("OnUpdate", nil)
-
--- Throttled OnUpdate wrapper to reduce per-frame work
-local function CtrlChecker_OnUpdate(self, elapsed)
-	self._accum = (self._accum or 0) + (elapsed or 0)
-	if self._accum < 0.12 then
-		return
-	end
-	self._accum = 0
-	CtrlChecker:CtrlUpdate()
-end
+CtrlChecker:SetScript("OnEvent", CtrlUpdate)
 
 -- NEW: Helper function to add reset-to-default functionality to widget labels
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
@@ -701,6 +700,21 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 	-- Store reference for showing/hiding
 	widget.ResetButton = resetButton
 
+	-- Hook native widget events for zero-polling control states
+	widget:HookScript("OnEnter", function()
+		if IsControlKeyDown() then
+			resetButton:Show()
+		end
+	end)
+	
+	widget:HookScript("OnLeave", function()
+		C_Timer.After(0.01, function()
+			if resetButton:IsShown() and not widget:IsMouseOver() and not resetButton:IsMouseOver() then
+				resetButton:Hide()
+			end
+		end)
+	end)
+
 	-- Register with global checker (no conflicts with widget scripts!)
 	resetButtons[widget] = resetButton
 
@@ -710,6 +724,7 @@ end
 -- Widget Creation Functions
 
 -- Widget Creation Functions
+-- REASON: Standardized switch widget factory with integrated hook support and undo functionality.
 local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isNew, requiresReload)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
@@ -1029,7 +1044,7 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 			isDragging = true
 			local lastUpdate = 0
 			local sinceLastCommit = 0
-			-- More efficient OnUpdate: throttled and with early exit conditions
+			-- PERF: Throttled update loop to prevent excessive script execution during drag operations.
 			self:SetScript("OnUpdate", function(self, elapsed)
 				if not isDragging then
 					self:SetScript("OnUpdate", nil)
@@ -1339,7 +1354,8 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 			return
 		end
 
-		-- Create dropdown menu on top-level to avoid clipping
+		-- WARNING: Creates new frames on every toggle; high memory churn if opened frequently.
+		-- PERF: Consider recycling frames to reduce garbage collection pressure.
 		local menu = CreateFrame("Frame", nil, UIParent)
 		local itemHeight = 22
 		local visibleCount = math.min(#options, 10)
@@ -1524,7 +1540,7 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 
 		-- Live filtering if search is present
 		if searchBox then
-			-- Debounced search to avoid relayout thrash on long lists
+			-- PERF: Debounced search handler prevents layout thrashing during rapid typing.
 			searchBox:SetScript("OnTextChanged", function(self)
 				local query = self:GetText():lower()
 				if menu._searchTimer then
@@ -2509,6 +2525,18 @@ local function CreateMainFrame()
 		GUI.PerksOverlay = K.AttachPerksTheme(frame, { variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 68, strata = "TOOLTIP", level = 999 })
 	end
 
+	local _, unitClass = UnitClass("player")
+	local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
+	local classIcon = titleBar:CreateTexture(nil, "OVERLAY")
+	classIcon:SetSize(32, 32)
+	classIcon:SetPoint("LEFT", 4, 0)
+	classIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES")
+	if ClassTCoords then
+		classIcon:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
+	else
+		classIcon:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+	end
+
 	-- Close Button
 	local closeButton = CreateFrame("Button", nil, titleBar)
 	closeButton:SetSize(32, 32)
@@ -2959,9 +2987,9 @@ function GUI:Show()
 	end
 	self.Frame:Show()
 	self.IsVisible = true
-	-- Enable CtrlChecker updates only while GUI is visible
+	-- Enable CtrlChecker zero-polling modifiers only while GUI is visible
 	if CtrlChecker then
-		CtrlChecker:SetScript("OnUpdate", CtrlChecker_OnUpdate)
+		CtrlChecker:RegisterEvent("MODIFIER_STATE_CHANGED")
 	end
 end
 
@@ -2998,7 +3026,7 @@ function GUI:Hide()
 	self.IsVisible = false
 	-- Disable CtrlChecker when GUI is hidden
 	if CtrlChecker then
-		CtrlChecker:SetScript("OnUpdate", nil)
+		CtrlChecker:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	end
 
 	-- Check for pending reloads when closing GUI
@@ -3607,6 +3635,7 @@ local function AcquireOptionButton(parent, width, height)
 	return btn
 end
 
+-- PERF: Object pooling for option buttons to reduce Garbage Collection pressure.
 local function ReleaseOptionButtons(buttons)
 	local pool = K.GUIHelpers._optionButtonPool
 	for _, btn in ipairs(buttons) do
@@ -3632,6 +3661,7 @@ end
 -- 	visibleCount = 10,
 -- 	showSearchOver = 10,
 -- })
+-- REASON: Singleton dropdown frame implementation to minimize memory churn compared to per-widget frames.
 function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 	if not anchorButton or not args or not args.options then
 		return
@@ -3980,6 +4010,7 @@ function K.GUIHelpers.OpenDropdownMenu(anchorButton, args)
 end
 
 -- Enable/disable a GUI widget with visual dimming and click blocking
+-- REASON: Lazy-load overlay for disabled state to save resources until needed.
 function K.GUIHelpers.SetWidgetEnabled(widget, enabled)
 	if not widget then
 		return

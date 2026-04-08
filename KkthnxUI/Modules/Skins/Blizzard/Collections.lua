@@ -1,14 +1,24 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Collections frames (Pets, Mounts, Toys, Transmog).
+-- - Design: Widens the wardrobe frame and applies custom positioning and textures.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- Globals -> locals
+-- REASON: Localize globals for performance and stack safety.
 local _G = _G
-local type = type
+local type = _G.type
 
 -- Cache frequently accessed values
+-- REASON: Constants for Collections skinning.
 local DESIRED_WARDROBE_WIDTH = 1092
 local TEXTURE_PATH = "Interface\\DressUpFrame\\DressingRoom"
 
--- WoW frames / funcs (globals -> locals)
+-- REASON: Cache frames.
 local WardrobeFrame = _G.WardrobeFrame
 local WardrobeTransmogFrame = _G.WardrobeTransmogFrame
 local PetJournalTutorialButton = _G.PetJournalTutorialButton
@@ -116,6 +126,7 @@ local function HideTutorialButton()
 	_G.PetJournalTutorialButton:Kill()
 end
 
+-- REASON: Main entry point for Blizzard Collections skinning.
 C.themes["Blizzard_Collections"] = function()
 	if not (C and C.Skins and C.Skins.BlizzardFrames) then
 		return

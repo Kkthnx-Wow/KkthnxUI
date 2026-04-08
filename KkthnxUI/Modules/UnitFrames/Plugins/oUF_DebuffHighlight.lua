@@ -1,3 +1,12 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Highlights unit frames based on dispellable debuffs.
+-- - Design: Checks unit auras and highlights the frame if a debuff matches player's class dispel capabilities.
+-- - Events: UNIT_AURA, PLAYER_TALENT_UPDATE.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local oUF = K.oUF
 

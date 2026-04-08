@@ -1,4 +1,19 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Achievement UI summary bars and categories.
+-- - Design: Applies custom status bar textures, gradients, and borders to achievement summary elements.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
+
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateColor = _G.CreateColor
+
+local AchievementFrameSummaryCategoriesStatusBar = _G.AchievementFrameSummaryCategoriesStatusBar
 
 local function SetupStatusBar(statusBar)
 	statusBar:StripTextures()
@@ -24,19 +39,7 @@ local function StyleAchievementFrameSummaryCategories()
 	end
 end
 
-local function StyleAchievementSummaryStatusBar(statusBar)
-	SetupStatusBar(statusBar)
-	local name = statusBar:GetName()
-	if name then
-		local title = _G[name .. "Title"]
-		local text = _G[name .. "Text"]
-		if title and text then
-			title:SetPoint("LEFT", statusBar, "LEFT", 6, 0)
-			text:SetPoint("RIGHT", statusBar, "RIGHT", -5, 0)
-		end
-	end
-end
-
+-- REASON: Main entry point for Blizzard Achievement UI skinning.
 C.themes["Blizzard_AchievementUI"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return

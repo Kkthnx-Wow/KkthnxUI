@@ -1,21 +1,30 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Silences specific annoying or repetitive game sounds (e.g., trains, turtles, motorcycles).
+-- - Design: Manages a list of sound IDs and uses MuteSoundFile/UnmuteSoundFile to toggle their state.
+-- - Events: None (Static initialization and config updates)
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
-local MuteSoundFile = MuteSoundFile
-local UnmuteSoundFile = UnmuteSoundFile
+-- PERF: Localize global functions and environment for faster lookups.
+local pairs = _G.pairs
+local string_gmatch = _G.string.gmatch
+local tonumber = _G.tonumber
+local type = _G.type
 
-local pairs = pairs
-local tonumber = tonumber
-local string_gmatch = string.gmatch
+local _G = _G
+local MuteSoundFile = _G.MuteSoundFile
+local UnmuteSoundFile = _G.UnmuteSoundFile
 
--- Website For Looking Up Sounds
--- https://wow.tools/
-
--- You Can Test Sounds With This Command In-Game
--- /run PlaySoundFile(2006030)
-
-local muteSounds = {
-	-- Annoying Train Choo Choo Crap
+-- SG: Sound ID Lists
+-- Website for looking up sounds: https://wow.tools/
+-- Test sounds in-game: /run PlaySoundFile(2006030)
+local MUTE_SOUNDS_LIST = {
+	-- SG: Annoying Train Sounds
 	[539219] = true,
 	[539203] = true,
 	[1313588] = true,
@@ -69,19 +78,18 @@ local muteSounds = {
 	[3106717] = true,
 	[1903049] = true,
 	[1903522] = true,
-
 	[13923] = true, -- ToyTrain_01
 
-	-- Stupid Turtle (I've collected Many Things Over The Years See If You Can Match Them)
+	-- SG: Turtle Collector Kojo
 	[2015901] = true, -- sound/creature/collector_kojo/vo_801_collector_kojo_28_m.ogg
 
-	-- Stupid Troll (Something has spooked one of the brutosaurs, sending it into a panic)
+	-- SG: Wardruid Loti (Brutosaur panic)
 	[1999176] = true, -- sound/creature/wardruid_loti/vo_801_wardruid_loti_02_f.ogg
 
-	-- World Quest Sound When It Popsup
+	-- SG: World Quest Popup
 	[1489473] = true, -- sound/interface/ui_worldquest_start.ogg
 
-	-- Annoying Motorcycle Sounds
+	-- SG: Motorcycle Sounds
 	[569854] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclewalkrun.ogg
 	[569855] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpend3.ogg
 	[569856] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpstart1.ogg
@@ -93,54 +101,55 @@ local muteSounds = {
 	[569862] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpstart2.ogg
 	[569863] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpend1.ogg
 
-	-- Sylvanas' Music Box I hate this darn thing so much!
+	-- SG: Sylvanas' Music Box
 	[53221] = true, -- sound/music/gluescreenmusic/bccredits_lament_of_the_highborne.mp3
 }
 
-local activeMuted = {}
+local currentlyMutedSounds = {}
 
-local function GetCombinedMuteSounds()
-	local combined = {}
-	for soundID in pairs(muteSounds) do
-		combined[soundID] = true
+-- REASON: Merges internal hardcoded sound IDs with user-defined IDs from the configuration to create a unified mute list.
+local function getCombinedMuteSounds()
+	local combinedList = {}
+	for soundID in pairs(MUTE_SOUNDS_LIST) do
+		combinedList[soundID] = true
 	end
 
-	local extra = C["Misc"] and C["Misc"].MuteSoundIDs
-	if type(extra) == "number" then
-		combined[extra] = true
-	elseif type(extra) == "string" and extra ~= "" then
-		for w in string_gmatch(extra, "%S+") do
-			local id = tonumber(w)
+	local extraIDs = C["Misc"] and C["Misc"].MuteSoundIDs
+	if type(extraIDs) == "number" then
+		combinedList[extraIDs] = true
+	elseif type(extraIDs) == "string" and extraIDs ~= "" then
+		for word in string_gmatch(extraIDs, "%S+") do
+			local id = tonumber(word)
 			if id then
-				combined[id] = true
+				combinedList[id] = true
 			end
 		end
 	end
 
-	return combined
+	return combinedList
 end
 
-function Module:CreateMuteSounds()
-	local shouldMute = C["Misc"].MuteSounds
-	local combined = GetCombinedMuteSounds()
+function Module:updateMutedSounds()
+	local isMuteEnabled = C["Misc"].MuteSounds
+	local combinedMuteList = getCombinedMuteSounds()
 
-	-- Unmute anything that should no longer be muted (or when the feature is disabled)
-	for soundID in pairs(activeMuted) do
-		if not shouldMute or not combined[soundID] then
+	-- REASON: Unmutes sounds that are no longer in the combined list or if the feature has been disabled.
+	for soundID in pairs(currentlyMutedSounds) do
+		if not isMuteEnabled or not combinedMuteList[soundID] then
 			UnmuteSoundFile(soundID)
-			activeMuted[soundID] = nil
+			currentlyMutedSounds[soundID] = nil
 		end
 	end
 
-	-- Mute anything new
-	if shouldMute then
-		for soundID in pairs(combined) do
-			if not activeMuted[soundID] then
+	-- REASON: Applies muting to any newly added sound IDs if the feature is active.
+	if isMuteEnabled then
+		for soundID in pairs(combinedMuteList) do
+			if not currentlyMutedSounds[soundID] then
 				MuteSoundFile(soundID)
-				activeMuted[soundID] = true
+				currentlyMutedSounds[soundID] = true
 			end
 		end
 	end
 end
 
-Module:RegisterMisc("MuteSounds", Module.CreateMuteSounds)
+Module:RegisterMisc("MuteSounds", Module.updateMutedSounds)

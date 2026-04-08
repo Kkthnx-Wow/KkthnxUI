@@ -503,7 +503,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdatePixelScale)
 
-	K:SetSmoothingAmount(C["General"].SmoothAmount)
+	-- K:SetSmoothingAmount(C["General"].SmoothAmount)
 
 	if K.LibCustomGlow then
 		K.ShowOverlayGlow = K.LibCustomGlow.ShowOverlayGlow

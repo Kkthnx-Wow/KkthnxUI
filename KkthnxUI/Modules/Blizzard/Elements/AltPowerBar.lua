@@ -1,24 +1,40 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Handles the Alternate Power Bar logic and skinning (e.g., boss energy, quest resources).
+-- - Design: Disables the Blizzard PlayerPowerBarAlt and replaces it with a custom skinned StatusBar.
+-- - Events: UNIT_POWER_UPDATE, UNIT_POWER_BAR_SHOW, UNIT_POWER_BAR_HIDE, PLAYER_ENTERING_WORLD
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
--- Cache globals
+-- PERF: Localize globals and API functions to reduce lookup overhead.
 local _G = _G
-local math_floor = math.floor
-local string_format = string.format
 local CreateFrame = CreateFrame
-local UnitPowerMax = UnitPowerMax
-local UnitPower = UnitPower
+local GameTooltip = _G.GameTooltip
 local GetUnitPowerBarInfo = GetUnitPowerBarInfo
 local GetUnitPowerBarStrings = GetUnitPowerBarStrings
-local GameTooltip = GameTooltip
-local UIParent = UIParent
-local GameTooltip_SetDefaultAnchor = _G.GameTooltip_SetDefaultAnchor
+local InCombatLockdown = InCombatLockdown
+local UIParent = _G.UIParent
+local UnitPower = UnitPower
+local UnitPowerMax = UnitPowerMax
+local math_floor = math.floor
+
+-- ---------------------------------------------------------------------------
+-- Constants
+-- ---------------------------------------------------------------------------
 local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
+local ALT_POWER_WIDTH = 250
+local ALT_POWER_HEIGHT = 20
 
-local AltPowerWidth = 250
-local AltPowerHeight = 20
-
+-- ---------------------------------------------------------------------------
+-- Tooltip Handling
+-- ---------------------------------------------------------------------------
+-- REASON: Updates the tooltip when hovering over the power bar to show power name and description.
 local function updateTooltip(self)
+	-- WARNING: Check forbidden status to avoid potential taint or UI errors from inaccessible frames.
 	if GameTooltip:IsForbidden() then
 		return
 	end
@@ -36,7 +52,7 @@ local function onEnter(self)
 	end
 
 	GameTooltip:ClearAllPoints()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 	updateTooltip(self)
 end
 
@@ -44,80 +60,116 @@ local function onLeave()
 	GameTooltip:Hide()
 end
 
+-- ---------------------------------------------------------------------------
+-- Text Formatting
+-- ---------------------------------------------------------------------------
 function Module:SetAltPowerBarText(text, name, value, max, percent)
-	local textFormat = "NAMECURMAX"
+	-- REASON: Provides flexible text formatting for the power bar display.
+	local textFormat = "NAMECURMAX" -- PERF: Hardcoded for now; could be exposed via config.
+
 	if textFormat == "NONE" or not textFormat then
 		text:SetText("")
 	elseif textFormat == "NAME" then
-		text:SetText(string_format("%s", name))
+		text:SetFormattedText("%s", name)
 	elseif textFormat == "NAMEPERC" then
-		text:SetText(string_format("%s: %s%%", name, percent))
+		text:SetFormattedText("%s: %s%%", name, percent)
 	elseif textFormat == "NAMECURMAX" then
-		text:SetText(string_format("%s: %s / %s", name, value, max))
+		text:SetFormattedText("%s: %s / %s", name, value, max)
 	elseif textFormat == "NAMECURMAXPERC" then
-		text:SetText(string_format("%s: %s / %s - %s%%", name, value, max, percent))
+		text:SetFormattedText("%s: %s / %s - %s%%", name, value, max, percent)
 	elseif textFormat == "PERCENT" then
-		text:SetText(string_format("%s%%", percent))
+		text:SetFormattedText("%s%%", percent)
 	elseif textFormat == "CURMAX" then
-		text:SetText(string_format("%s / %s", value, max))
+		text:SetFormattedText("%s / %s", value, max)
 	elseif textFormat == "CURMAXPERC" then
-		text:SetText(string_format("%s / %s - %s%%", value, max, percent))
+		text:SetFormattedText("%s / %s - %s%%", value, max, percent)
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- Positioning and Setup
+-- ---------------------------------------------------------------------------
 function Module:PositionAltPowerBar()
+	-- REASON: Creates a mover for the alternate power bar so the user can position it freely.
 	local holder = _G.AltPowerBarHolder or CreateFrame("Frame", "AltPowerBarHolder", UIParent)
-	holder:SetPoint("TOP", UIParent, "TOP", -1, -108)
+	holder:SetPoint("TOP", UIParent, "TOP", -1, -130)
 	holder:SetSize(128, 50)
 
-	local PlayerPowerBarAlt = _G.PlayerPowerBarAlt
-	PlayerPowerBarAlt:ClearAllPoints()
-	PlayerPowerBarAlt:SetPoint("CENTER", holder, "CENTER")
-	PlayerPowerBarAlt:SetParent(holder)
-	PlayerPowerBarAlt:SetMovable(true)
-	PlayerPowerBarAlt:SetUserPlaced(true)
-	PlayerPowerBarAlt.ignoreFramePositionManager = true
+	-- WARNING: PlayerPowerBarAlt is a secure frame; modifying its parent or visibility requires care to avoid taint.
+	local playerPowerBarAlt = _G.PlayerPowerBarAlt
+	if playerPowerBarAlt then
+		playerPowerBarAlt:ClearAllPoints()
+		playerPowerBarAlt:SetPoint("CENTER", holder, "CENTER")
+		playerPowerBarAlt:SetParent(holder)
+		playerPowerBarAlt:SetMovable(true)
+		playerPowerBarAlt:SetUserPlaced(true)
+		-- REASON: Prevents Blizzard's layout engine from resetting the frame's position.
+		playerPowerBarAlt:SetDontSavePosition(true)
+		playerPowerBarAlt.ignoreFramePositionManager = true
+	end
 
-	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", { "TOP", UIParent, "TOP", -1, -108 }, AltPowerWidth, AltPowerHeight)
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", { "TOP", UIParent, "TOP", -1, -130 }, ALT_POWER_WIDTH, ALT_POWER_HEIGHT)
 end
 
 function Module:UpdateAltPowerBarColors()
 	local bar = _G.KKUI_AltPowerBar
-	local color = { r = 0.2, g = 0.4, b = 0.8 }
-	bar:SetStatusBarColor(color.r, color.g, color.b)
+	if not bar then
+		return
+	end
+
+	-- REASON: Sets a consistent color for the custom power bar.
+	bar:SetStatusBarColor(0.2, 0.4, 0.8)
 end
 
 function Module:UpdateAltPowerBarSettings()
 	local bar = _G.KKUI_AltPowerBar
-	bar:SetSize(AltPowerWidth, AltPowerHeight)
+	if not bar then
+		return
+	end
+
+	bar:SetSize(ALT_POWER_WIDTH, ALT_POWER_HEIGHT)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	bar.text:SetFontObject(K.UIFont)
 
-	_G.AltPowerBarHolder:SetSize(bar:GetSize())
-	K:SmoothBar(bar)
+	local holder = _G.AltPowerBarHolder
+	if holder then
+		holder:SetSize(bar:GetSize())
+	end
+
+	-- K:SmoothBar(bar)
 
 	Module:SetAltPowerBarText(bar.text, bar.powerName or "", bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0)
 end
 
-local function UpdateAltPowerBar(self, event, unit)
+-- ---------------------------------------------------------------------------
+-- Event Handler
+-- ---------------------------------------------------------------------------
+-- REASON: Updates the custom power bar state based on Blizzard's unit power events.
+local function updateAltPowerBar(self, event, unit)
 	if event and event:find("^UNIT_") and unit ~= "player" then
 		return
 	end
 
-	-- Disable Blizzard's bar
-	_G.PlayerPowerBarAlt:UnregisterAllEvents()
-	_G.PlayerPowerBarAlt:Hide()
+	-- WARNING: Hiding secure frames like PlayerPowerBarAlt can cause taint if done in combat.
+	if not InCombatLockdown() then
+		local playerPowerBarAlt = _G.PlayerPowerBarAlt
+		if playerPowerBarAlt then
+			playerPowerBarAlt:UnregisterAllEvents()
+			playerPowerBarAlt:Hide()
+		end
+	end
 
 	local barInfo = GetUnitPowerBarInfo("player")
 	local powerName, powerTooltip = GetUnitPowerBarStrings("player")
+
 	if barInfo then
 		local power = UnitPower("player", ALTERNATE_POWER_INDEX) or 0
 		local maxPower = UnitPowerMax("player", ALTERNATE_POWER_INDEX) or 0
-		local perc = maxPower > 0 and math_floor(power / maxPower * 100) or 0
+		local percent = maxPower > 0 and math_floor(power / maxPower * 100) or 0
 
 		self.powerMaxValue = maxPower
 		self.powerName = powerName
-		self.powerPercent = perc
+		self.powerPercent = percent
 		self.powerTooltip = powerTooltip
 		self.powerValue = power
 
@@ -125,7 +177,7 @@ local function UpdateAltPowerBar(self, event, unit)
 		self:SetValue(power)
 		self:Show()
 
-		Module:SetAltPowerBarText(self.text, powerName or "", power or 0, maxPower, perc)
+		Module:SetAltPowerBarText(self.text, powerName or "", power or 0, maxPower, percent)
 	else
 		self.powerMaxValue = nil
 		self.powerName = nil
@@ -137,37 +189,49 @@ local function UpdateAltPowerBar(self, event, unit)
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- Initialization
+-- ---------------------------------------------------------------------------
 function Module:SkinAltPowerBar()
+	-- REASON: Creates and skins the alternative power bar to match the KkthnxUI aesthetic.
 	if _G.KKUI_AltPowerBar then
 		return
 	end
 
-	local powerbar = CreateFrame("StatusBar", "KKUI_AltPowerBar", UIParent)
-	powerbar:CreateBorder()
-	powerbar:SetMinMaxValues(0, 200)
-	powerbar:SetPoint("CENTER", _G.AltPowerBarHolder)
-	powerbar:Hide()
+	local powerBar = CreateFrame("StatusBar", "KKUI_AltPowerBar", UIParent)
+	powerBar:CreateBorder()
+	powerBar:SetMinMaxValues(0, 200)
+	powerBar:SetPoint("CENTER", _G.AltPowerBarHolder)
+	powerBar:Hide()
 
-	powerbar:SetScript("OnEnter", onEnter)
-	powerbar:SetScript("OnLeave", onLeave)
+	powerBar:SetScript("OnEnter", onEnter)
+	powerBar:SetScript("OnLeave", onLeave)
 
-	powerbar.text = powerbar:CreateFontString(nil, "OVERLAY")
-	powerbar.text:SetPoint("CENTER", powerbar, "CENTER")
-	powerbar.text:SetJustifyH("CENTER")
+	powerBar.text = powerBar:CreateFontString(nil, "OVERLAY")
+	powerBar.text:SetPoint("CENTER", powerBar, "CENTER")
+	powerBar.text:SetJustifyH("CENTER")
 
 	Module:UpdateAltPowerBarSettings()
 	Module:UpdateAltPowerBarColors()
 
-	-- Event handling
-	powerbar:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
-	powerbar:RegisterUnitEvent("UNIT_POWER_BAR_SHOW", "player")
-	powerbar:RegisterUnitEvent("UNIT_POWER_BAR_HIDE", "player")
-	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
-	powerbar:SetScript("OnEvent", UpdateAltPowerBar)
+	local spark = powerBar:CreateTexture(nil, "OVERLAY")
+	spark:SetTexture(C["Media"].Textures.Spark16Texture)
+	spark:SetHeight(ALT_POWER_HEIGHT)
+	spark:SetBlendMode("ADD")
+	spark:SetPoint("CENTER", powerBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	powerBar.spark = spark
+
+	powerBar:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+	powerBar:RegisterUnitEvent("UNIT_POWER_BAR_SHOW", "player")
+	powerBar:RegisterUnitEvent("UNIT_POWER_BAR_HIDE", "player")
+	powerBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+	powerBar:SetScript("OnEvent", updateAltPowerBar)
 end
 
 function Module:CreateAltPowerbar()
-	if C_AddOns.IsAddOnLoaded("SimplePowerBar") then
+	-- REASON: Entry point for the alternate power bar modification.
+	-- COMPAT: Check if conflicting addons are loaded to avoid UI breakage.
+	if _G.C_AddOns and _G.C_AddOns.IsAddOnLoaded("SimplePowerBar") then
 		return
 	end
 

@@ -1,7 +1,23 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard modern Menu (context menus).
+-- - Design: Hooks OpenMenu/OpenContextMenu to apply KkthnxUI borders and strip textures.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local table_insert = table.insert
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
+local table_insert = _G.table.insert
 
+local Menu = _G.Menu
+
+-- REASON: Main entry point for Blizzard Menu skinning.
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

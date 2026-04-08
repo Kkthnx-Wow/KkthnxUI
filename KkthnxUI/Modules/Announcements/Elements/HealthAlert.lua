@@ -1,26 +1,39 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Monitors player and pet health to trigger low-health warnings.
+-- - Design: Uses a periodic C_Timer ticker to poll health levels rather than event spam.
+-----------------------------------------------------------------------------]]
+
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
--- WoW API references
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache API references for frequent polling within the ticker loop.
 local UnitHealth, UnitHealthMax, UnitIsDead = UnitHealth, UnitHealthMax, UnitIsDead
 local UnitName, DoEmote, PlaySound = UnitName, DoEmote, PlaySound
 local UnitAffectingCombat, IsInGroup = UnitAffectingCombat, IsInGroup
 local string_format, time = string.format, time
 local UIErrorsFrame = UIErrorsFrame
 
--- Local Constants & Variables
 local playerNearDeath, petNearDeath = false, false
-local ALERT_THRESHOLD = 30 -- Trigger alert below this percent
-local RECOVERY_THRESHOLD = 50 -- Reset alert after health rises above this percent
-local ALERT_COOLDOWN = 5 -- Time (in seconds) to prevent repeated alerts
+local ALERT_THRESHOLD = 30 -- NOTE: Trigger alert below this percent.
+local RECOVERY_THRESHOLD = 50 -- NOTE: Reset alert status after health rises above this percent.
+local ALERT_COOLDOWN = 5 -- NOTE: Enforce 5s cooldown between consecutive audio/text alerts.
 local VALID_PET_CLASSES = { ["HUNTER"] = true, ["WARLOCK"] = true }
-local debugEnabled = false -- Set to false to disable debug logging
+local debugEnabled = false
 
--- Timestamp variables to track cooldowns
 local lastPlayerAlertTime = 0
 local lastPetAlertTime = 0
 
--- Utility Functions
+-- ---------------------------------------------------------------------------
+-- UTILITIES
+-- ---------------------------------------------------------------------------
+
 local function debugLog(message, ...)
 	if debugEnabled then
 		print("[DEBUG] " .. string_format(message, ...))
@@ -38,15 +51,22 @@ end
 local function ShouldCheckPlayerHealth()
 	local inCombat, inGroup = UnitAffectingCombat("player"), IsInGroup()
 	debugLog("Player Health Check - InCombat: %s, InGroup: %s", tostring(inCombat), tostring(inGroup))
-	return inCombat and inGroup -- Player health check requires combat and group presence
+	-- REASON: Only alert player health in groups/combat to reduce non-critical chatter.
+	return inCombat and inGroup
 end
 
 local function ShouldCheckPetHealth()
 	local inCombat = UnitAffectingCombat("player")
 	debugLog("Pet Health Check - InCombat: %s", tostring(inCombat))
-	return inCombat -- Pet health check only requires combat
+	-- REASON: Pet health is monitored during combat to alert owners of imminent pet loss.
+	return inCombat
 end
 
+-- ---------------------------------------------------------------------------
+-- CORE LOGIC
+-- ---------------------------------------------------------------------------
+
+-- REASON: Handles the state engine for alert triggering and recovery.
 local function HandleHealthAlert(unit, threshold, recoveryThreshold, alertFlag, lastAlertTime, messageCallback, soundCallback)
 	if UnitIsDead(unit) then
 		debugLog("Skipping health check for %s (unit is dead)", unit)
@@ -62,8 +82,9 @@ local function HandleHealthAlert(unit, threshold, recoveryThreshold, alertFlag, 
 	debugLog("%s health: %.1f%%", unit, healthPercent)
 	local currentTime = time()
 
-	-- Trigger alert if health is below threshold
+	-- Trigger alert logic.
 	if healthPercent <= threshold and not alertFlag then
+		-- PERF: Enforce cooldown to prevent spam if health fluctuates rapidly near the threshold.
 		if currentTime - lastAlertTime < ALERT_COOLDOWN then
 			debugLog("[COOLDOWN] Alert for %s is on cooldown. Skipping alert.", unit)
 		else
@@ -75,7 +96,7 @@ local function HandleHealthAlert(unit, threshold, recoveryThreshold, alertFlag, 
 				soundCallback()
 			end
 		end
-	-- Reset alert if health is recovered
+	-- Reset state for the next alert drop.
 	elseif healthPercent > recoveryThreshold and alertFlag then
 		debugLog("[RECOVERY] %s health recovered: %.1f%% (> %d%%)", unit, healthPercent, recoveryThreshold)
 		alertFlag = false
@@ -116,9 +137,13 @@ local function CheckPetHealth()
 		local alertMessage = L["The health for %s is low!"] or "The health for %s is low!"
 		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(alertMessage, petName))
 	end, function()
-		PlaySound(211593)
+		PlaySound(211593) -- SoundID: UI_Critter_Crowd_Mumble_Low
 	end)
 end
+
+-- ---------------------------------------------------------------------------
+-- REGISTRATION
+-- ---------------------------------------------------------------------------
 
 function Module:SetupHealthAnnounce()
 	debugLog("Running health checks...")
@@ -133,6 +158,7 @@ function Module:CreateHealthAnnounce()
 	end
 
 	debugLog("Initializing health alert system...")
+	-- PERF: Use a 1-second ticker to balance responsiveness and CPU usage.
 	C_Timer.NewTicker(1, function()
 		Module:SetupHealthAnnounce()
 	end)

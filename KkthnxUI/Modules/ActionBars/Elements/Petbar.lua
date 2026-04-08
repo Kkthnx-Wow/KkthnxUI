@@ -1,10 +1,21 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Manages and skins the Pet Action Bar.
+-- - Design: Reparents Blizzard's PetActionButtons and implements custom update logic.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
--- WoW / Lua locals
+-- ---------------------------------------------------------------------------
+-- LOCALS & CACHING
+-- ---------------------------------------------------------------------------
+
+-- PERF: Cache globals and pet-related APIs for high-frequency updates.
 local _G = _G
 local tinsert = tinsert
-
 local GetPetActionInfo = GetPetActionInfo
 local GetPetActionSlotUsable = GetPetActionSlotUsable
 local IsPetAttackAction = IsPetAttackAction
@@ -17,13 +28,18 @@ local Spell = Spell
 local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
 local PET_ACTION_HIGHLIGHT_MARKS = PET_ACTION_HIGHLIGHT_MARKS
 
--- Constants
 local MARGIN = 6
+
+-- ---------------------------------------------------------------------------
+-- PET BAR UTILITIES
+-- ---------------------------------------------------------------------------
 
 local function hasPetActionHighlightMark(index)
 	return PET_ACTION_HIGHLIGHT_MARKS and PET_ACTION_HIGHLIGHT_MARKS[index]
 end
 
+-- REASON: Garbage collection and performance protection.
+-- Cancels pending spell info requests if the button is updated or hidden.
 local function CancelSpellLoad(button)
 	local cancelFunc = button and button.spellDataLoadedCancelFunc
 	if cancelFunc then
@@ -32,6 +48,7 @@ local function CancelSpellLoad(button)
 	end
 end
 
+-- REASON: Lightweight update path for events that only affect mana/energy or spell activation range.
 function Module:UpdatePetBarUsable(frame)
 	frame = frame or PetActionBar
 	if not frame or not frame.actionButtons then
@@ -53,18 +70,18 @@ function Module:UpdatePetBarUsable(frame)
 			end
 		end
 
-		-- Comment: Highlight marks can change due to pet states; keep it cheap on usable updates
+		-- NOTE: Highlight marks (proc glows) can fluctuate rapidly; refresh them here.
 		SharedActionButton_RefreshSpellHighlight(petActionButton, hasPetActionHighlightMark(i))
 	end
 end
 
+-- REASON: Comprehensive update path for when pet abilities actually change (e.g. summoning different pet).
 function Module:UpdatePetBar(frame)
 	frame = frame or PetActionBar
 	if not frame or not frame.actionButtons then
 		return
 	end
 
-	-- Comment: Full refresh (used on PET_BAR_UPDATE/PET_UI_UPDATE/etc.)
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local petActionButton = frame.actionButtons[i]
 		if not petActionButton then
@@ -86,7 +103,7 @@ function Module:UpdatePetBar(frame)
 
 		petActionButton.isToken = isToken
 
-		-- Comment: Prevent piling up async spell-load callbacks when the pet bar updates frequently
+		-- NOTE: Fetch subtext (e.g. "Rank 2") asynchronously to avoid frame stutters on initial pet load.
 		if spellID and Spell and Spell.CreateFromSpellID then
 			if petActionButton._kkSpellID ~= spellID then
 				petActionButton._kkSpellID = spellID
@@ -105,10 +122,11 @@ function Module:UpdatePetBar(frame)
 			end
 		end
 
+		-- REASON: Visual feedback for active pet states.
+		-- Attack commands flash instead of showing a solid checked state to avoid confusion with toggles.
 		if isActive then
 			if IsPetAttackAction(i) then
 				petActionButton:StartFlash()
-				-- Comment: Checked alpha looks confusing at full alpha (looks like multiple selections)
 				petActionButton:GetCheckedTexture():SetAlpha(0.5)
 			else
 				petActionButton:StopFlash()
@@ -143,13 +161,18 @@ function Module:UpdatePetBar(frame)
 	frame.rangeTimer = -1
 end
 
+-- ---------------------------------------------------------------------------
+-- EVENT HANDLERS
+-- ---------------------------------------------------------------------------
+
 function Module.PetBarOnEvent(event, unit)
-	-- Comment: Unit-gated events (skip spam from raid/party pets)
+	-- NOTE: Filter out unit events from non-player/non-pet sources immediately for performance.
 	if (event == "UNIT_PET" or event == "UNIT_FLAGS") and unit and unit ~= "player" and unit ~= "pet" then
 		return
 	end
 
-	-- Comment: UNIT_FLAGS can fire frequently; it only needs a cheap usability/highlight refresh
+	-- REASON: UNIT_FLAGS often triggers for harmless changes (buffs/debuffs)
+	-- that only require a quick usability check rather than a full icon scan.
 	if event == "UNIT_FLAGS" then
 		Module:UpdatePetBarUsable(PetActionBar)
 		return
@@ -168,6 +191,10 @@ function Module.PetBarOnEvent(event, unit)
 	Module:UpdatePetBar(PetActionBar)
 end
 
+-- ---------------------------------------------------------------------------
+-- BAR CREATION
+-- ---------------------------------------------------------------------------
+
 function Module:CreatePetbar()
 	local num = NUM_PET_ACTION_SLOTS
 	local buttonList = {}
@@ -176,6 +203,7 @@ function Module:CreatePetbar()
 	frame.mover = K.Mover(frame, "Pet Actionbar", "PetBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, MARGIN })
 	Module.movers[10] = frame.mover
 
+	-- REASON: reparent Blizzard's default pet buttons to our custom container.
 	for i = 1, num do
 		local button = _G["PetActionButton" .. i]
 		if not button then
@@ -195,12 +223,13 @@ function Module:CreatePetbar()
 	end
 	frame.buttons = buttonList
 
+	-- NOTE: Manage pet bar visibility based on game state (vehicle, override, etc.).
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar][shapeshift] hide; [pet] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	-- Comment: Do an initial refresh once; events handle incremental updates after that
 	Module:UpdatePetBar(PetActionBar)
 
+	-- Register all relevant events for pet bar management.
 	K:RegisterEvent("UNIT_PET", Module.PetBarOnEvent)
 	K:RegisterEvent("UNIT_FLAGS", Module.PetBarOnEvent)
 	K:RegisterEvent("PET_UI_UPDATE", Module.PetBarOnEvent)

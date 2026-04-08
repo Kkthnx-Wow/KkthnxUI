@@ -1,6 +1,23 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Shows arena trinket cooldowns on arena frames.
+-- - Design: Tracks PvP trinket usage and cooldowns.
+-- - Events: ARENA_COOLDOWNS_UPDATE, ARENA_CROWD_CONTROL_SPELL_UPDATE.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local oUF = K.oUF
 assert(oUF, "oUF not loaded")
+
+-- REASON: Localize frequently used APIs and utilities for performance
+local IsInInstance = _G.IsInInstance
+local UnitFactionGroup = _G.UnitFactionGroup
+local C_PvP_RequestCrowdControlSpell = _G.C_PvP.RequestCrowdControlSpell
+local C_PvP_GetArenaCrowdControlInfo = _G.C_PvP.GetArenaCrowdControlInfo
+local CooldownFrame_Set = _G.CooldownFrame_Set
+local C_Spell_GetSpellInfo = _G.C_Spell.GetSpellInfo
 
 local Update = function(self, event, ...)
 	local _, instanceType = IsInInstance()
@@ -23,9 +40,9 @@ local Update = function(self, event, ...)
 		local tunit = self.unit
 
 		if self.unit == unit then
-			C_PvP.RequestCrowdControlSpell(unit)
+			C_PvP_RequestCrowdControlSpell(unit)
 
-			local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(unit)
+			local spellID, startTime, duration = C_PvP_GetArenaCrowdControlInfo(unit)
 
 			if spellID and startTime ~= 0 and duration ~= 0 then
 				CooldownFrame_Set(self.Trinket.cooldownFrame, startTime / 1000, duration / 1000, 1)
@@ -35,7 +52,7 @@ local Update = function(self, event, ...)
 		local unit, spellID = ...
 
 		if self.unit == unit then
-			local spellInfo = C_Spell.GetSpellInfo(spellID)
+			local spellInfo = C_Spell_GetSpellInfo(spellID)
 			if spellInfo then
 				self.Trinket.Icon:SetTexture(spellInfo.originalIconID)
 			end

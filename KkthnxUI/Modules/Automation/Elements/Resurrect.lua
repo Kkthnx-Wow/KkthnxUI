@@ -1,14 +1,27 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Automatically accepts resurrection requests from other players.
+-- - Design: Hooks RESURRECT_REQUEST and checks if the player is in combat and if the source is on a blacklist.
+-- - Events: RESURRECT_REQUEST
+-----------------------------------------------------------------------------]]
+
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
+-- PERF: Localize globals and API functions to minimize lookup overhead.
 local AcceptResurrect = AcceptResurrect
 local DoEmote = DoEmote
 local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
--- Localized names for specific items
-local localizedPylonNames = {
+-- ---------------------------------------------------------------------------
+-- Constants
+-- ---------------------------------------------------------------------------
+-- REASON: Blacklist for specific utility items that should not trigger auto-acceptance.
+local PYLON_NAMES = {
 	enUS = "Failure Detection Pylon",
 	zhCN = "故障检测晶塔",
 	zhTW = "滅團偵測水晶塔",
@@ -21,7 +34,8 @@ local localizedPylonNames = {
 	frFR = "Pylône de détection des échecs",
 	itIT = "Pilone d'Individuazione Fallimenti",
 }
-local localizedBrazierNames = {
+
+local BRAZIER_NAMES = {
 	enUS = "Brazier of Awakening",
 	zhCN = "觉醒火盆",
 	zhTW = "覺醒火盆",
@@ -35,33 +49,41 @@ local localizedBrazierNames = {
 	itIT = "Braciere del Risveglio",
 }
 
-local function HandleAutoResurrect(_, arg1)
+-- ---------------------------------------------------------------------------
+-- Internal Logic
+-- ---------------------------------------------------------------------------
+local function handleAutoResurrect(_, inviterName)
 	local clientLocale = K.Client
-	-- Ignore resurrection requests from specific items
-	if localizedPylonNames[clientLocale] == arg1 or localizedBrazierNames[clientLocale] == arg1 then
+
+	-- REASON: Ignore requests from automated pylon/brazier items to allow for strategic resurrection.
+	if PYLON_NAMES[clientLocale] == inviterName or BRAZIER_NAMES[clientLocale] == inviterName then
 		return
 	end
 
-	-- Accept resurrection if not in combat
+	-- REASON: Only auto-accept if not in combat to prevent taking a 'death' during active boss encounters.
 	if not UnitAffectingCombat("player") then
 		AcceptResurrect()
 		StaticPopup_Hide("RESURRECT_NO_TIMER")
 
-		-- Optionally thank the resurrector
+		-- REASON: Automated social interaction if configured by the user.
 		if C["Automation"].AutoResurrectThank then
 			K.Delay(3, function()
 				if not UnitIsDeadOrGhost("player") then
-					DoEmote("thank", arg1)
+					DoEmote("thank", inviterName)
 				end
 			end)
 		end
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- Module Registration
+-- ---------------------------------------------------------------------------
 function Module:CreateAutoResurrect()
+	-- REASON: Feature entry point; registers for resurrection request events.
 	if C["Automation"].AutoResurrect then
-		K:RegisterEvent("RESURRECT_REQUEST", HandleAutoResurrect)
+		K:RegisterEvent("RESURRECT_REQUEST", handleAutoResurrect)
 	else
-		K:UnregisterEvent("RESURRECT_REQUEST", HandleAutoResurrect)
+		K:UnregisterEvent("RESURRECT_REQUEST", handleAutoResurrect)
 	end
 end

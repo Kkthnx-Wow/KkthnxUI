@@ -1,15 +1,22 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Tracking auras for oUF layouts.
+-- - Design: Inspired by Tukui AuraTrack.
+-- - Events: UNIT_AURA.
+-----------------------------------------------------------------------------]]
+
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
--- By Tukz, for Tukui
-
--- Localize frequently used APIs and utilities for performance
-local CreateFrame = CreateFrame
-local GetTime = GetTime
-local UnitAura = UnitAura
-local AuraUtil_UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
-local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
-local math_floor = math.floor
+-- REASON: Localize frequently used APIs and utilities for performance
+local CreateFrame = _G.CreateFrame
+local GetTime = _G.GetTime
+local UnitAura = _G.UnitAura
+local AuraUtil_UnpackAuraData = _G.AuraUtil and _G.AuraUtil.UnpackAuraData
+local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
+local math_floor = _G.math.floor
 
 local Tracker = {
 	-- PRIEST

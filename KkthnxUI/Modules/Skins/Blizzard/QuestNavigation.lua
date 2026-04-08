@@ -1,14 +1,27 @@
+--[[-----------------------------------------------------------------------------
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Skins the Blizzard Quest Navigation (Super Track) frame.
+-- - Design: Adds arrival time estimation and skins the distance text.
+-- - Events: N/A
+-----------------------------------------------------------------------------]]
+
 local C = KkthnxUI[2]
 
--- Cache frequently used global variables locally
-local TIMER_MINUTES_DISPLAY = TIMER_MINUTES_DISPLAY
+-- REASON: Localize globals for performance and stack safety.
+local _G = _G
+local math_abs = _G.math.abs
+local math_floor = _G.math.floor
+local math_max = _G.math.max
+local hooksecurefunc = _G.hooksecurefunc
+
+local C_Navigation = _G.C_Navigation
+local SuperTrackedFrame = _G.SuperTrackedFrame
+local TIMER_MINUTES_DISPLAY = _G.TIMER_MINUTES_DISPLAY
+
 local GetDistance = C_Navigation and C_Navigation.GetDistance
 local WasClampedToScreen = C_Navigation and C_Navigation.WasClampedToScreen
-
--- Cache math functions
-local math_abs = math.abs
-local math_floor = math.floor
-local math_max = math.max
 
 -- Variables to keep track of distance and update time
 local lastDistance, lastUpdate = nil, 0
@@ -102,6 +115,7 @@ local function SetupQuestNavigation()
 	hooksecurefunc(SuperTrackedFrame, "UpdateAlpha", updateAlpha)
 end
 
+-- REASON: Main entry point for Blizzard Quest Navigation skinning.
 C.themes["Blizzard_QuestNavigation"] = function()
 	SetupQuestNavigation()
 end
