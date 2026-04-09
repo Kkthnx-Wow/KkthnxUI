@@ -249,19 +249,19 @@ function Module:OnSetHideCountdownNumbers(hide)
 	end
 end
 
-function Module:OnEnable()
-	if not C["ActionBar"]["Cooldown"] then
-		return
-	end
+function Module:OnEnable() -- Broken 12.0
+	-- if not C["ActionBar"]["Cooldown"] then
+	-- 	return
+	-- end
 
-	-- REASON: Hook the metatable of standard ActionButton cooldowns to catch all instances.
-	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
-	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
-	hooksecurefunc(cooldownIndex, "SetHideCountdownNumbers", Module.OnSetHideCountdownNumbers)
-	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
+	-- -- REASON: Hook the metatable of standard ActionButton cooldowns to catch all instances.
+	-- local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
+	-- hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
+	-- hooksecurefunc(cooldownIndex, "SetHideCountdownNumbers", Module.OnSetHideCountdownNumbers)
+	-- hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
 
-	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
+	-- K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
-	-- WARNING: Ensure the Blizzard CVar is disabled to prevent native number rendering.
-	SetCVar("countdownForCooldowns", 0)
+	-- -- WARNING: Ensure the Blizzard CVar is disabled to prevent native number rendering.
+	-- SetCVar("countdownForCooldowns", 0)
 end

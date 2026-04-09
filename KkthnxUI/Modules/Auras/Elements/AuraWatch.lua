@@ -1010,11 +1010,11 @@ function Module.AuraWatch_OnEvent(event, ...)
 
 	Module:AuraWatch_UpdateInt(event, ...)
 end
-K:RegisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent)
-K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.AuraWatch_OnEvent)
-K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
-K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
-K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
+-- K:RegisterEvent("UNIT_AURA", Module.AuraWatch_OnEvent) -- Broken 12.0
+-- K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.AuraWatch_OnEvent) -- Broken 12.0
+-- K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent) -- Broken 12.0
+-- K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent) -- Broken 12.0
+-- K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent) -- Broken 12.0
 
 function Module:AuraWatch_Centralize(force)
 	if not hasCentralize then

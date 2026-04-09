@@ -910,7 +910,7 @@ function Module:createImprovedRaidTool()
 	Module:createRaidManagementMenu(raidToolHeader)
 	Module:createCountdownButton(raidToolHeader)
 
-	Module:setupEasyMarker()
+	-- Module:setupEasyMarker() -- Broken 12.0
 	Module:createWorldMarkerBar()
 	Module:reanchorUIWidgets()
 end

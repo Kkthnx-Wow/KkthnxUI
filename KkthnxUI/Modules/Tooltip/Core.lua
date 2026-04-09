@@ -71,10 +71,8 @@ local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local PVP = _G.PVP
 local ROLE = _G.ROLE
 local SPECIALIZATION = _G.SPECIALIZATION
-local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local TANK = _G.TANK
 local TARGET = _G.TARGET
-local TooltipComparisonManager = _G.TooltipComparisonManager
 local TooltipDataProcessor = _G.TooltipDataProcessor
 local UIParent = _G.UIParent
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
@@ -236,9 +234,9 @@ function Module:OnTooltipCleared()
 	-- GameTooltip_ClearProgressBars(self)
 	-- GameTooltip_ClearWidgetSet(self)
 
-	if self.StatusBar then
-		self.StatusBar:ClearWatch()
-	end
+	-- if self.StatusBar then
+	-- 	self.StatusBar:ClearWatch()
+	-- end
 end
 
 -- REASON: Utility to wrap dungeon score with rarity color.
@@ -455,23 +453,6 @@ function Module:OnTooltipSetUnit()
 	end
 end
 
--- REASON: Updates the health bar text and color based on the unit's current health.
--- function Module:RefreshStatusBar(value)
--- 	if not self.text then
--- 		self.text = K.CreateFontString(self, 11, nil, "")
--- 	end
-
--- 	local unit = self.guid and UnitTokenFromGUID(self.guid)
--- 	local unitHealthMax = unit and UnitHealthMax(unit)
-
--- 	if unitHealthMax and unitHealthMax ~= 0 then
--- 		self.text:SetText(K.ShortValue(value * unitHealthMax) .. " - " .. K.ShortValue(unitHealthMax))
--- 		self:SetStatusBarColor(K.UnitColor(unit))
--- 	else
--- 		self.text:SetFormattedText("%d%%", value * 100)
--- 	end
--- end
-
 function Module:UpdateStatusBarColor()
 	local unit = Module.GetUnit(self)
 	if not unit then -- needs review
@@ -485,7 +466,7 @@ function Module:UpdateStatusBarColor()
 	end
 end
 
-function Module:RefreshStatusBar(value)
+function Module:RefreshStatusBar()
 	if not self.text then
 		self.text = K.CreateFontString(self, 11, nil, "")
 	end
@@ -643,7 +624,7 @@ function Module:FixRecipeItemNameWidth()
 	local name = self:GetName()
 	for i = 1, self:NumLines() do
 		local line = _G[name .. "TextLeft" .. i]
-		if line and line:GetHeight() > 40 then
+		if line and K.NotSecretValue(line:GetWidth()) and line:GetHeight() > 40 then
 			line:SetWidth(line:GetWidth() + 2)
 		end
 	end

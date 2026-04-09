@@ -45,7 +45,7 @@ function Module:OnEnable()
 		"HideBlizBuff",
 		"BuildBuffFrame",
 		"CreateTotems",
-		"CreateReminder",
+		-- "CreateReminder", -- Broken 12.0
 	}
 
 	-- PERF: Use ipairs for array iteration.
