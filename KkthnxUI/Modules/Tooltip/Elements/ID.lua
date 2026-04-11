@@ -66,7 +66,7 @@ function Module:AddLineForID(id, linkType, noadd)
 		end
 
 		local text = line:GetText()
-		if text and text == linkType then
+		if text and K.NotSecretValue(text) and text == linkType then
 			return
 		end
 	end

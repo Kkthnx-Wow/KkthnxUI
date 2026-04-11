@@ -1170,16 +1170,17 @@ function Module:CreatePlates()
 	self.Castbar.stageString:ClearAllPoints()
 	self.Castbar.stageString:SetPoint("TOPLEFT", self.Castbar.Icon, -2, 2)
 
-	self.Castbar.timeToHold = 0.5
 	self.Castbar.decimal = "%.1f"
-	self.Castbar.OnUpdate = Module.OnCastbarUpdate
-	self.Castbar.PostCastStart = Module.PostCastStart
-	self.Castbar.PostCastUpdate = Module.PostCastUpdate
-	self.Castbar.PostCastStop = Module.PostCastStop
-	self.Castbar.PostCastFail = Module.PostCastFailed
-	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	self.Castbar.timeToHold = 0.5
+	self.Castbar.PostCastStart = Module.UpdateCastBarColor
+	self.Castbar.PostCastInterruptible = Module.UpdateCastBarColor
+	self.Castbar.PostCastStop = Module.Castbar_FailedColor
+	self.Castbar.PostCastFail = Module.Castbar_FailedColor
+	self.Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
 	self.Castbar.CreatePip = Module.CreatePip
 	self.Castbar.PostUpdatePips = Module.PostUpdatePips
+	self.Castbar.CustomTimeText = Module.CustomTimeText
+	self.Castbar.CustomDelayText = Module.CustomTimeText
 
 	-- Raid Target Indicator
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")

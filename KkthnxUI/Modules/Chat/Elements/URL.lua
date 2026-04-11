@@ -42,6 +42,10 @@ local function highlightURL(_, url)
 end
 
 function Module:SearchForURL(text, ...)
+	if not text or K.IsSecretValue(text) then
+		return self:addMsg(text, ...)
+	end
+
 	-- REASON: Scans the message text using multiple regex patterns for IP addresses, websites, and emails.
 	foundURL = false
 
@@ -81,7 +85,7 @@ function Module:SearchForURL(text, ...)
 	end
 
 	-- REASON: Call the original AddMessage (stored as .am) with the potentially modified text.
-	return self.addMsg(self, text, ...)
+	self:addMsg(text, ...)
 end
 
 -- ---------------------------------------------------------------------------

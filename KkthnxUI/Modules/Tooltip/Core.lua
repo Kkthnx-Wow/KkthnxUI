@@ -48,10 +48,6 @@ local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
 local GameTooltip = _G.GameTooltip
 local GameTooltipTextLeft1 = _G.GameTooltipTextLeft1
 local GameTooltipTextLeft2 = _G.GameTooltipTextLeft2
-local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
-local GameTooltip_ClearProgressBars = _G.GameTooltip_ClearProgressBars
-local GameTooltip_ClearStatusBars = _G.GameTooltip_ClearStatusBars
-local GameTooltip_ClearWidgetSet = _G.GameTooltip_ClearWidgetSet
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetGuildInfo = _G.GetGuildInfo
 local GetRaidTargetIndex = _G.GetRaidTargetIndex
@@ -82,7 +78,6 @@ local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitHealthMax = _G.UnitHealthMax
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
@@ -182,14 +177,14 @@ end
 -- REASON: Utility to locate the level information line in the tooltip.
 function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
-		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
+		local tiptext = _G["GameTooltipTextLeft" .. i]
 		if not tiptext then
 			break
 		end
 
 		local linetext = tiptext:GetText()
 		if linetext and K.NotSecretValue(linetext) and string_find(linetext, LEVEL) then
-			return tiptext
+			return tiptext, i
 		end
 	end
 end
@@ -275,7 +270,7 @@ function Module:OnTooltipSetUnit()
 	end
 
 	local unit, guid = Module.GetUnit(self)
-	if not unit or not UnitExists(unit) then
+	if not unit then
 		return
 	end
 
@@ -376,6 +371,7 @@ function Module:OnTooltipSetUnit()
 		if ricon and K.NotSecretValue(ricon) and ricon <= 8 then
 			rionStr = ICON_LIST[ricon] .. "18|t "
 		end
+
 		GameTooltipTextLeft1:SetFormattedText("%s%s%s", rionStr, hexColor, text)
 	end
 
@@ -397,7 +393,7 @@ function Module:OnTooltipSetUnit()
 		local diff = GetCreatureDifficultyColor(level)
 		local classify = UnitClassification(unit)
 		local textLevel = format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
-		local tiptextLevel = Module.GetLevelLine(self)
+		local tiptextLevel, index = Module.GetLevelLine(self)
 		local unitClass = isPlayer and UnitClass(unit)
 
 		if tiptextLevel then
@@ -550,7 +546,7 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 		return
 	end
 
-	if not parent then
+	if not parent or parent:IsForbidden() then
 		return
 	end
 
@@ -632,7 +628,11 @@ end
 
 -- REASON: Forces a tooltip data refresh when a modifier key state changes.
 function Module:ResetUnit(btn)
-	if btn == "LSHIFT" and UnitExists("mouseover") then
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
+	if GameTooltip:IsShown() and btn == "LSHIFT" and TT:UnitExists("mouseover") then
 		GameTooltip:RefreshData()
 	end
 end

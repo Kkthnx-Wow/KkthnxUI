@@ -87,39 +87,25 @@ do
 		print("|cff3c9bedKkthnxUI:|r", ...)
 	end
 
-	-- PERF: Optimized ShortValue with zero GC churn by using math for rounding instead of string.format
-	-- where possible. Cached format strings avoid repeated allocations in hot paths like damage meters.
-	local format1 = "%.1f"
-
-	-- REASON: Pre-calculate number abbreviation configurations to avoid repeated object creation.
-	K.NumberAbbrOptions = {
-		[1] = {
-			config = CreateAbbreviateConfig({
-				{ breakpoint = 1e12, abbreviation = "t", significandDivisor = 1e10, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-				{ breakpoint = 1e9, abbreviation = "b", significandDivisor = 1e7, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-				{ breakpoint = 1e6, abbreviation = "m", significandDivisor = 1e4, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-				{ breakpoint = 1e3, abbreviation = "k", significandDivisor = 1e2, fractionDivisor = 1e1, abbreviationIsGlobal = false },
-			}),
-		},
-		[2] = {
-			config = CreateAbbreviateConfig({
-				{ breakpoint = 1e12, abbreviation = L["NumberCap3"] or "z", significandDivisor = 1e10, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-				{ breakpoint = 1e8, abbreviation = L["NumberCap2"] or "y", significandDivisor = 1e6, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-				{ breakpoint = 1e4, abbreviation = L["NumberCap1"] or "w", significandDivisor = 1e3, fractionDivisor = 1e1, abbreviationIsGlobal = false },
-			}),
-		},
+	K.NUMBER_ABBR_OPTIONS = {
+		[1] = { config = CreateAbbreviateConfig({
+			{ breakpoint = 1e12, abbreviation = "t", significandDivisor = 1e10, fractionDivisor = 1e2, abbreviationIsGlobal = false },
+			{ breakpoint = 1e9, abbreviation = "b", significandDivisor = 1e7, fractionDivisor = 1e2, abbreviationIsGlobal = false },
+			{ breakpoint = 1e6, abbreviation = "m", significandDivisor = 1e4, fractionDivisor = 1e2, abbreviationIsGlobal = false },
+			{ breakpoint = 1e3, abbreviation = "k", significandDivisor = 1e2, fractionDivisor = 1e1, abbreviationIsGlobal = false },
+		}) },
+		[2] = { config = CreateAbbreviateConfig({
+			{ breakpoint = 1e12, abbreviation = L["NumberCap3"], significandDivisor = 1e10, fractionDivisor = 1e2, abbreviationIsGlobal = false },
+			{ breakpoint = 1e8, abbreviation = L["NumberCap2"], significandDivisor = 1e6, fractionDivisor = 1e2, abbreviationIsGlobal = false },
+			{ breakpoint = 1e4, abbreviation = L["NumberCap1"], significandDivisor = 1e3, fractionDivisor = 1e1, abbreviationIsGlobal = false },
+		}) },
 	}
 
+	-- Numberize
 	function K.ShortValue(n)
-		if not n or type(n) ~= "number" then
-			return ""
-		end
-
-		local prefixStyle = C["General"].NumberPrefixStyle
-		local options = K.NumberAbbrOptions[prefixStyle]
-
+		local options = K.NUMBER_ABBR_OPTIONS[C["General"].NumberPrefixStyle]
 		if options then
-			return AbbreviateNumbers(n, options.config)
+			return AbbreviateNumbers(n, options)
 		else
 			return n
 		end
@@ -403,13 +389,13 @@ do
 		if not color then
 			return 1, 1, 1
 		end
+
 		return color.r, color.g, color.b
 	end
 
 	-- REASON: Centralized unit coloring logic (Class -> Tap Denied -> Reaction).
 	function K.UnitColor(unit)
 		local r, g, b = 1, 1, 1
-
 		if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
 			local class = select(2, UnitClass(unit))
 			if class then
@@ -420,8 +406,8 @@ do
 		else
 			local reaction = UnitReaction(unit, "player")
 			if reaction then
-				local color = K.Colors.reaction[reaction]
-				r, g, b = color[1], color[2], color[3]
+				local color = K.Colors.reaction[reaction] or FACTION_BAR_COLORS[reaction]
+				r, g, b = color.r, color.g, color.b
 			end
 		end
 
@@ -466,7 +452,12 @@ do
 
 	-- REASON: Resolves the numeric NPC ID from a GUID; handles varying GUID formats.
 	function K.GetNPCID(guid)
+		if K.IsSecretValue(guid) then
+			return
+		end
+
 		local id = tonumber(string_match((guid or ""), "%-(%d-)%-%x-$"))
+
 		return id
 	end
 

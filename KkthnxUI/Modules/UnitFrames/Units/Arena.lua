@@ -213,11 +213,16 @@ function Module:CreateArena()
 
 		self.Castbar.decimal = "%.2f"
 
-		self.Castbar.OnUpdate = Module.OnCastbarUpdate
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		self.Castbar.timeToHold = 0.5
+		self.Castbar.PostCastStart = Module.UpdateCastBarColor
+		self.Castbar.PostCastInterruptible = Module.UpdateCastBarColor
+		self.Castbar.PostCastStop = Module.Castbar_FailedColor
+		self.Castbar.PostCastFail = Module.Castbar_FailedColor
+		self.Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
+		self.Castbar.CreatePip = Module.CreatePip
+		self.Castbar.PostUpdatePips = Module.PostUpdatePips
+		self.Castbar.CustomTimeText = Module.CustomTimeText
+		self.Castbar.CustomDelayText = Module.CustomTimeText
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 		self.Castbar.Text:SetFontObject(K.UIFont)

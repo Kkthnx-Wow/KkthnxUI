@@ -29,7 +29,7 @@ local CreateFrame = _G.CreateFrame
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local InCombatLockdown = _G.InCombatLockdown
 local IsInRaid = _G.IsInRaid
-local IsSpellKnownOrOverridesKnown = _G.IsSpellKnownOrOverridesKnown
+local IsSpellInSpellBook = C_SpellBook.IsSpellInSpellBook or IsSpellKnownOrOverridesKnown
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
 local UnitInParty = _G.UnitInParty
@@ -220,7 +220,7 @@ local function UpdateRangeList(db)
 				end
 			end
 
-			if id and IsSpellKnownOrOverridesKnown(id) then
+			if id and IsSpellInSpellBook(id, nil, true) then
 				spells[id] = true
 			end
 		end
@@ -246,6 +246,7 @@ local function UnitSpellRange(unit, spells)
 			failed = true -- keep looking for other spells
 		end
 	end
+
 	if failed then
 		return false
 	end
@@ -297,6 +298,13 @@ end
 local function Update(self, event)
 	local element = self.RangeFader
 	local unit = self.unit
+
+	if not element then
+		return
+	end
+
+	-- clear these if we arent checking them (these are secret values on retail)
+	element.isInRange, element.checkedRange = nil, nil
 
 	-- REASON: Respect globally disabled range setting.
 	if C and C["Unitframe"] and C["Unitframe"].Range == false then

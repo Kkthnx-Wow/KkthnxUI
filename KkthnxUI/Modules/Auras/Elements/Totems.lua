@@ -81,33 +81,32 @@ end
 -- WARNING: Modifications to Blizzard's secure totem buttons are wrapped in combat checks to prevent taint.
 function Module:totemBarUpdate()
 	local activeTotems = 0
-	-- REASON: Iterate through active Blizzard totem buttons to sync them with custom bar.
 	for button in _G.TotemFrame.totemPool:EnumerateActive() do
 		activeTotems = activeTotems + 1
 
-		local haveTotem, _, start, dur, icon = GetTotemInfo(button.slot)
+		local _, _, start, dur, icon = GetTotemInfo(button.slot)
 		local totem = totems[activeTotems]
-		if haveTotem and dur > 0 then
-			totem.Icon:SetTexture(icon)
+		if K.IsSecretValue(dur) then
+			totem.CD:SetCooldownFromDurationObject(GetTotemDuration(button.slot))
+			totem.CD:Show()
+			totem:SetAlpha(1)
+		elseif start and dur then
 			totem.CD:SetCooldown(start, dur)
 			totem.CD:Show()
 			totem:SetAlpha(1)
 		else
-			totem.Icon:SetTexture("")
 			totem.CD:Hide()
 			totem:SetAlpha(0)
 		end
+		totem.Icon:SetTexture(icon)
 
-		if not InCombatLockdown() then
-			button:ClearAllPoints()
-			button:SetParent(totem)
-			button:SetAllPoints(totem)
-			button:SetAlpha(0)
-			button:SetFrameLevel(totem:GetFrameLevel() + 1)
-		end
+		button:ClearAllPoints()
+		button:SetParent(totem)
+		button:SetAllPoints(totem)
+		button:SetAlpha(0)
+		button:SetFrameLevel(totem:GetFrameLevel() + 1)
 	end
 
-	-- REASON: Hide any unused totem slots.
 	for i = activeTotems + 1, 4 do
 		local totem = totems[i]
 		totem.Icon:SetTexture("")

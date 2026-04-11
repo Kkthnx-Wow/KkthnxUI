@@ -1194,6 +1194,8 @@ function Module:CreateUnits()
 		-- Module:ToggleTargetClassPower()
 	end
 
+	Module:UpdateCastBarColors()
+
 	if C["Unitframe"].Enable then
 		oUF:RegisterStyle("Player", Module.CreatePlayer)
 		oUF:RegisterStyle("Target", Module.CreateTarget)

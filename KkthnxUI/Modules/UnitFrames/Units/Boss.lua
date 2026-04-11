@@ -233,14 +233,16 @@ function Module:CreateBoss()
 
 		Castbar.Time = timer
 		Castbar.Text = name
-		Castbar.OnUpdate = Module.OnCastbarUpdate
-		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastUpdate = Module.PostCastUpdate
-		Castbar.PostCastStop = Module.PostCastStop
-		Castbar.PostCastFail = Module.PostCastFailed
-		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		Castbar.timeToHold = 0.5
+		Castbar.PostCastStart = Module.UpdateCastBarColor
+		Castbar.PostCastInterruptible = Module.UpdateCastBarColor
+		Castbar.PostCastStop = Module.Castbar_FailedColor
+		Castbar.PostCastFail = Module.Castbar_FailedColor
+		Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
 		Castbar.CreatePip = Module.CreatePip
 		Castbar.PostUpdatePips = Module.PostUpdatePips
+		Castbar.CustomTimeText = Module.CustomTimeText
+		Castbar.CustomDelayText = Module.CustomTimeText
 
 		self.Castbar = Castbar
 	end

@@ -241,7 +241,7 @@ function Module:CreatePlayer()
 		lagStr:SetPoint("BOTTOM", Castbar, "TOP", 0, 4)
 		Castbar.LagString = lagStr
 
-		Module:ToggleCastBarLatency(self)
+		-- Module:ToggleCastBarLatency(self)
 
 		local stage = K.CreateFontString(Castbar, 20)
 		stage:ClearAllPoints()
@@ -249,7 +249,6 @@ function Module:CreatePlayer()
 		Castbar.stageString = stage
 
 		Castbar.decimal = "%.2f"
-
 		Castbar.Time = timer
 		Castbar.Text = name
 
@@ -263,15 +262,6 @@ function Module:CreatePlayer()
 		Castbar.PostUpdatePips = Module.PostUpdatePips
 		Castbar.CustomTimeText = Module.CustomTimeText
 		Castbar.CustomDelayText = Module.CustomTimeText
-		
-		-- Castbar.OnUpdate = Module.OnCastbarUpdate
-		-- Castbar.PostCastStart = Module.PostCastStart
-		-- Castbar.PostCastUpdate = Module.PostCastUpdate
-		-- Castbar.PostCastStop = Module.PostCastStop
-		-- Castbar.PostCastFail = Module.PostCastFailed
-		-- Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		-- Castbar.CreatePip = Module.CreatePip
-		-- Castbar.PostUpdatePips = Module.PostUpdatePips
 
 		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
 		Castbar:ClearAllPoints()
