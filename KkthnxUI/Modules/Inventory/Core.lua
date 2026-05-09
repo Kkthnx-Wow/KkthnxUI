@@ -1093,16 +1093,16 @@ function Module:OnEnable()
 		addNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
 		addNewContainer("Bag", 10, "BagAOE", filters.bagAOE)
 		addNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
-		addNewContainer("Bag", 17, "BagLegacy", filters.bagLegacy)
+		addNewContainer("Bag", 18, "BagLegacy", filters.bagLegacy)
 		addNewContainer("Bag", 19, "BagLower", filters.bagLower)
 		addNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		addNewContainer("Bag", 11, "BagCollection", filters.bagCollection)
-		addNewContainer("Bag", 14, "BagStone", filters.bagStone)
-		addNewContainer("Bag", 18, "BagKeystone", filters.bagKeystone)
-		addNewContainer("Bag", 15, "Consumable", filters.bagConsumable)
-		addNewContainer("Bag", 12, "BagGoods", filters.bagGoods)
-		addNewContainer("Bag", 16, "BagQuest", filters.bagQuest)
-		addNewContainer("Bag", 13, "BagAnima", filters.bagAnima)
+		addNewContainer("Bag", 15, "BagStone", filters.bagStone)
+		addNewContainer("Bag", 16, "Consumable", filters.bagConsumable)
+		addNewContainer("Bag", 13, "BagGoods", filters.bagGoods)
+		addNewContainer("Bag", 17, "BagQuest", filters.bagQuest)
+		addNewContainer("Bag", 14, "BagAnima", filters.bagAnima)
+		addNewContainer("Bag", 12, "BagDecor", filters.bagDecor)
 
 		bagFrames.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		bagFrames.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
@@ -1116,14 +1116,15 @@ function Module:OnEnable()
 		addNewContainer("Bank", 9, "BankAOE", filters.bankAOE)
 		addNewContainer("Bank", 6, "BankAzeriteItem", filters.bankAzeriteItem)
 		addNewContainer("Bank", 10, "BankLegendary", filters.bankLegendary)
-		addNewContainer("Bank", 16, "BankLegacy", filters.bankLegacy)
-		addNewContainer("Bank", 17, "BankLower", filters.bankLower)
+		addNewContainer("Bank", 17, "BankLegacy", filters.bankLegacy)
+		addNewContainer("Bank", 18, "BankLower", filters.bankLower)
 		addNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
 		addNewContainer("Bank", 11, "BankCollection", filters.bankCollection)
-		addNewContainer("Bank", 14, "BankConsumable", filters.bankConsumable)
-		addNewContainer("Bank", 12, "BankGoods", filters.bankGoods)
-		addNewContainer("Bank", 15, "BankQuest", filters.bankQuest)
-		addNewContainer("Bank", 13, "BankAnima", filters.bankAnima)
+		addNewContainer("Bank", 15, "BankConsumable", filters.bankConsumable)
+		addNewContainer("Bank", 13, "BankGoods", filters.bankGoods)
+		addNewContainer("Bank", 16, "BankQuest", filters.bankQuest)
+		addNewContainer("Bank", 14, "BankAnima", filters.bankAnima)
+		addNewContainer("Bank", 12, "BankDecor", filters.bankDecor)
 
 		bagFrames.bank = MyContainer:New("Bank", { Bags = "bank", BagType = "Bank" })
 		bagFrames.bank.__anchor = { "BOTTOMLEFT", 25, 50 }
@@ -1572,14 +1573,14 @@ function Module:OnEnable()
 			groupLabel = L["Reagent Bag"]
 		elseif name == "BagStone" then
 			groupLabel = _G.C_Spell.GetSpellName(404861)
-		elseif name:match("Keystone$") then
-			groupLabel = _G.WEEKLY_REWARDS_MYTHIC_KEYSTONE
 		elseif string_match(name, "AOE") then
 			groupLabel = _G.ITEM_ACCOUNTBOUND_UNTIL_EQUIP
 		elseif string_match(name, "Lower") then
 			groupLabel = L["Lower Item Level"]
 		elseif string_match(name, "Legacy") then
 			groupLabel = L["Legacy Items"]
+		elseif strmatch(name, "Decor") then
+			groupLabel = AUCTION_CATEGORY_HOUSING
 		else
 			if name:match("Legendary$") then
 				groupLabel = _G.LOOT_JOURNAL_LEGENDARIES

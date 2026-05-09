@@ -16,7 +16,6 @@ local _G = _G
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 local C_Item_IsAnimaItemByID = _G.C_Item.IsAnimaItemByID
-local C_Item_IsItemKeystoneByID = _G.C_Item.IsItemKeystoneByID
 
 -- FIX: Fallback for 'LE_EXPANSION_WAR_WITHIN' if not defined in older clients (though this is 11.0 code).
 local CURRENT_EXPANSION = _G.LE_EXPANSION_WAR_WITHIN or 10 -- 11.0
@@ -161,6 +160,18 @@ local function isItemLegacy(item)
 	return CheckEquip(item) and item.expacID and item.expacID < CURRENT_EXPANSION
 end
 
+local function isItemDecor(item)
+	if not CheckFilterSetting("FilterDecor") then
+		return
+	end
+
+	if not item.link then
+		return
+	end
+
+	return C_Item.IsDecorItem(item.link)
+end
+
 local function isItemLowerLevel(item)
 	if not CheckFilterSetting("FilterLower") then
 		return
@@ -262,21 +273,6 @@ local function isPrimordialStone(item)
 	return item.id and primordialStones[item.id]
 end
 
-local function isItemKeystone(item)
-	if not CheckFilterSetting("FilterKeystone") then
-		return
-	end
-
-	if isCustomFilter(item) == false then
-		return
-	end
-
-	if item.id and C_Item_IsItemKeystoneByID(item.id) then
-		return true
-	end
-	return item.classID == Enum.ItemClass.Reagent and item.subClassID == Enum.ItemReagentSubclass.Keystone
-end
-
 local function isWarboundUntilEquipped(item)
 	if not CheckFilterSetting("FilterAOE") then
 		return
@@ -307,7 +303,6 @@ function Module:GetFilters()
 	filters.bagEquipment = CreateLocationFilter(isItemInBag, isItemEquipment)
 	filters.bagEquipSet = CreateLocationFilter(isItemInBag, isItemEquipSet)
 	filters.bagConsumable = CreateLocationFilter(isItemInBag, isItemConsumable)
-	filters.bagKeystone = CreateLocationFilter(isItemInBag, isItemKeystone)
 	filters.bagsJunk = CreateLocationFilter(isItemInBag, isItemJunk)
 	filters.bagCollection = CreateLocationFilter(isItemInBag, isItemCollection)
 	filters.bagGoods = CreateLocationFilter(isItemInBag, isTradeGoods)
@@ -317,6 +312,7 @@ function Module:GetFilters()
 	filters.bagAOE = CreateLocationFilter(isItemInBag, isWarboundUntilEquipped)
 	filters.bagLower = CreateLocationFilter(isItemInBag, isItemLowerLevel)
 	filters.bagLegacy = CreateLocationFilter(isItemInBag, isItemLegacy)
+	filters.bagDecor = CreateLocationFilter(isItemInBag, isItemDecor)
 
 	filters.onlyBank = CreateLocationFilter(isItemInBank)
 	filters.bankAzeriteItem = CreateLocationFilter(isItemInBank, isAzeriteArmor)
@@ -331,6 +327,7 @@ function Module:GetFilters()
 	filters.bankAOE = CreateLocationFilter(isItemInBank, isWarboundUntilEquipped)
 	filters.bankLower = CreateLocationFilter(isItemInBank, isItemLowerLevel)
 	filters.bankLegacy = CreateLocationFilter(isItemInBank, isItemLegacy)
+	filters.bankDecor = CreateLocationFilter(isItemInBank, isItemDecor)
 
 	filters.onlyBagReagent = function(item)
 		return (isItemInBagReagent(item) and not isEmptySlot(item)) or (hasReagentBagEquipped() and isItemInBag(item) and isTradeGoods(item))
