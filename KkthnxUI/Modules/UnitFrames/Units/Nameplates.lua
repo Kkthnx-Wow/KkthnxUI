@@ -299,11 +299,7 @@ function Module:CheckThreatStatus(unit)
 
 	-- REASON: Determine if the unit is targeting a tank or the player to decide nameplate color.
 	local unitTarget = unit .. "target"
-	local unitRole = isInGroup
-			and UnitExists(unitTarget)
-			and not UnitIsUnit(unitTarget, "player")
-			and groupRoles[UnitName(unitTarget)]
-		or "NONE"
+	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
 
 	if K.Role == "Tank" and unitRole == "TANK" then
 		return true, UnitThreatSituation(unitTarget, unit)
@@ -360,9 +356,7 @@ function Module:ApplyStyleFilter(unit)
 
 	-- REASON: Apply hardcoded style filters for specific high-priority NPCs.
 	if npcID then
-		local filter = StyleFilters[npcID]
-			or (C.NameplateTrashUnits[npcID] and { color = { 0.6, 0.6, 0.6 }, desaturate = true })
-			or (ShowTargetNPCs[npcID] and { scale = 1.2, color = C["Nameplate"].TargetColor })
+		local filter = StyleFilters[npcID] or (C.NameplateTrashUnits[npcID] and { color = { 0.6, 0.6, 0.6 }, desaturate = true }) or (ShowTargetNPCs[npcID] and { scale = 1.2, color = C["Nameplate"].TargetColor })
 
 		if filter then
 			if filter.scale then
@@ -949,12 +943,7 @@ function Module:UpdateClassIcon(self, unit)
 		if class and CLASS_ICON_TCOORDS[class] then
 			local texcoord = CLASS_ICON_TCOORDS[class]
 			-- REASON: Apply specific texcoords to crop the Blizzard class icon texture correctly.
-			self.Class.Icon:SetTexCoord(
-				texcoord[1] + 0.015,
-				texcoord[2] - 0.02,
-				texcoord[3] + 0.018,
-				texcoord[4] - 0.02
-			)
+			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
 			self.Class:Show()
 		else
 			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
@@ -1316,7 +1305,7 @@ function Module:CreatePlates()
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Auras.spacing = 4
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
-	self.Auras["growth-y"] = "UP"
+	self.Auras["growthY"] = "UP"
 
 	-- REASON: Adjust aura position if class resource bars are enabled on nameplates.
 	if C["Nameplate"].NameplateClassPower then
@@ -1558,10 +1547,7 @@ function Module:RefreshPlateType(unit)
 	self.isFriendly = self.reaction and self.reaction >= 4 and not UnitCanAttack("player", unit)
 	self.isSoftTarget = UnitIsUnit(unit, "softinteract")
 
-	local forceShow = C.NameplateForceShow
-		and (
-			(self.npcID and C.NameplateForceShow[self.npcID]) or (self.unitName and C.NameplateForceShow[self.unitName])
-		)
+	local forceShow = C.NameplateForceShow and ((self.npcID and C.NameplateForceShow[self.npcID]) or (self.unitName and C.NameplateForceShow[self.unitName]))
 
 	if forceShow then
 		self.plateType = "None"

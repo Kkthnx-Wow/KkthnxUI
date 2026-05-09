@@ -108,19 +108,13 @@ function Module:CreateTargetOfTarget()
 		elseif targetOfTargetPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 		else
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -140,11 +134,7 @@ function Module:CreateTargetOfTarget()
 	-- REASON: Level Tag
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetFontObject(K.UIFont)
-	if
-		targetOfTargetPortraitStyle ~= 0
-		and targetOfTargetPortraitStyle ~= 4
-		and not C["Unitframe"].HideTargetOfTargetLevel
-	then
+	if targetOfTargetPortraitStyle ~= 0 and targetOfTargetPortraitStyle ~= 4 and not C["Unitframe"].HideTargetOfTargetLevel then
 		self.Level:Show()
 	else
 		self.Level:Hide()
@@ -156,22 +146,10 @@ function Module:CreateTargetOfTarget()
 	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-x"] = "RIGHT"
-	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint(
-		"TOPLEFT",
-		C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name,
-		"BOTTOMLEFT",
-		0,
-		-6
-	)
-	self.Debuffs:SetPoint(
-		"TOPRIGHT",
-		C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name,
-		"BOTTOMRIGHT",
-		0,
-		-6
-	)
+	self.Debuffs["growthX"] = "RIGHT"
+	self.Debuffs["growthY"] = "DOWN"
+	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
 	self.Debuffs.num = 8
 	self.Debuffs.iconsPerRow = 4
 

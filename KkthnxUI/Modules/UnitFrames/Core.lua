@@ -38,6 +38,8 @@ local UnitIsPVP = UnitIsPVP
 local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsPlayer = UnitIsPlayer
 local UnitThreatSituation = UnitThreatSituation
+local GetInventorySlotInfo = GetInventorySlotInfo
+local GetInventoryItemLink = GetInventoryItemLink
 
 local FALLBACK_COLOR = { r = 1, g = 1, b = 1 }
 
@@ -467,27 +469,6 @@ function Module:CreateHeader(_, onKeyDown)
 	self:HookScript("OnLeave", UF_OnLeave)
 end
 
--- REASON: Toggles castbar latency tracking for the player frame.
-function Module:ToggleCastBarLatency(frame)
-	frame = frame or _G.oUF_Player
-	if not frame then
-		return
-	end
-
-	if C["Unitframe"].CastbarLatency then
-		frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- REASON: Fix quests with WorldFrame interaction.
-		frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
-		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
-	else
-		frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
-		frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
-		frame:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
-		if frame.Castbar then
-			frame.Castbar.__sendTime = nil
-		end
-	end
-end
-
 -- Auras Helpers (oUF-style callbacks)
 
 local next = next
@@ -651,17 +632,6 @@ function Module.PostCreateButton(element, button)
 		button.Stealable:Hide() -- REASON: Prevent "sticky" display between reused buttons.
 	end
 
-	-- -- CLICK HOOK (OPTIONAL SAFETY)
-	-- -- REASON: AuraModule might not exist in every load order; avoid hard errors.
-	-- if AuraModule and AuraModule.RemoveSpellFromIgnoreList then
-	-- 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
-	-- end
-
-	-- -- TIMER TEXT (DURATION)
-	-- if not button.timer then
-	-- 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
-	-- end
-
 	if element.__owner.mystyle == "nameplate" then
 		hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
@@ -670,9 +640,6 @@ function Module.PostCreateButton(element, button)
 		button.Count:ClearAllPoints()
 		button.Count:SetPoint("RIGHT", button, "BOTTOMRIGHT", 5, 0)
 	end
-
-	-- REASON: Keep texcoords correct when size changes.
-	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
 -- Icon Overrides
@@ -706,7 +673,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 	-- DESATURATION RULES (HARMFUL + FILTEREDSTYLE)
 	-- REASON: filteredStyle must exist in your file; guard so missing table doesn't hard error.
 	if button.Icon then
-		if element.desaturateDebuff and data.isHarmfulAura and filteredStyle[style] and not data.isPlayerAura then
+		if data.isHarmfulAura and filteredStyle[style] and not data.isPlayerAura then
 			button.Icon:SetDesaturated(true)
 		else
 			button.Icon:SetDesaturated(false)
@@ -738,45 +705,6 @@ function Module.PostUpdateButton(element, button, unit, data)
 			if button.KKUI_Border then
 				K.SetBorderColor(button.KKUI_Border)
 			end
-		end
-	end
-
-	-- STEALABLE INDICATOR
-	-- REASON: Must explicitly hide when not applicable or it can "stick" on reused buttons.
-	if button.Stealable then
-		if (not data.isHarmfulAura) and type(data.dispelName) ~= "nil" and (not UnitIsPlayer(unit)) then
-			button.Stealable:Show()
-		else
-			button.Stealable:Hide()
-		end
-	end
-
-	-- -- COOLDOWN/TIMER
-	-- if duration and duration > 0 then
-	-- 	button.expiration = expiration
-	-- 	button:SetScript("OnUpdate", K.CooldownOnUpdate)
-	-- 	if button.timer then
-	-- 		button.timer:Show()
-	-- 	end
-	-- else
-	-- 	button:SetScript("OnUpdate", nil)
-	-- 	if button.timer then
-	-- 		button.timer:Hide()
-	-- 	end
-	-- end
-
-	-- -- REPLACE ICON TEXTURE (IF DEFINED)
-	-- -- REASON: ReplacedIcons uses spellID keys; data.spellId is the reliable source.
-	-- local spellID = data.spellId
-	-- local newTexture = spellID and Module.ReplacedSpellIcons[spellID]
-	-- if newTexture and button.Icon then
-	-- 	button.Icon:SetTexture(newTexture)
-	-- end
-
-	-- BOLSTER STACKS DISPLAY (IF THIS IS THE CHOSEN BOLSTER AURA)
-	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
-		if button.Count then
-			button.Count:SetText(element.bolsterStacks)
 		end
 	end
 end
@@ -1583,9 +1511,39 @@ function Module:UpdateRaidDebuffIndicator()
 	end
 end
 
+-- do
+local ChestSlotID = GetInventorySlotInfo("CHESTSLOT")
+local LegSlotID = GetInventorySlotInfo("LEGSSLOT")
+
+local chestSlotItem, legSlotItem -- local cache of the items
+
+local function OnUnitInventoryChanged(_, _, unit) -- limited to Mages only currently
+	if unit ~= "player" then
+		return
+	end
+
+	local ChestItem = GetInventoryItemLink("player", ChestSlotID) -- Mage: Regeneration
+	local LegItem = GetInventoryItemLink("player", LegSlotID) -- Mage: Mass Regeneration
+
+	if chestSlotItem ~= ChestItem or legSlotItem ~= LegItem then
+		chestSlotItem = ChestItem
+		legSlotItem = LegItem
+
+		Module:UpdateRangeSpells()
+	end
+end
+-- end
+
+local function OnPlayerEnteringWorld()
+	Module:UpdateRangeSpells()
+end
+
 function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
+
+	K:RegisterEvent("UNIT_INVENTORY_CHANGED", OnUnitInventoryChanged)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", OnPlayerEnteringWorld)
 
 	if C["Raid"].DebuffWatch or C["SimpleParty"].DebuffWatch then
 		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs

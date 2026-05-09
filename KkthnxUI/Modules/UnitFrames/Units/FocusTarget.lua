@@ -108,10 +108,7 @@ function Module:CreateFocusTarget()
 		elseif focusTargetPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 
@@ -121,10 +118,7 @@ function Module:CreateFocusTarget()
 		elseif focusTargetPortraitStyle ~= 5 and focusTargetPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -152,22 +146,10 @@ function Module:CreateFocusTarget()
 	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-x"] = "RIGHT"
-	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint(
-		"TOPLEFT",
-		C["Unitframe"].HideFocusTargetName and self.Power or self.Name,
-		"BOTTOMLEFT",
-		0,
-		-6
-	)
-	self.Debuffs:SetPoint(
-		"TOPRIGHT",
-		C["Unitframe"].HideFocusTargetName and self.Power or self.Name,
-		"BOTTOMRIGHT",
-		0,
-		-6
-	)
+	self.Debuffs["growthX"] = "RIGHT"
+	self.Debuffs["growthY"] = "DOWN"
+	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
 	self.Debuffs.num = 8
 	self.Debuffs.iconsPerRow = 4
 

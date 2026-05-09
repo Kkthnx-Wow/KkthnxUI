@@ -166,8 +166,8 @@ function Module:CreatePlayer()
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs["growthX"] = "RIGHT"
+		self.Debuffs["growthY"] = "UP"
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 14
@@ -185,8 +185,8 @@ function Module:CreatePlayer()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs["growthX"] = "RIGHT"
+		self.Buffs["growthY"] = "DOWN"
 		self.Buffs.num = 20
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].PlayerBuffsPerRow
@@ -235,13 +235,6 @@ function Module:CreatePlayer()
 		safeZone:SetPoint("BOTTOMRIGHT")
 		Castbar:SetFrameLevel(10)
 		Castbar.SafeZone = safeZone
-
-		local lagStr = K.CreateFontString(Castbar, 11)
-		lagStr:ClearAllPoints()
-		lagStr:SetPoint("BOTTOM", Castbar, "TOP", 0, 4)
-		Castbar.LagString = lagStr
-
-		-- Module:ToggleCastBarLatency(self)
 
 		local stage = K.CreateFontString(Castbar, 20)
 		stage:ClearAllPoints()

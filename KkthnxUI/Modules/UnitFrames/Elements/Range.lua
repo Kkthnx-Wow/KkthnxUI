@@ -1,15 +1,16 @@
 --[[-----------------------------------------------------------------------------
--- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
--- Notes:
--- - Purpose: Manages unit opacity based on range from the player.
--- - Design: Modified oUF_Range element supporting multiple unit types (friendly, enemy, pet).
--- - Events: OnUpdate (throttled)
------------------------------------------------------------------------------]]
+	-- Addon: KkthnxUI
+	-- Author: Josh "Kkthnx" Russell
+	-- Notes:
+	-- - Purpose: Manages unit opacity based on range from the player.
+	-- - Design: Modified oUF_Range element supporting multiple unit types (friendly, enemy, pet).
+	-- - Events: OnUpdate (throttled)
+	-----------------------------------------------------------------------------]]
 
 local _, ns = ...
 local oUF = ns.oUF
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local Module = K:GetModule("Unitframes")
 
 local _FRAMES = {}
 local OnRangeFrame
@@ -229,7 +230,11 @@ local function UpdateRangeList(db)
 	return spells
 end
 
-local function UpdateRangeSpells()
+function Module:UpdateRangeSpells(event, arg1)
+	if event == "CHARACTER_POINTS_CHANGED" and (not arg1 or arg1 > 0) then
+		return -- Not interested in gained points from leveling
+	end
+
 	list[1] = UpdateRangeList(CHECK_SPELLS.ENEMY[myClass])
 	list[2] = UpdateRangeList(CHECK_SPELLS.FRIENDLY[myClass])
 	list[3] = UpdateRangeList(CHECK_SPELLS.RESURRECT[myClass])
@@ -243,7 +248,7 @@ local function UnitSpellRange(unit, spells)
 		if range then
 			return true
 		elseif range ~= nil then
-			failed = true -- keep looking for other spells
+			failed = true -- oh no
 		end
 	end
 
@@ -255,43 +260,41 @@ end
 -- REASON: Checks if a unit is within range of any spell in the 'which' category list.
 local function UnitInSpellsRange(unit, which)
 	local spells = list[which]
-	-- REASON: If list is empty, default to range=1 (true-ish) to fallback to interaction check.
 	local range = (not next(spells) and 1) or UnitSpellRange(unit, spells)
 
-	-- REASON: Fallback to InteractDistance(4) for follow range if spell check fails or is N/A, and not in combat.
 	if (not range or range == 1) and not InCombatLockdown() then
-		return CheckInteractDistance(unit, 4)
+		return CheckInteractDistance(unit, 4) -- check follow interact when not in combat
 	else
-		return (range == nil and 1) or range -- REASON: nil implies cant check, so assume in range to avoid ghosting.
+		return (range == nil and 1) or range -- nil: various reason it cant be checked; ie: cant be cast on the unit
 	end
 end
 
 -- REASON: Specific check for friendly units using PhaseReason and UnitInRange API.
-local function FriendlyInRange(realUnit)
+local function FriendlyInRange(realUnit, element)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
 	if UnitIsPlayer(unit) then
 		local phaseReason = UnitPhaseReason(unit)
 		if phaseReason == PhaseReason.TimerunningHwt then
-			if not IsInInstance() then -- Phased in open world (hero / nonhero) but not phased in dungeons
+			if not IsInInstance() then -- phased in open world (hero / nonhero) but not phased in dungeons
 				return false
 			end
 		elseif phaseReason then
 			return false
 		end
-
-		local inRange, wasChecked = UnitInRange(unit)
-		if K.IsSecretValue(wasChecked) then
-			if element and (UnitInParty(unit) or UnitInRaid(unit)) then -- if its eligible
-				element.isInRange, element.checkedRange = inRange, wasChecked
-				return -- will be handled by these values so no need to proceed
-			end
-		elseif wasChecked and not inRange then
-			return false -- blizz checked and unit is out of range
-		end
-
-		return UnitInSpellsRange(unit, 2)
 	end
+
+	local inRange, wasChecked = UnitInRange(unit)
+	if K.IsSecretValue(wasChecked) then
+		if element and (UnitInParty(unit) or UnitInRaid(unit)) then -- if its eligible
+			element.isInRange, element.checkedRange = inRange, wasChecked
+			return -- will be handled by these values so no need to proceed
+		end
+	elseif wasChecked and not inRange then
+		return false -- blizz checked and unit is out of range
+	end
+
+	return UnitInSpellsRange(unit, 2)
 end
 
 -- REASON: Main update function to determine alpha based on range status.
@@ -306,45 +309,28 @@ local function Update(self, event)
 	-- clear these if we arent checking them (these are secret values on retail)
 	element.isInRange, element.checkedRange = nil, nil
 
-	-- REASON: Respect globally disabled range setting.
-	if C and C["Unitframe"] and C["Unitframe"].Range == false then
-		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
-		self:SetAlpha(element.RangeAlpha)
-		if element.PostUpdate then
-			return element:PostUpdate(self, true)
-		end
-		return
-	end
-
-	if not unit then
-		unit = self.unit
-	end
-
-	if self.forceInRange or unit == "player" then
-		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
+	local exists = UnitExists(unit)
+	if self.forceInRange or (exists and unit == "player") then
+		element.RangeAlpha = element.insideAlpha
 	elseif self.forceNotInRange then
-		element.RangeAlpha = element.MinAlpha or element.outsideAlpha
-	elseif unit then
+		element.RangeAlpha = element.outsideAlpha
+	elseif exists then
 		if UnitIsDeadOrGhost(unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and element.insideAlpha or element.outsideAlpha
 		elseif UnitCanAttack("player", unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 1) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			element.RangeAlpha = UnitInSpellsRange(unit, 1) and element.insideAlpha or element.outsideAlpha
 		elseif UnitIsUnit("pet", unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 4) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			element.RangeAlpha = UnitInSpellsRange(unit, 4) and element.insideAlpha or element.outsideAlpha
 		elseif UnitIsConnected(unit) then
-			element.RangeAlpha = FriendlyInRange(unit) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			element.RangeAlpha = FriendlyInRange(unit, element) and element.insideAlpha or element.outsideAlpha
 		else
-			element.RangeAlpha = element.MinAlpha or element.outsideAlpha
+			element.RangeAlpha = element.outsideAlpha
 		end
 	else
-		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
+		element.RangeAlpha = element.insideAlpha
 	end
 
 	self:SetAlpha(element.RangeAlpha)
-
-	if element.PostUpdate then
-		return element:PostUpdate(self, element.RangeAlpha == (element.MaxAlpha or element.insideAlpha))
-	end
 end
 
 -- REASON: Overridable path for custom range checking logic.
@@ -381,7 +367,7 @@ local function Enable(self)
 
 		-- Initialize spell list if not done yet
 		if not list[1] then
-			UpdateRangeSpells()
+			Module:UpdateRangeSpells()
 		end
 
 		if not OnRangeFrame then

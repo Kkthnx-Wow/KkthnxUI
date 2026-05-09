@@ -113,20 +113,14 @@ function Module:CreateArena()
 		elseif arenaPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 			Module:ApplyPortraitAlphaFix(self)
 		elseif arenaPortraitStyle ~= 5 and arenaPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -151,10 +145,7 @@ function Module:CreateArena()
 	self:Tag(self.Level, "[nplevel]")
 
 	self.Trinket = CreateFrame("Frame", nil, self)
-	self.Trinket:SetSize(
-		self.Health:GetHeight() + self.Power:GetHeight() + 6,
-		self.Health:GetHeight() + self.Power:GetHeight() + 6
-	)
+	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 	self.Trinket:SetPoint("RIGHT", self, "LEFT", -6, 0)
 	self.Trinket:CreateBorder()
 
@@ -163,8 +154,8 @@ function Module:CreateArena()
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growth-x"] = "RIGHT"
-	self.Buffs["growth-y"] = "DOWN"
+	self.Buffs["growthX"] = "RIGHT"
+	self.Buffs["growthY"] = "DOWN"
 	self.Buffs.num = 6
 	self.Buffs.spacing = 6
 	self.Buffs.iconsPerRow = 6
@@ -180,8 +171,8 @@ function Module:CreateArena()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPRIGHT"
-	self.Debuffs["growth-x"] = "LEFT"
-	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs["growthX"] = "LEFT"
+	self.Debuffs["growthY"] = "DOWN"
 	self.Debuffs:SetPoint("TOPRIGHT", self.Trinket, "TOPLEFT", -6, 0)
 	self.Debuffs.num = 2
 	self.Debuffs.iconsPerRow = 4

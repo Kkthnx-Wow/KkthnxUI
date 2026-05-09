@@ -121,10 +121,7 @@ function Module:CreateFocus()
 		elseif focusPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 
@@ -134,10 +131,7 @@ function Module:CreateFocus()
 		elseif focusPortraitStyle ~= 5 and focusPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(
-				self.Health:GetHeight() + self.Power:GetHeight() + 6,
-				self.Health:GetHeight() + self.Power:GetHeight() + 6
-			)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -155,8 +149,8 @@ function Module:CreateFocus()
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs["growthX"] = "RIGHT"
+		self.Debuffs["growthY"] = "UP"
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 15
@@ -175,8 +169,8 @@ function Module:CreateFocus()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs["growthX"] = "RIGHT"
+		self.Buffs["growthY"] = "DOWN"
 		self.Buffs.num = 20
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
@@ -239,14 +233,7 @@ function Module:CreateFocus()
 		Castbar.CustomTimeText = Module.CustomTimeText
 		Castbar.CustomDelayText = Module.CustomTimeText
 
-		local mover = K.Mover(
-			Castbar,
-			"Focus Castbar",
-			"FocusCB",
-			{ "BOTTOM", UIParent, "BOTTOM", -474, 750 },
-			Castbar:GetHeight() + Castbar:GetWidth() + 3,
-			Castbar:GetHeight() + 3
-		)
+		local mover = K.Mover(Castbar, "Focus Castbar", "FocusCB", { "BOTTOM", UIParent, "BOTTOM", -474, 750 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
 		Castbar:ClearAllPoints()
 		Castbar:SetPoint("RIGHT", mover)
 		Castbar.mover = mover
