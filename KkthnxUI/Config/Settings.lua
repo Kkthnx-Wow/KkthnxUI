@@ -293,6 +293,7 @@ C["Misc"] = {
 	MarkerBarSize = 22,
 	AFKCamera = false,
 	AutoBubbles = false,
+	CombatAnimation = false,
 	ColorPicker = false,
 	EnhancedFriends = false,
 	EnhancedMail = false,

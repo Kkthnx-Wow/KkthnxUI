@@ -129,42 +129,28 @@ function Module:UpdateSpellTarget(unit)
 	end
 end
 
--- REASON: Use K.Colors.castbar for centralized color management.
 function Module:UpdateCastBarColors()
-	-- Initialize Color objects if not present, using K.Colors as source
-	Module.CastingColor = Module.CastingColor or K.Colors.castbar.CastingColor
-	Module.OwnCastColor = Module.OwnCastColor or K.Colors.castbar.CastingColor
-	Module.NotInterruptColor = Module.NotInterruptColor or K.Colors.castbar.notInterruptibleColor
-	Module.CompleteColor = Module.CompleteColor or K.Colors.castbar.CompleteColor
-	Module.FailColor = Module.FailColor or K.Colors.castbar.FailColor
+	local castingColor = K.Colors.castbar.CastingColor
+	local ownCastColor = K.Colors.castbar.CastingColor
+	local notInterruptColor = K.Colors.castbar.notInterruptibleColor
+
+	Module.CastingColor = Module.CastingColor or CreateColor(0, 0, 0)
+	Module.OwnCastColor = Module.OwnCastColor or CreateColor(0, 0, 0)
+	Module.NotInterruptColor = Module.NotInterruptColor or CreateColor(0, 0, 0)
+
+	Module.CastingColor:SetRGB(castingColor.r, castingColor.g, castingColor.b)
+	Module.OwnCastColor:SetRGB(ownCastColor.r, ownCastColor.g, ownCastColor.b)
+	Module.NotInterruptColor:SetRGB(notInterruptColor.r, notInterruptColor.g, notInterruptColor.b)
 end
 
 -- REASON: Updates the castbar color based on class, reaction, or interruptible status.
 function Module:UpdateCastBarColor(unit)
-	local color = K.Colors.castbar.CastingColor
-
-	-- REASON: Prioritize class color, then reaction color, then default.
-	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, class = UnitClass(unit)
-		color = class and K.Colors.class[class]
-	elseif C["Unitframe"].CastReactionColor then
-		local reaction = UnitReaction(unit, "player")
-		color = reaction and K.Colors.reaction[reaction]
-	elseif self.notInterruptible and not UnitIsUnit(unit, "player") then
-		color = K.Colors.castbar.notInterruptibleColor
-	end
-
-	-- REASON: Grayish color for non-interruptible casts on nameplates.
-	if self.__owner.mystyle == "nameplate" and self.notInterruptible then
-		self:SetStatusBarColor(0.7, 0.7, 0.7)
-		return
-	end
-
-	-- REASON: Apply color immediately.
-	if color and color.GetRGB then
-		self:SetStatusBarColor(color:GetRGB())
-	elseif type(color) == "table" then
-		self:SetStatusBarColor(color[1] or 1, color[2] or 1, color[3] or 1)
+	if unit == "player" then
+		self:SetStatusBarColor(Module.OwnCastColor:GetRGB())
+	elseif not UnitIsUnit(unit, "player") then
+		self:GetStatusBarTexture():SetVertexColorFromBoolean(self.notInterruptible, Module.NotInterruptColor, Module.CastingColor)
+	else
+		self:SetStatusBarColor(Module.CastingColor:GetRGB())
 	end
 
 	Module.UpdateSpellTarget(self, unit)
@@ -172,31 +158,18 @@ function Module:UpdateCastBarColor(unit)
 end
 
 function Module:Castbar_FailedColor(unit)
-	if K.Colors.castbar.FailColor then
-		self:SetStatusBarColor(K.Colors.castbar.FailColor:GetRGB())
-	else
-		self:SetStatusBarColor(1, 0.1, 0)
-	end
+	self:SetStatusBarColor(1.0, 0.0, 0.0)
 end
 
 function Module:Castbar_UpdateInterrupted(unit, interruptedBy)
-	if K.Colors.castbar.FailColor then
-		self:SetStatusBarColor(K.Colors.castbar.FailColor:GetRGB())
-	else
-		self:SetStatusBarColor(1, 0.1, 0)
-	end
+	self:SetStatusBarColor(1.0, 0.0, 0.0)
 
 	if self.spellTarget and interruptedBy ~= nil then -- C["Nameplate"].Interruptor
 		local sourceName = UnitNameFromGUID(interruptedBy)
 		local _, class = GetPlayerInfoByGUID(interruptedBy)
 		class = class or "PRIEST"
-		-- REASON: Use K.Colors.class for consistency with UI color scheme.
-		local classColor = K.Colors.class[class]
-		if classColor then
-			self.Text:SetText(INTERRUPTED .. " > " .. classColor:WrapTextInColorCode(sourceName))
-		else
-			self.Text:SetText(INTERRUPTED .. " > " .. sourceName)
-		end
+		local classColor = C_ClassColor.GetClassColor(class)
+		self.Text:SetText(INTERRUPTED .. " > " .. classColor:WrapTextInColorCode(sourceName))
 		self.Time:SetText("")
 	end
 end

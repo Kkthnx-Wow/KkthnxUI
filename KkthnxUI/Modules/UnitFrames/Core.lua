@@ -939,7 +939,18 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
+local function GetColor(color)
+	if not color then
+		return 1, 0, 0
+	elseif type(color[1]) == "number" then
+		return color[1], color[2], color[3]
+	else
+		return color.r, color.g, color.b
+	end
+end
+
 local function SetStatusBarColor(element, r, g, b)
+	r, g, b = r or 1, g or 0, b or 0
 	for i = 1, #element do
 		local bar = element[i]
 		bar:SetStatusBarColor(r, g, b)
@@ -961,11 +972,13 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 				local colorIndex = math_min(i, #comboColors)
 				local color = comboColors[colorIndex]
 				if color then
-					bar:SetStatusBarColor(color[1], color[2], color[3])
+					local r, g, b = GetColor(color)
+					bar:SetStatusBarColor(r, g, b)
 				else
 					-- REASON: Fallback to first color if colorIndex is out of range.
 					local fallbackColor = comboColors[1]
-					bar:SetStatusBarColor(fallbackColor[1], fallbackColor[2], fallbackColor[3])
+					local r, g, b = GetColor(fallbackColor)
+					bar:SetStatusBarColor(r, g, b)
 				end
 			end
 			element.prevColor = cur -- REASON: Track current combo points for change detection.
@@ -997,7 +1010,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 				local r, g, b = 1, 0, 0
 				if thisColor == 2 then
 					local color = element.__owner.colors.power[powerType]
-					r, g, b = color[1], color[2], color[3]
+					r, g, b = GetColor(color)
 				end
 				SetStatusBarColor(element, r, g, b)
 				element.prevColor = thisColor

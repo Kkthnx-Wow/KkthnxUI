@@ -788,6 +788,7 @@ local function CreateMiscCategory()
 
 	-- Encounter UI
 	local encounterSection = GUI:AddSection(miscCategory, "Encounter UI")
+	GUI:CreateSwitch(encounterSection, "Misc.CombatAnimation", L["CombatAnimation"], L["CombatAnimation Desc"])
 	GUI:CreateSwitch(encounterSection, "Misc.HideBanner", L["Hide RaidBoss EmoteFrame"], "Hides the raid boss emote frame during encounters")
 	GUI:CreateSwitch(encounterSection, "Misc.HideBossEmote", L["Hide BossBanner"], "Hides the boss banner that appears during boss encounters")
 
