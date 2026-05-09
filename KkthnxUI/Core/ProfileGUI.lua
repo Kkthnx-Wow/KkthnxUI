@@ -340,7 +340,8 @@ function ProfileGUI:ExportProfile(profileKey)
 	end
 
 	-- Snapshot Variables
-	local variablesSnapshot = K.CopyTable(KkthnxUIDB.Variables[profile.realm] and KkthnxUIDB.Variables[profile.realm][profile.name] or {})
+	local variablesSnapshot =
+		K.CopyTable(KkthnxUIDB.Variables[profile.realm] and KkthnxUIDB.Variables[profile.realm][profile.name] or {})
 
 	-- Prepare the export data structure
 	local exportData = {
@@ -541,8 +542,10 @@ function ProfileGUI:CreateProfile(profileName, sourceProfile)
 		local source = profiles[sourceProfile]
 
 		if source then
-			KkthnxUIDB.Settings[K.Realm][profileName] = K.CopyTable(KkthnxUIDB.Settings[source.realm][source.name] or {})
-			KkthnxUIDB.Variables[K.Realm][profileName] = K.CopyTable(KkthnxUIDB.Variables[source.realm][source.name] or {})
+			KkthnxUIDB.Settings[K.Realm][profileName] =
+				K.CopyTable(KkthnxUIDB.Settings[source.realm][source.name] or {})
+			KkthnxUIDB.Variables[K.Realm][profileName] =
+				K.CopyTable(KkthnxUIDB.Variables[source.realm][source.name] or {})
 		else
 			return false, "Source profile not found"
 		end
@@ -972,26 +975,31 @@ function ProfileGUI:ShowRenameProfileDialog()
 		return
 	end
 
-	local dialog = self:CreateInputDialog("Rename Profile", "Enter a new name for the profile '" .. profile.name .. "':", profile.name, function(newName)
-		if not newName or newName == "" then
-			self:ShowStatusMessage("Profile name cannot be empty", "error")
-			return
-		end
+	local dialog = self:CreateInputDialog(
+		"Rename Profile",
+		"Enter a new name for the profile '" .. profile.name .. "':",
+		profile.name,
+		function(newName)
+			if not newName or newName == "" then
+				self:ShowStatusMessage("Profile name cannot be empty", "error")
+				return
+			end
 
-		if newName == profile.name then
-			self:ShowStatusMessage("New name must be different from current name", "error")
-			return
-		end
+			if newName == profile.name then
+				self:ShowStatusMessage("New name must be different from current name", "error")
+				return
+			end
 
-		local success, error = self:RenameProfile(self.SelectedProfile, newName)
-		if success then
-			self:ShowStatusMessage("Profile renamed successfully", "success")
-			self:RefreshProfileList()
-			self:UpdateInfoPanel()
-		else
-			self:ShowStatusMessage(error, "error")
+			local success, error = self:RenameProfile(self.SelectedProfile, newName)
+			if success then
+				self:ShowStatusMessage("Profile renamed successfully", "success")
+				self:RefreshProfileList()
+				self:UpdateInfoPanel()
+			else
+				self:ShowStatusMessage(error, "error")
+			end
 		end
-	end)
+	)
 end
 
 -- Helper function to update profile button state
@@ -2076,7 +2084,9 @@ function ProfileGUI:ShowImportDialog()
 
 			-- Ask if user wants to reload UI
 			if applyToCurrent then
-				self:ShowReloadUIDialog("Profile applied successfully. Would you like to reload the UI to ensure all changes take effect?")
+				self:ShowReloadUIDialog(
+					"Profile applied successfully. Would you like to reload the UI to ensure all changes take effect?"
+				)
 			end
 		else
 			statusText:SetTextColor(ERROR_COLOR[1], ERROR_COLOR[2], ERROR_COLOR[3], 1)
@@ -2270,20 +2280,25 @@ end
 
 -- Dialog creation functions
 function ProfileGUI:ShowCreateProfileDialog()
-	local dialog = self:CreateInputDialog("Create New Profile", "Enter a name for the new profile:", "", function(profileName)
-		if not profileName or profileName == "" then
-			self:ShowStatusMessage("Profile name cannot be empty", "error")
-			return
-		end
+	local dialog = self:CreateInputDialog(
+		"Create New Profile",
+		"Enter a name for the new profile:",
+		"",
+		function(profileName)
+			if not profileName or profileName == "" then
+				self:ShowStatusMessage("Profile name cannot be empty", "error")
+				return
+			end
 
-		local success, error = self:CreateProfile(profileName)
-		if success then
-			self:ShowStatusMessage("Profile created successfully", "success")
-			self:RefreshProfileList()
-		else
-			self:ShowStatusMessage(error, "error")
+			local success, error = self:CreateProfile(profileName)
+			if success then
+				self:ShowStatusMessage("Profile created successfully", "success")
+				self:RefreshProfileList()
+			else
+				self:ShowStatusMessage(error, "error")
+			end
 		end
-	end)
+	)
 end
 
 function ProfileGUI:ShowCopyProfileDialog()
@@ -2295,20 +2310,25 @@ function ProfileGUI:ShowCopyProfileDialog()
 	local profiles = self:GetAllProfiles()
 	local sourceProfile = profiles[self.SelectedProfile]
 
-	local dialog = self:CreateInputDialog("Copy Profile", "Enter a name for the copied profile:", sourceProfile.name .. " Copy", function(profileName)
-		if not profileName or profileName == "" then
-			self:ShowStatusMessage("Profile name cannot be empty", "error")
-			return
-		end
+	local dialog = self:CreateInputDialog(
+		"Copy Profile",
+		"Enter a name for the copied profile:",
+		sourceProfile.name .. " Copy",
+		function(profileName)
+			if not profileName or profileName == "" then
+				self:ShowStatusMessage("Profile name cannot be empty", "error")
+				return
+			end
 
-		local success, error = self:CreateProfile(profileName, self.SelectedProfile)
-		if success then
-			self:ShowStatusMessage("Profile copied successfully", "success")
-			self:RefreshProfileList()
-		else
-			self:ShowStatusMessage(error, "error")
+			local success, error = self:CreateProfile(profileName, self.SelectedProfile)
+			if success then
+				self:ShowStatusMessage("Profile copied successfully", "success")
+				self:RefreshProfileList()
+			else
+				self:ShowStatusMessage(error, "error")
+			end
 		end
-	end)
+	)
 end
 
 function ProfileGUI:ShowDeleteConfirmation()
@@ -2325,18 +2345,22 @@ function ProfileGUI:ShowDeleteConfirmation()
 		return
 	end
 
-	local dialog = self:CreateConfirmDialog("Delete Profile", "Are you sure you want to delete the profile '" .. profile.name .. "'?\n\nThis action cannot be undone.", function()
-		local success, error = self:DeleteProfile(self.SelectedProfile)
-		if success then
-			self:ShowStatusMessage("Profile deleted successfully", "success")
-			self.SelectedProfile = nil
-			self:RefreshProfileList()
-			self:UpdateInfoPanel()
-			self:UpdateButtonStates()
-		else
-			self:ShowStatusMessage(error, "error")
+	local dialog = self:CreateConfirmDialog(
+		"Delete Profile",
+		"Are you sure you want to delete the profile '" .. profile.name .. "'?\n\nThis action cannot be undone.",
+		function()
+			local success, error = self:DeleteProfile(self.SelectedProfile)
+			if success then
+				self:ShowStatusMessage("Profile deleted successfully", "success")
+				self.SelectedProfile = nil
+				self:RefreshProfileList()
+				self:UpdateInfoPanel()
+				self:UpdateButtonStates()
+			else
+				self:ShowStatusMessage(error, "error")
+			end
 		end
-	end)
+	)
 end
 
 function ProfileGUI:ShowResetConfirmation()
@@ -2344,15 +2368,19 @@ function ProfileGUI:ShowResetConfirmation()
 	local profile = self.SelectedProfile and profiles[self.SelectedProfile]
 	local profileName = profile and profile.name or "current profile"
 
-	local dialog = self:CreateConfirmDialog("Reset Profile", "Are you sure you want to reset '" .. profileName .. "' to default settings?\n\nThis action cannot be undone.", function()
-		local success, error = self:ResetProfile(self.SelectedProfile)
-		if success then
-			self:ShowStatusMessage("Profile reset successfully", "success")
-			self:RefreshProfileList()
-		else
-			self:ShowStatusMessage(error, "error")
+	local dialog = self:CreateConfirmDialog(
+		"Reset Profile",
+		"Are you sure you want to reset '" .. profileName .. "' to default settings?\n\nThis action cannot be undone.",
+		function()
+			local success, error = self:ResetProfile(self.SelectedProfile)
+			if success then
+				self:ShowStatusMessage("Profile reset successfully", "success")
+				self:RefreshProfileList()
+			else
+				self:ShowStatusMessage(error, "error")
+			end
 		end
-	end)
+	)
 end
 
 -- Character metadata and utility functions
@@ -2366,7 +2394,11 @@ function ProfileGUI:GetClassFromGoldInfo(name, realm)
 	end
 
 	-- Fallback to ProfilePortraits if available
-	if KkthnxUIDB.ProfilePortraits and KkthnxUIDB.ProfilePortraits[realm] and KkthnxUIDB.ProfilePortraits[realm][name] then
+	if
+		KkthnxUIDB.ProfilePortraits
+		and KkthnxUIDB.ProfilePortraits[realm]
+		and KkthnxUIDB.ProfilePortraits[realm][name]
+	then
 		return KkthnxUIDB.ProfilePortraits[realm][name].class
 	end
 
@@ -2419,7 +2451,11 @@ end
 
 -- Get race info from portrait storage
 function ProfileGUI:GetRaceFromPortraitData(name, realm)
-	if KkthnxUIDB.ProfilePortraits and KkthnxUIDB.ProfilePortraits[realm] and KkthnxUIDB.ProfilePortraits[realm][name] then
+	if
+		KkthnxUIDB.ProfilePortraits
+		and KkthnxUIDB.ProfilePortraits[realm]
+		and KkthnxUIDB.ProfilePortraits[realm][name]
+	then
 		return KkthnxUIDB.ProfilePortraits[realm][name].race
 	end
 	return nil
@@ -2427,7 +2463,11 @@ end
 
 -- Get gender info from portrait storage
 function ProfileGUI:GetGenderFromPortraitData(name, realm)
-	if KkthnxUIDB.ProfilePortraits and KkthnxUIDB.ProfilePortraits[realm] and KkthnxUIDB.ProfilePortraits[realm][name] then
+	if
+		KkthnxUIDB.ProfilePortraits
+		and KkthnxUIDB.ProfilePortraits[realm]
+		and KkthnxUIDB.ProfilePortraits[realm][name]
+	then
 		return KkthnxUIDB.ProfilePortraits[realm][name].gender
 	end
 	return nil
@@ -2570,7 +2610,11 @@ function ProfileGUI:GetFactionFromGoldInfo(name, realm)
 	end
 
 	-- Fallback to ProfilePortraits if available
-	if KkthnxUIDB.ProfilePortraits and KkthnxUIDB.ProfilePortraits[realm] and KkthnxUIDB.ProfilePortraits[realm][name] then
+	if
+		KkthnxUIDB.ProfilePortraits
+		and KkthnxUIDB.ProfilePortraits[realm]
+		and KkthnxUIDB.ProfilePortraits[realm][name]
+	then
 		return KkthnxUIDB.ProfilePortraits[realm][name].faction
 	end
 
@@ -2869,7 +2913,9 @@ function ProfileGUI:SwitchToProfile(profileKey)
 		self:UpdateButtonStates()
 
 		-- Ask if user wants to reload UI
-		self:ShowReloadUIDialog("Profile switched successfully. Would you like to reload the UI to ensure all changes take effect?")
+		self:ShowReloadUIDialog(
+			"Profile switched successfully. Would you like to reload the UI to ensure all changes take effect?"
+		)
 		return true
 	else
 		self:ShowStatusMessage(error or "Failed to switch profile", "error")
@@ -2968,7 +3014,11 @@ end
 
 -- Helper function to check if character metadata needs refreshing
 function ProfileGUI:ShouldRefreshCharacterData(name, realm)
-	if not KkthnxUIDB.ProfilePortraits or not KkthnxUIDB.ProfilePortraits[realm] or not KkthnxUIDB.ProfilePortraits[realm][name] then
+	if
+		not KkthnxUIDB.ProfilePortraits
+		or not KkthnxUIDB.ProfilePortraits[realm]
+		or not KkthnxUIDB.ProfilePortraits[realm][name]
+	then
 		return true -- No data exists
 	end
 
@@ -2993,7 +3043,12 @@ function ProfileGUI:ShouldRefreshCharacterData(name, realm)
 		local currentFaction = K.Faction or UnitFactionGroup("player")
 
 		if currentClass and currentRace and currentGender and currentFaction then
-			if data.class ~= currentClass or data.race ~= currentRace or data.gender ~= currentGender or data.faction ~= currentFaction then
+			if
+				data.class ~= currentClass
+				or data.race ~= currentRace
+				or data.gender ~= currentGender
+				or data.faction ~= currentFaction
+			then
 				return true
 			end
 		end

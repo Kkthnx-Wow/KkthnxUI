@@ -75,14 +75,14 @@ local DELVES_KEYS = { 91175, 91176, 91177, 91178 }
 local keyInfo = C_CurrencyInfo_GetCurrencyInfo(3028)
 local keyName = keyInfo and keyInfo.name or ""
 
-local LEGION_ZONE_TIME = { ["EU"] = 1565168400, ["US"] = 1565197200, ["CN"] = 1565226000 }
+local LEGION_ZONE_TIME = { ["EU"] = 1762434000, ["US"] = 1762421400, ["CN"] = 1762450200 }
 local BFA_ZONE_TIME = { ["CN"] = 1546743600, ["EU"] = 1546768800, ["US"] = 1546769340 }
 
 local region = GetCVar("portal")
 local invIndex = {
 	[1] = {
 		title = L["Legion Invasion"],
-		duration = 66600,
+		duration = 52200,
 		maps = { 630, 641, 650, 634 },
 		timeTable = {},
 		baseTime = LEGION_ZONE_TIME[region] or LEGION_ZONE_TIME["CN"],
@@ -132,21 +132,16 @@ local QUEST_LIST = {
 
 local HUNT_AREA_TO_MAPID = { [7342] = 2023, [7343] = 2022, [7344] = 2025, [7345] = 2024 }
 local DELVE_LIST = {
-	{ uiMapID = 2248, delveID = 7787 },
-	{ uiMapID = 2248, delveID = 7781 },
-	{ uiMapID = 2248, delveID = 7779 },
-	{ uiMapID = 2215, delveID = 7789 },
-	{ uiMapID = 2215, delveID = 7785 },
-	{ uiMapID = 2215, delveID = 7783 },
-	{ uiMapID = 2215, delveID = 7780 },
-	{ uiMapID = 2214, delveID = 7782 },
-	{ uiMapID = 2214, delveID = 7788 },
-	{ uiMapID = 2214, delveID = 8181 },
-	{ uiMapID = 2255, delveID = 7790 },
-	{ uiMapID = 2255, delveID = 7784 },
-	{ uiMapID = 2255, delveID = 7786 },
-	{ uiMapID = 2346, delveID = 8246 },
-	{ uiMapID = 2371, delveID = 8273 },
+	{ uiMapID = 2393, delveID = 8426 }, -- 學院災禍
+	{ uiMapID = 2424, delveID = 8428 }, -- 幻日廣場
+	{ uiMapID = 2405, delveID = 8430 }, -- 戮日者聖所
+	{ uiMapID = 2405, delveID = 8432 }, -- 影衛崗哨
+	{ uiMapID = 2413, delveID = 8434 }, -- 怨鬥坑洞
+	{ uiMapID = 2413, delveID = 8436 }, -- 回憶裂口
+	{ uiMapID = 2395, delveID = 8438 }, -- 暗影領區
+	{ uiMapID = 2393, delveID = 8440 }, -- 黑暗之途
+	{ uiMapID = 2437, delveID = 8442 }, -- 暮光墓穴
+	{ uiMapID = 2437, delveID = 8444 }, -- 阿塔阿曼
 }
 
 local STORM_POI_IDS = {
@@ -251,7 +246,7 @@ local function checkTimeWalker(event)
 	if numEvents > 0 then
 		for i = 1, numEvents do
 			local info = C_Calendar_GetDayEvent(0, calDate.monthDay, i)
-			if info and string_find(info.title, _G.PLAYER_DIFFICULTY_TIMEWALKER) and info.sequenceType ~= "END" then
+			if info and K.NotSecretValue(info.title) and string_find(info.title, _G.PLAYER_DIFFICULTY_TIMEWALKER) and info.sequenceType ~= "END" then
 				isTimeWalker = true
 				walkerTexture = info.iconTexture
 				break

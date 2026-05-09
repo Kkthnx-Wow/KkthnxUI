@@ -391,10 +391,30 @@ function Module:ReskinRegions()
 		hooksecurefunc(garrMinimapButton, "UpdateIcon", refreshLandingPageButton)
 
 		local landingMenuList = {
-			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_9_0_Garrison, notCheckable = true },
-			{ text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_8_0_Garrison, notCheckable = true },
-			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_7_0_Garrison, notCheckable = true },
-			{ text = _G.GARRISON_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_6_0_Garrison, notCheckable = true },
+			{
+				text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE,
+				func = toggleLandingPage,
+				arg1 = _G.Enum.GarrisonType.Type_9_0_Garrison,
+				notCheckable = true,
+			},
+			{
+				text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
+				func = toggleLandingPage,
+				arg1 = _G.Enum.GarrisonType.Type_8_0_Garrison,
+				notCheckable = true,
+			},
+			{
+				text = _G.ORDER_HALL_LANDING_PAGE_TITLE,
+				func = toggleLandingPage,
+				arg1 = _G.Enum.GarrisonType.Type_7_0_Garrison,
+				notCheckable = true,
+			},
+			{
+				text = _G.GARRISON_LANDING_PAGE_TITLE,
+				func = toggleLandingPage,
+				arg1 = _G.Enum.GarrisonType.Type_6_0_Garrison,
+				notCheckable = true,
+			},
 		}
 
 		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
@@ -411,7 +431,17 @@ function Module:ReskinRegions()
 
 		garrMinimapButton:HookScript("OnEnter", function(self)
 			if GameTooltip and GameTooltip:IsOwned(self) then
-				GameTooltip:AddLine("\n" .. (L and (L["Right Click to switch Summaries"] or "Right Click to switch Summaries") or "Right Click to switch Summaries"), 1, 1, 1, true)
+				GameTooltip:AddLine(
+					"\n"
+						.. (
+							L and (L["Right Click to switch Summaries"] or "Right Click to switch Summaries")
+							or "Right Click to switch Summaries"
+						),
+					1,
+					1,
+					1,
+					true
+				)
 				GameTooltip:Show()
 			end
 		end)
@@ -473,7 +503,11 @@ function Module:ReskinRegions()
 			queueStatusDisplay.text:ClearAllPoints()
 			queueStatusDisplay.text:SetPoint("CENTER", queueStatusButton, 0, -5)
 			queueStatusDisplay.text:SetFontObject(K.UIFont)
-			queueStatusDisplay.text:SetFont(select(1, queueStatusDisplay.text:GetFont()), 13, select(3, queueStatusDisplay.text:GetFont()))
+			queueStatusDisplay.text:SetFont(
+				select(1, queueStatusDisplay.text:GetFont()),
+				13,
+				select(3, queueStatusDisplay.text:GetFont())
+			)
 
 			if queueStatusDisplay.title then
 				Module:ClearQueueStatus()
@@ -566,7 +600,12 @@ function Module:ReskinRegions()
 	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
 	inviteNotification:Hide()
 
-	K.CreateFontString(inviteNotification, 12, K.InfoColor .. ((L and L["Pending Calendar Invite(s)!"]) or "Pending Calendar Invite(s)!"), "")
+	K.CreateFontString(
+		inviteNotification,
+		12,
+		K.InfoColor .. ((L and L["Pending Calendar Invite(s)!"]) or "Pending Calendar Invite(s)!"),
+		""
+	)
 
 	local function updateInviteVisibility()
 		local invites = C_Calendar_GetNumPendingInvites and C_Calendar_GetNumPendingInvites() or 0
@@ -744,7 +783,13 @@ function Module.Minimap_OnMouseUp(_, btn)
 			if trackingButton.menu then
 				local isRightPosition = anchorPoint and string_find(anchorPoint, "RIGHT")
 				trackingButton.menu:ClearAllPoints()
-				trackingButton.menu:SetPoint(isRightPosition and "TOPRIGHT" or "TOPLEFT", Minimap, isRightPosition and "LEFT" or "RIGHT", isRightPosition and -4 or 4, 0)
+				trackingButton.menu:SetPoint(
+					isRightPosition and "TOPRIGHT" or "TOPLEFT",
+					Minimap,
+					isRightPosition and "LEFT" or "RIGHT",
+					isRightPosition and -4 or 4,
+					0
+				)
 			end
 		end
 	else

@@ -120,7 +120,7 @@ local function DisableDefaultBarEvents() -- credit: Simpy
 
 	hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
 	buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
-	MultiActionBar_ShowAllGrid = K.Noop
+	MultiActionBar_ShowAllGrids = K.Noop
 end
 
 -- ---------------------------------------------------------------------------

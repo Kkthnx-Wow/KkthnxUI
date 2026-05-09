@@ -26,8 +26,6 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local ReloadUI = _G.ReloadUI
 local ResetCPUUsage = _G.ResetCPUUsage
 local SetCVar = _G.SetCVar
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UpdateAddOnCPUUsage = _G.UpdateAddOnCPUUsage
 local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
@@ -89,7 +87,7 @@ end
 
 local function getSmoothColor(cur, max)
 	-- REASON: Returns a color gradient from K.oUF for visual representation of usage levels.
-	return K.oUF:RGBColorGradient(cur, max, unpack(usageColor))
+	return K.RGBColorGradient(cur, max, unpack(usageColor))
 end
 
 local function buildAddonList()

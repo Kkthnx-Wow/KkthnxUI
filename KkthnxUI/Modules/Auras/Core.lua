@@ -40,6 +40,9 @@ local unpack = _G.unpack
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
 local DAY, HOUR, MINUTE = 86400, 3600, 60
 
+local MIN_SPELL_COUNT, MAX_SPELL_COUNT = 2, 999
+local FALLBACK_COLOR = { r = 1, g = 1, b = 1 }
+
 function Module:OnEnable()
 	local loadAuraModules = {
 		"HideBlizBuff",
@@ -97,14 +100,28 @@ function Module:BuildBuffFrame()
 		},
 	}
 
+	Module.DispelColorCurve = C_CurveUtil.CreateColorCurve()
+	Module.DispelColorCurve:SetType(Enum.LuaCurveType.Step)
+	for _, dispelIndex in next, K.oUF.Enum.DispelType do
+		if K.oUF.colors.dispel[dispelIndex] then
+			Module.DispelColorCurve:AddPoint(dispelIndex, K.oUF.colors.dispel[dispelIndex])
+		end
+	end
+
 	-- REASON: Initialize movers for custom positioning.
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
-	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
+	Module.BuffFrame.mover =
+		K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
 	Module.BuffFrame:ClearAllPoints()
 	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
 	Module.DebuffFrame = Module:CreateAuraHeader("HARMFUL")
-	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", { "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 })
+	Module.DebuffFrame.mover = K.Mover(
+		Module.DebuffFrame,
+		"Debuffs",
+		"DebuffAnchor",
+		{ "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 }
+	)
 	Module.DebuffFrame:ClearAllPoints()
 	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
@@ -183,41 +200,58 @@ end
 
 function Module:UpdateAuras(button, index)
 	local unit, filter = button.header:GetAttribute("unit"), button.filter
-	local auraData = C_UnitAuras_GetAuraDataByIndex(unit, index, filter)
+	local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
 	if not auraData then
 		return
 	end
-
-	if auraData.duration > 0 and auraData.expirationTime then
-		Module:StartAuraTimer(button, auraData.expirationTime - _G.GetTime())
+	--[[
+	if auraData.duration and auraData.expirationTime then
+		local timeLeft = auraData.expirationTime - GetTime()
+		if not button.timeLeft then
+			button.nextUpdate = -1
+			button.timeLeft = timeLeft
+			button:SetScript("OnUpdate", Module.UpdateTimer)
+		else
+			button.timeLeft = timeLeft
+		end
+		button.nextUpdate = -1
+		Module.UpdateTimer(button, 0)
 	else
 		button.timeLeft = nil
 		button.timer:SetText("")
-		button:SetScript("OnUpdate", nil)
+	end
+]]
+	local auraDuration = unit and C_UnitAuras.GetAuraDuration(unit, auraData.auraInstanceID)
+	if auraDuration then
+		button.Cooldown:SetCooldownFromDurationObject(auraDuration)
+		button.Cooldown:Show()
+	else
+		button.Cooldown:Hide()
 	end
 
 	local count = auraData.applications
-	if count and count > 1 then
-		button.count:SetText(count)
+	if K.IsSecretValue(count) then
+		button.count:SetText(
+			C_UnitAuras.GetAuraApplicationDisplayCount(unit, auraData.auraInstanceID, MIN_SPELL_COUNT, MAX_SPELL_COUNT)
+		)
 	else
-		button.count:SetText("")
+		local hideCount = not count or (count < MIN_SPELL_COUNT or count > MAX_SPELL_COUNT)
+		button.count:SetText(hideCount and "" or count)
 	end
 
 	if filter == "HARMFUL" then
-		local color = DebuffTypeColor[auraData.dispelName or "none"]
+		local color = C_UnitAuras.GetAuraDispelTypeColor(unit, auraData.auraInstanceID, Module.DispelColorCurve)
+			or FALLBACK_COLOR
 		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	else
-		K.SetBorderColor(button.KKUI_Border)
-	end
-
-	-- Show spell stat for 'Soleahs Secret Technique'
-	if auraData.spellId == 368512 then
-		button.count:SetText(Module:GetSpellStat(unpack(auraData.points)))
+		button.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
 
 	button.spellID = auraData.spellId
 	button.icon:SetTexture(auraData.icon)
 	button.expiration = nil
+	button.timeLeft = nil
+	button.timer:SetText("")
 end
 
 function Module:UpdateTempEnchant(button, index)
@@ -338,7 +372,12 @@ function Module:CreateAuraHeader(filter)
 end
 
 function Module:RemoveSpellFromIgnoreList()
-	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] then
+	if
+		IsAltKeyDown()
+		and IsControlKeyDown()
+		and self.spellID
+		and K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID]
+	then
 		K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] = nil
 		K.Print(string_format(L["RemoveFromIgnoreList"], "", self.spellID))
 	end
@@ -386,12 +425,25 @@ function Module:CreateAuraIcon(button)
 	button.timer:SetFontObject(K.UIFontOutline)
 	button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
+	local cd = CreateFrame("Cooldown", "$parentCooldown", button, "CooldownFrameTemplate")
+	cd:SetReverse(true)
+	--cd:SetEdgeTexture(DB.bgTex)
+	--cd:SetDrawSwipe(C.db["Auras"]["CDAnimation"])
+	cd:SetDrawBling(false)
+	button.Cooldown = cd
+
+	local text = cd:GetRegions()
+	--B.SetFontSize(text, fontSize)
+	text:ClearAllPoints()
+	text:SetPoint("TOP", button, "BOTTOM", 1, 2)
+	button.CooldownText = text
+
 	button:StyleButton()
 	button:CreateBorder()
 
 	-- button:RegisterForClicks("RightButtonUp", "RightButtonDown")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
-	button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
+	-- button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
 	button:SetScript("OnEnter", Module.Button_OnEnter)
 	button:SetScript("OnLeave", K.HideTooltip)
 end

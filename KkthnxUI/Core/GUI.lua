@@ -141,7 +141,15 @@ end
 
 -- Simple reload logic: only settings without hooks need reloads
 local function RequiresReload(configPath, hasHook, forceReload)
-	DebugLog("RequiresReload check for: " .. configPath .. " (hasHook: " .. tostring(hasHook) .. ", forceReload: " .. tostring(forceReload) .. ")")
+	DebugLog(
+		"RequiresReload check for: "
+			.. configPath
+			.. " (hasHook: "
+			.. tostring(hasHook)
+			.. ", forceReload: "
+			.. tostring(forceReload)
+			.. ")"
+	)
 
 	-- If explicitly forced
 	if forceReload then
@@ -277,7 +285,15 @@ local function RegisterUpdateHook(configPath, hookFunction)
 end
 
 local function ExecuteUpdateHooks(configPath, newValue, oldValue)
-	DebugLog("Executing hooks for: " .. configPath .. " (new: " .. tostring(newValue) .. ", old: " .. tostring(oldValue) .. ")")
+	DebugLog(
+		"Executing hooks for: "
+			.. configPath
+			.. " (new: "
+			.. tostring(newValue)
+			.. ", old: "
+			.. tostring(oldValue)
+			.. ")"
+	)
 
 	if GUI.UpdateHooks[configPath] then
 		DebugLog("Found " .. #GUI.UpdateHooks[configPath] .. " hooks for " .. configPath)
@@ -327,7 +343,15 @@ local SetConfigValue
 -- Set configuration value with hook execution and reload tracking
 -- WARNING: Modifies persistent DB directly; ensures hooked functions fire to update UI state.
 function SetConfigValue(configPath, value, requiresReload, settingName)
-	DebugLog("SetConfigValue called: " .. configPath .. " = " .. tostring(value) .. " (requiresReload: " .. tostring(requiresReload) .. ")")
+	DebugLog(
+		"SetConfigValue called: "
+			.. configPath
+			.. " = "
+			.. tostring(value)
+			.. " (requiresReload: "
+			.. tostring(requiresReload)
+			.. ")"
+	)
 
 	-- Get old value for hook comparison
 	local oldValue = K.GetValueByPath(C, configPath)
@@ -362,7 +386,15 @@ function SetConfigValue(configPath, value, requiresReload, settingName)
 
 		-- Check for reload requirement (simple: no hook = needs reload)
 		local hasHook = GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] > 0
-		DebugLog("Hook check for " .. configPath .. ": " .. tostring(hasHook) .. " (hooks count: " .. (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] or 0) .. ")")
+		DebugLog(
+			"Hook check for "
+				.. configPath
+				.. ": "
+				.. tostring(hasHook)
+				.. " (hooks count: "
+				.. (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] or 0)
+				.. ")"
+		)
 
 		if RequiresReload(configPath, hasHook, requiresReload) then
 			DebugLog("Reload required for: " .. configPath)
@@ -444,7 +476,13 @@ local function CreateEnhancedTooltip(widget, title, description, warning)
 
 		-- Add reset to default information
 		GameTooltip:AddLine(" ", 1, 1, 1)
-		GameTooltip:AddLine("|cff00ff00Tip:|r Hold Ctrl to show reset button, then click to reset to default", 0.7, 0.7, 0.7, true)
+		GameTooltip:AddLine(
+			"|cff00ff00Tip:|r Hold Ctrl to show reset button, then click to reset to default",
+			0.7,
+			0.7,
+			0.7,
+			true
+		)
 
 		GameTooltip:Show()
 	end)
@@ -681,7 +719,13 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 		-- Show tooltip
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText("Reset to Default", 1, 1, 1, 1, true)
-		GameTooltip:AddLine("Click to reset this setting to its default value", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+		GameTooltip:AddLine(
+			"Click to reset this setting to its default value",
+			NORMAL_FONT_COLOR.r,
+			NORMAL_FONT_COLOR.g,
+			NORMAL_FONT_COLOR.b,
+			true
+		)
 		GameTooltip:Show()
 	end)
 
@@ -706,7 +750,7 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 			resetButton:Show()
 		end
 	end)
-	
+
 	widget:HookScript("OnLeave", function()
 		C_Timer.After(0.01, function()
 			if resetButton:IsShown() and not widget:IsMouseOver() and not resetButton:IsMouseOver() then
@@ -876,7 +920,18 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 	return widget
 end
 
-local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
+local function CreateSlider(
+	parent,
+	configPath,
+	text,
+	minVal,
+	maxVal,
+	step,
+	tooltip,
+	hookFunction,
+	isNew,
+	requiresReload
+)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
 	widget.ConfigPath = configPath
@@ -2153,7 +2208,11 @@ local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, h
 		-- Also add tooltips to individual checkbox containers for better UX
 		for i, checkbox in ipairs(checkboxes) do
 			local option = options[i] -- Get the corresponding option
-			CreateEnhancedTooltip(checkbox.Container, option.text, "Click to toggle this option.\n\nCurrent selection affects: " .. cleanText)
+			CreateEnhancedTooltip(
+				checkbox.Container,
+				option.text,
+				"Click to toggle this option.\n\nCurrent selection affects: " .. cleanText
+			)
 		end
 	end
 
@@ -2318,7 +2377,11 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 
 	-- Enhanced tooltip functionality
 	if tooltip then
-		CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nEnter to apply, Esc to reset to default, or click the checkmark to apply.")
+		CreateEnhancedTooltip(
+			widget,
+			cleanText,
+			tooltip .. "\n\nEnter to apply, Esc to reset to default, or click the checkmark to apply."
+		)
 	end
 
 	-- Initialize
@@ -2522,7 +2585,10 @@ local function CreateMainFrame()
 
 	-- Perks Theme overlay via reusable helper
 	if K.AttachPerksTheme then
-		GUI.PerksOverlay = K.AttachPerksTheme(frame, { variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 68, strata = "TOOLTIP", level = 999 })
+		GUI.PerksOverlay = K.AttachPerksTheme(
+			frame,
+			{ variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 68, strata = "TOOLTIP", level = 999 }
+		)
 	end
 
 	local _, unitClass = UnitClass("player")
@@ -3052,7 +3118,12 @@ function GUI:ShowCategory(category)
 				cat.Button.Selected:Show()
 				-- Subtle accent background to indicate selection
 				if cat.Button.KKUI_Background then
-					cat.Button.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.2, ACCENT_COLOR[2] * 0.2, ACCENT_COLOR[3] * 0.2, 0.9)
+					cat.Button.KKUI_Background:SetVertexColor(
+						ACCENT_COLOR[1] * 0.2,
+						ACCENT_COLOR[2] * 0.2,
+						ACCENT_COLOR[3] * 0.2,
+						0.9
+					)
 				end
 			else
 				cat.Button.Selected:Hide()
@@ -3161,7 +3232,8 @@ function GUI:CreateSwitch(section, configPath, text, tooltip, hookFunction, isNe
 end
 
 function GUI:CreateSlider(section, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
-	local widget = CreateSlider(UIParent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
+	local widget =
+		CreateSlider(UIParent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
@@ -3192,7 +3264,8 @@ function GUI:CreateTextureDropdown(section, configPath, text, tooltip, hookFunct
 	end
 
 	-- Use regular dropdown widget as fallback
-	local widget = CreateDropdown(UIParent, configPath, text, textureOptions, tooltip, hookFunction, isNew, requiresReload)
+	local widget =
+		CreateDropdown(UIParent, configPath, text, textureOptions, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
@@ -3206,14 +3279,16 @@ function GUI:CreateColorPicker(section, configPath, text, tooltip, hookFunction,
 end
 
 function GUI:CreateCheckboxGroup(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
-	local widget = CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+	local widget =
+		CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
 end
 
 function GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
-	local widget = CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
+	local widget =
+		CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 
@@ -4165,7 +4240,9 @@ local function CreateCredits(parent, creditsData, title)
 	-- Title if provided
 	if title then
 		local titleLabel = widget:CreateFontString(nil, "OVERLAY")
-		titleLabel:SetFontObject(K.UIFontBold or K.UIFont)
+		titleLabel:SetFontObject(K.UIFont)
+		titleLabel:SetShadowColor(0, 0, 0, 1)
+		titleLabel:SetShadowOffset(1, -1)
 		titleLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 		titleLabel:SetText(title)
 		titleLabel:SetPoint("TOPLEFT", 15, yOffset)

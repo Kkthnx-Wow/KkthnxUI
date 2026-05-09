@@ -88,17 +88,63 @@ do
 	end
 
 	K.NUMBER_ABBR_OPTIONS = {
-		[1] = { config = CreateAbbreviateConfig({
-			{ breakpoint = 1e12, abbreviation = "t", significandDivisor = 1e10, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-			{ breakpoint = 1e9, abbreviation = "b", significandDivisor = 1e7, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-			{ breakpoint = 1e6, abbreviation = "m", significandDivisor = 1e4, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-			{ breakpoint = 1e3, abbreviation = "k", significandDivisor = 1e2, fractionDivisor = 1e1, abbreviationIsGlobal = false },
-		}) },
-		[2] = { config = CreateAbbreviateConfig({
-			{ breakpoint = 1e12, abbreviation = L["NumberCap3"], significandDivisor = 1e10, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-			{ breakpoint = 1e8, abbreviation = L["NumberCap2"], significandDivisor = 1e6, fractionDivisor = 1e2, abbreviationIsGlobal = false },
-			{ breakpoint = 1e4, abbreviation = L["NumberCap1"], significandDivisor = 1e3, fractionDivisor = 1e1, abbreviationIsGlobal = false },
-		}) },
+		[1] = {
+			config = CreateAbbreviateConfig({
+				{
+					breakpoint = 1e12,
+					abbreviation = "t",
+					significandDivisor = 1e10,
+					fractionDivisor = 1e2,
+					abbreviationIsGlobal = false,
+				},
+				{
+					breakpoint = 1e9,
+					abbreviation = "b",
+					significandDivisor = 1e7,
+					fractionDivisor = 1e2,
+					abbreviationIsGlobal = false,
+				},
+				{
+					breakpoint = 1e6,
+					abbreviation = "m",
+					significandDivisor = 1e4,
+					fractionDivisor = 1e2,
+					abbreviationIsGlobal = false,
+				},
+				{
+					breakpoint = 1e3,
+					abbreviation = "k",
+					significandDivisor = 1e2,
+					fractionDivisor = 1e1,
+					abbreviationIsGlobal = false,
+				},
+			}),
+		},
+		[2] = {
+			config = CreateAbbreviateConfig({
+				{
+					breakpoint = 1e12,
+					abbreviation = L["NumberCap3"],
+					significandDivisor = 1e10,
+					fractionDivisor = 1e2,
+					abbreviationIsGlobal = false,
+				},
+				{
+					breakpoint = 1e8,
+					abbreviation = L["NumberCap2"],
+					significandDivisor = 1e6,
+					fractionDivisor = 1e2,
+					abbreviationIsGlobal = false,
+				},
+				{
+					breakpoint = 1e4,
+					abbreviation = L["NumberCap1"],
+					significandDivisor = 1e3,
+					fractionDivisor = 1e1,
+					abbreviationIsGlobal = false,
+				},
+			}),
+		},
 	}
 
 	-- Numberize
@@ -203,7 +249,12 @@ do
 		if colorCache[key] then
 			return colorCache[key]
 		end
-		local hex = string_format("|cff%02x%02x%02x", math_floor(r * factor + 0.5), math_floor(g * factor + 0.5), math_floor(b * factor + 0.5))
+		local hex = string_format(
+			"|cff%02x%02x%02x",
+			math_floor(r * factor + 0.5),
+			math_floor(g * factor + 0.5),
+			math_floor(b * factor + 0.5)
+		)
 		colorCache[key] = hex
 		return hex
 	end
@@ -263,7 +314,18 @@ do
 		sizeX = sizeX or 0
 		sizeY = sizeY or 0
 
-		return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, sizeX, sizeY, atlasWidth, atlasHeight, atlasWidth * left, atlasWidth * right, atlasHeight * top, atlasHeight * bottom)
+		return string_format(
+			"|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t",
+			file,
+			sizeX,
+			sizeY,
+			atlasWidth,
+			atlasHeight,
+			atlasWidth * left,
+			atlasWidth * right,
+			atlasHeight * top,
+			atlasHeight * bottom
+		)
 	end
 end
 
@@ -526,7 +588,9 @@ do
 					if info.mode == "IN" then
 						frame:SetAlpha((info.fadeTimer / info.timeToFade) * info.diffAlpha + info.startAlpha)
 					else
-						frame:SetAlpha(((info.timeToFade - info.fadeTimer) / info.timeToFade) * info.diffAlpha + info.endAlpha)
+						frame:SetAlpha(
+							((info.timeToFade - info.fadeTimer) / info.timeToFade) * info.diffAlpha + info.endAlpha
+						)
 					end
 				else
 					frame:SetAlpha(info.endAlpha)
@@ -542,7 +606,13 @@ do
 							if info.finishedArgs then
 								info.finishedFunc(unpack(info.finishedArgs))
 							else
-								info.finishedFunc(info.finishedArg1, info.finishedArg2, info.finishedArg3, info.finishedArg4, info.finishedArg5)
+								info.finishedFunc(
+									info.finishedArg1,
+									info.finishedArg2,
+									info.finishedArg3,
+									info.finishedArg4,
+									info.finishedArg5
+								)
 							end
 
 							if not info.finishedFuncKeep then
@@ -705,7 +775,8 @@ do
 						slotData.gems[num] = lineData.gemIcon
 					elseif lineData.socketType then
 						num = num + 1
-						slotData.gems[num] = format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", lineData.socketType)
+						slotData.gems[num] =
+							format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", lineData.socketType)
 					end
 				end
 			end
@@ -1196,7 +1267,8 @@ do
 
 			local orig, _, tar, x, y = frame:GetPoint()
 			if KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
-				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] or {}
+				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"]
+					or {}
 				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = { orig, "UIParent", tar, x, y }
 			end
 		end)
@@ -1208,8 +1280,14 @@ do
 		end
 
 		local name = self:GetName()
-		if name and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
-			local anchorData = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] and KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]
+		if
+			name
+			and KkthnxUIDB.Variables
+			and KkthnxUIDB.Variables[K.Realm]
+			and KkthnxUIDB.Variables[K.Realm][K.Name]
+		then
+			local anchorData = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"]
+				and KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]
 			if anchorData then
 				self:ClearAllPoints()
 				self:SetPoint(unpack(anchorData))
@@ -1370,7 +1448,15 @@ do
 		local copper = math_floor(value % 100)
 
 		if gold > 0 then
-			return string_format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
+			return string_format(
+				"%s%s %02d%s %02d%s",
+				BreakUpLargeNumbers(gold),
+				goldname,
+				silver,
+				silvername,
+				copper,
+				coppername
+			)
 		elseif silver > 0 then
 			return string_format("%d%s %02d%s", silver, silvername, copper, coppername)
 		else

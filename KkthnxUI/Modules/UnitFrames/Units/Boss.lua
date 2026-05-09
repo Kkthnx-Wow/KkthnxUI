@@ -117,13 +117,19 @@ function Module:CreateBoss()
 		elseif bossPortraitStyle == 5 then
 			Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
 		else
 			Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			Portrait.Border = CreateFrame("Frame", nil, self)

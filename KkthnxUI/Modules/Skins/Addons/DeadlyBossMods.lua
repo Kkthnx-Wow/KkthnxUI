@@ -144,7 +144,8 @@ function Module:ReskinDeadlyBossMods()
 			if string_match(textString, ":(%d+):(%d+)") then
 				local size1, size2 = string_match(textString, ":(%d+):(%d+)")
 				size1, size2 = size1 + 3, size2 + 3
-				textString = string_gsub(textString, ":(%d+):(%d+)", ":" .. size1 .. ":" .. size2 .. ":0:0:64:64:5:59:5:59")
+				textString =
+					string_gsub(textString, ":(%d+):(%d+)", ":" .. size1 .. ":" .. size2 .. ":0:0:64:64:5:59:5:59")
 			elseif string_match(textString, ":(%d+)|t") then
 				local size = string_match(textString, ":(%d+)|t")
 				size = size + 3

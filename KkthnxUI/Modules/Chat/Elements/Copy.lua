@@ -443,7 +443,13 @@ function Module:ChatCopy_Create()
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine(string_format("%s %s", _G.FAST, _G.ROLL))
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(LEFT_BUTTON_STRING .. L["Left Click"], "Roll a random number between 1 and 100", 1, 1, 1)
+		GameTooltip:AddDoubleLine(
+			LEFT_BUTTON_STRING .. L["Left Click"],
+			"Roll a random number between 1 and 100",
+			1,
+			1,
+			1
+		)
 		GameTooltip:AddDoubleLine(RIGHT_BUTTON_STRING .. L["Right Click"], "Guaranteed to roll a perfect 100!", 1, 1, 1)
 		GameTooltip:Show()
 	end)

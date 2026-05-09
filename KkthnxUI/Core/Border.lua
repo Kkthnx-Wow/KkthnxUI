@@ -42,6 +42,13 @@ local function GetTileCount(border, w)
 	end
 
 	local offset = border.__offset or 0
+	if type(w) ~= "number" or (K.NotSecretValue and not K.NotSecretValue(w)) then
+		return 1
+	end
+	if type(offset) ~= "number" or (K.NotSecretValue and not K.NotSecretValue(offset)) then
+		offset = 0
+	end
+
 	return (w + 2 * offset) / size
 end
 
@@ -156,18 +163,8 @@ CreateProxyMethod("Hide")
 CreateProxyMethod("Show")
 CreateProxyMethod("SetShown")
 CreateProxyMethod("SetAlpha")
-
-function Module:SetIgnoreParentAlpha(ignore)
-	local state = ignore and true or false
-	self.TOPLEFT:SetIgnoreParentAlpha(state)
-	self.TOPRIGHT:SetIgnoreParentAlpha(state)
-	self.BOTTOMLEFT:SetIgnoreParentAlpha(state)
-	self.BOTTOMRIGHT:SetIgnoreParentAlpha(state)
-	self.TOP:SetIgnoreParentAlpha(state)
-	self.BOTTOM:SetIgnoreParentAlpha(state)
-	self.LEFT:SetIgnoreParentAlpha(state)
-	self.RIGHT:SetIgnoreParentAlpha(state)
-end
+-- REASON: Consistent with all other proxy methods above; avoids manually repeating the 8-segment pattern.
+CreateProxyMethod("SetIgnoreParentAlpha")
 
 function Module:IsObjectType(t)
 	return t == "Border"

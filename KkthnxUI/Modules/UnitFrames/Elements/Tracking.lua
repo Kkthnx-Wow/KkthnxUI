@@ -63,7 +63,15 @@ do
 			-- Modern retail API (preferred)
 			local info = C_Spell_GetSpellInfo(spell)
 			if info then
-				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = info.name, info.rank, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+				name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID =
+					info.name,
+					info.rank,
+					info.iconID,
+					info.castTime,
+					info.minRange,
+					info.maxRange,
+					info.spellID,
+					info.originalIconID
 			end
 		elseif GetSpellInfo then
 			-- Classic / fallback API
@@ -111,7 +119,11 @@ local function CreateTrackingDialog(category)
 			end
 
 			if db[spellID] then
-				K.Print(trackingTitle .. categoryTitle .. string_format(L["Sorry, %s is already tracked"], COLOR_YELLOW .. name .. COLOR_END))
+				K.Print(
+					trackingTitle
+						.. categoryTitle
+						.. string_format(L["Sorry, %s is already tracked"], COLOR_YELLOW .. name .. COLOR_END)
+				)
 				return
 			end
 
@@ -122,7 +134,11 @@ local function CreateTrackingDialog(category)
 				stackThreshold = 0,
 			}
 
-			K.Print(trackingTitle .. categoryTitle .. string_format(L["You have added %s"], COLOR_YELLOW .. name .. COLOR_END))
+			K.Print(
+				trackingTitle
+					.. categoryTitle
+					.. string_format(L["You have added %s"], COLOR_YELLOW .. name .. COLOR_END)
+			)
 
 			-- Update UI if frame exists
 			local trackingFrame = _G.KKUI_Tracking
@@ -249,7 +265,17 @@ end
 -- @param isDecrease Whether this decreases the ID
 -- @return button frame
 -- REASON: Create navigation button (arrow) for browsing spell list.
-local function CreateNavigationButton(parent, texture, point, relativeFrame, relativePoint, offsetX, offsetY, rotation, isDecrease)
+local function CreateNavigationButton(
+	parent,
+	texture,
+	point,
+	relativeFrame,
+	relativePoint,
+	offsetX,
+	offsetY,
+	rotation,
+	isDecrease
+)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(26, 26)
 	button:SetPoint(point, relativeFrame, relativePoint, offsetX, offsetY)
@@ -282,7 +308,16 @@ end
 -- @param popupName Static popup name
 -- @return category frame
 -- REASON: Helper to create PvE/PvP category sections in the UI.
-local function CreateCategorySection(trackingFrame, category, titleText, buttonText, titlePoint, titleRelative, titleOffsetY, popupName)
+local function CreateCategorySection(
+	trackingFrame,
+	category,
+	titleText,
+	buttonText,
+	titlePoint,
+	titleRelative,
+	titleOffsetY,
+	popupName
+)
 	-- Title
 	local title = trackingFrame:CreateFontString(nil, "OVERLAY")
 	title:SetFontObject(K.UIFont)
@@ -323,7 +358,13 @@ local function CreateCategorySection(trackingFrame, category, titleText, buttonT
 	-- Add button
 	button.Add = CreateFrame("Button", nil, trackingFrame)
 	button.Add:SetSize(trackingFrame:GetWidth() / 2 - 3, 26)
-	button.Add:SetPoint(category == "PvE" and "TOPLEFT" or "TOPRIGHT", trackingFrame, category == "PvE" and "BOTTOMLEFT" or "BOTTOMRIGHT", 0, -6)
+	button.Add:SetPoint(
+		category == "PvE" and "TOPLEFT" or "TOPRIGHT",
+		trackingFrame,
+		category == "PvE" and "BOTTOMLEFT" or "BOTTOMRIGHT",
+		0,
+		-6
+	)
 	button.Add:SkinButton()
 	button.Add:SetScript("OnClick", function()
 		StaticPopup_Show(popupName)
@@ -366,7 +407,16 @@ function Tracking:Setup()
 	self.TitlePVE:SetFont(select(1, self.TitlePVE:GetFont()), 16, select(3, self.TitlePVE:GetFont()))
 	self.TitlePVE:SetPoint("TOP", self, "TOP", 0, -86)
 
-	self.PvE = CreateCategorySection(self, "PvE", L["PvE Debuffs to track"], L["Add a pve debuff to track"], "TOP", self, -86, "KKUI_TRACKING_ADD_PVE")
+	self.PvE = CreateCategorySection(
+		self,
+		"PvE",
+		L["PvE Debuffs to track"],
+		L["Add a pve debuff to track"],
+		"TOP",
+		self,
+		-86,
+		"KKUI_TRACKING_ADD_PVE"
+	)
 
 	-- PvP Section
 	self.TitlePVP = self:CreateFontString(nil, "OVERLAY")
@@ -374,7 +424,16 @@ function Tracking:Setup()
 	self.TitlePVP:SetFont(select(1, self.TitlePVP:GetFont()), 16, select(3, self.TitlePVP:GetFont()))
 	self.TitlePVP:SetPoint("TOP", self.TitlePVE, "TOP", 0, -86)
 
-	self.PvP = CreateCategorySection(self, "PvP", L["PvP Debuffs to track"], L["Add a pvp debuff to track"], "TOP", self.TitlePVE, -86, "KKUI_TRACKING_ADD_PVP")
+	self.PvP = CreateCategorySection(
+		self,
+		"PvP",
+		L["PvP Debuffs to track"],
+		L["Add a pvp debuff to track"],
+		"TOP",
+		self.TitlePVE,
+		-86,
+		"KKUI_TRACKING_ADD_PVP"
+	)
 
 	-- Close button
 	self.Close = CreateFrame("Button", nil, self)

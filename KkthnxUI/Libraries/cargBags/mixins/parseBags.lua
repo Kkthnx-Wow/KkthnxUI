@@ -31,22 +31,24 @@ DESCRIPTION
 local _, ns = ...
 local cargBags = ns.cargBags
 
--- Cache globals for performance
-local string_match = string.match
-local tonumber = tonumber
-local type = type
-
 local bagStrings = {
-	["backpack"] = { 0 },
-	["bags"] = { 1, 2, 3, 4, 5 },
-	["backpack+bags"] = { 0, 1, 2, 3, 4, 5 },
-	["bankframe"] = { -1 },
-	["bankframe+bank"] = { -1, 6, 7, 8, 9, 10, 11, 12 },
-	["bankreagent"] = { -3 },
-	["bank"] = { 6, 7, 8, 9, 10, 11, 12 },
-	["keyring"] = { -2 },
-	["accountbank"] = { 13, 14, 15, 16, 17 },
+	["backpack"]		= { 0 },
+	["bags"]			= { 1, 2, 3, 4, 5 },
+	["backpack+bags"]	= { 0, 1, 2, 3, 4, 5 },
+	["bankframe"]		= { -1 },
+	["bankframe+bank"]	= { -1, 6, 7, 8, 9, 10, 11, 12 },
+	["bankreagent"]		= { -3 },
+	["bank"]			= { 6, 7, 8, 9, 10, 11},
+	["keyring"]			= { -2 },
+	["accountbank"]		= { 12, 13, 14, 15, 16 },
 }
+--[=[
+-1 Character slots
+0-4 Backpack slots
+5 reagent slot
+6-11 Bank slots
+12-16 Account bank slots
+]=]
 cargBags.BagStrings = bagStrings
 
 --[[!
@@ -55,30 +57,20 @@ cargBags.BagStrings = bagStrings
 	@return bags <table>
 ]]
 function cargBags:ParseBags(bags)
-	if not bags then
-		return
-	end
-	if type(bags) == "table" then
-		return bags
-	end
-	if bagStrings[bags] then
-		return bagStrings[bags]
-	end
-	local min, max = string_match(bags, "(%d+)-(%d+)")
-	if min then
+	if not bags then return end
+	if(type(bags) == "table") then return bags end
+	if(bagStrings[bags]) then return bagStrings[bags] end
+	local min, max = bags:match("(%d+)-(%d+)")
+	if(min) then
 		local t = {}
-		local nmin, nmax = tonumber(min), tonumber(max)
-		for i = nmin, nmax do
-			t[#t + 1] = i
+		for i=min, max do
+			t[#t+1] = i
 		end
 		bagStrings[bags] = t
 		return t
-	else
-		local v = tonumber(bags)
-		if v then
-			local t = { v }
-			bagStrings[bags] = t
-			return t
-		end
+	elseif(tonumber(bags)) then
+		local t = {tonumber(bags)}
+		bagStrings[bags] = t
+		return t
 	end
 end

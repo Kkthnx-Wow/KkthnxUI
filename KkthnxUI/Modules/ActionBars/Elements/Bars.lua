@@ -55,14 +55,10 @@ end
 
 -- NOTE: Standardizes font settings across all button text elements.
 function Module:UpdateFontSize(button, fontSize)
-	button.Name:SetFontObject(K.UIFontOutline)
-	button.Name:SetFont(select(1, button.Name:GetFont()), fontSize, select(3, button.Name:GetFont()))
-
-	button.Count:SetFontObject(K.UIFontOutline)
-	button.Count:SetFont(select(1, button.Count:GetFont()), fontSize, select(3, button.Count:GetFont()))
-
-	button.HotKey:SetFontObject(K.UIFontOutline)
-	button.HotKey:SetFont(select(1, button.HotKey:GetFont()), fontSize, select(3, button.HotKey:GetFont()))
+	-- Directly apply the path, new size, and style variables
+	button.Name:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
+	button.Count:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
+	button.HotKey:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
 end
 
 -- REASON: Recalculates button positions and frame bounds based on rows and columns.
@@ -176,7 +172,7 @@ function Module:UpdateButtonConfig(i)
 	self.buttonConfig.actionButtonUI = true
 
 	local hotkey = self.buttonConfig.text.hotkey
-	hotkey.font.font = K.UIFontOutline
+	hotkey.font.font = K.UIFontOutlinePath
 	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	hotkey.font.flags = K.UIFontOutlineStyle
 	hotkey.position.anchor = "TOPRIGHT"
@@ -186,7 +182,7 @@ function Module:UpdateButtonConfig(i)
 	hotkey.justifyH = "RIGHT"
 
 	local count = self.buttonConfig.text.count
-	count.font.font = K.UIFontOutline
+	count.font.font = K.UIFontOutlinePath
 	count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	count.font.flags = K.UIFontOutlineStyle
 	count.position.anchor = "BOTTOMRIGHT"
@@ -196,7 +192,7 @@ function Module:UpdateButtonConfig(i)
 	count.justifyH = "RIGHT"
 
 	local macro = self.buttonConfig.text.macro
-	macro.font.font = K.UIFontOutline
+	macro.font.font = K.UIFontOutlinePath
 	macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	macro.font.flags = K.UIFontOutlineStyle
 	macro.position.anchor = "BOTTOM"
@@ -226,7 +222,8 @@ end
 
 -- NOTE: Defines the state-switching logic for the main bar (Bar 1) to handle
 -- vehicles, stances, and overriding bars.
-local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
+local fullPage =
+	"[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
 	for i = 1, 8 do
@@ -309,10 +306,22 @@ function Module:CreateBars()
 
 	local BAR_DATA = {
 		[1] = { page = 1, bindName = "ACTIONBUTTON", anchor = { "BOTTOM", UIParent, "BOTTOM", 0, 4 } },
-		[2] = { page = 6, bindName = "MULTIACTIONBAR1BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin } },
-		[3] = { page = 5, bindName = "MULTIACTIONBAR2BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin } },
+		[2] = {
+			page = 6,
+			bindName = "MULTIACTIONBAR1BUTTON",
+			anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin },
+		},
+		[3] = {
+			page = 5,
+			bindName = "MULTIACTIONBAR2BUTTON",
+			anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin },
+		},
 		[4] = { page = 3, bindName = "MULTIACTIONBAR3BUTTON", anchor = { "RIGHT", UIParent, "RIGHT", -4, 0 } },
-		[5] = { page = 4, bindName = "MULTIACTIONBAR4BUTTON", anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 } },
+		[5] = {
+			page = 4,
+			bindName = "MULTIACTIONBAR4BUTTON",
+			anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 },
+		},
 		[6] = { page = 13, bindName = "MULTIACTIONBAR5BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 0 } },
 		[7] = { page = 14, bindName = "MULTIACTIONBAR6BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 40 } },
 		[8] = { page = 15, bindName = "MULTIACTIONBAR7BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 80 } },
@@ -357,7 +366,8 @@ function Module:CreateBars()
 		end
 
 		-- REASON: Bars 2-8 are hidden during special bar states (Vehicles, Override) to avoid clutter.
-		frame.visibility = index == 1 and "[petbattle] hide; show" or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
+		frame.visibility = index == 1 and "[petbattle] hide; show"
+			or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 
 		frame:SetAttribute(
 			"_onstate-page",

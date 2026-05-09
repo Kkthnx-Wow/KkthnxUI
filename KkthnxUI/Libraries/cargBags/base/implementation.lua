@@ -1,64 +1,32 @@
 --[[
-    cargBags: An inventory framework addon for World of Warcraft
+	cargBags: An inventory framework addon for World of Warcraft
 
-    Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
+	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
 
-    cargBags is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
+	cargBags is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-    cargBags is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	cargBags is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with cargBags; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with cargBags; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local _, ns = ...
 local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
--- Cache globals for performance
-local error = error
-local getmetatable = getmetatable
-local ipairs = ipairs
-local next = next
-local pairs = pairs
-local setmetatable = setmetatable
-local string_format = string.format
-local string_match = string.match
-local table_insert = table.insert
-local table_wipe = table.wipe
-local tonumber = tonumber
-local type = type
-local unpack = unpack
-
-local C_Bank_CloseBankFrame = C_Bank.CloseBankFrame
-local C_Container_GetContainerItemCooldown = C_Container.GetContainerItemCooldown
-local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
-local C_Container_GetContainerItemQuestInfo = C_Container.GetContainerItemQuestInfo
-local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
-local C_Item_GetItemInfo = C_Item.GetItemInfo
-local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
-local CreateFrame = CreateFrame
-local Enum = Enum
-local InCombatLockdown = InCombatLockdown
-local UIParent = UIParent
-local UISpecialFrames = UISpecialFrames
-
--- [FIX] Cache Bag constants to avoid magic numbers
-local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
-local NUM_BANKBAGSLOTS = NUM_BANKBAGSLOTS or 7
--- Calculate the max bag ID dynamically (usually 4 + 7 = 11 in Retail, plus 5 Account Bank tabs = 17)
-local MAX_BAG_ID = Enum.BagIndex.AccountBankTab_5 or 17
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
 
 --[[!
-    @class Implementation
-        The Implementation-class serves as the basis for your cargBags-instance, handling
-        item-data-fetching and dispatching events for containers and items.
+	@class Implementation
+		The Implementation-class serves as the basis for your cargBags-instance, handling
+		item-data-fetching and dispatching events for containers and items.
 ]]
 local Implementation = cargBags:NewClass("Implementation", nil, "Button")
 Implementation.instances = {}
@@ -66,26 +34,29 @@ Implementation.itemKeys = {}
 
 local toBagSlot = cargBags.ToBagSlot
 local PET_CAGE = 82800
+local MYTHIC_KEYSTONES = {
+	[180653] = true,
+	[187786] = true, -- Timewarped
+}
 
 --[[!
-    Creates a new instance of the class
-    @param name <string>
-    @return impl <Implementation>
+	Creates a new instance of the class
+	@param name <string>
+	@return impl <Implementation>
 ]]
 function Implementation:New(name)
 	if self.instances[name] then
-		return error(string_format("cargBags: Implementation '%s' already exists!", name))
+		return error(("cargBags: Implementation '%s' already exists!"):format(name))
 	end
 	if _G[name] then
-		return error(string_format("cargBags: Global '%s' for Implementation is already used!", name))
+		return error(("cargBags: Global '%s' for Implementation is already used!"):format(name))
 	end
 
-	local impl = setmetatable(CreateFrame("Button", name, UIParent), self.__index)
+	local impl = setmetatable(CreateFrame("Frame", name, UIParent), self.__index)
 	impl.name = name
 
 	impl:SetAllPoints()
-	-- [FIX] Use false instead of nil for API compliance
-	impl:EnableMouse(false)
+	impl:EnableMouse(nil)
 	impl:Hide()
 
 	cargBags.SetScriptHandlers(impl, "OnEvent", "OnShow", "OnHide")
@@ -97,37 +68,7 @@ function Implementation:New(name)
 	impl.events = {} -- @property events <table> Holds all event callbacks
 	impl.notInited = true -- @property notInited <bool>
 
-	table_insert(UISpecialFrames, name)
-
-	-- Throttled bag-update bucket to coalesce frequent events
-	impl._bagQueue = {}
-	impl._updateAll = false
-	impl._bucketDelay = 0.05
-	impl._bucket = CreateFrame("Frame")
-	impl._bucket:Hide()
-	impl._bucket._elapsed = 0
-	impl._bucket:SetScript("OnUpdate", function(frame, elapsed)
-		frame._elapsed = (frame._elapsed or 0) + elapsed
-		if frame._elapsed < (impl._bucketDelay or 0.05) then
-			return
-		end
-		frame._elapsed = 0
-		frame:Hide()
-		-- Process queued updates
-		if impl._updateAll then
-			for i = -3, MAX_BAG_ID do
-				impl:UpdateBag(i)
-			end
-		else
-			for bagID in pairs(impl._bagQueue) do
-				impl:UpdateBag(bagID)
-			end
-		end
-		impl._updateAll = false
-		for k in pairs(impl._bagQueue) do
-			impl._bagQueue[k] = nil
-		end
-	end)
+	tinsert(UISpecialFrames, name)
 
 	self.instances[name] = impl
 
@@ -135,12 +76,16 @@ function Implementation:New(name)
 end
 
 --[[!
-    Script handler, inits and updates the Implementation when shown
-    @callback OnOpen
+	Script handler, inits and updates the Implementation when shown
+	@callback OnOpen
 ]]
 function Implementation:OnShow()
 	if self.notInited then
-		self:Init()
+		if not (InCombatLockdown()) then -- initialization of bags in combat taints the itembuttons within - Lars Norberg
+			self:Init()
+		else
+			return
+		end
 	end
 
 	if self.OnOpen then
@@ -150,8 +95,8 @@ function Implementation:OnShow()
 end
 
 --[[!
-    Script handler, closes the Implementation when hidden
-    @callback OnClose
+	Script handler, closes the Implementation when hidden
+	@callback OnClose
 ]]
 function Implementation:OnHide()
 	if self.notInited then
@@ -162,13 +107,13 @@ function Implementation:OnHide()
 		self:OnClose()
 	end
 	if self:AtBank() then
-		C_Bank_CloseBankFrame()
+		C_Bank.CloseBankFrame()
 	end
 end
 
 --[[!
-    Toggles the implementation
-    @param forceopen <bool> Only open it
+	Toggles the implementation
+	@param forceopen <bool> Only open it
 ]]
 function Implementation:Toggle(forceopen)
 	if not forceopen and self:IsShown() then
@@ -179,34 +124,34 @@ function Implementation:Toggle(forceopen)
 end
 
 --[[!
-    Fetches an implementation by name
-    @param name <string>
-    @return impl <Implementation>
+	Fetches an implementation by name
+	@param name <string>
+	@return impl <Implementation>
 ]]
 function Implementation:Get(name)
 	return self.instances[name]
 end
 
 --[[!
-    Fetches a child-Container by name
-    @param name <string>
-    @return container <Container>
+	Fetches a child-Container by name
+	@param name <string>
+	@return container <Container>
 ]]
 function Implementation:GetContainer(name)
 	return self.contByName[name]
 end
 
 --[[!
-    Fetches a implementation-owned class by relative name
+	Fetches a implementation-owned class by relative name
 
-    The relative class names are prefixed by the name of the implementation
-    e.g. :GetClass("Button") -> ImplementationButton
-    It is just to prevent people from overwriting each others classes
+	The relative class names are prefixed by the name of the implementation
+	e.g. :GetClass("Button") -> ImplementationButton
+	It is just to prevent people from overwriting each others classes
 
-    @param name <string> The relative class name
-    @param create <bool> Creates it, if it doesn't exist
-    @param ... Arguments to pass to cargBags:NewClass(name, ...) when creating
-    @return class <table> The class prototype
+	@param name <string> The relative class name
+	@param create <bool> Creates it, if it doesn't exist
+	@param ... Arguments to pass to cargBags:NewClass(name, ...) when creating
+	@return class <table> The class prototype
 ]]
 function Implementation:GetClass(name, create, ...)
 	if not name then
@@ -225,29 +170,29 @@ function Implementation:GetClass(name, create, ...)
 end
 
 --[[!
-    Wrapper for :GetClass() using a Container
-    @note Container-classes have the full name "ImplementationNameContainer"
-    @param name <string> The relative container class name
-    @return class <table> The class prototype
+	Wrapper for :GetClass() using a Container
+	@note Container-classes have the full name "ImplementationNameContainer"
+	@param name <string> The relative container class name
+	@return class <table> The class prototype
 ]]
 function Implementation:GetContainerClass(name)
 	return self:GetClass((name or "") .. "Container", true, "Container")
 end
 
 --[[!
-    Wrapper for :GetClass() using an ItemButton
-    @note ItemButton-Classes have the full name "ImplementationNameItemButton"
-    @param name <string> The relative itembutton class name
-    @return class <table> The class prototype
+	Wrapper for :GetClass() using an ItemButton
+	@note ItemButton-Classes have the full name "ImplementationNameItemButton"
+	@param name <string> The relative itembutton class name
+	@return class <table> The class prototype
 ]]
 function Implementation:GetItemButtonClass(name)
 	return self:GetClass((name or "") .. "ItemButton", true, "ItemButton")
 end
 
 --[[!
-    Sets the ItemButton class to use for spawning new buttons
-    @param name <string> The relative itembutton class name
-    @return class <table> The newly set class
+	Sets the ItemButton class to use for spawning new buttons
+	@param name <string> The relative itembutton class name
+	@return class <table> The newly set class
 ]]
 function Implementation:SetDefaultItemButtonClass(name)
 	self.buttonClass = self:GetItemButtonClass(name)
@@ -255,8 +200,8 @@ function Implementation:SetDefaultItemButtonClass(name)
 end
 
 --[[!
-    Registers the implementation to overwrite Blizzards Bag-Toggle-Functions
-    @note This function only works before PLAYER_LOGIN and can be overwritten by other Implementations
+	Registers the implementation to overwrite Blizzards Bag-Toggle-Functions
+	@note This function only works before PLAYER_LOGIN and can be overwritten by other Implementations
 ]]
 function Implementation:RegisterBlizzard()
 	cargBags:RegisterBlizzard(self)
@@ -266,11 +211,11 @@ local _registerEvent = UIParent.RegisterEvent
 local _isEventRegistered = UIParent.IsEventRegistered
 
 --[[!
-    Registers an event callback - these are only called if the Implementation is currently shown
-    The events do not have to be 'blizz events' - they can also be internal messages
-    @param event <string> The event to register for
-    @param key Something passed to the callback as arg #1, also serves as identification
-    @param func <function> The function to call on the event
+	Registers an event callback - these are only called if the Implementation is currently shown
+	The events do not have to be 'blizz events' - they can also be internal messages
+	@param event <string> The event to register for
+	@param key Something passed to the callback as arg #1, also serves as identification
+	@param func <function> The function to call on the event
 ]]
 function Implementation:RegisterEvent(event, key, func)
 	local events = self.events
@@ -286,16 +231,16 @@ function Implementation:RegisterEvent(event, key, func)
 end
 
 --[[!
-    Returns whether the Implementation has the specified event callback
-    @param event <string> The event of the callback
-    @param key The identification of the callback [optional]
+	Returns whether the Implementation has the specified event callback
+	@param event <string> The event of the callback
+	@param key The identification of the callback [optional]
 ]]
 function Implementation:IsEventRegistered(event, key)
 	return self.events[event] and (not key or self.events[event][key])
 end
 
 --[[!
-    Script handler, dispatches the events
+	Script handler, dispatches the events
 ]]
 function Implementation:OnEvent(event, ...)
 	if not (self.events[event] and self:IsShown()) then
@@ -308,36 +253,16 @@ function Implementation:OnEvent(event, ...)
 end
 
 --[[!
-    Inits the implementation by registering events
-    @callback OnInit
+	Inits the implementation by registering events
+	@callback OnInit
 ]]
 function Implementation:Init()
 	if not self.notInited then
 		return
 	end
 
-	-- [FIX] Handle Combat Lockout Safely
-	-- If we are in combat, we cannot initialize secure frames.
-	-- Register an event to try again as soon as combat ends.
+	-- initialization of bags in combat taints the itembuttons within - Lars Norberg
 	if InCombatLockdown() then
-		if not self.combatInitReg then
-			self.combatInitReg = true
-			_registerEvent(self, "PLAYER_REGEN_ENABLED")
-			self:SetScript("OnEvent", function(s, event, ...)
-				if event == "PLAYER_REGEN_ENABLED" then
-					s:UnregisterEvent("PLAYER_REGEN_ENABLED")
-					s:SetScript("OnEvent", s.OnEvent) -- Restore original OnEvent handler
-					s.combatInitReg = nil
-					s:Init()
-					-- Force a refresh once inited
-					if s:IsShown() then
-						s:OnShow()
-					end
-				else
-					s:OnEvent(event, ...)
-				end
-			end)
-		end
 		return
 	end
 
@@ -352,39 +277,37 @@ function Implementation:Init()
 	end
 
 	self:RegisterEvent("BAG_UPDATE", self, self.BAG_UPDATE)
-	self:RegisterEvent("BAG_UPDATE_DELAYED", self, self.BAG_UPDATE)
 	self:RegisterEvent("MERCHANT_SHOW", self, self.BAG_UPDATE)
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", self, self.BAG_UPDATE_COOLDOWN)
 	self:RegisterEvent("ITEM_LOCK_CHANGED", self, self.ITEM_LOCK_CHANGED)
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED", self, self.PLAYERBANKSLOTS_CHANGED)
-	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED", self, self.PLAYERREAGENTBANKSLOTS_CHANGED)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self, self.UNIT_QUEST_LOG_CHANGED)
 	self:RegisterEvent("BAG_CLOSED", self, self.BAG_CLOSED)
 end
 
 --[[!
-    Returns whether the user is currently at the bank
-    @return atBank <bool>
+	Returns whether the user is currently at the bank
+	@return atBank <bool>
 ]]
 function Implementation:AtBank()
 	return cargBags.atBank
 end
 
 --[[
-    Fetches a button by bagID-slotID-pair
-    @param bagID <number>
-    @param slotID <number>
-    @return button <ItemButton>
+	Fetches a button by bagID-slotID-pair
+	@param bagID <number>
+	@param slotID <number>
+	@return button <ItemButton>
 ]]
 function Implementation:GetButton(bagID, slotID)
 	return self.buttons[toBagSlot(bagID, slotID)]
 end
 
 --[[!
-    Stores a button by bagID-slotID-pair
-    @param bagID <number>
-    @param slotID <number>
-    @param button <ItemButton> [optional]
+	Stores a button by bagID-slotID-pair
+	@param bagID <number>
+	@param slotID <number>
+	@param button <ItemButton> [optional]
 ]]
 function Implementation:SetButton(bagID, slotID, button)
 	self.buttons[toBagSlot(bagID, slotID)] = button
@@ -393,13 +316,12 @@ end
 local defaultItem = cargBags:NewItemTable()
 
 --[[!
-    Fetches the itemInfo of the item in bagID/slotID into the table
-    @param bagID <number>
-    @param slotID <number>
-    @param i <table> [optional]
-    @return i <table>
+	Fetches the itemInfo of the item in bagID/slotID into the table
+	@param bagID <number>
+	@param slotID <number>
+	@param i <table> [optional]
+	@return i <table>
 ]]
-
 local iLvlClassIDs = {
 	[Enum.ItemClass.Gem] = Enum.ItemGemSubclass.Artifactrelic,
 	[Enum.ItemClass.Armor] = 0,
@@ -412,47 +334,41 @@ end
 
 function Implementation:GetItemInfo(bagID, slotID, i)
 	i = i or defaultItem
-	table_wipe(i)
+	for k in pairs(i) do
+		i[k] = nil
+	end
 
 	i.bagId = bagID
 	i.slotId = slotID
 
-	local info = C_Container_GetContainerItemInfo(bagID, slotID)
+	local K = KkthnxUI and KkthnxUI[1] or nil
+	local info = C_Container.GetContainerItemInfo(bagID, slotID)
 	if info then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice, i.bound = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue, info.isBound
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
 
-		-- i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID) -- Still Broken!
+		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
 
-		i.cdStart, i.cdFinish, i.cdEnable = C_Container_GetContainerItemCooldown(bagID, slotID)
+		i.cdStart, i.cdFinish, i.cdEnable = C_Container.GetContainerItemCooldown(bagID, slotID)
 
-		local questInfo = C_Container_GetContainerItemQuestInfo(bagID, slotID)
-		if questInfo then
-			i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
-		end
+		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
+		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 
-		local name, _, _, _, minLevel, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = C_Item_GetItemInfo(i.link)
-
-		-- Safety: bail if item info not yet available
-		if not name then
-			return i
-		end
-
-		-- Store basic info
-		i.name, i.minLevel, i.type, i.subType, i.equipLoc, i.classID, i.subClassID, i.expacID, i.bindType = name, minLevel, typeText, subTypeText, (equipLoc and _G[equipLoc]) or nil, classID, subClassID, expacID, bindType
+		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, _, i.expacID = C_Item.GetItemInfo(i.link)
+		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
 		if isItemHasLevel(i) then
-			i.ilvl = KkthnxUI and KkthnxUI[1].GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
+			i.ilvl = K and K.GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
 		end
 
 		if i.id == PET_CAGE then
-			local petID, petLevel, petName = string_match(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
+			local petID, petLevel, petName = strmatch(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
 			i.name = petName
 			i.id = tonumber(petID) or 0
 			i.level = tonumber(petLevel) or 0
 			i.classID = Enum.ItemClass.Miscellaneous
 			i.subClassID = Enum.ItemMiscellaneousSubclass.CompanionPet
-		elseif C_Item_IsItemKeystoneByID(i.id) then
-			i.level, i.name = string_match(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
+		elseif MYTHIC_KEYSTONES[i.id] then
+			i.level, i.name = strmatch(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
 			i.level = tonumber(i.level) or 0
 		end
 	end
@@ -461,9 +377,9 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 end
 
 --[[!
-    Updates the defined slot, creating/removing buttons as necessary
-    @param bagID <number>
-    @param slotID <number>
+	Updates the defined slot, creating/removing buttons as necessary
+	@param bagID <number>
+	@param slotID <number>
 ]]
 function Implementation:UpdateSlot(bagID, slotID)
 	local item = self:GetItemInfo(bagID, slotID)
@@ -490,25 +406,25 @@ function Implementation:UpdateSlot(bagID, slotID)
 	end
 end
 
-local isUpdating = false
+local closed
 
 --[[!
-    Updates a bag and its containing slots
-    @param bagID <number>
+	Updates a bag and its containing slots
+	@param bagID <number>
 ]]
 function Implementation:UpdateBag(bagID)
-	-- [FIX] Removed global 'closed' state variable.
-	-- Rely on C_Container.GetContainerNumSlots returning 0 for closed/removed bags.
-	local numSlots = C_Container_GetContainerNumSlots(bagID) or 0
-
+	local numSlots
+	if closed then
+		numSlots, closed = 0
+	else
+		numSlots = GetContainerNumSlots(bagID)
+	end
 	local lastSlots = self.bagSizes[bagID] or 0
 	self.bagSizes[bagID] = numSlots
 
 	for slotID = 1, numSlots do
 		self:UpdateSlot(bagID, slotID)
 	end
-
-	-- Clean up buttons if the bag shrank or was removed
 	for slotID = numSlots + 1, lastSlots do
 		local button = self:GetButton(bagID, slotID)
 		if button then
@@ -520,41 +436,63 @@ function Implementation:UpdateBag(bagID)
 end
 
 --[[!
-    Updates a set of items
-    @param bagID <number> [optional]
-    @param slotID <number> [optional]
-    @callback Container:OnBagUpdate(bagID, slotID)
+	Updates a set of items
+	@param bagID <number> [optional]
+	@param slotID <number> [optional]
+	@callback Container:OnBagUpdate(bagID, slotID)
 ]]
+local isUpdating = false
 
 function Implementation:BAG_UPDATE(_, bagID, slotID)
-	-- Queue update for throttle bucket
-	if not bagID then
-		self._updateAll = true
+	if self.isSorting then
+		return
+	end
+	if isUpdating then
+		return
+	end
+	isUpdating = true
+
+	if bagID and slotID then
+		self:UpdateSlot(bagID, slotID)
+	elseif bagID then
+		self:UpdateBag(bagID)
 	else
-		self._bagQueue[bagID] = true
+		for bagID = 0, 5 do
+			self:UpdateBag(bagID)
+		end
+
+		local bankType = BankFrame.BankPanel.bankType
+
+		if bankType == Enum.BankType.Character then
+			for bagID = 6, 11 do
+				self:UpdateBag(bagID)
+			end
+		elseif bankType == Enum.BankType.Account then
+			for bagID = 12, 16 do
+				self:UpdateBag(bagID)
+			end
+		end
 	end
-	if self._bucket and not self._bucket:IsShown() then
-		self._bucket._elapsed = 0
-		self._bucket:Show()
-	end
+
+	isUpdating = false
 end
 
 --[[!
-    Updates a bag of the implementation (fired when it is removed)
-    @param bagID <number>
+	Updates a bag of the implementation (fired when it is removed)
+	@param bagID <number>
 ]]
 function Implementation:BAG_CLOSED(event, bagID)
-	-- Queue the bag for update; UpdateBag handles 0 slots
+	closed = bagID
 	self:BAG_UPDATE(event, bagID)
 end
 
 --[[!
-    Fired when the item cooldowns need to be updated
-    @param bagID <number> [optional]
+	Fired when the item cooldowns need to be updated
+	@param bagID <number> [optional]
 ]]
 function Implementation:BAG_UPDATE_COOLDOWN(_, bagID)
 	if bagID then
-		for slotID = 1, C_Container_GetContainerNumSlots(bagID) do
+		for slotID = 1, GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
 			if button then
 				local item = self:GetItemInfo(bagID, slotID)
@@ -572,9 +510,9 @@ function Implementation:BAG_UPDATE_COOLDOWN(_, bagID)
 end
 
 --[[!
-    Fired when the item is picked up or released
-    @param bagID <number>
-    @param slotID <number> [optional]
+	Fired when the item is picked up or released
+	@param bagID <number>
+	@param slotID <number> [optional]
 ]]
 function Implementation:ITEM_LOCK_CHANGED(_, bagID, slotID)
 	if self.isSorting then
@@ -592,34 +530,16 @@ function Implementation:ITEM_LOCK_CHANGED(_, bagID, slotID)
 end
 
 --[[!
-    Fired when bank bags or slots need to be updated
-    @param bagID <number>
-    @param slotID <number> [optional]
+	Fired when bank bags or slots need to be updated
+	@param bagID <number>
+	@param slotID <number> [optional]
 ]]
 function Implementation:PLAYERBANKSLOTS_CHANGED(event, bagID, slotID)
-	if bagID <= NUM_BANKGENERIC_SLOTS then
-		slotID = bagID
-		bagID = -1
-	else
-		bagID = bagID - NUM_BANKGENERIC_SLOTS
-	end
-
-	self:BAG_UPDATE(event, bagID, slotID)
-end
-
---[[!
-    Fired when reagent bank slots need to be updated
-    @param bagID <number>
-    @param slotID <number> [optional]
-]]
-function Implementation:PLAYERREAGENTBANKSLOTS_CHANGED(event, slotID)
-	local bagID = -3
-
 	self:BAG_UPDATE(event, bagID, slotID)
 end
 
 --[[
-    Fired when the quest log of a unit changes
+	Fired when the quest log of a unit changes
 ]]
 function Implementation:UNIT_QUEST_LOG_CHANGED()
 	for _, container in pairs(self.contByID) do

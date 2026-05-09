@@ -124,13 +124,19 @@ function Module:CreateTarget()
 		elseif targetPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 		else
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -239,7 +245,14 @@ function Module:CreateTarget()
 		Castbar.CustomTimeText = Module.CustomTimeText
 		Castbar.CustomDelayText = Module.CustomTimeText
 
-		local mover = K.Mover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 }, Castbar:GetHeight() + Castbar:GetWidth() + 6, Castbar:GetHeight())
+		local mover = K.Mover(
+			Castbar,
+			"Target Castbar",
+			"TargetCB",
+			{ "BOTTOM", UIParent, "BOTTOM", 0, 342 },
+			Castbar:GetHeight() + Castbar:GetWidth() + 6,
+			Castbar:GetHeight()
+		)
 		Castbar:ClearAllPoints()
 		Castbar:SetPoint("RIGHT", mover)
 		Castbar.mover = mover

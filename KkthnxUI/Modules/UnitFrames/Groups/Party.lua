@@ -121,13 +121,19 @@ function Module:CreateParty()
 		elseif partyPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			self.Portrait:CreateBorder()
 		else
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -345,7 +351,11 @@ function Module:CreateParty()
 	self.StatusIndicator = self.Power:CreateFontString(nil, "OVERLAY")
 	self.StatusIndicator:SetPoint("CENTER", 0, 0.5)
 	self.StatusIndicator:SetFontObject(K.UIFont)
-	self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
+	self.StatusIndicator:SetFont(
+		select(1, self.StatusIndicator:GetFont()),
+		10,
+		select(3, self.StatusIndicator:GetFont())
+	)
 	self:Tag(self.StatusIndicator, "[afkdnd]")
 
 	-- REASON: Target Highlight

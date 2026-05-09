@@ -168,13 +168,13 @@ K.SystemColor = "|CFFFFCC66"
 
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 
-K.UIFont = "KkthnxUIFont"
-K.UIFontSize = select(2, _G.KkthnxUIFont:GetFont())
-K.UIFontStyle = select(3, _G.KkthnxUIFont:GetFont())
+-- Store Font objects directly to preserve shadow and other properties
+K.UIFont = _G.KkthnxUIFont
+K.UIFontOutline = _G.KkthnxUIFontOutline
 
-K.UIFontOutline = "KkthnxUIFontOutline"
-K.UIFontOutlineSize = select(2, _G.KkthnxUIFontOutline:GetFont())
-K.UIFontOutlineStyle = select(3, _G.KkthnxUIFontOutline:GetFont())
+-- Extract the file paths, sizes, and styles for manual SetFont calls if needed
+K.UIFontPath, K.UIFontSize, K.UIFontStyle = K.UIFont:GetFont()
+K.UIFontOutlinePath, K.UIFontOutlineSize, K.UIFontOutlineStyle = K.UIFontOutline:GetFont()
 
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "

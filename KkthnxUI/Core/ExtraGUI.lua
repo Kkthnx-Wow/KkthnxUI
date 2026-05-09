@@ -66,7 +66,12 @@ local function OnCogwheelClicked(self)
 
 	-- REASON: Toggle the panel off if the same config is clicked again.
 	local ExtraGUI = K.ExtraGUI
-	if ExtraGUI and ExtraGUI.IsVisible and ExtraGUI.CurrentConfig and ExtraGUI.CurrentConfig.configPath == configPath then
+	if
+		ExtraGUI
+		and ExtraGUI.IsVisible
+		and ExtraGUI.CurrentConfig
+		and ExtraGUI.CurrentConfig.configPath == configPath
+	then
 		-- Same config is open, close it (toggle off)
 		ExtraGUI:Hide()
 	elseif ExtraGUI then
@@ -94,7 +99,8 @@ local function OnCogwheelEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(L["Extra Configuration"] or "Extra Configuration", 1, 1, 1, 1, true)
 	local optionTitle = self.optionTitle or self.configPath or ""
-	local tipMsg = format(L["Click to open additional options for %s"] or "Click to open additional options for %s", optionTitle)
+	local tipMsg =
+		format(L["Click to open additional options for %s"] or "Click to open additional options for %s", optionTitle)
 	GameTooltip:AddLine(tipMsg, 0.7, 0.7, 0.7, true)
 	GameTooltip:Show()
 end
@@ -303,7 +309,13 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 		-- Show tooltip
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(L["Reset to Default"] or "Reset to Default", 1, 1, 1, 1, true)
-		GameTooltip:AddLine(L["Click to reset this setting to its default value"] or "Click to reset this setting to its default value", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+		GameTooltip:AddLine(
+			L["Click to reset this setting to its default value"] or "Click to reset this setting to its default value",
+			NORMAL_FONT_COLOR.r,
+			NORMAL_FONT_COLOR.g,
+			NORMAL_FONT_COLOR.b,
+			true
+		)
 		GameTooltip:Show()
 	end)
 
@@ -328,7 +340,7 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 			resetButton:Show()
 		end
 	end)
-	
+
 	widget:HookScript("OnLeave", function()
 		C_Timer.After(0.01, function()
 			if resetButton:IsShown() and not widget:IsMouseOver() and not resetButton:IsMouseOver() then
@@ -1261,7 +1273,11 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 
 	-- Tooltip support with mousewheel hint
 	if tooltip and K and K.GUIHelpers and K.GUIHelpers.CreateEnhancedTooltip then
-		K.GUIHelpers.CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nTip: Use mouse wheel for fine adjustment!")
+		K.GUIHelpers.CreateEnhancedTooltip(
+			widget,
+			cleanText,
+			tooltip .. "\n\nTip: Use mouse wheel for fine adjustment!"
+		)
 	end
 
 	-- Initialize
@@ -1521,8 +1537,6 @@ local function UpdateActionBar8Scale()
 	K:GetModule("ActionBar"):UpdateActionSize("Bar8")
 end
 
-
-
 -- ---------------------------------------------------------------------------
 -- MODULE HOOKS: INVENTORY
 -- ---------------------------------------------------------------------------
@@ -1545,19 +1559,55 @@ function ExtraGUI:RegisterExampleConfigs()
 		-- NOTE: Individual bar configurations allow for granular control over size, layout, and appearance.
 		local yOffset = -10
 
-		local bar1SizeSlider = self:CreateSlider(parent, "ActionBar.Bar1Size", L["Button Size"], 20, 80, 1, L["Bar1Size Desc"], UpdateActionBar1Scale)
+		local bar1SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar1Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar1Size Desc"],
+			UpdateActionBar1Scale
+		)
 		bar1SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar1PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar1PerRow", L["Button PerRow"], 1, 12, 1, L["Bar1PerRow Desc"], UpdateActionBar1Scale)
+		local bar1PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar1PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar1PerRow Desc"],
+			UpdateActionBar1Scale
+		)
 		bar1PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar1NumSlider = self:CreateSlider(parent, "ActionBar.Bar1Num", L["Button Num"], 1, 12, 1, L["Bar1Num Desc"], UpdateActionBar1Scale)
+		local bar1NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar1Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar1Num Desc"],
+			UpdateActionBar1Scale
+		)
 		bar1NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar1FontSlider = self:CreateSlider(parent, "ActionBar.Bar1Font", L["Button FontSize"], 8, 20, 1, L["Bar1Font Desc"], UpdateActionBar1Scale)
+		local bar1FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar1Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar1Font Desc"],
+			UpdateActionBar1Scale
+		)
 		bar1FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1568,19 +1618,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar2", function(parent)
 		local yOffset = -10
 
-		local bar2SizeSlider = self:CreateSlider(parent, "ActionBar.Bar2Size", L["Button Size"], 20, 80, 1, L["Bar2Size Desc"], UpdateActionBar2Scale)
+		local bar2SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar2Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar2Size Desc"],
+			UpdateActionBar2Scale
+		)
 		bar2SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar2PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar2PerRow", L["Button PerRow"], 1, 12, 1, L["Bar2PerRow Desc"], UpdateActionBar2Scale)
+		local bar2PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar2PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar2PerRow Desc"],
+			UpdateActionBar2Scale
+		)
 		bar2PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar2NumSlider = self:CreateSlider(parent, "ActionBar.Bar2Num", L["Button Num"], 1, 12, 1, L["Bar2Num Desc"], UpdateActionBar2Scale)
+		local bar2NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar2Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar2Num Desc"],
+			UpdateActionBar2Scale
+		)
 		bar2NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar2FontSlider = self:CreateSlider(parent, "ActionBar.Bar2Font", L["Button FontSize"], 8, 20, 1, L["Bar2Font Desc"], UpdateActionBar2Scale)
+		local bar2FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar2Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar2Font Desc"],
+			UpdateActionBar2Scale
+		)
 		bar2FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1591,19 +1677,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar3", function(parent)
 		local yOffset = -10
 
-		local bar3SizeSlider = self:CreateSlider(parent, "ActionBar.Bar3Size", L["Button Size"], 20, 80, 1, L["Bar3Size Desc"], UpdateActionBar3Scale)
+		local bar3SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar3Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar3Size Desc"],
+			UpdateActionBar3Scale
+		)
 		bar3SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar3PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar3PerRow", L["Button PerRow"], 1, 12, 1, L["Bar3PerRow Desc"], UpdateActionBar3Scale)
+		local bar3PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar3PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar3PerRow Desc"],
+			UpdateActionBar3Scale
+		)
 		bar3PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar3NumSlider = self:CreateSlider(parent, "ActionBar.Bar3Num", L["Button Num"], 1, 12, 1, L["Bar3Num Desc"], UpdateActionBar3Scale)
+		local bar3NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar3Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar3Num Desc"],
+			UpdateActionBar3Scale
+		)
 		bar3NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar3FontSlider = self:CreateSlider(parent, "ActionBar.Bar3Font", L["Button FontSize"], 8, 20, 1, L["Bar3Font Desc"], UpdateActionBar3Scale)
+		local bar3FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar3Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar3Font Desc"],
+			UpdateActionBar3Scale
+		)
 		bar3FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1613,19 +1735,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar4", function(parent)
 		local yOffset = -10
 
-		local bar4SizeSlider = self:CreateSlider(parent, "ActionBar.Bar4Size", L["Button Size"], 20, 80, 1, L["Bar4Size Desc"], UpdateActionBar4Scale)
+		local bar4SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar4Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar4Size Desc"],
+			UpdateActionBar4Scale
+		)
 		bar4SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar4PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar4PerRow", L["Button PerRow"], 1, 12, 1, L["Bar4PerRow Desc"], UpdateActionBar4Scale)
+		local bar4PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar4PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar4PerRow Desc"],
+			UpdateActionBar4Scale
+		)
 		bar4PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar4NumSlider = self:CreateSlider(parent, "ActionBar.Bar4Num", L["Button Num"], 1, 12, 1, L["Bar4Num Desc"], UpdateActionBar4Scale)
+		local bar4NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar4Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar4Num Desc"],
+			UpdateActionBar4Scale
+		)
 		bar4NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar4FontSlider = self:CreateSlider(parent, "ActionBar.Bar4Font", L["Button FontSize"], 8, 20, 1, L["Bar4Font Desc"], UpdateActionBar4Scale)
+		local bar4FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar4Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar4Font Desc"],
+			UpdateActionBar4Scale
+		)
 		bar4FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1636,19 +1794,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar5", function(parent)
 		local yOffset = -10
 
-		local bar5SizeSlider = self:CreateSlider(parent, "ActionBar.Bar5Size", L["Button Size"], 20, 80, 1, L["Bar5Size Desc"], UpdateActionBar5Scale)
+		local bar5SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar5Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar5Size Desc"],
+			UpdateActionBar5Scale
+		)
 		bar5SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar5PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar5PerRow", L["Button PerRow"], 1, 12, 1, L["Bar5PerRow Desc"], UpdateActionBar5Scale)
+		local bar5PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar5PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar5PerRow Desc"],
+			UpdateActionBar5Scale
+		)
 		bar5PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar5NumSlider = self:CreateSlider(parent, "ActionBar.Bar5Num", L["Button Num"], 1, 12, 1, L["Bar5Num Desc"], UpdateActionBar5Scale)
+		local bar5NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar5Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar5Num Desc"],
+			UpdateActionBar5Scale
+		)
 		bar5NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar5FontSlider = self:CreateSlider(parent, "ActionBar.Bar5Font", L["Button FontSize"], 8, 20, 1, L["Bar5Font Desc"], UpdateActionBar5Scale)
+		local bar5FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar5Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar5Font Desc"],
+			UpdateActionBar5Scale
+		)
 		bar5FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1659,19 +1853,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar6", function(parent)
 		local yOffset = -10
 
-		local bar6SizeSlider = self:CreateSlider(parent, "ActionBar.Bar6Size", L["Button Size"], 20, 80, 1, L["Bar6Size Desc"], UpdateActionBar6Scale)
+		local bar6SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar6Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar6Size Desc"],
+			UpdateActionBar6Scale
+		)
 		bar6SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar6PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar6PerRow", L["Button PerRow"], 1, 12, 1, L["Bar6PerRow Desc"], UpdateActionBar6Scale)
+		local bar6PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar6PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar6PerRow Desc"],
+			UpdateActionBar6Scale
+		)
 		bar6PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar6NumSlider = self:CreateSlider(parent, "ActionBar.Bar6Num", L["Button Num"], 1, 12, 1, L["Bar6Num Desc"], UpdateActionBar6Scale)
+		local bar6NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar6Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar6Num Desc"],
+			UpdateActionBar6Scale
+		)
 		bar6NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar6FontSlider = self:CreateSlider(parent, "ActionBar.Bar6Font", L["Button FontSize"], 8, 20, 1, L["Bar6Font Desc"], UpdateActionBar6Scale)
+		local bar6FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar6Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar6Font Desc"],
+			UpdateActionBar6Scale
+		)
 		bar6FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1682,19 +1912,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar7", function(parent)
 		local yOffset = -10
 
-		local bar7SizeSlider = self:CreateSlider(parent, "ActionBar.Bar7Size", L["Button Size"], 20, 80, 1, L["Bar7Size Desc"], UpdateActionBar7Scale)
+		local bar7SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar7Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar7Size Desc"],
+			UpdateActionBar7Scale
+		)
 		bar7SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar7PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar7PerRow", L["Button PerRow"], 1, 12, 1, L["Bar7PerRow Desc"], UpdateActionBar7Scale)
+		local bar7PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar7PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar7PerRow Desc"],
+			UpdateActionBar7Scale
+		)
 		bar7PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar7NumSlider = self:CreateSlider(parent, "ActionBar.Bar7Num", L["Button Num"], 1, 12, 1, L["Bar7Num Desc"], UpdateActionBar7Scale)
+		local bar7NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar7Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar7Num Desc"],
+			UpdateActionBar7Scale
+		)
 		bar7NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar7FontSlider = self:CreateSlider(parent, "ActionBar.Bar7Font", L["Button FontSize"], 8, 20, 1, L["Bar7Font Desc"], UpdateActionBar7Scale)
+		local bar7FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar7Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar7Font Desc"],
+			UpdateActionBar7Scale
+		)
 		bar7FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1705,19 +1971,55 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("ActionBar.Bar8", function(parent)
 		local yOffset = -10
 
-		local bar8SizeSlider = self:CreateSlider(parent, "ActionBar.Bar8Size", L["Button Size"], 20, 80, 1, L["Bar8Size Desc"], UpdateActionBar8Scale)
+		local bar8SizeSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar8Size",
+			L["Button Size"],
+			20,
+			80,
+			1,
+			L["Bar8Size Desc"],
+			UpdateActionBar8Scale
+		)
 		bar8SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar8PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar8PerRow", L["Button PerRow"], 1, 12, 1, L["Bar8PerRow Desc"], UpdateActionBar8Scale)
+		local bar8PerRowSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar8PerRow",
+			L["Button PerRow"],
+			1,
+			12,
+			1,
+			L["Bar8PerRow Desc"],
+			UpdateActionBar8Scale
+		)
 		bar8PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar8NumSlider = self:CreateSlider(parent, "ActionBar.Bar8Num", L["Button Num"], 1, 12, 1, L["Bar8Num Desc"], UpdateActionBar8Scale)
+		local bar8NumSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar8Num",
+			L["Button Num"],
+			1,
+			12,
+			1,
+			L["Bar8Num Desc"],
+			UpdateActionBar8Scale
+		)
 		bar8NumSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local bar8FontSlider = self:CreateSlider(parent, "ActionBar.Bar8Font", L["Button FontSize"], 8, 20, 1, L["Bar8Font Desc"], UpdateActionBar8Scale)
+		local bar8FontSlider = self:CreateSlider(
+			parent,
+			"ActionBar.Bar8Font",
+			L["Button FontSize"],
+			8,
+			20,
+			1,
+			L["Bar8Font Desc"],
+			UpdateActionBar8Scale
+		)
 		bar8FontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1738,22 +2040,33 @@ function ExtraGUI:RegisterExampleConfigs()
 		yOffset = yOffset - 35
 
 		-- Chat Fade Time Slider
-		local fadeTimeSlider = self:CreateSlider(parent, "Chat.FadeTime", "Fade Time", 5, 120, 5, "Time in seconds before chat messages fade")
+		local fadeTimeSlider = self:CreateSlider(
+			parent,
+			"Chat.FadeTime",
+			"Fade Time",
+			5,
+			120,
+			5,
+			"Time in seconds before chat messages fade"
+		)
 		fadeTimeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Short Channel Names Switch
-		local shortNamesSwitch = self:CreateSwitch(parent, "Chat.ShortChannelNames", "Short Channel Names", "Use abbreviated channel names")
+		local shortNamesSwitch =
+			self:CreateSwitch(parent, "Chat.ShortChannelNames", "Short Channel Names", "Use abbreviated channel names")
 		shortNamesSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Link Hover Switch
-		local linkHoverSwitch = self:CreateSwitch(parent, "Chat.LinkHover", "Link Hover Tooltips", "Show tooltips when hovering over links")
+		local linkHoverSwitch =
+			self:CreateSwitch(parent, "Chat.LinkHover", "Link Hover Tooltips", "Show tooltips when hovering over links")
 		linkHoverSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Chat Background Color Picker
-		local bgColorPicker = self:CreateColorPicker(parent, "Chat.BackgroundColor", "Background Color", "Chat frame background color")
+		local bgColorPicker =
+			self:CreateColorPicker(parent, "Chat.BackgroundColor", "Background Color", "Chat frame background color")
 		bgColorPicker:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1775,82 +2088,178 @@ function ExtraGUI:RegisterExampleConfigs()
 		local yOffset = -10
 
 		-- Filter Warband BOE Switch
-		local warbandSwitch = self:CreateSwitch(parent, "Inventory.FilterAOE", "Filter Warband BOE", "Filter Warband bind-on-equip items", UpdateBagStatus)
+		local warbandSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterAOE",
+			"Filter Warband BOE",
+			"Filter Warband bind-on-equip items",
+			UpdateBagStatus
+		)
 		warbandSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Anima Items Switch
-		local animaSwitch = self:CreateSwitch(parent, "Inventory.FilterAnima", "Filter Anima Items", "Filter anima items into separate category", UpdateBagStatus)
+		local animaSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterAnima",
+			"Filter Anima Items",
+			"Filter anima items into separate category",
+			UpdateBagStatus
+		)
 		animaSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Azerite Items Switch
-		local azeriteSwitch = self:CreateSwitch(parent, "Inventory.FilterAzerite", "Filter Azerite Items", "Filter azerite items into separate category", UpdateBagStatus)
+		local azeriteSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterAzerite",
+			"Filter Azerite Items",
+			"Filter azerite items into separate category",
+			UpdateBagStatus
+		)
 		azeriteSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Collection Items Switch
-		local collectionSwitch = self:CreateSwitch(parent, "Inventory.FilterCollection", "Filter Collection Items", "Filter collection items (pets, mounts, toys)", UpdateBagStatus)
+		local collectionSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterCollection",
+			"Filter Collection Items",
+			"Filter collection items (pets, mounts, toys)",
+			UpdateBagStatus
+		)
 		collectionSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Consumables Switch
-		local consumableSwitch = self:CreateSwitch(parent, "Inventory.FilterConsumable", "Filter Consumables", "Filter consumable items (food, potions, etc.)", UpdateBagStatus)
+		local consumableSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterConsumable",
+			"Filter Consumables",
+			"Filter consumable items (food, potions, etc.)",
+			UpdateBagStatus
+		)
 		consumableSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Equipment Switch
-		local equipmentSwitch = self:CreateSwitch(parent, "Inventory.FilterEquipment", "Filter Equipment", "Filter equipment items", UpdateBagStatus)
+		local equipmentSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterEquipment",
+			"Filter Equipment",
+			"Filter equipment items",
+			UpdateBagStatus
+		)
 		equipmentSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Trade Goods Switch
-		local goodsSwitch = self:CreateSwitch(parent, "Inventory.FilterGoods", "Filter Trade Goods", "Filter trade goods and crafting materials", UpdateBagStatus)
+		local goodsSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterGoods",
+			"Filter Trade Goods",
+			"Filter trade goods and crafting materials",
+			UpdateBagStatus
+		)
 		goodsSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Junk Items Switch
-		local junkSwitch = self:CreateSwitch(parent, "Inventory.FilterJunk", "Filter Junk Items", "Filter junk items for easy selling", UpdateBagStatus)
+		local junkSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterJunk",
+			"Filter Junk Items",
+			"Filter junk items for easy selling",
+			UpdateBagStatus
+		)
 		junkSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Quest Items Switch
-		local questSwitch = self:CreateSwitch(parent, "Inventory.FilterQuest", "Filter Quest Items", "Filter quest items into separate category", UpdateBagStatus)
+		local questSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterQuest",
+			"Filter Quest Items",
+			"Filter quest items into separate category",
+			UpdateBagStatus
+		)
 		questSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Custom Items Switch
-		local customSwitch = self:CreateSwitch(parent, "Inventory.FilterCustom", "Filter Custom Items", "Filter custom defined items", UpdateBagStatus)
+		local customSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterCustom",
+			"Filter Custom Items",
+			"Filter custom defined items",
+			UpdateBagStatus
+		)
 		customSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Legendary Items Switch
-		local legendarySwitch = self:CreateSwitch(parent, "Inventory.FilterLegendary", "Filter Legendary Items", "Filter legendary items", UpdateBagStatus)
+		local legendarySwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterLegendary",
+			"Filter Legendary Items",
+			"Filter legendary items",
+			UpdateBagStatus
+		)
 		legendarySwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Lower Item Level Switch
-		local lowerSwitch = self:CreateSwitch(parent, "Inventory.FilterLower", "Filter Lower Item Level", "Filter items with lower item level", UpdateBagStatus)
+		local lowerSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterLower",
+			"Filter Lower Item Level",
+			"Filter items with lower item level",
+			UpdateBagStatus
+		)
 		lowerSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Legacy Items Switch
-		local legacySwitch = self:CreateSwitch(parent, "Inventory.FilterLegacy", "Filter Legacy Items", "Filter legacy items", UpdateBagStatus)
+		local legacySwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterLegacy",
+			"Filter Legacy Items",
+			"Filter legacy items",
+			UpdateBagStatus
+		)
 		legacySwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Primordial Stones Switch
-		local stoneSwitch = self:CreateSwitch(parent, "Inventory.FilterStone", "Filter Primordial Stones", "Filter primordial stones", UpdateBagStatus)
+		local stoneSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterStone",
+			"Filter Primordial Stones",
+			"Filter primordial stones",
+			UpdateBagStatus
+		)
 		stoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Keystone Items Switch
-		local keystoneSwitch = self:CreateSwitch(parent, "Inventory.FilterKeystone", "Filter Keystone Items", "Filter Mythic Keystone items", UpdateBagStatus)
+		local keystoneSwitch = self:CreateSwitch(
+			parent,
+			"Inventory.FilterKeystone",
+			"Filter Keystone Items",
+			"Filter Mythic Keystone items",
+			UpdateBagStatus
+		)
 		keystoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Gather Empty Slots Switch (this stays in extra config)
-		local gatherEmptySwitch = self:CreateSwitch(parent, "Inventory.GatherEmpty", "Gather Empty Slots", "Gather empty slots into one button", UpdateBagStatus)
+		local gatherEmptySwitch = self:CreateSwitch(
+			parent,
+			"Inventory.GatherEmpty",
+			"Gather Empty Slots",
+			"Gather empty slots into one button",
+			UpdateBagStatus
+		)
 		gatherEmptySwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -1921,12 +2330,20 @@ function ExtraGUI:RegisterExampleConfigs()
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
 		desc:SetWidth(contentWidth - 20)
-		desc:SetText(L["MuteSoundIDsDesc"] or "Add SoundKit IDs to mute. KkthnxUI already mutes a built-in set; this list only adds your extra IDs.")
+		desc:SetText(
+			L["MuteSoundIDsDesc"]
+				or "Add SoundKit IDs to mute. KkthnxUI already mutes a built-in set; this list only adds your extra IDs."
+		)
 		desc:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 45
 
 		-- Add ID input
-		local addInput = self:CreateTextInput(parent, nil, (L["Add Sound ID"] or "Add Sound ID"), (L["Enter a numeric SoundKit ID to add"] or "Enter a numeric SoundKit ID to add"))
+		local addInput = self:CreateTextInput(
+			parent,
+			nil,
+			(L["Add Sound ID"] or "Add Sound ID"),
+			(L["Enter a numeric SoundKit ID to add"] or "Enter a numeric SoundKit ID to add")
+		)
 		addInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2151,12 +2568,21 @@ function ExtraGUI:RegisterExampleConfigs()
 		desc:SetFontObject(K.UIFont)
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
-		desc:SetText(L["Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here."] or "Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here.")
+		desc:SetText(
+			L["Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here."]
+				or "Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here."
+		)
 		desc:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
 		-- Add ID input
-		local addInput = self:CreateTextInput(parent, nil, (L["Add NPC ID"] or "Add NPC ID"), format(L["e.g. %s"] or "e.g. %s", "174773"), (L["Enter an NPC ID to add"] or "Enter an NPC ID to add"))
+		local addInput = self:CreateTextInput(
+			parent,
+			nil,
+			(L["Add NPC ID"] or "Add NPC ID"),
+			format(L["e.g. %s"] or "e.g. %s", "174773"),
+			(L["Enter an NPC ID to add"] or "Enter an NPC ID to add")
+		)
 		addInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2348,7 +2774,14 @@ function ExtraGUI:RegisterExampleConfigs()
 				row.NameFS = nameFS
 				local function setNameText(nm)
 					if row.NameFS then
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", entry.id, entry.source == "default" and "  [Default]" or ""))
+						row.NameFS:SetText(
+							string.format(
+								"%s (ID: %d)%s",
+								nm or "Unknown",
+								entry.id,
+								entry.source == "default" and "  [Default]" or ""
+							)
+						)
 					end
 				end
 				local creatureName = GetNPCNameByID(entry.id, setNameText)
@@ -2448,7 +2881,14 @@ function ExtraGUI:RegisterExampleConfigs()
 				end
 				if row.NameFS then
 					local function setText(nm)
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, (C.NameplateCustomUnits and C.NameplateCustomUnits[row.NpcID]) and "  [Default]" or ""))
+						row.NameFS:SetText(
+							string.format(
+								"%s (ID: %d)%s",
+								nm or "Unknown",
+								row.NpcID,
+								(C.NameplateCustomUnits and C.NameplateCustomUnits[row.NpcID]) and "  [Default]" or ""
+							)
+						)
 					end
 					local nm = GetNPCNameByID(row.NpcID, setText)
 					setText(nm)
@@ -2480,11 +2920,20 @@ function ExtraGUI:RegisterExampleConfigs()
 		desc:SetFontObject(K.UIFont)
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
-		desc:SetText(L["Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here."] or "Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here.")
+		desc:SetText(
+			L["Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here."]
+				or "Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here."
+		)
 		desc:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
-		local addInput = self:CreateTextInput(parent, nil, (L["Add NPC ID"] or "Add NPC ID"), format(L["e.g. %s"] or "e.g. %s", "114247"), (L["Enter an NPC ID to add"] or "Enter an NPC ID to add"))
+		local addInput = self:CreateTextInput(
+			parent,
+			nil,
+			(L["Add NPC ID"] or "Add NPC ID"),
+			format(L["e.g. %s"] or "e.g. %s", "114247"),
+			(L["Enter an NPC ID to add"] or "Enter an NPC ID to add")
+		)
 		addInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2651,7 +3100,14 @@ function ExtraGUI:RegisterExampleConfigs()
 				row.NameFS = nameFS
 				local function setNameText(nm)
 					if row.NameFS then
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", entry.id, entry.source == "default" and "  [Default]" or ""))
+						row.NameFS:SetText(
+							string.format(
+								"%s (ID: %d)%s",
+								nm or "Unknown",
+								entry.id,
+								entry.source == "default" and "  [Default]" or ""
+							)
+						)
 					end
 				end
 				local creatureName = GetNPCNameByID(entry.id, setNameText)
@@ -2745,7 +3201,15 @@ function ExtraGUI:RegisterExampleConfigs()
 				end
 				if row.NameFS then
 					local function setText(nm)
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, (C.NameplateShowPowerList and C.NameplateShowPowerList[row.NpcID]) and "  [Default]" or ""))
+						row.NameFS:SetText(
+							string.format(
+								"%s (ID: %d)%s",
+								nm or "Unknown",
+								row.NpcID,
+								(C.NameplateShowPowerList and C.NameplateShowPowerList[row.NpcID]) and "  [Default]"
+									or ""
+							)
+						)
 					end
 					local nm = GetNPCNameByID(row.NpcID, setText)
 					setText(nm)
@@ -2803,13 +3267,20 @@ function ExtraGUI:RegisterExampleConfigs()
 		yOffset = yOffset - 40
 
 		-- Category Dropdown
-		categoryDropdown = self:CreateDropdown(parent, nil, (L["Select Category"] or "Select Category"), categories, (L["Choose which aura list to manage"] or "Choose which aura list to manage"), function(newValue, oldValue, configPath)
-			-- Handle category change
-			currentCategory = newValue
-			if RefreshAuraList then
-				RefreshAuraList()
+		categoryDropdown = self:CreateDropdown(
+			parent,
+			nil,
+			(L["Select Category"] or "Select Category"),
+			categories,
+			(L["Choose which aura list to manage"] or "Choose which aura list to manage"),
+			function(newValue, oldValue, configPath)
+				-- Handle category change
+				currentCategory = newValue
+				if RefreshAuraList then
+					RefreshAuraList()
+				end
 			end
-		end)
+		)
 		categoryDropdown:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 45
 
@@ -2821,7 +3292,13 @@ function ExtraGUI:RegisterExampleConfigs()
 		searchLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 20
 
-		searchInput = self:CreateTextInput(parent, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Filter displayed auras"] or "Filter displayed auras"))
+		searchInput = self:CreateTextInput(
+			parent,
+			nil,
+			"",
+			(L["Enter Spell ID"] or "Enter Spell ID"),
+			(L["Filter displayed auras"] or "Filter displayed auras")
+		)
 		searchInput:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2839,7 +3316,16 @@ function ExtraGUI:RegisterExampleConfigs()
 		addContainer:SetPoint("TOPLEFT", 0, yOffset)
 
 		-- Create smaller text input to make room for button
-		addSpellInput = self:CreateTextInput(addContainer, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Add a new spell to the current category"] or "Add a new spell to the current category"), nil, false, contentWidth - 110)
+		addSpellInput = self:CreateTextInput(
+			addContainer,
+			nil,
+			"",
+			(L["Enter Spell ID"] or "Enter Spell ID"),
+			(L["Add a new spell to the current category"] or "Add a new spell to the current category"),
+			nil,
+			false,
+			contentWidth - 110
+		)
 		addSpellInput:SetPoint("TOPLEFT", 0, 0)
 
 		-- Create the add button positioned to the right of the input
@@ -2887,7 +3373,11 @@ function ExtraGUI:RegisterExampleConfigs()
 				-- Play success sound
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 			else
-				print("|cffff0000" .. (L["Invalid Spell ID. Please enter a valid number."] or "Invalid Spell ID. Please enter a valid number.") .. "|r")
+				print(
+					"|cffff0000"
+						.. (L["Invalid Spell ID. Please enter a valid number."] or "Invalid Spell ID. Please enter a valid number.")
+						.. "|r"
+				)
 			end
 		end
 
@@ -2964,7 +3454,8 @@ function ExtraGUI:RegisterExampleConfigs()
 					local spellName = spellInfo and spellInfo.name or nil
 					local spellIdStr = tostring(spellId)
 
-					shouldShow = spellIdStr:find(searchText, 1, true) or (spellName and spellName:lower():find(searchText, 1, true))
+					shouldShow = spellIdStr:find(searchText, 1, true)
+						or (spellName and spellName:lower():find(searchText, 1, true))
 				end
 
 				if shouldShow then
@@ -3075,7 +3566,13 @@ function ExtraGUI:RegisterExampleConfigs()
 				removeBg:SetVertexColor(1, 0.2, 0.2, 1)
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 				GameTooltip:SetText(L["Remove Aura"] or "Remove Aura", 1, 1, 1, 1, true)
-				GameTooltip:AddLine(L["Click to remove this aura from the list"] or "Click to remove this aura from the list", 0.7, 0.7, 0.7, true)
+				GameTooltip:AddLine(
+					L["Click to remove this aura from the list"] or "Click to remove this aura from the list",
+					0.7,
+					0.7,
+					0.7,
+					true
+				)
 				GameTooltip:Show()
 			end)
 
@@ -3122,7 +3619,9 @@ function ExtraGUI:RegisterExampleConfigs()
 		local instructionText = parent:CreateFontString(nil, "OVERLAY")
 		instructionText:SetFontObject(K.UIFont)
 		instructionText:SetTextColor(0.7, 0.7, 0.7, 1)
-		instructionText:SetText("• Use /dump spellID to get spell IDs in-game\n• Whitelist: Auras that will always show\n• Blacklist: Auras that will always hide\n• Changes take effect immediately")
+		instructionText:SetText(
+			"• Use /dump spellID to get spell IDs in-game\n• Whitelist: Auras that will always show\n• Blacklist: Auras that will always hide\n• Changes take effect immediately"
+		)
 		instructionText:SetPoint("TOPLEFT", 10, yOffset)
 		instructionText:SetWidth(contentWidth - 20)
 		instructionText:SetJustifyH("LEFT")
@@ -3140,7 +3639,12 @@ function ExtraGUI:RegisterExampleConfigs()
 		local yOffset = -10
 
 		-- Hide at Max Level Switch
-		local hideMaxLevelSwitch = self:CreateSwitch(parent, "Unitframe.HideMaxPlayerLevel", L["Hide Player Level At Max Level"], L["Automatically hide the player level text when you reach maximum level (80)"])
+		local hideMaxLevelSwitch = self:CreateSwitch(
+			parent,
+			"Unitframe.HideMaxPlayerLevel",
+			L["Hide Player Level At Max Level"],
+			L["Automatically hide the player level text when you reach maximum level (80)"]
+		)
 		hideMaxLevelSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3162,27 +3666,54 @@ function ExtraGUI:RegisterExampleConfigs()
 		end
 
 		-- Enable Simple Party (main toggle)
-		local enableSimpleSwitch = self:CreateSwitch(parent, "SimpleParty.Enable", L["Enable Simple Party (Raid-Style)"] or "Enable Simple Party (Raid-Style)", L["Use compact raid-style party frames instead of traditional party frames (requires reload)"] or "Use compact raid-style party frames instead of traditional party frames (requires reload)")
+		local enableSimpleSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.Enable",
+			L["Enable Simple Party (Raid-Style)"] or "Enable Simple Party (Raid-Style)",
+			L["Use compact raid-style party frames instead of traditional party frames (requires reload)"]
+				or "Use compact raid-style party frames instead of traditional party frames (requires reload)"
+		)
 		enableSimpleSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Show Heal Prediction
-		local healPredictionSwitch = self:CreateSwitch(parent, "SimpleParty.ShowHealPrediction", L["Show HealPrediction Statusbars"], L["Show incoming heal predictions on party frames"] or "Show incoming heal predictions on party frames")
+		local healPredictionSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.ShowHealPrediction",
+			L["Show HealPrediction Statusbars"],
+			L["Show incoming heal predictions on party frames"] or "Show incoming heal predictions on party frames"
+		)
 		healPredictionSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Smooth Bar Transition
-		local smoothSwitch = self:CreateSwitch(parent, "SimpleParty.Smooth", L["Smooth Bar Transition"], L["Enable smooth animations for party frame bars"] or "Enable smooth animations for party frame bars")
+		local smoothSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.Smooth",
+			L["Smooth Bar Transition"],
+			L["Enable smooth animations for party frame bars"] or "Enable smooth animations for party frame bars"
+		)
 		smoothSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Target Highlight
-		local targetHighlightSwitch = self:CreateSwitch(parent, "SimpleParty.TargetHighlight", L["Show Highlighted Target"], L["Highlight the targeted party member"] or "Highlight the targeted party member")
+		local targetHighlightSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.TargetHighlight",
+			L["Show Highlighted Target"],
+			L["Highlight the targeted party member"] or "Highlight the targeted party member"
+		)
 		targetHighlightSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Horizontal Layout
-		local horizonSwitch = self:CreateSwitch(parent, "SimpleParty.HorizonParty", L["Horizontal Party Frames"] or "Horizontal Party Frames", L["Arrange party frames horizontally instead of vertically (requires reload)"] or "Arrange party frames horizontally instead of vertically (requires reload)")
+		local horizonSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.HorizonParty",
+			L["Horizontal Party Frames"] or "Horizontal Party Frames",
+			L["Arrange party frames horizontally instead of vertically (requires reload)"]
+				or "Arrange party frames horizontally instead of vertically (requires reload)"
+		)
 		horizonSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3202,11 +3733,23 @@ function ExtraGUI:RegisterExampleConfigs()
 			end
 		end
 
-		local powerBarSwitch = self:CreateSwitch(parent, "SimpleParty.PowerBarShow", L["Show All Power Bars"] or "Show All Power Bars", L["Show power bars on all party frames"] or "Show power bars on all party frames", UpdatePowerBarVisibility)
+		local powerBarSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.PowerBarShow",
+			L["Show All Power Bars"] or "Show All Power Bars",
+			L["Show power bars on all party frames"] or "Show power bars on all party frames",
+			UpdatePowerBarVisibility
+		)
 		powerBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local manaBarSwitch = self:CreateSwitch(parent, "SimpleParty.ManabarShow", L["Show Manabars"], L["Display mana bars on party frames"] or "Display mana bars on party frames", UpdatePowerBarVisibility)
+		local manaBarSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.ManabarShow",
+			L["Show Manabars"],
+			L["Display mana bars on party frames"] or "Display mana bars on party frames",
+			UpdatePowerBarVisibility
+		)
 		manaBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3217,12 +3760,32 @@ function ExtraGUI:RegisterExampleConfigs()
 		yOffset = yOffset - 40
 
 		-- Health Height Slider
-		local heightSlider = self:CreateSlider(parent, "SimpleParty.HealthHeight", L["Frame Height"] or "Frame Height", 20, 100, 1, L["Height of simple party member frames (requires reload)"] or "Height of simple party member frames (requires reload)", UpdateUnitSimplePartySize)
+		local heightSlider = self:CreateSlider(
+			parent,
+			"SimpleParty.HealthHeight",
+			L["Frame Height"] or "Frame Height",
+			20,
+			100,
+			1,
+			L["Height of simple party member frames (requires reload)"]
+				or "Height of simple party member frames (requires reload)",
+			UpdateUnitSimplePartySize
+		)
 		heightSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Health Width Slider
-		local widthSlider = self:CreateSlider(parent, "SimpleParty.HealthWidth", L["Frame Width"] or "Frame Width", 20, 100, 1, L["Width of simple party member frames (requires reload)"] or "Width of simple party member frames (requires reload)", UpdateUnitSimplePartySize)
+		local widthSlider = self:CreateSlider(
+			parent,
+			"SimpleParty.HealthWidth",
+			L["Frame Width"] or "Frame Width",
+			20,
+			100,
+			1,
+			L["Width of simple party member frames (requires reload)"]
+				or "Width of simple party member frames (requires reload)",
+			UpdateUnitSimplePartySize
+		)
 		widthSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3248,7 +3811,16 @@ function ExtraGUI:RegisterExampleConfigs()
 			end
 		end
 
-		local powerHeightSlider = self:CreateSlider(parent, "SimpleParty.PowerBarHeight", L["Power Bar Height"] or "Power Bar Height", 2, 15, 1, L["Height of power bars on simple party frames"] or "Height of power bars on simple party frames", UpdatePowerBarHeight)
+		local powerHeightSlider = self:CreateSlider(
+			parent,
+			"SimpleParty.PowerBarHeight",
+			L["Power Bar Height"] or "Power Bar Height",
+			2,
+			15,
+			1,
+			L["Height of power bars on simple party frames"] or "Height of power bars on simple party frames",
+			UpdatePowerBarHeight
+		)
 		powerHeightSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3264,7 +3836,14 @@ function ExtraGUI:RegisterExampleConfigs()
 			{ text = "Dark", value = 2 },
 			{ text = "Value", value = 3 },
 		}
-		local colorDropdown = self:CreateDropdown(parent, "SimpleParty.HealthbarColor", L["Health Color Format"] or "Health Color Format", healthColorOptions, L["Choose how health bars are colored on simple party frames"] or "Choose how health bars are colored on simple party frames")
+		local colorDropdown = self:CreateDropdown(
+			parent,
+			"SimpleParty.HealthbarColor",
+			L["Health Color Format"] or "Health Color Format",
+			healthColorOptions,
+			L["Choose how health bars are colored on simple party frames"]
+				or "Choose how health bars are colored on simple party frames"
+		)
 		colorDropdown:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3275,7 +3854,12 @@ function ExtraGUI:RegisterExampleConfigs()
 		yOffset = yOffset - 40
 
 		-- Raid Buffs Enable
-		local raidBuffsEnable = self:CreateSwitch(parent, "SimpleParty.RaidBuffs", L["Enable Raid Buffs"] or "Enable Raid Buffs", L["Show raid buffs on simple party frames"] or "Show raid buffs on simple party frames")
+		local raidBuffsEnable = self:CreateSwitch(
+			parent,
+			"SimpleParty.RaidBuffs",
+			L["Enable Raid Buffs"] or "Enable Raid Buffs",
+			L["Show raid buffs on simple party frames"] or "Show raid buffs on simple party frames"
+		)
 		raidBuffsEnable:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3285,23 +3869,53 @@ function ExtraGUI:RegisterExampleConfigs()
 			{ text = L["Standard"] or "Standard", value = 1 },
 			{ text = L["Aura Track"] or "Aura Track", value = 2 },
 		}
-		local buffsDropdown = self:CreateDropdown(parent, "SimpleParty.RaidBuffsStyle", L["Raid Buffs Style"] or "Raid Buffs Style", raidBuffsOptions, L["Choose how raid buffs are displayed on simple party frames"] or "Choose how raid buffs are displayed on simple party frames")
+		local buffsDropdown = self:CreateDropdown(
+			parent,
+			"SimpleParty.RaidBuffsStyle",
+			L["Raid Buffs Style"] or "Raid Buffs Style",
+			raidBuffsOptions,
+			L["Choose how raid buffs are displayed on simple party frames"]
+				or "Choose how raid buffs are displayed on simple party frames"
+		)
 		buffsDropdown:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Aura Track specific options
-		local auraHeader = CreateSectionHeader(parent, L["Aura Track Options"] or "Aura Track Options", EXTRA_PANEL_WIDTH - 40, yOffset)
+		local auraHeader = CreateSectionHeader(
+			parent,
+			L["Aura Track Options"] or "Aura Track Options",
+			EXTRA_PANEL_WIDTH - 40,
+			yOffset
+		)
 		yOffset = yOffset - 40
 
-		local auraIconsSwitch = self:CreateSwitch(parent, "SimpleParty.AuraTrackIcons", L["Show Aura Icons"] or "Show Aura Icons", L["Display icons for tracked auras"] or "Display icons for tracked auras")
+		local auraIconsSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.AuraTrackIcons",
+			L["Show Aura Icons"] or "Show Aura Icons",
+			L["Display icons for tracked auras"] or "Display icons for tracked auras"
+		)
 		auraIconsSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local auraTexturesSwitch = self:CreateSwitch(parent, "SimpleParty.AuraTrackSpellTextures", L["Use Spell Textures"] or "Use Spell Textures", L["Use spell textures instead of generic icons"] or "Use spell textures instead of generic icons")
+		local auraTexturesSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.AuraTrackSpellTextures",
+			L["Use Spell Textures"] or "Use Spell Textures",
+			L["Use spell textures instead of generic icons"] or "Use spell textures instead of generic icons"
+		)
 		auraTexturesSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local auraThicknessSlider = self:CreateSlider(parent, "SimpleParty.AuraTrackThickness", L["Aura Track Thickness"] or "Aura Track Thickness", 1, 10, 1, L["Line thickness for aura track indicators"] or "Line thickness for aura track indicators")
+		local auraThicknessSlider = self:CreateSlider(
+			parent,
+			"SimpleParty.AuraTrackThickness",
+			L["Aura Track Thickness"] or "Aura Track Thickness",
+			1,
+			10,
+			1,
+			L["Line thickness for aura track indicators"] or "Line thickness for aura track indicators"
+		)
 		auraThicknessSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3320,14 +3934,25 @@ function ExtraGUI:RegisterExampleConfigs()
 		end)
 
 		-- Debuff Watch options
-		local debuffHeader = CreateSectionHeader(parent, L["Debuff Watch"] or "Debuff Watch", EXTRA_PANEL_WIDTH - 40, yOffset)
+		local debuffHeader =
+			CreateSectionHeader(parent, L["Debuff Watch"] or "Debuff Watch", EXTRA_PANEL_WIDTH - 40, yOffset)
 		yOffset = yOffset - 40
 
-		local debuffWatchSwitch = self:CreateSwitch(parent, "SimpleParty.DebuffWatch", L["Enable Debuff Watch"] or "Enable Debuff Watch", L["Show debuff indicators on simple party frames"] or "Show debuff indicators on simple party frames")
+		local debuffWatchSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.DebuffWatch",
+			L["Enable Debuff Watch"] or "Enable Debuff Watch",
+			L["Show debuff indicators on simple party frames"] or "Show debuff indicators on simple party frames"
+		)
 		debuffWatchSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local debuffWatchDefaultSwitch = self:CreateSwitch(parent, "SimpleParty.DebuffWatchDefault", L["Use Default Debuff List"] or "Use Default Debuff List", L["Use the default debuff list for tracking"] or "Use the default debuff list for tracking")
+		local debuffWatchDefaultSwitch = self:CreateSwitch(
+			parent,
+			"SimpleParty.DebuffWatchDefault",
+			L["Use Default Debuff List"] or "Use Default Debuff List",
+			L["Use the default debuff list for tracking"] or "Use the default debuff list for tracking"
+		)
 		debuffWatchDefaultSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -3355,7 +3980,9 @@ function ExtraGUI:RegisterExampleConfigs()
 		desc:SetFontObject(K.UIFont)
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
-		desc:SetText("Add NPC IDs to ignore for auto questing. Defaults are built-in; this list is per-character. Hold ALT and click NPC name in quest/gossip to toggle quickly.")
+		desc:SetText(
+			"Add NPC IDs to ignore for auto questing. Defaults are built-in; this list is per-character. Hold ALT and click NPC name in quest/gossip to toggle quickly."
+		)
 		desc:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
 
@@ -3395,7 +4022,8 @@ function ExtraGUI:RegisterExampleConfigs()
 		local function getStore()
 			KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
 			KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC or {}
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC
+				or {}
 			return KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC
 		end
 
@@ -3580,7 +4208,14 @@ function ExtraGUI:RegisterExampleConfigs()
 				end
 				if row.NpcID and row.NameFS then
 					local function setText(nm)
-						local tag = (C and C.AutoQuestData and C.AutoQuestData.IgnoreQuestNPC and C.AutoQuestData.IgnoreQuestNPC[row.NpcID]) and "  [Default]" or ""
+						local tag = (
+							C
+							and C.AutoQuestData
+							and C.AutoQuestData.IgnoreQuestNPC
+							and C.AutoQuestData.IgnoreQuestNPC[row.NpcID]
+						)
+								and "  [Default]"
+							or ""
 						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, tag))
 					end
 					local nm = GetNPCNameByID and GetNPCNameByID(row.NpcID, setText)

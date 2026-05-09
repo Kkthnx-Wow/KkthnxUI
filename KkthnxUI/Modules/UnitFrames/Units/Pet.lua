@@ -109,7 +109,10 @@ function Module:CreatePet()
 		elseif petPortraitStyle == 5 then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			self.Portrait:CreateBorder()
 
@@ -119,7 +122,10 @@ function Module:CreatePet()
 		elseif petPortraitStyle ~= 5 and petPortraitStyle ~= 4 then
 			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetSize(
+				self.Health:GetHeight() + self.Power:GetHeight() + 6,
+				self.Health:GetHeight() + self.Power:GetHeight() + 6
+			)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)

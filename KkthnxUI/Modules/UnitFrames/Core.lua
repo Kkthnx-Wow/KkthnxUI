@@ -39,6 +39,8 @@ local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsPlayer = UnitIsPlayer
 local UnitThreatSituation = UnitThreatSituation
 
+local FALLBACK_COLOR = { r = 1, g = 1, b = 1 }
+
 -- Custom variables
 local lastPvPSound = false
 local phaseIconTexCoords = {
@@ -333,8 +335,20 @@ function Module:UpdateThreat(_, unit)
 
 	-- REASON: Guard oUF threat table access.
 	if status and status > 1 and oUF and oUF.colors and oUF.colors.threat and oUF.colors.threat[status] then
-		local r, g, b = unpack(oUF.colors.threat[status])
-		borderObject:SetVertexColor(r, g, b)
+		local threatColor = oUF.colors.threat[status]
+		local r, g, b
+
+		if type(threatColor.GetRGB) == "function" then
+			r, g, b = threatColor:GetRGB()
+		else
+			r, g, b = unpack(threatColor)
+		end
+
+		if r and g and b then
+			borderObject:SetVertexColor(r, g, b)
+		else
+			K.SetBorderColor(borderObject)
+		end
 	else
 		K.SetBorderColor(borderObject)
 	end
@@ -626,7 +640,8 @@ function Module.PostCreateButton(element, button)
 
 	-- REASON: Some templates may not have Overlay; avoid nil errors.
 	if button.Overlay then
-		button.Overlay:SetTexture(nil)
+		button.Overlay:Hide()
+		button.Overlay = nil -- needs review
 	end
 
 	-- STEALABLE INDICATOR (OPTIONAL)
@@ -636,15 +651,24 @@ function Module.PostCreateButton(element, button)
 		button.Stealable:Hide() -- REASON: Prevent "sticky" display between reused buttons.
 	end
 
-	-- CLICK HOOK (OPTIONAL SAFETY)
-	-- REASON: AuraModule might not exist in every load order; avoid hard errors.
-	if AuraModule and AuraModule.RemoveSpellFromIgnoreList then
-		button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
-	end
+	-- -- CLICK HOOK (OPTIONAL SAFETY)
+	-- -- REASON: AuraModule might not exist in every load order; avoid hard errors.
+	-- if AuraModule and AuraModule.RemoveSpellFromIgnoreList then
+	-- 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
+	-- end
 
-	-- TIMER TEXT (DURATION)
-	if not button.timer then
+	-- -- TIMER TEXT (DURATION)
+	-- if not button.timer then
+	-- 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
+	-- end
+
+	if element.__owner.mystyle == "nameplate" then
+		hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
+		button.timer:ClearAllPoints()
+		button.timer:SetPoint("LEFT", button, "TOPLEFT", -2, 0)
+		button.Count:ClearAllPoints()
+		button.Count:SetPoint("RIGHT", button, "BOTTOMRIGHT", 5, 0)
 	end
 
 	-- REASON: Keep texcoords correct when size changes.
@@ -672,10 +696,6 @@ local dispellType = {
 
 -- REASON: Main post-update logic for aura buttons (Colors, Stealable, Icons).
 function Module.PostUpdateButton(element, button, unit, data)
-	local duration = data.duration
-	local expiration = data.expirationTime
-	local debuffType = data.dispelName
-
 	local owner = element.__owner
 	local style = owner and owner.mystyle
 
@@ -686,7 +706,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 	-- DESATURATION RULES (HARMFUL + FILTEREDSTYLE)
 	-- REASON: filteredStyle must exist in your file; guard so missing table doesn't hard error.
 	if button.Icon then
-		if button.isHarmful and filteredStyle and filteredStyle[style] and not data.isPlayerAura then
+		if element.desaturateDebuff and data.isHarmfulAura and filteredStyle[style] and not data.isPlayerAura then
 			button.Icon:SetDesaturated(true)
 		else
 			button.Icon:SetDesaturated(false)
@@ -695,20 +715,17 @@ function Module.PostUpdateButton(element, button, unit, data)
 
 	-- BORDER COLORING (DEBUFF TYPE)
 	-- REASON: oUF nameplate buttons may use Shadow border; unitframes use KKUI_Border.
-	if button.isHarmful then
-		local color
-		if oUF and oUF.colors and oUF.colors.debuff then
-			color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
-		end
+	if data.isHarmfulAura then
+		local color = C_UnitAuras.GetAuraDispelTypeColor(unit, data.auraInstanceID, element.dispelColorCurve) or FALLBACK_COLOR
 
 		if color then
 			if style == "nameplate" then
 				if button.Shadow and button.Shadow.SetBackdropBorderColor then
-					button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
+					button.Shadow:SetBackdropBorderColor(color.r, color.g, color.b, 0.8)
 				end
 			else
 				if button.KKUI_Border and button.KKUI_Border.SetVertexColor then
-					button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
+					button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 				end
 			end
 		end
@@ -727,34 +744,34 @@ function Module.PostUpdateButton(element, button, unit, data)
 	-- STEALABLE INDICATOR
 	-- REASON: Must explicitly hide when not applicable or it can "stick" on reused buttons.
 	if button.Stealable then
-		if dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
+		if (not data.isHarmfulAura) and type(data.dispelName) ~= "nil" and (not UnitIsPlayer(unit)) then
 			button.Stealable:Show()
 		else
 			button.Stealable:Hide()
 		end
 	end
 
-	-- COOLDOWN/TIMER
-	if duration and duration > 0 then
-		button.expiration = expiration
-		button:SetScript("OnUpdate", K.CooldownOnUpdate)
-		if button.timer then
-			button.timer:Show()
-		end
-	else
-		button:SetScript("OnUpdate", nil)
-		if button.timer then
-			button.timer:Hide()
-		end
-	end
+	-- -- COOLDOWN/TIMER
+	-- if duration and duration > 0 then
+	-- 	button.expiration = expiration
+	-- 	button:SetScript("OnUpdate", K.CooldownOnUpdate)
+	-- 	if button.timer then
+	-- 		button.timer:Show()
+	-- 	end
+	-- else
+	-- 	button:SetScript("OnUpdate", nil)
+	-- 	if button.timer then
+	-- 		button.timer:Hide()
+	-- 	end
+	-- end
 
-	-- REPLACE ICON TEXTURE (IF DEFINED)
-	-- REASON: ReplacedIcons uses spellID keys; data.spellId is the reliable source.
-	local spellID = data.spellId
-	local newTexture = spellID and Module.ReplacedSpellIcons[spellID]
-	if newTexture and button.Icon then
-		button.Icon:SetTexture(newTexture)
-	end
+	-- -- REPLACE ICON TEXTURE (IF DEFINED)
+	-- -- REASON: ReplacedIcons uses spellID keys; data.spellId is the reliable source.
+	-- local spellID = data.spellId
+	-- local newTexture = spellID and Module.ReplacedSpellIcons[spellID]
+	-- if newTexture and button.Icon then
+	-- 	button.Icon:SetTexture(newTexture)
+	-- end
 
 	-- BOLSTER STACKS DISPLAY (IF THIS IS THE CHOSEN BOLSTER AURA)
 	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then

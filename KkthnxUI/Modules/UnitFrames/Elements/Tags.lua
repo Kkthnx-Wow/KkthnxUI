@@ -86,7 +86,7 @@ local function GetHealthColor(percentage)
 	else
 		r, g, b = 1, 1, 1
 	end
-	return K.RGBToHex(r, g, b) .. percentage
+	return K.RGBToHex(r, g, b) .. string_format("%d", percentage)
 end
 
 -- REASON: Formats health value, appending percentage if below 100%.

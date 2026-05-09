@@ -127,7 +127,8 @@ local function ShouldShowReminder(cfg)
 
 	local inInst = true
 	if cfg.instance then
-		inInst = state.inInstance and (state.instType == "scenario" or state.instType == "party" or state.instType == "raid")
+		inInst = state.inInstance
+			and (state.instType == "scenario" or state.instType == "party" or state.instType == "raid")
 	end
 
 	local inPVP = true
@@ -155,7 +156,16 @@ local function ShouldShowReminder(cfg)
 		end
 	end
 
-	return inGroup and inCombat and inInst and inPVP and isKnownSpell and isRightSpec and isEquipped and isNotOnCooldown and not state.inVehicle and not state.isDead
+	return inGroup
+		and inCombat
+		and inInst
+		and inPVP
+		and isKnownSpell
+		and isRightSpec
+		and isEquipped
+		and isNotOnCooldown
+		and not state.inVehicle
+		and not state.isDead
 end
 
 -- ---------------------------------------------------------------------------
@@ -257,7 +267,13 @@ function Module:Reminder_AddItemGroup()
 
 	-- PERF: Use ipairs for array iteration.
 	for _, value in ipairs(C.SpellReminderBuffs["ITEMS"]) do
-		if value and not value.disable and value.itemID and not added[value.itemID] and (C_Item_GetItemCount(value.itemID) > 0) then
+		if
+			value
+			and not value.disable
+			and value.itemID
+			and not added[value.itemID]
+			and (C_Item_GetItemCount(value.itemID) > 0)
+		then
 			value.texture = value.texture or C_Item_GetItemIconByID(value.itemID)
 			table_insert(groups, value)
 			added[value.itemID] = true

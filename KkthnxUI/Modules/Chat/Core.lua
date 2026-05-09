@@ -395,7 +395,12 @@ function Module:UpdateEditBoxColor()
 		return
 	end
 
-	if C_AddOns_IsAddOnLoaded("Prat-3.0") or C_AddOns_IsAddOnLoaded("Chatter") or C_AddOns_IsAddOnLoaded("BasicChatMods") or C_AddOns_IsAddOnLoaded("Glass") then
+	if
+		C_AddOns_IsAddOnLoaded("Prat-3.0")
+		or C_AddOns_IsAddOnLoaded("Chatter")
+		or C_AddOns_IsAddOnLoaded("BasicChatMods")
+		or C_AddOns_IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
@@ -449,7 +454,12 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if C_AddOns_IsAddOnLoaded("Prat-3.0") or C_AddOns_IsAddOnLoaded("Chatter") or C_AddOns_IsAddOnLoaded("BasicChatMods") or C_AddOns_IsAddOnLoaded("Glass") then
+	if
+		C_AddOns_IsAddOnLoaded("Prat-3.0")
+		or C_AddOns_IsAddOnLoaded("Chatter")
+		or C_AddOns_IsAddOnLoaded("BasicChatMods")
+		or C_AddOns_IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
@@ -494,7 +504,12 @@ function Module:QuickMouseScroll(dir)
 		return
 	end
 
-	if C_AddOns_IsAddOnLoaded("Prat-3.0") or C_AddOns_IsAddOnLoaded("Chatter") or C_AddOns_IsAddOnLoaded("BasicChatMods") or C_AddOns_IsAddOnLoaded("Glass") then
+	if
+		C_AddOns_IsAddOnLoaded("Prat-3.0")
+		or C_AddOns_IsAddOnLoaded("Chatter")
+		or C_AddOns_IsAddOnLoaded("BasicChatMods")
+		or C_AddOns_IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
@@ -592,7 +607,12 @@ function Module:OnEnable()
 	end
 
 	-- COMPAT: Skip custom skinning if total-replacement chat addons are loaded.
-	if C_AddOns_IsAddOnLoaded("Prat-3.0") or C_AddOns_IsAddOnLoaded("Chatter") or C_AddOns_IsAddOnLoaded("BasicChatMods") or C_AddOns_IsAddOnLoaded("Glass") then
+	if
+		C_AddOns_IsAddOnLoaded("Prat-3.0")
+		or C_AddOns_IsAddOnLoaded("Chatter")
+		or C_AddOns_IsAddOnLoaded("BasicChatMods")
+		or C_AddOns_IsAddOnLoaded("Glass")
+	then
 		return
 	end
 

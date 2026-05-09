@@ -203,7 +203,12 @@ local function handleReputationBar(currentBar)
 		end
 	end
 
-	if not standingLabel and factionID and C_Reputation_IsFactionParagon and C_Reputation_IsFactionParagon(factionID) then
+	if
+		not standingLabel
+		and factionID
+		and C_Reputation_IsFactionParagon
+		and C_Reputation_IsFactionParagon(factionID)
+	then
 		local cur, thresh
 		cur, thresh, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 		if cur and thresh and thresh > 0 then
@@ -215,7 +220,13 @@ local function handleReputationBar(currentBar)
 		end
 	end
 
-	if not standingLabel and factionID and C_Reputation_IsMajorFaction and C_Reputation_IsMajorFaction(factionID) and C_MajorFactions_GetMajorFactionData then
+	if
+		not standingLabel
+		and factionID
+		and C_Reputation_IsMajorFaction
+		and C_Reputation_IsMajorFaction(factionID)
+		and C_MajorFactions_GetMajorFactionData
+	then
 		local majorFactionData = _G.C_MajorFactions.GetMajorFactionData(factionID)
 		if majorFactionData then
 			reaction = 10
@@ -251,7 +262,14 @@ local function handleReputationBar(currentBar)
 		barDisplayString = string_format("%s: [%s]", name or "", standingLabel)
 	else
 		local cur, maxP, pct = calculateProgressInfo(curThreshold, nextThreshold, standingValue)
-		barDisplayString = string_format("%s: %s - %s (%.1f%%) [%s]", name or "", K.ShortValue(cur), K.ShortValue(maxP), pct, standingLabel)
+		barDisplayString = string_format(
+			"%s: %s - %s (%.1f%%) [%s]",
+			name or "",
+			K.ShortValue(cur),
+			K.ShortValue(maxP),
+			pct,
+			standingLabel
+		)
 	end
 
 	currentBar:Show()
@@ -282,7 +300,13 @@ local function handleHonorBar(currentBar, event, unit)
 
 	currentBar:SetStatusBarColor(0.94, 0.45, 0.25, 1)
 	setProgressBarValues(currentBar, 0, maxHonor, currentHonor)
-	barDisplayString = string_format("%s - %s (%.1f%%) [%s]", K.ShortValue(currentHonor), K.ShortValue(maxHonor), percentHonor, currentHonorLevel)
+	barDisplayString = string_format(
+		"%s - %s (%.1f%%) [%s]",
+		K.ShortValue(currentHonor),
+		K.ShortValue(maxHonor),
+		percentHonor,
+		currentHonorLevel
+	)
 
 	currentBar:Show()
 	currentBar.restBar:Hide()
@@ -319,7 +343,15 @@ local function handleAzeriteBar(currentBar)
 
 	currentBar:Show()
 	currentBar.restBar:Hide()
-	currentBar.text:SetText(string_format("%s - %s (%.1f%%) [%s]", K.ShortValue(currentAzerite), K.ShortValue(maxAzerite), percentAzerite, azeriteLevel))
+	currentBar.text:SetText(
+		string_format(
+			"%s - %s (%.1f%%) [%s]",
+			K.ShortValue(currentAzerite),
+			K.ShortValue(maxAzerite),
+			percentAzerite,
+			azeriteLevel
+		)
+	)
 end
 
 -- Tooltip Sections (consistent formatting)
@@ -329,16 +361,34 @@ local function addExperienceTooltip()
 	_G.GameTooltip:AddLine(" ")
 
 	if currentXP and xpToLevel then
-		_G.GameTooltip:AddDoubleLine(L["XP"], string_format(" %s - %s (%.2f%%)", K.ShortValue(currentXP), K.ShortValue(xpToLevel), percentXP or 0), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine(
+			L["XP"],
+			string_format(" %s - %s (%.2f%%)", K.ShortValue(currentXP), K.ShortValue(xpToLevel), percentXP or 0),
+			1,
+			1,
+			1
+		)
 	end
 
 	if remainXP then
-		_G.GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", remainXP, remainTotal or 0, remainBars or 0, L["Bars"]), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine(
+			L["Remaining"],
+			string_format(" %s (%.2f%% - %.2f %s)", remainXP, remainTotal or 0, remainBars or 0, L["Bars"]),
+			1,
+			1,
+			1
+		)
 	end
 
 	if restedXP and restedXP > 0 then
 		local restedPercent = (xpToLevel and xpToLevel > 0) and ((restedXP / xpToLevel) * 100) or 0
-		_G.GameTooltip:AddDoubleLine(L["Rested"], string_format(" +%s (%.2f%%)", K.ShortValue(restedXP), restedPercent), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine(
+			L["Rested"],
+			string_format(" +%s (%.2f%%)", K.ShortValue(restedXP), restedPercent),
+			1,
+			1,
+			1
+		)
 	end
 
 	_G.GameTooltip:AddLine(" ")
@@ -379,7 +429,12 @@ local function addWatchedReputationTooltip(addSpacingBefore)
 		end
 	end
 
-	if not standingLabel and factionID and C_Reputation_IsFactionParagon and C_Reputation_IsFactionParagon(factionID) then
+	if
+		not standingLabel
+		and factionID
+		and C_Reputation_IsFactionParagon
+		and C_Reputation_IsFactionParagon(factionID)
+	then
 		local cur, thresh
 		cur, thresh, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 		if cur and thresh and thresh > 0 then
@@ -391,7 +446,13 @@ local function addWatchedReputationTooltip(addSpacingBefore)
 		end
 	end
 
-	if not standingLabel and factionID and C_Reputation_IsMajorFaction and C_Reputation_IsMajorFaction(factionID) and C_MajorFactions_GetMajorFactionData then
+	if
+		not standingLabel
+		and factionID
+		and C_Reputation_IsMajorFaction
+		and C_Reputation_IsMajorFaction(factionID)
+		and C_MajorFactions_GetMajorFactionData
+	then
 		local majorFactionData = C_MajorFactions_GetMajorFactionData(factionID)
 		if majorFactionData then
 			reaction = 10
@@ -416,12 +477,24 @@ local function addWatchedReputationTooltip(addSpacingBefore)
 
 	if nextThreshold ~= math_huge then
 		local cur, maxP, pct, _, remaining = calculateProgressInfo(curThreshold, nextThreshold, standingValue)
-		_G.GameTooltip:AddDoubleLine("Reputation:", string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxP), pct), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine(
+			"Reputation:",
+			string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxP), pct),
+			1,
+			1,
+			1
+		)
 
 		local remainFraction = (maxP > 0) and (remaining / maxP) or 0
 		local remainPercent = remainFraction * 100
 		local remainBarsVal = remainFraction * 20
-		_G.GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPercent, remainBarsVal, L["Bars"]), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine(
+			L["Remaining"],
+			string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPercent, remainBarsVal, L["Bars"]),
+			1,
+			1,
+			1
+		)
 	end
 
 	if rewardPending then
@@ -444,12 +517,24 @@ local function addHonorTooltip(addSpacingBefore)
 	local pct = percentHonor or 0
 	local remaining = remainingHonor or 0
 
-	_G.GameTooltip:AddDoubleLine(L["Honor XP"], string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxV), pct), 1, 1, 1)
+	_G.GameTooltip:AddDoubleLine(
+		L["Honor XP"],
+		string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxV), pct),
+		1,
+		1,
+		1
+	)
 
 	local remainFraction = (maxV > 0) and (remaining / maxV) or 0
 	local remainPercent = remainFraction * 100
 	local remainBarsVal = remainFraction * 20
-	_G.GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPercent, remainBarsVal, L["Bars"]), 1, 1, 1)
+	_G.GameTooltip:AddDoubleLine(
+		L["Remaining"],
+		string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPercent, remainBarsVal, L["Bars"]),
+		1,
+		1,
+		1
+	)
 end
 
 local function addAzeriteTooltip(addSpacingBefore)
@@ -457,7 +542,10 @@ local function addAzeriteTooltip(addSpacingBefore)
 		_G.GameTooltip:AddLine(" ")
 	end
 
-	_G.GameTooltip:AddDoubleLine("|cff00bdfc" .. (_G.AZERITE_POWER or "Azerite") .. "|r", _G.LEVEL .. " " .. (azeriteLevel or 0))
+	_G.GameTooltip:AddDoubleLine(
+		"|cff00bdfc" .. (_G.AZERITE_POWER or "Azerite") .. "|r",
+		_G.LEVEL .. " " .. (azeriteLevel or 0)
+	)
 	_G.GameTooltip:AddLine(" ")
 
 	local cur = currentAzerite or 0
@@ -468,12 +556,24 @@ local function addAzeriteTooltip(addSpacingBefore)
 		remaining = 0
 	end
 
-	_G.GameTooltip:AddDoubleLine(_G.AZERITE_POWER or "Azerite", string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxV), pct), 1, 1, 1)
+	_G.GameTooltip:AddDoubleLine(
+		_G.AZERITE_POWER or "Azerite",
+		string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxV), pct),
+		1,
+		1,
+		1
+	)
 
 	local remainFraction = (maxV > 0) and (remaining / maxV) or 0
 	local remainPercent = remainFraction * 100
 	local remainBarsVal = remainFraction * 20
-	_G.GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPercent, remainBarsVal, L["Bars"]), 1, 1, 1)
+	_G.GameTooltip:AddDoubleLine(
+		L["Remaining"],
+		string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPercent, remainBarsVal, L["Bars"]),
+		1,
+		1,
+		1
+	)
 end
 
 -- Frame Scripts
@@ -555,7 +655,15 @@ end
 
 local function buildPartyReportMessage()
 	if currentBarMode == "xp" and currentXP and xpToLevel then
-		local reportMessage = string_format("XP: %s/%s (%.2f%%) Remaining: %s (%.2f%% - %.2f bars)", K.ShortValue(currentXP), K.ShortValue(xpToLevel), percentXP or 0, remainXP or "?", remainTotal or 0, remainBars or 0)
+		local reportMessage = string_format(
+			"XP: %s/%s (%.2f%%) Remaining: %s (%.2f%% - %.2f bars)",
+			K.ShortValue(currentXP),
+			K.ShortValue(xpToLevel),
+			percentXP or 0,
+			remainXP or "?",
+			remainTotal or 0,
+			remainBars or 0
+		)
 		if restedXP and restedXP > 0 then
 			reportMessage = reportMessage .. string_format(" Rested: %s", K.ShortValue(restedXP))
 		end
@@ -569,7 +677,16 @@ local function buildPartyReportMessage()
 	if currentBarMode == "honor" and currentHonor and maxHonor then
 		local remaining = remainingHonor or 0
 		local remainFraction = (maxHonor > 0) and (remaining / maxHonor) or 0
-		return string_format("Honor: %s-%s (%.1f%%) Remaining: %s (%.2f%% - %.2f bars) Level: %d", K.ShortValue(currentHonor), K.ShortValue(maxHonor), percentHonor or 0, K.ShortValue(remaining), remainFraction * 100, remainFraction * 20, currentHonorLevel or 0)
+		return string_format(
+			"Honor: %s-%s (%.1f%%) Remaining: %s (%.2f%% - %.2f bars) Level: %d",
+			K.ShortValue(currentHonor),
+			K.ShortValue(maxHonor),
+			percentHonor or 0,
+			K.ShortValue(remaining),
+			remainFraction * 100,
+			remainFraction * 20,
+			currentHonorLevel or 0
+		)
 	end
 
 	if currentBarMode == "azerite" and currentAzerite and maxAzerite then
@@ -578,7 +695,16 @@ local function buildPartyReportMessage()
 			remaining = 0
 		end
 		local remainFraction = (maxAzerite and maxAzerite > 0) and (remaining / maxAzerite) or 0
-		return string_format("Azerite: %s-%s (%.1f%%) Remaining: %s (%.2f%% - %.2f bars) Level: %d", K.ShortValue(currentAzerite or 0), K.ShortValue(maxAzerite or 0), percentAzerite or 0, K.ShortValue(remaining), remainFraction * 100, remainFraction * 20, azeriteLevel or 0)
+		return string_format(
+			"Azerite: %s-%s (%.1f%%) Remaining: %s (%.2f%% - %.2f bars) Level: %d",
+			K.ShortValue(currentAzerite or 0),
+			K.ShortValue(maxAzerite or 0),
+			percentAzerite or 0,
+			K.ShortValue(remaining),
+			remainFraction * 100,
+			remainFraction * 20,
+			azeriteLevel or 0
+		)
 	end
 
 	return nil

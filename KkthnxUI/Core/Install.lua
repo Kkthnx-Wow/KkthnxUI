@@ -11,6 +11,10 @@ local format = format or string.format
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
+local AddChatWindowChannel = AddChatWindowChannel
+local AddChatWindowMessages = AddChatWindowMessages
+local RemoveChatWindowMessages = RemoveChatWindowMessages
+local RemoveChatWindowChannel = RemoveChatWindowChannel
 local ChatFrame_AddChannel = ChatFrame_AddChannel
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
@@ -264,16 +268,15 @@ function Module:ForceChatSettings()
 	ChatFrame1:Show()
 
 	-- REASON: Clean up default spam channels.
-	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, "LocalDefense")
-	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
-	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
-	ChatFrame_RemoveChannel(ChatFrame1, "Services")
+	RemoveChatWindowChannel(1, TRADE)
+	RemoveChatWindowChannel(1, GENERAL)
+	RemoveChatWindowChannel(1, "LocalDefense")
+	RemoveChatWindowChannel(1, "GuildRecruitment")
+	RemoveChatWindowChannel(1, "LookingForGroup")
+	RemoveChatWindowChannel(1, "Services")
 
 	for i = 1, #generalMessageGroups do
-		ChatFrame_AddMessageGroup(ChatFrame1, generalMessageGroups[i])
+		AddChatWindowMessages(1, generalMessageGroups[i])
 	end
 
 	-- Configure ChatFrame2 (Combat Log)
@@ -285,33 +288,33 @@ function Module:ForceChatSettings()
 
 	-- Configure Whispers Window (New)
 	local Whispers = FCF_OpenNewWindow("Whispers")
+	local whispersId = Whispers:GetID()
 	FCF_SetLocked(Whispers, true)
 	FCF_DockFrame(Whispers)
-	ChatFrame_RemoveAllMessageGroups(Whispers)
-	ChatFrame_AddMessageGroup(Whispers, "WHISPER")
-	ChatFrame_AddMessageGroup(Whispers, "BN_WHISPER")
-	ChatFrame_AddMessageGroup(Whispers, "BN_CONVERSATION")
+	AddChatWindowMessages(whispersId, "WHISPER")
+	AddChatWindowMessages(whispersId, "BN_WHISPER")
+	AddChatWindowMessages(whispersId, "BN_CONVERSATION")
 
 	-- Configure Trade Window (New)
 	local Trade = FCF_OpenNewWindow(L["Trade"])
+	local tradeId = Trade:GetID()
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
-	ChatFrame_RemoveAllMessageGroups(Trade)
-	ChatFrame_AddChannel(Trade, TRADE)
-	ChatFrame_AddChannel(Trade, GENERAL)
-	ChatFrame_AddChannel(Trade, L["Services"])
+	AddChatWindowChannel(tradeId, TRADE)
+	AddChatWindowChannel(tradeId, GENERAL)
+	AddChatWindowChannel(tradeId, L["Services"])
 
 	-- Configure Loot Window (New)
 	local Loot = FCF_OpenNewWindow(L["Loot"])
+	local lootId = Loot:GetID()
 	FCF_SetLocked(Loot, true)
 	FCF_DockFrame(Loot)
-	ChatFrame_RemoveAllMessageGroups(Loot)
-	ChatFrame_AddMessageGroup(Loot, "COMBAT_XP_GAIN")
-	ChatFrame_AddMessageGroup(Loot, "COMBAT_HONOR_GAIN")
-	ChatFrame_AddMessageGroup(Loot, "COMBAT_FACTION_CHANGE")
-	ChatFrame_AddMessageGroup(Loot, "LOOT")
-	ChatFrame_AddMessageGroup(Loot, "MONEY")
-	ChatFrame_AddMessageGroup(Loot, "SKILL")
+	AddChatWindowMessages(lootId, "COMBAT_XP_GAIN")
+	AddChatWindowMessages(lootId, "COMBAT_HONOR_GAIN")
+	AddChatWindowMessages(lootId, "COMBAT_FACTION_CHANGE")
+	AddChatWindowMessages(lootId, "LOOT")
+	AddChatWindowMessages(lootId, "MONEY")
+	AddChatWindowMessages(lootId, "SKILL")
 
 	FCF_SelectDockFrame(ChatFrame1)
 

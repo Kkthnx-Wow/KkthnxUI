@@ -10,51 +10,49 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- -- REASON: Localize C-functions (Snake Case)
--- local math_floor = _G.math.floor
--- local math_min = _G.math.min
--- local string_format = _G.string.format
--- local string_upper = _G.string.upper
--- local tonumber = _G.tonumber
--- local unpack = _G.unpack
+-- REASON: Localize C-functions (Snake Case)
+local string_format = _G.string.format
+local string_upper = _G.string.upper
+local tonumber = _G.tonumber
+local unpack = _G.unpack
 
--- -- REASON: Localize Globals
--- local GetTime = _G.GetTime
--- local IsPlayerSpell = _G.IsPlayerSpell
--- local UnitCanAttack = _G.UnitCanAttack
--- local UnitClass = _G.UnitClass
--- local UnitExists = _G.UnitExists
--- local UnitInVehicle = _G.UnitInVehicle
--- local UnitIsPlayer = _G.UnitIsPlayer
--- local UnitIsUnit = _G.UnitIsUnit
--- local UnitName = _G.UnitName
--- local UnitReaction = _G.UnitReaction
--- local YOU = _G.YOU
+-- REASON: Localize Globals
+local GetTime = _G.GetTime
+local IsPlayerSpell = _G.IsPlayerSpell
+local UnitCanAttack = _G.UnitCanAttack
+local UnitClass = _G.UnitClass
+local UnitExists = _G.UnitExists
+local UnitInVehicle = _G.UnitInVehicle
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitName = _G.UnitName
+local UnitReaction = _G.UnitReaction
+local YOU = _G.YOU
 
--- local channelingTicks = {
--- 	[740] = 4, -- Tranquility
--- 	[755] = 5, -- Life Tap
--- 	[5143] = 4, -- Arcane Missiles
--- 	[12051] = 6, -- Evocation
--- 	[15407] = 6, -- Mind Flay
--- 	[47757] = 3, -- Penance
--- 	[47758] = 3, -- Penance
--- 	[48045] = 6, -- Mind Sear
--- 	[64843] = 4, -- Divine Hymn
--- 	[120360] = 15, -- Barrage
--- 	[198013] = 10, -- Eye Beam
--- 	[198590] = 5, -- Drain Soul
--- 	[205021] = 5, -- Frostbolt
--- 	[205065] = 6, -- Void Torrent
--- 	[206931] = 3, -- Blooddrinker
--- 	[212084] = 10, -- Fel Devastation
--- 	[234153] = 5, -- Drain Life
--- 	[257044] = 7, -- Rapid Fire
--- 	[291944] = 6, -- Rejuvenation, Zandalari Trolls
--- 	[314791] = 4, -- Metamorphosis, Demon Hunter
--- 	[324631] = 8, -- Blood and Thunder, Covenant
--- 	[356995] = 3, -- Decimate, Dragon's Breath
--- }
+local channelingTicks = {
+	[740] = 4, -- Tranquility
+	[755] = 5, -- Life Tap
+	[5143] = 4, -- Arcane Missiles
+	[12051] = 6, -- Evocation
+	[15407] = 6, -- Mind Flay
+	[47757] = 3, -- Penance
+	[47758] = 3, -- Penance
+	[48045] = 6, -- Mind Sear
+	[64843] = 4, -- Divine Hymn
+	[120360] = 15, -- Barrage
+	[198013] = 10, -- Eye Beam
+	[198590] = 5, -- Drain Soul
+	[205021] = 5, -- Frostbolt
+	[205065] = 6, -- Void Torrent
+	[206931] = 3, -- Blooddrinker
+	[212084] = 10, -- Fel Devastation
+	[234153] = 5, -- Drain Life
+	[257044] = 7, -- Rapid Fire
+	[291944] = 6, -- Rejuvenation, Zandalari Trolls
+	[314791] = 4, -- Metamorphosis, Demon Hunter
+	[324631] = 8, -- Blood and Thunder, Covenant
+	[356995] = 3, -- Decimate, Dragon's Breath
+}
 
 -- if K.Class == "PRIEST" then
 -- 	local function updateTicks()
@@ -71,36 +69,36 @@ local Module = K:GetModule("Unitframes")
 -- 	K:RegisterEvent("PLAYER_TALENT_UPDATE", updateTicks)
 -- end
 
--- -- REASON: Creates or updates the visual tick marks on the castbar for channeled spells.
--- local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
--- 	for i = 1, #ticks do
--- 		local t = ticks[i]
--- 		if t and t:IsShown() then
--- 			t:Hide()
--- 		end
--- 	end
+-- REASON: Creates or updates the visual tick marks on the castbar for channeled spells.
+local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
+	for i = 1, #ticks do
+		local t = ticks[i]
+		if t and t:IsShown() then
+			t:Hide()
+		end
+	end
 
--- 	if numTicks and numTicks > 0 then
--- 		local width, height = bar:GetSize()
--- 		local delta = width / numTicks
--- 		for i = 1, numTicks - 1 do
--- 			local tex = ticks[i]
--- 			if not tex then
--- 				tex = bar:CreateTexture(nil, "OVERLAY")
--- 				tex:SetAtlas("UI-Frame-DastardlyDuos-ProgressBar-BorderTick", false)
--- 				tex:SetWidth(3)
--- 				tex:SetHeight(height)
--- 				tex:SetVertexColor(0.8, 0.8, 0.8, 0.8)
--- 				ticks[i] = tex
--- 			end
--- 			tex:ClearAllPoints()
--- 			tex:SetPoint("RIGHT", bar, "LEFT", delta * i, 0)
--- 			if not tex:IsShown() then
--- 				tex:Show()
--- 			end
--- 		end
--- 	end
--- end
+	if numTicks and numTicks > 0 then
+		local width, height = bar:GetSize()
+		local delta = width / numTicks
+		for i = 1, numTicks - 1 do
+			local tex = ticks[i]
+			if not tex then
+				tex = bar:CreateTexture(nil, "OVERLAY")
+				tex:SetAtlas("UI-Frame-DastardlyDuos-ProgressBar-BorderTick", false)
+				tex:SetWidth(3)
+				tex:SetHeight(height)
+				tex:SetVertexColor(0.8, 0.8, 0.8, 0.8)
+				ticks[i] = tex
+			end
+			tex:ClearAllPoints()
+			tex:SetPoint("RIGHT", bar, "LEFT", delta * i, 0)
+			if not tex:IsShown() then
+				tex:Show()
+			end
+		end
+	end
+end
 
 function Module:UpdateCastbarGlow(unit)
 	if self.barGlow and self.spellID then
@@ -131,31 +129,42 @@ function Module:UpdateSpellTarget(unit)
 	end
 end
 
-local OwnCastColor = { r = 0.3, g = 0.7, b = 1 }
-local CastingColor = { r = 0.3, g = 0.7, b = 1 }
-local NotInterruptColor = { r = 1, g = 0.5, b = 0.5 }
-
+-- REASON: Use K.Colors.castbar for centralized color management.
 function Module:UpdateCastBarColors()
-	local castingColor = CastingColor
-	local ownCastColor = OwnCastColor
-	local notInterruptColor = NotInterruptColor
-
-	Module.CastingColor = Module.CastingColor or CreateColor(0, 0, 0)
-	Module.OwnCastColor = Module.OwnCastColor or CreateColor(0, 0, 0)
-	Module.NotInterruptColor = Module.NotInterruptColor or CreateColor(0, 0, 0)
-
-	Module.CastingColor:SetRGB(castingColor.r, castingColor.g, castingColor.b)
-	Module.OwnCastColor:SetRGB(ownCastColor.r, ownCastColor.g, ownCastColor.b)
-	Module.NotInterruptColor:SetRGB(notInterruptColor.r, notInterruptColor.g, notInterruptColor.b)
+	-- Initialize Color objects if not present, using K.Colors as source
+	Module.CastingColor = Module.CastingColor or K.Colors.castbar.CastingColor
+	Module.OwnCastColor = Module.OwnCastColor or K.Colors.castbar.CastingColor
+	Module.NotInterruptColor = Module.NotInterruptColor or K.Colors.castbar.notInterruptibleColor
+	Module.CompleteColor = Module.CompleteColor or K.Colors.castbar.CompleteColor
+	Module.FailColor = Module.FailColor or K.Colors.castbar.FailColor
 end
 
+-- REASON: Updates the castbar color based on class, reaction, or interruptible status.
 function Module:UpdateCastBarColor(unit)
-	if unit == "player" then
-		self:SetStatusBarColor(Module.OwnCastColor:GetRGB())
-	elseif not UnitIsUnit(unit, "player") then
-		self:GetStatusBarTexture():SetVertexColorFromBoolean(self.notInterruptible, Module.NotInterruptColor, Module.CastingColor)
-	else
-		self:SetStatusBarColor(Module.CastingColor:GetRGB())
+	local color = K.Colors.castbar.CastingColor
+
+	-- REASON: Prioritize class color, then reaction color, then default.
+	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		color = class and K.Colors.class[class]
+	elseif C["Unitframe"].CastReactionColor then
+		local reaction = UnitReaction(unit, "player")
+		color = reaction and K.Colors.reaction[reaction]
+	elseif self.notInterruptible and not UnitIsUnit(unit, "player") then
+		color = K.Colors.castbar.notInterruptibleColor
+	end
+
+	-- REASON: Grayish color for non-interruptible casts on nameplates.
+	if self.__owner.mystyle == "nameplate" and self.notInterruptible then
+		self:SetStatusBarColor(0.7, 0.7, 0.7)
+		return
+	end
+
+	-- REASON: Apply color immediately.
+	if color and color.GetRGB then
+		self:SetStatusBarColor(color:GetRGB())
+	elseif type(color) == "table" then
+		self:SetStatusBarColor(color[1] or 1, color[2] or 1, color[3] or 1)
 	end
 
 	Module.UpdateSpellTarget(self, unit)
@@ -163,18 +172,31 @@ function Module:UpdateCastBarColor(unit)
 end
 
 function Module:Castbar_FailedColor(unit)
-	self:SetStatusBarColor(1, 0.1, 0)
+	if K.Colors.castbar.FailColor then
+		self:SetStatusBarColor(K.Colors.castbar.FailColor:GetRGB())
+	else
+		self:SetStatusBarColor(1, 0.1, 0)
+	end
 end
 
 function Module:Castbar_UpdateInterrupted(unit, interruptedBy)
-	self:SetStatusBarColor(1, 0.1, 0)
+	if K.Colors.castbar.FailColor then
+		self:SetStatusBarColor(K.Colors.castbar.FailColor:GetRGB())
+	else
+		self:SetStatusBarColor(1, 0.1, 0)
+	end
 
 	if self.spellTarget and interruptedBy ~= nil then -- C["Nameplate"].Interruptor
 		local sourceName = UnitNameFromGUID(interruptedBy)
 		local _, class = GetPlayerInfoByGUID(interruptedBy)
 		class = class or "PRIEST"
-		local classColor = C_ClassColor.GetClassColor(class)
-		self.Text:SetText(INTERRUPTED .. " > " .. classColor:WrapTextInColorCode(sourceName))
+		-- REASON: Use K.Colors.class for consistency with UI color scheme.
+		local classColor = K.Colors.class[class]
+		if classColor then
+			self.Text:SetText(INTERRUPTED .. " > " .. classColor:WrapTextInColorCode(sourceName))
+		else
+			self.Text:SetText(INTERRUPTED .. " > " .. sourceName)
+		end
 		self.Time:SetText("")
 	end
 end
@@ -235,7 +257,7 @@ function Module:CustomTimeText(durationObject)
 		local total = durationObject:GetTotalDuration()
 		local delayText = ""
 		if self.delay ~= 0 then
-			delayText = format("|cffff0000%s%.2f|r", self.channeling and "-" or "+", self.delay)
+			delayText = string_format("|cffff0000%s%.2f|r", self.channeling and "-" or "+", self.delay)
 		end
 		self.Time:SetFormattedText("%.1f%s - %.1f", duration, delayText, total)
 	end

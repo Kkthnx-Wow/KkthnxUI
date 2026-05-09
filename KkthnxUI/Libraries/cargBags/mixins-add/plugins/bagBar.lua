@@ -38,10 +38,6 @@ local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
 local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID
-local pairs = pairs
-local ipairs = ipairs
-local table_insert = table.insert
-local CreateFrame = CreateFrame
 local maxBagSlots = 5
 
 function Implementation:GetBagButtonClass()
@@ -64,7 +60,7 @@ local buttonNum = 0
 function BagButton:Create(bagID)
 	buttonNum = buttonNum + 1
 	local name = addon .. "BagButton" .. buttonNum
-	local isBankBag = bagID > 5 and bagID < 18
+	local isBankBag = bagID > 5 and bagID < 13
 	local button = setmetatable(CreateFrame("ItemButton", name, nil, "BackdropTemplate"), self.__index)
 
 	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
@@ -204,10 +200,6 @@ local function updater(self)
 end
 
 local function onLock(self, _, bagID, slotID)
-	if bagID == -1 and slotID > NUM_BANKGENERIC_SLOTS then
-		bagID, slotID = ContainerIDToInventoryID(slotID - NUM_BANKGENERIC_SLOTS + maxBagSlots)
-	end
-
 	if slotID then
 		return
 	end
@@ -244,12 +236,11 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 			local button = buttonClass:Create(bags[i])
 			button:SetParent(bar)
 			button.bar = bar
-			table_insert(bar.buttons, button)
+			table.insert(bar.buttons, button)
 		end
 	end
 
 	self.implementation:RegisterEvent("BAG_UPDATE", bar, updater)
-	self.implementation:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
 	self.implementation:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
 
 	return bar

@@ -35,7 +35,8 @@ local C_Item_GetItemInfo = _G.C_Item and _G.C_Item.GetItemInfo
 local C_Item_GetItemLinkByGUID = _G.C_Item and _G.C_Item.GetItemLinkByGUID
 local C_PetBattles_GetAuraInfo = _G.C_PetBattles.GetAuraInfo
 local C_PetBattles_GetNumAuras = _G.C_PetBattles.GetNumAuras
-local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = _G.C_PlayerInfo and _G.C_PlayerInfo.GetPlayerMythicPlusRatingSummary
+local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = _G.C_PlayerInfo
+	and _G.C_PlayerInfo.GetPlayerMythicPlusRatingSummary
 local CreateFrame = _G.CreateFrame
 local DAMAGE = _G.DAMAGE
 local DEAD = _G.DEAD
@@ -298,7 +299,9 @@ function Module:OnTooltipSetUnit()
 			end
 		end
 
-		local status = CheckUnitStatus(UnitIsAFK, unit, AFK) or CheckUnitStatus(UnitIsDND, unit, DND) or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
+		local status = CheckUnitStatus(UnitIsAFK, unit, AFK)
+			or CheckUnitStatus(UnitIsDND, unit, DND)
+			or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
 		if status then
 			status = string_format(" |cffffcc00[%s]|r", status)
 		end
@@ -392,17 +395,30 @@ function Module:OnTooltipSetUnit()
 
 		local diff = GetCreatureDifficultyColor(level)
 		local classify = UnitClassification(unit)
-		local textLevel = format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
+		local textLevel =
+			format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
 		local tiptextLevel, index = Module.GetLevelLine(self)
 		local unitClass = isPlayer and UnitClass(unit)
 
 		if tiptextLevel then
 			local reaction = UnitReaction(unit, "player")
-			local standingText = not isPlayer and reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction] .. "|r " or ""
+			local standingText = not isPlayer
+					and reaction
+					and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction] .. "|r "
+				or ""
 			local pvpFlag = isPlayer and UnitIsPVP(unit) and string_format(" |cffff0000%s|r", PVP) or ""
-			local unitClassStr = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor .. (unitClass or "") .. "|r") or UnitCreatureType(unit) or ""
+			local unitClassStr = isPlayer
+					and format("%s %s", UnitRace(unit) or "", hexColor .. (unitClass or "") .. "|r")
+				or UnitCreatureType(unit)
+				or ""
 
-			tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, standingText .. unitClassStr, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
+			tiptextLevel:SetFormattedText(
+				"%s%s %s %s",
+				textLevel,
+				pvpFlag,
+				standingText .. unitClassStr,
+				(not alive and "|cffCCCCCC" .. DEAD .. "|r" or "")
+			)
 		end
 
 		local specLine = index and _G["GameTooltipTextLeft" .. (index + 1)]
@@ -555,7 +571,8 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 
 	if mode == 1 then
 		if not mover then
-			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 38 }, 100, 100)
+			mover =
+				K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 38 }, 100, 100)
 		end
 		self:ClearAllPoints()
 		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor], mover)
@@ -632,7 +649,7 @@ function Module:ResetUnit(btn)
 		return
 	end
 
-	if GameTooltip:IsShown() and btn == "LSHIFT" and TT:UnitExists("mouseover") then
+	if GameTooltip:IsShown() and btn == "LSHIFT" and Module:UnitExists("mouseover") then
 		GameTooltip:RefreshData()
 	end
 end

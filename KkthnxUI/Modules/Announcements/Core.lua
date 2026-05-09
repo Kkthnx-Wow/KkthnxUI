@@ -17,7 +17,6 @@ function Module:OnEnable()
 	-- NOTE: List of sub-modules to be instantiated.
 	-- Each corresponding function must be registered to the Module object.
 	local loadAnnouncementModules = {
-		"CreateHealthAnnounce",
 		"CreateInterruptAnnounce",
 		"CreateItemAnnounce",
 		"CreateKeystoneAnnounce",

@@ -188,7 +188,13 @@ local function updateAFKTimer(self)
 		self.topFrame.time:SetText(setupTimeDisplay(color, hour, minute))
 
 		local calendarTime = C_DateAndTime.GetCurrentCalendarTime()
-		self.topFrame.date:SetFormattedText("%s, %s %d, %d", DAYS_ABBREVIATIONS[calendarTime.weekday], MONTH_ABBREVIATIONS[calendarTime.month], calendarTime.monthDay, calendarTime.year)
+		self.topFrame.date:SetFormattedText(
+			"%s, %s %d, %d",
+			DAYS_ABBREVIATIONS[calendarTime.weekday],
+			MONTH_ABBREVIATIONS[calendarTime.month],
+			calendarTime.monthDay,
+			calendarTime.year
+		)
 	end
 end
 
@@ -207,7 +213,6 @@ local function updateLogOff(self)
 		self.countdownFrame.text:SetFormattedText("Logout Timer: |cfff0ff00-%02d:%02d|r", minutes, seconds)
 	end
 end
-
 
 local function createRandomStatMessage()
 	local statID = STAT_IDS[math_random(#STAT_IDS)]
@@ -388,8 +393,41 @@ local function chatOnMouseWheel(self, delta)
 	end
 end
 
-local function chatOnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
-	local coloredName = _G.GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
+local function chatOnEvent(
+	self,
+	event,
+	arg1,
+	arg2,
+	arg3,
+	arg4,
+	arg5,
+	arg6,
+	arg7,
+	arg8,
+	arg9,
+	arg10,
+	arg11,
+	arg12,
+	arg13,
+	arg14
+)
+	local coloredName = _G.GetColoredName(
+		event,
+		arg1,
+		arg2,
+		arg3,
+		arg4,
+		arg5,
+		arg6,
+		arg7,
+		arg8,
+		arg9,
+		arg10,
+		arg11,
+		arg12,
+		arg13,
+		arg14
+	)
 	local chatType = string_sub(event, 10)
 	local chatInfo = _G.ChatTypeInfo[chatType]
 
@@ -413,9 +451,17 @@ local function chatOnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 
 	local playerLink
 	if chatType ~= "BN_WHISPER" and chatType ~= "BN_CONVERSATION" then
-		playerLink = string_format("|Hplayer:%s:%s:%s%s|h", arg2, arg11, chatGroup, chatTarget and ":" .. chatTarget or "")
+		playerLink =
+			string_format("|Hplayer:%s:%s:%s%s|h", arg2, arg11, chatGroup, chatTarget and ":" .. chatTarget or "")
 	else
-		playerLink = string_format("|HBNplayer:%s:%s:%s:%s%s|h", arg2, arg13, arg11, chatGroup, chatTarget and ":" .. chatTarget or "")
+		playerLink = string_format(
+			"|HBNplayer:%s:%s:%s:%s%s|h",
+			arg2,
+			arg13,
+			arg11,
+			chatGroup,
+			chatTarget and ":" .. chatTarget or ""
+		)
 	end
 
 	local message = arg1
@@ -426,7 +472,11 @@ local function chatOnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	-- REASON: Escape '%' to prevent "invalid option in format" errors during string_format.
 	message = string_gsub(message, "%%", "%%%%")
 
-	_, body = pcall(string_format, _G["CHAT_" .. chatType .. "_GET"] .. message, playerLink .. "[" .. coloredName .. "]" .. "|h")
+	_, body = pcall(
+		string_format,
+		_G["CHAT_" .. chatType .. "_GET"] .. message,
+		playerLink .. "[" .. coloredName .. "]" .. "|h"
+	)
 
 	local accessID = _G.ChatHistory_GetAccessID(chatGroup, chatTarget)
 	local typeID = _G.ChatHistory_GetAccessID(chatType, chatTarget, arg12 == "" and arg13 or arg12)
@@ -475,7 +525,13 @@ function Module:CreateAFKCam()
 
 	afkModeFrame.topFrame = CreateFrame("Frame", nil, afkModeFrame)
 	afkModeFrame.topFrame:SetFrameLevel(0)
-	afkModeFrame.topFrame:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10)
+	afkModeFrame.topFrame:CreateBorder(
+		nil,
+		nil,
+		C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32,
+		nil,
+		C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10
+	)
 	afkModeFrame.topFrame:SetPoint("TOP", afkModeFrame, "TOP", 0, 6)
 	afkModeFrame.topFrame:SetSize(UIParent:GetWidth() + 12, 54)
 
@@ -483,7 +539,13 @@ function Module:CreateAFKCam()
 
 	afkModeFrame.bottomFrame = CreateFrame("Frame", nil, afkModeFrame)
 	afkModeFrame.bottomFrame:SetFrameLevel(0)
-	afkModeFrame.bottomFrame:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10)
+	afkModeFrame.bottomFrame:CreateBorder(
+		nil,
+		nil,
+		C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 32,
+		nil,
+		C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10
+	)
 	afkModeFrame.bottomFrame:SetPoint("BOTTOM", afkModeFrame, "BOTTOM", 0, -K.BorderSize)
 	afkModeFrame.bottomFrame:SetWidth(K.ScreenWidth + (K.BorderSize * 2))
 	afkModeFrame.bottomFrame:SetHeight(K.ScreenHeight * 0.08)
@@ -495,7 +557,11 @@ function Module:CreateAFKCam()
 
 	afkModeFrame.topFrame.time = afkModeFrame.topFrame:CreateFontString(nil, "OVERLAY")
 	afkModeFrame.topFrame.time:SetFontObject(K.UIFont)
-	afkModeFrame.topFrame.time:SetFont(select(1, afkModeFrame.topFrame.time:GetFont()), 16, select(3, afkModeFrame.topFrame.time:GetFont()))
+	afkModeFrame.topFrame.time:SetFont(
+		select(1, afkModeFrame.topFrame.time:GetFont()),
+		16,
+		select(3, afkModeFrame.topFrame.time:GetFont())
+	)
 	afkModeFrame.topFrame.time:SetText("")
 	afkModeFrame.topFrame.time:SetPoint("RIGHT", afkModeFrame.topFrame, "RIGHT", -20, 0)
 	afkModeFrame.topFrame.time:SetJustifyH("LEFT")
@@ -517,7 +583,11 @@ function Module:CreateAFKCam()
 	-- Date text
 	afkModeFrame.topFrame.date = afkModeFrame.topFrame:CreateFontString(nil, "OVERLAY")
 	afkModeFrame.topFrame.date:SetFontObject(K.UIFont)
-	afkModeFrame.topFrame.date:SetFont(select(1, afkModeFrame.topFrame.date:GetFont()), 16, select(3, afkModeFrame.topFrame.date:GetFont()))
+	afkModeFrame.topFrame.date:SetFont(
+		select(1, afkModeFrame.topFrame.date:GetFont()),
+		16,
+		select(3, afkModeFrame.topFrame.date:GetFont())
+	)
 	afkModeFrame.topFrame.date:SetText("")
 	afkModeFrame.topFrame.date:SetPoint("LEFT", afkModeFrame.topFrame, "LEFT", 20, 0)
 	afkModeFrame.topFrame.date:SetJustifyH("RIGHT")
@@ -591,20 +661,50 @@ function Module:CreateAFKCam()
 
 	afkModeFrame.bottomFrame.name = afkModeFrame.bottomFrame:CreateFontString(nil, "OVERLAY")
 	afkModeFrame.bottomFrame.name:SetFontObject(K.UIFont)
-	afkModeFrame.bottomFrame.name:SetFont(select(1, afkModeFrame.bottomFrame.name:GetFont()), 20, select(3, afkModeFrame.bottomFrame.name:GetFont()))
+	afkModeFrame.bottomFrame.name:SetFont(
+		select(1, afkModeFrame.bottomFrame.name:GetFont()),
+		20,
+		select(3, afkModeFrame.bottomFrame.name:GetFont())
+	)
 	afkModeFrame.bottomFrame.name:SetFormattedText("%s-%s", K.Name, K.Realm)
-	afkModeFrame.bottomFrame.name:SetPoint("TOPLEFT", afkModeFrame.bottomFrame.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
+	afkModeFrame.bottomFrame.name:SetPoint(
+		"TOPLEFT",
+		afkModeFrame.bottomFrame.faction,
+		"TOPRIGHT",
+		nameOffsetX,
+		nameOffsetY
+	)
 	afkModeFrame.bottomFrame.name:SetTextColor(K.r, K.g, K.b)
 
 	afkModeFrame.bottomFrame.playerInfo = afkModeFrame.bottomFrame:CreateFontString(nil, "OVERLAY")
 	afkModeFrame.bottomFrame.playerInfo:SetFontObject(K.UIFont)
-	afkModeFrame.bottomFrame.playerInfo:SetFont(select(1, afkModeFrame.bottomFrame.playerInfo:GetFont()), 20, select(3, afkModeFrame.bottomFrame.playerInfo:GetFont()))
-	afkModeFrame.bottomFrame.playerInfo:SetText(K.SystemColor .. _G.LEVEL .. " " .. K.Level .. "|r " .. K.GreyColor .. playerRace .. "|r " .. K.MyClassColor .. _G.UnitClass("player") .. "|r")
+	afkModeFrame.bottomFrame.playerInfo:SetFont(
+		select(1, afkModeFrame.bottomFrame.playerInfo:GetFont()),
+		20,
+		select(3, afkModeFrame.bottomFrame.playerInfo:GetFont())
+	)
+	afkModeFrame.bottomFrame.playerInfo:SetText(
+		K.SystemColor
+			.. _G.LEVEL
+			.. " "
+			.. K.Level
+			.. "|r "
+			.. K.GreyColor
+			.. playerRace
+			.. "|r "
+			.. K.MyClassColor
+			.. _G.UnitClass("player")
+			.. "|r"
+	)
 	afkModeFrame.bottomFrame.playerInfo:SetPoint("TOPLEFT", afkModeFrame.bottomFrame.name, "BOTTOMLEFT", 0, -6)
 
 	afkModeFrame.bottomFrame.guild = afkModeFrame.bottomFrame:CreateFontString(nil, "OVERLAY")
 	afkModeFrame.bottomFrame.guild:SetFontObject(K.UIFont)
-	afkModeFrame.bottomFrame.guild:SetFont(select(1, afkModeFrame.bottomFrame.guild:GetFont()), 20, select(3, afkModeFrame.bottomFrame.guild:GetFont()))
+	afkModeFrame.bottomFrame.guild:SetFont(
+		select(1, afkModeFrame.bottomFrame.guild:GetFont()),
+		20,
+		select(3, afkModeFrame.bottomFrame.guild:GetFont())
+	)
 	afkModeFrame.bottomFrame.guild:SetText(L["No Guild"])
 	afkModeFrame.bottomFrame.guild:SetPoint("TOPLEFT", afkModeFrame.bottomFrame.playerInfo, "BOTTOMLEFT", 0, -6)
 	afkModeFrame.bottomFrame.guild:SetTextColor(0.7, 0.7, 0.7)
@@ -637,7 +737,11 @@ function Module:CreateAFKCam()
 
 	afkModeFrame.statMsg.info = afkModeFrame.statMsg:CreateFontString(nil, "OVERLAY")
 	afkModeFrame.statMsg.info:SetFontObject(K.UIFont)
-	afkModeFrame.statMsg.info:SetFont(select(1, afkModeFrame.statMsg.info:GetFont()), 18, select(3, afkModeFrame.statMsg.info:GetFont()))
+	afkModeFrame.statMsg.info:SetFont(
+		select(1, afkModeFrame.statMsg.info:GetFont()),
+		18,
+		select(3, afkModeFrame.statMsg.info:GetFont())
+	)
 	afkModeFrame.statMsg.info:SetPoint("CENTER", afkModeFrame.statMsg, "CENTER", 0, -2)
 	afkModeFrame.statMsg.info:SetText(string_format("|cffb3b3b3%s|r", "Random Stats"))
 	afkModeFrame.statMsg.info:SetJustifyH("CENTER")
@@ -672,7 +776,13 @@ function Module:CreateAFKCam()
 	-- REASON: Holder frame to manage character model position and scaling relative to the bottom UI bar.
 	afkModeFrame.bottomFrame.modelHolder = CreateFrame("Frame", nil, afkModeFrame.bottomFrame)
 	afkModeFrame.bottomFrame.modelHolder:SetSize(150, 150)
-	afkModeFrame.bottomFrame.modelHolder:SetPoint("BOTTOMRIGHT", afkModeFrame.bottomFrame, "BOTTOMRIGHT", -200, modelOffsetY)
+	afkModeFrame.bottomFrame.modelHolder:SetPoint(
+		"BOTTOMRIGHT",
+		afkModeFrame.bottomFrame,
+		"BOTTOMRIGHT",
+		-200,
+		modelOffsetY
+	)
 
 	afkModeFrame.bottomFrame.model = CreateFrame("PlayerModel", nil, afkModeFrame.bottomFrame.modelHolder)
 	afkModeFrame.bottomFrame.model:SetPoint("CENTER", afkModeFrame.bottomFrame.modelHolder, "CENTER")

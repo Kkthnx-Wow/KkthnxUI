@@ -127,7 +127,6 @@ local function CreateAnnouncementsCategory()
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.SaySapped", L["Announce When Sapped"], "Automatically announces in chat when you are sapped in PvP.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.KillingBlow", L["Show Your Killing Blow Info"], "Displays a notification when you land a killing blow.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.PvPEmote", L["Auto Emote On Your Killing Blow"], "Automatically performs an emote when you land a killing blow in PvP.")
-	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.HealthAlert", L["Announce When Low On Health"], "Alerts when your health drops below a critical threshold.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.KeystoneAlert", L["Announce When New Mythic Key Is Obtained"], L["Notifies you and your group when you receive a new Mythic+ keystone."])
 
 	-- Interrupt
@@ -528,7 +527,7 @@ local function CreateGeneralCategory()
 	GUI:CreateDropdown(generalGeneralSection, "General.NumberPrefixStyle", L["Number Prefix Style"], numberPrefixOptions, "Choose how large numbers are abbreviated")
 
 	-- Smoothing
-	GUI:CreateSlider(generalGeneralSection, "General.SmoothAmount", "Smoothing Amount", 0.1, 1, 0.01, L["Setup healthbar smooth frequency for unitframes and nameplates. The lower the smoother."])
+	-- GUI:CreateSlider(generalGeneralSection, "General.SmoothAmount", "Smoothing Amount", 0.1, 1, 0.01, L["Setup healthbar smooth frequency for unitframes and nameplates. The lower the smoother."])
 
 	-- Scaling
 	local scalingSection = GUI:AddSection(generalCategory, L["Scaling"])
