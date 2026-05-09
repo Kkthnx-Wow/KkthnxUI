@@ -18,6 +18,7 @@ local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local next = next
 local string_format = string.format
+local AuraUtil_UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
 
 -- ---------------------------------------------------------------------------
 -- State
@@ -90,10 +91,23 @@ local function removeBadBuffsNow(_, unit)
 
 	-- PERF: Iterates backwards from 40 to safely handle buff removal shifts.
 	for i = 40, 1, -1 do
-		local aura = C_UnitAuras_GetAuraDataByIndex("player", i, "HELPFUL")
-		if aura then
+		local auraData = C_UnitAuras_GetAuraDataByIndex("player", i, "HELPFUL")
+		if auraData then
+			local name, _, _, _, _, _, _, _, _, spellId
+			if AuraUtil_UnpackAuraData then
+				name, _, _, _, _, _, _, _, _, spellId = AuraUtil_UnpackAuraData(auraData)
+			else
+				name = auraData.name
+				spellId = auraData.spellId
+			end
+
+			local aura = {
+				name = name,
+				spellId = spellId,
+			}
+
 			if isBadAura(badList, aura) then
-				CancelSpellByName(aura.name)
+				CancelSpellByName(name)
 				printRemoved(aura)
 			end
 		end

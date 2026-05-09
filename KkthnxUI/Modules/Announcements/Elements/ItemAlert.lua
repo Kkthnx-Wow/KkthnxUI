@@ -18,7 +18,6 @@ local string_format = string.format
 local C_Spell_GetSpellLink = C_Spell.GetSpellLink
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local IsInGroup = IsInGroup
-local SendChatMessage = SendChatMessage
 local UnitName = UnitName
 
 -- NOTE: Pre-populated table for efficient lookup of group unit IDs.
@@ -95,12 +94,20 @@ local importantSpells = {
 -- ---------------------------------------------------------------------------
 
 function Module:UpdateItemAlert(unit, castID, spellID)
+	if K.IsSecretValue(spellID) then
+		return
+	end
+
+	-- if C["Misc"].ItemAlertLeader and not (UnitIsGroupAssistant("player") or UnitIsGroupLeader("player")) then -- only alert for leader, needs review
+	-- 	return
+	-- end
+
 	-- REASON: Filters by group unit residency and whitelist presence.
 	-- Compares spellID to castID to handle potential duplicates or re-triggers.
 	if groupUnits[unit] and importantSpells[spellID] and importantSpells[spellID] ~= castID then
 		local spellLink = C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)
 		if spellLink then
-			SendChatMessage(string_format(L["%s used %s"] or "%s used %s", UnitName(unit), spellLink), K.CheckChat())
+			K.SendChatMessage(string_format(L["%s used %s"] or "%s used %s", UnitName(unit), spellLink), K.CheckChat())
 			-- NOTE: Store the castID for this spellID to prevent redundant alerts from the same cast events.
 			importantSpells[spellID] = castID
 		end

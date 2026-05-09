@@ -199,6 +199,7 @@ C["Auras"] = {
 -- Chat
 C["Chat"] = {
 	Background = true,
+	ChannelAbbreviation = 2,
 	ChatItemLevel = true,
 	ChatMenu = true,
 	ConfigButton = true,
@@ -214,9 +215,9 @@ C["Chat"] = {
 	OldChatNames = false,
 	RollButton = true,
 	Sticky = false,
+	TimestampFormat = 1,
 	WhisperColor = true,
 	Width = 400,
-	TimestampFormat = 1,
 }
 
 -- Datatext

@@ -384,7 +384,14 @@ local function CreateChatCategory()
 	GUI:CreateSwitch(generalChatSection, "Chat.Enable", enableTextColor .. L["Enable Chat"], L["Enable Desc"])
 	GUI:CreateSwitch(generalChatSection, "Chat.Lock", L["Lock Chat"], L["Lock Desc"])
 	GUI:CreateSwitch(generalChatSection, "Chat.Background", L["Show Chat Background"], L["Background Desc"], UpdateChatBackground)
-	GUI:CreateSwitch(generalChatSection, "Chat.OldChatNames", L["Use Default Channel Names"], L["OldChatNames Desc"])
+
+	-- ChannelAbbr Format
+	local channelAbbreviationOptions = {
+		{ text = DISABLE, value = 1 },
+		{ text = L["LetterMode"], value = 2 },
+		{ text = L["LocaleMode"], value = 3 },
+	}
+	GUI:CreateDropdown(generalChatSection, "Chat.ChannelAbbr", L["ChannelAbbreviation"], channelAbbreviationOptions, "filters chat messages to rename channel prefixes, add formatted timestamps, and apply clean, non-tainting message rewrites.", nil, true)
 
 	-- Appearance
 	local appearanceChatSection = GUI:AddSection(chatCategory, L["Appearance"])

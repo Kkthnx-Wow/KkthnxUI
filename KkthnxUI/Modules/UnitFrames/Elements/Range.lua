@@ -290,7 +290,7 @@ local function FriendlyInRange(realUnit, element)
 			element.isInRange, element.checkedRange = inRange, wasChecked
 			return -- will be handled by these values so no need to proceed
 		end
-	elseif wasChecked and not inRange then
+	elseif wasChecked and K.NotSecretValue(inRange) and not inRange then
 		return false -- blizz checked and unit is out of range
 	end
 
