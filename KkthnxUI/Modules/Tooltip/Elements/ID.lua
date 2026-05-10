@@ -25,10 +25,10 @@ local C_UnitAuras = _G.C_UnitAuras
 local GameTooltip = _G.GameTooltip
 local ItemRefTooltip = _G.ItemRefTooltip
 
-local GetItemCount = _G.GetItemCount
-local GetItemInfo = _G.GetItemInfo
+local GetItemCount = _G.C_Item.GetItemCount
+local GetItemInfo = _G.C_Item.GetItemInfo
 local GetUnitName = _G.GetUnitName
-local IsPlayerSpell = _G.IsPlayerSpell
+local IsPlayerSpell = _G.C_SpellBook.IsSpellKnown
 
 local ACHIEVEMENTS = _G.ACHIEVEMENTS
 local ALREADY_LEARNED = _G.ALREADY_LEARNED
@@ -64,7 +64,6 @@ function Module:AddLineForID(id, linkType, noadd)
 		if not line then
 			break
 		end
-
 		local text = line:GetText()
 		if text and K.NotSecretValue(text) and text == linkType then
 			return
@@ -80,10 +79,9 @@ function Module:AddLineForID(id, linkType, noadd)
 	end
 
 	if linkType == types.item then
-		local bagCount = GetItemCount(id)
+		local bagCount = C_Item.GetItemCount(id)
 		local bankCount = C_Item.GetItemCount(id, true, nil, true, true) - bagCount
-		local itemStackCount = select(8, GetItemInfo(id))
-
+		local itemStackCount = select(8, C_Item.GetItemInfo(id))
 		if bankCount > 0 then
 			self:AddDoubleLine(BAGSLOT .. "/" .. BANK .. ":", K.InfoColor .. bagCount .. "/" .. bankCount)
 		elseif bagCount > 0 then
@@ -95,7 +93,7 @@ function Module:AddLineForID(id, linkType, noadd)
 		end
 	end
 
-	self:AddDoubleLine(linkType, string_format(K.InfoColor .. "%s|r", id))
+	self:AddDoubleLine(linkType, format(K.InfoColor .. "%s|r", id))
 	self:Show()
 end
 
@@ -139,52 +137,56 @@ function Module:CreateTooltipID()
 	hooksecurefunc(ItemRefTooltip, "SetHyperlink", Module.SetHyperLinkID)
 
 	-- Spells
-	hooksecurefunc(GameTooltip, "SetUnitAura", function(self, ...)
-		if self:IsForbidden() then
-			return
-		end
-
-		local auraData = C_UnitAuras.GetAuraDataByIndex(...)
-		if not auraData then
-			return
-		end
-
-		local caster = auraData.sourceUnit
-		local id = auraData.spellId
-		if id then
-			Module.AddLineForID(self, id, types.spell)
-		end
-
-		if caster then
-			local name = GetUnitName(caster, true)
-			local hexColor = K.RGBToHex(K.UnitColor(caster))
-			self:AddDoubleLine(L["From"] .. ":", hexColor .. name)
-			self:Show()
-		end
-	end)
-
-	local function UpdateAuraTip(self, unit, auraInstanceID)
-		local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-		if not data then
-			return
-		end
-
+	local function HandleAuraData(self, data)
 		local id, caster = data.spellId, data.sourceUnit
 		if id then
 			Module.AddLineForID(self, id, types.spell)
 		end
 		if caster then
-			local name = GetUnitName(caster, true)
-			local hexColor = K.RGBToHex(K.UnitColor(caster))
-			self:AddDoubleLine(L["From"] .. ":", hexColor .. name)
-			self:Show()
+			if K.IsSecretValue(caster) then
+				local ok, name = pcall(UnitName, caster)
+				if ok then
+					self:AddDoubleLine(L["From"] .. ":", name)
+					self:Show()
+				end
+			else
+				local name = GetUnitName(caster, true)
+				local hexColor = K.RGBToHex(K.UnitColor(caster))
+				self:AddDoubleLine(L["From"] .. ":", hexColor .. (name or UNKNOWN))
+				self:Show()
+			end
 		end
+	end
+
+	hooksecurefunc(GameTooltip, "SetUnitAura", function(self, ...)
+		if self:IsForbidden() then
+			return
+		end
+		local data = C_UnitAuras.GetAuraDataByIndex(...)
+		if not data then
+			return
+		end
+
+		HandleAuraData(self, data)
+	end)
+
+	local function UpdateAuraTip(self, ...)
+		if self:IsForbidden() then
+			return
+		end
+		local data = C_UnitAuras.GetAuraDataByAuraInstanceID(...)
+		if not data then
+			return
+		end
+
+		HandleAuraData(self, data)
 	end
 	hooksecurefunc(GameTooltip, "SetUnitBuffByAuraInstanceID", UpdateAuraTip)
 	hooksecurefunc(GameTooltip, "SetUnitDebuffByAuraInstanceID", UpdateAuraTip)
+	hooksecurefunc(GameTooltip, "SetUnitAuraByAuraInstanceID", UpdateAuraTip)
 
 	hooksecurefunc("SetItemRef", function(link)
-		local id = tonumber(string_match(link, "spell:(%d+)"))
+		local id = tonumber(strmatch(link, "spell:(%d+)"))
 		if id then
 			Module.AddLineForID(ItemRefTooltip, id, types.spell)
 		end
@@ -224,6 +226,7 @@ function Module:CreateTooltipID()
 		if self:IsForbidden() then
 			return
 		end
+
 		if data.id then
 			Module.AddLineForID(self, data.id, types.item)
 		end
@@ -231,16 +234,14 @@ function Module:CreateTooltipID()
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, addItemID)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Toy, addItemID)
 
-	-- Currencies, todo: replace via tooltip processor
-	hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
-		local id = tonumber(string_match(C_CurrencyInfo_GetCurrencyListLink(index), "currency:(%d+)"))
-		if id then
-			Module.AddLineForID(self, id, types.currency)
+	-- Currencies
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Currency, function(self, data)
+		if self:IsForbidden() then
+			return
 		end
-	end)
-	hooksecurefunc(GameTooltip, "SetCurrencyByID", function(self, id)
-		if id then
-			Module.AddLineForID(self, id, types.currency)
+
+		if data.id then
+			Module.AddLineForID(self, data.id, types.currency)
 		end
 	end)
 

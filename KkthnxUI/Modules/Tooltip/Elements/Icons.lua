@@ -39,7 +39,7 @@ function Module:SetupTooltipIcon(icon)
 	local title = icon and _G[self:GetName() .. "TextLeft1"]
 	local titleText = title and title:GetText()
 
-	if titleText and not strfind(titleText, ":20:20:") then
+	if titleText and K.NotSecretValue(titleText) and not strfind(titleText, ":20:20:") then
 		title:SetFormattedText("|T%s:20:20:" .. newString .. ":%d|t %s", icon, 20, titleText)
 	end
 
@@ -48,9 +48,8 @@ function Module:SetupTooltipIcon(icon)
 		if not line then
 			break
 		end
-
 		local text = line:GetText()
-		if text and text ~= " " then
+		if text and K.NotSecretValue(text) and text ~= " " then
 			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T%1:14:14:" .. newString .. "|t")
 			if count > 0 then
 				line:SetText(newText)

@@ -27,6 +27,7 @@ function Module:OnEnable()
 		"CreateAutoGoodbye",
 		"CreateAutoInvite",
 		"CreateAutoKeystone",
+		"CreateAutoKeystoneStart",
 		"CreateAutoPartySyncAccept",
 		"CreateAutoRelease",
 		"CreateAutoResurrect",
