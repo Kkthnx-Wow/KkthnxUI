@@ -44,7 +44,8 @@ local cargBags = ns.cargBags
 
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 
-local tagPool, tagEvents, object = {}, {}
+local tagPool, tagEvents = {}, {}
+local object
 local function tagger(tag, ...)
 	return object.tags[tag] and object.tags[tag](object, ...) or ""
 end
@@ -87,6 +88,7 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 	setTagString(plugin, tagString)
 
 	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
+	self.implementation:RegisterEvent("BAG_UPDATE_DELAYED", plugin, updater)
 	return plugin
 end)
 
@@ -100,17 +102,17 @@ end
 -- Tags
 local function GetNumFreeSlots(name)
 	if name == "Bag" then
-		local totalFree, freeSlots, bagFamily = 0
+		local totalFree = 0
 		for i = 0, 4 do -- reagent bank excluded
-			freeSlots, bagFamily = GetContainerNumFreeSlots(i)
+			local freeSlots, bagFamily = GetContainerNumFreeSlots(i)
 			if bagFamily == 0 then
 				totalFree = totalFree + freeSlots
 			end
 		end
 		return totalFree
 	elseif name == "Bank" then
-		local numFreeSlots = 0
-		for bagID = 6, 11 do
+		local numFreeSlots = GetContainerNumFreeSlots(-1)
+		for bagID = 6, 12 do
 			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots
@@ -120,7 +122,7 @@ local function GetNumFreeSlots(name)
 		return GetContainerNumFreeSlots(5)
 	elseif name == "Account" then
 		local numFreeSlots = 0
-		for bagID = 12, 16 do
+		for bagID = 13, 17 do
 			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots
@@ -142,74 +144,77 @@ tagPool["item"] = function(self, item)
 	end
 end
 
-tagPool["currency"] = function(self, id)
-	local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
-	if currencyInfo then
-		return currencyInfo.quantity .. createIcon(currencyInfo.iconFileID, self.iconValues)
+tagPool["currency"] = function(self, indexOrCurrencyID)
+	-- Support either an index (as used by GetNumWatchedTokens) or a direct currencyID
+	local info
+	if type(indexOrCurrencyID) == "number" then
+		-- First, try backpack watched token by index
+		if indexOrCurrencyID <= (GetNumWatchedTokens() or 0) then
+			info = C_CurrencyInfo.GetBackpackCurrencyInfo(indexOrCurrencyID)
+		end
+		-- If not found, treat the number as a currencyID
+		if not info then
+			info = C_CurrencyInfo.GetCurrencyInfo(indexOrCurrencyID)
+		end
+	end
+	if not info then
+		return
+	end
+	local name, count, icon = info.name, info.quantity or info.quantityEarnedThisWeek or 0, info.iconFileID
+	if name and count then
+		local iconTexture = "|T" .. icon .. ":13:15:0:0:50:50:4:46:4:46|t "
+		return (iconTexture .. BreakUpLargeNumbers(count))
 	end
 end
 tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
 tagPool["currencies"] = function(self)
-	local str
-	for i = 1, GetNumWatchedTokens() do
+	local out
+	local watched = GetNumWatchedTokens() or 0
+	for i = 1, watched do
 		local curr = self.tags["currency"](self, i)
 		if curr then
-			str = (str and str .. " " or "") .. curr
+			out = out and (out .. " " .. curr) or curr
 		end
 	end
-	return str
+	return out
 end
 tagEvents["currencies"] = tagEvents["currency"]
 
-local atlasCache = {}
-local function createAtlasCoin(coin)
-	local str = atlasCache[coin]
-	if not str then
-		local info = C_Texture.GetAtlasInfo("coin-" .. coin)
-		local K = _G.KkthnxUI and _G.KkthnxUI[1] or nil
-		if info then
-			str = K and K.GetTextureStrByAtlas and K.GetTextureStrByAtlas(info, 16, 16)
-			atlasCache[coin] = str
-		end
-	end
-	return str
-end
-
 tagPool["money"] = function()
-	local money = GetMoney() or 0
-	local str = ""
-	local gold, silver, copper = floor(money / 1e4), floor(money / 100) % 100, money % 100
+	local coppername = "|cffeda55fc|r"
+	local goldname = "|cffffd700g|r"
+	local silvername = "|cffc7c7cfs|r"
+
+	local amount = GetMoney() or 0
+	local value = abs(amount)
+	local gold = floor(value / 10000)
+	local silver = floor(mod(value / 100, 100))
+	local copper = floor(mod(value, 100))
 
 	if gold > 0 then
-		str = str .. BreakUpLargeNumbers(gold) .. createAtlasCoin("gold") .. " "
+		return format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
+	elseif silver > 0 then
+		return format("%d%s %02d%s", silver, silvername, copper, coppername)
+	else
+		return format("%d%s", copper, coppername)
 	end
-	if silver > 0 then
-		str = str .. silver .. createAtlasCoin("silver") .. " "
-	end
-	if copper > 0 then
-		str = str .. copper .. createAtlasCoin("copper") .. " "
-	end
-
-	return str
 end
 tagEvents["money"] = { "PLAYER_MONEY" }
 
 tagPool["accountmoney"] = function()
 	local money = C_Bank.FetchDepositedMoney(Enum.BankType.Account) or 0
-	local str = ""
+	local coppername = "|cffeda55fc|r"
+	local goldname = "|cffffd700g|r"
+	local silvername = "|cffc7c7cfs|r"
 	local gold, silver, copper = floor(money / 1e4), floor(money / 100) % 100, money % 100
 
 	if gold > 0 then
-		str = str .. BreakUpLargeNumbers(gold) .. createAtlasCoin("gold") .. " "
+		return format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
+	elseif silver > 0 then
+		return format("%d%s %02d%s", silver, silvername, copper, coppername)
+	else
+		return format("%d%s", copper, coppername)
 	end
-	if silver > 0 then
-		str = str .. silver .. createAtlasCoin("silver") .. " "
-	end
-	if copper >= 0 then
-		str = str .. copper .. createAtlasCoin("copper") .. " "
-	end
-
-	return str
 end
 tagEvents["accountmoney"] = { "PLAYER_MONEY", "ACCOUNT_MONEY" }

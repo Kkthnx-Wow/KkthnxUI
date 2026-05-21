@@ -1518,7 +1518,6 @@ local LegSlotID = GetInventorySlotInfo("LEGSSLOT")
 local chestSlotItem, legSlotItem -- local cache of the items
 
 local function OnUnitInventoryChanged(_, _, unit) -- limited to Mages only currently
-	print("Unit inventory changed")
 	if unit ~= "player" then
 		return
 	end

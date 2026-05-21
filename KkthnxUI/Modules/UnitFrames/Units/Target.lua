@@ -412,14 +412,14 @@ function Module:CreateTarget()
 	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -6, 6)
 
 	if C["Unitframe"].DebuffHighlight then
-		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		self.DebuffHighlight:SetBlendMode("ADD")
+		-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		-- self.DebuffHighlight:SetAllPoints(self.Health)
+		-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+		-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		-- self.DebuffHighlight:SetBlendMode("ADD")
 
-		self.DebuffHighlightAlpha = 0.45
-		self.DebuffHighlightFilter = true
+		-- self.DebuffHighlightAlpha = 0.45
+		-- self.DebuffHighlightFilter = true
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

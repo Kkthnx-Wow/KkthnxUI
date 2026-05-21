@@ -384,7 +384,7 @@ function Module:ChatCopy_Create()
 	configBtn:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
 			PlaySound(111)
-			_G.K.LibEasyMenu.Create(menuList, K.EasyMenu, configBtn, 24, 290, "MENU", 2)
+			K.LibEasyMenu.Create(menuList, K.EasyMenu, configBtn, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
 			K.NewGUI:Toggle()
 		end
@@ -443,13 +443,7 @@ function Module:ChatCopy_Create()
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine(string_format("%s %s", _G.FAST, _G.ROLL))
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(
-			LEFT_BUTTON_STRING .. L["Left Click"],
-			"Roll a random number between 1 and 100",
-			1,
-			1,
-			1
-		)
+		GameTooltip:AddDoubleLine(LEFT_BUTTON_STRING .. L["Left Click"], "Roll a random number between 1 and 100", 1, 1, 1)
 		GameTooltip:AddDoubleLine(RIGHT_BUTTON_STRING .. L["Right Click"], "Guaranteed to roll a perfect 100!", 1, 1, 1)
 		GameTooltip:Show()
 	end)

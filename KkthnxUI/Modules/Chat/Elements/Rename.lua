@@ -186,18 +186,18 @@ local cnColonChannels = {
 	INSTANCE_CHAT = true,
 }
 
-local cnPattern = "(|Hplayer[^]]*:([^:]+):[^]]*%].-)" .. colon .. "%s"
-local enPattern = "(|Hplayer[^]]*:([^:]+):[^]]*%].-):%s"
+local cnPattern = "(|Hplayer[^]]*:([^:]+):[^]]*%]|h.-)" .. colon .. "%s"
+local enPattern = "(|Hplayer[^]]*:([^:]+):[^]]*%]|h.-):%s"
 
 local function KillColon(link, tag)
 	if channels[tag] then
-		return link .. " "
+		return link .. ": "
 	end
 end
 
 local function KillCNColon(link, tag)
 	if cnColonChannels[tag] then
-		return link .. " "
+		return link .. ": "
 	end
 end
 
@@ -236,11 +236,6 @@ local PROCESSED_LINES_MAX = 200
 -- Chat filter callback
 -- ---------------------------------------------------------------------------
 local function ChatMsgFilter(self, event, msg, sender, language, channelString, target, flags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, suppressRaidIcons)
-	-- REASON: Skip secret messages to avoid taint and invalid string processing.
-	if K.IsSecretValue(msg) then
-		return
-	end
-
 	if strfind(msg, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then
 		return true
 	end
@@ -346,10 +341,24 @@ local function ChatMsgFilter(self, event, msg, sender, language, channelString, 
 	if isCN then
 		outMsg = gsub(outMsg, cnPattern, KillCNColon)
 	end
-	outMsg = gsub(outMsg, enPattern, KillColon)
+	-- outMsg = gsub(outMsg, enPattern, KillColon)
 	outMsg = gsub(outMsg, matchPattern, AbbrChannelName)
 
 	self:AddMessage(outMsg, info.r, info.g, info.b, info.id)
+
+	-- Fix whipser reply
+	if chatType == "WHISPER" or chatType == "BN_WHISPER" then
+		ChatFrameUtil.SetLastTellTarget(sender, chatType)
+		if not self.tellTimer or (GetTime() > self.tellTimer) then
+			PlaySound(SOUNDKIT.TELL_MESSAGE)
+		end
+		self.tellTimer = GetTime() + ChatFrameConstants.WhisperSoundAlertCooldown
+		-- We don't flash the app icon for front end chat for now.
+		if FlashClientIcon then
+			FlashClientIcon()
+		end
+	end
+	ChatFrameUtil.FlashTabIfNotShown(self, info, chatType, chatGroup, chatTarget)
 
 	return true
 end

@@ -53,12 +53,37 @@ function Module:UpdateAllSize()
 	Module:UpdateVehicleButton()
 end
 
+function Module:UpdateCastVFX(button)
+	local buttonWidth, buttonHeight = button:GetSize()
+	local maskWidth, maskHeight = buttonWidth * 1.5, buttonHeight * 1.5
+
+	local spellCastAnim = button.SpellCastAnimFrame
+	if spellCastAnim then
+		local endBurst = spellCastAnim.EndBurst
+		if endBurst then
+			endBurst.EndMask:SetSize(maskWidth, maskHeight)
+		end
+
+		local spellCastFill = spellCastAnim.Fill
+		if spellCastFill then
+			spellCastFill.FillMask:SetSize(maskWidth, maskHeight)
+		end
+	end
+	local interruptDisplay = button.InterruptDisplay
+	local interruptHighlight = interruptDisplay and interruptDisplay.Highlight
+	if interruptHighlight then
+		interruptHighlight.Mask:SetSize(maskWidth, maskHeight)
+	end
+end
+
 -- NOTE: Standardizes font settings across all button text elements.
 function Module:UpdateFontSize(button, fontSize)
 	-- Directly apply the path, new size, and style variables
 	button.Name:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
 	button.Count:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
 	button.HotKey:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
+
+	Module:UpdateCastVFX(button)
 end
 
 -- REASON: Recalculates button positions and frame bounds based on rows and columns.
@@ -222,8 +247,7 @@ end
 
 -- NOTE: Defines the state-switching logic for the main bar (Bar 1) to handle
 -- vehicles, stances, and overriding bars.
-local fullPage =
-	"[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
+local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
 	for i = 1, 8 do
@@ -366,8 +390,7 @@ function Module:CreateBars()
 		end
 
 		-- REASON: Bars 2-8 are hidden during special bar states (Vehicles, Override) to avoid clutter.
-		frame.visibility = index == 1 and "[petbattle] hide; show"
-			or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
+		frame.visibility = index == 1 and "[petbattle] hide; show" or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 
 		frame:SetAttribute(
 			"_onstate-page",

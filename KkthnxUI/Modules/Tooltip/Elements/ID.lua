@@ -150,9 +150,10 @@ function Module:CreateTooltipID()
 					self:Show()
 				end
 			else
-				local name = GetUnitName(caster, true)
+				local name, server = UnitName(caster)
+				local fullName = name .. (server and "-" .. server or "")
 				local hexColor = K.RGBToHex(K.UnitColor(caster))
-				self:AddDoubleLine(L["From"] .. ":", hexColor .. (name or UNKNOWN))
+				self:AddDoubleLine(L["From"] .. ":", hexColor .. fullName)
 				self:Show()
 			end
 		end

@@ -110,18 +110,12 @@ function Module:BuildBuffFrame()
 
 	-- REASON: Initialize movers for custom positioning.
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
-	Module.BuffFrame.mover =
-		K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
+	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
 	Module.BuffFrame:ClearAllPoints()
 	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
 	Module.DebuffFrame = Module:CreateAuraHeader("HARMFUL")
-	Module.DebuffFrame.mover = K.Mover(
-		Module.DebuffFrame,
-		"Debuffs",
-		"DebuffAnchor",
-		{ "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 }
-	)
+	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", { "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 })
 	Module.DebuffFrame:ClearAllPoints()
 	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
@@ -194,9 +188,9 @@ function Module:StartAuraTimer(button, timeLeft)
 	Module.UpdateTimer(button, 0)
 end
 
-function Module:GetSpellStat(arg16, arg17, arg18)
-	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
-end
+-- function Module:GetSpellStat(arg16, arg17, arg18)
+-- 	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
+-- end
 
 function Module:UpdateAuras(button, index)
 	local unit, filter = button.header:GetAttribute("unit"), button.filter
@@ -231,17 +225,14 @@ function Module:UpdateAuras(button, index)
 
 	local count = auraData.applications
 	if K.IsSecretValue(count) then
-		button.count:SetText(
-			C_UnitAuras.GetAuraApplicationDisplayCount(unit, auraData.auraInstanceID, MIN_SPELL_COUNT, MAX_SPELL_COUNT)
-		)
+		button.count:SetText(C_UnitAuras.GetAuraApplicationDisplayCount(unit, auraData.auraInstanceID, MIN_SPELL_COUNT, MAX_SPELL_COUNT))
 	else
 		local hideCount = not count or (count < MIN_SPELL_COUNT or count > MAX_SPELL_COUNT)
 		button.count:SetText(hideCount and "" or count)
 	end
 
 	if filter == "HARMFUL" then
-		local color = C_UnitAuras.GetAuraDispelTypeColor(unit, auraData.auraInstanceID, Module.DispelColorCurve)
-			or FALLBACK_COLOR
+		local color = C_UnitAuras.GetAuraDispelTypeColor(unit, auraData.auraInstanceID, Module.DispelColorCurve) or FALLBACK_COLOR
 		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	else
 		button.KKUI_Border:SetVertexColor(1, 1, 1)
@@ -372,12 +363,7 @@ function Module:CreateAuraHeader(filter)
 end
 
 function Module:RemoveSpellFromIgnoreList()
-	if
-		IsAltKeyDown()
-		and IsControlKeyDown()
-		and self.spellID
-		and K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID]
-	then
+	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] then
 		K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] = nil
 		K.Print(string_format(L["RemoveFromIgnoreList"], "", self.spellID))
 	end
@@ -421,19 +407,20 @@ function Module:CreateAuraIcon(button)
 	button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
 	button.timer = button:CreateFontString(nil, "OVERLAY")
-	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 5)
+	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 2)
 	button.timer:SetFontObject(K.UIFontOutline)
 	button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
 	local cd = CreateFrame("Cooldown", "$parentCooldown", button, "CooldownFrameTemplate")
 	cd:SetReverse(true)
-	--cd:SetEdgeTexture(DB.bgTex)
-	--cd:SetDrawSwipe(C.db["Auras"]["CDAnimation"])
+	cd:SetEdgeTexture("Interface\\Cooldown\\edge")
+	cd:SetDrawSwipe(true) -- We need to push this for config later. FIX ME!
 	cd:SetDrawBling(false)
 	button.Cooldown = cd
 
 	local text = cd:GetRegions()
-	--B.SetFontSize(text, fontSize)
+	text:SetFontObject(K.UIFontOutline)
+	text:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 	text:ClearAllPoints()
 	text:SetPoint("TOP", button, "BOTTOM", 1, 2)
 	button.CooldownText = text
