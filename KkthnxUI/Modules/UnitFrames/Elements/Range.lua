@@ -73,126 +73,123 @@ end
 local CHECK_SPELLS = {
 	FRIENDLY = {
 		DEATHKNIGHT = {
-			[47541] = "Death Coil",
+			["47541"] = "Death Coil",
 		},
 		DEMONHUNTER = {},
 		DRUID = {
-			[8936] = "Regrowth",
+			["8936"] = "Regrowth",
 		},
 		EVOKER = {
-			[355913] = "Emerald Blossom",
+			["355913"] = "Emerald Blossom",
 		},
 		HUNTER = {},
 		MAGE = {
-			[1459] = "Arcane Intellect",
+			["1459"] = "Arcane Intellect",
 		},
 		MONK = {
-			[116670] = "Vivify",
+			["116670"] = "Vivify",
 		},
 		PALADIN = {
-			[85673] = "Word of Glory",
+			["85673"] = "Word of Glory",
 		},
 		PRIEST = {
-			[17] = "Power Word: Shield",
+			["17"] = "Power Word: Shield" or nil,
 		},
 		ROGUE = {
-			[36554] = "Shadowstep",
-			[921] = "Pick Pocket",
+			["36554"] = "Shadowstep" or nil,
+			["921"] = "Pick Pocket" or nil,
 		},
 		SHAMAN = {
-			[8004] = "Healing Surge",
+			["8004"] = "Healing Surge",
 		},
 		WARLOCK = {
-			[5697] = "Unending Breath",
+			["5697"] = "Unending Breath",
 		},
 		WARRIOR = {},
 	},
-
 	ENEMY = {
 		DEATHKNIGHT = {
-			[49576] = "Death Grip",
+			["49576"] = "Death Grip",
 		},
 		DEMONHUNTER = {
-			[278326] = "Consume Magic",
+			["278326"] = "Consume Magic",
 		},
 		DRUID = {
-			[8921] = "Moonfire",
+			["8921"] = "Moonfire",
 		},
 		EVOKER = {
-			[362969] = "Azure Strike",
+			["362969"] = "Azure Strike",
 		},
 		HUNTER = {
-			[75] = "Auto Shot",
+			["75"] = "Auto Shot",
 		},
 		MAGE = {
-			[2139] = "Counterspell",
+			["2139"] = "Counterspell",
 		},
 		MONK = {
-			[115546] = "Provoke",
+			["115546"] = "Provoke",
 		},
 		PALADIN = {
-			[20473] = "Holy Shock",
-			[20271] = "Judgement",
+			["20473"] = "Holy Shock",
+			["20271"] = "Judgement",
 		},
 		PRIEST = {
-			[589] = "Shadow Word: Pain",
+			["589"] = "Shadow Word: Pain",
 		},
 		ROGUE = {
-			[36554] = "Shadowstep",
+			["36554"] = "Shadowstep",
 		},
 		SHAMAN = {
-			[8042] = "Earth Shock",
-			[188196] = "Lightning Bolt",
+			["8042"] = "Earth Shock",
+			["188196"] = "Lightning Bolt" or nil,
 		},
 		WARLOCK = {
-			[234153] = "Drain Life",
+			["234153"] = "Drain Life" or nil,
 		},
 		WARRIOR = {
-			[355] = "Taunt",
+			["355"] = "Taunt",
 		},
 	},
-
 	RESURRECT = {
 		DEATHKNIGHT = {
-			[61999] = "Raise Ally",
+			["61999"] = "Raise Ally",
 		},
 		DEMONHUNTER = {},
 		DRUID = {
-			[50769] = "Revive",
+			["50769"] = "Revive",
 		},
 		EVOKER = {
-			[361227] = "Return",
+			["361227"] = "Return",
 		},
 		HUNTER = {},
 		MAGE = {},
 		MONK = {
-			[115178] = "Resuscitate",
+			["115178"] = "Resuscitate",
 		},
 		PALADIN = {
-			[7328] = "Redemption",
+			["7328"] = "Redemption",
 		},
 		PRIEST = {
-			[2006] = "Resurrection",
+			["2006"] = "Resurrection",
 		},
 		ROGUE = {},
 		SHAMAN = {
-			[2008] = "Ancestral Spirit",
+			["2008"] = "Ancestral Spirit",
 		},
 		WARLOCK = {
-			[20707] = "Soulstone",
+			["20707"] = "Soulstone" or nil,
 		},
 		WARRIOR = {},
 	},
-
 	PET = {
 		DEATHKNIGHT = {
-			[47541] = "Death Coil",
+			["47541"] = "Death Coil",
 		},
 		DEMONHUNTER = {},
 		DRUID = {},
 		EVOKER = {},
 		HUNTER = {
-			[136] = "Mend Pet",
+			["136"] = "Mend Pet",
 		},
 		MAGE = {},
 		MONK = {},
@@ -201,7 +198,7 @@ local CHECK_SPELLS = {
 		ROGUE = {},
 		SHAMAN = {},
 		WARLOCK = {
-			[755] = "Health Funnel",
+			["755"] = "Health Funnel",
 		},
 		WARRIOR = {},
 	},

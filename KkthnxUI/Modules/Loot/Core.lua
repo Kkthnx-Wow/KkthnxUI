@@ -344,7 +344,7 @@ function Module:LOOT_OPENED(_, isAutoLoot)
 	local color = ITEM_QUALITY_COLORS[maxQuality]
 	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, 0.8)
 	-- lootFrame:SetWidth(math_max(maxWidth + 60, lootFrame.title:GetStringWidth() + 5))
-	lootFrame:Width(maxWidth + 60)
+	lootFrame:SetWidth(maxWidth + 60)
 end
 
 function Module:OPEN_MASTER_LOOT_LIST()

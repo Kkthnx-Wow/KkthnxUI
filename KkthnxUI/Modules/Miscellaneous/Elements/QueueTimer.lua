@@ -14,7 +14,8 @@ local Module = K:GetModule("Miscellaneous")
 local ipairs = _G.ipairs
 local math_max = _G.math.max
 local select = _G.select
-local string_format = _G.string_format
+-- FIX: _G.string_format does not exist; the correct path is _G.string.format.
+local string_format = _G.string.format
 local type = _G.type
 
 local _G = _G
@@ -22,7 +23,7 @@ local CreateFrame = _G.CreateFrame
 local GetBattlefieldPortExpiration = _G.GetBattlefieldPortExpiration
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
 local GetTime = _G.GetTime
-local HookSecureFunc = _G.hooksecurefunc
+local hooksecurefunc = _G.hooksecurefunc
 local PlaySoundFile = _G.PlaySoundFile
 local SecondsToTime = _G.SecondsToTime
 
@@ -268,7 +269,7 @@ function Module:CreateQueueTimers()
 	K:RegisterEvent("LFG_PROPOSAL_FAILED", onLfgQueueDone)
 
 	if _G.PVPReadyDialog_Display then
-		HookSecureFunc("PVPReadyDialog_Display", function(_, pvpIndex)
+		hooksecurefunc("PVPReadyDialog_Display", function(_, pvpIndex)
 			activePvPQueueIndex = pvpIndex
 			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
 			hasPlayedWarningSound = false

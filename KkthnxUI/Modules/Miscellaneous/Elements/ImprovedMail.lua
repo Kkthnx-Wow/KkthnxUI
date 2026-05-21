@@ -232,12 +232,14 @@ local function onTotalCashEnter(self)
 end
 
 local function onTotalCashLeave()
-	_G.K.HideTooltip()
+	K.HideTooltip()
 	totalInboxCash = 0
 end
 
 function Module:UpdateOpeningText(isOpening)
-	if not Module.GoldButton then return end
+	if not Module.GoldButton then
+		return
+	end
 	if isOpening then
 		Module.GoldButton:SetText(INBOX_OPENING_TEXT)
 	else

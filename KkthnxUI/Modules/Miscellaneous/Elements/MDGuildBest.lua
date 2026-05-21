@@ -105,7 +105,7 @@ function Module:createGuildBestFrame()
 		entryFrame.Level:SetPoint("LEFT", entryFrame, "RIGHT", -22, 0)
 
 		entryFrame:SetScript("OnEnter", Module.onGuildBestEntryEnter)
-		entryFrame:SetScript("OnLeave", _G.K.HideTooltip)
+		entryFrame:SetScript("OnLeave", K.HideTooltip)
 
 		if i == 1 then
 			entryFrame:SetPoint("TOP", guildBestFrame, 0, -26)
@@ -150,7 +150,7 @@ function Module:createGuildBestFrame()
 
 	-- REASON: Hides RaiderIO's internal guild weekly frame as KkthnxUI provides its own integrated alternative.
 	if _G.RaiderIO_GuildWeeklyFrame then
-		_G.K.HideInterfaceOption(_G.RaiderIO_GuildWeeklyFrame)
+		K.HideInterfaceOption(_G.RaiderIO_GuildWeeklyFrame)
 	end
 end
 
@@ -305,7 +305,7 @@ function Module:createKeystoneInfoButton()
 		GameTooltip:Show()
 	end)
 
-	keystoneInfoFrame:SetScript("OnLeave", _G.K.HideTooltip)
+	keystoneInfoFrame:SetScript("OnLeave", K.HideTooltip)
 	keystoneInfoFrame:SetScript("OnMouseUp", function(_, mouseButton)
 		if mouseButton == "MiddleButton" then
 			if database.KeystoneInfo then

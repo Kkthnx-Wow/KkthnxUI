@@ -485,7 +485,7 @@ local function buttonOnClick(self, button)
 				end
 
 				if mIndex > 2 then
-					_G.K.LibEasyMenu.Create(menuList, _G.K.EasyMenu, self, 0, 0, "MENU", 1)
+					K.LibEasyMenu.Create(menuList, K.EasyMenu, self, 0, 0, "MENU", 1)
 				end
 			else
 				C_PartyInfo_InviteUnit(data[1])
