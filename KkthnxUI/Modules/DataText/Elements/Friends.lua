@@ -532,66 +532,85 @@ local function buttonOnEnter(self)
 		GameTooltip:AddLine(L["BN"], 0.4, 0.6, 1)
 		GameTooltip:AddLine(" ")
 
-		local qIndex, accountName, _, _, _, _, _, _, _, note, bCastText, bCastTime = unpack(data)
-		local numAcc = C_BattleNet_GetFriendNumGameAccounts(qIndex) or 0
-
-		for i = 1, numAcc do
-			local info = C_BattleNet_GetFriendGameAccountInfo(qIndex, i)
-			if info then
-				local charName = info.characterName or ""
-				local client = info.clientProgram
-				if client == BNET_CLIENT_WOW then
-					if charName ~= "" then
-						if info.timerunningSeasonID and _G.TimerunningUtil and _G.TimerunningUtil.AddSmallIcon then
-							charName = _G.TimerunningUtil.AddSmallIcon(charName)
-						end
-
-						local rName = (K.Realm == info.realmName or info.realmName == "") and "" or "-" .. info.realmName
-						if info.wowProjectID == WOW_PROJECT_CATA then
-							local r, count = string_gsub(info.richPresence or "", "^.-%-%s", "")
-							if count and count > 0 then
-								rName = "-" .. r
-							end
-						end
-
-						local color = K.ColorClass(K.ClassList[info.className] or info.className)
-						local classHex = K.RGBToHex(color.r, color.g, color.b)
-						local factionIconString = (info.factionName == "Horde" or info.factionName == "Alliance") and ("|TInterface\\FriendsFrame\\PlusManz-" .. info.factionName .. ":16:|t") or ""
-
-						GameTooltip:AddLine(string_format("%s%s %s%s%s", factionIconString, info.characterLevel or 0, classHex, charName, rName))
-						local areaLabel = info.areaName or _G.UNKNOWN
-						if info.wowProjectID ~= WOW_PROJECT_ID then
-							areaLabel = "*" .. areaLabel
-						end
-						GameTooltip:AddLine(string_format("%s%s", inactiveColor, areaLabel))
+		local index, accountName, _, _, _, _, _, _, _, note, broadcastText, broadcastTime = unpack(self.data)
+		local numGameAccounts = C_BattleNet_GetFriendNumGameAccounts(index)
+		for i = 1, numGameAccounts do
+			local gameAccountInfo = C_BattleNet_GetFriendGameAccountInfo(index, i)
+			local charName = gameAccountInfo.characterName
+			local client = gameAccountInfo.clientProgram
+			local realmName = gameAccountInfo.realmName or ""
+			local faction = gameAccountInfo.factionName
+			local class = gameAccountInfo.className or UNKNOWN
+			local zoneName = gameAccountInfo.areaName or UNKNOWN
+			local level = gameAccountInfo.characterLevel
+			local gameText = gameAccountInfo.richPresence or ""
+			local wowProjectID = gameAccountInfo.wowProjectID
+			local clientString = ""
+			local timerunningSeasonID = gameAccountInfo.timerunningSeasonID
+			if client == BNET_CLIENT_WOW then
+				if charName ~= "" then -- fix for weird account
+					if timerunningSeasonID then
+						charName = TimerunningUtil.AddSmallIcon(charName) -- add timerunning tag on name
 					end
-				else
-					GameTooltip:AddLine(string_format("|cffffffff%s%s", getClientLogo(client, 16), accountName or _G.UNKNOWN))
-					if info.richPresence ~= "" then
-						GameTooltip:AddLine(string_format("%s%s", inactiveColor, info.richPresence or ""))
+					realmName = (K.Realm == realmName or realmName == "") and "" or "-" .. realmName
+
+					-- Get TBC realm name from richPresence
+					if wowProjectID == WOW_PROJECT_CATA then
+						local realm, count = gsub(gameText, "^.-%-%s", "")
+						if count > 0 then
+							realmName = "-" .. realm
+						end
 					end
+
+					class = K.ClassList[class]
+					local classColor = K.RGBToHex(K.ColorClass(class))
+					if faction == "Horde" then
+						clientString = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:|t"
+					elseif faction == "Alliance" then
+						clientString = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:|t"
+					end
+					GameTooltip:AddLine(string_format("%s%s %s%s%s", clientString, level, classColor, charName, realmName))
+
+					if wowProjectID ~= WOW_PROJECT_ID then
+						zoneName = "*" .. zoneName
+					end
+					GameTooltip:AddLine(string_format("%s%s", K.GreyColor, zoneName))
+				end
+			else
+				if C_Texture.IsTitleIconTextureReady(client, Enum.TitleIconVersion.Small) then
+					C_Texture.GetTitleIconTexture(client, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							clientString = BNet_GetClientEmbeddedTexture(texture, 32, 32, 0)
+						end
+					end)
+				end
+				GameTooltip:AddLine(string_format("|cffffffff%s%s", clientString, accountName))
+				if gameText ~= "" then
+					GameTooltip:AddLine(string_format("%s%s", K.GreyColor, gameText))
 				end
 			end
 		end
 
 		if note and note ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(string_format(noteIconString, note), 1, 0.8, 0)
+			GameTooltip:AddLine(string_format("|T" .. "Interface\\Buttons\\UI-GuildButton-PublicNote-Up" .. ":16|t %s", note), 1, 0.8, 0)
 		end
-		if bCastText and bCastText ~= "" then
+
+		if broadcastText and broadcastText ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(string_format(broadcastIconString, bCastText, FriendsFrame_GetLastOnline(bCastTime)), 0.3, 0.5, 0.7, 1)
+			GameTooltip:AddLine(string_format("|TInterface\\FriendsFrame\\BroadcastIcon:12|t %s (%s)", broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), 0.3, 0.6, 0.8)
 		end
 	else
 		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
 		GameTooltip:AddLine(" ")
-		local name, level, class, area, _, note = unpack(data)
-		local color = K.ColorClass(class)
-		GameTooltip:AddLine(string_format("%s %s%s", level, K.RGBToHex(color.r, color.g, color.b), name))
-		GameTooltip:AddLine(string_format("%s%s", inactiveColor, area))
+		local name, level, class, area, _, note = unpack(self.data)
+		local classColor = K.RGBToHex(K.ColorClass(class))
+		GameTooltip:AddLine(string_format("%s %s%s", level, classColor, name))
+		GameTooltip:AddLine(string_format("%s%s", K.GreyColor, area))
+
 		if note and note ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(string_format(noteIconString, note), 1, 0.8, 0)
+			GameTooltip:AddLine(string_format("|T" .. "Interface\\Buttons\\UI-GuildButton-PublicNote-Up" .. ":16|t %s", note), 1, 0.8, 0)
 		end
 	end
 	GameTooltip:Show()

@@ -587,11 +587,14 @@ function Module.PostCreateButton(element, button)
 	button.Count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
 	-- COOLDOWN CONFIG (IF PRESENT)
+	local isRaid = element.__owner.mystyle == "raid"
 	if button.Cooldown then
-		button.Cooldown.noOCC = true
-		button.Cooldown.noCooldownCount = true
 		button.Cooldown:SetReverse(true)
-		button.Cooldown:SetHideCountdownNumbers(true)
+		button.Cooldown:SetHideCountdownNumbers(isRaid)
+
+		button.CooldownText = button.Cooldown:GetRegions()
+		button.CooldownText:SetFontObject(K.UIFontOutline)
+		button.CooldownText:SetFont(select(1, button.CooldownText:GetFont()), fontSize, select(3, button.CooldownText:GetFont()))
 	end
 
 	-- ICON BASELINE
