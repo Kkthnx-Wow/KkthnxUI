@@ -234,16 +234,16 @@ function Module:CustomTimeText(durationObject)
 		end
 		self.Time:SetFormattedText("%.1f%s - %.1f", duration, delayText, total)
 
-		if total and total > 0 and duration > 0 and duration < total then
-			local elapsed = total - duration
-			self.Spark:SetPoint("CENTER", self, "LEFT", (elapsed / total) * self:GetWidth(), 0)
-			if self.Spark.Hide then
-				self.Spark:Show()
-			end
-		else
-			if self.Spark.Hide then
-				self.Spark:Hide()
-			end
-		end
+		-- if total and K.NotSecretValue(total) and total > 0 and duration > 0 and duration < total then
+		-- 	local elapsed = total - duration
+		-- 	self.Spark:SetPoint("CENTER", self, "LEFT", (elapsed / total) * self:GetWidth(), 0)
+		-- 	if self.Spark.Hide then
+		-- 		self.Spark:Show()
+		-- 	end
+		-- else
+		-- 	if self.Spark.Hide then
+		-- 		self.Spark:Hide()
+		-- 	end
+		-- end
 	end
 end

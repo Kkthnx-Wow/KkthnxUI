@@ -82,10 +82,6 @@ function Module:CreatePlayer()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
-	if C["Unitframe"].Smooth then
-		-- K:SmoothBar(self.Health)
-	end
-
 	if C["Unitframe"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
@@ -118,7 +114,8 @@ function Module:CreatePlayer()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		-- K:SmoothBar(self.Power)
+		Module:SmoothBar(self.Health)
+		Module:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -422,33 +419,33 @@ function Module:CreatePlayer()
 
 	-- REASON: Additional Power (Mana for Druids/Priests/Shamans)
 	if C["Unitframe"].AdditionalPower then
-		local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", self.Health)
-		AdditionalPower.frequentUpdates = true
-		AdditionalPower:SetWidth(12)
-		AdditionalPower:SetOrientation("VERTICAL")
-		if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
-			AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
-			AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
-		else
-			AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
-			AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
-		end
-		AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		AdditionalPower:CreateBorder()
+		-- local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", self.Health)
+		-- AdditionalPower.frequentUpdates = true
+		-- AdditionalPower:SetWidth(12)
+		-- AdditionalPower:SetOrientation("VERTICAL")
+		-- if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
+		-- 	AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
+		-- 	AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
+		-- else
+		-- 	AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
+		-- 	AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
+		-- end
+		-- AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		-- AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
+		-- AdditionalPower:CreateBorder()
 
-		if C["Unitframe"].Smooth then
-			-- K:SmoothBar(AdditionalPower)
-		end
+		-- if C["Unitframe"].Smooth then
+		-- 	-- K:SmoothBar(AdditionalPower)
+		-- end
 
-		AdditionalPower.Text = AdditionalPower:CreateFontString(nil, "OVERLAY")
-		AdditionalPower.Text:SetFontObject(K.UIFont)
-		AdditionalPower.Text:SetFont(select(1, AdditionalPower.Text:GetFont()), 9, select(3, AdditionalPower.Text:GetFont()))
-		AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
+		-- AdditionalPower.Text = AdditionalPower:CreateFontString(nil, "OVERLAY")
+		-- AdditionalPower.Text:SetFontObject(K.UIFont)
+		-- AdditionalPower.Text:SetFont(select(1, AdditionalPower.Text:GetFont()), 9, select(3, AdditionalPower.Text:GetFont()))
+		-- AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
 
-		AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+		-- AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 
-		self.AdditionalPower = AdditionalPower
+		-- self.AdditionalPower = AdditionalPower
 	end
 
 	-- REASON: Global Cooldown Spark

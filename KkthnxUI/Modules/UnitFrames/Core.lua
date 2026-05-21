@@ -436,6 +436,13 @@ function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allA
 end
 
 -- Elements
+
+Module.smoothbars = {}
+function Module:SmoothBar(bar)
+	bar.smoothing = Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
+	Module.smoothbars[bar] = true
+end
+
 -- REASON: Handles OnEnter event for unit frames to show highlights and tooltips.
 local function UF_OnEnter(self)
 	if not self.disableTooltip then

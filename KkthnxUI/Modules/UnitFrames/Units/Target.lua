@@ -50,10 +50,6 @@ function Module:CreateTarget()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
-	if C["Unitframe"].Smooth then
-		-- K:SmoothBar(self.Health)
-	end
-
 	if C["Unitframe"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
@@ -83,6 +79,11 @@ function Module:CreateTarget()
 
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
+
+	if C["Unitframe"].Smooth then
+		Module:SmoothBar(self.Health)
+		Module:SmoothBar(self.Power)
+	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
