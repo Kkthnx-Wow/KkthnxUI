@@ -1267,7 +1267,7 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local party = oUF:SpawnHeader(
-				"oUF_SimpleParty", nil, nil,
+				"oUF_SimpleParty", nil,
 				"showPlayer", C["Party"].ShowPlayer,
 				"showSolo", true,
 				"showParty", true,
@@ -1307,7 +1307,7 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local party = oUF:SpawnHeader(
-				"oUF_Party", nil, nil,
+				"oUF_Party", nil,
 				"showPlayer", C["Party"].ShowPlayer,
 				"showSolo", true,
 				"showParty", true,
@@ -1344,7 +1344,7 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local partyPet = oUF:SpawnHeader(
-				"oUF_PartyPet", "SecureGroupPetHeaderTemplate", nil,
+				"oUF_PartyPet", "SecureGroupPetHeaderTemplate",
 				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
@@ -1380,7 +1380,7 @@ function Module:CreateUnits()
 		-- stylua: ignore
 		local function CreateGroup(name, i)
 			local group = oUF:SpawnHeader(
-				name, nil, nil,
+				name, nil,
 				"showPlayer", true,
 				"showSolo", true,
 				"showParty", true,
@@ -1518,6 +1518,7 @@ local LegSlotID = GetInventorySlotInfo("LEGSSLOT")
 local chestSlotItem, legSlotItem -- local cache of the items
 
 local function OnUnitInventoryChanged(_, _, unit) -- limited to Mages only currently
+	print("Unit inventory changed")
 	if unit ~= "player" then
 		return
 	end

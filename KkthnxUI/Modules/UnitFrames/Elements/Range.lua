@@ -302,8 +302,18 @@ local function Update(self, event)
 	local element = self.RangeFader
 	local unit = self.unit
 
-	if not element then
+	-- REASON: Respect globally disabled range setting.
+	if not C["Unitframe"].Range then
+		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
+		self:SetAlpha(element.RangeAlpha)
+		if element.PostUpdate then
+			return element:PostUpdate(self, true)
+		end
 		return
+	end
+
+	if not unit then
+		unit = self.unit
 	end
 
 	-- clear these if we arent checking them (these are secret values on retail)
@@ -311,26 +321,30 @@ local function Update(self, event)
 
 	local exists = UnitExists(unit)
 	if self.forceInRange or (exists and unit == "player") then
-		element.RangeAlpha = element.insideAlpha
+		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
 	elseif self.forceNotInRange then
-		element.RangeAlpha = element.outsideAlpha
+		element.RangeAlpha = element.MinAlpha or element.outsideAlpha
 	elseif exists then
 		if UnitIsDeadOrGhost(unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and element.insideAlpha or element.outsideAlpha
+			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
 		elseif UnitCanAttack("player", unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 1) and element.insideAlpha or element.outsideAlpha
+			element.RangeAlpha = UnitInSpellsRange(unit, 1) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
 		elseif UnitIsUnit("pet", unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 4) and element.insideAlpha or element.outsideAlpha
+			element.RangeAlpha = UnitInSpellsRange(unit, 4) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
 		elseif UnitIsConnected(unit) then
-			element.RangeAlpha = FriendlyInRange(unit, element) and element.insideAlpha or element.outsideAlpha
+			element.RangeAlpha = FriendlyInRange(unit) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
 		else
-			element.RangeAlpha = element.outsideAlpha
+			element.RangeAlpha = element.MinAlpha or element.outsideAlpha
 		end
 	else
-		element.RangeAlpha = element.insideAlpha
+		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
 	end
 
 	self:SetAlpha(element.RangeAlpha)
+
+	if element.PostUpdate then
+		return element:PostUpdate(self, element.RangeAlpha == (element.MaxAlpha or element.insideAlpha))
+	end
 end
 
 -- REASON: Overridable path for custom range checking logic.

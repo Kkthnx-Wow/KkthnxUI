@@ -60,7 +60,7 @@ local function AddLine(self, source, isCollectedText, type, noadd)
 		local line = _G[self:GetName() .. "TextLeft" .. i]
 		if line then
 			local text = line:GetText()
-			if text == type then
+			if text and K.NotSecretValue(text) == type then
 				return
 			end
 		end

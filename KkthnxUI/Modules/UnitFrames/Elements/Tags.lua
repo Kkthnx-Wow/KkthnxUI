@@ -89,6 +89,11 @@ local function GetHealthColor(percentage)
 	return K.RGBToHex(r, g, b) .. string_format("%d", percentage)
 end
 
+local function CheckUnitStatus(func, unit)
+	local status = func(unit)
+	return K.NotSecretValue(status) and status
+end
+
 -- REASON: Formats health value, appending percentage if below 100%.
 local function FormatHealthValue(health, percentage)
 	local formattedValue = K.ShortValue(health)
@@ -170,9 +175,9 @@ end
 oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FACTION UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["afkdnd"] = function(unit)
-	if UnitIsAFK(unit) and K.NotSecretValue(UnitIsAFK(unit)) then
+	if CheckUnitStatus(UnitIsAFK, unit) then
 		return "|cffCFCFCF <" .. AFK .. ">|r"
-	elseif UnitIsDND(unit) and K.NotSecretValue(UnitIsDND(unit)) then
+	elseif CheckUnitStatus(UnitIsDND, unit) then
 		return "|cffCFCFCF <" .. DND .. ">|r"
 	else
 		return ""

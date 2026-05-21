@@ -265,94 +265,96 @@ local function initObject(unit, style, styleFunc, header, ...)
 		local objectUnit = object:GetAttribute("oUF-guessUnit") or unit
 		local suffix = object:GetAttribute("unitsuffix")
 
-		-- Handle the case where someone has modified the unitsuffix attribute in
-		-- oUF-initialConfigFunction.
-		if suffix and not objectUnit:match(suffix) then
-			objectUnit = objectUnit .. suffix
-		end
-
-		object.__elements = {}
-		object.style = style
-		object = setmetatable(object, frame_metatable)
-
-		-- Expose the frame through oUF.objects.
-		table.insert(objects, object)
-
-		-- We have to force update the frames when PEW fires.
-		-- It's also important to evaluate units before running an update
-		-- because sometimes events that are required for unit updates end up
-		-- not firing because of loading screens. For instance, there's a slight
-		-- delay between UNIT_EXITING_VEHICLE and UNIT_EXITED_VEHICLE during
-		-- which a user can go through a loading screen after which the player
-		-- frame will be stuck with the 'vehicle' unit.
-		object:RegisterEvent("PLAYER_ENTERING_WORLD", evalUnitAndUpdate, true)
-
-		if not objectUnit:match("%w+target") then
-			object:RegisterEvent("UNIT_ENTERED_VEHICLE", evalUnitAndUpdate)
-			object:RegisterEvent("UNIT_EXITED_VEHICLE", evalUnitAndUpdate)
-
-			-- We don't need to register UNIT_PET for the player unit. We register it
-			-- mainly because UNIT_EXITED_VEHICLE and UNIT_ENTERED_VEHICLE don't always
-			-- have pet information when they fire for party and raid units.
-			if objectUnit ~= "player" then
-				object:RegisterEvent("UNIT_PET", updatePet)
+		if objectUnit then
+			-- Handle the case where someone has modified the unitsuffix attribute in
+			-- oUF-initialConfigFunction.
+			if suffix and not objectUnit:match(suffix) then
+				objectUnit = objectUnit .. suffix
 			end
-		end
 
-		if not header then
-			-- No header means it's a frame created through :Spawn().
-			object:SetAttribute("*type1", "target")
-			object:SetAttribute("*type2", "togglemenu")
-			object:SetAttribute("toggleForVehicle", true)
+			object.__elements = {}
+			object.style = style
+			object = setmetatable(object, frame_metatable)
 
-			if objectUnit:match("%w+target") then
-				oUF:HandleEventlessUnit(object)
-			else
-				oUF:HandleUnit(object)
-			end
-		else
-			-- update the frame when its prev unit is replaced with a new one
-			-- updateRaid relies on UnitGUID to detect the unit change
-			object:RegisterEvent("GROUP_ROSTER_UPDATE", updateRaid, true)
+			-- Expose the frame through oUF.objects.
+			table.insert(objects, object)
 
-			if num > 1 then
-				if object:GetParent() == header then
-					object.hasChildren = true
-				else
-					object.isChild = true
+			-- We have to force update the frames when PEW fires.
+			-- It's also important to evaluate units before running an update
+			-- because sometimes events that are required for unit updates end up
+			-- not firing because of loading screens. For instance, there's a slight
+			-- delay between UNIT_EXITING_VEHICLE and UNIT_EXITED_VEHICLE during
+			-- which a user can go through a loading screen after which the player
+			-- frame will be stuck with the 'vehicle' unit.
+			object:RegisterEvent("PLAYER_ENTERING_WORLD", evalUnitAndUpdate, true)
+
+			if not objectUnit:match("%w+target") then
+				object:RegisterEvent("UNIT_ENTERED_VEHICLE", evalUnitAndUpdate)
+				object:RegisterEvent("UNIT_EXITED_VEHICLE", evalUnitAndUpdate)
+
+				-- We don't need to register UNIT_PET for the player unit. We register it
+				-- mainly because UNIT_EXITED_VEHICLE and UNIT_ENTERED_VEHICLE don't always
+				-- have pet information when they fire for party and raid units.
+				if objectUnit ~= "player" then
+					object:RegisterEvent("UNIT_PET", updatePet)
 				end
 			end
 
-			if suffix == "target" then
-				oUF:HandleEventlessUnit(object)
+			if not header then
+				-- No header means it's a frame created through :Spawn().
+				object:SetAttribute("*type1", "target")
+				object:SetAttribute("*type2", "togglemenu")
+				object:SetAttribute("toggleForVehicle", true)
+
+				if objectUnit:match("%w+target") then
+					oUF:HandleEventlessUnit(object)
+				else
+					oUF:HandleUnit(object)
+				end
+			else
+				-- update the frame when its prev unit is replaced with a new one
+				-- updateRaid relies on UnitGUID to detect the unit change
+				object:RegisterEvent("GROUP_ROSTER_UPDATE", updateRaid, true)
+
+				if num > 1 then
+					if object:GetParent() == header then
+						object.hasChildren = true
+					else
+						object.isChild = true
+					end
+				end
+
+				if suffix == "target" then
+					oUF:HandleEventlessUnit(object)
+				end
 			end
-		end
 
-		Private.UpdateUnits(object, objectUnit)
+			Private.UpdateUnits(object, objectUnit)
 
-		styleFunc(object, objectUnit, not header)
+			styleFunc(object, objectUnit, not header)
 
-		object:HookScript("OnAttributeChanged", onAttributeChanged)
+			object:HookScript("OnAttributeChanged", onAttributeChanged)
 
-		-- NAME_PLATE_UNIT_ADDED fires after the frame is shown, so there's no
-		-- need to call UAE multiple times
-		if not object.isNamePlate then
-			object:SetScript("OnShow", onShow)
-		end
+			-- NAME_PLATE_UNIT_ADDED fires after the frame is shown, so there's no
+			-- need to call UAE multiple times
+			if not object.isNamePlate then
+				object:SetScript("OnShow", onShow)
+			end
 
-		activeElements[object] = {}
-		for element in next, elements do
-			object:EnableElement(element, objectUnit)
-		end
+			activeElements[object] = {}
+			for element in next, elements do
+				object:EnableElement(element, objectUnit)
+			end
 
-		for _, func in next, callback do
-			func(object)
-		end
+			for _, func in next, callback do
+				func(object)
+			end
 
-		-- Make Clique kinda happy
-		if not object.isNamePlate then
-			_G.ClickCastFrames = _G.ClickCastFrames or {}
-			_G.ClickCastFrames[object] = true
+			-- Make Clique kinda happy
+			if not object.isNamePlate then
+				_G.ClickCastFrames = _G.ClickCastFrames or {}
+				_G.ClickCastFrames[object] = true
+			end
 		end
 	end
 end
