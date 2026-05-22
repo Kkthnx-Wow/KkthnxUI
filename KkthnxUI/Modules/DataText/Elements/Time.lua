@@ -49,9 +49,7 @@ local UIParent = _G.UIParent
 local date = date
 local ipairs = ipairs
 local math_floor = math.floor
-local math_max = math.max
 local mod = mod
-local next = next
 local pairs = pairs
 local select = select
 local string_find = string.find
@@ -59,7 +57,6 @@ local string_format = string.format
 local string_match = string.match
 local time = time
 local tonumber = tonumber
-local unpack = unpack
 
 -- ---------------------------------------------------------------------------
 -- State & Constants
@@ -69,7 +66,6 @@ local isTimeWalker = false
 local walkerTexture
 local onUpdateTimer = 3
 local currentTime
-local isMoverSized = false
 
 local DELVES_KEYS = { 91175, 91176, 91177, 91178 }
 local keyInfo = C_CurrencyInfo_GetCurrencyInfo(3028)
@@ -81,14 +77,14 @@ local BFA_ZONE_TIME = { ["CN"] = 1546743600, ["EU"] = 1546768800, ["US"] = 15467
 local region = GetCVar("portal")
 local invIndex = {
 	[1] = {
-		title = L["Legion Invasion"],
+		title = L["Legion Invasion"] or "Legion Invasion",
 		duration = 52200,
 		maps = { 630, 641, 650, 634 },
 		timeTable = {},
 		baseTime = LEGION_ZONE_TIME[region] or LEGION_ZONE_TIME["CN"],
 	},
 	[2] = {
-		title = L["Faction Assault"],
+		title = L["Faction Assault"] or "Faction Assault",
 		duration = 68400,
 		maps = { 862, 863, 864, 896, 942, 895 },
 		timeTable = { 4, 1, 6, 2, 5, 3 },
@@ -106,8 +102,8 @@ local mapAreaPoiIDs = {
 	[864] = 5970,
 	[896] = 5964,
 	[942] = 5966,
-	[104] = 5896, -- Note: 104 was [895] in original, wait, 895? Let me check
-} -- Original was [895] = 5896. Line 104. Fixed.
+	[895] = 5896,
+}
 
 local QUEST_LIST = {
 	{ name = L["Feast of Winter Veil"], id = 6983 },
@@ -199,6 +195,11 @@ end
 local function getInvasionInfo(mapID)
 	-- REASON: Retrieves time left and zone name for a specific map's invasion point.
 	local areaPoiID = mapAreaPoiIDs[mapID]
+	if not areaPoiID then
+		-- NOTE: Guard against mapIDs not present in mapAreaPoiIDs to prevent
+		-- C_AreaPoiInfo_GetAreaPOISecondsLeft crashing with a nil argument.
+		return nil, nil
+	end
 	local secondsLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID)
 	local mapData = C_Map_GetMapInfo(mapID)
 	return secondsLeft, mapData and mapData.name

@@ -221,6 +221,15 @@ function Module:OnTooltipCleared()
 		self.factionFrame:Hide()
 	end
 
+	-- REASON: Reset border to default class color on every tooltip clear so that
+	-- quality coloring from a previous item doesn't bleed into the next tooltip
+	-- (e.g. moving from a rare item to a battle-pet tooltip). Matches NDui pattern.
+	-- NOTE: Guard on self.bg, not self.bg.KKUI_Border, to avoid indexing a nil table
+	-- when OnTooltipCleared fires before the tooltip has ever been skinned.
+	if self.bg then
+		K.SetBorderColor(self.bg.KKUI_Border)
+	end
+
 	-- GameTooltip_ClearMoney(self)
 	-- GameTooltip_ClearStatusBars(self)
 	-- GameTooltip_ClearProgressBars(self)
@@ -559,7 +568,10 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 	end
 end
 
--- REASON: Main function to apply KkthnxUI borders and quality colors to various tooltips.
+-- REASON: Main function to apply KkthnxUI borders to various tooltips.
+-- NOTE: Only handles one-time border frame creation. Quality coloring is done
+-- separately in UpdateTooltipBorderColor (Item post-call), which fires AFTER
+-- OnTooltipCleared so the color is never wiped by a tooltip data refresh.
 function Module:ReskinTooltip()
 	if not self then
 		if K.isDeveloper then
@@ -604,26 +616,35 @@ function Module:ReskinTooltip()
 
 		self.tipStyled = true
 	end
+end
 
-	if not self.bg.KKUI_Border then
+-- REASON: Applies quality color to the tooltip border after item data is populated.
+-- Registered as a TooltipDataProcessor Item post-call so it runs AFTER OnTooltipCleared
+-- has already reset the border — ensuring the quality color is never wiped mid-frame.
+function Module:UpdateTooltipBorderColor()
+	if not self or self:IsForbidden() then
+		return
+	end
+
+	if not (self.bg and self.bg.KKUI_Border) then
 		return
 	end
 
 	if C["Tooltip"].ClassColor then
-		-- NOTE: GetDisplayedItem internally calls IsTooltipType, which is nil on
-		-- non-standard tooltip frames (e.g. BattlePetTooltip). Use pcall to guard
-		-- against this crash without blocking the rest of the reskin path.
+		-- NOTE: GetDisplayedItem calls IsTooltipType internally, which is nil on
+		-- non-standard frames (e.g. BattlePetTooltip). pcall prevents the crash.
 		local ok, _, link = pcall(GetDisplayedItem, self)
 		if ok and link then
 			local quality = C_Item.GetItemQualityByID(link)
 			local color = K.QualityColors[quality or 1]
 			if color then
 				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+				return
 			end
 		end
-	else
-		K.SetBorderColor(self.bg.KKUI_Border)
 	end
+	-- Fallback: reset to default border color (no item / no matching quality).
+	K.SetBorderColor(self.bg.KKUI_Border)
 end
 
 -- REASON: FIX: Workaround for Blizzard's recipe item name wrapping issues.
@@ -701,6 +722,10 @@ function Module:OnEnable()
 	hooksecurefunc(GameTooltip.StatusBar, "UpdateUnitHealth", Module.RefreshStatusBar)
 	TooltipDataProcessor.AddLinePreCall(Enum.TooltipDataLineType.None, Module.UpdateFactionLine)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.FixRecipeItemNameWidth)
+	-- REASON: Register quality-color update as an Item post-call so it fires AFTER
+	-- OnTooltipCleared has reset the border. This prevents the color flash-then-wipe
+	-- that occurs when coloring in ReskinTooltip (OnShow).
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.UpdateTooltipBorderColor)
 
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
@@ -746,40 +771,40 @@ K:RegisterEvent("ADDON_LOADED", addonStyled)
 -- REASON: Skins a wide array of Blizzard and Addon tooltips.
 Module:RegisterTooltips("KkthnxUI", function()
 	local tooltips = {
-		_G.ChatMenu,
-		_G.EmoteMenu,
-		_G.LanguageMenu,
-		_G.VoiceMacroMenu,
-		_G.GameTooltip,
-		_G.EmbeddedItemTooltip,
-		_G.ItemRefTooltip,
-		_G.ItemRefShoppingTooltip1,
-		_G.ItemRefShoppingTooltip2,
-		_G.ShoppingTooltip1,
-		_G.ShoppingTooltip2,
-		_G.AutoCompleteBox,
-		_G.FriendsTooltip,
-		_G.QuestScrollFrame.StoryTooltip,
-		_G.QuestScrollFrame.CampaignTooltip,
-		_G.GeneralDockManagerOverflowButtonList,
-		_G.ReputationParagonTooltip,
-		_G.NamePlateTooltip,
-		_G.QueueStatusFrame,
-		_G.FloatingGarrisonFollowerTooltip,
-		_G.FloatingGarrisonFollowerAbilityTooltip,
-		_G.FloatingGarrisonMissionTooltip,
-		_G.GarrisonFollowerAbilityTooltip,
-		_G.GarrisonFollowerTooltip,
-		_G.FloatingGarrisonShipyardFollowerTooltip,
-		_G.GarrisonShipyardFollowerTooltip,
-		_G.BattlePetTooltip,
-		_G.PetBattlePrimaryAbilityTooltip,
-		_G.PetBattlePrimaryUnitTooltip,
-		_G.FloatingBattlePetTooltip,
-		_G.FloatingPetBattleAbilityTooltip,
-		_G.IMECandidatesFrame,
-		_G.QuickKeybindTooltip,
-		_G.GameSmallHeaderTooltip,
+		ChatMenu,
+		EmoteMenu,
+		LanguageMenu,
+		VoiceMacroMenu,
+		GameTooltip,
+		EmbeddedItemTooltip,
+		ItemRefTooltip,
+		ItemRefShoppingTooltip1,
+		ItemRefShoppingTooltip2,
+		ShoppingTooltip1,
+		ShoppingTooltip2,
+		AutoCompleteBox,
+		FriendsTooltip,
+		QuestScrollFrame.StoryTooltip,
+		QuestScrollFrame.CampaignTooltip,
+		GeneralDockManagerOverflowButtonList,
+		ReputationParagonTooltip,
+		NamePlateTooltip,
+		QueueStatusFrame,
+		FloatingGarrisonFollowerTooltip,
+		FloatingGarrisonFollowerAbilityTooltip,
+		FloatingGarrisonMissionTooltip,
+		GarrisonFollowerAbilityTooltip,
+		GarrisonFollowerTooltip,
+		FloatingGarrisonShipyardFollowerTooltip,
+		GarrisonShipyardFollowerTooltip,
+		BattlePetTooltip,
+		PetBattlePrimaryAbilityTooltip,
+		PetBattlePrimaryUnitTooltip,
+		FloatingBattlePetTooltip,
+		FloatingPetBattleAbilityTooltip,
+		IMECandidatesFrame,
+		QuickKeybindTooltip,
+		GameSmallHeaderTooltip,
 	}
 
 	for _, f in pairs(tooltips) do
