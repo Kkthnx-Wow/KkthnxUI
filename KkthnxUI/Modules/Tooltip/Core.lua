@@ -31,10 +31,6 @@ local BOSS = _G.BOSS
 local error = _G.error
 local format = _G.format
 local C_ChallengeMode_GetDungeonScoreRarityColor = _G.C_ChallengeMode and _G.C_ChallengeMode.GetDungeonScoreRarityColor
-local C_Item_GetItemInfo = _G.C_Item and _G.C_Item.GetItemInfo
-local C_Item_GetItemLinkByGUID = _G.C_Item and _G.C_Item.GetItemLinkByGUID
-local C_PetBattles_GetAuraInfo = _G.C_PetBattles.GetAuraInfo
-local C_PetBattles_GetNumAuras = _G.C_PetBattles.GetNumAuras
 local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = _G.C_PlayerInfo and _G.C_PlayerInfo.GetPlayerMythicPlusRatingSummary
 local CreateFrame = _G.CreateFrame
 local DAMAGE = _G.DAMAGE
@@ -98,7 +94,6 @@ local UnitRealmRelationship = _G.UnitRealmRelationship
 local UnitTokenFromGUID = _G.UnitTokenFromGUID
 local YOU = _G.YOU
 local hooksecurefunc = _G.hooksecurefunc
-
 local GetDisplayedItem = TooltipUtil and TooltipUtil.GetDisplayedItem
 
 local classification = {
@@ -567,6 +562,10 @@ end
 -- REASON: Main function to apply KkthnxUI borders and quality colors to various tooltips.
 function Module:ReskinTooltip()
 	if not self then
+		if K.isDeveloper then
+			print("Unknown tooltip spotted.")
+		end
+
 		return
 	end
 
@@ -586,19 +585,36 @@ function Module:ReskinTooltip()
 		self.bg:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -2, 2)
 		self.bg:SetFrameLevel(self:GetFrameLevel())
 		self.bg:CreateBorder()
+		K.SetBorderColor(self.bg.KKUI_Border)
 
 		if self.StatusBar then
 			Module.ReskinStatusBar(self)
 		end
 
+		local header = self.CompareHeader
+		if header then
+			header:StripTextures()
+			local bg = header:CreateTexture(nil, "ARTWORK")
+			bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
+			bg:SetTexCoord(0, 0.66, 0, 0.31)
+			bg:SetVertexColor(K.r, K.g, K.b, 0.8)
+			bg:SetPoint("BOTTOM", 0, -4)
+			bg:SetSize(100, 30)
+		end
+
 		self.tipStyled = true
 	end
 
-	K.SetBorderColor(self.bg.KKUI_Border)
+	if not self.bg.KKUI_Border then
+		return
+	end
 
 	if C["Tooltip"].ClassColor then
-		local _, link = GetDisplayedItem(self)
-		if link then
+		-- NOTE: GetDisplayedItem internally calls IsTooltipType, which is nil on
+		-- non-standard tooltip frames (e.g. BattlePetTooltip). Use pcall to guard
+		-- against this crash without blocking the rest of the reskin path.
+		local ok, _, link = pcall(GetDisplayedItem, self)
+		if ok and link then
 			local quality = C_Item.GetItemQualityByID(link)
 			local color = K.QualityColors[quality or 1]
 			if color then
@@ -612,15 +628,13 @@ end
 
 -- REASON: FIX: Workaround for Blizzard's recipe item name wrapping issues.
 function Module:FixRecipeItemNameWidth()
-	if not self.GetName then
-		return
-	end
-
-	local name = self:GetName()
-	for i = 1, self:NumLines() do
-		local line = _G[name .. "TextLeft" .. i]
-		if line and K.NotSecretValue(line:GetWidth()) and line:GetHeight() > 40 then
-			line:SetWidth(line:GetWidth() + 2)
+	if self.GetName then
+		local name = self:GetName()
+		for i = 1, self:NumLines() do
+			local line = _G[name .. "TextLeft" .. i]
+			if line and K.NotSecretValue(line:GetWidth()) and line:GetHeight() > 40 then
+				line:SetWidth(line:GetWidth() + 2)
+			end
 		end
 	end
 end
@@ -698,7 +712,7 @@ function Module:OnEnable()
 	local loadTooltipModules = {
 		"CreateTooltipIcons",
 		"CreateTooltipID",
-		"CreateMountSource",
+		-- "CreateMountSource",
 	}
 
 	for _, funcName in ipairs(loadTooltipModules) do

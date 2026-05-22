@@ -9,6 +9,7 @@ C["ActionBar"] = {
 	Macro = true,
 	Grid = true,
 	Cooldown = true,
+	CDFormat = 1,   -- 1=ColoredTenths, 2=ColoredWhole, 3=PlainTenths, 4=PlainWhole, 5=Disabled
 	MmssTH = 60,
 	TenthTH = 3,
 	OverrideWA = false,

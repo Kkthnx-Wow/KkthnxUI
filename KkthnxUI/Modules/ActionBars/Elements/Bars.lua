@@ -457,6 +457,7 @@ function Module:OnEnable()
 		"UpdateBarVisibility",
 		"UpdateAllSize",
 		"HideBlizz",
+		"OnEnableCooldown", -- REASON: Hooks cooldown formatter after bars are created.
 	}
 
 	for _, funcName in ipairs(loadActionBarModules) do

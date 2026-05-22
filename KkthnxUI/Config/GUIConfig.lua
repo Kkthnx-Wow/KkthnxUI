@@ -108,9 +108,35 @@ local function CreateActionBarsCategory()
 	GUI:CreateSwitch(togglesSection, "ActionBar.MicroMenu", L["Enable MicroBar"], L["MicroMenu Desc"])
 	GUI:CreateSwitch(togglesSection, "ActionBar.FadeMicroMenu", L["Mouseover MicroBar"], L["FadeMicroMenu Desc"])
 	GUI:CreateSwitch(togglesSection, "ActionBar.OverrideWA", L["Enable OverrideWA"], L["OverrideWA Desc"])
-	GUI:CreateSlider(togglesSection, "ActionBar.MmssTH", L["MMSSThreshold"], 60, 600, 1, L["MMSSThresholdTip"])
-	GUI:CreateSlider(togglesSection, "ActionBar.TenthTH", L["TenthThreshold"], 0, 60, 1, L["TenthThresholdTip"])
+
+	-- Cooldown Format
+	-- REASON: Dropdown for CDFormat maps to breakpoint presets in Cooldown.lua.
+	-- Index 5 disables the custom formatter entirely.
+	local function UpdateCooldownFormat()
+		local cooldownModule = K:GetModule("ActionBar")
+		if cooldownModule and cooldownModule.UpdateCooldownFormat then
+			cooldownModule:UpdateCooldownFormat()
+		end
+	end
+
+	local cdFormatSection = GUI:AddSection(actionBarCategory, L["Cooldown Format"] or "Cooldown Format")
+	local cdFormatOptions = {
+		{ text = L["Colored (Tenths)"]  or "Colored + Tenths",  value = 1 },
+		{ text = L["Colored (Whole)"]   or "Colored (Whole)",   value = 2 },
+		{ text = L["Plain (Tenths)"]    or "Plain + Tenths",     value = 3 },
+		{ text = L["Plain (Whole)"]     or "Plain (Whole)",      value = 4 },
+		{ text = DISABLE,                                         value = 5 },
+	}
+	GUI:CreateDropdown(
+		cdFormatSection,
+		"ActionBar.CDFormat",
+		L["Cooldown Number Format"] or "Cooldown Number Format",
+		cdFormatOptions,
+		L["CDFormat Desc"] or "Choose how cooldown timers are displayed on action buttons.\n\nColored modes apply red/yellow/dark-gold to urgency ranges.\nTenths modes show one decimal place below 3 seconds.\nDisable removes the custom formatter entirely.",
+		UpdateCooldownFormat
+	)
 end
+
 
 -- Announcements
 local function CreateAnnouncementsCategory()

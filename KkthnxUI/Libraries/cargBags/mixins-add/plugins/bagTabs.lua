@@ -204,8 +204,8 @@ cargBags:RegisterPlugin("BagTab", function(self, bags, account)
 			end
 
 			for _, data in pairs(self.purchasedBankTabData) do
-				if _G["NDuiBagTab_ID" .. data.ID] then
-					_G["NDuiBagTab_ID" .. data.ID].Icon:SetTexture(data.icon)
+				if _G["KKUI_BagTab_ID" .. data.ID] then
+					_G["KKUI_BagTab_ID" .. data.ID].Icon:SetTexture(data.icon)
 				end
 			end
 		end)
