@@ -88,13 +88,25 @@ local Tracker = {
 
 if not UnitAura then
 	UnitAura = function(unitToken, index, filter)
-		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
-
+		local auraData = C_UnitAuras_GetAuraDataByIndex(unitToken, index, filter)
 		if not auraData then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		if K.IsSecretValue(auraData) then
+			return nil
+		end
+
+		if type(auraData) == "table" then
+			return auraData.name, auraData.icon, auraData.applications, auraData.dispelType, auraData.duration, auraData.expirationTime, auraData.source, auraData.isStealable, auraData.nameplateShowPersonal, auraData.spellId, auraData.canApplyAura, auraData.isBossAura, auraData.castByPlayer, auraData.nameplateShowAll, auraData.timeMod, auraData.points
+		elseif AuraUtil_UnpackAuraData then
+			local name, icon, count, dispelType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossAura, castByPlayer, nameplateShowAll, timeMod, points = AuraUtil_UnpackAuraData(auraData)
+			if name and K.NotSecretValue(name) then
+				return name, icon, count, dispelType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossAura, castByPlayer, nameplateShowAll, timeMod, points
+			end
+		end
+
+		return nil
 	end
 end
 

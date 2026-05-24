@@ -176,6 +176,10 @@ local lastTime = 0
 -- REASON: Event handler for inspect results and inventory updates.
 function Module:GetInspectInfo(...)
 	if self == "UNIT_INVENTORY_CHANGED" then
+		if InCombatLockdown() then
+			return
+		end
+
 		local thisTime = GetTime()
 		if thisTime - lastTime > 0.1 then
 			lastTime = thisTime
@@ -205,8 +209,7 @@ K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
 
 -- REASON: Injects or updates the item level line in the GameTooltip.
 function Module:SetupItemLevel(level)
-	local _, unit = GameTooltip:GetUnit()
-	if not unit or UnitGUID(unit) ~= currentGUID then
+	if not Module:UnitExists("mouseover") or UnitGUID("mouseover") ~= currentGUID then
 		return
 	end
 

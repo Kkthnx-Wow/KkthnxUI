@@ -28,7 +28,12 @@ Offline units are handled as if they are in range.
 local _, ns = ...
 local oUF = ns.oUF
 
-local function Update(self, event)
+local UnitInRange = UnitInRange
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+local UnitIsConnected = UnitIsConnected
+
+local function Update(self)
 	local element = self.Range
 	local unit = self.unit
 
@@ -37,15 +42,23 @@ local function Update(self, event)
 
 	* self - the Range element
 	--]]
-	if(element.PreUpdate) then
+	if element.PreUpdate then
 		element:PreUpdate()
 	end
 
-	local inRange
-	local isEligible = UnitIsConnected(unit) and UnitInParty(unit)
-	if(isEligible) then
-		inRange = UnitInRange(unit)
-		self:SetAlphaFromBoolean(inRange, element.insideAlpha, element.outsideAlpha)
+	local inRange, wasChecked
+	local connected = UnitIsConnected(unit)
+	local isEligible = connected and (UnitInParty(unit) or UnitInRaid(unit))
+	if isEligible then
+		inRange, wasChecked = UnitInRange(unit)
+
+		if oUF.isRetail then
+			self:SetAlphaFromBoolean(inRange, element.insideAlpha, element.outsideAlpha)
+		elseif wasChecked and not inRange then
+			self:SetAlpha(element.outsideAlpha)
+		else
+			self:SetAlpha(element.insideAlpha)
+		end
 	else
 		self:SetAlpha(element.insideAlpha)
 	end
@@ -58,8 +71,8 @@ local function Update(self, event)
 	* inRange    - indicates if the unit is within 40 yards of the player (boolean)
 	* isEligible - indicates if the unit is eligible for the range check (boolean)
 	--]]
-	if(element.PostUpdate) then
-		return element:PostUpdate(self, inRange, isEligible)
+	if element.PostUpdate then
+		return element:PostUpdate(self, inRange, isEligible, connected)
 	end
 end
 
@@ -70,23 +83,17 @@ local function Path(self, ...)
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	--]]
-	return (self.Range.Override or Update) (self, ...)
+	return (self.Range.Override or Update)(self, ...)
 end
 
-local function Enable(self, unit)
+local function Enable(self)
 	local element = self.Range
-	if(element) then
+	if element then
 		element.__owner = self
 		element.insideAlpha = element.insideAlpha or 1
 		element.outsideAlpha = element.outsideAlpha or 0.55
 
-		self:RegisterEvent('UNIT_IN_RANGE_UPDATE', Path)
-		self:RegisterEvent('UNIT_CONNECTION', Path)
-
-		if(unit == 'party' or unit == 'raid') then
-			self:RegisterEvent('PARTY_MEMBER_ENABLE', Path)
-			self:RegisterEvent('PARTY_MEMBER_DISABLE', Path)
-		end
+		self:RegisterEvent("UNIT_IN_RANGE_UPDATE", Path)
 
 		return true
 	end
@@ -94,14 +101,10 @@ end
 
 local function Disable(self)
 	local element = self.Range
-	if(element) then
+	if element then
 		self:SetAlpha(element.insideAlpha)
-
-		self:UnregisterEvent('UNIT_IN_RANGE_UPDATE', Path)
-		self:UnregisterEvent('UNIT_CONNECTION', Path)
-		self:UnregisterEvent('PARTY_MEMBER_ENABLE', Path)
-		self:UnregisterEvent('PARTY_MEMBER_DISABLE', Path)
+		self:UnregisterEvent("UNIT_IN_RANGE_UPDATE", Path)
 	end
 end
 
-oUF:AddElement('Range', Path, Enable, Disable)
+oUF:AddElement("Range", Path, Enable, Disable)

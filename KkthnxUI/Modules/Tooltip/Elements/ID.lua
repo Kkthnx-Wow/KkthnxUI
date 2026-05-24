@@ -10,37 +10,11 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
--- REASON: Localize globals for performance and stack safety.
-local _G = _G
-local tonumber = _G.tonumber
-local select = _G.select
-local string_match = _G.string.match
-local string_format = _G.string.format
-local hooksecurefunc = _G.hooksecurefunc
-
-local C_CurrencyInfo_GetCurrencyListLink = _G.C_CurrencyInfo.GetCurrencyListLink
-local C_Item = _G.C_Item
-local C_MountJournal_GetMountFromSpell = _G.C_MountJournal.GetMountFromSpell
-local C_UnitAuras = _G.C_UnitAuras
-local GameTooltip = _G.GameTooltip
-local ItemRefTooltip = _G.ItemRefTooltip
-
-local GetItemCount = _G.C_Item.GetItemCount
-local GetItemInfo = _G.C_Item.GetItemInfo
-local GetUnitName = _G.GetUnitName
-local IsPlayerSpell = _G.C_SpellBook.IsSpellKnown
-
-local ACHIEVEMENTS = _G.ACHIEVEMENTS
-local ALREADY_LEARNED = _G.ALREADY_LEARNED
-local BAGSLOT = _G.BAGSLOT
-local BANK = _G.BANK
-local CURRENCY = _G.CURRENCY
-local Enum = _G.Enum
-local ITEMS = _G.ITEMS
-local QUESTS_LABEL = _G.QUESTS_LABEL
-local SPELLS = _G.SPELLS
-local TALENT = _G.TALENT
-
+local strmatch, format, tonumber, select = string.match, string.format, tonumber, select
+local GetUnitName = GetUnitName
+local IsPlayerSpell = IsPlayerSpell
+local C_MountJournal_GetMountFromSpell = C_MountJournal.GetMountFromSpell
+local BAGSLOT, BANK, UNKNOWN = BAGSLOT, BANK, UNKNOWN
 local LEARNT_STRING = "|cffff0000" .. ALREADY_LEARNED .. "|r"
 
 local types = {
@@ -53,7 +27,6 @@ local types = {
 	azerite = L["Trait"] .. "ID:",
 }
 
--- REASON: Appends a line with the specific ID to the tooltip.
 function Module:AddLineForID(id, linkType, noadd)
 	if self:IsForbidden() then
 		return
@@ -80,6 +53,7 @@ function Module:AddLineForID(id, linkType, noadd)
 
 	if linkType == types.item then
 		local bagCount = C_Item.GetItemCount(id)
+		-- bank, ?, reagentbank, accountbank
 		local bankCount = C_Item.GetItemCount(id, true, nil, true, true) - bagCount
 		local itemStackCount = select(8, C_Item.GetItemInfo(id))
 		if bankCount > 0 then
@@ -87,7 +61,6 @@ function Module:AddLineForID(id, linkType, noadd)
 		elseif bagCount > 0 then
 			self:AddDoubleLine(BAGSLOT .. ":", K.InfoColor .. bagCount)
 		end
-
 		if itemStackCount and itemStackCount > 1 then
 			self:AddDoubleLine(L["Stack Cap"] .. ":", K.InfoColor .. itemStackCount)
 		end
@@ -97,17 +70,15 @@ function Module:AddLineForID(id, linkType, noadd)
 	self:Show()
 end
 
--- REASON: Utility to set ID info from a hyperlink.
 function Module:SetHyperLinkID(link)
 	if self:IsForbidden() then
 		return
 	end
-
 	if not link then
 		return
 	end
 
-	local linkType, id = string_match(link, "^(%a+):(%d+)")
+	local linkType, id = strmatch(link, "^(%a+):(%d+)")
 	if not linkType or not id then
 		return
 	end
@@ -150,10 +121,9 @@ function Module:CreateTooltipID()
 					self:Show()
 				end
 			else
-				local name, server = UnitName(caster)
-				local fullName = name .. (server and "-" .. server or "")
+				local name = GetUnitName(caster, true)
 				local hexColor = K.RGBToHex(K.UnitColor(caster))
-				self:AddDoubleLine(L["From"] .. ":", hexColor .. fullName)
+				self:AddDoubleLine(L["From"] .. ":", hexColor .. (name or UNKNOWN))
 				self:Show()
 			end
 		end
@@ -227,7 +197,6 @@ function Module:CreateTooltipID()
 		if self:IsForbidden() then
 			return
 		end
-
 		if data.id then
 			Module.AddLineForID(self, data.id, types.item)
 		end
@@ -240,7 +209,6 @@ function Module:CreateTooltipID()
 		if self:IsForbidden() then
 			return
 		end
-
 		if data.id then
 			Module.AddLineForID(self, data.id, types.currency)
 		end

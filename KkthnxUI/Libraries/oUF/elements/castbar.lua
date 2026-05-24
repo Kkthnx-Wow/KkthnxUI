@@ -110,7 +110,13 @@ end
 
 local function UpdatePips(element, stages)
 	local isHoriz = element:GetOrientation() == 'HORIZONTAL'
-	local elementSize = isHoriz and element:GetWidth() or element:GetHeight()
+	local elementSize = (isHoriz and element:GetWidth() or element:GetHeight()) or 0
+
+	if issecretvalue and issecretvalue(elementSize) then
+		elementSize = element.__cachedSize or (isHoriz and element.width or element.height) or 150
+	elseif elementSize > 0 then
+		element.__cachedSize = elementSize
+	end
 
 	local lastOffset = 0
 	for stage, stageSection in next, (stages or {}) do -- NDui: needs review
@@ -267,7 +273,14 @@ local function CastStart(self, event, unit)
 			ratio = 1
 		end
 
-		safeZone[isHoriz and 'SetWidth' or 'SetHeight'](safeZone, element[isHoriz and 'GetWidth' or 'GetHeight'](element) * ratio)
+		local size = (isHoriz and element:GetWidth() or element:GetHeight()) or 0
+		if issecretvalue and issecretvalue(size) then
+			size = element.__cachedSize or (isHoriz and element.width or element.height) or 150
+		elseif size > 0 then
+			element.__cachedSize = size
+		end
+
+		safeZone[isHoriz and 'SetWidth' or 'SetHeight'](safeZone, size * ratio)
 	end
 
 	if(element.empowering) then

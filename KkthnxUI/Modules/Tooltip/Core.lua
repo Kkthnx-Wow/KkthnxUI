@@ -110,7 +110,9 @@ local specPrefix = "|cffFFCC00" .. SPECIALIZATION .. ": " .. K.InfoColor
 function Module:GetUnit()
 	local data = self:GetTooltipData()
 	local guid = data and K.NotSecretValue(data.guid) and data.guid
-	local mouseover = UnitExists("mouseover") and "mouseover"
+	local mouseExists = UnitExists("mouseover")
+	if issecretvalue and issecretvalue(mouseExists) then mouseExists = nil end
+	local mouseover = mouseExists and "mouseover"
 	local unit = guid and UnitTokenFromGUID(guid) or mouseover
 	return unit, guid
 end
@@ -120,7 +122,10 @@ function Module:UnitExists(unit)
 		return
 	end
 
-	return unit and UnitExists(unit)
+	if not unit then return end
+	local exists = UnitExists(unit)
+	if issecretvalue and issecretvalue(exists) then exists = nil end
+	return exists
 end
 
 local FACTION_COLORS = {
@@ -473,8 +478,8 @@ function Module:RefreshStatusBar()
 		self.text = K.CreateFontString(self, 11, nil, "")
 	end
 	local unit = Module.GetUnit(self:GetParent())
-	local ok, value = pcall(UnitHealth, unit)
-	if ok and value then
+	local value = unit and UnitHealth(unit)
+	if value and K.NotSecretValue(value) then
 		self.text:SetText(K.ShortValue(value))
 	else
 		self.text:SetText("")
@@ -667,7 +672,7 @@ function Module:ResetUnit(btn)
 	end
 
 	if GameTooltip:IsShown() and btn == "LSHIFT" and Module:UnitExists("mouseover") then
-		GameTooltip:RefreshData()
+		securecall(GameTooltip.RefreshData, GameTooltip)
 	end
 end
 

@@ -50,7 +50,12 @@ local PhaseReason = Enum.PhaseReason
 
 -- REASON: Returns the unit token (partyN/raidN) for a given unit GUID/name if they are in your group.
 local function GetGroupUnit(unit)
-	if UnitIsUnit(unit, "player") then
+	local isPlayer = UnitIsUnit(unit, "player")
+	if K.IsSecretValue(isPlayer) then
+		isPlayer = nil
+	end
+
+	if isPlayer then
 		return
 	end
 
@@ -59,11 +64,22 @@ local function GetGroupUnit(unit)
 	end
 
 	-- REASON: Only scan group if unit isn't already a token.
-	if UnitInParty(unit) or UnitInRaid(unit) then
+	local inParty = UnitInParty(unit)
+	if K.IsSecretValue(inParty) then inParty = nil end
+
+	local inRaid = UnitInRaid(unit)
+	if K.IsSecretValue(inRaid) then inRaid = nil end
+
+	if inParty or inRaid then
 		local isInRaid = IsInRaid()
 		for i = 1, GetNumGroupMembers() do
 			local groupUnit = (isInRaid and "raid" or "party") .. i
-			if UnitIsUnit(unit, groupUnit) then
+			local isGroupUnit = UnitIsUnit(unit, groupUnit)
+			if K.IsSecretValue(isGroupUnit) then
+				isGroupUnit = nil
+			end
+
+			if isGroupUnit then
 				return groupUnit
 			end
 		end
@@ -270,7 +286,10 @@ end
 local function FriendlyInRange(realUnit, element)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
-	if UnitIsPlayer(unit) then
+	local isPlayer = UnitIsPlayer(unit)
+	if K.IsSecretValue(isPlayer) then isPlayer = nil end
+
+	if isPlayer then
 		local phaseReason = UnitPhaseReason(unit)
 		if phaseReason == PhaseReason.TimerunningHwt then
 			if not IsInInstance() then -- phased in open world (hero / nonhero) but not phased in dungeons
@@ -283,7 +302,13 @@ local function FriendlyInRange(realUnit, element)
 
 	local inRange, wasChecked = UnitInRange(unit)
 	if K.IsSecretValue(wasChecked) then
-		if element and (UnitInParty(unit) or UnitInRaid(unit)) then -- if its eligible
+		local inParty = UnitInParty(unit)
+		if K.IsSecretValue(inParty) then inParty = nil end
+
+		local inRaid = UnitInRaid(unit)
+		if K.IsSecretValue(inRaid) then inRaid = nil end
+
+		if element and (inParty or inRaid) then -- if its eligible
 			element.isInRange, element.checkedRange = inRange, wasChecked
 			return -- will be handled by these values so no need to proceed
 		end
@@ -324,14 +349,28 @@ local function Update(self, event)
 	elseif exists then
 		if UnitIsDeadOrGhost(unit) then
 			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
-		elseif UnitCanAttack("player", unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 1) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
-		elseif UnitIsUnit("pet", unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 4) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
-		elseif UnitIsConnected(unit) then
-			element.RangeAlpha = FriendlyInRange(unit) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
 		else
-			element.RangeAlpha = element.MinAlpha or element.outsideAlpha
+			-- REASON: UnitCanAttack and UnitIsUnit can return secret booleans in combat (taint).
+			-- Assigning to a local is safe; K.IsSecretValue (issecretvalue) accepts secret values.
+			-- We nil them out before the boolean test to avoid the taint error.
+			local canAttack = UnitCanAttack("player", unit)
+			if K.IsSecretValue(canAttack) then canAttack = nil end
+
+			local isPet = UnitIsUnit("pet", unit)
+			if K.IsSecretValue(isPet) then isPet = nil end
+
+			local isConnected = UnitIsConnected(unit)
+			if K.IsSecretValue(isConnected) then isConnected = nil end
+
+			if canAttack then
+				element.RangeAlpha = UnitInSpellsRange(unit, 1) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			elseif isPet then
+				element.RangeAlpha = UnitInSpellsRange(unit, 4) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			elseif isConnected then
+				element.RangeAlpha = FriendlyInRange(unit) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			else
+				element.RangeAlpha = element.MinAlpha or element.outsideAlpha
+			end
 		end
 	else
 		element.RangeAlpha = element.MaxAlpha or element.insideAlpha

@@ -93,22 +93,31 @@ local function removeBadBuffsNow(_, unit)
 	for i = 40, 1, -1 do
 		local auraData = C_UnitAuras_GetAuraDataByIndex("player", i, "HELPFUL")
 		if auraData then
-			local name, _, _, _, _, _, _, _, _, spellId
-			if AuraUtil_UnpackAuraData then
-				name, _, _, _, _, _, _, _, _, spellId = AuraUtil_UnpackAuraData(auraData)
+			if K.IsSecretValue(auraData) then
+				-- Skip secret auras to avoid any taint/secret errors
 			else
-				name = auraData.name
-				spellId = auraData.spellId
-			end
+				local name, spellId
+				if type(auraData) == "table" then
+					name = auraData.name
+					spellId = auraData.spellId
+				elseif AuraUtil_UnpackAuraData then
+					local n, _, _, _, _, _, _, _, _, s = AuraUtil_UnpackAuraData(auraData)
+					if K.NotSecretValue(n) then
+						name, spellId = n, s
+					end
+				end
 
-			local aura = {
-				name = name,
-				spellId = spellId,
-			}
+				if name and K.NotSecretValue(name) and K.NotSecretValue(spellId) then
+					local aura = {
+						name = name,
+						spellId = spellId,
+					}
 
-			if isBadAura(badList, aura) then
-				CancelSpellByName(name)
-				printRemoved(aura)
+					if isBadAura(badList, aura) then
+						CancelSpellByName(name)
+						printRemoved(aura)
+					end
+				end
 			end
 		end
 	end

@@ -56,7 +56,14 @@ local function Update(self, event, unit)
 	if(element.PreUpdate) then element:PreUpdate(unit) end
 
 	local guid = UnitGUID(unit)
-	local isAvailable = UnitIsConnected(unit) and UnitIsVisible(unit)
+
+	local connected = UnitIsConnected(unit)
+	if issecretvalue and issecretvalue(connected) then connected = nil end
+
+	local visible = UnitIsVisible(unit)
+	if issecretvalue and issecretvalue(visible) then visible = nil end
+
+	local isAvailable = connected and visible
 
 	local hasStateChanged = event ~= 'OnUpdate'
 		or (not issecretvalue(guid) and not issecretvalue(element.guid) and element.guid ~= guid)
