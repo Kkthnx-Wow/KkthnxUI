@@ -52,7 +52,7 @@ local function Update(self)
 	if isEligible then
 		inRange, wasChecked = UnitInRange(unit)
 
-		if oUF.isRetail then
+		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 			self:SetAlphaFromBoolean(inRange, element.insideAlpha, element.outsideAlpha)
 		elseif wasChecked and not inRange then
 			self:SetAlpha(element.outsideAlpha)
