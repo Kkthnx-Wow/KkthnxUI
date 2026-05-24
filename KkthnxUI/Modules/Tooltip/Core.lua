@@ -95,6 +95,7 @@ local UnitTokenFromGUID = _G.UnitTokenFromGUID
 local YOU = _G.YOU
 local hooksecurefunc = _G.hooksecurefunc
 local GetDisplayedItem = TooltipUtil and TooltipUtil.GetDisplayedItem
+local ShouldUnitIdentityBeSecret = C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret
 
 local classification = {
 	worldboss = string_format("|cffAF5050 %s|r", BOSS),
@@ -111,7 +112,9 @@ function Module:GetUnit()
 	local data = self:GetTooltipData()
 	local guid = data and K.NotSecretValue(data.guid) and data.guid
 	local mouseExists = UnitExists("mouseover")
-	if issecretvalue and issecretvalue(mouseExists) then mouseExists = nil end
+	if issecretvalue and issecretvalue(mouseExists) then
+		mouseExists = nil
+	end
 	local mouseover = mouseExists and "mouseover"
 	local unit = guid and UnitTokenFromGUID(guid) or mouseover
 	return unit, guid
@@ -122,9 +125,13 @@ function Module:UnitExists(unit)
 		return
 	end
 
-	if not unit then return end
+	if not unit then
+		return
+	end
 	local exists = UnitExists(unit)
-	if issecretvalue and issecretvalue(exists) then exists = nil end
+	if issecretvalue and issecretvalue(exists) then
+		exists = nil
+	end
 	return exists
 end
 
@@ -742,7 +749,7 @@ function Module:OnEnable()
 	local loadTooltipModules = {
 		"CreateTooltipIcons",
 		"CreateTooltipID",
-		-- "CreateMountSource",
+		"CreateMountSource",
 	}
 
 	for _, funcName in ipairs(loadTooltipModules) do
