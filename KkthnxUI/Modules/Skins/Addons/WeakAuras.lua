@@ -56,6 +56,10 @@ local function CreateIconBackground(parent)
 end
 
 local function ReskinWAIcon(icon)
+	if not icon or icon.bg then
+		return
+	end
+
 	UpdateIconTexCoord(icon)
 	hooksecurefunc(icon, "SetTexCoord", UpdateIconTexCoord)
 	icon.bg = CreateIconBackground(icon)
@@ -79,7 +83,7 @@ local function Skin_WeakAuras(f, fType)
 		f.styled = true
 	end
 
-	if fType == "aurabar" then
+	if fType == "aurabar" and f.icon and f.icon.bg then
 		f.icon.bg:SetShown(not not f.iconVisible)
 	end
 end
@@ -110,7 +114,7 @@ local function ReskinWeakAuras()
 			local parent = icon:GetParent()
 			if parent then
 				local region = parent.regionType and parent or parent:GetParent()
-				if region.regionType then
+				if region and region.regionType then
 					Skin_WeakAuras(region, region.regionType)
 				end
 			end

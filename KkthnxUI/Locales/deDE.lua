@@ -1,4 +1,4 @@
-local K, L = KkthnxUI[1], KkthnxUI[3]
+local _, _ = KkthnxUI[1], KkthnxUI[3]
 
 local GetLocale = GetLocale
 

@@ -105,9 +105,13 @@ function Module:ReskinButtonForge()
 		if event == "BUTTON_ALLOCATED" then
 			local bu = _G[button]
 			local icon = _G[button .. "Icon"]
-			ActionBar:StyleActionButton(bu, cfg)
-			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			icon.SetTexCoord = K.Noop
+			if bu then
+				ActionBar:StyleActionButton(bu, cfg)
+			end
+			if icon then
+				icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+				icon.SetTexCoord = K.Noop
+			end
 		end
 	end
 	ButtonForge_API1.RegisterCallback(callback)

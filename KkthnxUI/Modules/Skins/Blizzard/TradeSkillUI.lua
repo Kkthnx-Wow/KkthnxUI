@@ -12,7 +12,6 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G
 local TradeSkillFrame = _G.TradeSkillFrame
-local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 
 -- Function to skin the TradeSkillFrame Rank Bar
 local function SkinTradeSkillRankBar()

@@ -7,7 +7,7 @@
 -- - Events: ADD_CHART_ITEM_INFO (simulated), ADDON_LOADED
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K = KkthnxUI[1]
 local Module = K:GetModule("Miscellaneous")
 
 -- PERF: Localize global functions and environment for faster lookups.
@@ -21,10 +21,13 @@ local tonumber = _G.tonumber
 local _G = _G
 local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local C_Item_GetItemInfo = _G.C_Item.GetItemInfo
+local C_Item_IsCosmeticItem = _G.C_Item.IsCosmeticItem
 local C_MerchantFrame_GetItemInfo = _G.C_MerchantFrame.GetItemInfo
 local C_PetJournal_GetNumCollectedInfo = _G.C_PetJournal.GetNumCollectedInfo
 local C_TooltipInfo_GetGuildBankItem = _G.C_TooltipInfo.GetGuildBankItem
 local C_TooltipInfo_GetHyperlink = _G.C_TooltipInfo.GetHyperlink
+local C_TransmogCollection_GetItemInfo = _G.C_TransmogCollection and _G.C_TransmogCollection.GetItemInfo
+local C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance = _G.C_TransmogCollection and _G.C_TransmogCollection.PlayerHasTransmogItemModifiedAppearance
 local GetBuybackItemInfo = _G.GetBuybackItemInfo
 local GetBuybackItemLink = _G.GetBuybackItemLink
 local GetCurrentGuildBankTab = _G.GetCurrentGuildBankTab
@@ -58,7 +61,18 @@ local function isPetSpeciesCollected(speciesID)
 		return
 	end
 	local numOwned = C_PetJournal_GetNumCollectedInfo(speciesID)
-	return numOwned > 0
+	return numOwned and numOwned > 0
+end
+
+local function isCosmeticCollected(link)
+	if not (C_TransmogCollection_GetItemInfo and C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance) then
+		return
+	end
+
+	local _, sourceID = C_TransmogCollection_GetItemInfo(link)
+	if sourceID and sourceID ~= 0 then
+		return C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance(sourceID) and true or false
+	end
 end
 
 -- REASON: Determines if an item is already known by checking pet journal collection or scanning tooltip data for "Already Known" strings.
@@ -87,7 +101,16 @@ local function isItemAlreadyKnown(link, index)
 			if KNOWN_ITEMS_CACHE[link] then
 				return true
 			end
-			if not KNOWABLE_CLASSES[itemClassID] then
+
+			if C_Item_IsCosmeticItem and C_Item_IsCosmeticItem(link) then
+				local collected = isCosmeticCollected(link)
+				if collected ~= nil then
+					KNOWN_ITEMS_CACHE[link] = collected or nil
+					return collected
+				end
+			end
+
+			if not KNOWABLE_CLASSES[itemClassID] and not (C_Item_IsCosmeticItem and C_Item_IsCosmeticItem(link)) then
 				return
 			end
 
@@ -167,7 +190,7 @@ function Module:Buyback()
 end
 
 -- REASON: Injects "Already Known" coloring into the Guild Bank UI slots.
-function Module:GuildBank(guildBankFrame)
+function Module.GuildBank(guildBankFrame)
 	if guildBankFrame.mode ~= "bank" then
 		return
 	end
@@ -197,7 +220,7 @@ function Module:GuildBank(guildBankFrame)
 end
 
 -- REASON: Injects "Already Known" coloring into the new 10.0+ Auction House UI rows.
-function Module:AuctionHouse(auctionHouseFrame)
+function Module.AuctionHouse(auctionHouseFrame)
 	local scrollTarget = auctionHouseFrame.ScrollTarget
 	for childIndex = 1, scrollTarget:GetNumChildren() do
 		local rowFrame = select(childIndex, scrollTarget:GetChildren())
@@ -231,21 +254,44 @@ function Module:AuctionHouse(auctionHouseFrame)
 	end
 end
 
-do
-	local addonLoadHookCount = 0
-	-- REASON: Listens for Blizzard UI modules to load so that custom hooks can be applied to frames like the Auction House and Guild Bank.
-	function Module:ADDON_LOADED(addonEvent, addonName)
-		if addonName == "Blizzard_AuctionHouseUI" then
-			hooksecurefunc(_G.AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, "Update", self.AuctionHouse)
-			addonLoadHookCount = addonLoadHookCount + 1
-		elseif addonName == "Blizzard_GuildBankUI" then
-			hooksecurefunc(_G.GuildBankFrame, "Update", self.GuildBank)
-			addonLoadHookCount = addonLoadHookCount + 1
-		end
+local auctionHouseHooked, guildBankHooked
 
-		if addonLoadHookCount == 2 then
-			K:UnregisterEvent("ADDON_LOADED", self.ADDON_LOADED)
-		end
+local function hookAuctionHouse()
+	if auctionHouseHooked then
+		return
+	end
+
+	local itemList = _G.AuctionHouseFrame and _G.AuctionHouseFrame.BrowseResultsFrame and _G.AuctionHouseFrame.BrowseResultsFrame.ItemList
+	local scrollBox = itemList and itemList.ScrollBox
+	if scrollBox then
+		hooksecurefunc(scrollBox, "Update", Module.AuctionHouse)
+		auctionHouseHooked = true
+	end
+end
+
+local function hookGuildBank()
+	if guildBankHooked then
+		return
+	end
+
+	if _G.GuildBankFrame then
+		hooksecurefunc(_G.GuildBankFrame, "Update", Module.GuildBank)
+		guildBankHooked = true
+	end
+end
+
+-- REASON: Listens for Blizzard UI modules to load so hooks are applied whether the addon loads early or late.
+-- COMPAT: Dot syntax (not colon). K:RegisterEvent dispatches func(event, ...), so a colon
+-- handler would bind `self` to "ADDON_LOADED" and shift addonName to nil.
+function Module.ADDON_LOADED(event, addonName)
+	if addonName == "Blizzard_AuctionHouseUI" then
+		hookAuctionHouse()
+	elseif addonName == "Blizzard_GuildBankUI" then
+		hookGuildBank()
+	end
+
+	if auctionHouseHooked and guildBankHooked then
+		K:UnregisterEvent(event, Module.ADDON_LOADED)
 	end
 end
 
@@ -257,5 +303,14 @@ function Module:CreateAlreadyKnown()
 
 	hooksecurefunc("MerchantFrame_UpdateMerchantInfo", self.Merchant)
 	hooksecurefunc("MerchantFrame_UpdateBuybackInfo", self.Buyback)
-	K:RegisterEvent("ADDON_LOADED", self.ADDON_LOADED)
+
+	if C_AddOns_IsAddOnLoaded("Blizzard_AuctionHouseUI") then
+		hookAuctionHouse()
+	end
+	if C_AddOns_IsAddOnLoaded("Blizzard_GuildBankUI") then
+		hookGuildBank()
+	end
+	if not (auctionHouseHooked and guildBankHooked) then
+		K:RegisterEvent("ADDON_LOADED", Module.ADDON_LOADED)
+	end
 end

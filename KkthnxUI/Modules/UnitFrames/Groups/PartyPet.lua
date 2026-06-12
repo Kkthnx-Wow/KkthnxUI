@@ -90,13 +90,13 @@ function Module:CreatePartyPet()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyPetTargetGlow, true)
 	end
 
-	-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-	-- self.DebuffHighlight:SetAllPoints(self.Health)
-	-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-	-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-	-- self.DebuffHighlight:SetBlendMode("ADD")
-	-- self.DebuffHighlightAlpha = 0.45
-	-- self.DebuffHighlightFilter = true
+	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.DebuffHighlight:SetAllPoints(self.Health)
+	self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+	self.DebuffHighlight:SetBlendMode("ADD")
+	self.DebuffHighlightAlpha = 0.45
+	self.DebuffHighlightFilter = true
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()

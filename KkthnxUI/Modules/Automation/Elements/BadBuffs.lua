@@ -13,12 +13,11 @@ local Module = K:GetModule("Automation")
 -- PERF: Localize globals to reduce lookup overhead.
 local C_Spell_GetSpellLink = C_Spell.GetSpellLink
 local C_UnitAuras_GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
-local CancelSpellByName = CancelSpellByName
+local CancelUnitBuff = CancelUnitBuff
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local next = next
 local string_format = string.format
-local AuraUtil_UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
 
 -- ---------------------------------------------------------------------------
 -- State
@@ -91,33 +90,11 @@ local function removeBadBuffsNow(_, unit)
 
 	-- PERF: Iterates backwards from 40 to safely handle buff removal shifts.
 	for i = 40, 1, -1 do
-		local auraData = C_UnitAuras_GetAuraDataByIndex("player", i, "HELPFUL")
-		if auraData then
-			if K.IsSecretValue(auraData) then
-				-- Skip secret auras to avoid any taint/secret errors
-			else
-				local name, spellId
-				if type(auraData) == "table" then
-					name = auraData.name
-					spellId = auraData.spellId
-				elseif AuraUtil_UnpackAuraData then
-					local n, _, _, _, _, _, _, _, _, s = AuraUtil_UnpackAuraData(auraData)
-					if K.NotSecretValue(n) then
-						name, spellId = n, s
-					end
-				end
-
-				if name and K.NotSecretValue(name) and K.NotSecretValue(spellId) then
-					local aura = {
-						name = name,
-						spellId = spellId,
-					}
-
-					if isBadAura(badList, aura) then
-						CancelSpellByName(name)
-						printRemoved(aura)
-					end
-				end
+		local aura = C_UnitAuras_GetAuraDataByIndex("player", i, "HELPFUL")
+		if aura then
+			if isBadAura(badList, aura) then
+				CancelUnitBuff("player", i)
+				printRemoved(aura)
 			end
 		end
 	end

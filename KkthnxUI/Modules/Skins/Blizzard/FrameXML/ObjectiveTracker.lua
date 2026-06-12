@@ -7,16 +7,14 @@
 -- - Events: N/A
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C = _G["KkthnxUI"][1], _G["KkthnxUI"][2]
 
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G
 local pairs = _G.pairs
-local tinsert = _G.table.insert
 local hooksecurefunc = _G.hooksecurefunc
 
 local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
-local ObjectiveTrackerFrame = _G.ObjectiveTrackerFrame
 
 local function SkinOjectiveTrackerHeaders(header)
 	if header and header.Background then
@@ -25,9 +23,16 @@ local function SkinOjectiveTrackerHeaders(header)
 end
 
 local function SetCollapsed(header, collapsed)
-	local MinimizeButton = header.MinimizeButton
+	local MinimizeButton = header and header.MinimizeButton
+	if not MinimizeButton then
+		return
+	end
+
 	local normalTexture = MinimizeButton:GetNormalTexture()
 	local pushedTexture = MinimizeButton:GetPushedTexture()
+	if not (normalTexture and pushedTexture) then
+		return
+	end
 
 	if collapsed then
 		normalTexture:SetAtlas("UI-QuestTrackerButton-Secondary-Expand", true)
@@ -40,25 +45,19 @@ end
 
 local function ReskinBarTemplate(bar)
 	-- bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	bar:SetStatusBarColor(K.r, K.g, K.b)
+	if bar then
+		bar:SetStatusBarColor(K.r, K.g, K.b)
+	end
 end
 
 local function HandleProgressBar(tracker, key)
-	local progressBar = tracker.usedProgressBars[key]
-	local bar = progressBar and progressBar.Bar
-
-	if bar then
-		ReskinBarTemplate(bar)
-	end
+	local progressBar = tracker.usedProgressBars and tracker.usedProgressBars[key]
+	ReskinBarTemplate(progressBar and progressBar.Bar)
 end
 
 local function HandleTimers(tracker, key)
-	local timerBar = tracker.usedTimerBars[key]
-	local bar = timerBar and timerBar.Bar
-
-	if bar then
-		ReskinBarTemplate(bar)
-	end
+	local timerBar = tracker.usedTimerBars and tracker.usedTimerBars[key]
+	ReskinBarTemplate(timerBar and timerBar.Bar)
 end
 
 -- REASON: Main entry point for Blizzard Objective Tracker skinning.
@@ -67,7 +66,7 @@ C.themes["Blizzard_ObjectiveTracker"] = function()
 		return
 	end
 
-	local TrackerFrame = _G.ObjectiveTrackerFrame
+	local TrackerFrame = _G["ObjectiveTrackerFrame"]
 	local TrackerHeader = TrackerFrame and TrackerFrame.Header
 	if TrackerHeader then
 		SkinOjectiveTrackerHeaders(TrackerHeader)
@@ -83,21 +82,27 @@ C.themes["Blizzard_ObjectiveTracker"] = function()
 	end
 
 	local trackers = {
-		_G.ScenarioObjectiveTracker,
-		_G.UIWidgetObjectiveTracker,
-		_G.CampaignQuestObjectiveTracker,
-		_G.QuestObjectiveTracker,
-		_G.AdventureObjectiveTracker,
-		_G.AchievementObjectiveTracker,
-		_G.MonthlyActivitiesObjectiveTracker,
-		_G.ProfessionsRecipeTracker,
-		_G.BonusObjectiveTracker,
-		_G.WorldQuestObjectiveTracker,
+		_G["ScenarioObjectiveTracker"],
+		_G["UIWidgetObjectiveTracker"],
+		_G["CampaignQuestObjectiveTracker"],
+		_G["QuestObjectiveTracker"],
+		_G["AdventureObjectiveTracker"],
+		_G["AchievementObjectiveTracker"],
+		_G["MonthlyActivitiesObjectiveTracker"],
+		_G["ProfessionsRecipeTracker"],
+		_G["BonusObjectiveTracker"],
+		_G["WorldQuestObjectiveTracker"],
 	}
 
 	for _, tracker in pairs(trackers) do
-		SkinOjectiveTrackerHeaders(tracker.Header)
-		hooksecurefunc(tracker, "GetProgressBar", HandleProgressBar)
-		hooksecurefunc(tracker, "GetTimerBar", HandleTimers)
+		if tracker then
+			SkinOjectiveTrackerHeaders(tracker.Header)
+			if tracker.GetProgressBar then
+				hooksecurefunc(tracker, "GetProgressBar", HandleProgressBar)
+			end
+			if tracker.GetTimerBar then
+				hooksecurefunc(tracker, "GetTimerBar", HandleTimers)
+			end
+		end
 	end
 end

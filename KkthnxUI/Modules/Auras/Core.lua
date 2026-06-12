@@ -29,6 +29,7 @@ local error = _G.error
 local ipairs = _G.ipairs
 local math_floor = _G.math.floor
 local pcall = _G.pcall
+local rawget = _G.rawget
 local select = _G.select
 local string_format = _G.string.format
 local string_match = _G.string.match
@@ -38,17 +39,53 @@ local type = _G.type
 local unpack = _G.unpack
 
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
+local C_UnitAuras_GetAuraApplicationDisplayCount = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraApplicationDisplayCount
+local C_UnitAuras_GetAuraDispelTypeColor = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDispelTypeColor
 local DAY, HOUR, MINUTE = 86400, 3600, 60
-
 local MIN_SPELL_COUNT, MAX_SPELL_COUNT = 2, 999
-local FALLBACK_COLOR = { r = 1, g = 1, b = 1 }
+
+local IsSecret = K.IsSecret
+
+-- MIDNIGHT (12.0): C_UnitAuras.GetAuraDispelTypeColor(unit, auraInstanceID, curve)
+-- requires a dispel ColorCurve as its 3rd argument; without it the call errors
+-- ("bad argument #3"). The curve lets us color debuff borders by dispel type
+-- without ever reading the now-secret dispelName field. Build it once, mirroring
+-- the oUF Auras element.
+local dispelColorCurve
+local function GetDispelColorCurve()
+	if dispelColorCurve ~= nil then
+		return dispelColorCurve or nil
+	end
+
+	local CurveUtil = _G.C_CurveUtil
+	local oUF = K.oUF
+	if not (CurveUtil and CurveUtil.CreateColorCurve and oUF and oUF.Enum and oUF.colors) then
+		dispelColorCurve = false -- mark as attempted so we don't retry every call
+		return nil
+	end
+
+	local curve = CurveUtil.CreateColorCurve()
+	if _G.Enum and _G.Enum.LuaCurveType then
+		curve:SetType(_G.Enum.LuaCurveType.Step)
+	end
+
+	for _, dispelIndex in next, oUF.Enum.DispelType do
+		local color = oUF.colors.dispel[dispelIndex]
+		if color then
+			curve:AddPoint(dispelIndex, color)
+		end
+	end
+
+	dispelColorCurve = curve
+	return curve
+end
 
 function Module:OnEnable()
 	local loadAuraModules = {
 		"HideBlizBuff",
 		"BuildBuffFrame",
 		"CreateTotems",
-		-- "CreateReminder", -- Broken 12.0
+		"CreateReminder",
 	}
 
 	-- PERF: Use ipairs for array iteration.
@@ -99,14 +136,6 @@ function Module:BuildBuffFrame()
 			reverseGrow = C["Auras"].ReverseDebuffs,
 		},
 	}
-
-	Module.DispelColorCurve = C_CurveUtil.CreateColorCurve()
-	Module.DispelColorCurve:SetType(Enum.LuaCurveType.Step)
-	for _, dispelIndex in next, K.oUF.Enum.DispelType do
-		if K.oUF.colors.dispel[dispelIndex] then
-			Module.DispelColorCurve:AddPoint(dispelIndex, K.oUF.colors.dispel[dispelIndex])
-		end
-	end
 
 	-- REASON: Initialize movers for custom positioning.
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
@@ -188,61 +217,87 @@ function Module:StartAuraTimer(button, timeLeft)
 	Module.UpdateTimer(button, 0)
 end
 
--- function Module:GetSpellStat(arg16, arg17, arg18)
--- 	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
--- end
+function Module:GetSpellStat(arg16, arg17, arg18)
+	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
+end
 
 function Module:UpdateAuras(button, index)
 	local unit, filter = button.header:GetAttribute("unit"), button.filter
-	local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+	local auraData = C_UnitAuras_GetAuraDataByIndex(unit, index, filter)
 	if not auraData then
 		return
 	end
-	--[[
-	if auraData.duration and auraData.expirationTime then
-		local timeLeft = auraData.expirationTime - GetTime()
-		if not button.timeLeft then
-			button.nextUpdate = -1
-			button.timeLeft = timeLeft
-			button:SetScript("OnUpdate", Module.UpdateTimer)
-		else
-			button.timeLeft = timeLeft
-		end
-		button.nextUpdate = -1
-		Module.UpdateTimer(button, 0)
+
+	local duration = auraData.duration
+	local expirationTime = auraData.expirationTime
+	local auraInstanceID = auraData.auraInstanceID
+
+	if not IsSecret(duration) and not IsSecret(expirationTime) and duration and expirationTime and duration > 0 then
+		Module:StartAuraTimer(button, expirationTime - _G.GetTime())
 	else
 		button.timeLeft = nil
 		button.timer:SetText("")
-	end
-]]
-	local auraDuration = unit and C_UnitAuras.GetAuraDuration(unit, auraData.auraInstanceID)
-	if auraDuration then
-		button.Cooldown:SetCooldownFromDurationObject(auraDuration)
-		button.Cooldown:Show()
-	else
-		button.Cooldown:Hide()
+		button:SetScript("OnUpdate", nil)
 	end
 
 	local count = auraData.applications
-	if K.IsSecretValue(count) then
-		button.count:SetText(C_UnitAuras.GetAuraApplicationDisplayCount(unit, auraData.auraInstanceID, MIN_SPELL_COUNT, MAX_SPELL_COUNT))
+	if IsSecret(count) and C_UnitAuras_GetAuraApplicationDisplayCount and auraInstanceID then
+		button.count:SetText(C_UnitAuras_GetAuraApplicationDisplayCount(unit, auraInstanceID, MIN_SPELL_COUNT, MAX_SPELL_COUNT))
+	elseif not IsSecret(count) and count and count > 1 then
+		button.count:SetText(count)
 	else
-		local hideCount = not count or (count < MIN_SPELL_COUNT or count > MAX_SPELL_COUNT)
-		button.count:SetText(hideCount and "" or count)
+		button.count:SetText("")
 	end
 
 	if filter == "HARMFUL" then
-		local color = C_UnitAuras.GetAuraDispelTypeColor(unit, auraData.auraInstanceID, Module.DispelColorCurve) or FALLBACK_COLOR
-		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+		local color
+		if C_UnitAuras_GetAuraDispelTypeColor and auraInstanceID then
+			local curve = GetDispelColorCurve()
+			if curve then
+				-- pcall: secret/forbidden auras can still make the C call throw.
+				local ok, result = pcall(C_UnitAuras_GetAuraDispelTypeColor, unit, auraInstanceID, curve)
+				if ok then
+					color = result
+				end
+			end
+		end
+
+		if not color then
+			local dispelName = auraData.dispelName
+			if not IsSecret(dispelName) then
+				color = DebuffTypeColor[dispelName or "none"]
+			end
+		end
+		color = color or DebuffTypeColor.none
+
+		-- The curve API returns a ColorMixin (has :GetRGB); the fallback tables expose r/g/b.
+		local r, g, b
+		if color.GetRGB then
+			r, g, b = color:GetRGB()
+		else
+			r, g, b = color.r, color.g, color.b
+		end
+		button.KKUI_Border:SetVertexColor(r, g, b)
 	else
-		button.KKUI_Border:SetVertexColor(1, 1, 1)
+		K.SetBorderColor(button.KKUI_Border)
 	end
 
-	button.spellID = auraData.spellId
+	-- Show spell stat for 'Soleahs Secret Technique'
+	local spellID = auraData.spellId
+	if not IsSecret(spellID) and spellID == 368512 then
+		local points = auraData.points
+		-- MIDNIGHT (12.0): points can itself be a secret table; guard before indexing.
+		if points and not IsSecret(points) then
+			local point1, point2, point3 = points[1], points[2], points[3]
+			if type(point1) == "number" and type(point2) == "number" and type(point3) == "number" and not IsSecret(point1) and not IsSecret(point2) and not IsSecret(point3) then
+				button.count:SetText(Module:GetSpellStat(unpack(points)))
+			end
+		end
+	end
+
+	button.spellID = not IsSecret(spellID) and spellID or nil
 	button.icon:SetTexture(auraData.icon)
 	button.expiration = nil
-	button.timeLeft = nil
-	button.timer:SetText("")
 end
 
 function Module:UpdateTempEnchant(button, index)
@@ -407,30 +462,16 @@ function Module:CreateAuraIcon(button)
 	button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
 	button.timer = button:CreateFontString(nil, "OVERLAY")
-	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 2)
+	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 5)
 	button.timer:SetFontObject(K.UIFontOutline)
 	button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
-
-	local cd = CreateFrame("Cooldown", "$parentCooldown", button, "CooldownFrameTemplate")
-	cd:SetReverse(true)
-	cd:SetEdgeTexture("Interface\\Cooldown\\edge")
-	cd:SetDrawSwipe(true) -- We need to push this for config later. FIX ME!
-	cd:SetDrawBling(false)
-	button.Cooldown = cd
-
-	local text = cd:GetRegions()
-	text:SetFontObject(K.UIFontOutline)
-	text:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
-	text:ClearAllPoints()
-	text:SetPoint("TOP", button, "BOTTOM", 1, 2)
-	button.CooldownText = text
 
 	button:StyleButton()
 	button:CreateBorder()
 
 	-- button:RegisterForClicks("RightButtonUp", "RightButtonDown")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
-	-- button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
+	button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
 	button:SetScript("OnEnter", Module.Button_OnEnter)
 	button:SetScript("OnLeave", K.HideTooltip)
 end

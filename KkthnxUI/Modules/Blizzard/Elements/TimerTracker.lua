@@ -56,5 +56,5 @@ function Module:CreateTimerTracker()
 		end
 	end
 
-	K:RegisterEvent("START_TIMER", updateTimerTracker, true)
+	K:RegisterEvent("START_TIMER", updateTimerTracker)
 end

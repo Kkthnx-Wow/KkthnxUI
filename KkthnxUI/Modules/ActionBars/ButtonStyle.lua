@@ -128,8 +128,6 @@ function Module:StyleActionButton(button)
 	local icon = button.icon
 	local cooldown = button.cooldown
 	local hotkey = button.HotKey
-	local count = button.Count
-	local name = button.Name
 	local flash = button.Flash
 	local border = button.Border
 	local normal = button.NormalTexture
@@ -143,7 +141,6 @@ function Module:StyleActionButton(button)
 	local iconMask = button.IconMask
 	local petShine = _G[buttonName .. "Shine"]
 	local autoCastable = button.AutoCastable
-	local autoCastOverlay = button.AutoCastOverlay
 
 	-- NOTE: Hide original Blizzard textures to prevent visual overlaps.
 	if normal then
@@ -189,10 +186,6 @@ function Module:StyleActionButton(button)
 		autoCastable:SetAllPoints()
 	end
 
-	if autoCastOverlay then
-		autoCastOverlay:SetAllPoints()
-	end
-
 	-- REASON: Setup custom icon and background border.
 	if icon then
 		icon:SetAllPoints()
@@ -211,12 +204,6 @@ function Module:StyleActionButton(button)
 	if cooldown then
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
-
-		local region = cooldown:GetRegions()
-		if region and region:IsObjectType("FontString") then
-			region:SetFontObject(Game16FontOutline)
-			button.cooldownText = region
-		end
 	end
 
 	-- NOTE: Apply custom textures for interaction states (Pushed, Checked, Highlight).
@@ -251,18 +238,6 @@ function Module:StyleActionButton(button)
 	if hotkey then
 		Module.UpdateHotKey(hotkey)
 		hooksecurefunc(hotkey, "SetText", Module.UpdateHotKey)
-	end
-
-	-- Cast VFX
-	local spellCastAnim = button.SpellCastAnimFrame
-	local spellCastFill = spellCastAnim and spellCastAnim.Fill
-	if spellCastFill then
-		spellCastFill.InnerGlowTexture:SetAllPoints(icon)
-		spellCastFill.InnerGlowTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	end
-
-	if button.lossOfControlCooldown then
-		button.lossOfControlCooldown:SetAllPoints()
 	end
 
 	button.__styled = true

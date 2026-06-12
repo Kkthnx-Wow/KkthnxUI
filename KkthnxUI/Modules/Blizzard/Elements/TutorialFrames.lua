@@ -7,18 +7,32 @@
 -- - Events: Hooked into HelpTip:Show and uses a delayed initialization check.
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Blizzard")
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
 local _G = _G
 local hooksecurefunc = hooksecurefunc
 local ipairs = ipairs
+local pcall = pcall
+local SetCVar = SetCVar
 local table_wipe = table.wipe
 
 -- ---------------------------------------------------------------------------
 -- Internal Logic
 -- ---------------------------------------------------------------------------
+local allowedHelpTips = {
+	[L["DurabilityHelpTip"]] = true,
+}
+
+local tutorialCVars = { "showTutorials", "showNPETutorials" }
+
+local function isAllowedHelpTip(frame)
+	local info = frame and frame.info
+	local text = info and info.text
+	return text and allowedHelpTips[text]
+end
+
 local function autoCompleteHelpTips()
 	-- REASON: Iterates through all active help tips and automatically acknowledges them to clear the UI.
 	local helpTipPool = _G.HelpTip and _G.HelpTip.framePool
@@ -27,9 +41,15 @@ local function autoCompleteHelpTips()
 	end
 
 	for frame in helpTipPool:EnumerateActive() do
-		if frame.Acknowledge then
+		if frame.Acknowledge and not isAllowedHelpTip(frame) then
 			frame:Acknowledge()
 		end
+	end
+end
+
+local function disableTutorialCVars()
+	for i = 1, #tutorialCVars do
+		pcall(SetCVar, tutorialCVars[i], "0")
 	end
 end
 
@@ -43,6 +63,7 @@ function Module:AutoDismissHelpTips()
 	if helpTip then
 		hooksecurefunc(helpTip, "Show", autoCompleteHelpTips)
 	end
+	disableTutorialCVars()
 	-- REASON: One-time delay check to catch any help tips that spawned during the initial loading process.
 	K.Delay(1, autoCompleteHelpTips)
 end

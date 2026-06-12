@@ -6,7 +6,7 @@ https://www.wowace.com/projects/libbuttonglow-1-0
 -- luacheck: globals CreateFromMixins ObjectPoolMixin CreateTexturePool CreateFramePool
 
 local MAJOR_VERSION = "LibCustomGlow-1.0-KkthnxUI"
-local MINOR_VERSION = 24
+local MINOR_VERSION = 20
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
 end
@@ -18,6 +18,7 @@ local Masque = LibStub("Masque", true)
 
 local fallbackLevel = 2 -- KkthnxUI: decreased from 8
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local issecretvalue = rawget(_G, "issecretvalue")
 local textureList = {
 	empty = [[Interface\AdventureMap\BrokenIsles\AM_29]],
 	white = [[Interface\BUTTONS\WHITE8X8]],
@@ -156,12 +157,7 @@ local function addFrameAndTex(r, color, name, key, N, xOffset, yOffset, texture,
 				f.textures[i]:SetBlendMode("ADD")
 			end
 		end
-		-- Handle both array format {r,g,b,a} and Color objects (for WoW 12.0 secret values)
-		if type(color) == "table" and color.GetRGBA then
-			f.textures[i]:SetVertexColor(color:GetRGBA())
-		else
-			f.textures[i]:SetVertexColor(color[1], color[2], color[3], color[4])
-		end
+		f.textures[i]:SetVertexColor(color[1], color[2], color[3], color[4])
 		f.textures[i]:Show()
 	end
 	while #f.textures > N do
@@ -364,7 +360,7 @@ table.insert(lib.glowList, "Pixel Glow")
 lib.startList["Pixel Glow"] = lib.PixelGlow_Start
 lib.stopList["Pixel Glow"] = lib.PixelGlow_Stop
 
---Autocast Glow Functions--
+--Autocast Glow Funcitons--
 local function acUpdate(self, elapsed)
 	local width, height = self:GetSize()
 	if width ~= self.info.width or height ~= self.info.height then
@@ -698,12 +694,7 @@ function lib.ButtonGlow_Start(r, color, frequency, frameLevel)
 		else
 			for texture in pairs(ButtonGlowTextures) do
 				f[texture]:SetDesaturated(1)
-				if type(color) == "table" and color.GetRGBA then
-					local r, g, b = color:GetRGBA()
-					f[texture]:SetVertexColor(r, g, b)
-				else
-					f[texture]:SetVertexColor(color[1], color[2], color[3])
-				end
+				f[texture]:SetVertexColor(color[1], color[2], color[3])
 				local alpha = math.min(f[texture]:GetAlpha() / noZero(f.color and f.color[4] or 1) * color[4], 1)
 				f[texture]:SetAlpha(alpha)
 				updateAlphaAnim(f, color and color[4] or 1)
@@ -735,12 +726,7 @@ function lib.ButtonGlow_Start(r, color, frequency, frameLevel)
 			f.color = color
 			for texture in pairs(ButtonGlowTextures) do
 				f[texture]:SetDesaturated(1)
-				if type(color) == "table" and color.GetRGBA then
-					local r, g, b = color:GetRGBA()
-					f[texture]:SetVertexColor(r, g, b)
-				else
-					f[texture]:SetVertexColor(color[1], color[2], color[3])
-				end
+				f[texture]:SetVertexColor(color[1], color[2], color[3])
 			end
 		end
 		f.throttle = throttle
@@ -748,17 +734,18 @@ function lib.ButtonGlow_Start(r, color, frequency, frameLevel)
 
 		f.animIn:Play()
 
-		if Masque and Masque.UpdateSpellAlert then
-			Masque:UpdateSpellAlert(r, f)
+		if Masque and Masque.UpdateSpellAlert and (not r.overlay or not issecurevariable(r, "overlay")) then
+			local old_overlay = r.overlay
+			r.overlay = f
+			Masque:UpdateSpellAlert(r)
+			r.overlay = old_overlay
 		end
 	end
 end
 
 function lib.ButtonGlow_Stop(r)
 	if r._ButtonGlow then
-		if r._ButtonGlow.animOut:IsPlaying() then
-			-- Do nothing the animOut finishing will release
-		elseif r._ButtonGlow.animIn:IsPlaying() then
+		if r._ButtonGlow.animIn:IsPlaying() then
 			r._ButtonGlow.animIn:Stop()
 			ButtonGlowPool:Release(r._ButtonGlow)
 		elseif r:IsVisible() then
@@ -959,7 +946,7 @@ table.insert(lib.glowList, "Proc Glow")
 lib.startList["Proc Glow"] = lib.ProcGlow_Start
 lib.stopList["Proc Glow"] = lib.ProcGlow_Stop
 
--- NDui
+-- KkthnxUI
 local LCG_GlowList = {
 	[1] = "Pixel Glow",
 	[2] = "Autocast Shine",
@@ -967,11 +954,10 @@ local LCG_GlowList = {
 	[4] = "Proc Glow",
 }
 local function GetGlowType()
-	local C = KkthnxUI and KkthnxUI[2]
+	local C = KkthnxUI[2]
 	if not C then
 		return
 	end
-
 	return LCG_GlowList[C["General"] and C["General"].GlowMode or 4]
 end
 

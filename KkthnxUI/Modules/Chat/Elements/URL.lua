@@ -4,7 +4,7 @@
 -- Notes:
 -- - Purpose: Detects URLs and IP addresses in chat and converts them into clickable hyperlinks.
 -- - Design: Hooks AddMessage to scan for URL patterns and hooks hyperlink clicks to copy URLs into the editbox.
--- - Events: Hooked into ChatFrame_OnHyperlinkShow
+-- - Events: Hooked into SetItemRef (Midnight; ChatFrame_OnHyperlinkShow was removed in 12.0).
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]
@@ -12,10 +12,11 @@ local Module = K:GetModule("Chat")
 
 -- PERF: Localize globals and API functions to minimize lookup overhead.
 local _G = _G
-local ChatEdit_ClearChat = _G.ChatEdit_ClearChat
 local ItemRefTooltip = _G.ItemRefTooltip
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS or 10
+local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
 local hooksecurefunc = hooksecurefunc
+local IsSecret = K.IsSecret
 local string_find = string.find
 local string_gsub = string.gsub
 local string_match = string.match
@@ -42,10 +43,6 @@ local function highlightURL(_, url)
 end
 
 function Module:SearchForURL(text, ...)
-	if not text or K.IsSecretValue(text) then
-		return self:addMsg(text, ...)
-	end
-
 	-- REASON: Scans the message text using multiple regex patterns for IP addresses, websites, and emails.
 	foundURL = false
 
@@ -85,17 +82,25 @@ function Module:SearchForURL(text, ...)
 	end
 
 	-- REASON: Call the original AddMessage (stored as .am) with the potentially modified text.
-	self:addMsg(text, ...)
+	return self.am(self, text, ...)
 end
 
 -- ---------------------------------------------------------------------------
 -- UI Callbacks
 -- ---------------------------------------------------------------------------
-function Module:SetItemRefHook(link, ...)
+-- MIDNIGHT (12.0): ChatFrame_OnHyperlinkShow was removed; hyperlink clicks now route
+-- through SetItemRef(link, text, button). Defined with a dot (no implicit self) so the
+-- hooksecurefunc post-hook receives SetItemRef's raw arguments.
+function Module.HyperlinkShowHook(link)
+	-- SECRET (12.0): chat links can be secret values inside instances; never parse them then.
+	if IsSecret(link) then
+		return
+	end
+
 	-- REASON: Intercepts custom 'url' hyperlinks and copies the URL into the active chat editbox.
 	local linkType, linkValue = string_match(link, "(%a+):(.+)")
 	if linkType == "url" then
-		local eb = _G.LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName() .. "EditBox"]
+		local eb = ChatEdit_ChooseBoxForSend()
 		if eb then
 			eb:Show()
 			eb:SetText(linkValue)
@@ -113,20 +118,21 @@ function Module:CreateCopyURL()
 	for i = 1, NUM_CHAT_WINDOWS do
 		if i ~= 2 then
 			local chatFrame = _G["ChatFrame" .. i]
-			chatFrame.addMsg = chatFrame.AddMessage
-			chatFrame.AddMessage = self.SearchForURL
+			if chatFrame and chatFrame.AddMessage then
+				chatFrame.am = chatFrame.AddMessage
+				chatFrame.AddMessage = self.SearchForURL
+			end
 		end
 	end
 
 	-- REASON: Prevent the default ItemRefTooltip from attempting to process custom 'url' links.
-	local orig = ItemRefTooltip.SetHyperlink
+	local originalSetHyperlink = ItemRefTooltip.SetHyperlink
 	function ItemRefTooltip:SetHyperlink(link, ...)
-		if link and strsub(link, 0, 3) == "url" then
+		if link and string_sub(link, 1, 3) == "url" then
 			return
 		end
-
-		return orig(self, link, ...)
+		return originalSetHyperlink(self, link, ...)
 	end
 
-	hooksecurefunc("SetItemRef", self.SetItemRefHook)
+	hooksecurefunc("SetItemRef", self.HyperlinkShowHook)
 end

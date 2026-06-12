@@ -6,37 +6,26 @@
 -- - Design: Uses oUF for unit frame management and Blizzard CVars for nameplate behavior.
 -----------------------------------------------------------------------------]]
 
-local K, C, L = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
 -- Lua functions
+local math_max = math.max
 local math_rad = math.rad
-local math_floor = math.floor
 local pairs = pairs
 local ipairs = ipairs
 local select = select
 local string_format = string.format
-local strmatch = string.match
 local table_wipe = table.wipe
 local tonumber = tonumber
 local tostring = tostring
 local unpack = unpack
 
-local function trim(str)
-	if not str then
-		return ""
-	end
-	return str:match("^%s*(.-)%s*$") or ""
-end
-
 -- WoW API
 local Ambiguate = Ambiguate
 local C_NamePlate_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
 local C_NamePlate_GetNamePlates = C_NamePlate.GetNamePlates
-local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
-local C_NamePlate_SetNamePlateEnemySize = C_NamePlate.SetNamePlateEnemySize
-local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
-local C_NamePlate_SetNamePlateFriendlySize = C_NamePlate.SetNamePlateFriendlySize
+local C_QuestLog_UnitIsRelatedToActiveQuest = C_QuestLog.UnitIsRelatedToActiveQuest
 local C_Scenario_GetInfo = C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = C_Scenario.GetStepInfo
 local C_ScenarioInfo_GetCriteriaInfo = C_ScenarioInfo.GetCriteriaInfo
@@ -72,9 +61,38 @@ local UnitName = UnitName
 local UnitNameplateShowsWidgetsOnly = UnitNameplateShowsWidgetsOnly
 local UnitPlayerControlled = UnitPlayerControlled
 local UnitReaction = UnitReaction
+local UnitSelectionType = UnitSelectionType
 local UnitThreatSituation = UnitThreatSituation
 local hooksecurefunc = hooksecurefunc
 local issecure = issecure
+local UnitHealthPercent = UnitHealthPercent
+local C_CurveUtil = C_CurveUtil
+local CreateColor = CreateColor
+
+local IsSecret = K.IsSecret
+
+-- SECRET (12.0): execute coloring is a comparison on health, which is secret in
+-- combat (exactly when execute matters). Instead of doing the math in Lua, drive a
+-- step color curve and let UnitHealthPercent(unit, true, curve) return a ColorMixin
+-- the engine evaluates internally. Mirrors NDui's executedCurve approach.
+local executedCurve = C_CurveUtil and C_CurveUtil.CreateColorCurve and C_CurveUtil.CreateColorCurve()
+if executedCurve then
+	executedCurve:SetType(Enum.LuaCurveType.Step)
+end
+
+function Module:UpdateExecuteCurve()
+	if not executedCurve then
+		return
+	end
+
+	local executeRatio = C["Nameplate"].ExecuteRatio or 0
+	local executeColor = C["Nameplate"].ExecuteColor
+	executedCurve:ClearPoints()
+	-- Above the execute threshold: normal white name text.
+	executedCurve:AddPoint(executeRatio / 100, CreateColor(1, 1, 1))
+	-- At/below the threshold: execute color (red by default).
+	executedCurve:AddPoint(0, CreateColor(executeColor[1], executeColor[2], executeColor[3]))
+end
 
 -- Custom data
 local mdtCacheData = {} -- Cache for data of abilities used by players
@@ -126,9 +144,9 @@ function Module:UpdatePlateCVars()
 
 	local settings = {
 		namePlateMinScale = C["Nameplate"].MinScale,
-		namePlateMaxScale = C["Nameplate"].MinScale,
+		namePlateMaxScale = C["Nameplate"].MaxScale,
 		nameplateMinAlpha = C["Nameplate"].MinAlpha,
-		nameplateMaxAlpha = C["Nameplate"].MinAlpha,
+		nameplateMaxAlpha = C["Nameplate"].MaxAlpha,
 		nameplateOverlapV = C["Nameplate"].VerticalSpacing,
 		nameplateShowOnlyNames = C["Nameplate"].CVarOnlyNames and 1 or 0,
 		nameplateShowFriendlyNPCs = C["Nameplate"].CVarShowNPCs and 1 or 0,
@@ -148,26 +166,42 @@ function Module:UpdateClickableSize()
 		return
 	end
 
-	-- REASON: Adjust the interactive area of the nameplates based on UI scale and settings.
-	local uiScale = C["General"].UIScale
-	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
-	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
-
-	C_NamePlate_SetNamePlateEnemySize(harmWidth * uiScale, harmHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(helpWidth * uiScale, helpHeight * uiScale)
-end
-
-function Module:UpdatePlateClickThru()
-	if InCombatLockdown() then
+	-- MIDNIGHT (12.0): the standalone C_NamePlate.SetNamePlate*Size and
+	-- SetNamePlate*ClickThrough APIs were removed. The new oUF nameplate driver owns
+	-- both: driver:SetSize() funnels into C_NamePlate.SetNamePlateSize, and the
+	-- enemyNonInteractible / friendlyNonInteractible fields drive
+	-- C_NamePlateManager.SetNamePlateHitTestInsets (the click-through replacement).
+	-- Going through the driver also means its internal updateDriver (fired on
+	-- PLAYER_LOGIN / Blizzard option refreshes) keeps our size instead of resetting to
+	-- the 200x30 default. Mirrors NDui's UF:UpdatePlateSize.
+	local driver = Module.NameplateDriver
+	if not driver then
 		return
 	end
 
-	-- REASON: Control whether nameplates can be clicked through in combat.
-	C_NamePlate_SetNamePlateEnemyClickThrough(C["Nameplate"].EnemyThru)
-	C_NamePlate_SetNamePlateFriendlyClickThrough(C["Nameplate"].FriendlyThru)
+	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
+	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
+
+	-- REASON: Set interactibility before SetSize so its updateDriver pass applies the
+	-- hit-test insets in one go. Friendly and hostile boxes can no longer be sized
+	-- separately, so use the larger configured box to avoid clipping either style.
+	-- MIDNIGHT (12.0): this is the clickable/base hit area, NOT the visual bar (the bar
+	-- is sized in CreatePlates via PlateWidth/PlateHeight). Pass the raw configured size
+	-- like NDui; multiplying by UIScale double-applies scale and mis-sizes the hit box.
+	driver.enemyNonInteractible = C["Nameplate"].EnemyThru
+	driver.friendlyNonInteractible = C["Nameplate"].FriendlyThru
+	driver:SetSize(math_max(harmWidth, helpWidth), math_max(harmHeight, helpHeight))
+end
+
+function Module:UpdatePlateClickThru()
+	-- MIDNIGHT (12.0): click-through is now an inset on the driver, applied together
+	-- with sizing. Re-run the unified driver update.
+	Module:UpdateClickableSize()
 end
 
 function Module:SetupCVars()
+	-- REASON: Build the execute color curve up front so UpdateColor always has points.
+	Module:UpdateExecuteCurve()
 	Module:UpdatePlateCVars()
 
 	-- REASON: Enforce various Blizzard CVars for consistent nameplate scaling and visibility.
@@ -196,7 +230,9 @@ function Module:SetupCVars()
 
 	Module:UpdateClickableSize()
 	-- WARNING: DBM and other addons might fight for these CVars; hook ensures our settings persist.
-	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
+	-- MIDNIGHT (12.0): hook UpdateNamePlateSize (the per-plate size/scale apply pass that
+	-- can reset our driver size) rather than UpdateNamePlateOptions, mirroring NDui.
+	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateSize", Module.UpdateClickableSize)
 	Module:UpdatePlateClickThru()
 end
 
@@ -227,6 +263,54 @@ end
 -- ---------------------------------------------------------------------------
 -- Tables & Data Management
 -- ---------------------------------------------------------------------------
+
+-- REASON: The aura-filter editor (ExtraGUI "Nameplate.AuraFilter") edits these plain
+-- data tables, which are NOT SavedVariables. Without re-applying the user's saved
+-- deltas at login, edits would vanish on /reload. Keep this list in sync with the
+-- editor's category dropdown.
+local AURA_FILTER_CATEGORIES = {
+	"NameplateWhiteList",
+	"NameplateBlackList",
+	"NameplateCustomUnits",
+	"NameplateTargetNPCs",
+	"NameplateTrashUnits",
+	"MajorSpells",
+}
+
+function Module:ApplyNameplateAuraOverrides()
+	if not KkthnxUIDB or type(KkthnxUIDB.Variables) ~= "table" then
+		return
+	end
+
+	local realmData = KkthnxUIDB.Variables[K.Realm]
+	local charData = realmData and realmData[K.Name]
+	local store = charData and charData.NameplateAuraFilters
+	if type(store) ~= "table" then
+		return
+	end
+
+	for i = 1, #AURA_FILTER_CATEGORIES do
+		local category = AURA_FILTER_CATEGORIES[i]
+		local catStore = store[category]
+		local baseTable = C[category]
+		-- WARNING: Mutate the existing table in place. Nameplates.lua captures some of
+		-- these by reference at file load (e.g. ShowTargetNPCs); reassigning would orphan them.
+		if type(catStore) == "table" and type(baseTable) == "table" then
+			-- Removals first so a (shouldn't-happen) id in both ends up present via the add pass.
+			if type(catStore.removed) == "table" then
+				for id in pairs(catStore.removed) do
+					baseTable[tonumber(id) or id] = nil
+				end
+			end
+			if type(catStore.added) == "table" then
+				for id in pairs(catStore.added) do
+					baseTable[tonumber(id) or id] = true
+				end
+			end
+		end
+	end
+end
+
 function Module:CreateUnitTable()
 	table_wipe(customUnits)
 	if not C["Nameplate"].CustomUnitColor then
@@ -326,6 +410,11 @@ local StyleFilters = {
 	[216365] = { scale = 1.25 }, -- Blood-Bound Horror
 }
 
+-- PERF: Reusable filter tables for the dynamic trash/target-NPC cases. ApplyStyleFilter runs on
+-- every UNIT_HEALTH tick (frequentUpdates); allocating these inline per call caused needless GC churn.
+local TRASH_UNIT_FILTER = { color = { 0.6, 0.6, 0.6 }, desaturate = true }
+local TARGET_NPC_FILTER = { scale = 1.2 }
+
 function Module:ApplyStyleFilter(unit)
 	local npcID = self.npcID
 	local name = self.unitName
@@ -333,7 +422,7 @@ function Module:ApplyStyleFilter(unit)
 
 	-- REASON: Reset style filter changes before applying new ones to prevent state leaking between units.
 	if self._styleFiltered then
-		self:SetScale(C["General"].UIScale)
+		self:SetScale(1)
 		local element = self.Health:GetStatusBarTexture()
 		if element and element.SetDesaturated then
 			element:SetDesaturated(false)
@@ -356,12 +445,22 @@ function Module:ApplyStyleFilter(unit)
 
 	-- REASON: Apply hardcoded style filters for specific high-priority NPCs.
 	if npcID then
-		local filter = StyleFilters[npcID] or (C.NameplateTrashUnits[npcID] and { color = { 0.6, 0.6, 0.6 }, desaturate = true }) or (ShowTargetNPCs[npcID] and { scale = 1.2, color = C["Nameplate"].TargetColor })
+		-- PERF: Resolve the filter without allocating; reuse shared tables for the dynamic cases.
+		local filter = StyleFilters[npcID]
+		if not filter then
+			if C.NameplateTrashUnits[npcID] then
+				filter = TRASH_UNIT_FILTER
+			elseif ShowTargetNPCs[npcID] then
+				TARGET_NPC_FILTER.color = C["Nameplate"].TargetColor
+				filter = TARGET_NPC_FILTER
+			end
+		end
 
 		if filter then
 			if filter.scale then
-				-- PERF: Cache scale calculations.
-				self:SetScale(filter.scale * C["General"].UIScale)
+				-- MIDNIGHT (12.0): apply the filter scale directly; the plate already
+				-- inherits UIParent scale, so multiplying by UIScale would shrink it.
+				self:SetScale(filter.scale)
 			end
 
 			if filter.color then
@@ -434,7 +533,14 @@ function Module:UpdateColor(_, unit)
 	end
 
 	local executeRatio = C["Nameplate"].ExecuteRatio
-	local healthPerc = healthMax > 0 and (health / healthMax) * 100 or 100
+	local useExecuteColor = false
+	-- SECRET (12.0): UnitHealth/UnitHealthMax can be secret while target changes
+	-- run through a tainted secure path. Execute coloring is logic, not display
+	-- routing, so skip it when we cannot legally inspect health values.
+	if not IsSecret(health) and not IsSecret(healthMax) and executeRatio > 0 then
+		local healthPerc = healthMax > 0 and (health / healthMax) * 100 or 100
+		useExecuteColor = not isFriendly and healthPerc <= executeRatio
+	end
 	local r, g, b
 
 	-- REASON: Style filters (custom units, priority NPCs, target coloring) have high priority.
@@ -449,7 +555,7 @@ function Module:UpdateColor(_, unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			-- 2. Tapping status (greyed out)
 			r, g, b = 0.6, 0.6, 0.6
-		elseif not isFriendly and executeRatio > 0 and healthPerc <= executeRatio then
+		elseif useExecuteColor then
 			-- 3. Execute phase coloring
 			local executeColor = C["Nameplate"].ExecuteColor
 			r, g, b = executeColor[1], executeColor[2], executeColor[3]
@@ -473,7 +579,7 @@ function Module:UpdateColor(_, unit)
 			end
 		else
 			-- 6. Selection Type coloring (Retail primary, provides more granular NPC/Guard colors)
-			local selection = _G.UnitSelectionType and _G.UnitSelectionType(unit, true)
+			local selection = UnitSelectionType and UnitSelectionType(unit, true)
 			if selection then
 				-- REASON: Special handling for friendly NPCs/Guards to match specific selection colors.
 				if selection == 3 then
@@ -533,10 +639,18 @@ function Module:UpdateColor(_, unit)
 	end
 
 	-- REASON: Update name text color for units in execute range for immediate feedback.
-	local useExecuteColor = not isFriendly and executeRatio > 0 and healthPerc <= executeRatio
-	if useExecuteColor ~= self._lastExecuteColor then
-		self._lastExecuteColor = useExecuteColor
-		self.nameText:SetTextColor(useExecuteColor and 1 or 1, useExecuteColor and 0 or 1, useExecuteColor and 0 or 1)
+	-- SECRET (12.0): UnitHealthPercent(unit, true, curve) returns a ColorMixin the
+	-- engine evaluates from the (secret) health internally, so execute feedback keeps
+	-- working in combat without us ever comparing health in Lua. Mirrors NDui.
+	if executedCurve and C["Nameplate"].ExecuteRatio > 0 and not isFriendly then
+		local healthColor = UnitHealthPercent(unit, true, executedCurve)
+		if healthColor then
+			self.nameText:SetTextColor(healthColor:GetRGB())
+		end
+		self._lastExecuteColor = nil
+	elseif self._lastExecuteColor ~= false then
+		self._lastExecuteColor = false
+		self.nameText:SetTextColor(1, 1, 1)
 	end
 end
 
@@ -598,7 +712,7 @@ function Module:UpdateTargetChange()
 
 	-- REASON: Immediately update threat color for the new target for responsive visual feedback.
 	-- This ensures that the target color or style filter applied to the target is updated instantly.
-	Module.UpdateThreatColor(self, _, unit)
+	Module.UpdateThreatColor(self, nil, unit)
 end
 
 function Module:UpdateTargetIndicator()
@@ -703,45 +817,6 @@ function Module:QuestIconCheck()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", checkInstanceStatus)
 end
 
--- REASON: Localize quest objective keywords for different languages to improve detection accuracy.
-local questKeywords = {
-	KILL = {
-		"slain",
-		"destroy",
-		"eliminate",
-		"repel",
-		"kill",
-		"defeat",
-		"消灭",
-		"摧毁",
-		"击败",
-		"毁灭",
-		"击退",
-	},
-	CHAT = { "speak", "talk", "交谈", "谈一谈" },
-	LOOT = { "collect", "gather", "retrieve", "收集", "寻找", "获取" },
-}
-
-local function getQuestType(text)
-	local lowerText = text:lower()
-	for _, keyword in ipairs(questKeywords.KILL) do
-		if lowerText:find(keyword:lower()) then
-			return "KILL"
-		end
-	end
-	for _, keyword in ipairs(questKeywords.CHAT) do
-		if lowerText:find(keyword:lower()) then
-			return "CHAT"
-		end
-	end
-	for _, keyword in ipairs(questKeywords.LOOT) do
-		if lowerText:find(keyword:lower()) then
-			return "LOOT"
-		end
-	end
-	return "DEFAULT"
-end
-
 function Module:UpdateQuestUnit(_, unit)
 	if not C["Nameplate"].QuestIndicator then
 		return
@@ -755,30 +830,57 @@ function Module:UpdateQuestUnit(_, unit)
 	end
 
 	unit = unit or self.unit
-	local questProgress, questType
-	local iconStyle = C["Nameplate"].QuestIconStyle
+	local questProgress
+	local isPartyQuest = false
+	local isPlayerQuest = false
 
 	-- REASON: Parse the unit tooltip to find quest objectives and progress.
 	local data = C_TooltipInfo_GetUnit(unit)
 	if data then
+		local currentPlayerIsPlayer = true
+		local playerName = K.Name
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
+			-- REASON: Type 7 lines in C_TooltipInfo represent QuestPlayer.
+			-- SECRET (12.0): tooltip text on instance units is secret; comparing or
+			-- string-matching a secret string throws, so guard with IsSecret first
+			-- (mirrors NDui's B:NotSecretValue() check before strmatch).
+			if lineData.type == 7 then
+				local linePlayerName = lineData.leftText
+				if linePlayerName and not IsSecret(linePlayerName) then
+					currentPlayerIsPlayer = linePlayerName == playerName
+				end
+			end
 			-- REASON: Type 8 lines in C_TooltipInfo typically represent quest objectives.
 			if lineData.type == 8 then
 				local text = lineData.leftText
-				if text then
+				if text and not IsSecret(text) then
 					local current, goal = text:match("(%d+)%s*/%s*(%d+)")
 					local progress = text:match("(%d+)%%")
+
 					if current and goal then
 						local diff = tonumber(goal) - tonumber(current)
 						if diff > 0 then
-							questProgress = diff
-							questType = getQuestType(text)
+							if not questProgress or currentPlayerIsPlayer then
+								questProgress = current .. "/" .. goal
+							end
+							if currentPlayerIsPlayer then
+								isPlayerQuest = true
+							else
+								isPartyQuest = true
+							end
 						end
 					elseif progress then
-						if tonumber(progress) < 100 then
-							questProgress = (100 - tonumber(progress)) .. "%"
-							questType = getQuestType(text)
+						local progressNum = tonumber(progress)
+						if progressNum and progressNum < 100 then
+							if not questProgress or currentPlayerIsPlayer then
+								questProgress = progressNum .. "%"
+							end
+							if currentPlayerIsPlayer then
+								isPlayerQuest = true
+							else
+								isPartyQuest = true
+							end
 						end
 					end
 				end
@@ -788,28 +890,25 @@ function Module:UpdateQuestUnit(_, unit)
 
 	if questProgress then
 		self.questCount:SetText(questProgress)
-		if iconStyle == 2 then
-			if questType == "CHAT" then
-				self.questIcon:SetTexture(C["Media"].Textures.ChatBubbleIcon)
-				self.questIcon:SetVertexColor(unpack(C["Nameplate"].QuestChatColor))
-			elseif questType == "LOOT" then
-				self.questIcon:SetTexture(C["Media"].Textures.QuestIcon)
-				self.questIcon:SetVertexColor(unpack(C["Nameplate"].QuestItemColor))
-			elseif questType == "KILL" then
-				self.questIcon:SetTexture(C["Media"].Textures.SkullIcon)
-				self.questIcon:SetVertexColor(unpack(C["Nameplate"].QuestSkullColor))
-			else
-				self.questIcon:SetTexture(C["Media"].Textures.QuestIcon)
-				self.questIcon:SetVertexColor(1, 1, 1)
-			end
+		if not isPlayerQuest and isPartyQuest then
+			self.questCount:SetTextColor(0.67, 0.67, 0.67)
 		else
-			self.questIcon:SetTexture(C["Media"].Textures.QuestIcon)
-			self.questIcon:SetVertexColor(1, 1, 1)
+			self.questCount:SetTextColor(1, 1, 1)
 		end
-		self.questIcon:Show()
+		self.questIcon:Hide()
 	else
 		self.questCount:SetText("")
-		self.questIcon:Hide()
+		if C_QuestLog_UnitIsRelatedToActiveQuest(unit) or isPlayerQuest then
+			self.questIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\NameplateQuest.png")
+			self.questIcon:SetTexCoord(0, 0.5, 0.25, 0.75)
+			self.questIcon:Show()
+		elseif isPartyQuest then
+			self.questIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\NameplateQuest.png")
+			self.questIcon:SetTexCoord(0.5, 1, 0, 0.5)
+			self.questIcon:Show()
+		else
+			self.questIcon:Hide()
+		end
 	end
 end
 
@@ -824,8 +923,8 @@ function Module:AddQuestIcon(self)
 	self.questIcon:SetSize(18, 18)
 	self.questIcon:Hide()
 
-	self.questCount = K.CreateFontString(self, 12, "", nil, "LEFT", 0, 0)
-	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", 2, 0)
+	self.questCount = K.CreateFontString(self, 14, "", nil, "LEFT", 0, 0)
+	self.questCount:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 
 	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
 	self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdateQuestUnit, true)
@@ -883,8 +982,8 @@ end
 function Module:AddCreatureIcon(self)
 	-- REASON: Create an indicator for unit classification (Rare, Elite, World Boss).
 	local classifyIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	classifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 10, 0)
-	classifyIndicator:SetSize(16, 16)
+	classifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 8, 0)
+	classifyIndicator:SetSize(14, 14)
 	classifyIndicator:Hide()
 
 	self.ClassifyIndicator = classifyIndicator
@@ -1066,10 +1165,17 @@ end
 function Module:CreatePlates()
 	self.mystyle = "nameplate"
 
-	-- REASON: Initialize base nameplate dimensions and scale.
+	-- REASON: Initialize base nameplate dimensions.
+	-- MIDNIGHT (12.0): the oUF plate is parented to the Blizzard nameplate and already
+	-- inherits UIParent's effective scale, so an explicit SetScale(UIScale) double-scales
+	-- it (~0.5x) and shrinks all text. Mirror NDui, which leaves the plate at native scale.
+	-- MIDNIGHT (12.0): oUF's NAME_PLATE_UNIT_ADDED handler calls unitFrame:SetAllPoints()
+	-- (4 anchors filling the Blizzard base) BEFORE running this style function. We must
+	-- ClearAllPoints() first, otherwise those anchors stay active, SetSize is ignored, and
+	-- the plate stretches to the full driver/base size (oversized bars). Mirrors NDui.
 	self:SetSize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight)
+	self:ClearAllPoints()
 	self:SetPoint("CENTER")
-	self:SetScale(C["General"].UIScale)
 
 	-- Health Bar
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -1089,8 +1195,15 @@ function Module:CreatePlates()
 	self.Health.UpdateColor = Module.UpdateColor
 
 	if C["Nameplate"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
+
+	-- REASON: Health spark — anchored to the bar texture edge so it tracks smooth
+	-- animation perfectly. Hidden at full/zero health, dead, or offline, same as
+	-- all other unit frames. Nameplates are pooled/reused; the spark is created
+	-- once per plate and stays attached through unit reassignment.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
 
 	-- Text Elements
 	-- REASON: Use oUF tags for dynamic text updating (name, level, health, etc.).
@@ -1157,6 +1270,7 @@ function Module:CreatePlates()
 	self.Castbar.Text = K.CreateFontString(self.Castbar, 12, "", "", false, "LEFT", 0, -1)
 	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -5, 0)
 	self.Castbar.Text:SetJustifyH("LEFT")
+	self.Castbar.timeToHold = 0.5
 
 	self.Castbar.Icon = self.Castbar:CreateTexture(nil, "ARTWORK")
 	self.Castbar.Icon:SetSize(self:GetHeight() * 2 + 10, self:GetHeight() * 2 + 10)
@@ -1182,17 +1296,16 @@ function Module:CreatePlates()
 	self.Castbar.stageString:ClearAllPoints()
 	self.Castbar.stageString:SetPoint("TOPLEFT", self.Castbar.Icon, -2, 2)
 
-	self.Castbar.decimal = "%.1f"
 	self.Castbar.timeToHold = 0.5
-	self.Castbar.PostCastStart = Module.UpdateCastBarColor
-	self.Castbar.PostCastInterruptible = Module.UpdateCastBarColor
-	self.Castbar.PostCastStop = Module.Castbar_FailedColor
-	self.Castbar.PostCastFail = Module.Castbar_FailedColor
-	self.Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
+	self.Castbar.decimal = "%.1f"
+	self.Castbar.OnUpdate = Module.OnCastbarUpdate
+	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostCastUpdate = Module.PostCastUpdate
+	self.Castbar.PostCastStop = Module.PostCastStop
+	self.Castbar.PostCastFail = Module.PostCastFailed
+	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 	self.Castbar.CreatePip = Module.CreatePip
 	self.Castbar.PostUpdatePips = Module.PostUpdatePips
-	self.Castbar.CustomTimeText = Module.CustomTimeText
-	self.Castbar.CustomDelayText = Module.CustomTimeText
 
 	-- Raid Target Indicator
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
@@ -1234,11 +1347,11 @@ function Module:CreatePlates()
 		absorbBar:SetFrameLevel(frameLevel)
 		absorbBar:SetAlpha(0.5)
 		absorbBar:Hide()
-		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex1 = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex1:SetAllPoints(absorbBar:GetStatusBarTexture())
+		tex1:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
+		tex1:SetHorizTile(true)
+		tex1:SetVertTile(true)
 
 		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		overAbsorbBar:SetAllPoints()
@@ -1247,11 +1360,11 @@ function Module:CreatePlates()
 		overAbsorbBar:SetFrameLevel(frameLevel)
 		overAbsorbBar:SetAlpha(0.35)
 		overAbsorbBar:Hide()
-		local tex = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
+		tex2:SetHorizTile(true)
+		tex2:SetVertTile(true)
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, frame)
 		healAbsorbBar:SetPoint("TOP")
@@ -1263,11 +1376,11 @@ function Module:CreatePlates()
 		healAbsorbBar:SetFrameLevel(frameLevel)
 		healAbsorbBar:SetAlpha(0.35)
 		healAbsorbBar:Hide()
-		local tex = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
+		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
+		tex3:SetHorizTile(true)
+		tex3:SetVertTile(true)
 
 		local overAbsorb = self.Health:CreateTexture(nil, "OVERLAY", nil, 2)
 		overAbsorb:SetWidth(8)
@@ -1305,7 +1418,7 @@ function Module:CreatePlates()
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Auras.spacing = 4
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
-	self.Auras["growthY"] = "UP"
+	self.Auras["growth-y"] = "UP"
 
 	-- REASON: Adjust aura position if class resource bars are enabled on nameplates.
 	if C["Nameplate"].NameplateClassPower then
@@ -1380,17 +1493,19 @@ function Module:UpdateNameplateAuras()
 
 	local element = self.Auras
 	-- REASON: Dynamically adjust aura position and sizing when nameplate width or options change.
+	element:ClearAllPoints()
 	if C["Nameplate"].NameplateClassPower then
 		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + C["Nameplate"].PlateHeight)
+		element:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6 + C["Nameplate"].PlateHeight)
 	else
 		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
+		element:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 5)
 	end
 
 	element.numTotal = C["Nameplate"].MaxAuras
 	element.size = C["Nameplate"].AuraSize
 	element.showDebuffType = true
-	element:SetWidth(self:GetWidth())
-	element:SetHeight((element.size + element.spacing) * 2)
+	Module:UpdateAuraContainer(self:GetWidth(), element, element.numTotal)
 
 	element:ForceUpdate()
 end
@@ -1412,7 +1527,9 @@ function Module:UpdateNameplateSize()
 	self.nameText:UpdateTag()
 end
 
-function Module:RefreshNameplats()
+function Module:RefreshNameplates()
+	-- REASON: Rebuild the execute color curve so ratio/color setting changes apply.
+	Module:UpdateExecuteCurve()
 	-- REASON: Iterate through all active nameplates to apply global setting changes.
 	for nameplate in pairs(platesList) do
 		Module.UpdateNameplateSize(nameplate)
@@ -1425,7 +1542,7 @@ function Module:RefreshNameplats()
 end
 
 function Module:RefreshAllPlates()
-	Module:RefreshNameplats()
+	Module:RefreshNameplates()
 	Module:ResizeTargetPower()
 end
 
@@ -1453,6 +1570,7 @@ function Module:UpdatePlateByType()
 	local guild = self.guildName
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
+	local questCount = self.questCount
 
 	local shouldHideName = self.widgetsOnly
 	if shouldHideName then
@@ -1500,7 +1618,10 @@ function Module:UpdatePlateByType()
 		raidtarget:SetPoint("BOTTOM", name, "TOP", 0, 6)
 
 		if questIcon then
-			questIcon:SetPoint("LEFT", name, "RIGHT", -6, 0)
+			questIcon:SetPoint("LEFT", name, "RIGHT", -4, 0)
+			if questCount then
+				questCount:SetPoint("LEFT", name, "RIGHT", -0, 0)
+			end
 		end
 
 		if self.widgetContainer then
@@ -1525,6 +1646,9 @@ function Module:UpdatePlateByType()
 
 		if questIcon then
 			questIcon:SetPoint("LEFT", self, "RIGHT", 4, 0)
+			if questCount then
+				questCount:SetPoint("LEFT", self, "RIGHT", 4, 0)
+			end
 		end
 
 		if self.widgetContainer then
@@ -1567,6 +1691,14 @@ function Module:RefreshPlateType(unit)
 end
 
 function Module:OnUnitFactionChanged(unit)
+	-- MIDNIGHT (12.0): UNIT_FACTION fires for many tokens (target, targettarget, ...),
+	-- but C_NamePlate.GetNamePlateForUnit only accepts real nameplate tokens and now
+	-- ERRORS on derived ones like "targettarget". A visible plate always also fires this
+	-- with its own "nameplateN" token, so filter to those. Mirrors NDui's nameplateUnits guard.
+	if not unit or not string.find(unit, "nameplate") then
+		return
+	end
+
 	local nameplate = C_NamePlate_GetNamePlateForUnit(unit, issecure())
 	local unitFrame = nameplate and nameplate.unitFrame
 	if unitFrame and unitFrame.unitName then
@@ -1606,12 +1738,18 @@ function Module:PostUpdatePlates(event, unit)
 
 	-- REASON: Handle logic for units being added or removed from the screen (recycling).
 	if event == "NAME_PLATE_UNIT_ADDED" then
-		self.unitName = UnitName(unit)
-		self.unitGUID = UnitGUID(unit)
+		-- SECRET (12.0): UnitName/UnitGUID are secret inside instances. Storing a
+		-- secret string and later using it as a table key (customUnits[...]) or running
+		-- string ops on it (K.GetNPCID -> string.match) throws, so null them out when
+		-- secret. Mirrors NDui's B:NotSecretValue() guard on plate add.
+		local name = UnitName(unit)
+		self.unitName = not IsSecret(name) and name or nil
+		local guid = UnitGUID(unit)
+		self.unitGUID = not IsSecret(guid) and guid or nil
 		self.isPlayer = UnitIsPlayer(unit)
 		self.isFriendly = not UnitCanAttack("player", unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
-		self.isCustomUnit = customUnits[self.unitName] or customUnits[self.npcID]
+		self.isCustomUnit = (self.unitName and customUnits[self.unitName]) or customUnits[self.npcID]
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
 
 		-- REASON: Handle Blizzard widget containers (e.g. for dungeon mechanics or NPC dialogues).
@@ -1628,7 +1766,7 @@ function Module:PostUpdatePlates(event, unit)
 			end
 		end
 
-		self:SetScale(C["General"].UIScale)
+		-- MIDNIGHT (12.0): no SetScale here; the plate inherits UIParent scale already.
 		Module.RefreshPlateType(self, unit)
 
 		-- WARNING: Mitigate Blizzard bug where unit name might be delayed upon unit being added.
@@ -1662,14 +1800,19 @@ end
 -- ---------------------------------------------------------------------------
 function Module:PlateVisibility(event)
 	-- REASON: Manage the visibility of the personal resource display, often fading it out out-of-combat.
+	local auras = self.Auras
 	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and UnitIsUnit("player", self.unit) then
 		K.UIFrameFadeIn(self.Health, 0.2, self.Health:GetAlpha(), 1)
 		K.UIFrameFadeIn(self.Power, 0.2, self.Power:GetAlpha(), 1)
-		K.UIFrameFadeIn(self.Auras, 0.2, self.Power:GetAlpha(), 1)
+		if auras then
+			K.UIFrameFadeIn(auras, 0.2, auras:GetAlpha(), 1)
+		end
 	else
 		K.UIFrameFadeOut(self.Health, 0.2, self.Health:GetAlpha(), 0)
 		K.UIFrameFadeOut(self.Power, 0.2, self.Power:GetAlpha(), 0)
-		K.UIFrameFadeOut(self.Auras, 0.2, self.Power:GetAlpha(), 0)
+		if auras then
+			K.UIFrameFadeOut(auras, 0.2, auras:GetAlpha(), 0)
+		end
 	end
 end
 

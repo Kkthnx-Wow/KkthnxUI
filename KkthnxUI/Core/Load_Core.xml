@@ -3,6 +3,7 @@
    <!-- Load_Core -->
    <Script file="API.lua"/>
    <Script file="Functions.lua"/>
+   <Script file="WidgetFactory.lua"/>
    <Script file="Border.lua"/>
    <Script file="StaticPopups.lua"/>
    <Script file="Commands.lua"/>
@@ -11,8 +12,16 @@
    <Script file="Install.lua"/>
    <Script file="Movers.lua"/>
    <Script file="Loading.lua"/>
+   <Script file="GUIConfigService.lua"/>
+   <Script file="GUIResetButtons.lua"/>
+   <Script file="GUIReloadTracker.lua"/>
    <Script file="GUI.lua"/>
+   <Script file="ExtraGUIActionBars.lua"/>
+   <Script file="ExtraGUIInventory.lua"/>
    <Script file="ExtraGUI.lua"/>
+   <Script file="ProfileService.lua"/>
+   <Script file="ProfileDialogs.lua"/>
+   <Script file="ProfilePortraits.lua"/>
    <Script file="ProfileGUI.lua"/>
    <Script file="Changelog.lua"/>
    <Script file="VersionCheck.lua"/>

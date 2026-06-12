@@ -13,7 +13,6 @@ local Module = K:GetModule("WorldMap")
 -- PERF: Localize global functions and environment for faster lookups.
 local setmetatable = _G.setmetatable
 local string_match = _G.string.match
-local unpack = _G.unpack
 
 local _G = _G
 local C_AddOns = _G.C_AddOns
@@ -86,7 +85,11 @@ local function initializeAchievementLink()
 		return
 	end
 
-	local achievementEditBox = createLinkEditBox(_G.AchievementFrame, "BOTTOMRIGHT", -50, 1, "GameFontNormalSmall")
+	if not (_G["AchievementFrame"] and _G["AchievementTemplateMixin"]) then
+		return
+	end
+
+	local achievementEditBox = createLinkEditBox(_G["AchievementFrame"], "BOTTOMRIGHT", -50, 1, "GameFontNormalSmall")
 	achievementEditBox:SetJustifyH("RIGHT")
 	achievementEditBox:SetHitRectInsets(90, 0, 0, 0)
 
@@ -107,10 +110,12 @@ local function initializeAchievementLink()
 		end
 	end
 
-	hooksecurefunc(_G.AchievementTemplateMixin, "DisplayObjectives", setAchievementLink)
-	hooksecurefunc("AchievementFrameComparisonTab_OnClick", function()
-		achievementEditBox:Hide()
-	end)
+	hooksecurefunc(_G["AchievementTemplateMixin"], "DisplayObjectives", setAchievementLink)
+	if _G["AchievementFrameComparisonTab_OnClick"] then
+		hooksecurefunc("AchievementFrameComparisonTab_OnClick", function()
+			achievementEditBox:Hide()
+		end)
+	end
 
 	achievementEditBox:SetScript("OnEnter", function()
 		achievementEditBox:HighlightText()
@@ -138,12 +143,18 @@ local function initializeQuestLink()
 		return
 	end
 
+	if not (WorldMapFrame and WorldMapFrame.BorderFrame) then
+		return
+	end
+
 	local questEditBox = createLinkEditBox(WorldMapFrame.BorderFrame, "TOPLEFT", 100, -4, "GameFontNormal")
 	questEditBox:SetFrameLevel(501)
 	questEditBox:SetHitRectInsets(0, 90, 0, 0)
 
 	local function updateQuestURL()
-		local questID = _G.QuestMapFrame.DetailsFrame:IsShown() and _G.QuestMapFrame_GetDetailQuestID() or C_SuperTrack.GetSuperTrackedQuestID()
+		local questMapFrame = _G["QuestMapFrame"]
+		local getDetailQuestID = _G["QuestMapFrame_GetDetailQuestID"]
+		local questID = (questMapFrame and questMapFrame.DetailsFrame and questMapFrame.DetailsFrame:IsShown() and getDetailQuestID and getDetailQuestID()) or C_SuperTrack.GetSuperTrackedQuestID()
 		if questID and questID ~= 0 then
 			local questURL = formatWowheadLink(questID, "quest")
 			questEditBox:SetText(questURL)
@@ -165,8 +176,12 @@ local function initializeQuestLink()
 	questEditBox:SetScript("OnEvent", updateQuestURL)
 	updateQuestURL()
 
-	hooksecurefunc("QuestMapFrame_ShowQuestDetails", updateQuestURL)
-	hooksecurefunc("QuestMapFrame_CloseQuestDetails", updateQuestURL)
+	if _G["QuestMapFrame_ShowQuestDetails"] then
+		hooksecurefunc("QuestMapFrame_ShowQuestDetails", updateQuestURL)
+	end
+	if _G["QuestMapFrame_CloseQuestDetails"] then
+		hooksecurefunc("QuestMapFrame_CloseQuestDetails", updateQuestURL)
+	end
 
 	questEditBox:SetScript("OnEnter", function()
 		questEditBox:HighlightText()

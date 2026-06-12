@@ -4,7 +4,7 @@
 -- Notes:
 -- - Purpose: Tracks and displays player gold across characters and session profit/loss.
 -- - Design: Persistent database for multi-char tracking, session-based delta calculations, and bag slot hybrid mode.
--- - Events: PLAYER_ENTERING_WORLD, PLAYER_MONEY, PLAYER_TRADE_MONEY, BAG_UPDATE, etc.
+-- - Events: PLAYER_ENTERING_WORLD, PLAYER_MONEY, PLAYER_TRADE_MONEY, BAG_UPDATE_DELAYED, etc.
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
@@ -35,26 +35,35 @@ local UIParent = _G.UIParent
 local ipairs = ipairs
 local math_max = math.max
 local pairs = pairs
-local print = print
 local string_format = string.format
 local string_gsub = string.gsub
-local table_sort = table.sort
 local table_unpack = unpack
 local table_wipe = table.wipe
-local tostring = tostring
-local type = type
 
 -- ---------------------------------------------------------------------------
 -- State & Constants
 -- ---------------------------------------------------------------------------
 local SLOT_STRING = _G.BAGSLOTTEXT .. ": %s%d"
 local SHOW_GOLD_GAP = 100 * 10000 -- 100 Gold threshold for character listing.
+
+-- PERF: Module-level constant; avoids re-allocating a new table on every CreateGoldDataText() call (e.g. after /reload).
+local EVENT_LIST = {
+	"PLAYER_ENTERING_WORLD",
+	"PLAYER_MONEY",
+	"PLAYER_TRADE_MONEY",
+	"SEND_MAIL_COD_CHANGED",
+	"SEND_MAIL_MONEY_CHANGED",
+	"TRADE_MONEY_CHANGED",
+}
+
 local goldDataText
 local marketTicker
 local profit = 0
 local spent = 0
 local oldMoney = 0
 local rebuildCharList
+local lastShiftState = nil -- REASON: Tracks prior Shift key state to detect changes for tooltip refresh.
+local tooltipOwner = nil -- REASON: Stores hovered frame ref for onTooltipUpdate; avoids allocating a new closure per hover.
 
 local myName, myRealm = K.Name, K.Realm
 myRealm = string_gsub(myRealm, "%s", "")
@@ -67,6 +76,8 @@ _G.StaticPopupDialogs["RESETGOLD"] = {
 		table_wipe(_G.KkthnxUIDB.Gold)
 		_G.KkthnxUIDB.Gold[myRealm] = _G.KkthnxUIDB.Gold[myRealm] or {}
 		_G.KkthnxUIDB.Gold[myRealm][myName] = { GetMoney(), K.Class, K.Faction }
+		-- FIX: Clear the stale guard so Ctrl+RightClick rebuilds the menu correctly after a reset.
+		menuList[1].isCreated = nil
 	end,
 	whileDead = 1,
 }
@@ -93,7 +104,8 @@ local function getClassIcon(class)
 
 	local c1, c2, c3, c4 = table_unpack(coords)
 	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
-	return "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
+	-- PERF: string_format does one allocation vs. 5 intermediate strings from chained .. operators.
+	return string_format("|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:%s:%s:%s:%s|t ", c1, c2, c3, c4)
 end
 
 local factionIcons = {
@@ -105,7 +117,8 @@ local factionIcons = {
 local function getFactionIcon(faction)
 	-- REASON: Generates an inline faction icon texture string.
 	local icon = factionIcons[faction] or "INV_Misc_QuestionMark"
-	return "|TInterface\\ICONS\\" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t "
+	-- PERF: string_format avoids two intermediate strings from chained .. operators.
+	return string_format("|TInterface\\ICONS\\%s:12:12:0:0:50:50:4:46:4:46|t ", icon)
 end
 
 local function getSlotString()
@@ -167,13 +180,10 @@ local function onEvent(_, event, arg1)
 		if goldDataText then
 			goldDataText:UnregisterEvent(event)
 			if _G.KkthnxUIDB.ShowSlots then
-				goldDataText:RegisterEvent("BAG_UPDATE")
+				-- REASON: BAG_UPDATE_DELAYED fires once after all bag changes settle, preventing
+				-- the event storm that BAG_UPDATE causes (fires per-slot per-bag).
+				goldDataText:RegisterEvent("BAG_UPDATE_DELAYED")
 			end
-		end
-	elseif event == "BAG_UPDATE" then
-		-- REASON: Only process primary bag updates to avoid redundant processing on sub-bag changes.
-		if arg1 < 0 or arg1 > 4 then
-			return
 		end
 	end
 
@@ -381,9 +391,9 @@ local function onMouseUp(self, btn)
 		else
 			_G.KkthnxUIDB.ShowSlots = not _G.KkthnxUIDB.ShowSlots
 			if _G.KkthnxUIDB.ShowSlots then
-				goldDataText:RegisterEvent("BAG_UPDATE")
+				goldDataText:RegisterEvent("BAG_UPDATE_DELAYED")
 			else
-				goldDataText:UnregisterEvent("BAG_UPDATE")
+				goldDataText:UnregisterEvent("BAG_UPDATE_DELAYED")
 			end
 			onEvent()
 		end
@@ -399,6 +409,11 @@ local function onMouseUp(self, btn)
 end
 
 local function onLeave()
+	-- REASON: Stop polling for Shift key changes when the cursor leaves the element.
+	if goldDataText then
+		goldDataText:SetScript("OnUpdate", nil)
+	end
+	lastShiftState = nil
 	K.HideTooltip()
 end
 K.GoldButton_OnLeave = onLeave
@@ -414,36 +429,42 @@ function Module:CreateGoldDataText()
 	if C["DataText"].Gold then
 		goldDataText.Text = K.CreateFontString(goldDataText, 12)
 		goldDataText.Text:ClearAllPoints()
-		goldDataText.Text:SetPoint("LEFT", goldDataText, "LEFT", 24, 0)
+		goldDataText.Text:SetPoint("LEFT", goldDataText, "LEFT", 18, 0)
 
 		goldDataText.Texture = goldDataText:CreateTexture(nil, "ARTWORK")
-		goldDataText.Texture:SetPoint("LEFT", goldDataText, "LEFT", 0, 2)
+		goldDataText.Texture:SetPoint("LEFT", goldDataText, "LEFT", 0, 1)
 		goldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\BagsIcon")
-		goldDataText.Texture:SetSize(24, 24)
+		goldDataText.Texture:SetSize(16, 16)
 		goldDataText.Texture:SetVertexColor(table_unpack(C["DataText"].IconColor))
 	end
 
-	local eventList = {
-		"PLAYER_ENTERING_WORLD",
-		"PLAYER_MONEY",
-		"PLAYER_TRADE_MONEY",
-		"SEND_MAIL_COD_CHANGED",
-		"SEND_MAIL_MONEY_CHANGED",
-		"TRADE_MONEY_CHANGED",
-	}
-
-	for _, eventName in ipairs(eventList) do
+	for _, eventName in ipairs(EVENT_LIST) do
 		goldDataText:RegisterEvent(eventName)
 	end
 
+	-- PERF: Named top-level function; no new closure or upvalue capture allocated per hover.
+	local function onTooltipUpdate()
+		local shiftDown = IsShiftKeyDown()
+		if shiftDown ~= lastShiftState then
+			lastShiftState = shiftDown
+			onEnter(tooltipOwner)
+		end
+	end
+
 	goldDataText:SetScript("OnEvent", onEvent)
-	goldDataText:SetScript("OnEnter", onEnter)
+	goldDataText:SetScript("OnEnter", function(self)
+		tooltipOwner = self
+		onEnter(self)
+		lastShiftState = IsShiftKeyDown()
+		-- REASON: Poll Shift key state each frame and rebuild the tooltip only on state change.
+		self:SetScript("OnUpdate", onTooltipUpdate)
+	end)
 	goldDataText:SetScript("OnLeave", onLeave)
 
 	if C["DataText"].Gold then
 		goldDataText:SetScript("OnMouseUp", onMouseUp)
 		-- REASON: Registers the frame with the mover system for user-controlled layout.
-		goldDataText.mover = K.Mover(goldDataText, "GoldDT", "GoldDT", { "LEFT", UIParent, "LEFT", 0, -300 }, 56, 12)
+		goldDataText.mover = K.Mover(goldDataText, "GoldDT", "GoldDT", { "LEFT", UIParent, "LEFT", 2, -300 }, 56, 12)
 
 		local currentWidth = (goldDataText.Text:GetStringWidth() or 0) + ((goldDataText.Texture and goldDataText.Texture:GetWidth()) or 0)
 		goldDataText.mover:SetWidth(math_max(currentWidth, 56))

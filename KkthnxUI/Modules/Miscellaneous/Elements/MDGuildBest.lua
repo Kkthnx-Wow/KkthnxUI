@@ -4,14 +4,13 @@
 -- Notes:
 -- - Purpose: Displays guild leadership rankings and Mythic+ weekly records in the Challenges frame.
 -- - Design: Hooks Blizzard's Challenges UI, integrates with AngryKeystones and Details Keystones, and tracks account-wide keystone info.
--- - Events: ADDON_LOADED, BAG_UPDATE, CHALLENGE_MODE_LEADERS_UPDATE
+-- - Events: ADDON_LOADED, BAG_UPDATE_DELAYED, CHALLENGE_MODE_LEADERS_UPDATE
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
 -- PERF: Localize global functions and environment for faster lookups.
-local ipairs = _G.ipairs
 local pairs = _G.pairs
 local string_format = _G.string.format
 local strsplit = _G.strsplit
@@ -24,13 +23,12 @@ local Ambiguate = _G.Ambiguate
 local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local C_ChallengeMode_GetGuildLeaders = _G.C_ChallengeMode.GetGuildLeaders
 local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
-local C_Item_GetItemIconByID = _G.C_Item and _G.C_Item.GetItemIconByID
 local C_MythicPlus_GetRunHistory = _G.C_MythicPlus.GetRunHistory
 local C_MythicPlus_GetOwnedKeystoneChallengeMapID = _G.C_MythicPlus.GetOwnedKeystoneChallengeMapID
 local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
-local HookSecureFunc = _G.hooksecurefunc
+local hooksecurefunc = _G.hooksecurefunc
 local IsShiftKeyDown = _G.IsShiftKeyDown
 
 -- SG: Constants
@@ -190,7 +188,7 @@ function Module:updateGuildBestData()
 
 	-- REASON: Applies layout adaptations for AngryKeystones to maintain UI alignment in the Challenges frame.
 	if not hasResizedAngryKeystones and isAngryKeystonesLoaded and self.WeeklyInfo and self.WeeklyInfo.Child and self.WeeklyInfo.Child.WeeklyChest then
-		HookSecureFunc(self.WeeklyInfo.Child.WeeklyChest, "SetPoint", function(weeklyChestFrame, _, xPos, yPos)
+		hooksecurefunc(self.WeeklyInfo.Child.WeeklyChest, "SetPoint", function(weeklyChestFrame, _, xPos, yPos)
 			if xPos == 100 and yPos == 0 then
 				weeklyChestFrame:SetPoint("LEFT", 110, -5)
 			end
@@ -339,7 +337,7 @@ local function initializeGuildBestElements()
 		return
 	end
 
-	HookSecureFunc(_G.ChallengesFrame, "Update", Module.updateGuildBestData)
+	hooksecurefunc(_G.ChallengesFrame, "Update", Module.updateGuildBestData)
 
 	-- REASON: Adds an account-wide keystone tracking icon and hooks the weekly chest for enhanced run history.
 	Module:createKeystoneInfoButton()
@@ -369,7 +367,9 @@ function Module:CreateGuildBest()
 	end
 
 	Module:updateAccountKeystoneData()
-	K:RegisterEvent("BAG_UPDATE", Module.updateAccountKeystoneData)
+	-- REASON: BAG_UPDATE_DELAYED fires once after all bag changes settle; sufficient for
+	-- keystone ownership detection and avoids the per-slot event storm of raw BAG_UPDATE.
+	K:RegisterEvent("BAG_UPDATE_DELAYED", Module.updateAccountKeystoneData)
 end
 
 Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest)

@@ -8,11 +8,9 @@
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = K:GetModule("Skins")
 
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G
-local ipairs = _G.ipairs
 local pairs = _G.pairs
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -63,13 +61,14 @@ local EquipmentSlots = {
 
 -- Pre-calculate class background paths to avoid runtime concatenation
 local ClassTextures = {}
-for classID, classFile in pairs(K.ClassList) do
+for _, classFile in pairs(K.ClassList) do
 	ClassTextures[classFile] = DRESSING_ROOM_PATH .. classFile
 end
 
 -- Helper Functions
 
 local function UpdateCosmetic(self)
+	if not self then return end
 	local unit = _G.InspectFrame and _G.InspectFrame.unit
 	if not unit then
 		return
@@ -95,8 +94,19 @@ end
 
 local function ResetIconBorderColor(slot)
 	if slot.KKUI_Border then
-		slot.KKUI_Border:SetVertexColor(WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b)
+		-- FIX: Use K.SetBorderColor to match CharacterFrame behavior and respect theme color,
+		-- instead of always forcing white which ignored the configured border color.
+		K.SetBorderColor(slot.KKUI_Border)
 	end
+end
+
+-- PERF: Use shared handlers for hooks to avoid closure allocations per slot
+local function IconBorder_OnSetVertexColor(self, r, g, b)
+	UpdateIconBorderColor(self:GetParent(), r, g, b)
+end
+
+local function IconBorder_OnHide(self)
+	ResetIconBorderColor(self:GetParent())
 end
 
 local function StyleEquipmentSlot(slotName)
@@ -131,17 +141,18 @@ local function StyleEquipmentSlot(slotName)
 
 	-- Hook Icon Border
 	if iconBorder then
-		hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
-			UpdateIconBorderColor(slot, r, g, b)
-		end)
-
-		hooksecurefunc(iconBorder, "Hide", function()
-			ResetIconBorderColor(slot)
-		end)
+		hooksecurefunc(iconBorder, "SetVertexColor", IconBorder_OnSetVertexColor)
+		hooksecurefunc(iconBorder, "Hide", IconBorder_OnHide)
 	end
 
 	slot.KKUI_Styled = true
 end
+
+-- FIX: Cache last applied tab index and class so ApplyInspectFrameLayout is a no-op
+-- when nothing changed. Without this, every InspectSwitchTabs call was re-running
+-- UnitClass(), SetSize(), SetTexture(), and SetPoint() unconditionally.
+local lastAppliedTab
+local lastAppliedClass
 
 local function ApplyInspectFrameLayout()
 	local inspectFrame = _G.InspectFrame
@@ -153,14 +164,20 @@ local function ApplyInspectFrameLayout()
 	local bg = inset.Bg
 
 	local selectedTab = PanelTemplates_GetSelectedTab(inspectFrame)
+	local unit = inspectFrame.unit or "target"
+	local _, targetClass = UnitClass(unit)
+
+	-- Skip if neither tab nor inspected class changed
+	if selectedTab == lastAppliedTab and targetClass == lastAppliedClass then
+		return
+	end
+	lastAppliedTab = selectedTab
+	lastAppliedClass = targetClass
 
 	if selectedTab == 1 then
 		inspectFrame:SetSize(FRAME_SIZE_TAB1.width, FRAME_SIZE_TAB1.height)
 		inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", 432, 4)
 
-		-- Determine class texture
-		local unit = inspectFrame.unit or "target"
-		local _, targetClass = UnitClass(unit)
 		local texturePath = targetClass and ClassTextures[targetClass]
 
 		if texturePath and bg then
@@ -220,18 +237,24 @@ C.themes["Blizzard_InspectUI"] = function()
 	end
 
 	-- Style Slots
-	for _, slotName in ipairs(EquipmentSlots) do
-		StyleEquipmentSlot(slotName)
+	for i = 1, #EquipmentSlots do
+		StyleEquipmentSlot(EquipmentSlots[i])
 	end
 
 	-- Hooks & Positioning
 	if InspectFrame and not InspectFrame.KKUI_Hooks then
+		-- FIX: Reset layout cache on show/hide so each fresh inspection always applies
+		-- the layout. Without this, inspecting the same class on the same tab a second
+		-- time would hit the cache and skip SetSize/SetTexture/SetPoint entirely.
+		local function ResetInspectLayoutCache()
+			lastAppliedTab = nil
+			lastAppliedClass = nil
+		end
+		InspectFrame:HookScript("OnShow", ResetInspectLayoutCache)
+		InspectFrame:HookScript("OnHide", ResetInspectLayoutCache)
+
 		-- Cosmetic Update Hook
-		hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
-			if button then
-				UpdateCosmetic(button)
-			end
-		end)
+		hooksecurefunc("InspectPaperDollItemSlotButton_Update", UpdateCosmetic)
 
 		-- Layout Hook
 		hooksecurefunc("InspectSwitchTabs", ApplyInspectFrameLayout)

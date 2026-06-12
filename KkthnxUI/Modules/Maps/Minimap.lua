@@ -391,30 +391,10 @@ function Module:ReskinRegions()
 		hooksecurefunc(garrMinimapButton, "UpdateIcon", refreshLandingPageButton)
 
 		local landingMenuList = {
-			{
-				text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE,
-				func = toggleLandingPage,
-				arg1 = _G.Enum.GarrisonType.Type_9_0_Garrison,
-				notCheckable = true,
-			},
-			{
-				text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
-				func = toggleLandingPage,
-				arg1 = _G.Enum.GarrisonType.Type_8_0_Garrison,
-				notCheckable = true,
-			},
-			{
-				text = _G.ORDER_HALL_LANDING_PAGE_TITLE,
-				func = toggleLandingPage,
-				arg1 = _G.Enum.GarrisonType.Type_7_0_Garrison,
-				notCheckable = true,
-			},
-			{
-				text = _G.GARRISON_LANDING_PAGE_TITLE,
-				func = toggleLandingPage,
-				arg1 = _G.Enum.GarrisonType.Type_6_0_Garrison,
-				notCheckable = true,
-			},
+			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_9_0_Garrison, notCheckable = true },
+			{ text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_8_0_Garrison, notCheckable = true },
+			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_7_0_Garrison, notCheckable = true },
+			{ text = _G.GARRISON_LANDING_PAGE_TITLE, func = toggleLandingPage, arg1 = _G.Enum.GarrisonType.Type_6_0_Garrison, notCheckable = true },
 		}
 
 		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
@@ -431,17 +411,7 @@ function Module:ReskinRegions()
 
 		garrMinimapButton:HookScript("OnEnter", function(self)
 			if GameTooltip and GameTooltip:IsOwned(self) then
-				GameTooltip:AddLine(
-					"\n"
-						.. (
-							L and (L["Right Click to switch Summaries"] or "Right Click to switch Summaries")
-							or "Right Click to switch Summaries"
-						),
-					1,
-					1,
-					1,
-					true
-				)
+				GameTooltip:AddLine("\n" .. (L and (L["Right Click to switch Summaries"] or "Right Click to switch Summaries") or "Right Click to switch Summaries"), 1, 1, 1, true)
 				GameTooltip:Show()
 			end
 		end)
@@ -503,11 +473,7 @@ function Module:ReskinRegions()
 			queueStatusDisplay.text:ClearAllPoints()
 			queueStatusDisplay.text:SetPoint("CENTER", queueStatusButton, 0, -5)
 			queueStatusDisplay.text:SetFontObject(K.UIFont)
-			queueStatusDisplay.text:SetFont(
-				select(1, queueStatusDisplay.text:GetFont()),
-				13,
-				select(3, queueStatusDisplay.text:GetFont())
-			)
+			queueStatusDisplay.text:SetFont(select(1, queueStatusDisplay.text:GetFont()), 13, select(3, queueStatusDisplay.text:GetFont()))
 
 			if queueStatusDisplay.title then
 				Module:ClearQueueStatus()
@@ -522,6 +488,10 @@ function Module:ReskinRegions()
 		instDifficulty:SetScale(0.9)
 
 		local function updateFlagAnchor(frame)
+			local p, rel, rp, x, y = frame:GetPoint()
+			if p == "TOPLEFT" and rel == Minimap and rp == "TOPLEFT" and x == 2 and y == -2 then
+				return
+			end
 			frame:ClearAllPoints()
 			frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 		end
@@ -600,12 +570,7 @@ function Module:ReskinRegions()
 	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
 	inviteNotification:Hide()
 
-	K.CreateFontString(
-		inviteNotification,
-		12,
-		K.InfoColor .. ((L and L["Pending Calendar Invite(s)!"]) or "Pending Calendar Invite(s)!"),
-		""
-	)
+	K.CreateFontString(inviteNotification, 12, K.InfoColor .. ((L and L["Pending Calendar Invite(s)!"]) or "Pending Calendar Invite(s)!"), "")
 
 	local function updateInviteVisibility()
 		local invites = C_Calendar_GetNumPendingInvites and C_Calendar_GetNumPendingInvites() or 0
@@ -626,6 +591,57 @@ function Module:ReskinRegions()
 	end)
 end
 
+function Module:CreatePing()
+	-- MIDNIGHT (12.0): Blizzard removed the legacy minimap ping info event.
+	-- NDui disables this feature on 12.x for the same reason.
+	if K.TocVersion and K.TocVersion >= 120000 then
+		return
+	end
+
+	local pingFrame = CreateFrame("Frame", nil, Minimap)
+	pingFrame:SetSize(Minimap:GetWidth(), 13)
+	pingFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 30)
+	pingFrame.text = K.CreateFontString(pingFrame, 13, "", "OUTLINE", false, "CENTER")
+
+	local pingAnimation = pingFrame:CreateAnimationGroup()
+	pingAnimation:SetScript("OnPlay", function()
+		pingFrame:SetAlpha(0.8)
+	end)
+	pingAnimation:SetScript("OnFinished", function()
+		pingFrame:SetAlpha(0)
+	end)
+
+	pingAnimation.fader = pingAnimation:CreateAnimation("Alpha")
+	pingAnimation.fader:SetFromAlpha(1)
+	pingAnimation.fader:SetToAlpha(0)
+	pingAnimation.fader:SetDuration(3)
+	pingAnimation.fader:SetSmoothing("OUT")
+	pingAnimation.fader:SetStartDelay(3)
+
+	-- REASON: Displays the name and class color of the player who pinged the minimap.
+	local ok = pcall(K.RegisterEvent, K, "MINIMAP_PING", function(_, unit)
+		if UnitIsUnit(unit, "player") then
+			return
+		end
+
+		local class = select(2, UnitClass(unit))
+		local name = GetUnitName(unit)
+		if not class or not name then
+			return
+		end
+
+		local r, g, b = K.ColorClass(class)
+
+		pingAnimation:Stop()
+		pingFrame.text:SetText(name)
+		pingFrame.text:SetTextColor(r, g, b)
+		pingAnimation:Play()
+	end)
+	if not ok then
+		pingFrame:Hide()
+	end
+end
+
 function Module:UpdateMinimapScale()
 	local minimapSize = C["Minimap"].Size
 	Minimap:SetSize(minimapSize, minimapSize)
@@ -634,12 +650,10 @@ function Module:UpdateMinimapScale()
 	end
 end
 
--- REASON: Mandatory for LibDBIcon-1.0 and similar libraries to return the correct shape.
+-- REASON: Required by LibDBIcon-1.0 and similar libraries to determine circular vs square button placement.
+-- FIX: The previous version lazily initialized UpdateMinimapScale() here on first call, hiding a side-effect
+-- inside a utility stub. Scale is now initialized explicitly in OnEnable; this function is pure.
 function _G.GetMinimapShape()
-	if not Module.Initialized then
-		Module:UpdateMinimapScale()
-		Module.Initialized = true
-	end
 	return "SQUARE"
 end
 
@@ -783,13 +797,7 @@ function Module.Minimap_OnMouseUp(_, btn)
 			if trackingButton.menu then
 				local isRightPosition = anchorPoint and string_find(anchorPoint, "RIGHT")
 				trackingButton.menu:ClearAllPoints()
-				trackingButton.menu:SetPoint(
-					isRightPosition and "TOPRIGHT" or "TOPLEFT",
-					Minimap,
-					isRightPosition and "LEFT" or "RIGHT",
-					isRightPosition and -4 or 4,
-					0
-				)
+				trackingButton.menu:SetPoint(isRightPosition and "TOPRIGHT" or "TOPLEFT", Minimap, isRightPosition and "LEFT" or "RIGHT", isRightPosition and -4 or 4, 0)
 			end
 		end
 	else
@@ -1004,6 +1012,7 @@ function Module:OnEnable()
 	-- REASON: Load various minimap sub-modules dynamically with error protection.
 	local loadMinimapModules = {
 		"BlizzardACF",
+		"CreatePing",
 		"CreateRecycleBin",
 		"CreateSoundVolume",
 		"CreateStyle",

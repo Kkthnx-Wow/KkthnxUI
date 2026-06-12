@@ -7,17 +7,16 @@
 -- - Events: Hooked into AlertFrame and GroupLootContainer updates.
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C = _G["KkthnxUI"][1], _G["KkthnxUI"][2]
 local Module = K:GetModule("Blizzard")
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
 local _G = _G
 local CreateFrame = CreateFrame
 local UIParent = _G.UIParent
-local GroupLootContainer = _G.GroupLootContainer
-local AlertFrame = _G.AlertFrame
+local GroupLootContainer = _G["GroupLootContainer"]
+local AlertFrame = _G["AlertFrame"]
 local hooksecurefunc = hooksecurefunc
-local ipairs = ipairs
 local select = select
 local table_remove = table.remove
 
@@ -28,6 +27,7 @@ local parentFrame
 local anchorPosition = "TOP"
 local anchorPoint = "BOTTOM"
 local anchorYOffset = -6
+local talkingHeadHidden
 
 -- ---------------------------------------------------------------------------
 -- Anchor Logic
@@ -122,19 +122,47 @@ end
 -- ---------------------------------------------------------------------------
 -- Talking Head Suppression
 -- ---------------------------------------------------------------------------
+local function removeTalkingHeadSubSystem()
+	local talkingHeadFrame = _G["TalkingHeadFrame"]
+	local alertFrameSubSystems = AlertFrame and AlertFrame.alertFrameSubSystems
+	if not (talkingHeadFrame and alertFrameSubSystems) then
+		return
+	end
+
+	for index = #alertFrameSubSystems, 1, -1 do
+		local alertFrameSubSystem = alertFrameSubSystems[index]
+		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == talkingHeadFrame then
+			table_remove(alertFrameSubSystems, index)
+		end
+	end
+end
+
 -- REASON: Disables the Talking Head UI if requested by the user to reduce screen clutter.
 local function noTalkingHeads()
 	if not C["Misc"].NoTalkingHead then
 		return
 	end
 
-	local talkingHeadFrame = _G.TalkingHeadFrame
-	if talkingHeadFrame then
-		talkingHeadFrame:UnregisterAllEvents()
-		hooksecurefunc(talkingHeadFrame, "Show", function(self)
-			self:Hide()
-		end)
+	local talkingHeadFrame = _G["TalkingHeadFrame"]
+	if not talkingHeadFrame or talkingHeadHidden then
+		return
 	end
+
+	talkingHeadHidden = true
+	talkingHeadFrame:UnregisterAllEvents()
+	hooksecurefunc(talkingHeadFrame, "Show", function(self)
+		self:Hide()
+	end)
+end
+
+function Module.AlertFrames_OnAddonLoaded(event, addonName)
+	if addonName ~= "Blizzard_TalkingHeadUI" then
+		return
+	end
+
+	K:UnregisterEvent(event, Module.AlertFrames_OnAddonLoaded)
+	removeTalkingHeadSubSystem()
+	noTalkingHeads()
 end
 
 -- ---------------------------------------------------------------------------
@@ -149,17 +177,12 @@ function Module:CreateAlertFrames()
 	GroupLootContainer:EnableMouse(false)
 	GroupLootContainer.ignoreFramePositionManager = true
 
+	removeTalkingHeadSubSystem()
+
 	-- REASON: Iterate through existing Blizzard sub-systems to apply custom anchoring.
-	-- We remove the TalkingHeadFrame sub-system if it exists to handle it independently.
-	-- PERF: Iterate backwards when removing elements from a table to avoid index shifts.
 	local alertFrameSubSystems = AlertFrame.alertFrameSubSystems
-	for i = #alertFrameSubSystems, 1, -1 do
-		local alertFrameSubSystem = alertFrameSubSystems[i]
-		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == _G.TalkingHeadFrame then
-			table_remove(alertFrameSubSystems, i)
-		else
-			Module.AlertFrame_AdjustPosition(alertFrameSubSystem)
-		end
+	for i = 1, #alertFrameSubSystems do
+		Module.AlertFrame_AdjustPosition(alertFrameSubSystems[i])
 	end
 
 	-- WARNING: Hook insecurely to allow dynamic additions of alert sub-systems by other addons or future Blizzard updates.
@@ -170,7 +193,9 @@ function Module:CreateAlertFrames()
 	hooksecurefunc(AlertFrame, "UpdateAnchors", Module.AlertFrame_UpdateAnchor)
 	hooksecurefunc("GroupLootContainer_Update", Module.UpdateGroupLootContainer)
 
-	if _G.TalkingHeadFrame then
+	if _G["TalkingHeadFrame"] then
 		noTalkingHeads()
+	elseif C["Misc"].NoTalkingHead then
+		K:RegisterEvent("ADDON_LOADED", Module.AlertFrames_OnAddonLoaded)
 	end
 end

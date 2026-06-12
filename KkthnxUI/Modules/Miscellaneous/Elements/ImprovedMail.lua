@@ -13,7 +13,8 @@ local Module = K:GetModule("Miscellaneous")
 -- PERF: Localize global functions and environment for faster lookups.
 local pairs = _G.pairs
 local select = _G.select
-local string_format = _G.string_format
+-- FIX: _G.string_format does not exist; the correct path is _G.string.format.
+local string_format = _G.string.format
 local table_remove = _G.table.remove
 local table_wipe = _G.table.wipe
 
@@ -29,7 +30,7 @@ local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMoney = _G.GetMoney
 local GetSendMailPrice = _G.GetSendMailPrice
-local HookSecureFunc = _G.hooksecurefunc
+local hooksecurefunc = _G.hooksecurefunc
 local InboxItemCanDelete = _G.InboxItemCanDelete
 local TakeInboxMoney = _G.TakeInboxMoney
 local TakeInboxItem = _G.TakeInboxItem
@@ -124,6 +125,10 @@ local function onMailDeleteButtonClick(self)
 end
 
 local function addDeleteButtonToMailItem(button, index)
+	if not button or button.KKUI_DeleteButton then
+		return
+	end
+
 	local deleteButton = CreateFrame("Button", nil, button)
 	deleteButton:SetPoint("BOTTOMRIGHT", button:GetParent(), "BOTTOMRIGHT", -6, 5)
 	deleteButton:SetSize(16, 16)
@@ -141,6 +146,7 @@ local function addDeleteButtonToMailItem(button, index)
 	deleteButton.id = index
 	deleteButton:SetScript("OnClick", onMailDeleteButtonClick)
 	K.AddTooltip(deleteButton, "ANCHOR_RIGHT", _G.DELETE, "system")
+	button.KKUI_DeleteButton = deleteButton
 end
 
 local function onInboxItemEnter(self)
@@ -259,6 +265,9 @@ end
 function Module:createCollectGoldButton()
 	local openAllMailButton = _G.OpenAllMail
 	local inboxFrame = _G.InboxFrame
+	if not (openAllMailButton and inboxFrame) then
+		return
+	end
 
 	openAllMailButton:ClearAllPoints()
 	openAllMailButton:SetPoint("TOPLEFT", inboxFrame, "TOPLEFT", 70, -28)
@@ -285,7 +294,6 @@ function Module:collectMailAttachments()
 		return
 	end
 
-	local isInventoryNearlyFull = false
 	local freeSlotsCount = 0
 	-- REASON: Check for standard inventory slots (excluding specialty bags)
 	for bagIndex = 0, _G.NUM_BAG_SLOTS do
@@ -295,7 +303,7 @@ function Module:collectMailAttachments()
 		end
 	end
 
-	isInventoryNearlyFull = freeSlotsCount <= (MAIL_FULL_THRESHOLD + 1)
+	local isInventoryNearlyFull = freeSlotsCount <= (MAIL_FULL_THRESHOLD + 1)
 	if freeSlotsCount <= 0 then
 		return
 	end
@@ -327,6 +335,10 @@ function Module:collectCurrentMailAttachments()
 end
 
 function Module:createCollectCurrentButton()
+	if not (_G.OpenMailFrame and _G.OpenMailReplyButton) then
+		return
+	end
+
 	local collectAllButton = Module:createMailControlButton(_G.OpenMailFrame, 82, 22, L["Take All"], { "RIGHT", "OpenMailReplyButton", "LEFT", -1, 0 })
 	collectAllButton:SetScript("OnClick", Module.collectCurrentMailAttachments)
 end
@@ -335,6 +347,7 @@ end
 do
 	local ERR_INV_FULL = _G.ERR_INV_FULL
 	local ERR_ITEM_NOT_FOUND = _G.ERR_ITEM_NOT_FOUND
+	local ERR_ITEM_MAX_COUNT = _G.ERR_ITEM_MAX_COUNT
 	local mailErrorFrame = CreateFrame("Frame")
 	mailErrorFrame:RegisterEvent("UI_ERROR_MESSAGE")
 	mailErrorFrame:SetScript("OnEvent", function(_, _, _, errorMessage)
@@ -346,7 +359,7 @@ do
 			return
 		end
 
-		if errorMessage == ERR_ITEM_NOT_FOUND then
+		if errorMessage == ERR_ITEM_NOT_FOUND or errorMessage == ERR_ITEM_MAX_COUNT then
 			local openMailID = _G.InboxFrame and _G.InboxFrame.openMailID
 			if openMailID then
 				attachmentBlacklist[openMailID] = attachmentBlacklist[openMailID] or {}
@@ -365,7 +378,51 @@ do
 	end)
 end
 
+-- REASON: Overrides standard OpenAllMail logic to handle GM mails, COD mail, and blacklisted items during mass processing.
+-- WARNING: This directly patches a method on _G.OpenAllMail; fragile if Blizzard restructures that object.
+-- FIX: The original implementation used recursive tail-calls to advance through slots — this could overflow the
+-- Lua call stack on a full 50-mail inbox with many attachments. Replaced with a flat iterative loop.
+local function applyOpenAllMailFix()
+	local openAllMail = _G.OpenAllMail
+	if not openAllMail then
+		return
+	end
+
+	function openAllMail:AdvanceToNextItem()
+		local maxIndex = GetInboxNumItems()
+		local maxAttachments = _G.ATTACHMENTS_MAX or ATTACHMENTS_MAX_RECEIVE or 12
+
+		-- REASON: Iterate every mail/attachment combination without recursion; terminates when all slots are exhausted.
+		while self.mailIndex <= maxIndex do
+			local _, _, _, _, money, codAmount, _, hasItem, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex)
+			local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex))
+			local isBlacklisted = self:IsItemBlacklisted(itemID)
+			local hasCOD = codAmount and codAmount > 0
+
+			if not isGM and not hasCOD then
+				-- Follow Blizzard's standard logic for skipping blacklisted items
+				if (money > 0 and not hasItem) or (hasItem and itemID and not isBlacklisted) then
+					return true
+				end
+			end
+
+			-- REASON: Exhaust all attachments on current mail before advancing to the next one.
+			self.attachmentIndex = self.attachmentIndex - 1
+			if self.attachmentIndex <= 0 then
+				self.mailIndex = self.mailIndex + 1
+				self.attachmentIndex = maxAttachments
+			end
+		end
+
+		return false
+	end
+end
+
 function Module:arrangeDefaultMailElements()
+	if not (_G.InboxTooMuchMail and _G.MailFrame and _G.SendMailNameEditBox and _G.SendMailNameEditBoxMiddle and _G.SendMailCostMoneyFrame and _G.SendMailMailButton) then
+		return
+	end
+
 	_G.InboxTooMuchMail:ClearAllPoints()
 	_G.InboxTooMuchMail:SetPoint("BOTTOM", _G.MailFrame, "TOP", 0, 5)
 
@@ -403,11 +460,12 @@ function Module:CreateImprovedMail()
 		addDeleteButtonToMailItem(mailItemButton, i)
 	end
 
-	HookSecureFunc("InboxFrameItem_OnEnter", onInboxItemEnter)
+	hooksecurefunc("InboxFrameItem_OnEnter", onInboxItemEnter)
 
 	Module:arrangeDefaultMailElements()
 	Module:createCollectGoldButton()
 	Module:createCollectCurrentButton()
+	applyOpenAllMailFix()
 
 	-- REASON: Monitors the inbox for updates during mass gold collection to reset indices if the mailbox content changes.
 	local mailUpdateFrame = CreateFrame("Frame")
@@ -427,36 +485,3 @@ function Module:CreateImprovedMail()
 end
 
 Module:RegisterMisc("ImprovedMail", Module.CreateImprovedMail)
-
--- REASON: Overrides standard OpenAllMail logic to handle GM mails and blacklisted items during mass processing.
-function _G.OpenAllMail:AdvanceToNextItem()
-	local foundAttachment = false
-	while not foundAttachment do
-		local _, _, _, _, _, codAmount, _, _, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex)
-		local _, itemID = GetInboxItem(self.mailIndex, self.attachmentIndex)
-		local isBlacklisted = self:IsItemBlacklisted(itemID)
-		local hasCOD = codAmount and codAmount > 0
-		local hasMoneyOrItem = _G.C_Mail.HasInboxMoney(self.mailIndex) or _G.HasInboxItem(self.mailIndex, self.attachmentIndex)
-
-		if not isBlacklisted and not isGM and not hasCOD and hasMoneyOrItem then
-			foundAttachment = true
-		else
-			self.attachmentIndex = self.attachmentIndex - 1
-			if self.attachmentIndex == 0 then
-				break
-			end
-		end
-	end
-
-	if not foundAttachment then
-		self.mailIndex = self.mailIndex + 1
-		self.attachmentIndex = _G.ATTACHMENTS_MAX or ATTACHMENTS_MAX_RECEIVE or 12
-		if self.mailIndex > GetInboxNumItems() then
-			return false
-		end
-
-		return self:AdvanceToNextItem()
-	end
-
-	return true
-end

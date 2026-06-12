@@ -22,7 +22,6 @@ local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 
-local _G = _G
 local C_AddOns = _G.C_AddOns
 local C_Map_GetMapArtID = _G.C_Map.GetMapArtID
 local C_Map_GetMapArtLayers = _G.C_Map.GetMapArtLayers

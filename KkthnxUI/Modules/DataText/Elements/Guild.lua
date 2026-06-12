@@ -37,14 +37,12 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local MailFrameTab_OnClick = _G.MailFrameTab_OnClick
 local MouseIsOver = _G.MouseIsOver
 local ToggleFrame = _G.ToggleFrame
-local ToggleGuildFrame = _G.ToggleGuildFrame
 local UIParent = _G.UIParent
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local ipairs = ipairs
 local math_max = math.max
 local math_min = math.min
-local pairs = pairs
 local string_format = string.format
 local table_sort = table.sort
 local table_wipe = table.wipe
@@ -78,6 +76,7 @@ local officerNoteLabel = "|cff999999" .. _G.GUILD_RANK1_DESC .. ":|r %s"
 local infoTitle = "|cffffffff" .. _G.GUILD_INFORMATION .. "|r"
 local noNoteText = "|cff999999" .. _G.NOT_APPLICABLE .. "|r"
 local rankString = "|cff999999" .. _G.RANK .. ":|r %s"
+local inactiveColor = K.GreyColor
 
 -- ---------------------------------------------------------------------------
 -- Utility Functions
@@ -326,6 +325,41 @@ local function sortHeaderOnClick(self)
 	Module:GuildPanel_SortUpdate()
 end
 
+local function guildPanel_OnMouseWheel(self, delta)
+	local scrollBar = self.scrollBar
+	local step = delta * self.buttonHeight
+	if IsShiftKeyDown() then
+		step = step * MAX_VISIBLE_ROWS
+	end
+	scrollBar:SetValue(scrollBar:GetValue() - step)
+	guildPanel_Update()
+end
+
+local function guildPanel_CreateButton(parent, index)
+	local button = CreateFrame("Button", nil, parent)
+	button:SetSize(305, BUTTON_HEIGHT)
+	button:SetPoint("TOPLEFT", 0, -(index - 1) * BUTTON_HEIGHT)
+	button:RegisterForClicks("AnyUp")
+
+	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
+	button.HL:SetAllPoints()
+	button.HL:SetColorTexture(K.r, K.g, K.b, 0.2)
+
+	button.level = K.CreateFontString(button, 12, "", "", false, "LEFT", 12, 0)
+	button.class = button:CreateTexture(nil, "ARTWORK")
+	button.class:SetPoint("LEFT", 45, 0)
+	button.class:SetSize(16, 16)
+	button.class:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
+	button.name = K.CreateFontString(button, 12, "", "", false, "LEFT", 65, 0)
+	button.zone = K.CreateFontString(button, 12, "", "", false, "RIGHT", -2, 0)
+
+	button:SetScript("OnClick", rosterButtonOnClick)
+	button:SetScript("OnEnter", rosterButtonOnEnter)
+	button:SetScript("OnLeave", K.HideTooltip)
+
+	return button
+end
+
 -- ---------------------------------------------------------------------------
 -- Initialization
 -- ---------------------------------------------------------------------------
@@ -402,12 +436,12 @@ local function guildPanel_Init()
 	local numButtons = MAX_VISIBLE_ROWS + 1
 	local buttons = {}
 	for i = 1, numButtons do
-		buttons[i] = GuildPanel_CreateButton(scrollChild, i)
+		buttons[i] = guildPanel_CreateButton(scrollChild, i)
 	end
 	scrollFrame.buttons = buttons
 	scrollFrame.buttonHeight = BUTTON_HEIGHT
 	scrollFrame.update = guildPanel_Update
-	scrollFrame:SetScript("OnMouseWheel", GuildPanel_OnMouseWheel)
+	scrollFrame:SetScript("OnMouseWheel", guildPanel_OnMouseWheel)
 	scrollChild:SetSize(scrollFrame:GetWidth(), numButtons * BUTTON_HEIGHT)
 	scrollFrame:SetVerticalScroll(0)
 	scrollFrame:UpdateScrollChildRect()
@@ -458,9 +492,26 @@ end
 -- ---------------------------------------------------------------------------
 -- Base Module Hooks
 -- ---------------------------------------------------------------------------
+local noGuildStrings = {
+	"Lone wolf mode activated.",
+	"Will raid for snacks.",
+	"Currently accepting guild invites.",
+	"Guildless and free!",
+	"Too cool for a guild.",
+	"Looking for a guild that doesn't suck.",
+	"Error 404: Guild not found."
+}
+
 local function onEnter()
 	-- REASON: Displays a simple "No Guild Online" tooltip or initializes the full guild panel.
 	if not IsInGuild() then
+		GameTooltip:SetOwner(guildDataText, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(guildDataText))
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine(_G.GUILD, tooltipColors.title.r, tooltipColors.title.g, tooltipColors.title.b)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(noGuildStrings[math.random(1, #noGuildStrings)], 1, 1, 1, 1)
+		GameTooltip:Show()
 		return
 	end
 
@@ -563,12 +614,12 @@ function Module:CreateGuildDataText()
 	guildDataText = CreateFrame("Frame", nil, UIParent)
 	guildDataText.Text = K.CreateFontString(guildDataText, 12)
 	guildDataText.Text:ClearAllPoints()
-	guildDataText.Text:SetPoint("LEFT", guildDataText, "LEFT", 24, 0)
+	guildDataText.Text:SetPoint("LEFT", guildDataText, "LEFT", 18, 0)
 
 	guildDataText.Texture = guildDataText:CreateTexture(nil, "ARTWORK")
-	guildDataText.Texture:SetPoint("LEFT", guildDataText, "LEFT", 0, 2)
+	guildDataText.Texture:SetPoint("LEFT", guildDataText, "LEFT", 0, 1)
 	guildDataText.Texture:SetTexture(K.MediaFolder .. "DataText\\GuildIcon")
-	guildDataText.Texture:SetSize(24, 24)
+	guildDataText.Texture:SetSize(16, 16)
 	guildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	local events = { "PLAYER_ENTERING_WORLD", "GUILD_ROSTER_UPDATE", "PLAYER_GUILD_UPDATE" }
@@ -581,7 +632,7 @@ function Module:CreateGuildDataText()
 	guildDataText:SetScript("OnLeave", onLeave)
 	guildDataText:SetScript("OnMouseUp", onMouseUp)
 
-	guildDataText.mover = K.Mover(guildDataText, "GuildDT", "GuildDT", { "LEFT", UIParent, "LEFT", 0, -240 }, 56, 12)
+	guildDataText.mover = K.Mover(guildDataText, "GuildDT", "GuildDT", { "LEFT", UIParent, "LEFT", 2, -240 }, 56, 12)
 end
 
 K.Delay(5, function()

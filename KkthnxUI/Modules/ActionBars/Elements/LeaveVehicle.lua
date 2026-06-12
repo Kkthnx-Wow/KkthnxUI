@@ -6,7 +6,7 @@
 -- - Design: Uses a SecureHandlerStateTemplate to toggle visibility based on exit capability.
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
 -- ---------------------------------------------------------------------------

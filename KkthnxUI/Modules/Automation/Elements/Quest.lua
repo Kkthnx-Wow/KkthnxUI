@@ -24,12 +24,16 @@ local C_GossipInfo_SelectOption = C_GossipInfo.SelectOption
 local C_Item_GetItemInfo = C_Item.GetItemInfo
 local C_Minimap_IsFilteredOut = C_Minimap.IsFilteredOut
 local C_Minimap_IsTrackingHiddenQuests = C_Minimap.IsTrackingHiddenQuests
+local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
+local C_QuestLog_IsPushableQuest = C_QuestLog.IsPushableQuest
 local C_QuestLog_IsQuestFlaggedCompletedOnAccount = C_QuestLog.IsQuestFlaggedCompletedOnAccount
 local C_QuestLog_IsQuestTrivial = C_QuestLog.IsQuestTrivial
 local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
+local C_TooltipInfo_GetItemByID = C_TooltipInfo and C_TooltipInfo.GetItemByID
 local CloseQuest = CloseQuest
 local CompleteQuest = CompleteQuest
+local ConfirmAcceptQuest = ConfirmAcceptQuest
 local CreateFrame = CreateFrame
 local GetActiveQuestID = GetActiveQuestID
 local GetActiveTitle = GetActiveTitle
@@ -41,6 +45,7 @@ local GetNumAutoQuestPopUps = GetNumAutoQuestPopUps
 local GetNumAvailableQuests = GetNumAvailableQuests
 local GetNumQuestChoices = GetNumQuestChoices
 local GetNumQuestItems = GetNumQuestItems
+local GetQuestMoneyToGet = GetQuestMoneyToGet
 local GetQuestGetAutoAccept = QuestGetAutoAccept
 local GetQuestID = GetQuestID
 local GetQuestItemInfo = GetQuestItemInfo
@@ -48,9 +53,13 @@ local GetQuestItemLink = GetQuestItemLink
 local GetQuestReward = GetQuestReward
 local GetQuestIsFromAreaTrigger = QuestIsFromAreaTrigger
 local IsAltKeyDown = IsAltKeyDown
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
 local IsQuestCompletable = IsQuestCompletable
 local IsShiftKeyDown = IsShiftKeyDown
-local RemoveAutoQuestPopUp = RemoveAutoQuestPopUp
+local QuestLogPushQuest = QuestLogPushQuest
+local QuestIsDaily = QuestIsDaily
+local QuestIsWeekly = QuestIsWeekly
 local SelectActiveQuest = SelectActiveQuest
 local SelectAvailableQuest = SelectAvailableQuest
 local ShowQuestComplete = ShowQuestComplete
@@ -69,13 +78,26 @@ local table_wipe = table.wipe
 -- ---------------------------------------------------------------------------
 -- Constants & State
 -- ---------------------------------------------------------------------------
+
+-- REASON: Named constants for magic NPC/Quest IDs to improve patch-time maintainability.
+local CALL_OF_THE_WORLDSOUL_QUEST_ID = 82449
+local BLINGTRON_4000_NPC_ID = 43929 -- daily lockout protection
+local BLINGTRON_5000_NPC_ID = 77789 -- daily lockout protection
+
+local MAX_REQUIRED_ITEMS = _G.MAX_REQUIRED_ITEMS or 8
 local QUEST_LABEL_PREPEND = Enum.GossipOptionRecFlags.QuestLabelPrepend
+local QUEST_FREQUENCY_DAILY = Enum.QuestFrequency and Enum.QuestFrequency.Daily
+local QUEST_FREQUENCY_WEEKLY = Enum.QuestFrequency and Enum.QuestFrequency.Weekly
 local MINIMAP_ACCOUNT_COMPLETED = Enum.MinimapTrackingFilter.AccountCompletedQuests
 local QUEST_STRING = "cFF0000FF.-" .. _G.TRANSMOG_SOURCE_2
 local IGNORED_TEXT = _G.IGNORED
 
 local choiceQueue
 local created
+
+-- REASON: Module-local runtime ignore cache; never written to C to avoid polluting the shared config namespace.
+-- updateIgnoreList() merges the defaults (C["AutoQuestData"]) and user overrides (CharVars) into this table.
+local ignoreQuestNPC = {}
 
 -- ---------------------------------------------------------------------------
 -- Minimap / WorldMap Integration
@@ -134,14 +156,90 @@ local function isAccountCompleted(questID)
 	return C_Minimap_IsFilteredOut(MINIMAP_ACCOUNT_COMPLETED) and C_QuestLog_IsQuestFlaggedCompletedOnAccount(questID)
 end
 
-C.IgnoreQuestNPC = {}
+local function isQuestFrequencyAllowed(frequency)
+	if frequency == QUEST_FREQUENCY_DAILY then
+		return C["Automation"].AutoQuestAcceptDaily
+	elseif frequency == QUEST_FREQUENCY_WEEKLY then
+		return C["Automation"].AutoQuestAcceptWeekly
+	end
+	return C["Automation"].AutoQuestAcceptRegular
+end
+
+local function isQuestDetailFrequencyAllowed()
+	if QuestIsDaily and QuestIsDaily() then
+		return C["Automation"].AutoQuestAcceptDaily
+	elseif QuestIsWeekly and QuestIsWeekly() then
+		return C["Automation"].AutoQuestAcceptWeekly
+	end
+	return C["Automation"].AutoQuestAcceptRegular
+end
+
+local accountBoundLines = {}
+do
+	local labels = { _G.ITEM_BNETACCOUNTBOUND, _G.ITEM_BIND_TO_BNETACCOUNT, _G.ITEM_BIND_TO_ACCOUNT, _G.ITEM_ACCOUNTBOUND }
+	for i = 1, #labels do
+		if labels[i] then
+			accountBoundLines[labels[i]] = true
+		end
+	end
+end
+
+local function isCraftingReagent(itemID)
+	return select(17, C_Item_GetItemInfo(itemID)) and true or false
+end
+
+local function isItemAccountBound(itemID)
+	if not C_TooltipInfo_GetItemByID then
+		return false
+	end
+	local data = C_TooltipInfo_GetItemByID(itemID)
+	local lines = data and data.lines
+	if not lines then
+		return false
+	end
+	for i = 1, #lines do
+		local line = lines[i]
+		if line and line.leftText and accountBoundLines[line.leftText] then
+			return true
+		end
+	end
+	return false
+end
+
+local function hasCostlyTurnIn()
+	if not C["Automation"].AutoQuestProtectTurnIns then
+		return false
+	end
+
+	if GetQuestMoneyToGet and (GetQuestMoneyToGet() or 0) > 0 then
+		return true
+	end
+
+	for index = 1, MAX_REQUIRED_ITEMS do
+		local itemButton = _G["QuestProgressItem" .. index]
+		if itemButton and itemButton:IsShown() and itemButton.type == "required" then
+			if itemButton.objectType == "currency" then
+				return true
+			elseif itemButton.objectType == "item" then
+				local itemID = select(6, GetQuestItemInfo("required", index))
+				if itemID and (isCraftingReagent(itemID) or isItemAccountBound(itemID)) then
+					return true
+				end
+			end
+		end
+	end
+
+	return false
+end
+
+-- REASON: ignoreQuestNPC is now a module-local declared above; no longer initialized through C.
 
 -- ---------------------------------------------------------------------------
 -- Event Handlers
 -- ---------------------------------------------------------------------------
 QuickQuest:Register("QUEST_GREETING", function()
 	local npcID = getNPCID()
-	if C.IgnoreQuestNPC[npcID] then
+	if ignoreQuestNPC[npcID] then
 		return
 	end
 
@@ -159,8 +257,8 @@ QuickQuest:Register("QUEST_GREETING", function()
 	local available = GetNumAvailableQuests()
 	if available > 0 then
 		for index = 1, available do
-			local isTrivial, _, _, _, questID = GetAvailableQuestInfo(index)
-			if not isAccountCompleted(questID) and (not isTrivial or C_Minimap_IsTrackingHiddenQuests()) then
+			local isTrivial, frequency, _, _, questID = GetAvailableQuestInfo(index)
+			if not isAccountCompleted(questID) and isQuestFrequencyAllowed(frequency) and (not isTrivial or C_Minimap_IsTrackingHiddenQuests()) then
 				SelectAvailableQuest(index)
 			end
 		end
@@ -192,7 +290,7 @@ end
 
 QuickQuest:Register("GOSSIP_SHOW", function()
 	local npcID = getNPCID()
-	if C.IgnoreQuestNPC[npcID] then
+	if ignoreQuestNPC[npcID] then
 		return
 	end
 
@@ -212,7 +310,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 		for _, questInfo in ipairs(C_GossipInfo_GetAvailableQuests()) do
 			local trivial = questInfo.isTrivial
 			local questID = questInfo.questID
-			if not isAccountCompleted(questID) and (not trivial or C_Minimap_IsTrackingHiddenQuests() or (trivial and npcID == 64337)) then
+			if not isAccountCompleted(questID) and isQuestFrequencyAllowed(questInfo.frequency) and (not trivial or C_Minimap_IsTrackingHiddenQuests() or (trivial and npcID == 64337)) then
 				C_GossipInfo_SelectAvailableQuest(questID)
 			end
 		end
@@ -268,7 +366,7 @@ end)
 
 QuickQuest:Register("QUEST_DETAIL", function()
 	local questID = GetQuestID()
-	if questID == 82449 then -- REASON: Call of the Worldsoul - requires manual choice.
+	if questID == CALL_OF_THE_WORLDSOUL_QUEST_ID then -- REASON: Call of the Worldsoul - requires manual choice.
 		return
 	end
 
@@ -276,19 +374,34 @@ QuickQuest:Register("QUEST_DETAIL", function()
 		AcceptQuest()
 	elseif GetQuestGetAutoAccept() then
 		AcknowledgeAutoAcceptQuest()
-	elseif not C_QuestLog_IsQuestTrivial(questID) or C_Minimap_IsTrackingHiddenQuests() then
-		if not C.IgnoreQuestNPC[getNPCID()] and not isAccountCompleted(questID) then
+	elseif (not C_QuestLog_IsQuestTrivial(questID) or C_Minimap_IsTrackingHiddenQuests()) and isQuestDetailFrequencyAllowed() then
+		if not ignoreQuestNPC[getNPCID()] and not isAccountCompleted(questID) then
 			AcceptQuest()
 		end
 	end
 end)
 
-QuickQuest:Register("QUEST_ACCEPT_CONFIRM", AcceptQuest)
+QuickQuest:Register("QUEST_ACCEPT_CONFIRM", function()
+	if ConfirmAcceptQuest then
+		ConfirmAcceptQuest()
+	else
+		AcceptQuest()
+	end
+end)
 
-QuickQuest:Register("QUEST_ACCEPTED", function()
+QuickQuest:Register("QUEST_ACCEPTED", function(questID)
 	-- REASON: Auto-closes the quest frame if the quest was automatically accepted.
 	if _G.QuestFrame:IsShown() and GetQuestGetAutoAccept() then
 		CloseQuest()
+	end
+
+	if C["Automation"].AutoShareQuest and questID then
+		if IsInGroup() and not IsInRaid() then
+			local logIndex = C_QuestLog_GetLogIndexForQuestID(questID)
+			if logIndex and logIndex > 0 and C_QuestLog_IsPushableQuest(questID) then
+				QuestLogPushQuest(logIndex)
+			end
+		end
 	end
 end)
 
@@ -301,7 +414,7 @@ end)
 QuickQuest:Register("QUEST_PROGRESS", function()
 	if IsQuestCompletable() then
 		local questID = GetQuestID()
-		if questID == 82449 then -- Call of the Worldsoul
+		if questID == CALL_OF_THE_WORLDSOUL_QUEST_ID then -- Call of the Worldsoul
 			return
 		end
 
@@ -310,7 +423,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 			return
 		end
 
-		if C.IgnoreQuestNPC[getNPCID()] then
+		if ignoreQuestNPC[getNPCID()] then
 			return
 		end
 
@@ -335,19 +448,24 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 			end
 		end
 
-		CompleteQuest()
+		if not hasCostlyTurnIn() then
+			CompleteQuest()
+		end
 	end
 end)
 
 QuickQuest:Register("QUEST_COMPLETE", function()
 	local questID = GetQuestID()
-	if questID == 82449 then -- Call of the Worldsoul
+	if questID == CALL_OF_THE_WORLDSOUL_QUEST_ID then -- Call of the Worldsoul
 		return
 	end
 
 	-- WARNING: Protect specific NPCs (Blingtron) from auto-turn-in to avoid wasting daily lockouts.
 	local npcID = getNPCID()
-	if npcID == 43929 or npcID == 77789 then
+	if npcID == BLINGTRON_4000_NPC_ID or npcID == BLINGTRON_5000_NPC_ID then
+		return
+	end
+	if C["Automation"].AutoQuestProtectTurnIns and GetQuestMoneyToGet and (GetQuestMoneyToGet() or 0) > 0 then
 		return
 	end
 
@@ -411,17 +529,17 @@ QuickQuest:Register("QUEST_LOG_UPDATE", AttemptAutoComplete)
 -- ---------------------------------------------------------------------------
 local function updateIgnoreList()
 	-- REASON: Syncs the local ignore list with both project defaults and user-defined ignores.
-	table_wipe(C.IgnoreQuestNPC)
+	table_wipe(ignoreQuestNPC)
 
 	for npcID, value in next, C["AutoQuestData"].IgnoreQuestNPC do
-		C.IgnoreQuestNPC[npcID] = value
+		ignoreQuestNPC[npcID] = value
 	end
 
 	for npcID, value in next, K.GetCharVars().AutoQuestIgnoreNPC do
 		if value and C["AutoQuestData"].IgnoreQuestNPC[npcID] then
 			K.GetCharVars().AutoQuestIgnoreNPC[npcID] = nil
 		else
-			C.IgnoreQuestNPC[npcID] = value
+			ignoreQuestNPC[npcID] = value
 		end
 	end
 end
@@ -441,7 +559,7 @@ local function unitQuickQuestStatus(self)
 	end
 
 	local npcID = getNPCID()
-	local isIgnored = K.GetCharVars().AutoQuest and npcID and C.IgnoreQuestNPC[npcID]
+	local isIgnored = K.GetCharVars().AutoQuest and npcID and ignoreQuestNPC[npcID]
 	self.__ignore:SetShown(isIgnored)
 end
 

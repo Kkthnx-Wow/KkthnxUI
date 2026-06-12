@@ -35,7 +35,8 @@ local UIErrorsFrame = UIErrorsFrame
 -- ---------------------------------------------------------------------------
 
 -- NOTE: Used for real-time event monitoring in the console.
-local EventTraceEnabled = true
+-- REASON: Starts disabled; the first /kk eventtrace call enables it rather than disabling it (correct UX).
+local EventTraceEnabled = false
 local EventTrace = CreateFrame("Frame")
 EventTrace:SetScript("OnEvent", function(_, event)
 	if event ~= "GET_ITEM_INFO_RECEIVED" and event ~= "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -239,7 +240,7 @@ local function StoreAndDisableAddons()
 	end
 
 	StaticPopupDialogs["CONFIRM_DISABLE_ADDONS"] = {
-		text = string.format("Are you sure you want to disable |cff5C8BCF%d|r addon(s) except |cff5C8BCFKkthnxUI|r for debugging?|n|nYou can use '|cff5C8BCFkkdebug off|r' to restore them.", addonsToDisable),
+		text = string_format("Are you sure you want to disable |cff5C8BCF%d|r addon(s) except |cff5C8BCFKkthnxUI|r for debugging?|n|nYou can use '|cff5C8BCFkkdebug off|r' to restore them.", addonsToDisable),
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function()
@@ -436,7 +437,7 @@ local commandMap = {
 -- REASON: Splitting input into command and arguments for modular handling.
 SlashCmdList["KKUI_COMMANDS"] = function(input)
 	local command, args = strsplit(" ", input, 2)
-	command = string.lower(command)
+	command = string_lower(command)
 
 	if commandMap[command] then
 		commandMap[command](args)

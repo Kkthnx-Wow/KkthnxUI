@@ -5,9 +5,16 @@
 local addon, ns = ...
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
+local ipairs = ipairs
+local pairs = pairs
+local CreateFrame = CreateFrame
+local UIParent = UIParent
 
+local AccountBankPanel = AccountBankPanel
 local BANK_TAB1 = Enum.BagIndex.CharacterBankTab_1 or 6
 local ACCOUNT_TAB1 = Enum.BagIndex.AccountBankTab_1 or 12
+local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
+local tabButtons = {}
 
 function Implementation:GetBagTabClass()
 	return self:GetClass("BagTab", true, "BagTab")
@@ -39,6 +46,7 @@ local function UpdateTooltip(self, id)
 	if not BankFrame.BankPanel.purchasedBankTabData then
 		return
 	end
+
 	local data = BankFrame.BankPanel.purchasedBankTabData[id]
 	if not data then
 		return
@@ -58,7 +66,14 @@ function BagTab:Create(bagID, i, account)
 	button.bagId = bagId
 	button:SetID(i)
 
-	--B.PixelIcon(button, BagTab.bgTex, true)
+	button:CreateBorder()
+	button:StyleButton()
+
+	button.Icon = button:CreateTexture(nil, "ARTWORK")
+	button.Icon:SetAllPoints()
+	button.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	button.Icon:SetTexture(BagTab.bgTex)
+
 	button:RegisterForDrag("LeftButton", "RightButton")
 	button:RegisterForClicks("AnyUp")
 	button:SetSize(37, 37)
@@ -81,7 +96,7 @@ function BagTab:OnEnter()
 
 	if hlFunction then
 		if self.bar.isGlobal then
-			for _, container in pairs(self.implementation.contByID) do
+			for _, container in ipairs(self.implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction, self.bagId)
 			end
 		else
@@ -97,7 +112,7 @@ function BagTab:OnLeave()
 
 	if hlFunction then
 		if self.bar.isGlobal then
-			for _, container in pairs(self.implementation.contByID) do
+			for _, container in ipairs(self.implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction)
 			end
 		else
@@ -120,7 +135,7 @@ function BagTab:UpdateButton()
 		self.hidden = not self.hidden
 
 		if self.bar.isGlobal then
-			for _, container in pairs(container.implementation.contByID) do
+			for _, container in ipairs(container.implementation.contByID) do
 				container:SetFilter(self.filter, self.hidden)
 			end
 		else
@@ -130,9 +145,9 @@ function BagTab:UpdateButton()
 	end
 
 	if self.hidden then
-		-- self.bg:SetBackdropBorderColor(0, 0, 0)
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
 	else
-		-- self.bg:SetBackdropBorderColor(1, 0.8, 0)
+		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	end
 end
 
@@ -166,7 +181,7 @@ function BagTab:OnClick(btn)
 end
 
 local function updater(self)
-	for _, button in pairs(self.buttons) do
+	for _, button in ipairs(self.buttons) do
 		button:UpdateButton()
 	end
 end

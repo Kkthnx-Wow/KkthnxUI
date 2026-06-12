@@ -24,7 +24,7 @@ function Module:CreateFocus()
 	local focusPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+
 
 	Module.CreateHeader(self)
 
@@ -46,7 +46,7 @@ function Module:CreateFocus()
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	if C["Unitframe"].HealthbarColor == 3 then
@@ -81,7 +81,7 @@ function Module:CreateFocus()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		-- K:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -149,8 +149,8 @@ function Module:CreateFocus()
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
-		self.Debuffs["growthX"] = "RIGHT"
-		self.Debuffs["growthY"] = "UP"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 15
@@ -169,8 +169,8 @@ function Module:CreateFocus()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growthX"] = "RIGHT"
-		self.Buffs["growthY"] = "DOWN"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 20
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
@@ -222,16 +222,14 @@ function Module:CreateFocus()
 
 		Castbar.Time = timer
 		Castbar.Text = name
-		Castbar.timeToHold = 0.5
-		Castbar.PostCastStart = Module.UpdateCastBarColor
-		Castbar.PostCastInterruptible = Module.UpdateCastBarColor
-		Castbar.PostCastStop = Module.Castbar_FailedColor
-		Castbar.PostCastFail = Module.Castbar_FailedColor
-		Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		Castbar.CreatePip = Module.CreatePip
 		Castbar.PostUpdatePips = Module.PostUpdatePips
-		Castbar.CustomTimeText = Module.CustomTimeText
-		Castbar.CustomDelayText = Module.CustomTimeText
 
 		local mover = K.Mover(Castbar, "Focus Castbar", "FocusCB", { "BOTTOM", UIParent, "BOTTOM", -474, 750 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
 		Castbar:ClearAllPoints()
@@ -279,7 +277,7 @@ function Module:CreateFocus()
 		absorbBar:Hide()
 		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex:SetHorizTile(true)
 		tex:SetVertTile(true)
 
@@ -292,7 +290,7 @@ function Module:CreateFocus()
 		overAbsorbBar:Hide()
 		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex2:SetHorizTile(true)
 		tex2:SetVertTile(true)
 
@@ -308,7 +306,7 @@ function Module:CreateFocus()
 		healAbsorbBar:Hide()
 		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex3:SetHorizTile(true)
 		tex3:SetVertTile(true)
 
@@ -403,14 +401,14 @@ function Module:CreateFocus()
 
 	-- REASON: Debuff Highlight (Magic, Poison, etc.)
 	if C["Unitframe"].DebuffHighlight then
-		-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-		-- self.DebuffHighlight:SetAllPoints(self.Health)
-		-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-		-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		-- self.DebuffHighlight:SetBlendMode("ADD")
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
 
-		-- self.DebuffHighlightAlpha = 0.45
-		-- self.DebuffHighlightFilter = true
+		self.DebuffHighlightAlpha = 0.45
+		self.DebuffHighlightFilter = true
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

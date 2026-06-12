@@ -33,10 +33,15 @@ CALLBACKS
 ]]
 
 local addon, ns = ...
+local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
 local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID
+local pairs = pairs
+local ipairs = ipairs
+local table_insert = table.insert
+local CreateFrame = CreateFrame
 local maxBagSlots = 5
 
 function Implementation:GetBagButtonClass()
@@ -59,7 +64,7 @@ local buttonNum = 0
 function BagButton:Create(bagID)
 	buttonNum = buttonNum + 1
 	local name = addon .. "BagButton" .. buttonNum
-	local isBankBag = bagID > 5 and bagID < 13
+	local isBankBag = bagID > 5 and bagID < 18
 	local button = setmetatable(CreateFrame("ItemButton", name, nil, "BackdropTemplate"), self.__index)
 
 	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
@@ -115,7 +120,7 @@ function BagButton:OnEnter()
 
 	if hlFunction then
 		if self.bar.isGlobal then
-			for _, container in pairs(self.implementation.contByID) do
+			for _, container in ipairs(self.implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction, self.bagId)
 			end
 		else
@@ -135,7 +140,7 @@ function BagButton:OnLeave()
 
 	if hlFunction then
 		if self.bar.isGlobal then
-			for _, container in pairs(self.implementation.contByID) do
+			for _, container in ipairs(self.implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction)
 			end
 		else
@@ -176,7 +181,7 @@ function BagButton:OnClick(btn)
 		self.hidden = not self.hidden
 
 		if self.bar.isGlobal then
-			for _, container in pairs(container.implementation.contByID) do
+			for _, container in ipairs(container.implementation.contByID) do
 				container:SetFilter(self.filter, self.hidden)
 			end
 		else
@@ -193,17 +198,21 @@ end
 
 -- Updating the icons
 local function updater(self)
-	for _, button in pairs(self.buttons) do
+	for _, button in ipairs(self.buttons) do
 		button:UpdateButton()
 	end
 end
 
 local function onLock(self, _, bagID, slotID)
+	if bagID == -1 and slotID > NUM_BANKGENERIC_SLOTS then
+		bagID, slotID = ContainerIDToInventoryID(slotID - NUM_BANKGENERIC_SLOTS + maxBagSlots)
+	end
+
 	if slotID then
 		return
 	end
 
-	for _, button in pairs(self.buttons) do
+	for _, button in ipairs(self.buttons) do
 		if button.invID == bagID then
 			return button:UpdateButton()
 		end
@@ -235,7 +244,7 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 			local button = buttonClass:Create(bags[i])
 			button:SetParent(bar)
 			button.bar = bar
-			table.insert(bar.buttons, button)
+			table_insert(bar.buttons, button)
 		end
 	end
 

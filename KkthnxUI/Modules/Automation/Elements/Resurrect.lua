@@ -13,6 +13,7 @@ local Module = K:GetModule("Automation")
 -- PERF: Localize globals and API functions to minimize lookup overhead.
 local AcceptResurrect = AcceptResurrect
 local DoEmote = DoEmote
+local GetLocale = GetLocale
 local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
@@ -49,14 +50,19 @@ local BRAZIER_NAMES = {
 	itIT = "Braciere del Risveglio",
 }
 
+local RESURRECT_BLACKLIST = {}
+do
+	local clientLocale = K.Client or GetLocale()
+	RESURRECT_BLACKLIST[PYLON_NAMES[clientLocale] or PYLON_NAMES.enUS] = true
+	RESURRECT_BLACKLIST[BRAZIER_NAMES[clientLocale] or BRAZIER_NAMES.enUS] = true
+end
+
 -- ---------------------------------------------------------------------------
 -- Internal Logic
 -- ---------------------------------------------------------------------------
 local function handleAutoResurrect(_, inviterName)
-	local clientLocale = K.Client
-
 	-- REASON: Ignore requests from automated pylon/brazier items to allow for strategic resurrection.
-	if PYLON_NAMES[clientLocale] == inviterName or BRAZIER_NAMES[clientLocale] == inviterName then
+	if inviterName and RESURRECT_BLACKLIST[inviterName] then
 		return
 	end
 
@@ -66,7 +72,7 @@ local function handleAutoResurrect(_, inviterName)
 		StaticPopup_Hide("RESURRECT_NO_TIMER")
 
 		-- REASON: Automated social interaction if configured by the user.
-		if C["Automation"].AutoResurrectThank then
+		if C["Automation"].AutoResurrectThank and inviterName then
 			K.Delay(3, function()
 				if not UnitIsDeadOrGhost("player") then
 					DoEmote("thank", inviterName)

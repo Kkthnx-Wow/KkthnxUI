@@ -7,7 +7,7 @@
 -- - Events: ADDON_LOADED (Blizzard_OrderHallUI), MODIFIER_STATE_CHANGED
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K = KkthnxUI[1]
 local Module = K:GetModule("Blizzard")
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
@@ -157,7 +157,9 @@ function Module:OrderHall_CreateIcon()
 	end
 end
 
-function Module:OrderHall_OnLoad(event, addon)
+-- COMPAT: Dot syntax (not colon). K:RegisterEvent dispatches func(event, ...), so
+-- ADDON_LOADED passes (event, addonName) and the leading event must not bind as self.
+function Module.OrderHall_OnLoad(event, addon)
 	if addon == "Blizzard_OrderHallUI" then
 		Module:OrderHall_CreateIcon()
 		K:UnregisterEvent(event, Module.OrderHall_OnLoad)

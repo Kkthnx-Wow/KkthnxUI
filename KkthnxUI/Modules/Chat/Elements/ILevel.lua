@@ -95,8 +95,11 @@ local function convertItemLevel(link)
 
 	local name, itemLevel = isItemWithLevel(link)
 	if name and itemLevel then
-		link = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. Module:GetItemGemInfo(link))
-		itemCache[link] = link
+		-- PERF: Cache keyed by the ORIGINAL link (the lookup key above). Previously the table was
+		-- keyed by the rebuilt link, so it never hit and GetItemInfo/GetItemStats re-ran every message.
+		local newLink = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. Module:GetItemGemInfo(link))
+		itemCache[link] = newLink
+		return newLink
 	end
 
 	return link

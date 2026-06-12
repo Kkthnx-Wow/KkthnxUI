@@ -51,11 +51,15 @@ local function UpdateSimplePartyPower(self, _, unit)
 
 	-- Determine if power bar should be shown
 	if C["SimpleParty"].PowerBarShow then
-		-- Show all power bars when PowerBarShow is enabled
-		shouldShowPower = true
-	elseif C["SimpleParty"].ManabarShow and powerToken == "MANA" then
-		-- Show only mana bars when ManabarShow is enabled
-		shouldShowPower = true
+		if C["SimpleParty"].ManabarShow then
+			-- Master is ON, but restricted to Mana
+			if powerToken == "MANA" then
+				shouldShowPower = true
+			end
+		else
+			-- Master is ON, no restrictions
+			shouldShowPower = true
+		end
 	end
 
 	-- Calculate health bar offset based on power bar height + spacing
@@ -84,7 +88,7 @@ end
 
 function Module:CreateSimpleParty()
 	local SimplePartyframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+
 
 	Module.CreateHeader(self)
 
@@ -101,6 +105,10 @@ function Module:CreateSimpleParty()
 	self.Health.Value:SetFontObject(K.UIFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[raidhp]")
+
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
 
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -121,7 +129,7 @@ function Module:CreateSimpleParty()
 	end
 
 	if C["SimpleParty"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	-- REASON: Power Bar Setup
@@ -136,15 +144,19 @@ function Module:CreateSimpleParty()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
+
 	if C["SimpleParty"].Smooth then
-		-- K:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.UpdateSimplePartyPower = UpdateSimplePartyPower -- Store reference for external access
 
 	table_insert(self.__elements, UpdateSimplePartyPower)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateSimplePartyPower)
-	UpdateSimplePartyPower(self, _, self.unit)
+	UpdateSimplePartyPower(self, "UpdateSimplePartyPower", self.unit)
 
 	-- REASON: Heal Prediction
 	if C["SimpleParty"].ShowHealPrediction then
@@ -184,7 +196,7 @@ function Module:CreateSimpleParty()
 		absorbBar:Hide()
 		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex:SetHorizTile(true)
 		tex:SetVertTile(true)
 
@@ -197,7 +209,7 @@ function Module:CreateSimpleParty()
 		overAbsorbBar:Hide()
 		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex2:SetHorizTile(true)
 		tex2:SetVertTile(true)
 
@@ -213,7 +225,7 @@ function Module:CreateSimpleParty()
 		healAbsorbBar:Hide()
 		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex3:SetHorizTile(true)
 		tex3:SetVertTile(true)
 
@@ -399,14 +411,14 @@ function Module:CreateSimpleParty()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateSimplePartyTargetGlow, true)
 	end
 
-	-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-	-- self.DebuffHighlight:SetAllPoints(self.Health)
-	-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-	-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-	-- self.DebuffHighlight:SetBlendMode("ADD")
+	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.DebuffHighlight:SetAllPoints(self.Health)
+	self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+	self.DebuffHighlight:SetBlendMode("ADD")
 
-	-- self.DebuffHighlightAlpha = 0.45
-	-- self.DebuffHighlightFilter = true
+	self.DebuffHighlightAlpha = 0.45
+	self.DebuffHighlightFilter = true
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()

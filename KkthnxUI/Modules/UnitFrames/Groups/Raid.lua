@@ -45,29 +45,31 @@ local function UpdateRaidPower(self, _, unit)
 		return
 	end
 
-	-- Check power type (MANA or others)
 	local _, powerToken = UnitPowerType(unit)
+	local shouldShowPower = false
+
 	if C["Raid"].PowerBarShow then
-		if powerToken == "MANA" and C["Raid"].ManabarShow then
-			if not self.Power:IsVisible() then
-				self.Health:ClearAllPoints()
-				self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
-				self.Health:SetPoint("TOPRIGHT", self)
-				self.Power:Show()
-			end
-		elseif powerToken ~= "MANA" and not C["Raid"].ManabarShow then
-			if not self.Power:IsVisible() then
-				self.Health:ClearAllPoints()
-				self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
-				self.Health:SetPoint("TOPRIGHT", self)
-				self.Power:Show()
+		if C["Raid"].ManabarShow then
+			if powerToken == "MANA" then
+				shouldShowPower = true
 			end
 		else
-			if self.Power:IsVisible() then
-				self.Health:ClearAllPoints()
-				self.Health:SetAllPoints(self)
-				self.Power:Hide()
-			end
+			shouldShowPower = true
+		end
+	end
+
+	local powerBarOffset = 6
+
+	if shouldShowPower then
+		if not self.Power:IsVisible() then
+			self.Health:ClearAllPoints()
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, powerBarOffset)
+			self.Health:SetPoint("TOPRIGHT", self)
+			self.Power:Show()
+		else
+			self.Health:ClearAllPoints()
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, powerBarOffset)
+			self.Health:SetPoint("TOPRIGHT", self)
 		end
 	else
 		if self.Power:IsVisible() then
@@ -80,7 +82,7 @@ end
 
 function Module:CreateRaid()
 	local RaidframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+
 
 	Module.CreateHeader(self)
 
@@ -97,6 +99,10 @@ function Module:CreateRaid()
 	self.Health.Value:SetFontObject(K.UIFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[raidhp]")
+
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
 
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -117,7 +123,7 @@ function Module:CreateRaid()
 	end
 
 	if C["Raid"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	-- REASON: Power Bar Setup
@@ -132,13 +138,19 @@ function Module:CreateRaid()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
+
 	if C["Raid"].Smooth then
-		-- K:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
+
+	self.UpdateRaidPower = UpdateRaidPower -- Store reference for external access
 
 	table_insert(self.__elements, UpdateRaidPower)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-	UpdateRaidPower(self, _, self.unit)
+	UpdateRaidPower(self, "UpdateRaidPower", self.unit)
 
 	-- REASON: Heal Prediction
 	if C["Raid"].ShowHealPrediction then
@@ -178,7 +190,7 @@ function Module:CreateRaid()
 		absorbBar:Hide()
 		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex:SetHorizTile(true)
 		tex:SetVertTile(true)
 
@@ -191,7 +203,7 @@ function Module:CreateRaid()
 		overAbsorbBar:Hide()
 		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex2:SetHorizTile(true)
 		tex2:SetVertTile(true)
 
@@ -207,7 +219,7 @@ function Module:CreateRaid()
 		healAbsorbBar:Hide()
 		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex3:SetHorizTile(true)
 		tex3:SetVertTile(true)
 
@@ -392,14 +404,14 @@ function Module:CreateRaid()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
 	end
 
-	-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-	-- self.DebuffHighlight:SetAllPoints(self.Health)
-	-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-	-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-	-- self.DebuffHighlight:SetBlendMode("ADD")
+	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.DebuffHighlight:SetAllPoints(self.Health)
+	self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+	self.DebuffHighlight:SetBlendMode("ADD")
 
-	-- self.DebuffHighlightAlpha = 0.45
-	-- self.DebuffHighlightFilter = true
+	self.DebuffHighlightAlpha = 0.45
+	self.DebuffHighlightFilter = true
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()

@@ -14,7 +14,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 -- PERF: Cache frequent APIs and globals to minimize table lookups.
 local _G = _G
-local floor, max, min = math.floor, math.max, math.min
+local _, max, min = math.floor, math.max, math.min
 local format = string.format
 local ipairs, pairs, type = ipairs, pairs, type
 
@@ -26,14 +26,6 @@ local UIParent = UIParent
 -- UTILITY HELPERS
 -- ---------------------------------------------------------------------------
 
--- NOTE: Simple helper to extract keys from a table for iteration or sorting.
-local function tKeys(t)
-	local keys = {}
-	for k, _ in pairs(t) do
-		table.insert(keys, k)
-	end
-	return keys
-end
 
 -- ---------------------------------------------------------------------------
 -- STATIC EVENT HANDLERS
@@ -119,22 +111,12 @@ end
 
 -- Get default value for a config path
 local function GetDefaultValue(configPath)
-	-- First check if K.Defaults exists and has the path
-	if K.Defaults then
-		local defaultValue = K.GetValueByPath(K.Defaults, configPath)
-		if defaultValue ~= nil then
-			return defaultValue
-		end
-	end
-
-	-- Fallback: If K.Defaults doesn't exist or doesn't have the path,
-	-- try to get from the original C table structure (may be current values though)
-	return K.GetValueByPath(C, configPath)
+	return K.GUIConfigService:GetDefaultValue(configPath)
 end
 
 -- Get extra configuration value by path
 local function GetExtraConfigValue(configPath)
-	return K.GetValueByPath(C, configPath)
+	return K.GUIConfigService:GetValue(configPath)
 end
 
 -- REASON: Propagates changes to main GUI and handles reload tracking/hooks.
@@ -146,27 +128,9 @@ local function SetExtraConfigValue(configPath, value, settingName)
 		return true
 	end
 
-	-- Fallback if main GUI not available (shouldn't happen in normal operation)
-	-- Get old value for hook comparison
-	local oldValue = K.GetValueByPath(C, configPath)
-
-	-- Set in runtime config
-	K.SetValueByPath(C, configPath, value)
-
-	-- Save to database (with safety check)
-	if KkthnxUIDB then
-		if not KkthnxUIDB.Settings then
-			KkthnxUIDB.Settings = {}
-		end
-		if not KkthnxUIDB.Settings[K.Realm] then
-			KkthnxUIDB.Settings[K.Realm] = {}
-		end
-		if not KkthnxUIDB.Settings[K.Realm][K.Name] then
-			KkthnxUIDB.Settings[K.Realm][K.Name] = {}
-		end
-
-		K.SetValueByPath(KkthnxUIDB.Settings[K.Realm][K.Name], configPath, value)
-	end
+	-- Fallback if main GUI not available (shouldn't happen in normal operation).
+	-- GUIConfigService owns the runtime + SavedVariables write path.
+	local oldValue = K.GUIConfigService:SetValue(configPath, value)
 
 	-- Execute real-time update hooks (if available from main GUI)
 	if oldValue ~= value then
@@ -241,122 +205,30 @@ end
 -- CONTROL KEY CHECKER (RESET BUTTONS)
 -- ---------------------------------------------------------------------------
 
--- NOTE: Global frame tracking Ctrl state without passive polling.
-local CtrlChecker = CreateFrame("Frame")
-local resetButtons = {}
-
-local function CtrlUpdate(_, _, key, state)
-	if key == "LCTRL" or key == "RCTRL" then
-		for widget, resetButton in pairs(resetButtons) do
-			if widget:IsMouseOver() then
-				if state == 1 then
-					if not resetButton:IsShown() then
-						resetButton:Show()
-					end
-				else
-					if resetButton:IsShown() then
-						resetButton:Hide()
-						GameTooltip:Hide()
-					end
-				end
-				break -- Only one widget can be moused over at a time
-			end
-		end
-	end
-end
-CtrlChecker:SetScript("OnEvent", CtrlUpdate)
-
 -- REASON: Attaches a hidden reset button to a widget that appears only when Ctrl is held.
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
-	-- Create reset button with undo icon
-	local resetButton = CreateFrame("Button", nil, widget)
-	resetButton:SetSize(16, 16)
-
-	-- Position next to label (no cogwheel in ExtraGUI widgets)
-	resetButton:SetPoint("LEFT", label, "RIGHT", 5, 0)
-	resetButton:Hide() -- Initially hidden
-
-	-- Undo icon
-	local undoIcon = resetButton:CreateTexture(nil, "ARTWORK")
-	undoIcon:SetAllPoints()
-	undoIcon:SetAlpha(0.7)
-
-	-- Try to set the atlas, with fallback
-	local success = pcall(function()
-		undoIcon:SetAtlas("common-icon-undo", true)
-		undoIcon:SetSize(16, 16)
-	end)
-
-	if not success then
-		-- Fallback to a texture if atlas fails
-		undoIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
-		undoIcon:SetTexCoord(0, 1, 0, 1)
-	end
-
-	-- ---------------------------------------------------------------------------
-	-- Reset Button Logic
-	-- ---------------------------------------------------------------------------
-
-	-- Hover effects for the reset button
-	resetButton:SetScript("OnEnter", function(self)
-		undoIcon:SetAlpha(1)
-		-- Show tooltip
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(L["Reset to Default"] or "Reset to Default", 1, 1, 1, 1, true)
-		GameTooltip:AddLine(L["Click to reset this setting to its default value"] or "Click to reset this setting to its default value", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
-		GameTooltip:Show()
-	end)
-
-	resetButton:SetScript("OnLeave", function(self)
-		undoIcon:SetAlpha(0.7)
-		GameTooltip:Hide()
-	end)
-
-	-- Click handler for reset
-	resetButton:SetScript("OnClick", function(self, button)
-		if button == "LeftButton" then
-			ResetToDefault(configPath, widget, cleanText)
-		end
-	end)
-
-	-- Store reference for showing/hiding
-	widget.ResetButton = resetButton
-
-	-- Hook native widget events for zero-polling control states
-	widget:HookScript("OnEnter", function()
-		if IsControlKeyDown() then
-			resetButton:Show()
-		end
-	end)
-
-	widget:HookScript("OnLeave", function()
-		C_Timer.After(0.01, function()
-			if resetButton:IsShown() and not widget:IsMouseOver() and not resetButton:IsMouseOver() then
-				resetButton:Hide()
-			end
-		end)
-	end)
-
-	-- Register with global checker
-	resetButtons[widget] = resetButton
-
-	return resetButton
+	return K.GUIResetButtons:Attach(widget, label, configPath, cleanText, ResetToDefault, 5)
 end
 
 -- ---------------------------------------------------------------------------
 -- CONSTANTS & LAYOUT CONFIG
 -- ---------------------------------------------------------------------------
 
--- REASON: Panel dimensions are derived from the main GUI to ensure visual consistency.
-local PANEL_WIDTH = 880
-local PANEL_HEIGHT = 640
+-- REASON: Panel dimensions are now actually derived from the shared K.GUILayout
+-- (WidgetFactory.lua), so "consistent with the main GUI" is true by construction.
+local layout = K.GUILayout
+local PANEL_WIDTH = layout.PanelWidth
+local PANEL_HEIGHT = layout.PanelHeight
 local EXTRA_PANEL_WIDTH = PANEL_WIDTH / 2 -- Half the width of main GUI
-local SPACING = 8
-local HEADER_HEIGHT = 40
+local SPACING = layout.Spacing
+local HEADER_HEIGHT = layout.HeaderHeight
 
--- Colors (use KkthnxUI's established color system)
-local ACCENT_COLOR = { K.r, K.g, K.b }
-local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
+-- Colors: pull from the shared K.GUITheme (WidgetFactory.lua) for a uniform look.
+-- NOTE: ExtraGUI intentionally uses the FULL-strength accent (not the dimmed one
+-- the main config uses), so it reads theme.Accent. Don't "fix" this to AccentDim.
+local theme = K.GUITheme
+local ACCENT_COLOR = theme.Accent
+local TEXT_COLOR = theme.Text
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
 -- ---------------------------------------------------------------------------
@@ -608,7 +480,7 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	end
 
 	-- Hide existing containers; we'll show or create for the requested path
-	for key, container in pairs(self.ConfigContainers) do
+	for _, container in pairs(self.ConfigContainers) do
 		if container and container.Hide then
 			container:Hide()
 		end
@@ -703,11 +575,6 @@ function ExtraGUI:ShowExtraConfig(configPath, optionTitle)
 	self.CurrentConfig = config
 	self.Frame:Show()
 	self.IsVisible = true
-
-	-- Enable CtrlChecker zero-polling modifiers while ExtraGUI is visible
-	if CtrlChecker then
-		CtrlChecker:RegisterEvent("MODIFIER_STATE_CHANGED")
-	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -746,10 +613,20 @@ function ExtraGUI:Hide()
 	end
 	self.IsVisible = false
 	self.CurrentConfig = nil
+end
 
-	-- Disable CtrlChecker when ExtraGUI is hidden
-	if CtrlChecker then
-		CtrlChecker:UnregisterEvent("MODIFIER_STATE_CHANGED")
+-- Toggle a config panel: open it, or close it if it's already the open one.
+-- REASON: Launcher buttons (Open GUI / Open / Manage) should behave like the cogwheel - clicking
+-- the same launcher again closes the panel instead of silently doing nothing.
+function ExtraGUI:ToggleExtraConfig(configPath, optionTitle)
+	if not configPath then
+		return
+	end
+
+	if self.IsVisible and self.CurrentConfig and self.CurrentConfig.configPath == configPath then
+		self:Hide()
+	else
+		self:ShowExtraConfig(configPath, optionTitle)
 	end
 end
 
@@ -757,8 +634,6 @@ end
 function ExtraGUI:Show()
 	if self.IsVisible then
 		self:Hide()
-	else
-		-- Can't show without a specific config
 	end
 end
 
@@ -869,8 +744,8 @@ function ExtraGUI:Enable()
 		return true
 	end
 
-	-- Register some example extra configurations
-	self:RegisterExampleConfigs()
+	-- Register the built-in extra configurations
+	self:RegisterBuiltinConfigs()
 
 	self.IsInitialized = true
 	self._enabled = true
@@ -998,7 +873,6 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 		local value = GetExtraConfigValue(self.ConfigPath)
 		if value == nil then
 			value = false -- Default for switches
-		else
 		end
 
 		if value then
@@ -1030,7 +904,6 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 		local currentValue = GetExtraConfigValue(configPath)
 		if currentValue == nil then
 			currentValue = false -- Default for switches
-		else
 		end
 
 		local newValue = not currentValue
@@ -1133,6 +1006,7 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 	thumbTexture:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 
 	local currentValue = minVal
+	local committedValue = minVal
 	local isDragging = false
 
 	-- Update thumb position
@@ -1178,6 +1052,7 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 
 		value = math.max(minVal, math.min(maxVal, value))
 		currentValue = value
+		committedValue = value
 		valueText:SetText(tostring(value))
 		UpdateThumbPosition(value)
 	end
@@ -1216,13 +1091,15 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 				end
 
 				-- PERF: Coalesce config writes while dragging to minimize database and hook overhead.
-				if sinceLastCommit >= 0.12 then
+				if currentValue ~= committedValue and sinceLastCommit >= 0.12 then
 					SetExtraConfigValue(configPath, currentValue, cleanText)
+					local oldValue = committedValue
+					committedValue = currentValue
 					sinceLastCommit = 0
 
 					-- Call hook function if provided
 					if hookFunction and type(hookFunction) == "function" then
-						hookFunction(currentValue, currentValue, configPath)
+						hookFunction(currentValue, oldValue, configPath)
 					end
 				end
 			end)
@@ -1233,6 +1110,17 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 		if button == "LeftButton" and isDragging then
 			isDragging = false
 			self:SetScript("OnUpdate", nil)
+
+			if currentValue ~= committedValue then
+				SetExtraConfigValue(configPath, currentValue, cleanText)
+				local oldValue = committedValue
+				committedValue = currentValue
+
+				if hookFunction and type(hookFunction) == "function" then
+					hookFunction(currentValue, oldValue, configPath)
+				end
+			end
+
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 		end
 	end)
@@ -1244,14 +1132,16 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 		newValue = max(minVal, min(maxVal, newValue))
 
 		if newValue ~= currentValue then
+			local oldValue = currentValue
 			currentValue = newValue
+			committedValue = newValue
 			valueText:SetText(tostring(newValue))
 			UpdateThumbPosition(newValue)
 			SetExtraConfigValue(configPath, newValue, cleanText)
 
 			-- Call hook function if provided
 			if hookFunction and type(hookFunction) == "function" then
-				hookFunction(newValue, currentValue, configPath)
+				hookFunction(newValue, oldValue, configPath)
 			end
 
 			-- Play feedback sound
@@ -1485,1305 +1375,351 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 end
 
 -- ---------------------------------------------------------------------------
--- MODULE HOOKS: ACTIONBARS
+-- SHARED LIST-EDITOR INFRASTRUCTURE
+--
+-- REASON: Five ExtraGUI panels (Mute SoundIDs, Custom Units, Power Units,
+-- Nameplate aura filters, Auto-Quest ignore NPCs) all reimplemented the same
+-- "searchable, scrollable list of numeric IDs with add/remove" widget by hand.
+-- That copy-paste was ~1500 lines and bred drift + latent bugs (e.g. the Mute
+-- editor read its input via a non-existent :GetText(), Power Units crashed on
+-- PLAYER_TARGET_CHANGED). This single factory + a few store adapters own the
+-- behavior now; each panel is a small declarative spec.
 -- ---------------------------------------------------------------------------
 
--- REASON: These helpers bridge the GUI settings to the ActionBar module's internal scaling logic.
-local function UpdateActionBar1Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar1")
+-- Resolve an NPC's name by ID, learning names from nearby units (async via K.GetNPCName).
+local function GetNPCNameByID(npcID, callback)
+	if not npcID then
+		return "Unknown"
+	end
+
+	if K.GetNPCName then
+		local name = K.GetNPCName(npcID, callback)
+		if name and name ~= "" and name ~= "..." then
+			return name
+		end
+	end
+
+	K.NPCNameCache = K.NPCNameCache or {}
+	if K.NPCNameCache[npcID] then
+		return K.NPCNameCache[npcID]
+	end
+
+	return "Unknown"
 end
 
-local function UpdateActionBar2Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar2")
-end
+-- Set a creature portrait onto a texture, falling back to a question mark until a
+-- matching unit (target/mouseover/focus/nameplate/boss) is visible to read from.
+local function TrySetNPCPortrait(texture, npcID)
+	texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+	texture:SetVertexColor(1, 1, 1, 1)
+	texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 
-local function UpdateActionBar3Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar3")
-end
+	local function checkUnit(u)
+		if UnitExists(u) then
+			local guid = UnitGUID(u)
+			local id = guid and K.GetNPCID(guid)
+			if id and id == npcID then
+				SetPortraitTexture(texture, u)
+				texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+				return true
+			end
+		end
+	end
 
-local function UpdateActionBar4Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar4")
-end
-
-local function UpdateActionBar5Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar5")
-end
-
-local function UpdateActionBar6Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar6")
-end
-
-local function UpdateActionBar7Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar7")
-end
-
-local function UpdateActionBar8Scale()
-	K:GetModule("ActionBar"):UpdateActionSize("Bar8")
-end
-
--- ---------------------------------------------------------------------------
--- MODULE HOOKS: INVENTORY
--- ---------------------------------------------------------------------------
-
--- REASON: Forces a bag layout refresh when bag-related settings (like sorting or size) are changed.
-local function UpdateBagStatus()
-	local inventoryModule = K:GetModule("Bags")
-	if inventoryModule and inventoryModule.UpdateAllBags then
-		K:GetModule("Bags"):UpdateAllBags()
+	local directUnits = { "target", "mouseover", "focus" }
+	for _, u in ipairs(directUnits) do
+		if checkUnit(u) then
+			return
+		end
+	end
+	for i = 1, 40 do
+		if checkUnit("nameplate" .. i) then
+			return
+		end
+	end
+	for i = 1, 8 do
+		if checkUnit("boss" .. i) then
+			return
+		end
 	end
 end
 
--- ---------------------------------------------------------------------------
--- CONFIGURATION REGISTRATION: EXAMPLES & BUILT-INS
--- ---------------------------------------------------------------------------
-
--- NOTE: This function populates the ExtraGUI with standard configurations for core addon features.
-function ExtraGUI:RegisterExampleConfigs()
-	self:RegisterExtraConfig("ActionBar.Bar1", function(parent)
-		-- NOTE: Individual bar configurations allow for granular control over size, layout, and appearance.
-		local yOffset = -10
-
-		local bar1SizeSlider = self:CreateSlider(parent, "ActionBar.Bar1Size", L["Button Size"], 20, 80, 1, L["Bar1Size Desc"], UpdateActionBar1Scale)
-		bar1SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar1PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar1PerRow", L["Button PerRow"], 1, 12, 1, L["Bar1PerRow Desc"], UpdateActionBar1Scale)
-		bar1PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar1NumSlider = self:CreateSlider(parent, "ActionBar.Bar1Num", L["Button Num"], 1, 12, 1, L["Bar1Num Desc"], UpdateActionBar1Scale)
-		bar1NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar1FontSlider = self:CreateSlider(parent, "ActionBar.Bar1Font", L["Button FontSize"], 8, 20, 1, L["Bar1Font Desc"], UpdateActionBar1Scale)
-		bar1FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 1")
-
-	self:RegisterExtraConfig("ActionBar.Bar2", function(parent)
-		local yOffset = -10
-
-		local bar2SizeSlider = self:CreateSlider(parent, "ActionBar.Bar2Size", L["Button Size"], 20, 80, 1, L["Bar2Size Desc"], UpdateActionBar2Scale)
-		bar2SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar2PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar2PerRow", L["Button PerRow"], 1, 12, 1, L["Bar2PerRow Desc"], UpdateActionBar2Scale)
-		bar2PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar2NumSlider = self:CreateSlider(parent, "ActionBar.Bar2Num", L["Button Num"], 1, 12, 1, L["Bar2Num Desc"], UpdateActionBar2Scale)
-		bar2NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar2FontSlider = self:CreateSlider(parent, "ActionBar.Bar2Font", L["Button FontSize"], 8, 20, 1, L["Bar2Font Desc"], UpdateActionBar2Scale)
-		bar2FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 2")
-
-	self:RegisterExtraConfig("ActionBar.Bar3", function(parent)
-		local yOffset = -10
-
-		local bar3SizeSlider = self:CreateSlider(parent, "ActionBar.Bar3Size", L["Button Size"], 20, 80, 1, L["Bar3Size Desc"], UpdateActionBar3Scale)
-		bar3SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar3PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar3PerRow", L["Button PerRow"], 1, 12, 1, L["Bar3PerRow Desc"], UpdateActionBar3Scale)
-		bar3PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar3NumSlider = self:CreateSlider(parent, "ActionBar.Bar3Num", L["Button Num"], 1, 12, 1, L["Bar3Num Desc"], UpdateActionBar3Scale)
-		bar3NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar3FontSlider = self:CreateSlider(parent, "ActionBar.Bar3Font", L["Button FontSize"], 8, 20, 1, L["Bar3Font Desc"], UpdateActionBar3Scale)
-		bar3FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 3")
-
-	self:RegisterExtraConfig("ActionBar.Bar4", function(parent)
-		local yOffset = -10
-
-		local bar4SizeSlider = self:CreateSlider(parent, "ActionBar.Bar4Size", L["Button Size"], 20, 80, 1, L["Bar4Size Desc"], UpdateActionBar4Scale)
-		bar4SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar4PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar4PerRow", L["Button PerRow"], 1, 12, 1, L["Bar4PerRow Desc"], UpdateActionBar4Scale)
-		bar4PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar4NumSlider = self:CreateSlider(parent, "ActionBar.Bar4Num", L["Button Num"], 1, 12, 1, L["Bar4Num Desc"], UpdateActionBar4Scale)
-		bar4NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar4FontSlider = self:CreateSlider(parent, "ActionBar.Bar4Font", L["Button FontSize"], 8, 20, 1, L["Bar4Font Desc"], UpdateActionBar4Scale)
-		bar4FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 4")
-
-	self:RegisterExtraConfig("ActionBar.Bar5", function(parent)
-		local yOffset = -10
-
-		local bar5SizeSlider = self:CreateSlider(parent, "ActionBar.Bar5Size", L["Button Size"], 20, 80, 1, L["Bar5Size Desc"], UpdateActionBar5Scale)
-		bar5SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar5PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar5PerRow", L["Button PerRow"], 1, 12, 1, L["Bar5PerRow Desc"], UpdateActionBar5Scale)
-		bar5PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar5NumSlider = self:CreateSlider(parent, "ActionBar.Bar5Num", L["Button Num"], 1, 12, 1, L["Bar5Num Desc"], UpdateActionBar5Scale)
-		bar5NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar5FontSlider = self:CreateSlider(parent, "ActionBar.Bar5Font", L["Button FontSize"], 8, 20, 1, L["Bar5Font Desc"], UpdateActionBar5Scale)
-		bar5FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 5")
-
-	self:RegisterExtraConfig("ActionBar.Bar6", function(parent)
-		local yOffset = -10
-
-		local bar6SizeSlider = self:CreateSlider(parent, "ActionBar.Bar6Size", L["Button Size"], 20, 80, 1, L["Bar6Size Desc"], UpdateActionBar6Scale)
-		bar6SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar6PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar6PerRow", L["Button PerRow"], 1, 12, 1, L["Bar6PerRow Desc"], UpdateActionBar6Scale)
-		bar6PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar6NumSlider = self:CreateSlider(parent, "ActionBar.Bar6Num", L["Button Num"], 1, 12, 1, L["Bar6Num Desc"], UpdateActionBar6Scale)
-		bar6NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar6FontSlider = self:CreateSlider(parent, "ActionBar.Bar6Font", L["Button FontSize"], 8, 20, 1, L["Bar6Font Desc"], UpdateActionBar6Scale)
-		bar6FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 6")
-
-	self:RegisterExtraConfig("ActionBar.Bar7", function(parent)
-		local yOffset = -10
-
-		local bar7SizeSlider = self:CreateSlider(parent, "ActionBar.Bar7Size", L["Button Size"], 20, 80, 1, L["Bar7Size Desc"], UpdateActionBar7Scale)
-		bar7SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar7PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar7PerRow", L["Button PerRow"], 1, 12, 1, L["Bar7PerRow Desc"], UpdateActionBar7Scale)
-		bar7PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar7NumSlider = self:CreateSlider(parent, "ActionBar.Bar7Num", L["Button Num"], 1, 12, 1, L["Bar7Num Desc"], UpdateActionBar7Scale)
-		bar7NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar7FontSlider = self:CreateSlider(parent, "ActionBar.Bar7Font", L["Button FontSize"], 8, 20, 1, L["Bar7Font Desc"], UpdateActionBar7Scale)
-		bar7FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 7")
-
-	self:RegisterExtraConfig("ActionBar.Bar8", function(parent)
-		local yOffset = -10
-
-		local bar8SizeSlider = self:CreateSlider(parent, "ActionBar.Bar8Size", L["Button Size"], 20, 80, 1, L["Bar8Size Desc"], UpdateActionBar8Scale)
-		bar8SizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar8PerRowSlider = self:CreateSlider(parent, "ActionBar.Bar8PerRow", L["Button PerRow"], 1, 12, 1, L["Bar8PerRow Desc"], UpdateActionBar8Scale)
-		bar8PerRowSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar8NumSlider = self:CreateSlider(parent, "ActionBar.Bar8Num", L["Button Num"], 1, 12, 1, L["Bar8Num Desc"], UpdateActionBar8Scale)
-		bar8NumSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local bar8FontSlider = self:CreateSlider(parent, "ActionBar.Bar8Font", L["Button FontSize"], 8, 20, 1, L["Bar8Font Desc"], UpdateActionBar8Scale)
-		bar8FontSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Bar 8")
-
-	-- ---------------------------------------------------------------------------
-	-- Configuration Registration: Chat
-	-- ---------------------------------------------------------------------------
-
-	self:RegisterExtraConfig("Chat.General", function(parent)
-		local yOffset = -10
-
-		-- Chat Font Size Slider
-		local fontSizeSlider = self:CreateSlider(parent, "Chat.FontSize", "Font Size", 8, 18, 1, "Size of chat text")
-		fontSizeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Chat Fade Time Slider
-		local fadeTimeSlider = self:CreateSlider(parent, "Chat.FadeTime", "Fade Time", 5, 120, 5, "Time in seconds before chat messages fade")
-		fadeTimeSlider:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Short Channel Names Switch
-		local shortNamesSwitch = self:CreateSwitch(parent, "Chat.ShortChannelNames", "Short Channel Names", "Use abbreviated channel names")
-		shortNamesSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Link Hover Switch
-		local linkHoverSwitch = self:CreateSwitch(parent, "Chat.LinkHover", "Link Hover Tooltips", "Show tooltips when hovering over links")
-		linkHoverSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Chat Background Color Picker
-		local bgColorPicker = self:CreateColorPicker(parent, "Chat.BackgroundColor", "Background Color", "Chat frame background color")
-		bgColorPicker:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Chat Copy Button
-		local copyButton = self:CreateButton(parent, "Copy Chat", 100, 25, function() end)
-		copyButton:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 35
-
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Chat Settings")
-
-	-- ---------------------------------------------------------------------------
-	-- Configuration Registration: Inventory
-	-- ---------------------------------------------------------------------------
-
-	-- REASON: Provides granular filtering options for the unified bag system.
-	self:RegisterExtraConfig("Inventory.ItemFilter", function(parent)
-		local yOffset = -10
-
-		-- Filter Warband BOE Switch
-		local warbandSwitch = self:CreateSwitch(parent, "Inventory.FilterAOE", "Filter Warband BOE", "Filter Warband bind-on-equip items", UpdateBagStatus)
-		warbandSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Anima Items Switch
-		local animaSwitch = self:CreateSwitch(parent, "Inventory.FilterAnima", "Filter Anima Items", "Filter anima items into separate category", UpdateBagStatus)
-		animaSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Azerite Items Switch
-		local azeriteSwitch = self:CreateSwitch(parent, "Inventory.FilterAzerite", "Filter Azerite Items", "Filter azerite items into separate category", UpdateBagStatus)
-		azeriteSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Collection Items Switch
-		local collectionSwitch = self:CreateSwitch(parent, "Inventory.FilterCollection", "Filter Collection Items", "Filter collection items (pets, mounts, toys)", UpdateBagStatus)
-		collectionSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Consumables Switch
-		local consumableSwitch = self:CreateSwitch(parent, "Inventory.FilterConsumable", "Filter Consumables", "Filter consumable items (food, potions, etc.)", UpdateBagStatus)
-		consumableSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Equipment Switch
-		local equipmentSwitch = self:CreateSwitch(parent, "Inventory.FilterEquipment", "Filter Equipment", "Filter equipment items", UpdateBagStatus)
-		equipmentSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Trade Goods Switch
-		local goodsSwitch = self:CreateSwitch(parent, "Inventory.FilterGoods", "Filter Trade Goods", "Filter trade goods and crafting materials", UpdateBagStatus)
-		goodsSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Junk Items Switch
-		local junkSwitch = self:CreateSwitch(parent, "Inventory.FilterJunk", "Filter Junk Items", "Filter junk items for easy selling", UpdateBagStatus)
-		junkSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Quest Items Switch
-		local questSwitch = self:CreateSwitch(parent, "Inventory.FilterQuest", "Filter Quest Items", "Filter quest items into separate category", UpdateBagStatus)
-		questSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Custom Items Switch
-		local customSwitch = self:CreateSwitch(parent, "Inventory.FilterCustom", "Filter Custom Items", "Filter custom defined items", UpdateBagStatus)
-		customSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Legendary Items Switch
-		local legendarySwitch = self:CreateSwitch(parent, "Inventory.FilterLegendary", "Filter Legendary Items", "Filter legendary items", UpdateBagStatus)
-		legendarySwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Lower Item Level Switch
-		local lowerSwitch = self:CreateSwitch(parent, "Inventory.FilterLower", "Filter Lower Item Level", "Filter items with lower item level", UpdateBagStatus)
-		lowerSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Legacy Items Switch
-		local legacySwitch = self:CreateSwitch(parent, "Inventory.FilterLegacy", "Filter Legacy Items", "Filter legacy items", UpdateBagStatus)
-		legacySwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Primordial Stones Switch
-		local stoneSwitch = self:CreateSwitch(parent, "Inventory.FilterStone", "Filter Primordial Stones", "Filter primordial stones", UpdateBagStatus)
-		stoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Keystone Items Switch
-		local itemDecorSwitch = self:CreateSwitch(parent, "Inventory.FilterDecor", "Filter Decor Items", "Filter decor items", UpdateBagStatus)
-		itemDecorSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Gather Empty Slots Switch (this stays in extra config)
-		local gatherEmptySwitch = self:CreateSwitch(parent, "Inventory.GatherEmpty", "Gather Empty Slots", "Gather empty slots into one button", UpdateBagStatus)
-		gatherEmptySwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Reset Filters Button
-		local resetButton = self:CreateButton(parent, "Reset Filters", 120, 25, function()
-			-- Reset filter switches to default values
-			SetExtraConfigValue("Inventory.FilterAOE", true)
-			SetExtraConfigValue("Inventory.FilterAnima", true)
-			SetExtraConfigValue("Inventory.FilterAzerite", false)
-			SetExtraConfigValue("Inventory.FilterCollection", true)
-			SetExtraConfigValue("Inventory.FilterConsumable", true)
-			SetExtraConfigValue("Inventory.FilterEquipment", true)
-			SetExtraConfigValue("Inventory.FilterGoods", false)
-			SetExtraConfigValue("Inventory.FilterJunk", true)
-			SetExtraConfigValue("Inventory.FilterQuest", true)
-			SetExtraConfigValue("Inventory.FilterCustom", true)
-			SetExtraConfigValue("Inventory.FilterLegendary", true)
-			SetExtraConfigValue("Inventory.FilterLower", true)
-			SetExtraConfigValue("Inventory.FilterLegacy", false)
-			SetExtraConfigValue("Inventory.FilterStone", true)
-			SetExtraConfigValue("Inventory.FilterKeystone", true)
-
-			-- Update all widgets
-			warbandSwitch:UpdateValue()
-			animaSwitch:UpdateValue()
-			azeriteSwitch:UpdateValue()
-			collectionSwitch:UpdateValue()
-			consumableSwitch:UpdateValue()
-			equipmentSwitch:UpdateValue()
-			goodsSwitch:UpdateValue()
-			junkSwitch:UpdateValue()
-			questSwitch:UpdateValue()
-			customSwitch:UpdateValue()
-			legendarySwitch:UpdateValue()
-			lowerSwitch:UpdateValue()
-			legacySwitch:UpdateValue()
-			stoneSwitch:UpdateValue()
-			keystoneSwitch:UpdateValue()
-			gatherEmptySwitch:UpdateValue()
+-- Store adapter: numeric IDs persisted as a space-joined string config value,
+-- merged with an optional read-only defaults table (defaults are non-removable).
+-- Covers Mute Sound IDs (no defaults), Custom Units, and Power Units.
+function ExtraGUI.MakeStringSetStore(opts)
+	local store = {}
+
+	local function parse()
+		local current = tostring(K.GetValueByPath(C, opts.configPath) or "")
+		local numeric, nonNumeric = {}, {}
+		for w in string.gmatch(current, "%S+") do
+			local id = tonumber(w)
+			if id then
+				numeric[id] = true
+			else
+				nonNumeric[#nonNumeric + 1] = w
+			end
+		end
+		return numeric, nonNumeric
+	end
+
+	local function save(numeric, nonNumeric)
+		local ids = {}
+		for id in pairs(numeric) do
+			ids[#ids + 1] = id
+		end
+		table.sort(ids)
+
+		local parts = {}
+		for _, t in ipairs(nonNumeric or {}) do
+			parts[#parts + 1] = tostring(t)
+		end
+		for _, id in ipairs(ids) do
+			parts[#parts + 1] = tostring(id)
+		end
+
+		SetExtraConfigValue(opts.configPath, table.concat(parts, " "), opts.settingName)
+		if opts.applyFn then
+			opts.applyFn()
+		end
+	end
+
+	function store:GetEntries()
+		local numeric = parse()
+		local combined = {}
+		if opts.defaultsTable then
+			for id in pairs(opts.defaultsTable) do
+				combined[id] = false -- default = present but not removable
+			end
+		end
+		for id in pairs(numeric) do
+			if combined[id] == nil then
+				combined[id] = true
+			end
+		end
+
+		local list = {}
+		for id, removable in pairs(combined) do
+			list[#list + 1] = { id = id, removable = removable }
+		end
+		table.sort(list, function(a, b)
+			return a.id < b.id
 		end)
-		resetButton:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 35
+		return list
+	end
 
-		-- Set parent height based on content
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Inventory Filters")
+	function store:Add(id)
+		local numeric, nonNumeric = parse()
+		numeric[id] = true
+		save(numeric, nonNumeric)
+	end
 
-	-- ---------------------------------------------------------------------------
-	-- Configuration Registration: Miscellaneous (Mute)
-	-- ---------------------------------------------------------------------------
+	function store:Remove(id)
+		local numeric, nonNumeric = parse()
+		numeric[id] = nil
+		save(numeric, nonNumeric)
+	end
 
-	-- NOTE: Allows users to suppress specific game sounds by their SoundKit ID.
-	self:RegisterExtraConfig("Misc.MuteSoundIDs", function(parent)
-		local yOffset = -10
-		local contentWidth = GetExtraContentWidth()
+	function store:Clear()
+		save({}, {})
+	end
 
-		-- Header
+	return store
+end
+
+-- Store adapter: per-character flat additions in KkthnxUIDB.Variables, merged with
+-- an optional read-only defaults table. Covers Auto-Quest ignore NPCs.
+function ExtraGUI.MakeCharFlatStore(opts)
+	local store = {}
+
+	local function raw()
+		KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
+		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
+		local charData = KkthnxUIDB.Variables[K.Realm][K.Name]
+		charData[opts.varKey] = charData[opts.varKey] or {}
+		return charData[opts.varKey]
+	end
+
+	local function key(id)
+		return opts.stringKeys and tostring(id) or id
+	end
+
+	function store:GetEntries()
+		local user = raw()
+		local combined = {}
+		if opts.defaultsTable then
+			for id in pairs(opts.defaultsTable) do
+				combined[tonumber(id) or id] = false
+			end
+		end
+		for id, v in pairs(user) do
+			if v then
+				local nid = tonumber(id) or id
+				if combined[nid] == nil then
+					combined[nid] = true
+				end
+			end
+		end
+
+		local list = {}
+		for id, removable in pairs(combined) do
+			list[#list + 1] = { id = id, removable = removable }
+		end
+		table.sort(list, function(a, b)
+			return (tonumber(a.id) or 0) < (tonumber(b.id) or 0)
+		end)
+		return list
+	end
+
+	function store:Add(id)
+		raw()[key(id)] = true
+		if opts.applyFn then
+			opts.applyFn()
+		end
+	end
+
+	function store:Remove(id)
+		raw()[key(id)] = nil
+		if opts.applyFn then
+			opts.applyFn()
+		end
+	end
+
+	return store
+end
+
+-- Store adapter: per-character add/removed deltas layered over the live nameplate
+-- aura data tables (C[category]), keyed by the 6 aura categories. The deltas are
+-- re-applied at login by Unitframes:ApplyNameplateAuraOverrides(). Covers the
+-- Nameplate aura filter editor (category-aware).
+function ExtraGUI.MakeAuraDeltaStore()
+	local store = {}
+
+	local function filterStore()
+		KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
+		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
+		local charData = KkthnxUIDB.Variables[K.Realm][K.Name]
+		charData.NameplateAuraFilters = charData.NameplateAuraFilters or {}
+		return charData.NameplateAuraFilters
+	end
+
+	local function catDelta(category)
+		local s = filterStore()
+		local cs = s[category]
+		if type(cs) ~= "table" then
+			cs = {}
+			s[category] = cs
+		end
+		cs.added = cs.added or {}
+		cs.removed = cs.removed or {}
+		return cs
+	end
+
+	function store:GetEntries(category)
+		local base = category and C[category]
+		local list = {}
+		if base then
+			for id in pairs(base) do
+				list[#list + 1] = { id = id, removable = true }
+			end
+		end
+		table.sort(list, function(a, b)
+			return a.id < b.id
+		end)
+		return list
+	end
+
+	function store:Add(id, category)
+		if not category then
+			return
+		end
+		if not C[category] then
+			C[category] = {}
+		end
+		C[category][id] = true
+		local cs = catDelta(category)
+		cs.added[id] = true
+		cs.removed[id] = nil
+	end
+
+	function store:Remove(id, category)
+		if not category then
+			return
+		end
+		if C[category] then
+			C[category][id] = nil
+		end
+		local cs = catDelta(category)
+		cs.removed[id] = true
+		cs.added[id] = nil
+	end
+
+	return store
+end
+
+-- The single list-editor engine. `spec` drives every variation; see the call sites
+-- in RegisterBuiltinConfigs for concrete examples.
+--   spec.title / description / descAfterGap (padding below measured description height)
+--   spec.categories            -> array {text,value}; renders the category header + dropdown
+--   spec.search                -> bool; renders a search box (filters spell rows by id/name)
+--   spec.addStyle              -> "stacked" (input then button) | "container" (input + button inline)
+--   spec.inputLabel/inputPlaceholder/inputTooltip/addLabel
+--   spec.showClear             -> bool; adds a Clear button beside Add
+--   spec.invalidMessage        -> printed when validation fails (nil => play the reject sound instead)
+--   spec.validate(text)        -> id|nil (default: positive integer)
+--   spec.listHeaderText        -> optional section header above the list
+--   spec.listHeight            -> list frame height (default 300)
+--   spec.rowKind               -> "text" | "npc" | "spell"
+--   spec.npcPortraitStyle      -> "framed" | "plain"
+--   spec.liveNPC               -> bool; refresh NPC portraits/names on unit events
+--   spec.defaultTag            -> suffix for non-removable rows (default "  [Default]")
+--   spec.footerText/footerGapBefore/footerGapAfter
+--   spec.parentHeight(listTopY, listHeight) -> number (used when there is no footer)
+--   spec.store                 -> store adapter (required)
+function ExtraGUI:CreateListEditor(parent, spec)
+	local yOffset = -10
+	local contentWidth = GetExtraContentWidth()
+	local store = spec.store
+	local rowKind = spec.rowKind or "text"
+	local validate = spec.validate or function(text)
+		local id = tonumber(text)
+		if id and id > 0 then
+			return id
+		end
+	end
+	local currentCategory = spec.categories and spec.categories[1] and spec.categories[1].value or nil
+
+	local rows = {}
+	local refresh -- forward declaration (referenced by handlers below)
+	local addCurrent -- forward declaration
+	local searchEdit
+
+	-- Header (optional; the aura filter panel leads with its category dropdown instead)
+	if spec.title then
 		local header = parent:CreateFontString(nil, "OVERLAY")
 		header:SetFontObject(K.UIFont)
 		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		header:SetText(L["Custom Mute Sound IDs"] or "Custom Mute Sound IDs")
+		header:SetText(spec.title)
 		header:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
+	end
 
-		-- Description
+	-- Description
+	if spec.description then
 		local desc = parent:CreateFontString(nil, "OVERLAY")
 		desc:SetFontObject(K.UIFont)
 		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		desc:SetJustifyH("LEFT")
 		desc:SetWidth(contentWidth - 20)
-		desc:SetText(L["MuteSoundIDsDesc"] or "Add SoundKit IDs to mute. KkthnxUI already mutes a built-in set; this list only adds your extra IDs.")
+		desc:SetText(spec.description)
 		desc:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 45
-
-		-- Add ID input
-		local addInput = self:CreateTextInput(parent, nil, (L["Add Sound ID"] or "Add Sound ID"), (L["Enter a numeric SoundKit ID to add"] or "Enter a numeric SoundKit ID to add"))
-		addInput:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Add button
-		local addButton
-		if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-			addButton = K.GUIHelpers.CreateButton(parent, (L["Add"] or "Add"), 90, 24)
-			addButton:SetPoint("TOPLEFT", 0, yOffset)
-		else
-			addButton = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-			addButton:SetSize(90, 24)
-			addButton:SetText(L["Add"] or "Add")
-			addButton:SetPoint("TOPLEFT", 0, yOffset)
-		end
-
-		-- Clear button
-		local clearButton
-		if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-			clearButton = K.GUIHelpers.CreateButton(parent, (L["Clear"] or "Clear"), 90, 24)
-			clearButton:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
-		else
-			clearButton = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-			clearButton:SetSize(90, 24)
-			clearButton:SetText(L["Clear"] or "Clear")
-			clearButton:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
-		end
-
-		yOffset = yOffset - 35
-
-		-- List frame
-		local listFrame = CreateFrame("Frame", nil, parent)
-		listFrame:SetPoint("TOPLEFT", 10, yOffset)
-		listFrame:SetPoint("TOPRIGHT", -10, yOffset)
-		listFrame:SetHeight(200)
-
-		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
-		listBg:SetAllPoints()
-		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
-
-		-- Scroll frame
-		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
-		scrollFrame:SetPoint("TOPLEFT", 5, -5)
-		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
-		scrollFrame:EnableMouseWheel(true)
-
-		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
-		scrollChild:SetWidth(contentWidth - 30)
-		scrollChild:SetHeight(1)
-		scrollFrame:SetScrollChild(scrollChild)
-
-		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
-			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
-		end
-
-		local rows = {}
-
-		local function parseConfigString()
-			local current = tostring(C["Misc"].MuteSoundIDs or "")
-			local numeric = {}
-			for w in string.gmatch(current, "%S+") do
-				local id = tonumber(w)
-				if id then
-					numeric[id] = true
-				end
-			end
-			return numeric
-		end
-
-		local function saveNumericSet(numeric)
-			local ids = {}
-			for id in pairs(numeric) do
-				ids[#ids + 1] = id
-			end
-			table.sort(ids)
-
-			local parts = {}
-			for i = 1, #ids do
-				parts[i] = tostring(ids[i])
-			end
-
-			local newString = table.concat(parts, " ")
-			SetExtraConfigValue("Misc.MuteSoundIDs", newString, "Mute Sound IDs")
-
-			-- Apply immediately when possible
-			local miscModule = K and K.GetModule and K:GetModule("Miscellaneous")
-			if miscModule and miscModule.CreateMuteSounds then
-				miscModule:CreateMuteSounds()
-			end
-		end
-
-		local function clearRows()
-			for i = 1, #rows do
-				rows[i]:Hide()
-				rows[i]:SetParent(nil)
-			end
-			wipe(rows)
-		end
-
-		local function createRow(y, id, numeric)
-			local row = CreateFrame("Frame", nil, scrollChild)
-			row:SetPoint("TOPLEFT", 0, y)
-			row:SetPoint("TOPRIGHT", 0, y)
-			row:SetHeight(24)
-
-			local text = row:CreateFontString(nil, "OVERLAY")
-			text:SetFontObject(K.UIFont)
-			text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			text:SetPoint("LEFT", 6, 0)
-			text:SetText(tostring(id))
-
-			local removeBtn
-			if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-				removeBtn = K.GUIHelpers.CreateButton(row, (L["Remove"] or "Remove"), 80, 20)
-			else
-				removeBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-				removeBtn:SetSize(80, 20)
-				removeBtn:SetText(L["Remove"] or "Remove")
-			end
-			removeBtn:SetPoint("RIGHT", -6, 0)
-			removeBtn:SetScript("OnClick", function()
-				numeric[id] = nil
-				saveNumericSet(numeric)
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			end)
-
-			return row
-		end
-
-		local function refreshRows()
-			clearRows()
-
-			local numeric = parseConfigString()
-			local ids = {}
-			for id in pairs(numeric) do
-				ids[#ids + 1] = id
-			end
-			table.sort(ids)
-
-			local y = -2
-			for i = 1, #ids do
-				local row = createRow(y, ids[i], numeric)
-				rows[#rows + 1] = row
-				y = y - 26
-			end
-
-			scrollChild:SetHeight(math.abs(y) + 10)
-		end
-
-		addButton:SetScript("OnClick", function()
-			local inputText = addInput and addInput.GetText and addInput:GetText() or ""
-			local id = tonumber(inputText)
-			if not id then
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
-				return
-			end
-
-			local numeric = parseConfigString()
-			numeric[id] = true
-			saveNumericSet(numeric)
-
-			if addInput and addInput.SetText then
-				addInput:SetText("")
-			end
-
-			refreshRows()
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		end)
-
-		clearButton:SetScript("OnClick", function()
-			saveNumericSet({})
-			refreshRows()
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		end)
-
-		refreshRows()
-		parent:SetHeight(math.abs(yOffset) + 230)
-	end, "Mute Sound IDs")
-
-	-- Provide a small cache for NPC names learned from nearby units
-	K.NPCNameCache = K.NPCNameCache or {}
-
-	-- Use K.GetNPCName (NDui-style) for async NPC name resolution
-	local function GetNPCNameByID(npcID, callback)
-		if not npcID then
-			return "Unknown"
-		end
-
-		if K.GetNPCName then
-			local name = K.GetNPCName(npcID, callback)
-			if name and name ~= "" and name ~= "..." then
-				return name
-			end
-		end
-
-		if K.NPCNameCache and K.NPCNameCache[npcID] then
-			return K.NPCNameCache[npcID]
-		end
-
-		return "Unknown"
+		-- Measure wrapped height so multi-line descriptions never overlap the input below.
+		yOffset = yOffset - desc:GetStringHeight() - (spec.descAfterGap or 10)
 	end
 
-	-- ---------------------------------------------------------------------------
-	-- Configuration Registration: Nameplates
-	-- ---------------------------------------------------------------------------
-
-	-- REASON: Enables custom coloring for specific NPCs identified by their internal ID.
-	self:RegisterExtraConfig("Nameplate.CustomUnitList", function(parent)
-		local yOffset = -10
-		local contentWidth = GetExtraContentWidth()
-
-		-- Header
-		local header = parent:CreateFontString(nil, "OVERLAY")
-		header:SetFontObject(K.UIFont)
-		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		header:SetText(L["Custom Units by NPC ID"] or "Custom Units by NPC ID")
-		header:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
-
-		-- Description
-		local desc = parent:CreateFontString(nil, "OVERLAY")
-		desc:SetFontObject(K.UIFont)
-		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		desc:SetJustifyH("LEFT")
-		desc:SetText(L["Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here."] or "Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here.")
-		desc:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
-
-		-- Add ID input
-		local addInput = self:CreateTextInput(parent, nil, (L["Add NPC ID"] or "Add NPC ID"), format(L["e.g. %s"] or "e.g. %s", "174773"), (L["Enter an NPC ID to add"] or "Enter an NPC ID to add"))
-		addInput:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Add button (shared helper for consistent styling)
-		local addButton
-		if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-			addButton = K.GUIHelpers.CreateButton(parent, (L["Add"] or "Add"), 90, 24)
-			addButton:SetPoint("TOPLEFT", 0, yOffset)
-		else
-			addButton = CreateFrame("Button", nil, parent)
-			addButton:SetSize(90, 24)
-			addButton:SetPoint("TOPLEFT", 0, yOffset)
-			local addBg = addButton:CreateTexture(nil, "BACKGROUND")
-			addBg:SetAllPoints()
-			addBg:SetTexture(C["Media"].Textures.White8x8Texture)
-			addBg:SetVertexColor(0.2, 0.6, 0.2, 0.8)
-			local addLabel = addButton:CreateFontString(nil, "OVERLAY")
-			addLabel:SetFontObject(K.UIFont)
-			addLabel:SetTextColor(1, 1, 1, 1)
-			addLabel:SetText(L["Add"] or "Add")
-			addLabel:SetPoint("CENTER")
-		end
-		yOffset = yOffset - 35
-
-		-- List header
-		CreateSectionHeader(parent, L["Current IDs"] or "Current IDs", contentWidth, yOffset)
-		yOffset = yOffset - 40
-
-		-- List container
-		local listFrame = CreateFrame("Frame", nil, parent)
-		listFrame:SetPoint("TOPLEFT", 10, yOffset)
-		listFrame:SetSize(contentWidth - 20, 320)
-		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
-		listBg:SetAllPoints()
-		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
-
-		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
-		scrollFrame:SetPoint("TOPLEFT", 5, -5)
-		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
-		scrollFrame:EnableMouseWheel(true)
-
-		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
-		scrollChild:SetWidth(contentWidth - 30)
-		scrollChild:SetHeight(1)
-		scrollFrame:SetScrollChild(scrollChild)
-
-		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
-			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
-		end
-
-		local rows = {}
-
-		local function parseConfigString()
-			local current = tostring(C["Nameplate"].CustomUnitList or "")
-			local numeric = {}
-			local nonNumeric = {}
-			for w in string.gmatch(current, "%S+") do
-				local id = tonumber(w)
-				if id then
-					numeric[id] = true
-				else
-					table.insert(nonNumeric, w)
-				end
-			end
-			return numeric, nonNumeric
-		end
-
-		local function saveNumericSet(numericSet, nonNumericList)
-			local ids = {}
-			for id in pairs(numericSet) do
-				table.insert(ids, id)
-			end
-			table.sort(ids)
-			local parts = {}
-			for _, t in ipairs(nonNumericList) do
-				table.insert(parts, tostring(t))
-			end
-			for _, id in ipairs(ids) do
-				table.insert(parts, tostring(id))
-			end
-			local newStr = table.concat(parts, " ")
-			-- Persist via config system so it saves to DB
-			SetExtraConfigValue("Nameplate.CustomUnitList", newStr)
-			local nameplateModule = K:GetModule("Unitframes")
-			if nameplateModule and nameplateModule.CreateUnitTable then
-				nameplateModule:CreateUnitTable()
-			end
-		end
-
-		local function getCombinedIds()
-			local combined = {}
-			-- defaults
-			for id in pairs(C.NameplateCustomUnits or {}) do
-				combined[id] = "default"
-			end
-			-- user numeric
-			local numeric = select(1, parseConfigString())
-			for id in pairs(numeric) do
-				combined[id] = combined[id] or "user"
-			end
-			local list = {}
-			for id, src in pairs(combined) do
-				table.insert(list, { id = id, source = src })
-			end
-			table.sort(list, function(a, b)
-				return a.id < b.id
-			end)
-			return list
-		end
-
-		local function trySetPortrait(texture, npcID)
-			-- Default to question mark if we can't resolve a portrait
-			texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-			texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-			local function checkUnit(u)
-				if UnitExists(u) then
-					local guid = UnitGUID(u)
-					local id = guid and K.GetNPCID(guid)
-					if id and id == npcID then
-						SetPortraitTexture(texture, u)
-						texture:SetTexCoord(0, 1, 0, 1)
-						return true
-					end
-				end
-			end
-			-- Common direct tokens
-			local directUnits = { "target", "mouseover", "focus" }
-			for _, u in ipairs(directUnits) do
-				if checkUnit(u) then
-					return
-				end
-			end
-			-- Visible nameplates
-			for i = 1, 40 do
-				if checkUnit("nameplate" .. i) then
-					return
-				end
-			end
-			-- Boss units
-			for i = 1, 8 do
-				if checkUnit("boss" .. i) then
-					return
-				end
-			end
-		end
-
-		local function refreshRows()
-			for _, r in ipairs(rows) do
-				r:Hide()
-			end
-			wipe(rows)
-
-			local list = getCombinedIds()
-			local y = -5
-			for _, entry in ipairs(list) do
-				local row = CreateFrame("Frame", nil, scrollChild)
-				row:SetSize(contentWidth - 40, 28)
-				row:SetPoint("TOPLEFT", 10, y)
-
-				local bg = row:CreateTexture(nil, "BACKGROUND")
-				bg:SetAllPoints()
-				bg:SetTexture(C["Media"].Textures.White8x8Texture)
-				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
-
-				local portraitFrame = CreateFrame("Frame", nil, row)
-				portraitFrame:SetSize(24, 24)
-				portraitFrame:SetPoint("LEFT", 6, 0)
-				-- Match ProfileGUI portrait styling: background + subtle border + inset texture
-				CreateColoredBackground(portraitFrame, 0.12, 0.12, 0.12, 1)
-				local portraitBorder = portraitFrame:CreateTexture(nil, "BORDER")
-				portraitBorder:SetPoint("TOPLEFT", -1, 1)
-				portraitBorder:SetPoint("BOTTOMRIGHT", 1, -1)
-				portraitBorder:SetTexture(C["Media"].Textures.White8x8Texture)
-				portraitBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
-
-				local portrait = portraitFrame:CreateTexture(nil, "ARTWORK")
-				portrait:SetPoint("TOPLEFT", 2, -2)
-				portrait:SetPoint("BOTTOMRIGHT", -2, 2)
-				trySetPortrait(portrait, entry.id)
-				row.Portrait = portrait
-				row.NpcID = entry.id
-				row.Portrait = portrait
-				row.NpcID = entry.id
-
-				local nameFS = row:CreateFontString(nil, "OVERLAY")
-				nameFS:SetFontObject(K.UIFont)
-				nameFS:SetTextColor(1, 1, 1, 1)
-				row.NameFS = nameFS
-				local function setNameText(nm)
-					if row.NameFS then
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", entry.id, entry.source == "default" and "  [Default]" or ""))
-					end
-				end
-				local creatureName = GetNPCNameByID(entry.id, setNameText)
-				setNameText(creatureName)
-				nameFS:SetPoint("LEFT", portraitFrame, "RIGHT", 8, 0)
-
-				if entry.source ~= "default" then
-					local removeBtn
-					if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-						removeBtn = K.GUIHelpers.CreateButton(row, "", 22, 22)
-						removeBtn:SetPoint("RIGHT", -8, 0)
-					else
-						removeBtn = CreateFrame("Button", nil, row)
-						removeBtn:SetSize(22, 22)
-						removeBtn:SetPoint("RIGHT", -8, 0)
-					end
-					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
-					icon:SetAllPoints()
-					local ok = pcall(function()
-						icon:SetAtlas("common-icon-redx", true)
-					end)
-					if not ok then
-						icon:SetTexture(C["Media"].Textures.White8x8Texture)
-						icon:SetVertexColor(0.8, 0.2, 0.2, 1)
-					end
-					removeBtn:SetScript("OnClick", function()
-						local numeric, nonNumeric = parseConfigString()
-						numeric[entry.id] = nil
-						saveNumericSet(numeric, nonNumeric)
-						refreshRows()
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-					end)
-				end
-
-				table.insert(rows, row)
-				y = y - 30
-			end
-
-			scrollChild:SetHeight(math.abs(y) + 10)
-		end
-
-		-- Add button handler
-		addButton:SetScript("OnClick", function()
-			local inputText = ""
-			if addInput and addInput.GetChildren then
-				for _, child in ipairs({ addInput:GetChildren() }) do
-					if child and child.GetObjectType and child:GetObjectType() == "EditBox" then
-						local eb = child
-						if eb and eb.GetText then
-							inputText = eb:GetText() or ""
-						end
-						break
-					end
-				end
-			end
-			local id = tonumber(inputText)
-			if id and id > 0 then
-				local numeric, nonNumeric = parseConfigString()
-				numeric[id] = true
-				saveNumericSet(numeric, nonNumeric)
-				refreshRows()
-				-- clear input
-				if addInput and addInput:GetChildren() then
-					for _, child in ipairs({ addInput:GetChildren() }) do
-						if child:GetObjectType() == "EditBox" then
-							child:SetText("")
-							break
-						end
-					end
-				end
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			else
-				print("|cffff0000Invalid NPC ID. Enter a number.|r")
-			end
-		end)
-
-		-- Update portraits and learn names when units are visible
-		local events = CreateFrame("Frame", nil, parent)
-		events:RegisterEvent("PLAYER_TARGET_CHANGED")
-		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
-		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-		events:SetScript("OnEvent", function(_, _, unit)
-			if unit and UnitExists(unit) then
-				local guid = UnitGUID(unit)
-				local id = guid and K.GetNPCID(guid)
-				if id then
-					local n = UnitName(unit)
-					if n and n ~= "" then
-						K.NPCNameCache[id] = n
-					end
-				end
-			end
-			for _, row in ipairs(rows) do
-				if row.Portrait and row.NpcID then
-					trySetPortrait(row.Portrait, row.NpcID)
-				end
-				if row.NameFS then
-					local function setText(nm)
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, (C.NameplateCustomUnits and C.NameplateCustomUnits[row.NpcID]) and "  [Default]" or ""))
-					end
-					local nm = GetNPCNameByID(row.NpcID, setText)
-					setText(nm)
-				end
-			end
-		end)
-
-		refreshRows()
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Custom Units")
-
-	-- ---------------------------------------------------------------------------
-	-- Configuration Registration: Nameplate Power
-	-- ---------------------------------------------------------------------------
-
-	-- REASON: Allows specific NPC IDs to display a power bar on their nameplate.
-	self:RegisterExtraConfig("Nameplate.PowerUnitList", function(parent)
-		local yOffset = -10
-		local contentWidth = GetExtraContentWidth()
-
-		local header = parent:CreateFontString(nil, "OVERLAY")
-		header:SetFontObject(K.UIFont)
-		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		header:SetText(L["Show Power for NPC IDs"] or "Show Power for NPC IDs")
-		header:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
-
-		local desc = parent:CreateFontString(nil, "OVERLAY")
-		desc:SetFontObject(K.UIFont)
-		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		desc:SetJustifyH("LEFT")
-		desc:SetText(L["Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here."] or "Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here.")
-		desc:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
-
-		local addInput = self:CreateTextInput(parent, nil, (L["Add NPC ID"] or "Add NPC ID"), format(L["e.g. %s"] or "e.g. %s", "114247"), (L["Enter an NPC ID to add"] or "Enter an NPC ID to add"))
-		addInput:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local addButton = CreateFrame("Button", nil, parent)
-		addButton:SetSize(90, 24)
-		addButton:SetPoint("TOPLEFT", 0, yOffset)
-		local addBg = addButton:CreateTexture(nil, "BACKGROUND")
-		addBg:SetAllPoints()
-		addBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		addBg:SetVertexColor(0.2, 0.6, 0.2, 0.8)
-		local addLabel = addButton:CreateFontString(nil, "OVERLAY")
-		addLabel:SetFontObject(K.UIFont)
-		addLabel:SetTextColor(1, 1, 1, 1)
-		addLabel:SetText(L["Add"] or "Add")
-		addLabel:SetPoint("CENTER")
-		yOffset = yOffset - 35
-
-		CreateSectionHeader(parent, L["Current IDs"] or "Current IDs", contentWidth, yOffset)
-		yOffset = yOffset - 40
-
-		local listFrame = CreateFrame("Frame", nil, parent)
-		listFrame:SetPoint("TOPLEFT", 10, yOffset)
-		listFrame:SetSize(contentWidth - 20, 320)
-		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
-		listBg:SetAllPoints()
-		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
-
-		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
-		scrollFrame:SetPoint("TOPLEFT", 5, -5)
-		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
-		scrollFrame:EnableMouseWheel(true)
-
-		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
-		scrollChild:SetWidth(contentWidth - 30)
-		scrollChild:SetHeight(1)
-		scrollFrame:SetScrollChild(scrollChild)
-
-		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
-			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
-		end
-
-		local rows = {}
-
-		local function parseConfigString()
-			local current = tostring(C["Nameplate"].PowerUnitList or "")
-			local numeric = {}
-			local nonNumeric = {}
-			for w in string.gmatch(current, "%S+") do
-				local id = tonumber(w)
-				if id then
-					numeric[id] = true
-				else
-					table.insert(nonNumeric, w)
-				end
-			end
-			return numeric, nonNumeric
-		end
-
-		local function saveNumericSet(numericSet, nonNumericList)
-			local ids = {}
-			for id in pairs(numericSet) do
-				table.insert(ids, id)
-			end
-			table.sort(ids)
-			local parts = {}
-			for _, t in ipairs(nonNumericList) do
-				table.insert(parts, tostring(t))
-			end
-			for _, id in ipairs(ids) do
-				table.insert(parts, tostring(id))
-			end
-			local newStr = table.concat(parts, " ")
-			-- Persist via config system so it saves to DB
-			SetExtraConfigValue("Nameplate.PowerUnitList", newStr)
-			local nameplateModule = K:GetModule("Unitframes")
-			if nameplateModule and nameplateModule.CreatePowerUnitTable then
-				nameplateModule:CreatePowerUnitTable()
-			end
-		end
-
-		local function getCombinedIds()
-			local combined = {}
-			for id in pairs(C.NameplateShowPowerList or {}) do
-				combined[id] = "default"
-			end
-			local numeric = select(1, parseConfigString())
-			for id in pairs(numeric) do
-				combined[id] = combined[id] or "user"
-			end
-			local list = {}
-			for id, src in pairs(combined) do
-				table.insert(list, { id = id, source = src })
-			end
-			table.sort(list, function(a, b)
-				return a.id < b.id
-			end)
-			return list
-		end
-
-		local function trySetPortrait(texture, npcID)
-			-- Default to question mark icon (cropped) until a unit match is found
-			texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-			texture:SetVertexColor(1, 1, 1, 1)
-			texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-			local function checkUnit(u)
-				if UnitExists(u) then
-					local guid = UnitGUID(u)
-					local id = guid and K.GetNPCID(guid)
-					if id and id == npcID then
-						SetPortraitTexture(texture, u)
-						texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-						return true
-					end
-				end
-			end
-			-- Common direct tokens
-			local directUnits = { "target", "mouseover", "focus" }
-			for _, u in ipairs(directUnits) do
-				if checkUnit(u) then
-					return
-				end
-			end
-			-- Visible nameplates
-			for i = 1, 40 do
-				if checkUnit("nameplate" .. i) then
-					return
-				end
-			end
-			-- Boss units
-			for i = 1, 8 do
-				if checkUnit("boss" .. i) then
-					return
-				end
-			end
-		end
-
-		local function refreshRows()
-			for _, r in ipairs(rows) do
-				r:Hide()
-			end
-			wipe(rows)
-
-			local list = getCombinedIds()
-			local y = -5
-			for _, entry in ipairs(list) do
-				local row = CreateFrame("Frame", nil, scrollChild)
-				row:SetSize(contentWidth - 40, 28)
-				row:SetPoint("TOPLEFT", 10, y)
-
-				local bg = row:CreateTexture(nil, "BACKGROUND")
-				bg:SetAllPoints()
-				bg:SetTexture(C["Media"].Textures.White8x8Texture)
-				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
-
-				local portrait = row:CreateTexture(nil, "ARTWORK")
-				portrait:SetSize(22, 22)
-				portrait:SetPoint("LEFT", 6, 0)
-				trySetPortrait(portrait, entry.id)
-
-				local nameFS = row:CreateFontString(nil, "OVERLAY")
-				nameFS:SetFontObject(K.UIFont)
-				nameFS:SetTextColor(1, 1, 1, 1)
-				row.NameFS = nameFS
-				local function setNameText(nm)
-					if row.NameFS then
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", entry.id, entry.source == "default" and "  [Default]" or ""))
-					end
-				end
-				local creatureName = GetNPCNameByID(entry.id, setNameText)
-				setNameText(creatureName)
-				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
-
-				if entry.source ~= "default" then
-					local removeBtn
-					if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-						removeBtn = K.GUIHelpers.CreateButton(row, "", 22, 22)
-						removeBtn:SetPoint("RIGHT", -8, 0)
-					else
-						removeBtn = CreateFrame("Button", nil, row)
-						removeBtn:SetSize(22, 22)
-						removeBtn:SetPoint("RIGHT", -8, 0)
-					end
-					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
-					icon:SetAllPoints()
-					local ok = pcall(function()
-						icon:SetAtlas("common-icon-redx", true)
-					end)
-					if not ok then
-						icon:SetTexture(C["Media"].Textures.White8x8Texture)
-						icon:SetVertexColor(0.8, 0.2, 0.2, 1)
-					end
-					removeBtn:SetScript("OnClick", function()
-						local numeric, nonNumeric = parseConfigString()
-						numeric[entry.id] = nil
-						saveNumericSet(numeric, nonNumeric)
-						refreshRows()
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-					end)
-				end
-
-				table.insert(rows, row)
-				y = y - 30
-			end
-
-			scrollChild:SetHeight(math.abs(y) + 10)
-		end
-
-		addButton:SetScript("OnClick", function()
-			local inputText = ""
-			if addInput and addInput:GetChildren() then
-				for _, child in ipairs({ addInput:GetChildren() }) do
-					if child:GetObjectType() == "EditBox" then
-						inputText = child:GetText()
-						break
-					end
-				end
-			end
-			local id = tonumber(inputText)
-			if id and id > 0 then
-				local numeric, nonNumeric = parseConfigString()
-				numeric[id] = true
-				saveNumericSet(numeric, nonNumeric)
-				refreshRows()
-				if addInput and addInput:GetChildren() then
-					for _, child in ipairs({ addInput:GetChildren() }) do
-						if child:GetObjectType() == "EditBox" then
-							child:SetText("")
-							break
-						end
-					end
-				end
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			else
-				print("|cffff0000Invalid NPC ID. Enter a number.|r")
-			end
-		end)
-
-		local events = CreateFrame("Frame", nil, parent)
-		events:RegisterEvent("PLAYER_TARGET_CHANGED")
-		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
-		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-		events:SetScript("OnEvent", function(_, _, unit)
-			if unit and UnitExists(unit) then
-				local guid = UnitGUID(unit)
-				local id = guid and K.GetNPCID(guid)
-				if id then
-					local n = UnitName(unit)
-					if n and n ~= "" then
-						K.NPCNameCache[id] = n
-					end
-				end
-			end
-			for _, row in ipairs(rows) do
-				if row.Portrait and row.NpcID then
-					trySetPortrait(row.Portrait, row.NpcID)
-				end
-				if row.NameFS then
-					local function setText(nm)
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, (C.NameplateShowPowerList and C.NameplateShowPowerList[row.NpcID]) and "  [Default]" or ""))
-					end
-					local nm = GetNPCNameByID(row.NpcID, setText)
-					setText(nm)
-				end
-			end
-		end)
-
-		refreshRows()
-		parent:SetHeight(math.abs(yOffset) + 20)
-	end, "Power Units")
-
-	-- ---------------------------------------------------------------------------
-	-- Configuration Registration: Nameplate Auras
-	-- ---------------------------------------------------------------------------
-
-	-- NOTE: High-performance aura management using whitelists, blacklists, and category-based filtering.
-	self:RegisterExtraConfig("Nameplate.PlateAuras", function(parent)
-		local yOffset = -10
-		local contentWidth = GetExtraContentWidth()
-
-		-- Create category selection dropdown
-		local categories = {
-			{ text = "Whitelist (Show These)", value = "NameplateWhiteList" },
-			{ text = "Blacklist (Hide These)", value = "NameplateBlackList" },
-			{ text = "Custom Units", value = "NameplateCustomUnits" },
-			{ text = "Target NPCs", value = "NameplateTargetNPCs" },
-			{ text = "Trash Units", value = "NameplateTrashUnits" },
-			{ text = "Major Spells", value = "MajorSpells" },
-		}
-
-		local currentCategory = "NameplateWhiteList"
-		local categoryDropdown, auraListFrame, addSpellInput, searchInput
-		local auraItems = {}
-		local scrollChild
-
-		-- Declare RefreshAuraList function first so it's in scope
-		local RefreshAuraList
-		local CreateAuraItem
-
-		-- Category Selection Header (match header styling)
+	-- Category header + dropdown (aura filter)
+	if spec.categories then
 		local categoryHeader = CreateFrame("Frame", nil, parent)
 		categoryHeader:SetSize(contentWidth - 20, 30)
 		categoryHeader:SetPoint("TOPLEFT", 10, yOffset)
@@ -2800,334 +1736,610 @@ function ExtraGUI:RegisterExampleConfigs()
 		categoryLabel:SetPoint("LEFT", categoryHeader, "LEFT", 10, 0)
 		yOffset = yOffset - 40
 
-		-- Category Dropdown
-		categoryDropdown = self:CreateDropdown(parent, nil, (L["Select Category"] or "Select Category"), categories, (L["Choose which aura list to manage"] or "Choose which aura list to manage"), function(newValue, oldValue, configPath)
-			-- Handle category change
+		local dropdown = self:CreateDropdown(parent, nil, (L["Select Category"] or "Select Category"), spec.categories, (L["Choose which aura list to manage"] or "Choose which aura list to manage"), function(newValue)
 			currentCategory = newValue
-			if RefreshAuraList then
-				RefreshAuraList()
+			if refresh then
+				refresh()
 			end
 		end)
-		categoryDropdown:SetPoint("TOPLEFT", 0, yOffset)
+		dropdown:SetPoint("TOPLEFT", 0, yOffset)
+		dropdown.dropdownText:SetText(spec.categories[1].text)
 		yOffset = yOffset - 45
+	end
 
-		-- Search Input
+	-- Search box (spell rows)
+	if spec.search then
 		local searchLabel = parent:CreateFontString(nil, "OVERLAY")
 		searchLabel:SetFontObject(K.UIFont)
 		searchLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		searchLabel:SetText(L["Search Auras:"] or "Search Auras:")
+		searchLabel:SetText(spec.searchLabel or (L["Search Auras:"] or "Search Auras:"))
 		searchLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 20
 
-		searchInput = self:CreateTextInput(parent, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Filter displayed auras"] or "Filter displayed auras"))
+		local searchInput = self:CreateTextInput(parent, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Filter displayed auras"] or "Filter displayed auras"))
 		searchInput:SetPoint("TOPLEFT", 0, yOffset)
+		searchEdit = searchInput.editBox
+		searchEdit:HookScript("OnTextChanged", function()
+			if refresh then
+				refresh()
+			end
+		end)
 		yOffset = yOffset - 35
+	end
 
-		-- Add New Spell Section
+	-- Add section
+	local addEdit
+	if spec.addStyle == "container" then
 		local addLabel = parent:CreateFontString(nil, "OVERLAY")
 		addLabel:SetFontObject(K.UIFont)
 		addLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		addLabel:SetText(L["Add New Spell ID:"] or "Add New Spell ID:")
+		addLabel:SetText(spec.inputLabel or (L["Add New Spell ID:"] or "Add New Spell ID:"))
 		addLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 20
 
-		-- Create container for input and button
 		local addContainer = CreateFrame("Frame", nil, parent)
 		addContainer:SetSize(contentWidth, 28)
 		addContainer:SetPoint("TOPLEFT", 0, yOffset)
 
-		-- Create smaller text input to make room for button
-		addSpellInput = self:CreateTextInput(addContainer, nil, "", (L["Enter Spell ID"] or "Enter Spell ID"), (L["Add a new spell to the current category"] or "Add a new spell to the current category"), nil, false, contentWidth - 110)
-		addSpellInput:SetPoint("TOPLEFT", 0, 0)
+		local input = self:CreateTextInput(addContainer, nil, "", spec.inputPlaceholder or (L["Enter Spell ID"] or "Enter Spell ID"), spec.inputTooltip or (L["Add a new spell to the current category"] or "Add a new spell to the current category"), nil, false, contentWidth - 110)
+		input:SetPoint("TOPLEFT", 0, 0)
+		addEdit = input.editBox
 
-		-- Create the add button positioned to the right of the input
-		local addButton = self:CreateButton(addContainer, (L["Add Spell"] or "Add Spell"), 100, 28, function() end)
-		addButton:SetPoint("LEFT", addSpellInput, "RIGHT", 10, 0)
-
+		local addButton = self:CreateButton(addContainer, spec.addLabel or (L["Add Spell"] or "Add Spell"), 100, 28, function() end)
+		addButton:SetPoint("LEFT", input, "RIGHT", 10, 0)
+		addButton:SetScript("OnClick", function()
+			addCurrent()
+		end)
+		yOffset = yOffset - 35
+	else
+		local input = self:CreateTextInput(parent, nil, spec.inputLabel, spec.inputPlaceholder, spec.inputTooltip)
+		input:SetPoint("TOPLEFT", 0, yOffset)
+		addEdit = input.editBox
 		yOffset = yOffset - 35
 
-		-- Add button click handler
-		local addButtonHandler = function()
-			local spellIdText = ""
-			-- Access the editBox from the CreateTextInput widget
-			if addSpellInput and addSpellInput:GetChildren() then
-				for _, child in ipairs({ addSpellInput:GetChildren() }) do
-					if child:GetObjectType() == "EditBox" then
-						spellIdText = child:GetText()
-						break
-					end
+		local addButton = self:CreateButton(parent, spec.addLabel or (L["Add"] or "Add"), 90, 24, function() end)
+		addButton:SetPoint("TOPLEFT", 0, yOffset)
+		addButton:SetScript("OnClick", function()
+			addCurrent()
+		end)
+
+		if spec.showClear then
+			local clearButton = self:CreateButton(parent, L["Clear"] or "Clear", 90, 24, function() end)
+			clearButton:SetPoint("LEFT", addButton, "RIGHT", 10, 0)
+			clearButton:SetScript("OnClick", function()
+				if store.Clear then
+					store:Clear(currentCategory)
 				end
-			end
-
-			local spellId = tonumber(spellIdText)
-
-			if spellId and spellId > 0 then
-				-- Add to the current category
-				if not C[currentCategory] then
-					C[currentCategory] = {}
-				end
-
-				C[currentCategory][spellId] = true
-
-				-- Clear the input - access editBox again
-				if addSpellInput and addSpellInput:GetChildren() then
-					for _, child in ipairs({ addSpellInput:GetChildren() }) do
-						if child:GetObjectType() == "EditBox" then
-							child:SetText("")
-							break
-						end
-					end
-				end
-
-				-- Refresh the aura list
-				RefreshAuraList()
-
-				-- Play success sound
+				refresh()
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			else
-				print("|cffff0000" .. (L["Invalid Spell ID. Please enter a valid number."] or "Invalid Spell ID. Please enter a valid number.") .. "|r")
-			end
+			end)
 		end
+		yOffset = yOffset - 35
+	end
 
-		-- Update the add button
-		addButton:SetScript("OnClick", addButtonHandler)
+	-- Optional list section header (boxed, used by the NPC ID lists)
+	if spec.listHeaderText then
+		CreateSectionHeader(parent, spec.listHeaderText, contentWidth, yOffset)
+		yOffset = yOffset - 40
+	end
 
-		-- Aura List Header
+	-- Optional plain accent label above the list (used by the aura filter panel)
+	if spec.listLabel then
 		local listLabel = parent:CreateFontString(nil, "OVERLAY")
 		listLabel:SetFontObject(K.UIFont)
 		listLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		listLabel:SetText(L["Current Auras:"] or "Current Auras:")
+		listLabel:SetText(spec.listLabel)
 		listLabel:SetPoint("TOPLEFT", 10, yOffset)
 		yOffset = yOffset - 25
+	end
 
-		-- Aura List Container
-		auraListFrame = CreateFrame("Frame", nil, parent)
-		auraListFrame:SetPoint("TOPLEFT", 10, yOffset)
-		auraListFrame:SetSize(contentWidth - 20, 300)
+	local listTopY = yOffset
+	local listHeight = spec.listHeight or 300
 
-		-- Background for aura list
-		local listBg = auraListFrame:CreateTexture(nil, "BACKGROUND")
-		listBg:SetAllPoints()
-		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
+	-- List frame + internal scroll
+	local listFrame = CreateFrame("Frame", nil, parent)
+	listFrame:SetPoint("TOPLEFT", 10, yOffset)
+	listFrame:SetSize(contentWidth - 20, listHeight)
+	local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
+	listBg:SetAllPoints()
+	listBg:SetTexture(C["Media"].Textures.White8x8Texture)
+	listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
 
-		-- Scroll Frame for aura list
-		local scrollFrame = CreateFrame("ScrollFrame", nil, auraListFrame)
-		scrollFrame:SetPoint("TOPLEFT", 5, -5)
-		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
-		scrollFrame:EnableMouseWheel(true)
+	local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
+	scrollFrame:SetPoint("TOPLEFT", 5, -5)
+	scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
+	scrollFrame:EnableMouseWheel(true)
 
-		scrollChild = CreateFrame("Frame", nil, scrollFrame)
-		scrollChild:SetWidth(contentWidth - 30) -- Use known width directly like main GUI
-		scrollChild:SetHeight(1)
-		scrollFrame:SetScrollChild(scrollChild)
+	local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+	scrollChild:SetWidth(contentWidth - 30)
+	scrollChild:SetHeight(1)
+	scrollFrame:SetScrollChild(scrollChild)
 
-		-- Mouse wheel scrolling
-		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
-			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+	if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
+		K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
+	end
+
+	-- Row builder: plain ID or NPC portrait+name
+	local function buildIdRow(entry, y)
+		local removable = entry.removable
+		local row = CreateFrame("Frame", nil, scrollChild)
+
+		if rowKind == "text" then
+			row:SetPoint("TOPLEFT", 0, y)
+			row:SetPoint("TOPRIGHT", 0, y)
+			row:SetHeight(24)
+
+			local text = row:CreateFontString(nil, "OVERLAY")
+			text:SetFontObject(K.UIFont)
+			text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+			text:SetPoint("LEFT", 6, 0)
+			text:SetText(tostring(entry.id))
+
+			if removable then
+				local removeBtn = self:CreateButton(row, L["Remove"] or "Remove", 80, 20, function() end)
+				removeBtn:SetPoint("RIGHT", -6, 0)
+				removeBtn:SetScript("OnClick", function()
+					store:Remove(entry.id, currentCategory)
+					refresh()
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+				end)
+			end
+			return row
 		end
 
-		-- Function to refresh the aura list
-		RefreshAuraList = function()
-			-- Clear existing items
-			for _, item in ipairs(auraItems) do
-				item:Hide()
-				item:SetParent(nil)
-			end
-			wipe(auraItems)
+		-- NPC row
+		row:SetSize(contentWidth - 40, 28)
+		row:SetPoint("TOPLEFT", 10, y)
 
-			if not C[currentCategory] then
-				scrollChild:SetHeight(1)
-				return
-			end
+		local bg = row:CreateTexture(nil, "BACKGROUND")
+		bg:SetAllPoints()
+		bg:SetTexture(C["Media"].Textures.White8x8Texture)
+		bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
 
-			-- Get search text
-			local searchText = ""
-			if searchInput and searchInput:GetChildren() then
-				for _, child in ipairs({ searchInput:GetChildren() }) do
-					if child:GetObjectType() == "EditBox" then
-						searchText = child:GetText():lower()
-						break
+		local portrait, nameAnchor
+		if spec.npcPortraitStyle == "framed" then
+			local portraitFrame = CreateFrame("Frame", nil, row)
+			portraitFrame:SetSize(24, 24)
+			portraitFrame:SetPoint("LEFT", 6, 0)
+			CreateColoredBackground(portraitFrame, 0.12, 0.12, 0.12, 1)
+			local portraitBorder = portraitFrame:CreateTexture(nil, "BORDER")
+			portraitBorder:SetPoint("TOPLEFT", -1, 1)
+			portraitBorder:SetPoint("BOTTOMRIGHT", 1, -1)
+			portraitBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+			portraitBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
+			portrait = portraitFrame:CreateTexture(nil, "ARTWORK")
+			portrait:SetPoint("TOPLEFT", 2, -2)
+			portrait:SetPoint("BOTTOMRIGHT", -2, 2)
+			nameAnchor = portraitFrame
+		else
+			portrait = row:CreateTexture(nil, "ARTWORK")
+			portrait:SetSize(22, 22)
+			portrait:SetPoint("LEFT", 6, 0)
+			nameAnchor = portrait
+		end
+		TrySetNPCPortrait(portrait, entry.id)
+		row.Portrait = portrait
+		row.NpcID = entry.id
+
+		local nameFS = row:CreateFontString(nil, "OVERLAY")
+		nameFS:SetFontObject(K.UIFont)
+		nameFS:SetTextColor(1, 1, 1, 1)
+		nameFS:SetPoint("LEFT", nameAnchor, "RIGHT", 8, 0)
+		row.NameFS = nameFS
+
+		local tag = (not removable) and (spec.defaultTag or "  [Default]") or ""
+		local function setName(nm)
+			nameFS:SetText(string.format("%s (ID: %s)%s", nm or "Unknown", tostring(entry.id), tag))
+		end
+		row._setName = setName
+		setName(GetNPCNameByID(entry.id, setName))
+
+		if removable then
+			local removeBtn = self:CreateButton(row, "", 22, 22, function() end)
+			removeBtn:SetPoint("RIGHT", -8, 0)
+			local icon = removeBtn:CreateTexture(nil, "ARTWORK")
+			icon:SetAllPoints()
+			local ok = pcall(function()
+				icon:SetAtlas("common-icon-redx", true)
+			end)
+			if not ok then
+				icon:SetTexture(C["Media"].Textures.White8x8Texture)
+				icon:SetVertexColor(0.8, 0.2, 0.2, 1)
+			end
+			removeBtn:SetScript("OnClick", function()
+				store:Remove(entry.id, currentCategory)
+				refresh()
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+			end)
+		end
+		return row
+	end
+
+	-- Row builder: spell icon + id + name (aura filter)
+	local function buildSpellRow(entry, index)
+		local spellId = entry.id
+		local item = CreateFrame("Frame", nil, scrollChild)
+		item:SetSize(contentWidth - 40, 27)
+		item:SetPoint("TOPLEFT", 0, -(index - 1) * 29)
+
+		local itemBg = item:CreateTexture(nil, "BACKGROUND")
+		itemBg:SetAllPoints()
+		itemBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		if index % 2 == 0 then
+			itemBg:SetVertexColor(0.1, 0.1, 0.1, 0.5)
+		else
+			itemBg:SetVertexColor(0.05, 0.05, 0.05, 0.5)
+		end
+
+		local iconContainer = CreateFrame("Frame", nil, item)
+		iconContainer:SetSize(20, 20)
+		iconContainer:SetPoint("LEFT", 6, 0)
+		local iconBorder = iconContainer:CreateTexture(nil, "BACKGROUND")
+		iconBorder:SetAllPoints()
+		iconBorder:SetTexture(C["Media"].Textures.White8x8Texture)
+		iconBorder:SetVertexColor(0.2, 0.2, 0.2, 0.8)
+		local icon = iconContainer:CreateTexture(nil, "ARTWORK")
+		icon:SetSize(18, 18)
+		icon:SetPoint("CENTER", 0, 0)
+		local spellTexture = C_Spell.GetSpellTexture(spellId)
+		if spellTexture then
+			icon:SetTexture(spellTexture)
+		else
+			icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+		end
+		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+		local idText = item:CreateFontString(nil, "OVERLAY")
+		idText:SetFontObject(K.UIFont)
+		idText:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		idText:SetText(tostring(spellId))
+		idText:SetPoint("LEFT", iconContainer, "RIGHT", 10, 0)
+
+		local nameText = item:CreateFontString(nil, "OVERLAY")
+		nameText:SetFontObject(K.UIFont)
+		nameText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		local spellInfo = C_Spell.GetSpellInfo(spellId)
+		nameText:SetText(spellInfo and spellInfo.name or "Unknown Spell")
+		nameText:SetPoint("LEFT", idText, "RIGHT", 15, 0)
+
+		local removeButton = CreateFrame("Button", nil, item)
+		removeButton:SetSize(18, 18)
+		removeButton:SetPoint("RIGHT", -8, 0)
+		local removeBg = removeButton:CreateTexture(nil, "BACKGROUND")
+		removeBg:SetAllPoints()
+		removeBg:SetTexture(C["Media"].Textures.White8x8Texture)
+		removeBg:SetVertexColor(0.8, 0.2, 0.2, 0.8)
+		local removeText = removeButton:CreateFontString(nil, "OVERLAY")
+		removeText:SetFontObject(K.UIFont)
+		removeText:SetTextColor(1, 1, 1, 1)
+		removeText:SetText("×")
+		removeText:SetPoint("CENTER")
+		removeButton:SetScript("OnClick", function()
+			store:Remove(spellId, currentCategory)
+			refresh()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+		end)
+		removeButton:SetScript("OnEnter", function(btn)
+			removeBg:SetVertexColor(1, 0.2, 0.2, 1)
+			GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
+			GameTooltip:SetText(L["Remove Aura"] or "Remove Aura", 1, 1, 1, 1, true)
+			GameTooltip:AddLine(L["Click to remove this aura from the list"] or "Click to remove this aura from the list", 0.7, 0.7, 0.7, true)
+			GameTooltip:Show()
+		end)
+		removeButton:SetScript("OnLeave", function()
+			removeBg:SetVertexColor(0.8, 0.2, 0.2, 0.8)
+			GameTooltip:Hide()
+		end)
+
+		return item
+	end
+
+	refresh = function()
+		for _, r in ipairs(rows) do
+			r:Hide()
+			r:SetParent(nil)
+		end
+		wipe(rows)
+
+		local entries = store:GetEntries(currentCategory)
+
+		-- Search filter (spell rows)
+		if searchEdit then
+			local query = (searchEdit:GetText() or ""):lower()
+			if query ~= "" then
+				local filtered = {}
+				for _, e in ipairs(entries) do
+					local match = tostring(e.id):find(query, 1, true)
+					if not match then
+						local info = C_Spell.GetSpellInfo(e.id)
+						local nm = info and info.name
+						match = nm and nm:lower():find(query, 1, true)
+					end
+					if match then
+						filtered[#filtered + 1] = e
+					end
+				end
+				entries = filtered
+			end
+		end
+
+		if rowKind == "spell" then
+			for i, e in ipairs(entries) do
+				rows[#rows + 1] = buildSpellRow(e, i)
+			end
+			scrollChild:SetHeight(math.max(#entries * 29, 250))
+		else
+			local y = (rowKind == "text") and -2 or -5
+			local step = (rowKind == "text") and 26 or 30
+			for _, e in ipairs(entries) do
+				rows[#rows + 1] = buildIdRow(e, y)
+				y = y - step
+			end
+			scrollChild:SetHeight(math.abs(y) + 10)
+		end
+	end
+
+	addCurrent = function()
+		local id = validate(addEdit:GetText() or "")
+		if not id then
+			if spec.invalidMessage then
+				print(spec.invalidMessage)
+			else
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+			end
+			return
+		end
+		store:Add(id, currentCategory)
+		addEdit:SetText("")
+		refresh()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	end
+
+	-- Live NPC portrait/name refresh
+	if spec.liveNPC then
+		local events = CreateFrame("Frame", nil, parent)
+		events:RegisterEvent("PLAYER_TARGET_CHANGED")
+		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+		events:SetScript("OnEvent", function(_, _, unit)
+			if unit and UnitExists(unit) then
+				local guid = UnitGUID(unit)
+				local id = guid and K.GetNPCID(guid)
+				if id then
+					local n = UnitName(unit)
+					if n and n ~= "" then
+						K.NPCNameCache = K.NPCNameCache or {}
+						K.NPCNameCache[id] = n
 					end
 				end
 			end
-
-			-- Build filtered list
-			local filteredSpells = {}
-			for spellId, _ in pairs(C[currentCategory]) do
-				local shouldShow = true
-
-				if searchText ~= "" then
-					local spellInfo = C_Spell.GetSpellInfo(spellId)
-					local spellName = spellInfo and spellInfo.name or nil
-					local spellIdStr = tostring(spellId)
-
-					shouldShow = spellIdStr:find(searchText, 1, true) or (spellName and spellName:lower():find(searchText, 1, true))
+			for _, row in ipairs(rows) do
+				if row.Portrait and row.NpcID then
+					TrySetNPCPortrait(row.Portrait, row.NpcID)
 				end
-
-				if shouldShow then
-					table.insert(filteredSpells, spellId)
+				if row.NameFS and row.NpcID and row._setName then
+					row._setName(GetNPCNameByID(row.NpcID, row._setName))
 				end
 			end
+		end)
+	end
 
-			-- Sort by spell ID
-			table.sort(filteredSpells)
+	refresh()
 
-			-- Create items
-			for i, spellId in ipairs(filteredSpells) do
-				local item = CreateAuraItem(spellId, i)
-				table.insert(auraItems, item)
-			end
-
-			-- Update scroll child height
-			scrollChild:SetHeight(max(#filteredSpells * 29, 250)) -- Updated to match new spacing
-		end
-
-		-- Function to create an aura item row
-		CreateAuraItem = function(spellId, index)
-			local item = CreateFrame("Frame", nil, scrollChild)
-			item:SetSize(contentWidth - 40, 27) -- Slightly taller for better icon fit
-			item:SetPoint("TOPLEFT", 0, -(index - 1) * 29) -- Increased spacing
-
-			-- Background
-			local itemBg = item:CreateTexture(nil, "BACKGROUND")
-			itemBg:SetAllPoints()
-			itemBg:SetTexture(C["Media"].Textures.White8x8Texture)
-			if index % 2 == 0 then
-				itemBg:SetVertexColor(0.1, 0.1, 0.1, 0.5)
-			else
-				itemBg:SetVertexColor(0.05, 0.05, 0.05, 0.5)
-			end
-
-			-- Spell Icon Container (for better border control)
-			local iconContainer = CreateFrame("Frame", nil, item)
-			iconContainer:SetSize(20, 20) -- Smaller square container (was 24x24)
-			iconContainer:SetPoint("LEFT", 6, 0) -- Slightly less padding since icon is smaller
-
-			-- Icon border/background
-			local iconBorder = iconContainer:CreateTexture(nil, "BACKGROUND")
-			iconBorder:SetAllPoints()
-			iconBorder:SetTexture(C["Media"].Textures.White8x8Texture)
-			iconBorder:SetVertexColor(0.2, 0.2, 0.2, 0.8)
-
-			-- Spell Icon
-			local icon = iconContainer:CreateTexture(nil, "ARTWORK")
-			icon:SetSize(18, 18) -- Smaller square icon (was 22x22)
-			icon:SetPoint("CENTER", 0, 0) -- Perfectly centered
-
-			local spellTexture = C_Spell.GetSpellTexture(spellId)
-			if spellTexture then
-				icon:SetTexture(spellTexture)
-				icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) -- Crop borders for cleaner look
-			else
-				icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-				icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) -- Apply same cropping to fallback
-			end
-
-			-- Spell ID Text
-			local idText = item:CreateFontString(nil, "OVERLAY")
-			idText:SetFontObject(K.UIFont)
-			idText:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-			idText:SetText(tostring(spellId))
-			idText:SetPoint("LEFT", iconContainer, "RIGHT", 10, 0) -- Adjusted spacing for smaller icon
-
-			-- Spell Name Text
-			local nameText = item:CreateFontString(nil, "OVERLAY")
-			nameText:SetFontObject(K.UIFont)
-			nameText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-			local spellInfo = C_Spell.GetSpellInfo(spellId)
-			local spellName = spellInfo and spellInfo.name or "Unknown Spell"
-			nameText:SetText(spellName)
-			nameText:SetPoint("LEFT", idText, "RIGHT", 15, 0)
-
-			-- Remove Button
-			local removeButton = CreateFrame("Button", nil, item)
-			removeButton:SetSize(18, 18) -- Square button
-			removeButton:SetPoint("RIGHT", -8, 0) -- More padding from right edge
-
-			local removeBg = removeButton:CreateTexture(nil, "BACKGROUND")
-			removeBg:SetAllPoints()
-			removeBg:SetTexture(C["Media"].Textures.White8x8Texture)
-			removeBg:SetVertexColor(0.8, 0.2, 0.2, 0.8)
-
-			local removeText = removeButton:CreateFontString(nil, "OVERLAY")
-			removeText:SetFontObject(K.UIFont)
-			removeText:SetTextColor(1, 1, 1, 1)
-			removeText:SetText("×")
-			removeText:SetPoint("CENTER")
-
-			removeButton:SetScript("OnClick", function()
-				-- Remove from the category
-				if C[currentCategory] then
-					C[currentCategory][spellId] = nil
-				end
-
-				-- Refresh the list
-				RefreshAuraList()
-
-				-- Play sound
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
-			end)
-
-			removeButton:SetScript("OnEnter", function(self)
-				removeBg:SetVertexColor(1, 0.2, 0.2, 1)
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText(L["Remove Aura"] or "Remove Aura", 1, 1, 1, 1, true)
-				GameTooltip:AddLine(L["Click to remove this aura from the list"] or "Click to remove this aura from the list", 0.7, 0.7, 0.7, true)
-				GameTooltip:Show()
-			end)
-
-			removeButton:SetScript("OnLeave", function(self)
-				removeBg:SetVertexColor(0.8, 0.2, 0.2, 0.8)
-				GameTooltip:Hide()
-			end)
-
-			return item
-		end
-
-		-- Category dropdown change handler
-		local function OnCategoryChanged(newValue)
-			currentCategory = newValue
-			RefreshAuraList()
-		end
-
-		-- Search input change handler
-		if searchInput and searchInput:GetChildren() then
-			for _, child in ipairs({ searchInput:GetChildren() }) do
-				if child:GetObjectType() == "EditBox" then
-					child:SetScript("OnTextChanged", function()
-						if RefreshAuraList then
-							RefreshAuraList()
-						end
-					end)
-					break
-				end
-			end
-		end
-
-		-- Initialize with first category
-		categoryDropdown.dropdownText:SetText(categories[1].text)
-		currentCategory = categories[1].value
-		-- Call RefreshAuraList after it's been defined
-		if RefreshAuraList then
-			RefreshAuraList()
-		end
-
-		-- Update yOffset for parent height
-		yOffset = yOffset - 320
-
-		-- Instructions
-		local instructionText = parent:CreateFontString(nil, "OVERLAY")
-		instructionText:SetFontObject(K.UIFont)
-		instructionText:SetTextColor(0.7, 0.7, 0.7, 1)
-		instructionText:SetText("• Use /dump spellID to get spell IDs in-game\n• Whitelist: Auras that will always show\n• Blacklist: Auras that will always hide\n• Changes take effect immediately")
-		instructionText:SetPoint("TOPLEFT", 10, yOffset)
-		instructionText:SetWidth(contentWidth - 20)
-		instructionText:SetJustifyH("LEFT")
-		yOffset = yOffset - 60
-
-		-- Set parent height based on content
+	-- Footer instructions + panel height
+	if spec.footerText then
+		yOffset = yOffset - (spec.footerGapBefore or (listHeight + 20))
+		local footer = parent:CreateFontString(nil, "OVERLAY")
+		footer:SetFontObject(K.UIFont)
+		footer:SetTextColor(0.7, 0.7, 0.7, 1)
+		footer:SetText(spec.footerText)
+		footer:SetPoint("TOPLEFT", 10, yOffset)
+		footer:SetWidth(contentWidth - 20)
+		footer:SetJustifyH("LEFT")
+		yOffset = yOffset - (spec.footerGapAfter or 60)
 		parent:SetHeight(math.abs(yOffset) + 20)
+	elseif spec.parentHeight then
+		parent:SetHeight(spec.parentHeight(listTopY, listHeight))
+	else
+		parent:SetHeight(math.abs(listTopY) + listHeight + 20)
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- CONFIGURATION REGISTRATION: BUILT-INS
+-- ---------------------------------------------------------------------------
+
+-- NOTE: This function populates the ExtraGUI with standard configurations for core addon features.
+function ExtraGUI:RegisterBuiltinConfigs()
+	K.ExtraGUIActionBars:Register(self)
+
+	local function CreateSimpleTextEditor(parent, configPath, title, placeholder, description, hookFunction)
+		local yOffset = -10
+		local contentWidth = GetExtraContentWidth()
+
+		local header = parent:CreateFontString(nil, "OVERLAY")
+		header:SetFontObject(K.UIFont)
+		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
+		header:SetText(title)
+		header:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 25
+
+		local desc = parent:CreateFontString(nil, "OVERLAY")
+		desc:SetFontObject(K.UIFont)
+		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
+		desc:SetJustifyH("LEFT")
+		desc:SetWidth(contentWidth - 20)
+		desc:SetText(description)
+		desc:SetPoint("TOPLEFT", 10, yOffset)
+		yOffset = yOffset - 45
+
+		local input = self:CreateTextInput(parent, configPath, title, placeholder, description, hookFunction)
+		input:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		parent:SetHeight(math.abs(yOffset) + 20)
+	end
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Automation
+	-- ---------------------------------------------------------------------------
+
+	self:RegisterExtraConfig("Automation.WhisperInvite", function(parent)
+		local function updateInviteKeyword()
+			local automationModule = K:GetModule("Automation")
+			if automationModule and automationModule.onUpdateInviteKeyword then
+				automationModule:onUpdateInviteKeyword()
+			end
+		end
+
+		CreateSimpleTextEditor(parent, "Automation.WhisperInvite", L["Auto Accept Invite Keyword"], L["WhisperInvite Placeholder"], L["WhisperInvite Desc"], updateInviteKeyword)
+	end, L["Auto Accept Invite Keyword"])
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Inventory
+	-- ---------------------------------------------------------------------------
+
+	K.ExtraGUIInventory:Register(self)
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Miscellaneous (Simple Text Editors)
+	-- ---------------------------------------------------------------------------
+
+	self:RegisterExtraConfig("Misc.DBMCount", function(parent)
+		CreateSimpleTextEditor(parent, "Misc.DBMCount", L["DBMCount - Add Info"], L["Enter custom info..."], L["Misc.DBMCount Desc"])
+	end, L["DBMCount - Add Info"])
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Miscellaneous (Mute)
+	-- ---------------------------------------------------------------------------
+
+	-- NOTE: Allows users to suppress specific game sounds by their SoundKit ID.
+	self:RegisterExtraConfig("Misc.MuteSoundIDs", function(parent)
+		self:CreateListEditor(parent, {
+			title = L["Custom Mute Sound IDs"] or "Custom Mute Sound IDs",
+			description = L["MuteSoundIDsDesc"] or "Add SoundKit IDs to mute. KkthnxUI already mutes a built-in set; this list only adds your extra IDs.",
+			inputLabel = L["Add Sound ID"] or "Add Sound ID",
+			inputTooltip = L["Enter a numeric SoundKit ID to add"] or "Enter a numeric SoundKit ID to add",
+			showClear = true,
+			rowKind = "text",
+			-- Mute accepts any numeric SoundKit id (including 0), matching the legacy behavior.
+			validate = function(text)
+				return tonumber(text)
+			end,
+			parentHeight = function(listTopY)
+				return math.abs(listTopY) + 230
+			end,
+			store = ExtraGUI.MakeStringSetStore({
+				configPath = "Misc.MuteSoundIDs",
+				settingName = "Mute Sound IDs",
+				applyFn = function()
+					local miscModule = K and K.GetModule and K:GetModule("Miscellaneous")
+					if miscModule and miscModule.CreateMuteSounds then
+						miscModule:CreateMuteSounds()
+					end
+				end,
+			}),
+		})
+	end, "Mute Sound IDs")
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Nameplates
+	-- ---------------------------------------------------------------------------
+
+	-- REASON: Enables custom coloring for specific NPCs identified by their internal ID.
+	self:RegisterExtraConfig("Nameplate.CustomUnitList", function(parent)
+		self:CreateListEditor(parent, {
+			title = L["Custom Units by NPC ID"] or "Custom Units by NPC ID",
+			description = L["Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here."] or "Add NPC IDs to always color as custom. Defaults are shown and cannot be removed here.",
+			inputLabel = L["Add NPC ID"] or "Add NPC ID",
+			inputPlaceholder = format(L["e.g. %s"] or "e.g. %s", "174773"),
+			inputTooltip = L["Enter an NPC ID to add"] or "Enter an NPC ID to add",
+			listHeaderText = L["Current IDs"] or "Current IDs",
+			listHeight = 320,
+			rowKind = "npc",
+			npcPortraitStyle = "framed",
+			liveNPC = true,
+			invalidMessage = "|cffff0000Invalid NPC ID. Enter a number.|r",
+			parentHeight = function(listTopY)
+				return math.abs(listTopY) + 20
+			end,
+			store = ExtraGUI.MakeStringSetStore({
+				configPath = "Nameplate.CustomUnitList",
+				defaultsTable = C.NameplateCustomUnits,
+				applyFn = function()
+					local nameplateModule = K:GetModule("Unitframes")
+					if nameplateModule and nameplateModule.CreateUnitTable then
+						nameplateModule:CreateUnitTable()
+					end
+				end,
+			}),
+		})
+	end, "Custom Units")
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Nameplate Power
+	-- ---------------------------------------------------------------------------
+
+	-- REASON: Allows specific NPC IDs to display a power bar on their nameplate.
+	self:RegisterExtraConfig("Nameplate.PowerUnitList", function(parent)
+		self:CreateListEditor(parent, {
+			title = L["Show Power for NPC IDs"] or "Show Power for NPC IDs",
+			description = L["Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here."] or "Add NPC IDs whose power bar should be shown on nameplates. Defaults are shown and cannot be removed here.",
+			inputLabel = L["Add NPC ID"] or "Add NPC ID",
+			inputPlaceholder = format(L["e.g. %s"] or "e.g. %s", "114247"),
+			inputTooltip = L["Enter an NPC ID to add"] or "Enter an NPC ID to add",
+			listHeaderText = L["Current IDs"] or "Current IDs",
+			listHeight = 320,
+			rowKind = "npc",
+			npcPortraitStyle = "plain",
+			liveNPC = true,
+			invalidMessage = "|cffff0000Invalid NPC ID. Enter a number.|r",
+			parentHeight = function(listTopY)
+				return math.abs(listTopY) + 20
+			end,
+			store = ExtraGUI.MakeStringSetStore({
+				configPath = "Nameplate.PowerUnitList",
+				defaultsTable = C.NameplateShowPowerList,
+				applyFn = function()
+					local nameplateModule = K:GetModule("Unitframes")
+					if nameplateModule and nameplateModule.CreatePowerUnitTable then
+						nameplateModule:CreatePowerUnitTable()
+					end
+				end,
+			}),
+		})
+	end, "Power Units")
+
+	-- ---------------------------------------------------------------------------
+	-- Configuration Registration: Nameplate Auras
+	-- ---------------------------------------------------------------------------
+
+	-- NOTE: High-performance aura management using whitelists, blacklists, and category-based filtering.
+	-- REASON: This editor manages the aura *filter* lists, so it hangs off the "Auras Filter Style"
+	-- dropdown (Nameplate.AuraFilter), not the simple "Target Nameplate Auras" on/off toggle.
+	self:RegisterExtraConfig("Nameplate.AuraFilter", function(parent)
+		self:CreateListEditor(parent, {
+			categories = {
+				{ text = "Whitelist (Show These)", value = "NameplateWhiteList" },
+				{ text = "Blacklist (Hide These)", value = "NameplateBlackList" },
+				{ text = "Custom Units", value = "NameplateCustomUnits" },
+				{ text = "Target NPCs", value = "NameplateTargetNPCs" },
+				{ text = "Trash Units", value = "NameplateTrashUnits" },
+				{ text = "Major Spells", value = "MajorSpells" },
+			},
+			search = true,
+			addStyle = "container",
+			inputLabel = L["Add New Spell ID:"] or "Add New Spell ID:",
+			addLabel = L["Add Spell"] or "Add Spell",
+			listLabel = L["Current Auras:"] or "Current Auras:",
+			listHeight = 300,
+			rowKind = "spell",
+			invalidMessage = "|cffff0000" .. (L["Invalid Spell ID. Please enter a valid number."] or "Invalid Spell ID. Please enter a valid number.") .. "|r",
+			footerText = "• Use /dump spellID to get spell IDs in-game\n• Whitelist: Auras that will always show\n• Blacklist: Auras that will always hide\n• Changes take effect immediately",
+			footerGapBefore = 320,
+			store = ExtraGUI.MakeAuraDeltaStore(),
+		})
 	end, "Nameplate Auras")
 
 	-- ---------------------------------------------------------------------------
@@ -3149,7 +2361,6 @@ function ExtraGUI:RegisterExampleConfigs()
 	-- REASON: Configuration for raid-style party frames; includes layout and power bar logic.
 	self:RegisterExtraConfig("Party.Enable", function(parent)
 		local yOffset = -10
-		local contentWidth = GetExtraContentWidth()
 
 		-- Hook function for size updates
 		local function UpdateUnitSimplePartySize()
@@ -3200,13 +2411,14 @@ function ExtraGUI:RegisterExampleConfigs()
 			end
 		end
 
-		local powerBarSwitch = self:CreateSwitch(parent, "SimpleParty.PowerBarShow", L["Show All Power Bars"] or "Show All Power Bars", L["Show power bars on all party frames"] or "Show power bars on all party frames", UpdatePowerBarVisibility)
+		local powerBarSwitch = self:CreateSwitch(parent, "SimpleParty.PowerBarShow", L["Enable Power Bars"] or "Enable Power Bars", L["Show power bars on all party frames"] or "Show power bars on all party frames", UpdatePowerBarVisibility)
 		powerBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local manaBarSwitch = self:CreateSwitch(parent, "SimpleParty.ManabarShow", L["Show Manabars"], L["Display mana bars on party frames"] or "Display mana bars on party frames", UpdatePowerBarVisibility)
+		local manaBarSwitch = self:CreateSwitch(parent, "SimpleParty.ManabarShow", L["Only Show Mana"], L["Display mana bars on party frames"] or "Display mana bars on party frames", UpdatePowerBarVisibility)
 		manaBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
+		self:DependsOn(manaBarSwitch, "SimpleParty.PowerBarShow", true)
 
 		yOffset = yOffset - 20 -- Extra spacing before section
 
@@ -3318,7 +2530,7 @@ function ExtraGUI:RegisterExampleConfigs()
 		end)
 
 		-- Debuff Watch options
-		local debuffHeader = CreateSectionHeader(parent, L["Debuff Watch"] or "Debuff Watch", EXTRA_PANEL_WIDTH - 40, yOffset)
+		local _ = CreateSectionHeader(parent, L["Debuff Watch"] or "Debuff Watch", EXTRA_PANEL_WIDTH - 40, yOffset)
 		yOffset = yOffset - 40
 
 		local debuffWatchSwitch = self:CreateSwitch(parent, "SimpleParty.DebuffWatch", L["Enable Debuff Watch"] or "Enable Debuff Watch", L["Show debuff indicators on simple party frames"] or "Show debuff indicators on simple party frames")
@@ -3339,256 +2551,30 @@ function ExtraGUI:RegisterExampleConfigs()
 
 	-- REASON: Manage NPC IDs to ignore during auto-questing; maintains character-specific overrides.
 	self:RegisterExtraConfig("Automation.AutoQuestIgnoreNPC", function(parent)
-		local yOffset = -10
-		local contentWidth = GetExtraContentWidth()
-
-		local header = parent:CreateFontString(nil, "OVERLAY")
-		header:SetFontObject(K.UIFont)
-		header:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		header:SetText("Ignored Quest NPCs (Per-Character)")
-		header:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
-
-		local desc = parent:CreateFontString(nil, "OVERLAY")
-		desc:SetFontObject(K.UIFont)
-		desc:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		desc:SetJustifyH("LEFT")
-		desc:SetText("Add NPC IDs to ignore for auto questing. Defaults are built-in; this list is per-character. Hold ALT and click NPC name in quest/gossip to toggle quickly.")
-		desc:SetPoint("TOPLEFT", 10, yOffset)
-		yOffset = yOffset - 25
-
-		local addInput = self:CreateTextInput(parent, nil, "Add NPC ID", "e.g. 162804", "Enter an NPC ID to add")
-		addInput:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		local addButton = self:CreateButton(parent, "Add", 90, 24, function() end)
-		addButton:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		CreateSectionHeader(parent, "Current IDs", contentWidth, yOffset)
-		yOffset = yOffset - 40
-
-		local listFrame = CreateFrame("Frame", nil, parent)
-		listFrame:SetPoint("TOPLEFT", 10, yOffset)
-		listFrame:SetSize(contentWidth - 20, 300)
-		local listBg = listFrame:CreateTexture(nil, "BACKGROUND")
-		listBg:SetAllPoints()
-		listBg:SetTexture(C["Media"].Textures.White8x8Texture)
-		listBg:SetVertexColor(0.05, 0.05, 0.05, 0.8)
-
-		local scrollFrame = CreateFrame("ScrollFrame", nil, listFrame)
-		scrollFrame:SetPoint("TOPLEFT", 5, -5)
-		scrollFrame:SetPoint("BOTTOMRIGHT", -5, 5)
-		scrollFrame:EnableMouseWheel(true)
-
-		local scrollChild = CreateFrame("Frame", nil, scrollFrame)
-		scrollChild:SetWidth(contentWidth - 30)
-		scrollChild:SetHeight(1)
-		scrollFrame:SetScrollChild(scrollChild)
-
-		if K and K.GUIHelpers and K.GUIHelpers.AttachSimpleScroll then
-			K.GUIHelpers.AttachSimpleScroll(scrollFrame, 30)
-		end
-
-		local function getStore()
-			KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
-			KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
-			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC or {}
-			return KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC
-		end
-
-		local function trySetPortrait(texture, npcID)
-			-- Fallback to question mark icon (cropped)
-			texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-			texture:SetVertexColor(1, 1, 1, 1)
-			texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-			local function checkUnit(u)
-				if UnitExists(u) then
-					local guid = UnitGUID(u)
-					local id = guid and K.GetNPCID(guid)
-					if id and id == npcID then
-						SetPortraitTexture(texture, u)
-						return true
+		self:CreateListEditor(parent, {
+			title = L["AutoQuest Ignore NPCs Title"] or "Ignored Quest NPCs (Per-Character)",
+			description = L["AutoQuest Ignore NPCs Desc"] or "Add NPC IDs to ignore for auto questing. Defaults are built-in; this list is per-character. Hold ALT and click NPC name in quest/gossip to toggle quickly.",
+			inputLabel = L["Add NPC ID"] or "Add NPC ID",
+			inputPlaceholder = format(L["e.g. %s"] or "e.g. %s", "162804"),
+			inputTooltip = L["Enter an NPC ID to add"] or "Enter an NPC ID to add",
+			listHeaderText = L["Current IDs"] or "Current IDs",
+			listHeight = 300,
+			rowKind = "npc",
+			npcPortraitStyle = "plain",
+			liveNPC = true,
+			invalidMessage = "|cffff0000" .. (L["Invalid NPC ID. Enter a number."] or "Invalid NPC ID. Enter a number.") .. "|r",
+			store = ExtraGUI.MakeCharFlatStore({
+				varKey = "AutoQuestIgnoreNPC",
+				stringKeys = true,
+				defaultsTable = C.AutoQuestData and C.AutoQuestData.IgnoreQuestNPC,
+				applyFn = function()
+					local mod = K:GetModule("Automation")
+					if mod and mod.UpdateAutoQuestIgnoreList then
+						mod:UpdateAutoQuestIgnoreList()
 					end
-				end
-			end
-			local directUnits = { "target", "mouseover", "focus" }
-			for _, u in ipairs(directUnits) do
-				if checkUnit(u) then
-					return
-				end
-			end
-			for i = 1, 40 do
-				if checkUnit("nameplate" .. i) then
-					return
-				end
-			end
-			for i = 1, 8 do
-				if checkUnit("boss" .. i) then
-					return
-				end
-			end
-		end
-
-		local rows = {}
-		local function refresh()
-			for _, r in ipairs(rows) do
-				r:Hide()
-			end
-			wipe(rows)
-			local store = getStore()
-			local defaults = (C and C["AutoQuestData"] and C["AutoQuestData"].IgnoreQuestNPC) or {}
-			local combined = {}
-			for id in pairs(defaults) do
-				combined[tonumber(id) or id] = "default"
-			end
-			for id, v in pairs(store) do
-				if v then
-					local nid = tonumber(id) or id
-					combined[nid] = combined[nid] or "user"
-				end
-			end
-			local list = {}
-			for id, src in pairs(combined) do
-				table.insert(list, { id = tonumber(id) or id, source = src })
-			end
-			table.sort(list, function(a, b)
-				return (tonumber(a.id) or 0) < (tonumber(b.id) or 0)
-			end)
-			local y = -5
-			for _, entry in ipairs(list) do
-				local row = CreateFrame("Frame", nil, scrollChild)
-				row:SetSize(contentWidth - 40, 28)
-				row:SetPoint("TOPLEFT", 10, y)
-				local bg = row:CreateTexture(nil, "BACKGROUND")
-				bg:SetAllPoints()
-				bg:SetTexture(C["Media"].Textures.White8x8Texture)
-				bg:SetVertexColor(0.08, 0.08, 0.08, 0.7)
-
-				local portrait = row:CreateTexture(nil, "ARTWORK")
-				portrait:SetSize(22, 22)
-				portrait:SetPoint("LEFT", 6, 0)
-				trySetPortrait(portrait, entry.id)
-				row.Portrait = portrait
-				row.NpcID = entry.id
-
-				local nameFS = row:CreateFontString(nil, "OVERLAY")
-				nameFS:SetFontObject(K.UIFont)
-				nameFS:SetTextColor(1, 1, 1, 1)
-				local tag = entry.source == "default" and "  [Default]" or ""
-				local function setNameText(nm)
-					nameFS:SetText(string.format("%s (ID: %s)%s", nm or "Unknown", tostring(entry.id), tag))
-				end
-				local creatureName = GetNPCNameByID and GetNPCNameByID(entry.id, setNameText) or nil
-				setNameText(creatureName)
-				nameFS:SetPoint("LEFT", portrait, "RIGHT", 8, 0)
-				row.NameFS = nameFS
-
-				if entry.source ~= "default" then
-					local removeBtn
-					if K and K.GUIHelpers and K.GUIHelpers.CreateButton then
-						removeBtn = K.GUIHelpers.CreateButton(row, "", 22, 22)
-						removeBtn:SetPoint("RIGHT", -8, 0)
-					else
-						removeBtn = CreateFrame("Button", nil, row)
-						removeBtn:SetSize(22, 22)
-						removeBtn:SetPoint("RIGHT", -8, 0)
-					end
-					local icon = removeBtn:CreateTexture(nil, "ARTWORK")
-					icon:SetAllPoints()
-					local ok = pcall(function()
-						icon:SetAtlas("common-icon-redx", true)
-					end)
-					if not ok then
-						icon:SetTexture(C["Media"].Textures.White8x8Texture)
-						icon:SetVertexColor(0.8, 0.2, 0.2, 1)
-					end
-					removeBtn:SetScript("OnClick", function()
-						store[tostring(entry.id)] = nil
-						if K:GetModule("Automation") and K:GetModule("Automation").UpdateAutoQuestIgnoreList then
-							K:GetModule("Automation"):UpdateAutoQuestIgnoreList()
-						end
-						refresh()
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-					end)
-				end
-
-				table.insert(rows, row)
-				y = y - 30
-			end
-			scrollChild:SetHeight(math.abs(y) + 10)
-		end
-
-		addButton:SetScript("OnClick", function()
-			local inputText = ""
-			if addInput and addInput:GetChildren() then
-				for _, child in ipairs({ addInput:GetChildren() }) do
-					if child:GetObjectType() == "EditBox" then
-						inputText = child:GetText()
-						break
-					end
-				end
-			end
-			local id = tonumber(inputText)
-			if id and id > 0 then
-				local store = getStore()
-				store[tostring(id)] = true
-				if K:GetModule("Automation") and K:GetModule("Automation").UpdateAutoQuestIgnoreList then
-					K:GetModule("Automation"):UpdateAutoQuestIgnoreList()
-				end
-				refresh()
-				if addInput and addInput.GetChildren then
-					for _, child in ipairs({ addInput:GetChildren() }) do
-						if child and child.GetObjectType and child:GetObjectType() == "EditBox" then
-							local eb = child
-							if eb and eb.SetText then
-								eb:SetText("")
-							end
-							break
-						end
-					end
-				end
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			else
-				print("|cffff0000Invalid NPC ID. Enter a number.|r")
-			end
-		end)
-
-		-- Update portraits and learn names when units are visible
-		local events = CreateFrame("Frame", nil, parent)
-		events:RegisterEvent("PLAYER_TARGET_CHANGED")
-		events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-		events:RegisterEvent("PLAYER_FOCUS_CHANGED")
-		events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-		events:SetScript("OnEvent", function(_, _, unit)
-			if unit and UnitExists(unit) then
-				local guid = UnitGUID(unit)
-				local id = guid and K.GetNPCID(guid)
-				if id then
-					local n = UnitName(unit)
-					if n and n ~= "" then
-						K.NPCNameCache = K.NPCNameCache or {}
-						K.NPCNameCache[id] = n
-					end
-				end
-			end
-			for _, row in ipairs(rows) do
-				if row.Portrait and row.NpcID then
-					trySetPortrait(row.Portrait, row.NpcID)
-				end
-				if row.NpcID and row.NameFS then
-					local function setText(nm)
-						local tag = (C and C.AutoQuestData and C.AutoQuestData.IgnoreQuestNPC and C.AutoQuestData.IgnoreQuestNPC[row.NpcID]) and "  [Default]" or ""
-						row.NameFS:SetText(string.format("%s (ID: %d)%s", nm or "Unknown", row.NpcID, tag))
-					end
-					local nm = GetNPCNameByID and GetNPCNameByID(row.NpcID, setText)
-					setText(nm)
-				end
-			end
-		end)
-
-		refresh()
-		parent:SetHeight(360)
+				end,
+			}),
+		})
 	end, "Auto-Quest Ignore NPCs")
 end
 
@@ -4041,10 +3027,18 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		GameTooltip:Hide()
 	end)
 	applyButton:SetScript("OnClick", function()
+		local newValue = editBox:GetText() or ""
+
 		-- Only persist when a configPath is provided
 		if configPath then
-			SetExtraConfigValue(configPath, editBox:GetText(), cleanText)
+			SetExtraConfigValue(configPath, newValue, cleanText)
 		end
+
+		if hookFunction and type(hookFunction) == "function" then
+			hookFunction(newValue, widget.PreviousValue or "", configPath)
+		end
+
+		widget.PreviousValue = newValue
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
 
@@ -4072,6 +3066,18 @@ function ExtraGUI:CreateTextInput(parent, configPath, text, placeholder, tooltip
 		editBox:SetScript("OnLeave", function(self)
 			GameTooltip:Hide()
 		end)
+	end
+
+	-- Expose the EditBox + thin text accessors so callers stop hunting through
+	-- GetChildren() for the EditBox (that pattern silently breaks if layout changes,
+	-- and was the cause of the Mute editor reading an empty string).
+	widget.editBox = editBox
+	function widget:GetText()
+		return editBox:GetText()
+	end
+	function widget:SetText(t)
+		editBox:SetText(t or "")
+		UpdatePlaceholder()
 	end
 
 	-- Initialize

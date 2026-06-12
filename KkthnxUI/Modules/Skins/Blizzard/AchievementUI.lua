@@ -47,7 +47,7 @@ C.themes["Blizzard_AchievementUI"] = function()
 
 	local statusBar = AchievementFrameSummaryCategoriesStatusBar
 	if statusBar then
-		StyleAchievementSummaryStatusBar(statusBar)
+		SetupStatusBar(statusBar)
 	end
 
 	StyleAchievementFrameSummaryCategories()

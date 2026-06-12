@@ -20,7 +20,26 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
+-- Cache globals for performance
+local error = error
+local pairs = pairs
+local setmetatable = setmetatable
+local string_match = string.match
+local table_wipe = table.wipe
+local tonumber = tonumber
+
+local C_Container_GetContainerItemCooldown = C_Container.GetContainerItemCooldown
+local C_Container_GetContainerItemEquipmentSetInfo = C_Container.GetContainerItemEquipmentSetInfo
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_GetContainerItemQuestInfo = C_Container.GetContainerItemQuestInfo
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
+local CreateFrame = CreateFrame
+local Enum = Enum
+local InCombatLockdown = InCombatLockdown
+local UIParent = UIParent
+local UISpecialFrames = UISpecialFrames
 
 --[[!
 	@class Implementation
@@ -333,41 +352,47 @@ end
 
 function Implementation:GetItemInfo(bagID, slotID, i)
 	i = i or defaultItem
-	for k in pairs(i) do
-		i[k] = nil
-	end
+	table_wipe(i)
 
 	i.bagId = bagID
 	i.slotId = slotID
 
-	local K = KkthnxUI and KkthnxUI[1] or nil
-	local info = C_Container.GetContainerItemInfo(bagID, slotID)
+	local info = C_Container_GetContainerItemInfo(bagID, slotID)
 	if info then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice, i.bound = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue, info.isBound
 
-		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
+		i.isInSet, i.setName = C_Container_GetContainerItemEquipmentSetInfo(bagID, slotID) -- Still Broken!
 
-		i.cdStart, i.cdFinish, i.cdEnable = C_Container.GetContainerItemCooldown(bagID, slotID)
+		i.cdStart, i.cdFinish, i.cdEnable = C_Container_GetContainerItemCooldown(bagID, slotID)
 
-		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
-		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
+		local questInfo = C_Container_GetContainerItemQuestInfo(bagID, slotID)
+		if questInfo then
+			i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
+		end
 
-		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, _, i.expacID = C_Item.GetItemInfo(i.link)
-		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
+		local name, _, _, _, minLevel, typeText, subTypeText, _, equipLoc, _, _, classID, subClassID, bindType, expacID = C_Item_GetItemInfo(i.link)
+
+		-- Safety: bail if item info not yet available
+		if not name then
+			return i
+		end
+
+		-- Store basic info
+		i.name, i.minLevel, i.type, i.subType, i.equipLoc, i.classID, i.subClassID, i.expacID, i.bindType = name, minLevel, typeText, subTypeText, (equipLoc and _G[equipLoc]) or nil, classID, subClassID, expacID, bindType
 
 		if isItemHasLevel(i) then
-			i.ilvl = K and K.GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
+			i.ilvl = KkthnxUI and KkthnxUI[1].GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
 		end
 
 		if i.id == PET_CAGE then
-			local petID, petLevel, petName = strmatch(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
+			local petID, petLevel, petName = string_match(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
 			i.name = petName
 			i.id = tonumber(petID) or 0
 			i.level = tonumber(petLevel) or 0
 			i.classID = Enum.ItemClass.Miscellaneous
 			i.subClassID = Enum.ItemMiscellaneousSubclass.CompanionPet
-		elseif MYTHIC_KEYSTONES[i.id] then
-			i.level, i.name = strmatch(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
+		elseif C_Item_IsItemKeystoneByID(i.id) then
+			i.level, i.name = string_match(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
 			i.level = tonumber(i.level) or 0
 		end
 	end
@@ -416,7 +441,7 @@ function Implementation:UpdateBag(bagID)
 	if closed then
 		numSlots, closed = 0
 	else
-		numSlots = GetContainerNumSlots(bagID)
+		numSlots = C_Container_GetContainerNumSlots(bagID)
 	end
 	local lastSlots = self.bagSizes[bagID] or 0
 	self.bagSizes[bagID] = numSlots
@@ -460,7 +485,7 @@ function Implementation:BAG_UPDATE(_, bagID, slotID)
 			self:UpdateBag(bagID)
 		end
 
-		local bankType = BankFrame.BankPanel.bankType
+		local bankType = BankFrame and BankFrame.BankPanel and BankFrame.BankPanel.bankType
 
 		if bankType == Enum.BankType.Character then
 			for bagID = 6, 11 do
@@ -491,7 +516,7 @@ end
 ]]
 function Implementation:BAG_UPDATE_COOLDOWN(_, bagID)
 	if bagID then
-		for slotID = 1, GetContainerNumSlots(bagID) do
+		for slotID = 1, C_Container_GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
 			if button then
 				local item = self:GetItemInfo(bagID, slotID)

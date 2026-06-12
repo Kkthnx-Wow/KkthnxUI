@@ -17,13 +17,12 @@ local gsub = _G.string.gsub
 local IsAltKeyDown = _G.IsAltKeyDown
 local table_insert = _G.table.insert
 local tostring = _G.tostring
-local type = _G.type
 
 local _G = _G
 local C_LFGList_GetActivityInfoTable = _G.C_LFGList.GetActivityInfoTable
 local C_LFGList_GetSearchResultInfo = _G.C_LFGList.GetSearchResultInfo
 local CreateFrame = _G.CreateFrame
-local HookSecureFunc = _G.hooksecurefunc
+local hooksecurefunc = _G.hooksecurefunc
 local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
@@ -38,13 +37,13 @@ local FACTION_LOGOS = {
 
 -- REASON: Facilitates quick sign-ups by automating the click operation on LFG sign-up buttons.
 function Module:onQuickJoinApplicationClick()
-	local searchPanel = _G.LFGListFrame.SearchPanel
-	if searchPanel.SignUpButton:IsEnabled() then
+	local searchPanel = _G.LFGListFrame and _G.LFGListFrame.SearchPanel
+	if searchPanel and searchPanel.SignUpButton:IsEnabled() then
 		searchPanel.SignUpButton:Click()
 	end
 
 	local applicationDialog = _G.LFGListApplicationDialog
-	if (not IsAltKeyDown()) and applicationDialog:IsShown() and applicationDialog.SignUpButton:IsEnabled() then
+	if (not IsAltKeyDown()) and applicationDialog and applicationDialog:IsShown() and applicationDialog.SignUpButton:IsEnabled() then
 		applicationDialog.SignUpButton:Click()
 	end
 end
@@ -103,7 +102,7 @@ function Module:createAutoAcceptButton()
 		end
 	end)
 
-	HookSecureFunc("LFGListApplicationViewer_UpdateInfo", function(self)
+	hooksecurefunc("LFGListApplicationViewer_UpdateInfo", function(self)
 		autoAcceptButton:SetShown(UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) and not self.AutoAcceptButton:IsShown())
 	end)
 end
@@ -112,12 +111,16 @@ end
 function Module:displayLeaderOverallScore()
 	local searchResultID = self.resultID
 	local searchResultInfo = searchResultID and C_LFGList_GetSearchResultInfo(searchResultID)
-	if searchResultInfo then
+	if searchResultInfo and searchResultInfo.activityIDs and searchResultInfo.activityIDs[1] then
 		local activityInfo = C_LFGList_GetActivityInfoTable(searchResultInfo.activityIDs[1], nil, searchResultInfo.isWarMode)
 		if activityInfo then
 			local leaderScoreValue = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
 			if leaderScoreValue then
 				local currentActivityName = self.ActivityName:GetText()
+				if not currentActivityName then
+					return
+				end
+
 				currentActivityName = gsub(currentActivityName, ".-" .. _G.HEADER_COLON, "")
 				self.ActivityName:SetFormattedText(SCORE_DISPLAY_FORMAT, TooltipModule.GetDungeonScore(leaderScoreValue), currentActivityName)
 
@@ -131,10 +134,11 @@ function Module:displayLeaderOverallScore()
 		end
 
 		if self.crossFactionLogo then
-			if searchResultInfo.crossFactionListing then
+			local factionLogo = FACTION_LOGOS[searchResultInfo.leaderFactionGroup]
+			if searchResultInfo.crossFactionListing or not factionLogo then
 				self.crossFactionLogo:Hide()
 			else
-				self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. FACTION_LOGOS[searchResultInfo.leaderFactionGroup] .. "-Logo")
+				self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionLogo .. "-Logo")
 				self.crossFactionLogo:Show()
 			end
 		end
@@ -267,7 +271,7 @@ function Module:CreateQuickJoin()
 	end
 
 	local searchPanel = _G.LFGListFrame.SearchPanel
-	HookSecureFunc(searchPanel.ScrollBox, "Update", function(self)
+	hooksecurefunc(searchPanel.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
 			local childFrame = select(i, self.ScrollTarget:GetChildren())
 			if childFrame.Name and not childFrame.isQuickJoinHooked then
@@ -280,15 +284,15 @@ function Module:CreateQuickJoin()
 		end
 	end)
 
-	HookSecureFunc("LFGListInviteDialog_Accept", function()
+	hooksecurefunc("LFGListInviteDialog_Accept", function()
 		if _G.PVEFrame:IsShown() then
 			_G.HideUIPanel(_G.PVEFrame)
 		end
 	end)
 
-	HookSecureFunc("StaticPopup_Show", Module.onQuickJoinDialogShow)
-	HookSecureFunc("LFGListInviteDialog_Show", Module.onQuickJoinDialogShow)
-	HookSecureFunc("LFGListSearchEntry_Update", Module.displayLeaderOverallScore)
+	hooksecurefunc("StaticPopup_Show", Module.onQuickJoinDialogShow)
+	hooksecurefunc("LFGListInviteDialog_Show", Module.onQuickJoinDialogShow)
+	hooksecurefunc("LFGListSearchEntry_Update", Module.displayLeaderOverallScore)
 
 	Module:createAutoAcceptButton()
 	Module:replaceFindGroupButton()

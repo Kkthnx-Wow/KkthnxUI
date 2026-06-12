@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <!--
+      Load order contract:
+      Init.lua creates K/C/L, Settings.lua fills defaults, Core\Loading.lua
+      verifies SavedVariables and merges profile deltas during ADDON_LOADED.
+      Keep Settings before Core, and Core before Config/Modules.
+   -->
    <!-- Libraries -->
    <Include file="Libraries\Load_Libraries.xml" />
    <!-- Engine -->

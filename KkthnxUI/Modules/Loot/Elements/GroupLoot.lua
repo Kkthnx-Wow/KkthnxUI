@@ -13,7 +13,6 @@ local Module = K:GetModule("Loot")
 -- PERF: Localize global functions and environment for faster lookups.
 local _G = _G
 local format = _G.string.format
-local math_ceil = _G.math.ceil
 local next = _G.next
 local pairs = _G.pairs
 local table_insert = _G.table.insert
@@ -27,10 +26,7 @@ local GetLootRollItemLink = _G.GetLootRollItemLink
 local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
 local IsModifiedClick = _G.IsModifiedClick
 local RollOnLoot = _G.RollOnLoot
-local hooksecurefunc = _G.hooksecurefunc
 local ipairs = _G.ipairs
-local select = _G.select
-local strmatch = _G.strmatch
 local tostring = _G.tostring
 
 -- REASON: Constants for loot quality and localized strings.
@@ -61,8 +57,8 @@ local function setTip(button)
 	if rolls then
 		for _, rollerInfo in next, rolls do
 			local playerName, className = unpack(rollerInfo)
-			local r, g, b = K.ClassColors[K.ClassList[className] or className] or K.ClassColors["PRIEST"]
-			GameTooltip:AddLine(playerName, r, g, b)
+			local color = K.ClassColors[K.ClassList[className] or className] or K.ClassColors["PRIEST"]
+			GameTooltip:AddLine(playerName, color.r, color.g, color.b)
 		end
 	end
 
@@ -251,33 +247,10 @@ function Module:CreateRollBar(name)
 	status.spark:SetPoint("CENTER", status:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar.need = createRollButton(bar, [[lootroll-toast-icon-need]], 1, NEED, { "LEFT", bar.button, "RIGHT", 6, 0 }, true)
-	bar.transmog = createRollButton(
-		bar,
-		[[lootroll-toast-icon-transmog]],
-		4,
-		TRANSMOGRIFICATION,
-		{ "LEFT", bar.need, "RIGHT", 3, 0 },
-		true
-	)
-	bar.greed =
-		createRollButton(bar, [[lootroll-toast-icon-greed]], 2, GREED, { "LEFT", bar.need, "RIGHT", 3, 0 }, true)
-	bar.disenchant = isDisenchantEnabled
-		and createRollButton(
-			bar,
-			[[lootroll-toast-icon-disenchant]],
-			3,
-			ROLL_DISENCHANT,
-			{ "LEFT", bar.greed, "RIGHT", 3, 0 },
-			true
-		)
-	bar.pass = createRollButton(
-		bar,
-		[[lootroll-toast-icon-pass]],
-		0,
-		PASS,
-		{ "LEFT", bar.disenchant or bar.greed, "RIGHT", 3, 0 },
-		true
-	)
+	bar.transmog = createRollButton(bar, [[lootroll-toast-icon-transmog]], 4, TRANSMOGRIFICATION, { "LEFT", bar.need, "RIGHT", 3, 0 }, true)
+	bar.greed = createRollButton(bar, [[lootroll-toast-icon-greed]], 2, GREED, { "LEFT", bar.need, "RIGHT", 3, 0 }, true)
+	bar.disenchant = isDisenchantEnabled and createRollButton(bar, [[lootroll-toast-icon-disenchant]], 3, ROLL_DISENCHANT, { "LEFT", bar.greed, "RIGHT", 3, 0 }, true)
+	bar.pass = createRollButton(bar, [[lootroll-toast-icon-pass]], 0, PASS, { "LEFT", bar.disenchant or bar.greed, "RIGHT", 3, 0 }, true)
 
 	local bind = bar:CreateFontString()
 	bind:SetPoint("LEFT", bar.pass, "RIGHT", 3, 0)
@@ -318,8 +291,7 @@ local function getFrame()
 end
 
 function Module:LootRoll_Start(rollID, rollTime)
-	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog =
-		GetLootRollItemInfo(rollID)
+	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(rollID)
 
 	if not name then
 		for _, rollBar in next, Module.RollBars do
@@ -370,8 +342,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 	if bar.disenchant then
 		bar.disenchant.text:SetText("")
 		bar.disenchant:SetEnabled(canDisenchant)
-		bar.disenchant.tiptext = canDisenchant and ROLL_DISENCHANT
-			or format(_G["LOOT_ROLL_INELIGIBLE_REASON" .. reasonDisenchant], deSkillRequired)
+		bar.disenchant.tiptext = canDisenchant and ROLL_DISENCHANT or format(_G["LOOT_ROLL_INELIGIBLE_REASON" .. reasonDisenchant], deSkillRequired)
 	end
 
 	bar.pass.text:SetText("")

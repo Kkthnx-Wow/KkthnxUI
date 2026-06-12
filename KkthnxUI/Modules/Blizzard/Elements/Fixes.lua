@@ -7,21 +7,18 @@
 -- - Events: ADDON_LOADED, PLAYER_REGEN_ENABLED, PLAYER_ENTERING_WORLD
 -----------------------------------------------------------------------------]]
 
-local K = KkthnxUI[1]
+local K = _G["KkthnxUI"][1]
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
 local _G = _G
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local C_ContentTracking = _G.C_ContentTracking
-local C_GossipInfo_SelectOption = _G.C_GossipInfo and _G.C_GossipInfo.SelectOption
-local C_Minimap = _G.C_Minimap
 local C_QuestLog = _G.C_QuestLog
 local C_SuperTrack = _G.C_SuperTrack
 local CreateFrame = _G.CreateFrame
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
-local RemoveTrackedAchievement = _G.RemoveTrackedAchievement
 local hooksecurefunc = _G.hooksecurefunc
-local print = _G.print
 local string_format = _G.string.format
 
 -- ---------------------------------------------------------------------------
@@ -32,7 +29,7 @@ do
 	local playerTalentFrame = _G.PlayerTalentFrame
 	if playerTalentFrame then
 		playerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
+	elseif _G.TalentFrame_LoadUI then
 		hooksecurefunc("TalentFrame_LoadUI", function()
 			if _G.PlayerTalentFrame then
 				_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
@@ -44,14 +41,45 @@ end
 -- ---------------------------------------------------------------------------
 -- Addon List Tooltip Fix
 -- ---------------------------------------------------------------------------
+-- WARNING: Intentional global overwrite. hooksecurefunc cannot block execution (it is post-hook only).
+-- This pre-hook guard is required to prevent errors when owner:GetID() returns an invalid index.
 -- REASON: Prevents errors in the Addon List UI when an owner ID is invalid or missing.
 do
 	local originalAddonTooltip_Update = _G.AddonTooltip_Update
-	_G.AddonTooltip_Update = function(owner)
-		if not owner or owner:GetID() < 1 then
-			return
+	if originalAddonTooltip_Update then
+		_G.AddonTooltip_Update = function(owner)
+			if not owner or (owner.GetID and owner:GetID() < 1) then
+				return
+			end
+			return originalAddonTooltip_Update(owner)
 		end
-		originalAddonTooltip_Update(owner)
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Money Tooltip Spacing Fix
+-- ---------------------------------------------------------------------------
+-- REASON: Blizzard's SetTooltipMoney can omit spacing around prefix/suffix coin text.
+do
+	if _G.SetTooltipMoney then
+		local C_CurrencyInfo_GetCoinTextureString = _G.C_CurrencyInfo and _G.C_CurrencyInfo.GetCoinTextureString
+		local getCoinTextureString = C_CurrencyInfo_GetCoinTextureString or _G.GetCoinTextureString
+		if getCoinTextureString then
+			_G.SetTooltipMoney = function(frame, money, _, prefixText, suffixText)
+				frame:AddLine((prefixText or "") .. " " .. getCoinTextureString(money) .. " " .. (suffixText or ""), 1, 1, 1)
+			end
+		end
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Pet Frame Click Area Fix
+-- ---------------------------------------------------------------------------
+-- REASON: PetFrame's default hit rect is slightly too tall; tighten without reparenting.
+do
+	local petFrame = _G.PetFrame
+	if petFrame and petFrame.SetHitRectInsets then
+		petFrame:SetHitRectInsets(0, 0, 1, 5)
 	end
 end
 
@@ -125,12 +153,16 @@ do
 			local raidGroupButton1 = _G.RaidGroupButton1
 			if raidGroupButton1 and raidGroupButton1:GetAttribute("type") ~= "target" then
 				fixRaidGroupButtons()
-				K:UnregisterEvent(event, setupRaidFix)
 			end
+			K:UnregisterEvent(event, setupRaidFix)
 		end
 	end
 
-	K:RegisterEvent("ADDON_LOADED", setupRaidFix)
+	if C_AddOns_IsAddOnLoaded("Blizzard_RaidUI") then
+		setupRaidFix("ADDON_LOADED", "Blizzard_RaidUI")
+	else
+		K:RegisterEvent("ADDON_LOADED", setupRaidFix)
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -138,24 +170,37 @@ end
 -- ---------------------------------------------------------------------------
 -- REASON: Fixes tooltip errors and performance jams in the Guild News feed.
 do
-	local function fixGuildNews(event, addon)
-		if addon ~= "Blizzard_GuildUI" then
+	local function applyGuildNewsFix()
+		local originalGuildNewsButton_OnEnter = _G.GuildNewsButton_OnEnter
+		if type(originalGuildNewsButton_OnEnter) ~= "function" then
 			return
 		end
 
-		local originalGuildNewsButton_OnEnter = _G.GuildNewsButton_OnEnter
+		-- WARNING: Intentional global overwrite. hooksecurefunc cannot block execution.
+		-- This pre-hook guard prevents errors when newsInfo is nil or lacks whatText.
 		_G.GuildNewsButton_OnEnter = function(self)
 			-- REASON: Prevent errors if news info is incomplete for a button.
 			if not (self.newsInfo and self.newsInfo.whatText) then
 				return
 			end
-			originalGuildNewsButton_OnEnter(self)
+			return originalGuildNewsButton_OnEnter(self)
+		end
+	end
+
+	local function fixGuildNews(event, addon)
+		if addon ~= "Blizzard_GuildUI" then
+			return
 		end
 
+		applyGuildNewsFix()
 		K:UnregisterEvent(event, fixGuildNews)
 	end
 
-	K:RegisterEvent("ADDON_LOADED", fixGuildNews)
+	if C_AddOns_IsAddOnLoaded("Blizzard_GuildUI") then
+		applyGuildNewsFix()
+	else
+		K:RegisterEvent("ADDON_LOADED", fixGuildNews)
+	end
 end
 
 do
@@ -183,64 +228,129 @@ do
 	end
 end
 
+-- Fix Professions drag taint in combat
+do
+	local done
+	local function setupMisc(event, addon)
+		if event == "ADDON_LOADED" and addon == "Blizzard_ProfessionsBook" then
+			ProfessionsBookFrame:HookScript("OnShow", function()
+				if not done then
+					if InCombatLockdown() then
+						K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+					else
+						K.CreateMoverFrame(ProfessionsBookFrame)
+					end
+					done = true
+				end
+			end)
+			K:UnregisterEvent(event, setupMisc)
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			K.CreateMoverFrame(ProfessionsBookFrame)
+			K:UnregisterEvent(event, setupMisc)
+		end
+	end
+
+	K:RegisterEvent("ADDON_LOADED", setupMisc)
+end
+
 -- ---------------------------------------------------------------------------
 -- Quest Log Performance (QuestClean)
 -- ---------------------------------------------------------------------------
 -- REASON: Standalone performance utility to fix hidden quest tracking overhead.
 do
-	local COLOR_BLUE = "0070dd"
-	local COLOR_SILVER = "c7c7c7"
 	local DEEP_CLEAN_LIMIT = 160000 -- Future-proofed for TWW expansion cycles
+	local DEEP_CLEAN_CHUNK_SIZE = 5000 -- How many quests to clean per tick to prevent hanging
+
+	-- REASON: Localize Hot Globals for performance inside loops
+	local GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
+	local GetInfo = C_QuestLog.GetInfo
+	local GetQuestWatchType = C_QuestLog.GetQuestWatchType
+	local RemoveQuestWatch = C_QuestLog.RemoveQuestWatch
+	local SetSuperTrackedQuestID = C_SuperTrack.SetSuperTrackedQuestID
+	local GetTrackedIDs = C_ContentTracking and C_ContentTracking.GetTrackedIDs
+	local GetTrackedAchievements = _G.GetTrackedAchievements
+	local RemoveTrackedAchievement = _G.RemoveTrackedAchievement
+	local NewTicker = C_Timer.NewTicker
+	local math_min = math.min
+	local select = select
+	local table_wipe = table.wipe
+
+	local tempTracked = {}
 
 	local function cleanActiveWatches()
 		-- REASON: Removes watches for quests that are hidden but still tracked in the engine.
-		local numEntries = C_QuestLog.GetNumQuestLogEntries()
+		local numEntries = GetNumQuestLogEntries()
 		local cleaned = 0
 
 		for i = 1, numEntries do
-			local info = C_QuestLog.GetInfo(i)
+			local info = GetInfo(i)
 			if info and not info.isHeader and info.isHidden then
-				if C_QuestLog.GetQuestWatchType(info.questID) ~= nil then
-					C_QuestLog.RemoveQuestWatch(info.questID)
+				if GetQuestWatchType(info.questID) ~= nil then
+					RemoveQuestWatch(info.questID)
 					cleaned = cleaned + 1
 				end
 			end
 		end
 
 		-- REASON: Clears achievement watches which can also cause tracking overhead.
-		if C_ContentTracking and C_ContentTracking.GetTrackedIDs then
-			local trackedAchievements = C_ContentTracking.GetTrackedIDs(2) or {}
-			for i = 1, #trackedAchievements do
-				RemoveTrackedAchievement(trackedAchievements[i])
+		if GetTrackedIDs then
+			local trackedAchievements = GetTrackedIDs(2)
+			if trackedAchievements then
+				for i = 1, #trackedAchievements do
+					RemoveTrackedAchievement(trackedAchievements[i])
+				end
 			end
-		elseif _G.GetTrackedAchievements then
-			local trackedAchievements = { _G.GetTrackedAchievements() }
-			for i = 1, #trackedAchievements do
-				RemoveTrackedAchievement(trackedAchievements[i])
+		elseif GetTrackedAchievements then
+			table_wipe(tempTracked)
+			local numTracked = select("#", GetTrackedAchievements())
+			for i = 1, numTracked do
+				tempTracked[i] = select(i, GetTrackedAchievements())
+			end
+			for i = 1, #tempTracked do
+				RemoveTrackedAchievement(tempTracked[i])
 			end
 		end
 
 		-- REASON: Resetting SuperTrack is a major performance boost as it reduces UI-to-Engine draw calls.
-		C_SuperTrack.SetSuperTrackedQuestID(0)
+		SetSuperTrackedQuestID(0)
 
 		if cleaned > 0 then
-			print(string_format("|cff%sQuestClean:|r |cff%sCleaned %d active hidden watches.|r", COLOR_BLUE, COLOR_SILVER, cleaned))
+			K.Print(string_format("QuestClean: Cleaned %d active hidden watches.", cleaned))
 		end
 	end
 
+	local isDeepCleaning = false
 	local function deepCleanWatches()
-		-- REASON: Brute-forces the watch list to fix "Orphaned Watch" bugs where non-existing quests hog resources.
-		print(string_format("|cff%sQuestClean:|r |cff%sStarting Deep Clean. The client may hang for a moment...|r", COLOR_BLUE, COLOR_SILVER))
-
-		local startTime = GetTime()
-		for i = 1, DEEP_CLEAN_LIMIT do
-			C_QuestLog.RemoveQuestWatch(i)
+		if isDeepCleaning then
+			K.Print("QuestClean: Deep Clean is already running...")
+			return
 		end
 
-		C_SuperTrack.SetSuperTrackedQuestID(0)
-		local duration = GetTime() - startTime
+		-- REASON: Brute-forces the watch list to fix "Orphaned Watch" bugs.
+		-- Throttled using a ticker to avoid freezing the game client.
+		K.Print("QuestClean: Starting Deep Clean in background. This will take a few seconds...")
 
-		print(string_format("|cff%sQuestClean:|r |cff%sDeep Clean complete in %.2fs. Performance restored.|r", COLOR_BLUE, COLOR_SILVER, duration))
+		isDeepCleaning = true
+		local startTime = GetTime()
+		local currentIndex = 1
+		local ticker
+
+		ticker = NewTicker(0.05, function()
+			local endIndex = math_min(currentIndex + DEEP_CLEAN_CHUNK_SIZE - 1, DEEP_CLEAN_LIMIT)
+			for i = currentIndex, endIndex do
+				RemoveQuestWatch(i)
+			end
+
+			currentIndex = endIndex + 1
+
+			if currentIndex > DEEP_CLEAN_LIMIT then
+				ticker:Cancel()
+				SetSuperTrackedQuestID(0)
+				local duration = GetTime() - startTime
+				K.Print(string_format("QuestClean: Deep Clean complete in %.2fs. Performance restored.", duration))
+				isDeepCleaning = false
+			end
+		end)
 	end
 
 	local initFrame = CreateFrame("Frame")
@@ -250,7 +360,7 @@ do
 		cleanActiveWatches()
 
 		if isInitialLogin then
-			print(string_format("|cff%sQuestClean:|r |cff%sType /qc deep if your FPS is still lower than your alts.|r", COLOR_BLUE, COLOR_SILVER))
+			K.Print("QuestClean: Type /qc deep if your FPS is still lower than your alts.")
 		end
 
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
@@ -265,7 +375,7 @@ do
 			deepCleanWatches()
 		else
 			cleanActiveWatches()
-			print(string_format("|cff%sQuestClean:|r |cff%sStandard clean finished. Performance optimized.|r", COLOR_BLUE, COLOR_SILVER))
+			K.Print("QuestClean: Standard clean finished. Performance optimized.")
 		end
 	end
 end

@@ -14,7 +14,7 @@ local Module = K:GetModule("ActionBar")
 -- ---------------------------------------------------------------------------
 
 local _G = _G
-local next, tonumber = next, tonumber
+local next = next
 
 -- NOTE: List of scripts to wipe from Blizzard frames to ensure they remain inert.
 local scripts = {
@@ -31,6 +31,10 @@ local scripts = {
 }
 
 -- REASON: These frames are parented to a hidden frame to keep them out of sight.
+-- MIDNIGHT (12.0): the bottom bar container was renamed MainMenuBar -> MainActionBar.
+-- Referencing the old (now nil) MainMenuBar left the real art frame visible, so
+-- Blizzard's default bar art bled through. StanceBar is hidden here too (we only
+-- reparent the individual StanceButtons), matching NDui's Hide_blizzart list.
 local framesToHide = {
 	MainActionBar,
 	MultiBarBottomLeft,
@@ -111,6 +115,7 @@ local function DisableDefaultBarEvents() -- credit: Simpy
 	_G.ActionBarController:UnregisterAllEvents()
 	_G.ActionBarController:RegisterEvent("SETTINGS_LOADED") -- REASON: Needed for page controller to spawn properly.
 	_G.ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- REASON: Allows the Extra Action Bar to function.
+
 	_G.ActionBarActionEventsFrame:UnregisterAllEvents()
 
 	-- NOTE: Used for ExtraActionButton and TotemBar (on Wrath/Classic).
@@ -120,6 +125,9 @@ local function DisableDefaultBarEvents() -- credit: Simpy
 
 	hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
 	buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
+
+	-- REASON: Stop Blizzard from flashing all empty action slots (the default grid
+	-- art) when dragging spells or toggling the option. Mirrors NDui's stub.
 	MultiActionBar_ShowAllGrids = K.Noop
 end
 

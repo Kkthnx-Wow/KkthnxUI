@@ -16,6 +16,8 @@ local _G = _G
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 local C_Item_IsAnimaItemByID = _G.C_Item.IsAnimaItemByID
+local C_Item_IsItemKeystoneByID = _G.C_Item.IsItemKeystoneByID
+local C_Item_IsDecorItem = _G.C_Item.IsDecorItem
 
 -- FIX: Fallback for 'LE_EXPANSION_WAR_WITHIN' if not defined in older clients (though this is 11.0 code).
 local CURRENT_EXPANSION = _G.LE_EXPANSION_WAR_WITHIN or 10 -- 11.0
@@ -72,8 +74,6 @@ for id = 204573, 204579 do
 end
 primordialStones[203703] = true -- 棱光碎片
 
-local emptyBags = { [0] = true, [11] = true }
-
 local function hasReagentBagEquipped()
 	return C_Container.GetContainerNumSlots(REAGENT_BAG) > 0
 end
@@ -101,12 +101,12 @@ local function isItemInBagReagent(item)
 end
 
 local function isItemInBank(item)
-	-- REASON: Bag IDs 6-12 are Bank bags; -1 is the main Bank window.
+	-- REASON: Bag IDs 6-11 are Bank bags; -1 is the main Bank window.
 	return (item.bagId > 5 and item.bagId < 12)
 end
 
 local function isItemInAccountBank(item)
-	-- REASON: Warband Bank (Account Bank) uses Bag IDs 13-17.
+	-- REASON: Warband Bank (Account Bank) uses Bag IDs 12-16.
 	return item.bagId > 11 and item.bagId < 17
 end
 
@@ -127,7 +127,8 @@ local function isItemEquipSet(item)
 	end
 
 	-- REASON: Specifically checks for items that are part of a user-defined Equipment Set.
-	return item.isItemSet
+	--	return item.isItemSet
+	return item.isInSet
 end
 
 local function isAzeriteArmor(item)
@@ -161,15 +162,17 @@ local function isItemLegacy(item)
 end
 
 local function isItemDecor(item)
-	if not CheckFilterSetting("FilterDecor") then
+	if not CheckFilterSetting("FilterDecor") or not item.link then
 		return
 	end
 
-	if not item.link then
+	-- REASON: Midnight (12.0) housing decor. C_Item.IsDecorItem reports items that
+	-- can be placed in player housing; group them separately like NDui does.
+	if not C_Item_IsDecorItem then
 		return
 	end
 
-	return C_Item.IsDecorItem(item.link)
+	return C_Item_IsDecorItem(item.link)
 end
 
 local function isItemLowerLevel(item)
@@ -212,7 +215,6 @@ end
 local toyBlackList = {
 	[167698] = true, -- 隐秘之鱼护目镜
 }
-
 local function isItemCollection(item)
 	if not CheckFilterSetting("FilterCollection") then
 		return
@@ -273,6 +275,21 @@ local function isPrimordialStone(item)
 	return item.id and primordialStones[item.id]
 end
 
+local function isItemKeystone(item)
+	if not CheckFilterSetting("FilterKeystone") then
+		return
+	end
+
+	if isCustomFilter(item) == false then
+		return
+	end
+
+	if item.id and C_Item_IsItemKeystoneByID(item.id) then
+		return true
+	end
+	return item.classID == Enum.ItemClass.Reagent and item.subClassID == Enum.ItemReagentSubclass.Keystone
+end
+
 local function isWarboundUntilEquipped(item)
 	if not CheckFilterSetting("FilterAOE") then
 		return
@@ -303,6 +320,7 @@ function Module:GetFilters()
 	filters.bagEquipment = CreateLocationFilter(isItemInBag, isItemEquipment)
 	filters.bagEquipSet = CreateLocationFilter(isItemInBag, isItemEquipSet)
 	filters.bagConsumable = CreateLocationFilter(isItemInBag, isItemConsumable)
+	filters.bagKeystone = CreateLocationFilter(isItemInBag, isItemKeystone)
 	filters.bagsJunk = CreateLocationFilter(isItemInBag, isItemJunk)
 	filters.bagCollection = CreateLocationFilter(isItemInBag, isItemCollection)
 	filters.bagGoods = CreateLocationFilter(isItemInBag, isTradeGoods)

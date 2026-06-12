@@ -1,6 +1,5 @@
 local C = KkthnxUI[2]
 
-local DISABLE = DISABLE
 
 -- Actionbar
 C["ActionBar"] = {
@@ -9,7 +8,6 @@ C["ActionBar"] = {
 	Macro = true,
 	Grid = true,
 	Cooldown = true,
-	CDFormat = 1,   -- 1=ColoredTenths, 2=ColoredWhole, 3=PlainTenths, 4=PlainWhole, 5=Disabled
 	MmssTH = 60,
 	TenthTH = 3,
 	OverrideWA = false,
@@ -27,6 +25,7 @@ C["ActionBar"] = {
 	Bar1Font = 12,
 	Bar1Num = 12,
 	Bar1PerRow = 12,
+	Bar1Fade = false,
 
 	Bar2 = true,
 	Bar2Flyout = 1,
@@ -34,6 +33,7 @@ C["ActionBar"] = {
 	Bar2Font = 12,
 	Bar2Num = 12,
 	Bar2PerRow = 12,
+	Bar2Fade = false,
 
 	Bar3 = true,
 	Bar3Flyout = 1,
@@ -41,6 +41,7 @@ C["ActionBar"] = {
 	Bar3Font = 12,
 	Bar3Num = 12,
 	Bar3PerRow = 12,
+	Bar3Fade = false,
 
 	Bar4 = true,
 	Bar4Flyout = 3,
@@ -48,6 +49,7 @@ C["ActionBar"] = {
 	Bar4Font = 12,
 	Bar4Num = 12,
 	Bar4PerRow = 1,
+	Bar4Fade = true,
 
 	Bar5 = true,
 	Bar5Flyout = 3,
@@ -55,14 +57,17 @@ C["ActionBar"] = {
 	Bar5Font = 12,
 	Bar5Num = 12,
 	Bar5PerRow = 1,
+	Bar5Fade = false,
 
 	BarPetSize = 28,
 	BarPetFont = 12,
 	BarPetPerRow = 10,
+	BarPetFade = false,
 
 	BarStanceSize = 30,
 	BarStanceFont = 12,
 	BarStancePerRow = 10,
+	BarStanceFade = false,
 
 	Bar6 = false,
 	Bar6Flyout = 1,
@@ -70,6 +75,7 @@ C["ActionBar"] = {
 	Bar6Font = 12,
 	Bar6Num = 12,
 	Bar6PerRow = 12,
+	Bar6Fade = false,
 
 	Bar7 = false,
 	Bar7Flyout = 1,
@@ -77,6 +83,7 @@ C["ActionBar"] = {
 	Bar7Font = 12,
 	Bar7Num = 12,
 	Bar7PerRow = 12,
+	Bar7Fade = false,
 
 	Bar8 = false,
 	Bar8Flyout = 1,
@@ -84,6 +91,23 @@ C["ActionBar"] = {
 	Bar8Font = 12,
 	Bar8Num = 12,
 	Bar8PerRow = 12,
+	Bar8Fade = false,
+
+	BarFadeGlobal = true,
+	BarFadeAlpha = 0.1,
+	BarFadeDelay = 0,
+	BarFadeCombat = true,
+	BarFadeTarget = true,
+	BarFadeCasting = true,
+	BarFadeHealth = true,
+	BarFadeVehicle = true,
+
+	PulseCD = false,
+	PulseCDSize = 75,
+	PulseCDAnimScale = 1.5,
+	PulseCDHoldTime = 0.5,
+	PulseCDThreshold = 3,
+	PulseCDSound = false,
 }
 
 -- Announcements
@@ -93,6 +117,7 @@ C["Announcements"] = {
 	KeystoneAlert = false,
 	BrokenAlert = false,
 	DispellAlert = false,
+	HealthAlert = false,
 	InstAlertOnly = true,
 	InterruptAlert = false,
 	ItemAlert = false,
@@ -105,6 +130,10 @@ C["Announcements"] = {
 	QuestNotifier = false,
 	QuestProgress = false,
 	RareAlert = false,
+	RareAlertSound = true,
+	RareAlertSoundInBackground = false,
+	RareAlertPopup = true,
+	RareAlertClickToTarget = true,
 	ResetInstance = true,
 	SaySapped = false,
 	AlertChannel = 2,
@@ -116,15 +145,18 @@ C["Announcements"] = {
 C["Automation"] = {
 	AutoDelves = false,
 	AutoKeystone = false,
-	AutoKeystoneStart = false,
-	AutoKeystoneStartAnnouncements = false,
-	-- AutoCollapse = false,
+
 	AutoDeclineDuels = false,
+	AutoDeclineGuildInvites = false,
 	AutoDeclinePetDuels = false,
 	AutoGoodbye = false,
 	AutoInvite = false,
 	AutoPartySync = false,
 	AutoQuest = false,
+	AutoQuestAcceptRegular = true,
+	AutoQuestAcceptDaily = true,
+	AutoQuestAcceptWeekly = true,
+	AutoQuestProtectTurnIns = true,
 	AutoRelease = false,
 	AutoResurrect = false,
 	AutoResurrectThank = false,
@@ -162,11 +194,12 @@ C["Inventory"] = {
 	FilterEquipment = true,
 	FilterGoods = false,
 	FilterJunk = true,
-	FilterLegacy = false,
 	FilterLegendary = true,
 	FilterLower = true,
+	FilterLegacy = false,
 	FilterQuest = true,
 	FilterStone = true,
+	FilterKeystone = true,
 	GatherEmpty = false,
 	IconSize = 36,
 	ItemFilter = true,
@@ -202,7 +235,6 @@ C["Auras"] = {
 -- Chat
 C["Chat"] = {
 	Background = true,
-	ChannelAbbreviation = 2,
 	ChatItemLevel = true,
 	ChatMenu = true,
 	ConfigButton = true,
@@ -215,12 +247,15 @@ C["Chat"] = {
 	Height = 170,
 	Lock = true,
 	LogMax = 0,
-	OldChatNames = false,
+	LootIcons = true,
+	ChannelAbbr = 2,
 	RollButton = true,
 	Sticky = false,
-	TimestampFormat = 1,
 	WhisperColor = true,
 	Width = 400,
+	TimestampFormat = 1,
+	HighlightPlayer = true,
+	HighlightGuild = true,
 }
 
 -- Datatext
@@ -260,7 +295,7 @@ C["General"] = {
 	UIScale = 0.71,
 	UseGlobal = false,
 	Texture = "KkthnxUI",
-	-- SmoothAmount = 0.25,
+	SmoothAmount = 0.25,
 	BorderStyle = "KkthnxUI",
 	NumberPrefixStyle = 1,
 	GlowMode = 3,
@@ -297,7 +332,6 @@ C["Misc"] = {
 	MarkerBarSize = 22,
 	AFKCamera = false,
 	AutoBubbles = false,
-	CombatAnimation = false,
 	ColorPicker = false,
 	EnhancedFriends = false,
 	EnhancedMail = false,
@@ -317,6 +351,7 @@ C["Misc"] = {
 	QueueTimerAudio = true,
 	QueueTimerWarning = true,
 	QueueTimerHideOtherTimers = true,
+	QuickDelete = true,
 	QuickJoin = false,
 	QuickMenuList = true,
 	ShowWowHeadLinks = false,
@@ -403,6 +438,7 @@ C["Nameplate"] = {
 -- Skins
 C["Skins"] = {
 	Bartender4 = false,
+	BigDebuffs = false,
 	BigWigs = false,
 	BlizzardFrames = true,
 	ButtonForge = false,
@@ -426,6 +462,7 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
+	Achievements = true,
 	ClassColor = false,
 	CombatHide = false,
 	Cursor = false,
@@ -436,12 +473,15 @@ C["Tooltip"] = {
 	HideRealm = true,
 	HideTitle = true,
 	Icons = true,
+	InstanceLock = true,
 	LFDRole = false,
 	MDScore = true,
 	ShowIDs = false,
 	ShowMount = false,
 	SpecLevelByShift = true,
 	TargetBy = true,
+	VendorLocation = false,
+	VendorLocationOpenMap = true,
 	CursorMode = 1,
 	TipAnchor = 4,
 }
@@ -455,6 +495,8 @@ C["Unitframe"] = {
 	CastReactionColor = false,
 	CastbarLatency = true,
 	ClassResources = true,
+	CombatFade = false,
+	CombatText = false,
 	DebuffHighlight = true,
 	Enable = true,
 	FCTOverHealing = false,
@@ -483,6 +525,13 @@ C["Unitframe"] = {
 	HideMaxPlayerLevel = false,
 	Smooth = false,
 	Stagger = true,
+
+	SwingBar = false,
+	SwingWidth = 274,
+	SwingHeight = 14,
+	SwingTimer = true,
+	OffOnTop = false,
+
 	-- Target
 	TargetHealthHeight = 34,
 	TargetHealthWidth = 200,

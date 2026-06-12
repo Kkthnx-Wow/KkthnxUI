@@ -10,6 +10,15 @@
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
+-- PERF: Localize frequently used APIs and globals to minimize lookup overhead on UNIT_AURA.
+-- REASON: Dispelling scans execute dozens of times per second in raid groups.
+local _G = _G
+local ipairs = _G.ipairs
+local UnitCanAssist = _G.UnitCanAssist
+local GetSpecialization = _G.GetSpecialization
+local DebuffTypeColor = _G.DebuffTypeColor
+local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
+
 local CanDispel = {
 	["DRUID"] = {
 		["Magic"] = false,
@@ -55,7 +64,7 @@ local function GetDebuffType(unitToken, filter)
 	local i = 1
 	while true do
 		-- Get aura data
-		local aura = C_UnitAuras.GetAuraDataByIndex(unitToken, i, "HARMFUL")
+		local aura = C_UnitAuras_GetAuraDataByIndex(unitToken, i, "HARMFUL")
 		if not aura then
 			break
 		end

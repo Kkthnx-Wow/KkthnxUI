@@ -1,36 +1,35 @@
 --[[-----------------------------------------------------------------------------
-	-- Addon: KkthnxUI
-	-- Author: Josh "Kkthnx" Russell
-	-- Notes:
-	-- - Purpose: Manages unit opacity based on range from the player.
-	-- - Design: Modified oUF_Range element supporting multiple unit types (friendly, enemy, pet).
-	-- - Events: OnUpdate (throttled)
-	-----------------------------------------------------------------------------]]
+-- Addon: KkthnxUI
+-- Author: Josh "Kkthnx" Russell
+-- Notes:
+-- - Purpose: Manages unit opacity based on range from the player.
+-- - Design: Modified oUF_Range element supporting multiple unit types (friendly, enemy, pet).
+-- - Events: OnUpdate (throttled)
+-----------------------------------------------------------------------------]]
 
 local _, ns = ...
 local oUF = ns.oUF
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
-local Module = K:GetModule("Unitframes")
+local K, C = unpack(KkthnxUI)
 
 local _FRAMES = {}
-local OnRangeFrame
+local rangeTimer
 
 -- REASON: Localize C-functions (Snake Case)
-local strfind = _G.string.find
+local string_find = _G.string.find
+-- REASON: table_remove removed; Disable() uses O(1) swap-remove, making this import unnecessary.
 local table_insert = _G.table.insert
-local table_remove = _G.table.remove
 local tonumber = _G.tonumber
 local next = _G.next
 local select = _G.select
 
 -- REASON: Localize Globals
 local C_Spell = _G.C_Spell
+local C_Timer = _G.C_Timer
 local CheckInteractDistance = _G.CheckInteractDistance
-local CreateFrame = _G.CreateFrame
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local InCombatLockdown = _G.InCombatLockdown
 local IsInRaid = _G.IsInRaid
-local IsSpellInSpellBook = C_SpellBook.IsSpellInSpellBook or IsSpellKnownOrOverridesKnown
+local IsSpellKnownOrOverridesKnown = _G.IsSpellKnownOrOverridesKnown
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
 local UnitInParty = _G.UnitInParty
@@ -38,7 +37,6 @@ local UnitInRaid = _G.UnitInRaid
 local UnitInRange = _G.UnitInRange
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPhaseReason = _G.UnitPhaseReason
@@ -46,40 +44,39 @@ local UnitPhaseReason = _G.UnitPhaseReason
 local IsSpellInRange = C_Spell.IsSpellInRange
 local myClass = select(2, UnitClass("player"))
 
-local PhaseReason = Enum.PhaseReason
+local IsSecret = K.IsSecret
+
+-- PERF: Pre-cache group unit tokens to avoid high-frequency string concatenations on every update frame.
+-- REASON: This completely eliminates string allocations and subsequent GC overhead during group scanning.
+local groupUnits = {
+	party = {},
+	raid = {},
+}
+for i = 1, 4 do
+	groupUnits.party[i] = "party" .. i
+end
+for i = 1, 40 do
+	groupUnits.raid[i] = "raid" .. i
+end
 
 -- REASON: Returns the unit token (partyN/raidN) for a given unit GUID/name if they are in your group.
 local function GetGroupUnit(unit)
-	local isPlayer = UnitIsUnit(unit, "player")
-	if K.IsSecretValue(isPlayer) then
-		isPlayer = nil
-	end
-
-	if isPlayer then
+	if UnitIsUnit(unit, "player") then
 		return
 	end
 
-	if strfind(unit, "party") or strfind(unit, "raid") then
+	if string_find(unit, "party") or string_find(unit, "raid") then
 		return unit
 	end
 
 	-- REASON: Only scan group if unit isn't already a token.
-	local inParty = UnitInParty(unit)
-	if K.IsSecretValue(inParty) then inParty = nil end
-
-	local inRaid = UnitInRaid(unit)
-	if K.IsSecretValue(inRaid) then inRaid = nil end
-
-	if inParty or inRaid then
+	if UnitInParty(unit) or UnitInRaid(unit) then
 		local isInRaid = IsInRaid()
+		local prefix = isInRaid and "raid" or "party"
+		local tokens = groupUnits[prefix]
 		for i = 1, GetNumGroupMembers() do
-			local groupUnit = (isInRaid and "raid" or "party") .. i
-			local isGroupUnit = UnitIsUnit(unit, groupUnit)
-			if K.IsSecretValue(isGroupUnit) then
-				isGroupUnit = nil
-			end
-
-			if isGroupUnit then
+			local groupUnit = tokens[i]
+			if groupUnit and UnitIsUnit(unit, groupUnit) then
 				return groupUnit
 			end
 		end
@@ -89,123 +86,126 @@ end
 local CHECK_SPELLS = {
 	FRIENDLY = {
 		DEATHKNIGHT = {
-			["47541"] = "Death Coil",
+			[47541] = "Death Coil",
 		},
 		DEMONHUNTER = {},
 		DRUID = {
-			["8936"] = "Regrowth",
+			[8936] = "Regrowth",
 		},
 		EVOKER = {
-			["355913"] = "Emerald Blossom",
+			[355913] = "Emerald Blossom",
 		},
 		HUNTER = {},
 		MAGE = {
-			["1459"] = "Arcane Intellect",
+			[1459] = "Arcane Intellect",
 		},
 		MONK = {
-			["116670"] = "Vivify",
+			[116670] = "Vivify",
 		},
 		PALADIN = {
-			["85673"] = "Word of Glory",
+			[85673] = "Word of Glory",
 		},
 		PRIEST = {
-			["17"] = "Power Word: Shield" or nil,
+			[17] = "Power Word: Shield",
 		},
 		ROGUE = {
-			["36554"] = "Shadowstep" or nil,
-			["921"] = "Pick Pocket" or nil,
+			[36554] = "Shadowstep",
+			[921] = "Pick Pocket",
 		},
 		SHAMAN = {
-			["8004"] = "Healing Surge",
+			[8004] = "Healing Surge",
 		},
 		WARLOCK = {
-			["5697"] = "Unending Breath",
+			[5697] = "Unending Breath",
 		},
 		WARRIOR = {},
 	},
+
 	ENEMY = {
 		DEATHKNIGHT = {
-			["49576"] = "Death Grip",
+			[49576] = "Death Grip",
 		},
 		DEMONHUNTER = {
-			["278326"] = "Consume Magic",
+			[278326] = "Consume Magic",
 		},
 		DRUID = {
-			["8921"] = "Moonfire",
+			[8921] = "Moonfire",
 		},
 		EVOKER = {
-			["362969"] = "Azure Strike",
+			[362969] = "Azure Strike",
 		},
 		HUNTER = {
-			["75"] = "Auto Shot",
+			[75] = "Auto Shot",
 		},
 		MAGE = {
-			["2139"] = "Counterspell",
+			[2139] = "Counterspell",
 		},
 		MONK = {
-			["115546"] = "Provoke",
+			[115546] = "Provoke",
 		},
 		PALADIN = {
-			["20473"] = "Holy Shock",
-			["20271"] = "Judgement",
+			[20473] = "Holy Shock",
+			[20271] = "Judgement",
 		},
 		PRIEST = {
-			["589"] = "Shadow Word: Pain",
+			[589] = "Shadow Word: Pain",
 		},
 		ROGUE = {
-			["36554"] = "Shadowstep",
+			[36554] = "Shadowstep",
 		},
 		SHAMAN = {
-			["8042"] = "Earth Shock",
-			["188196"] = "Lightning Bolt" or nil,
+			[8042] = "Earth Shock",
+			[188196] = "Lightning Bolt",
 		},
 		WARLOCK = {
-			["234153"] = "Drain Life" or nil,
+			[234153] = "Drain Life",
 		},
 		WARRIOR = {
-			["355"] = "Taunt",
+			[355] = "Taunt",
 		},
 	},
+
 	RESURRECT = {
 		DEATHKNIGHT = {
-			["61999"] = "Raise Ally",
+			[61999] = "Raise Ally",
 		},
 		DEMONHUNTER = {},
 		DRUID = {
-			["50769"] = "Revive",
+			[50769] = "Revive",
 		},
 		EVOKER = {
-			["361227"] = "Return",
+			[361227] = "Return",
 		},
 		HUNTER = {},
 		MAGE = {},
 		MONK = {
-			["115178"] = "Resuscitate",
+			[115178] = "Resuscitate",
 		},
 		PALADIN = {
-			["7328"] = "Redemption",
+			[7328] = "Redemption",
 		},
 		PRIEST = {
-			["2006"] = "Resurrection",
+			[2006] = "Resurrection",
 		},
 		ROGUE = {},
 		SHAMAN = {
-			["2008"] = "Ancestral Spirit",
+			[2008] = "Ancestral Spirit",
 		},
 		WARLOCK = {
-			["20707"] = "Soulstone" or nil,
+			[20707] = "Soulstone",
 		},
 		WARRIOR = {},
 	},
+
 	PET = {
 		DEATHKNIGHT = {
-			["47541"] = "Death Coil",
+			[47541] = "Death Coil",
 		},
 		DEMONHUNTER = {},
 		DRUID = {},
 		EVOKER = {},
 		HUNTER = {
-			["136"] = "Mend Pet",
+			[136] = "Mend Pet",
 		},
 		MAGE = {},
 		MONK = {},
@@ -214,7 +214,7 @@ local CHECK_SPELLS = {
 		ROGUE = {},
 		SHAMAN = {},
 		WARLOCK = {
-			["755"] = "Health Funnel",
+			[755] = "Health Funnel",
 		},
 		WARRIOR = {},
 	},
@@ -234,7 +234,7 @@ local function UpdateRangeList(db)
 				end
 			end
 
-			if id and IsSpellInSpellBook(id, nil, true) then
+			if id and IsSpellKnownOrOverridesKnown(id) then
 				spells[id] = true
 			end
 		end
@@ -243,11 +243,7 @@ local function UpdateRangeList(db)
 	return spells
 end
 
-function Module:UpdateRangeSpells(event, arg1)
-	if event == "CHARACTER_POINTS_CHANGED" and (not arg1 or arg1 > 0) then
-		return -- Not interested in gained points from leveling
-	end
-
+local function UpdateRangeSpells()
 	list[1] = UpdateRangeList(CHECK_SPELLS.ENEMY[myClass])
 	list[2] = UpdateRangeList(CHECK_SPELLS.FRIENDLY[myClass])
 	list[3] = UpdateRangeList(CHECK_SPELLS.RESURRECT[myClass])
@@ -258,13 +254,18 @@ local function UnitSpellRange(unit, spells)
 	local failed
 	for spell in next, spells do
 		local range = IsSpellInRange(spell, unit)
+		if IsSecret(range) then
+			-- SECRET (12.0): Blizzard can hide range booleans in combat/instances.
+			-- Treat that as unknown instead of testing it and throwing.
+			return
+		end
+
 		if range then
 			return true
 		elseif range ~= nil then
-			failed = true -- oh no
+			failed = true -- keep looking for other spells
 		end
 	end
-
 	if failed then
 		return false
 	end
@@ -273,47 +274,45 @@ end
 -- REASON: Checks if a unit is within range of any spell in the 'which' category list.
 local function UnitInSpellsRange(unit, which)
 	local spells = list[which]
+	-- REASON: If list is empty, default to range=1 (true-ish) to fallback to interaction check.
 	local range = (not next(spells) and 1) or UnitSpellRange(unit, spells)
+	if IsSecret(range) then
+		return 1
+	end
 
+	-- REASON: Fallback to InteractDistance(4) for follow range if spell check fails or is N/A, and not in combat.
 	if (not range or range == 1) and not InCombatLockdown() then
-		return CheckInteractDistance(unit, 4) -- check follow interact when not in combat
+		local interactRange = CheckInteractDistance(unit, 4)
+		if IsSecret(interactRange) then
+			return 1
+		end
+
+		return interactRange
 	else
-		return (range == nil and 1) or range -- nil: various reason it cant be checked; ie: cant be cast on the unit
+		return (range == nil and 1) or range -- REASON: nil implies cant check, so assume in range to avoid ghosting.
 	end
 end
 
 -- REASON: Specific check for friendly units using PhaseReason and UnitInRange API.
-local function FriendlyInRange(realUnit, element)
+local function FriendlyInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
-	local isPlayer = UnitIsPlayer(unit)
-	if K.IsSecretValue(isPlayer) then isPlayer = nil end
-
-	if isPlayer then
-		local phaseReason = UnitPhaseReason(unit)
-		if phaseReason == PhaseReason.TimerunningHwt then
-			if not IsInInstance() then -- phased in open world (hero / nonhero) but not phased in dungeons
-				return false
-			end
-		elseif phaseReason then
+	if UnitIsPlayer(unit) then
+		if UnitPhaseReason and UnitPhaseReason(unit) then
 			return false
 		end
 	end
 
-	local inRange, wasChecked = UnitInRange(unit)
-	if K.IsSecretValue(wasChecked) then
-		local inParty = UnitInParty(unit)
-		if K.IsSecretValue(inParty) then inParty = nil end
+	local range, checked = UnitInRange(unit)
+	if IsSecret(range) or IsSecret(checked) then
+		-- SECRET (12.0): UnitInRange can return secret booleans. Fall back to
+		-- spell/interaction checks, and if those are also unavailable they assume
+		-- in-range rather than fading on unreadable data.
+		return UnitInSpellsRange(unit, 2)
+	end
 
-		local inRaid = UnitInRaid(unit)
-		if K.IsSecretValue(inRaid) then inRaid = nil end
-
-		if element and (inParty or inRaid) then -- if its eligible
-			element.isInRange, element.checkedRange = inRange, wasChecked
-			return -- will be handled by these values so no need to proceed
-		end
-	elseif wasChecked and K.NotSecretValue(inRange) and not inRange then
-		return false -- blizz checked and unit is out of range
+	if checked and not range then
+		return false -- REASON: Blizzard API confirms unit is out of range.
 	end
 
 	return UnitInSpellsRange(unit, 2)
@@ -325,7 +324,7 @@ local function Update(self, event)
 	local unit = self.unit
 
 	-- REASON: Respect globally disabled range setting.
-	if not C["Unitframe"].Range then
+	if C and C["Unitframe"] and C["Unitframe"].Range == false then
 		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
 		self:SetAlpha(element.RangeAlpha)
 		if element.PostUpdate then
@@ -334,52 +333,34 @@ local function Update(self, event)
 		return
 	end
 
-	if not unit then
-		unit = self.unit
-	end
+	-- PERF: Cache alpha fallback values locally to reduce hash lookups and logic evaluation.
+	local maxAlpha = element.MaxAlpha or element.insideAlpha
+	local minAlpha = element.MinAlpha or element.outsideAlpha
 
-	-- clear these if we arent checking them (these are secret values on retail)
-	element.isInRange, element.checkedRange = nil, nil
-
-	local exists = UnitExists(unit)
-	if self.forceInRange or (exists and unit == "player") then
-		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
+	if self.forceInRange or unit == "player" then
+		element.RangeAlpha = maxAlpha
 	elseif self.forceNotInRange then
-		element.RangeAlpha = element.MinAlpha or element.outsideAlpha
-	elseif exists then
+		element.RangeAlpha = minAlpha
+	elseif unit then
 		if UnitIsDeadOrGhost(unit) then
-			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
+			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and maxAlpha or minAlpha
+		elseif UnitCanAttack("player", unit) then
+			element.RangeAlpha = UnitInSpellsRange(unit, 1) and maxAlpha or minAlpha
+		elseif UnitIsUnit("pet", unit) then
+			element.RangeAlpha = UnitInSpellsRange(unit, 4) and maxAlpha or minAlpha
+		elseif UnitIsConnected(unit) then
+			element.RangeAlpha = FriendlyInRange(unit) and maxAlpha or minAlpha
 		else
-			-- REASON: UnitCanAttack and UnitIsUnit can return secret booleans in combat (taint).
-			-- Assigning to a local is safe; K.IsSecretValue (issecretvalue) accepts secret values.
-			-- We nil them out before the boolean test to avoid the taint error.
-			local canAttack = UnitCanAttack("player", unit)
-			if K.IsSecretValue(canAttack) then canAttack = nil end
-
-			local isPet = UnitIsUnit("pet", unit)
-			if K.IsSecretValue(isPet) then isPet = nil end
-
-			local isConnected = UnitIsConnected(unit)
-			if K.IsSecretValue(isConnected) then isConnected = nil end
-
-			if canAttack then
-				element.RangeAlpha = UnitInSpellsRange(unit, 1) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
-			elseif isPet then
-				element.RangeAlpha = UnitInSpellsRange(unit, 4) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
-			elseif isConnected then
-				element.RangeAlpha = FriendlyInRange(unit) and (element.MaxAlpha or element.insideAlpha) or (element.MinAlpha or element.outsideAlpha)
-			else
-				element.RangeAlpha = element.MinAlpha or element.outsideAlpha
-			end
+			element.RangeAlpha = minAlpha
 		end
 	else
-		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
+		element.RangeAlpha = maxAlpha
 	end
 
 	self:SetAlpha(element.RangeAlpha)
 
 	if element.PostUpdate then
-		return element:PostUpdate(self, element.RangeAlpha == (element.MaxAlpha or element.insideAlpha))
+		return element:PostUpdate(self, element.RangeAlpha == maxAlpha)
 	end
 end
 
@@ -389,18 +370,14 @@ local function Path(self, ...)
 end
 
 -- REASON: Internal throttled update loop (0.2s).
-local timer = 0
-local function OnRangeUpdate(_, elapsed)
-	timer = timer + elapsed
-
-	if timer >= 0.20 then
-		for _, object in next, _FRAMES do
-			if object:IsShown() then
-				Path(object, "OnUpdate")
-			end
+-- PERF: Use numerical loop iteration over sequential _FRAMES table instead of next pairs.
+-- PERF: Use C_Timer.NewTicker instead of OnUpdate to avoid per-frame execution overhead.
+local function OnRangeUpdate()
+	for i = 1, #_FRAMES do
+		local object = _FRAMES[i]
+		if object and object:IsShown() then
+			Path(object, "OnUpdate")
 		end
-
-		timer = 0
 	end
 end
 
@@ -417,16 +394,14 @@ local function Enable(self)
 
 		-- Initialize spell list if not done yet
 		if not list[1] then
-			Module:UpdateRangeSpells()
+			UpdateRangeSpells()
 		end
 
-		if not OnRangeFrame then
-			OnRangeFrame = CreateFrame("Frame")
-			OnRangeFrame:SetScript("OnUpdate", OnRangeUpdate)
+		if not rangeTimer then
+			rangeTimer = C_Timer.NewTicker(0.2, OnRangeUpdate)
 		end
 
 		table_insert(_FRAMES, self)
-		OnRangeFrame:Show()
 
 		return true
 	end
@@ -435,16 +410,20 @@ end
 local function Disable(self)
 	local element = self.RangeFader
 	if element then
-		for index, frame in next, _FRAMES do
-			if frame == self then
-				table_remove(_FRAMES, index)
+		-- PERF: O(1) swap-remove replaces the O(n) table_remove that shifted the entire array on disable.
+		-- Iteration order does not matter for _FRAMES, so swapping with the last element is safe.
+		for i = 1, #_FRAMES do
+			if _FRAMES[i] == self then
+				_FRAMES[i] = _FRAMES[#_FRAMES]
+				_FRAMES[#_FRAMES] = nil
 				break
 			end
 		end
 		self:SetAlpha(element.MaxAlpha or element.insideAlpha)
 
-		if #_FRAMES == 0 then
-			OnRangeFrame:Hide()
+		if #_FRAMES == 0 and rangeTimer then
+			rangeTimer:Cancel()
+			rangeTimer = nil
 		end
 	end
 end

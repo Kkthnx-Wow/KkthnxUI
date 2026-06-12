@@ -7,7 +7,7 @@
 -- - Events: ADDON_LOADED
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C = _G["KkthnxUI"][1], _G["KkthnxUI"][2]
 local Module = K:GetModule("Miscellaneous")
 
 -- PERF: Localize global functions and environment for faster lookups.
@@ -24,6 +24,7 @@ local MOVABLE_FRAMES = {
 	["ChannelFrame"] = false,
 	["ChatConfigFrame"] = false,
 	["CommunitiesFrame"] = false,
+	["CooldownViewerSettings"] = false,
 	["DressUpFrame"] = false,
 	["FriendsFrame"] = false,
 	["GossipFrame"] = false,
@@ -129,22 +130,8 @@ local function onFrameMouseUp(frame, mouseButton)
 	end
 end
 
--- REASON: Safely hooks frame scripts by chaining with existing handlers to maintain original game logic.
-local function hookFrameScript(frame, scriptType, handlerFunc)
-	if not frame or not frame.GetScript then
-		return
-	end
-
-	local originalHandler = frame:GetScript(scriptType)
-	if originalHandler then
-		frame:SetScript(scriptType, function(...)
-			handlerFunc(...)
-			originalHandler(...)
-		end)
-	else
-		frame:SetScript(scriptType, handlerFunc)
-	end
-end
+-- REASON: hookFrameScript removed; replaced with Blizzard's taint-safe HookScript API.
+-- WARNING: The manual SetScript pattern risked taint on protected Blizzard frames.
 
 -- REASON: Resolves and hooks a specific frame by name, supporting dot-notation for nested child frames and optional parent-repositioning.
 local function makeFrameMovable(frameName, moveParent)
@@ -187,8 +174,9 @@ local function makeFrameMovable(frameName, moveParent)
 	targetFrame:EnableMouse(true)
 	targetFrame:SetMovable(true)
 	targetFrame:SetClampedToScreen(false)
-	hookFrameScript(targetFrame, "OnMouseDown", onFrameMouseDown)
-	hookFrameScript(targetFrame, "OnMouseUp", onFrameMouseUp)
+	-- REASON: HookScript is taint-safe and chains handlers automatically; replaces manual hookFrameScript.
+	targetFrame:HookScript("OnMouseDown", onFrameMouseDown)
+	targetFrame:HookScript("OnMouseUp", onFrameMouseUp)
 
 	hookedFrames[frameName] = true
 end

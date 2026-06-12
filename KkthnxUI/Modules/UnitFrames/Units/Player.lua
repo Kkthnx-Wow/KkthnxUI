@@ -56,7 +56,7 @@ function Module:CreatePlayer()
 	local playerPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+
 
 	if not self then
 		return
@@ -82,6 +82,10 @@ function Module:CreatePlayer()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
+	if C["Unitframe"].Smooth then
+		K:SmoothBar(self.Health)
+	end
+
 	if C["Unitframe"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
@@ -102,6 +106,10 @@ function Module:CreatePlayer()
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
+
 	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Unitframe"].PlayerPowerHeight)
@@ -114,8 +122,7 @@ function Module:CreatePlayer()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		Module:SmoothBar(self.Health)
-		Module:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -124,10 +131,14 @@ function Module:CreatePlayer()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
+
 	-- REASON: Portrait Setup (2D/3D support)
 	if playerPortraitStyle ~= 0 then
 		if playerPortraitStyle == 4 then
-			self.Portrait = CreateFrame("PlayerModel", nil, self)
+			self.Portrait = CreateFrame("PlayerModel", "PlayerPortrait", self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
@@ -163,8 +174,8 @@ function Module:CreatePlayer()
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
-		self.Debuffs["growthX"] = "RIGHT"
-		self.Debuffs["growthY"] = "UP"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 14
@@ -182,8 +193,8 @@ function Module:CreatePlayer()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growthX"] = "RIGHT"
-		self.Buffs["growthY"] = "DOWN"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 20
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].PlayerBuffsPerRow
@@ -233,25 +244,31 @@ function Module:CreatePlayer()
 		Castbar:SetFrameLevel(10)
 		Castbar.SafeZone = safeZone
 
+		local lagStr = K.CreateFontString(Castbar, 11)
+		lagStr:ClearAllPoints()
+		lagStr:SetPoint("BOTTOM", Castbar, "TOP", 0, 4)
+		Castbar.LagString = lagStr
+
+		Module:ToggleCastBarLatency(self)
+
 		local stage = K.CreateFontString(Castbar, 20)
 		stage:ClearAllPoints()
 		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
 		Castbar.stageString = stage
 
 		Castbar.decimal = "%.2f"
+
 		Castbar.Time = timer
 		Castbar.Text = name
-
 		Castbar.timeToHold = 0.5
-		Castbar.PostCastStart = Module.UpdateCastBarColor
-		Castbar.PostCastInterruptible = Module.UpdateCastBarColor
-		Castbar.PostCastStop = Module.Castbar_FailedColor
-		Castbar.PostCastFail = Module.Castbar_FailedColor
-		Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		Castbar.CreatePip = Module.CreatePip
 		Castbar.PostUpdatePips = Module.PostUpdatePips
-		Castbar.CustomTimeText = Module.CustomTimeText
-		Castbar.CustomDelayText = Module.CustomTimeText
 
 		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
 		Castbar:ClearAllPoints()
@@ -299,7 +316,7 @@ function Module:CreatePlayer()
 		absorbBar:Hide()
 		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex:SetHorizTile(true)
 		tex:SetVertTile(true)
 
@@ -312,7 +329,7 @@ function Module:CreatePlayer()
 		overAbsorbBar:Hide()
 		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex2:SetHorizTile(true)
 		tex2:SetVertTile(true)
 
@@ -328,7 +345,7 @@ function Module:CreatePlayer()
 		healAbsorbBar:Hide()
 		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex3:SetHorizTile(true)
 		tex3:SetVertTile(true)
 
@@ -419,33 +436,33 @@ function Module:CreatePlayer()
 
 	-- REASON: Additional Power (Mana for Druids/Priests/Shamans)
 	if C["Unitframe"].AdditionalPower then
-		-- local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", self.Health)
-		-- AdditionalPower.frequentUpdates = true
-		-- AdditionalPower:SetWidth(12)
-		-- AdditionalPower:SetOrientation("VERTICAL")
-		-- if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
-		-- 	AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
-		-- 	AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
-		-- else
-		-- 	AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
-		-- 	AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
-		-- end
-		-- AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		-- AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		-- AdditionalPower:CreateBorder()
+		local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", self.Health)
+		AdditionalPower.frequentUpdates = true
+		AdditionalPower:SetWidth(12)
+		AdditionalPower:SetOrientation("VERTICAL")
+		if playerPortraitStyle ~= 0 and playerPortraitStyle ~= 4 then
+			AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
+			AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
+		else
+			AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
+			AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
+		end
+		AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
+		AdditionalPower:CreateBorder()
 
-		-- if C["Unitframe"].Smooth then
-		-- 	-- K:SmoothBar(AdditionalPower)
-		-- end
+		if C["Unitframe"].Smooth then
+			K:SmoothBar(AdditionalPower)
+		end
 
-		-- AdditionalPower.Text = AdditionalPower:CreateFontString(nil, "OVERLAY")
-		-- AdditionalPower.Text:SetFontObject(K.UIFont)
-		-- AdditionalPower.Text:SetFont(select(1, AdditionalPower.Text:GetFont()), 9, select(3, AdditionalPower.Text:GetFont()))
-		-- AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
+		AdditionalPower.Text = AdditionalPower:CreateFontString(nil, "OVERLAY")
+		AdditionalPower.Text:SetFontObject(K.UIFont)
+		AdditionalPower.Text:SetFont(select(1, AdditionalPower.Text:GetFont()), 9, select(3, AdditionalPower.Text:GetFont()))
+		AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
 
-		-- AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+		AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 
-		-- self.AdditionalPower = AdditionalPower
+		self.AdditionalPower = AdditionalPower
 	end
 
 	-- REASON: Global Cooldown Spark
@@ -461,6 +478,82 @@ function Module:CreatePlayer()
 		GCD.Width = 128 / 2
 
 		self.GCD = GCD
+	end
+
+	-- REASON: Combat Text
+	if C["Unitframe"].CombatText then
+		if C_AddOns.IsAddOnLoaded("MikScrollingBattleText") or C_AddOns.IsAddOnLoaded("Parrot") or C_AddOns.IsAddOnLoaded("xCT") or C_AddOns.IsAddOnLoaded("sct") then
+			C["Unitframe"].CombatText = false
+			return
+		end
+
+		local parentFrame = CreateFrame("Frame", nil, UIParent)
+		local FloatingCombatFeedback = CreateFrame("Frame", nil, parentFrame)
+		FloatingCombatFeedback:SetSize(32, 32)
+		K.Mover(FloatingCombatFeedback, "CombatText", "PlayerCombatText", { "BOTTOM", self, "TOPLEFT", 0, 120 })
+
+		for i = 1, 36 do
+			FloatingCombatFeedback[i] = FloatingCombatFeedback:CreateFontString("$parentText", "OVERLAY")
+		end
+
+		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
+		FloatingCombatFeedback.fontFlags = "OUTLINE"
+		FloatingCombatFeedback.abbreviateNumbers = true
+		FloatingCombatFeedback:SetFrameStrata("HIGH")
+
+		self.FloatingCombatFeedback = FloatingCombatFeedback
+	end
+
+	-- REASON: Swing Timer
+	if C["Unitframe"].SwingBar then
+		local width, height = C["Unitframe"].SwingWidth, C["Unitframe"].SwingHeight
+
+		local bar = CreateFrame("Frame", nil, self)
+		bar:SetSize(width, height)
+		bar.mover = K.Mover(bar, "UFs SwingBar", "Swing", { "BOTTOM", UIParent, "BOTTOM", 0, 176 })
+		bar:ClearAllPoints()
+		bar:SetPoint("CENTER", bar.mover)
+
+		local two = CreateFrame("StatusBar", nil, bar)
+		two:SetStatusBarTexture(UnitframeTexture)
+		two:SetStatusBarColor(0.20, 0.60, 0.80) -- Light blue color
+		two:CreateBorder()
+		two:Hide()
+		two:SetAllPoints()
+
+		local main = CreateFrame("StatusBar", nil, bar)
+		main:SetStatusBarTexture(UnitframeTexture)
+		main:SetStatusBarColor(0.20, 0.80, 0.20) -- Light green color
+		main:CreateBorder()
+		main:Hide()
+		main:SetAllPoints()
+
+		local off = CreateFrame("StatusBar", nil, bar)
+		off:SetStatusBarTexture(UnitframeTexture)
+		off:SetStatusBarColor(0.80, 0.20, 0.20) -- Light red color
+		off:CreateBorder()
+		off:Hide()
+		if C["Unitframe"].OffOnTop then
+			off:SetPoint("BOTTOMLEFT", bar, "TOPLEFT", 0, 6)
+			off:SetPoint("BOTTOMRIGHT", bar, "TOPRIGHT", 0, 6)
+		else
+			off:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", 0, -6)
+			off:SetPoint("TOPRIGHT", bar, "BOTTOMRIGHT", 0, -6)
+		end
+		off:SetHeight(height)
+
+		bar.Text = K.CreateFontString(bar, 12, "")
+		bar.Text:SetShown(C["Unitframe"].SwingTimer)
+		bar.TextMH = K.CreateFontString(main, 12, "")
+		bar.TextMH:SetShown(C["Unitframe"].SwingTimer)
+		bar.TextOH = K.CreateFontString(off, 12, "")
+		bar.TextOH:SetShown(C["Unitframe"].SwingTimer)
+
+		self.Swing = bar
+		self.Swing.Twohand = two
+		self.Swing.Mainhand = main
+		self.Swing.Offhand = off
+		self.Swing.hideOoc = true
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
@@ -558,9 +651,9 @@ function Module:CreatePlayer()
 			[6] = { false, false, false },
 		}
 
-		local function OnUpdateResting(self, elapsed)
-			self.elapsed = (self.elapsed or 0) + elapsed
-			if self.elapsed > stepSpeed then
+		local function OnUpdateResting(indicator, elapsed)
+			indicator.elapsed = (indicator.elapsed or 0) + elapsed
+			if indicator.elapsed > stepSpeed then
 				step = step + 1
 				if step == 7 then
 					step = 1
@@ -570,22 +663,22 @@ function Module:CreatePlayer()
 					texts[i]:SetShown(stepMaps[step][i])
 				end
 
-				self.elapsed = 0
+				indicator.elapsed = 0
 			end
 		end
 
 		RestingIndicator:SetScript("OnUpdate", OnUpdateResting)
 
-		RestingIndicator:SetScript("OnHide", function(self)
+		RestingIndicator:SetScript("OnHide", function(indicator)
 			step = 6
 			-- Clean up OnUpdate script when hidden to save performance
-			self:SetScript("OnUpdate", nil)
-			self.elapsed = 0
+			indicator:SetScript("OnUpdate", nil)
+			indicator.elapsed = 0
 		end)
 
-		RestingIndicator:SetScript("OnShow", function(self)
+		RestingIndicator:SetScript("OnShow", function(indicator)
 			-- Restore OnUpdate script when shown
-			self:SetScript("OnUpdate", OnUpdateResting)
+			indicator:SetScript("OnUpdate", OnUpdateResting)
 		end)
 
 		self.RestingIndicator = RestingIndicator
@@ -607,14 +700,14 @@ function Module:CreatePlayer()
 
 	-- REASON: Debuff Highlight
 	if C["Unitframe"].DebuffHighlight then
-		-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-		-- self.DebuffHighlight:SetAllPoints(self.Health)
-		-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-		-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		-- self.DebuffHighlight:SetBlendMode("ADD")
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
 
-		-- self.DebuffHighlightAlpha = 0.45
-		-- self.DebuffHighlightFilter = true
+		self.DebuffHighlightAlpha = 0.45
+		self.DebuffHighlightFilter = true
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

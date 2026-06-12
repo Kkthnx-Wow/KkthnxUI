@@ -158,18 +158,7 @@ local function SetPosition(element, from, to)
 	local anchor = element.initialAnchor or 'BOTTOMLEFT'
 	local growthX = (element.growthX == 'LEFT' and -1) or 1
 	local growthY = (element.growthY == 'DOWN' and -1) or 1
-
-	local elementWidth = element:GetWidth() or 0
-	if (issecretvalue and issecretvalue(elementWidth)) or elementWidth <= 0 then
-		elementWidth = element.__cachedWidth or element.width or element.size or sizeX or 16
-	else
-		element.__cachedWidth = elementWidth
-	end
-
-	local cols = element.maxCols or math.floor(elementWidth / sizeX + 0.5)
-	if cols < 1 then
-		cols = 1
-	end
+	local cols = element.maxCols or math.floor(element:GetWidth() / sizeX + 0.5)
 
 	for i = from, to do
 		local button = element[i]

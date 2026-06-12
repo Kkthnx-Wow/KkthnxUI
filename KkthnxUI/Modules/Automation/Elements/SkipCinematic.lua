@@ -16,6 +16,16 @@ local _G = _G
 -- ---------------------------------------------------------------------------
 -- Internal Logic
 -- ---------------------------------------------------------------------------
+local function getSkipParts(self)
+	local movieFrame = _G["MovieFrame"]
+	if self == movieFrame then
+		local dialog = movieFrame.CloseDialog
+		return dialog, dialog and dialog.ConfirmButton
+	end
+
+	return _G["CinematicFrameCloseDialog"], _G["CinematicFrameCloseDialogConfirmButton"]
+end
+
 local function skipOnKeyDown(self, key)
 	if not C["Automation"].ConfirmCinematicSkip then
 		return
@@ -23,8 +33,9 @@ local function skipOnKeyDown(self, key)
 
 	-- REASON: Hides the confirmation dialog when ESCAPE is pressed to allow standard behavior if desired.
 	if key == "ESCAPE" then
-		if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
-			self.closeDialog:Hide()
+		local dialog = getSkipParts(self)
+		if self:IsShown() and dialog then
+			dialog:Hide()
 		end
 	end
 end
@@ -36,8 +47,9 @@ local function skipOnKeyUp(self, key)
 
 	-- REASON: Automatically clicks the 'Confirm' button when common skip keys are pressed.
 	if key == "SPACE" or key == "ESCAPE" or key == "ENTER" then
-		if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
-			self.closeDialog.confirmButton:Click()
+		local _, confirmButton = getSkipParts(self)
+		if self:IsShown() and confirmButton then
+			confirmButton:Click()
 		end
 	end
 end
@@ -45,28 +57,28 @@ end
 -- ---------------------------------------------------------------------------
 -- Module Registration
 -- ---------------------------------------------------------------------------
+-- REASON: Install the key hooks at most once. The per-key handlers already gate on
+-- C["Automation"].ConfirmCinematicSkip, so hooking is harmless while the feature is off,
+-- and HookScript cannot be undone anyway. Without this guard, a live re-toggle that
+-- re-runs CreateSkipCinematic would stack duplicate hooks on each frame.
+local hooksInstalled = false
+
 function Module:CreateSkipCinematic()
 	-- REASON: Feature entry point; hooks Blizzard's cinematic frames to streamline skipping.
-	local movieFrame = _G.MovieFrame
-	local cinematicFrame = _G.CinematicFrame
-	local cinematicFrameCloseDialogConfirmButton = _G.CinematicFrameCloseDialogConfirmButton
+	if hooksInstalled then
+		return
+	end
+	hooksInstalled = true
+
+	local movieFrame = _G["MovieFrame"]
+	local cinematicFrame = _G["CinematicFrame"]
 
 	if movieFrame then
-		movieFrame.closeDialog = movieFrame.CloseDialog
-		if movieFrame.closeDialog then
-			movieFrame.closeDialog.confirmButton = movieFrame.closeDialog.ConfirmButton
-		end
-
 		movieFrame:HookScript("OnKeyDown", skipOnKeyDown)
 		movieFrame:HookScript("OnKeyUp", skipOnKeyUp)
 	end
 
 	if cinematicFrame then
-		if not cinematicFrame.closeDialog then
-			cinematicFrame.closeDialog = {}
-		end
-		cinematicFrame.closeDialog.confirmButton = cinematicFrameCloseDialogConfirmButton
-
 		cinematicFrame:HookScript("OnKeyDown", skipOnKeyDown)
 		cinematicFrame:HookScript("OnKeyUp", skipOnKeyUp)
 	end

@@ -49,19 +49,24 @@ table_insert(C.defaultThemes, function()
 	frame.TimeLeft.SecondsText:Hide()
 
 	-- Hook function to control LossOfControlFrame display
+	local styled
 	hooksecurefunc(LossOfControlFrame, "SetUpDisplay", function(self)
-		local icon = self.Icon
-		local abilityName = self.AbilityName
-		local animation = self.Anim
+		if not styled then
+			local icon = self.Icon
+			local abilityName = self.AbilityName
+			local animation = self.Anim
 
-		icon:ClearAllPoints()
-		icon:SetPoint("CENTER", self)
+			icon:ClearAllPoints()
+			icon:SetPoint("CENTER", self)
 
-		abilityName:ClearAllPoints()
-		abilityName:SetPoint("BOTTOM", self, 0, -8)
+			abilityName:ClearAllPoints()
+			abilityName:SetPoint("BOTTOM", self, 0, -8)
 
-		if animation and animation:IsPlaying() then
-			animation:Stop()
+			if animation and animation:IsPlaying() then
+				animation:Stop()
+			end
+
+			styled = true
 		end
 	end)
 

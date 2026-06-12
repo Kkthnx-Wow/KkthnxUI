@@ -7,7 +7,7 @@
 -- - Events: N/A
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 -- Cache frequently used functions for performance
 local select = select
 
@@ -76,29 +76,34 @@ local SlashCmdList = SlashCmdList
 local ReloadUI = ReloadUI
 
 -- WoW Constants
-local YES, NO, OKAY, CANCEL, RESET, SETTINGS = YES, NO, OKAY, CANCEL, RESET, SETTINGS
+local YES, NO, OKAY, CANCEL, _, _ = YES, NO, OKAY, CANCEL, RESET, SETTINGS
 
 -- Constants
 
 -- New Tag System (from NDui)
 local IsNew = "ISNEW"
 
--- Panel Dimensions
-local PANEL_WIDTH = 880
-local PANEL_HEIGHT = 640
+-- Panel Dimensions: shared metrics come from K.GUILayout (WidgetFactory.lua);
+-- sidebar/content/category sizes are specific to the main config layout.
+local layout = K.GUILayout
+local PANEL_WIDTH = layout.PanelWidth
+local PANEL_HEIGHT = layout.PanelHeight
 local SIDEBAR_WIDTH = 200
 local CONTENT_WIDTH = PANEL_WIDTH - SIDEBAR_WIDTH - 40
-local SPACING = 8
-local WIDGET_HEIGHT = 28
-local HEADER_HEIGHT = 40
+local SPACING = layout.Spacing
+local WIDGET_HEIGHT = layout.RowHeight
+local HEADER_HEIGHT = layout.HeaderHeight
 local CATEGORY_HEIGHT = 32
 
--- Colors (use KkthnxUI's established color system)
-local ACCENT_COLOR = { K.r * 0.7, K.g * 0.7, K.b * 0.7 }
+-- Colors: pull from the shared K.GUITheme (WidgetFactory.lua) so the whole config
+-- UI stays uniform. PERF: alias into file-scope locals for hot-path widget skins.
+-- NOTE: main config uses the dimmed accent on purpose; that's AccentDim, not Accent.
+local theme = K.GUITheme
+local ACCENT_COLOR = theme.AccentDim
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
-local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
-local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
-local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
+local SIDEBAR_COLOR = theme.Sidebar
+local WIDGET_BG = theme.WidgetBg
+local TEXT_COLOR = theme.Text
 
 -- Helper Functions
 
@@ -124,130 +129,18 @@ end
 
 -- Reload Tracking System
 
--- Settings without hooks require reload
--- REASON: Tracks pending reload requirements to prevent spamming popups for multiple setting changes.
-local ReloadTracker = {
-	PendingReloads = {}, -- Settings that have been changed and require reload
-	IsShowing = false, -- Prevent multiple popups
-	DebugMode = false, -- Disable debug logging since system is working
-}
-
--- Debug logging function
+-- REASON: GUIReloadTracker.lua owns queue state and popup display. Keep local
+-- aliases so the rest of this file reads the same, while the subsystem has a
+-- real architectural owner.
+local ReloadTracker = K.GUIReloadTracker
 local function DebugLog(message)
-	if ReloadTracker.DebugMode then
-		print("|cff669DFFKkthnxUI ReloadDebug:|r " .. message)
-	end
+	ReloadTracker:DebugLog(message)
 end
-
--- Simple reload logic: only settings without hooks need reloads
 local function RequiresReload(configPath, hasHook, forceReload)
-	DebugLog(
-		"RequiresReload check for: "
-			.. configPath
-			.. " (hasHook: "
-			.. tostring(hasHook)
-			.. ", forceReload: "
-			.. tostring(forceReload)
-			.. ")"
-	)
-
-	-- If explicitly forced
-	if forceReload then
-		DebugLog("Reload required: explicitly forced")
-		return true
-	end
-
-	-- If no hook function provided, setting can't update in real-time
-	if not hasHook then
-		DebugLog("Reload required: no hook available")
-		return true
-	end
-
-	-- Has hook = no reload needed (real-time updates work)
-	DebugLog("No reload needed: hook available for real-time updates")
-	return false
+	return ReloadTracker:RequiresReload(configPath, hasHook, forceReload)
 end
-
--- Add a setting to reload queue
 local function AddToReloadQueue(configPath, settingName)
-	DebugLog("Adding to reload queue: " .. configPath .. " (" .. (settingName or configPath) .. ")")
-
-	if not ReloadTracker.PendingReloads[configPath] then
-		ReloadTracker.PendingReloads[configPath] = settingName or configPath
-
-		-- Show reload prompt immediately (no delay)
-		if not ReloadTracker.IsShowing then
-			DebugLog("Showing reload prompt immediately")
-			ReloadTracker:ShowReloadPrompt()
-		end
-	else
-		DebugLog("Setting already in reload queue: " .. configPath)
-	end
-end
-
--- Show reload prompt with details
-function ReloadTracker:ShowReloadPrompt()
-	DebugLog("ShowReloadPrompt called")
-
-	if self.IsShowing then
-		DebugLog("Reload prompt already showing, skipping")
-		return
-	end
-
-	if not next(self.PendingReloads) then
-		DebugLog("No pending reloads, skipping prompt")
-		return
-	end
-
-	self.IsShowing = true
-
-	-- Count how many settings need reload
-	local count = 0
-	for _ in pairs(self.PendingReloads) do
-		count = count + 1
-	end
-
-	local message
-	if count == 1 then
-		local _, settingName = next(self.PendingReloads)
-		message = format("The setting '%s' requires a UI reload to take effect.\n\nReload now?", settingName)
-	else
-		message = format("%d settings have been changed that require a UI reload.\n\nReload now?", count)
-	end
-
-	DebugLog("Showing reload prompt: " .. message)
-
-	-- Use our existing popup
-	StaticPopupDialogs["KKTHNXUI_RELOAD_UI"].text = message
-	StaticPopup_Show("KKTHNXUI_RELOAD_UI")
-end
-
--- Clear reload queue
-function ReloadTracker:ClearQueue()
-	DebugLog("Clearing reload queue")
-	self.PendingReloads = {}
-	self.IsShowing = false
-end
-
--- Check if we have pending reloads
-function ReloadTracker:HasPendingReloads()
-	local hasReloads = next(self.PendingReloads) ~= nil
-	DebugLog("HasPendingReloads: " .. tostring(hasReloads))
-	return hasReloads
-end
-
--- Only show reload prompt on GUI close if there are pending reloads
-function ReloadTracker:OnGUIClose()
-	DebugLog("OnGUIClose called")
-	if self:HasPendingReloads() and not self.IsShowing then
-		DebugLog("Showing reload prompt on GUI close")
-		-- Show reload prompt when closing GUI if there are pending reloads
-		C_Timer.After(0.1, function()
-			self:ShowReloadPrompt()
-		end)
-	else
-		DebugLog("No reload prompt needed on GUI close")
-	end
+	ReloadTracker:Add(configPath, settingName)
 end
 
 -- GUI Framework Core
@@ -285,27 +178,16 @@ local function RegisterUpdateHook(configPath, hookFunction)
 end
 
 local function ExecuteUpdateHooks(configPath, newValue, oldValue)
-	DebugLog(
-		"Executing hooks for: "
-			.. configPath
-			.. " (new: "
-			.. tostring(newValue)
-			.. ", old: "
-			.. tostring(oldValue)
-			.. ")"
-	)
+	DebugLog("Executing hooks for: " .. configPath .. " (new: " .. tostring(newValue) .. ", old: " .. tostring(oldValue) .. ")")
 
 	if GUI.UpdateHooks[configPath] then
 		DebugLog("Found " .. #GUI.UpdateHooks[configPath] .. " hooks for " .. configPath)
 		for i, hookFunc in ipairs(GUI.UpdateHooks[configPath]) do
 			if type(hookFunc) == "function" then
 				DebugLog("Executing hook " .. i .. " for " .. configPath)
-				local success, err = pcall(hookFunc, newValue, oldValue, configPath)
-				if not success then
-					DebugLog("Hook " .. i .. " failed for " .. configPath .. ": " .. tostring(err))
-				else
-					DebugLog("Hook " .. i .. " executed successfully for " .. configPath)
-				end
+				DebugLog("Executing hook " .. i .. " for " .. configPath)
+				hookFunc(newValue, oldValue, configPath)
+				DebugLog("Hook " .. i .. " executed successfully for " .. configPath)
 			else
 				DebugLog("Hook " .. i .. " is not a function for " .. configPath .. " (type: " .. type(hookFunc) .. ")")
 			end
@@ -319,22 +201,12 @@ end
 
 -- Get configuration value by path
 local function GetConfigValue(configPath)
-	return K.GetValueByPath(C, configPath)
+	return K.GUIConfigService:GetValue(configPath)
 end
 
 -- Get default value for a config path from K.Defaults
 local function GetDefaultValue(configPath)
-	-- First check if K.Defaults exists and has the path
-	if K.Defaults then
-		local defaultValue = K.GetValueByPath(K.Defaults, configPath)
-		if defaultValue ~= nil then
-			return defaultValue
-		end
-	end
-
-	-- Fallback: If K.Defaults doesn't exist or doesn't have the path,
-	-- try to get from the original C table structure (may be current values though)
-	return K.GetValueByPath(C, configPath)
+	return K.GUIConfigService:GetDefaultValue(configPath)
 end
 
 -- Forward declaration of SetConfigValue so ResetToDefault can call it
@@ -343,41 +215,11 @@ local SetConfigValue
 -- Set configuration value with hook execution and reload tracking
 -- WARNING: Modifies persistent DB directly; ensures hooked functions fire to update UI state.
 function SetConfigValue(configPath, value, requiresReload, settingName)
-	DebugLog(
-		"SetConfigValue called: "
-			.. configPath
-			.. " = "
-			.. tostring(value)
-			.. " (requiresReload: "
-			.. tostring(requiresReload)
-			.. ")"
-	)
+	DebugLog("SetConfigValue called: " .. configPath .. " = " .. tostring(value) .. " (requiresReload: " .. tostring(requiresReload) .. ")")
 
-	-- Get old value for hook comparison
-	local oldValue = K.GetValueByPath(C, configPath)
+	-- Get old value for hook comparison while the service handles runtime + DB write.
+	local oldValue = K.GUIConfigService:SetValue(configPath, value)
 	DebugLog("Old value: " .. tostring(oldValue))
-
-	-- Set in runtime config
-	K.SetValueByPath(C, configPath, value)
-
-	-- Save to database (with safety check)
-	if KkthnxUIDB then
-		if not KkthnxUIDB.Settings then
-			KkthnxUIDB.Settings = {}
-		end
-		if not KkthnxUIDB.Settings[K.Realm] then
-			KkthnxUIDB.Settings[K.Realm] = {}
-		end
-		if not KkthnxUIDB.Settings[K.Realm][K.Name] then
-			KkthnxUIDB.Settings[K.Realm][K.Name] = {}
-		end
-
-		K.SetValueByPath(KkthnxUIDB.Settings[K.Realm][K.Name], configPath, value)
-	else
-		-- Database not yet available, settings will only be stored in runtime config
-		-- This is normal during initial loading
-		DebugLog("Database not available, only storing in runtime config")
-	end
 
 	-- Execute real-time update hooks
 	if oldValue ~= value then
@@ -386,15 +228,7 @@ function SetConfigValue(configPath, value, requiresReload, settingName)
 
 		-- Check for reload requirement (simple: no hook = needs reload)
 		local hasHook = GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] > 0
-		DebugLog(
-			"Hook check for "
-				.. configPath
-				.. ": "
-				.. tostring(hasHook)
-				.. " (hooks count: "
-				.. (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] or 0)
-				.. ")"
-		)
+		DebugLog("Hook check for " .. configPath .. ": " .. tostring(hasHook) .. " (hooks count: " .. (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] or 0) .. ")")
 
 		if RequiresReload(configPath, hasHook, requiresReload) then
 			DebugLog("Reload required for: " .. configPath)
@@ -461,7 +295,7 @@ local CreateButton = K.WidgetFactory.CreateButton
 
 -- Enhanced Features Functions (moved here to be available when needed)
 local function CreateEnhancedTooltip(widget, title, description, warning)
-	widget:SetScript("OnEnter", function(self)
+	widget:HookScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(title, 1, 1, 1, 1, true)
 
@@ -476,18 +310,12 @@ local function CreateEnhancedTooltip(widget, title, description, warning)
 
 		-- Add reset to default information
 		GameTooltip:AddLine(" ", 1, 1, 1)
-		GameTooltip:AddLine(
-			"|cff00ff00Tip:|r Hold Ctrl to show reset button, then click to reset to default",
-			0.7,
-			0.7,
-			0.7,
-			true
-		)
+		GameTooltip:AddLine("|cff00ff00Tip:|r Hold Ctrl to show reset button, then click to reset to default", 0.7, 0.7, 0.7, true)
 
 		GameTooltip:Show()
 	end)
 
-	widget:SetScript("OnLeave", function()
+	widget:HookScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
 end
@@ -638,38 +466,8 @@ end
 
 -- Reset To Default System
 
--- REASON: Global Ctrl key checker for reset buttons prevents collision with widget scripts.
--- Global Ctrl key checker for reset buttons (event-driven, zero polling overhead)
-local CtrlChecker = CreateFrame("Frame")
-local resetButtons = {}
-
-local function CtrlUpdate(_, _, key, state)
-	if key == "LCTRL" or key == "RCTRL" then
-		for widget, resetButton in pairs(resetButtons) do
-			if widget:IsMouseOver() then
-				if state == 1 then
-					if not resetButton:IsShown() then
-						resetButton:Show()
-					end
-				else
-					if resetButton:IsShown() then
-						resetButton:Hide()
-						GameTooltip:Hide()
-					end
-				end
-				break -- Only one widget can be moused over at a time
-			end
-		end
-	end
-end
-CtrlChecker:SetScript("OnEvent", CtrlUpdate)
-
 -- NEW: Helper function to add reset-to-default functionality to widget labels
 local function AddResetToDefaultFunctionality(widget, label, configPath, cleanText)
-	-- Create reset button with undo icon
-	local resetButton = CreateFrame("Button", nil, widget)
-	resetButton:SetSize(16, 16)
-
 	-- Check if there's a cogwheel icon and position accordingly
 	local baseXOffset = 5 -- Default offset from label
 
@@ -693,76 +491,7 @@ local function AddResetToDefaultFunctionality(widget, label, configPath, cleanTe
 		baseXOffset = 26
 	end
 
-	resetButton:SetPoint("LEFT", label, "RIGHT", baseXOffset, 0)
-	resetButton:Hide() -- Initially hidden
-
-	-- Undo icon
-	local undoIcon = resetButton:CreateTexture(nil, "ARTWORK")
-	undoIcon:SetAllPoints()
-	undoIcon:SetAlpha(0.7)
-
-	-- Try to set the atlas, with fallback
-	local success = pcall(function()
-		undoIcon:SetAtlas("common-icon-undo", true)
-		undoIcon:SetSize(16, 16)
-	end)
-
-	if not success then
-		-- Fallback to a texture if atlas fails
-		undoIcon:SetTexture("Interface\\Buttons\\UI-RefreshButton")
-		undoIcon:SetTexCoord(0, 1, 0, 1)
-	end
-
-	-- Hover effects for the reset button
-	resetButton:SetScript("OnEnter", function(self)
-		undoIcon:SetAlpha(1)
-		-- Show tooltip
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText("Reset to Default", 1, 1, 1, 1, true)
-		GameTooltip:AddLine(
-			"Click to reset this setting to its default value",
-			NORMAL_FONT_COLOR.r,
-			NORMAL_FONT_COLOR.g,
-			NORMAL_FONT_COLOR.b,
-			true
-		)
-		GameTooltip:Show()
-	end)
-
-	resetButton:SetScript("OnLeave", function(self)
-		undoIcon:SetAlpha(0.7)
-		GameTooltip:Hide()
-	end)
-
-	-- Click handler for reset
-	resetButton:SetScript("OnClick", function(self, button)
-		if button == "LeftButton" then
-			ResetToDefault(configPath, widget, cleanText)
-		end
-	end)
-
-	-- Store reference for showing/hiding
-	widget.ResetButton = resetButton
-
-	-- Hook native widget events for zero-polling control states
-	widget:HookScript("OnEnter", function()
-		if IsControlKeyDown() then
-			resetButton:Show()
-		end
-	end)
-
-	widget:HookScript("OnLeave", function()
-		C_Timer.After(0.01, function()
-			if resetButton:IsShown() and not widget:IsMouseOver() and not resetButton:IsMouseOver() then
-				resetButton:Hide()
-			end
-		end)
-	end)
-
-	-- Register with global checker (no conflicts with widget scripts!)
-	resetButtons[widget] = resetButton
-
-	return resetButton
+	return K.GUIResetButtons:Attach(widget, label, configPath, cleanText, ResetToDefault, baseXOffset)
 end
 
 -- Widget Creation Functions
@@ -829,14 +558,14 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 
 	-- Tooltip functionality (now added)
 	if tooltip then
-		widget:SetScript("OnEnter", function(self)
+		widget:HookScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(cleanText, 1, 1, 1, 1, true)
 			GameTooltip:AddLine(tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 			GameTooltip:Show()
 		end)
 
-		widget:SetScript("OnLeave", function(self)
+		widget:HookScript("OnLeave", function(self)
 			GameTooltip:Hide()
 		end)
 	end
@@ -920,18 +649,7 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 	return widget
 end
 
-local function CreateSlider(
-	parent,
-	configPath,
-	text,
-	minVal,
-	maxVal,
-	step,
-	tooltip,
-	hookFunction,
-	isNew,
-	requiresReload
-)
+local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
 	local widget = CreateFrame("Frame", nil, parent)
 	widget:SetSize(CONTENT_WIDTH, WIDGET_HEIGHT)
 	widget.ConfigPath = configPath
@@ -1367,14 +1085,14 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 
 	-- Tooltip functionality (now added)
 	if tooltip then
-		widget:SetScript("OnEnter", function(self)
+		widget:HookScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(cleanText, 1, 1, 1, 1, true)
 			GameTooltip:AddLine(tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 			GameTooltip:Show()
 		end)
 
-		widget:SetScript("OnLeave", function(self)
+		widget:HookScript("OnLeave", function(self)
 			GameTooltip:Hide()
 		end)
 	end
@@ -1441,7 +1159,6 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 		borderTexture:SetVertexColor(0.3, 0.3, 0.3, 0.8)
 
 		-- Optional scroll frame when there are too many entries
-		local container = menu
 		local useScroll = #options > visibleCount
 		local scrollChild, scrollFrame
 		-- Optional search box for long lists
@@ -1472,6 +1189,7 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 				end
 			end)
 		end
+		local container
 		if useScroll then
 			scrollFrame = CreateFrame("ScrollFrame", nil, menu)
 			scrollFrame:SetPoint("TOPLEFT", 2, -(2 + searchHeight))
@@ -2208,11 +1926,7 @@ local function CreateCheckboxGroup(parent, configPath, text, options, tooltip, h
 		-- Also add tooltips to individual checkbox containers for better UX
 		for i, checkbox in ipairs(checkboxes) do
 			local option = options[i] -- Get the corresponding option
-			CreateEnhancedTooltip(
-				checkbox.Container,
-				option.text,
-				"Click to toggle this option.\n\nCurrent selection affects: " .. cleanText
-			)
+			CreateEnhancedTooltip(checkbox.Container, option.text, "Click to toggle this option.\n\nCurrent selection affects: " .. cleanText)
 		end
 	end
 
@@ -2377,11 +2091,7 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 
 	-- Enhanced tooltip functionality
 	if tooltip then
-		CreateEnhancedTooltip(
-			widget,
-			cleanText,
-			tooltip .. "\n\nEnter to apply, Esc to reset to default, or click the checkmark to apply."
-		)
+		CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nEnter to apply, Esc to reset to default, or click the checkmark to apply.")
 	end
 
 	-- Initialize
@@ -2585,10 +2295,7 @@ local function CreateMainFrame()
 
 	-- Perks Theme overlay via reusable helper
 	if K.AttachPerksTheme then
-		GUI.PerksOverlay = K.AttachPerksTheme(
-			frame,
-			{ variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 68, strata = "TOOLTIP", level = 999 }
-		)
+		GUI.PerksOverlay = K.AttachPerksTheme(frame, { variant = "tp", point = "TOP", relPoint = "TOP", x = 0, y = 68, strata = "TOOLTIP", level = 999 })
 	end
 
 	local _, unitClass = UnitClass("player")
@@ -2790,7 +2497,7 @@ local function PopulateContent(category)
 			yOffset = yOffset - 15
 		end
 
-		local createdHeader = false
+
 		if not (sectionIndex == 1 and firstMatchesCategory) then
 			-- Section header frame with proper background
 			local sectionFrame = CreateFrame("Frame", nil, GUI.ScrollChild)
@@ -2813,14 +2520,14 @@ local function PopulateContent(category)
 			sectionTitle:SetPoint("LEFT", sectionFrame, "LEFT", 10, 0)
 
 			yOffset = yOffset - 40
-			createdHeader = true
+
 		else
 			-- Skip duplicate header if first section matches category name
 			yOffset = yOffset - 10
 		end
 
 		-- Section widgets with consistent spacing
-		for widgetIndex, widget in ipairs(section.Widgets) do
+		for _, widget in ipairs(section.Widgets) do
 			widget:SetParent(GUI.ScrollChild)
 			widget:ClearAllPoints()
 			widget:SetPoint("TOPLEFT", 15, yOffset)
@@ -3053,10 +2760,6 @@ function GUI:Show()
 	end
 	self.Frame:Show()
 	self.IsVisible = true
-	-- Enable CtrlChecker zero-polling modifiers only while GUI is visible
-	if CtrlChecker then
-		CtrlChecker:RegisterEvent("MODIFIER_STATE_CHANGED")
-	end
 end
 
 function GUI:Hide()
@@ -3090,10 +2793,6 @@ function GUI:Hide()
 		self.Frame:Hide()
 	end
 	self.IsVisible = false
-	-- Disable CtrlChecker when GUI is hidden
-	if CtrlChecker then
-		CtrlChecker:UnregisterEvent("MODIFIER_STATE_CHANGED")
-	end
 
 	-- Check for pending reloads when closing GUI
 	ReloadTracker:OnGUIClose()
@@ -3118,12 +2817,7 @@ function GUI:ShowCategory(category)
 				cat.Button.Selected:Show()
 				-- Subtle accent background to indicate selection
 				if cat.Button.KKUI_Background then
-					cat.Button.KKUI_Background:SetVertexColor(
-						ACCENT_COLOR[1] * 0.2,
-						ACCENT_COLOR[2] * 0.2,
-						ACCENT_COLOR[3] * 0.2,
-						0.9
-					)
+					cat.Button.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.2, ACCENT_COLOR[2] * 0.2, ACCENT_COLOR[3] * 0.2, 0.9)
 				end
 			else
 				cat.Button.Selected:Hide()
@@ -3149,9 +2843,7 @@ function GUI:ShowCategory(category)
 				-- Force dependency overlay creation/evaluation if bound
 				if K.GUIHelpers and K.GUIHelpers.SetWidgetEnabled then
 					-- NOP: actual dependency functions already hooked OnShow; simply ensure shown state
-					if widget:IsShown() and widget._disableOverlay and widget._disableOverlay:IsShown() then
-						-- keep overlay as-is
-					end
+
 				end
 			end
 		end
@@ -3232,8 +2924,7 @@ function GUI:CreateSwitch(section, configPath, text, tooltip, hookFunction, isNe
 end
 
 function GUI:CreateSlider(section, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
-	local widget =
-		CreateSlider(UIParent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateSlider(UIParent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
@@ -3248,9 +2939,9 @@ end
 
 function GUI:CreateTextureDropdown(section, configPath, text, tooltip, hookFunction, isNew, requiresReload)
 	-- TEMPORARY FALLBACK: Use regular dropdown with texture options until proper function is available
-	local textureOptions = {}
 
 	-- Get basic texture options from Media.lua
+	local textureOptions
 	if K.GetAllStatusbarTextures then
 		textureOptions = K.GetAllStatusbarTextures()
 	else
@@ -3264,8 +2955,7 @@ function GUI:CreateTextureDropdown(section, configPath, text, tooltip, hookFunct
 	end
 
 	-- Use regular dropdown widget as fallback
-	local widget =
-		CreateDropdown(UIParent, configPath, text, textureOptions, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateDropdown(UIParent, configPath, text, textureOptions, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
@@ -3279,16 +2969,14 @@ function GUI:CreateColorPicker(section, configPath, text, tooltip, hookFunction,
 end
 
 function GUI:CreateCheckboxGroup(section, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
-	local widget =
-		CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateCheckboxGroup(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 	return widget
 end
 
 function GUI:CreateTextInput(section, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
-	local widget =
-		CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
+	local widget = CreateTextInput(UIParent, configPath, text, placeholder, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
 
@@ -3345,7 +3033,7 @@ function GUI:FilterCategories(searchText)
 	end
 
 	searchText = searchText:lower()
-	local hasVisibleCategories = false
+
 
 	for _, category in ipairs(self.Categories) do
 		local shouldShow = false
@@ -3365,7 +3053,7 @@ function GUI:FilterCategories(searchText)
 			-- Keep all buttons shown, dim non-matching
 			category.Button:Show()
 			if shouldShow then
-				hasVisibleCategories = true
+
 				category.Button:SetAlpha(1)
 				if category.Button.Text then
 					category.Button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
@@ -3564,9 +3252,7 @@ function Module:OnEnable()
 	-- Setup slash commands
 	self:SetupSlashCommands()
 
-	-- Initialize GUI if categories exist
-	if #self.GUI.Categories > 0 then
-	end
+
 end
 
 -- Add Enable method to Module for Core/Loading.lua compatibility
@@ -4146,6 +3832,37 @@ function K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValu
 		K.GUIHelpers.SetWidgetEnabled(childWidget, evaluate(current))
 	end
 
+	-- Add visual tree hierarchy if it's a dependent widget
+	if not childWidget._isDependent then
+		childWidget._isDependent = true
+
+		-- Find the text label to indent it
+		local label
+		for _, region in pairs({ childWidget:GetRegions() }) do
+			if region:GetObjectType() == "FontString" and region:GetText() and (not childWidget.DisplayText or region:GetText() == childWidget.DisplayText) then
+				label = region
+				break
+			end
+		end
+
+		if label then
+			-- Indent text to the right
+			local point, relativeTo, relativePoint, xOfs, yOfs = label:GetPoint()
+			label:SetPoint(point, relativeTo, relativePoint, (xOfs or 8) + 16, yOfs)
+
+			-- Draw L-bracket tree branch anchored to the widget for perfect geometric alignment
+			local vLine = childWidget:CreateTexture(nil, "ARTWORK")
+			vLine:SetSize(2, 14) -- Goes down 14px from top (roughly middle of widget)
+			vLine:SetPoint("TOPLEFT", childWidget, "TOPLEFT", 12, 0)
+			vLine:SetColorTexture(0.4, 0.4, 0.4, 1)
+
+			local hLine = childWidget:CreateTexture(nil, "ARTWORK")
+			hLine:SetSize(8, 2)
+			hLine:SetPoint("TOPLEFT", vLine, "BOTTOMLEFT", 0, 0)
+			hLine:SetColorTexture(0.4, 0.4, 0.4, 1)
+		end
+	end
+
 	-- Add explanatory tooltip while disabled
 	if not childWidget._dependencyTooltipSetup then
 		childWidget._dependencyTooltipSetup = true
@@ -4240,9 +3957,7 @@ local function CreateCredits(parent, creditsData, title)
 	-- Title if provided
 	if title then
 		local titleLabel = widget:CreateFontString(nil, "OVERLAY")
-		titleLabel:SetFontObject(K.UIFont)
-		titleLabel:SetShadowColor(0, 0, 0, 1)
-		titleLabel:SetShadowOffset(1, -1)
+		titleLabel:SetFontObject(K.UIFontBold or K.UIFont)
 		titleLabel:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 		titleLabel:SetText(title)
 		titleLabel:SetPoint("TOPLEFT", 15, yOffset)
@@ -4250,7 +3965,7 @@ local function CreateCredits(parent, creditsData, title)
 	end
 
 	-- Credits entries
-	for i, credit in ipairs(creditsData) do
+	for _, credit in ipairs(creditsData) do
 		local creditFrame = CreateFrame("Frame", nil, widget)
 		creditFrame:SetSize(CONTENT_WIDTH - 30, itemHeight - 2)
 		creditFrame:SetPoint("TOPLEFT", 15, yOffset)

@@ -65,6 +65,10 @@ function Module:CreateTargetOfTarget()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
+
 	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Unitframe"].TargetTargetPowerHeight)
@@ -75,6 +79,10 @@ function Module:CreateTargetOfTarget()
 
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
+
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -4)
@@ -139,15 +147,16 @@ function Module:CreateTargetOfTarget()
 	else
 		self.Level:Hide()
 	end
-	self.Level:SetPoint("TOPLEFT", self.Portrait, "BOTTOMLEFT", 0, -4)
-	self.Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
+	local levelAnchor = self.Portrait or self.Health
+	self.Level:SetPoint("TOPLEFT", levelAnchor, "BOTTOMLEFT", 0, -4)
+	self.Level:SetPoint("TOPRIGHT", levelAnchor, "BOTTOMRIGHT", 0, -4)
 	self:Tag(self.Level, "[fulllevel]")
 
 	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growthX"] = "RIGHT"
-	self.Debuffs["growthY"] = "DOWN"
+	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs["growth-y"] = "DOWN"
 	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
 	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
 	self.Debuffs.num = 8

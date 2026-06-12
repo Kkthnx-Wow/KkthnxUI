@@ -24,11 +24,11 @@ local InCombatLockdown = _G.InCombatLockdown
 local PaperDollFrame = _G.PaperDollFrame
 local UIParent = _G.UIParent
 local math_floor = math.floor
+local ipairs = ipairs
 local pairs = pairs
 local string_format = string.format
 local string_gsub = string.gsub
 local table_sort = table.sort
-local unpack = unpack
 
 -- ---------------------------------------------------------------------------
 -- State & Constants
@@ -84,7 +84,8 @@ local function updateAllSlots()
 		local index = localSlots[i][1]
 		if GetInventoryItemLink("player", index) then
 			local current, max = GetInventoryItemDurability(index)
-			if current then
+			-- REASON: Guard against a missing/zero max to avoid div-by-zero/NaN durability ratios.
+			if current and max and max > 0 then
 				localSlots[i][3] = current / max
 				numSlots = numSlots + 1
 			end
@@ -109,8 +110,40 @@ end
 
 local function getDurabilityColor(cur, max)
 	-- REASON: Generates a color gradient (red to green) based on the current durability percentage.
-	local r, g, b = K.RGBColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 0, 1, 0)
+	local r, g, b = K.oUF:RGBColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 	return r, g, b
+end
+
+local function getSlotRepairCost(slot)
+	-- REASON: Pull the repair cost for a slot out of structured tooltip data. The arg index is not
+	-- stable across patches, so scan both the flattened (data.args) and per-line (data.lines[i].args)
+	-- shapes instead of hardcoding args[7]. Prefer the flattened arg; fall back to line args.
+	local data = C_TooltipInfo_GetInventoryItem("player", slot)
+	if not data then
+		return 0
+	end
+
+	if data.args then
+		for _, arg in ipairs(data.args) do
+			if arg.field == "repairCost" and arg.intVal then
+				return arg.intVal
+			end
+		end
+	end
+
+	if data.lines then
+		for _, line in ipairs(data.lines) do
+			if line.args then
+				for _, arg in ipairs(line.args) do
+					if arg.field == "repairCost" and arg.intVal then
+						return arg.intVal
+					end
+				end
+			end
+		end
+	end
+
+	return 0
 end
 
 local function onEvent(self, event)
@@ -160,13 +193,7 @@ local function onEnter(self)
 			local slotIcon = localSlots[i][4]
 			GameTooltip:AddDoubleLine(slotIcon .. localSlots[i][2], curPercent .. "%", 1, 1, 1, getDurabilityColor(curPercent, 100))
 
-			local data = C_TooltipInfo_GetInventoryItem("player", slot)
-			if data then
-				local argVal = data.args and data.args[7]
-				if argVal and argVal.field == "repairCost" then
-					totalCost = totalCost + argVal.intVal
-				end
-			end
+			totalCost = totalCost + getSlotRepairCost(slot)
 		end
 	end
 

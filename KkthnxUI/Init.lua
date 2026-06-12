@@ -85,22 +85,22 @@ Engine[1] = {} -- K: Utilities/Core
 Engine[2] = {} -- C: Configuration
 Engine[3] = {} -- L: Locales
 
-local K, C, L = Engine[1], Engine[2], Engine[3]
+local K, C = Engine[1], Engine[2]
 
 -- ---------------------------------------------------------------------------
 -- Library Support
 -- ---------------------------------------------------------------------------
 
-K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true) or nil
-K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
-K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
-K.LibDeflate = LibStub("LibDeflate-KkthnxUI", true) or nil
-K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true) or nil
-K.LibSerialize = LibStub("LibSerialize-KkthnxUI", true) or nil
-K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true) or nil
-K.LibUnfit = LibStub("LibUnfit-1.0-KkthnxUI", true) or nil
-K.cargBags = Engine and Engine.cargBags or nil
-K.oUF = Engine and Engine.oUF or nil
+K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true)
+K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true)
+K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true)
+K.LibDeflate = LibStub("LibDeflate-KkthnxUI", true)
+K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+K.LibSerialize = LibStub("LibSerialize-KkthnxUI", true)
+K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
+K.LibUnfit = LibStub("LibUnfit-1.0-KkthnxUI", true)
+K.cargBags = Engine and Engine.cargBags
+K.oUF = Engine and Engine.oUF
 
 -- ---------------------------------------------------------------------------
 -- AddOn Metadata
@@ -168,13 +168,13 @@ K.SystemColor = "|CFFFFCC66"
 
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 
--- Store Font objects directly to preserve shadow and other properties
-K.UIFont = _G.KkthnxUIFont
-K.UIFontOutline = _G.KkthnxUIFontOutline
+K.UIFont = "KkthnxUIFont"
+K.UIFontSize = select(2, _G.KkthnxUIFont:GetFont())
+K.UIFontStyle = select(3, _G.KkthnxUIFont:GetFont())
 
--- Extract the file paths, sizes, and styles for manual SetFont calls if needed
-K.UIFontPath, K.UIFontSize, K.UIFontStyle = K.UIFont:GetFont()
-K.UIFontOutlinePath, K.UIFontOutlineSize, K.UIFontOutlineStyle = K.UIFontOutline:GetFont()
+K.UIFontOutline = "KkthnxUIFontOutline"
+K.UIFontOutlineSize = select(2, _G.KkthnxUIFontOutline:GetFont())
+K.UIFontOutlineStyle = select(3, _G.KkthnxUIFontOutline:GetFont())
 
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
@@ -272,11 +272,18 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	end
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+		-- PERF: Fetch the CLEU payload once per event, then fan it out to all listeners.
+		local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName
+		local destFlags, destRaidFlags, arg12, arg13, arg14, arg15, arg16, arg17
+		local arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25
+
+		timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25 = CombatLogGetCurrentEventInfo()
+
 		for func, context in pairs(funcs) do
 			if context == true then
-				func(event, CombatLogGetCurrentEventInfo())
+				func(event, timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25)
 			else
-				func(context, event, CombatLogGetCurrentEventInfo())
+				func(context, event, timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25)
 			end
 		end
 	else
@@ -289,6 +296,13 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 		end
 	end
 end)
+
+-- MIDNIGHT (12.0): do NOT register COMBAT_LOG_EVENT_UNFILTERED here. Registering it
+-- from the addon-load bootstrap chunk runs during the restricted load phase and gets
+-- blocked (ADDON_ACTION_BLOCKED at Frame:RegisterEvent), which then taints the rest of
+-- KkthnxUI's init and floods taint.log. NDui registers CLEU lazily from a real consumer
+-- after login instead, so we mirror that: K:RegisterEvent below performs the actual
+-- eventsFrame:RegisterEvent the first time a module subscribes (post-PLAYER_LOGIN).
 
 function K:RegisterEvent(event, func, unit1, unit2)
 	if event == "CLEU" then
@@ -368,11 +382,6 @@ function K:NewModule(name, noReport)
 	return module
 end
 
--- Alias for CreateModule
-function K:CreateModule(name)
-	return K:NewModule(name)
-end
-
 function K:GetModule(name)
 	if not modules[name] then
 		print(string_format("|cffff0000KkthnxUI:|r Module <%s> does not exist.", name))
@@ -447,9 +456,10 @@ function K:SetupUIScale(init)
 	local scale = C["General"].UIScale
 	if init then
 		-- REASON: Pre-calculate the coordinate multiplier for pixel-perfect positioning.
+		-- Stored on C (Config table) to match NDui's C.mult pattern and be accessible to all modules.
 		local pixel = 1
 		local ratio = 768 / K.ScreenHeight
-		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
+		C.Mult = (pixel / scale) - ((pixel - ratio) / scale)
 		return
 	end
 
@@ -470,6 +480,15 @@ local function UpdatePixelScale(event)
 		return
 	end
 
+	-- REASON: Always refresh screen dimensions and recalculate C.Mult immediately, even
+	-- during combat. Only UIParent:SetScale is protected by combat lockdown and must be
+	-- deferred. Matches NDui's pattern where B:SetupUIScale(true) runs unconditionally.
+	if event == "UI_SCALE_CHANGED" then
+		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
+	end
+	K:SetupUIScale(true)
+
+	-- WARNING: UIParent:SetScale is a protected call; defer past combat lockdown.
 	if InCombatLockdown() then
 		if not pendingScaleApply then
 			pendingScaleApply = true
@@ -479,14 +498,7 @@ local function UpdatePixelScale(event)
 	end
 
 	isScaling = true
-
-	if event == "UI_SCALE_CHANGED" then
-		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
-	end
-
-	K:SetupUIScale(true)
 	K:SetupUIScale()
-
 	isScaling = false
 end
 
@@ -503,7 +515,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdatePixelScale)
 
-	-- K:SetSmoothingAmount(C["General"].SmoothAmount)
+	K:SetSmoothingAmount(C["General"].SmoothAmount)
 
 	if K.LibCustomGlow then
 		K.ShowOverlayGlow = K.LibCustomGlow.ShowOverlayGlow

@@ -12,7 +12,6 @@ local Module = K:GetModule("Miscellaneous")
 
 -- PERF: Localize global functions and environment for faster lookups.
 local ipairs = _G.ipairs
-local math_floor = _G.math.floor
 local math_huge = _G.math.huge
 local math_min = _G.math.min
 local string_find = _G.string.find
@@ -51,7 +50,7 @@ local UnitXPMax = _G.UnitXPMax
 
 -- SG: State Variables
 local currentXP, xpToLevel, restedXP
-local percentRested, percentXP, remainXP, remainTotal, remainBars
+local percentXP, remainXP, remainTotal, remainBars
 local currentHonor, maxHonor, currentHonorLevel, percentHonor, remainingHonor
 local currentAzerite, maxAzerite, azeriteLevel, percentAzerite
 local barDisplayString = ""
@@ -175,9 +174,10 @@ local function handleExperienceBar(currentBar)
 end
 
 -- REASON: Updates the reputation bar state and visuals, handling friendship, paragon, and renown systems.
-local function handleReputationBar(currentBar)
+-- REASON: Accepts optional pre-fetched factionData to avoid redundant C_Reputation_GetWatchedFactionData calls.
+local function handleReputationBar(currentBar, factionData)
 	currentBarMode = "rep"
-	local factionData = C_Reputation_GetWatchedFactionData and C_Reputation_GetWatchedFactionData()
+	factionData = factionData or (C_Reputation_GetWatchedFactionData and C_Reputation_GetWatchedFactionData())
 	if not factionData then
 		currentBar:Hide()
 		currentBar.text:SetText("")
@@ -199,12 +199,19 @@ local function handleReputationBar(currentBar)
 			curThreshold = friendshipData.reactionThreshold or 0
 			nextThreshold = friendshipData.nextThreshold or math_huge
 			standingValue = friendshipData.standing or standingValue
-			renownLevel = friendshipData.friendshipFactionLevel
+-- 			renownLevel = friendshipData.friendshipFactionLevel
 		end
 	end
 
-	if not standingLabel and factionID and C_Reputation_IsFactionParagon and C_Reputation_IsFactionParagon(factionID) then
-		local cur, thresh
+	-- REASON: C_Reputation.IsFactionParagon returns true for any faction that *supports* paragon
+	-- (including major/renown factions nowhere near it). Only treat it as Paragon for regular
+	-- factions, or major factions that have actually reached maximum renown - otherwise a
+	-- mid-renown major faction (e.g. Renown 4) wrongly shows "Paragon".
+	local isMajorFaction = factionID and C_Reputation_IsMajorFaction and C_Reputation_IsMajorFaction(factionID)
+	local majorRenownMaxed = isMajorFaction and C_MajorFactions_HasMaximumRenown and C_MajorFactions_HasMaximumRenown(factionID)
+
+	if not standingLabel and factionID and C_Reputation_IsFactionParagon and (not isMajorFaction or majorRenownMaxed) and C_Reputation_IsFactionParagon(factionID) then
+		local cur, thresh, _
 		cur, thresh, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 		if cur and thresh and thresh > 0 then
 			standingLabel = L["Paragon"]
@@ -274,7 +281,7 @@ local function handleHonorBar(currentBar, event, unit)
 	end
 
 	percentHonor = (currentHonor / maxHonor) * 100
-	remainingHonor = math_min(maxHonor - currentHonor, 0) -- Fixed logic
+	-- FIX: Removed dead code line that was immediately overwritten (math_min clamped to ≤ 0, then replaced).
 	remainingHonor = maxHonor - currentHonor
 	if remainingHonor < 0 then
 		remainingHonor = 0
@@ -347,11 +354,9 @@ local function addExperienceTooltip()
 end
 
 local function addWatchedReputationTooltip(addSpacingBefore)
-	if not (C_Reputation_GetWatchedFactionData and C_Reputation_GetWatchedFactionData()) then
-		return false
-	end
-
-	local factionData = C_Reputation_GetWatchedFactionData()
+	-- FIX: Capture the guard result to avoid calling C_Reputation_GetWatchedFactionData twice
+	-- (each call returns a fresh table, creating unnecessary GC pressure).
+	local factionData = C_Reputation_GetWatchedFactionData and C_Reputation_GetWatchedFactionData()
 	if not factionData or not factionData.name then
 		return false
 	end
@@ -375,12 +380,19 @@ local function addWatchedReputationTooltip(addSpacingBefore)
 			curThreshold = friendshipData.reactionThreshold or 0
 			nextThreshold = friendshipData.nextThreshold or math_huge
 			standingValue = friendshipData.standing or standingValue
-			renownLevel = friendshipData.friendshipFactionLevel
+-- 			renownLevel = friendshipData.friendshipFactionLevel
 		end
 	end
 
-	if not standingLabel and factionID and C_Reputation_IsFactionParagon and C_Reputation_IsFactionParagon(factionID) then
-		local cur, thresh
+	-- REASON: C_Reputation.IsFactionParagon returns true for any faction that *supports* paragon
+	-- (including major/renown factions nowhere near it). Only treat it as Paragon for regular
+	-- factions, or major factions that have actually reached maximum renown - otherwise a
+	-- mid-renown major faction (e.g. Renown 4) wrongly shows "Paragon".
+	local isMajorFaction = factionID and C_Reputation_IsMajorFaction and C_Reputation_IsMajorFaction(factionID)
+	local majorRenownMaxed = isMajorFaction and C_MajorFactions_HasMaximumRenown and C_MajorFactions_HasMaximumRenown(factionID)
+
+	if not standingLabel and factionID and C_Reputation_IsFactionParagon and (not isMajorFaction or majorRenownMaxed) and C_Reputation_IsFactionParagon(factionID) then
+		local cur, thresh, _
 		cur, thresh, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 		if cur and thresh and thresh > 0 then
 			standingLabel = L["Paragon"]
@@ -502,8 +514,10 @@ local function onExpBarEvent(self, event, unit)
 		return
 	end
 
-	if C_Reputation_GetWatchedFactionData and C_Reputation_GetWatchedFactionData() then
-		handleReputationBar(self)
+	-- FIX: Capture the guard result and pass it to handleReputationBar to avoid triple API calls.
+	local factionData = C_Reputation_GetWatchedFactionData and C_Reputation_GetWatchedFactionData()
+	if factionData then
+		handleReputationBar(self, factionData)
 		return
 	end
 
@@ -676,7 +690,8 @@ function Module:CreateExpbar()
 
 	local barText = expRepBar:CreateFontString(nil, "OVERLAY")
 	barText:SetFontObject(K.UIFont)
-	barText:SetFont(string_format("%s", select(1, barText:GetFont())), 11, select(3, barText:GetFont()))
+	-- FIX: Removed no-op string_format("%s", ...) identity wrapper; font path is already a string.
+	barText:SetFont(select(1, barText:GetFont()), 11, select(3, barText:GetFont()))
 	barText:SetJustifyH("CENTER")
 	barText:SetWordWrap(false)
 	barText:SetPoint("CENTER", expRepBar, "CENTER", 0, 0)

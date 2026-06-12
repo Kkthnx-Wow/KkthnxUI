@@ -16,11 +16,12 @@ local ADDON_NAME = ...
 
 -- PERF: Cache frequent APIs and globals to reduce table lookups in hot paths.
 local _G = _G
-local ipairs, pairs, select, unpack = ipairs, pairs, select, unpack
+local ipairs, select, unpack = ipairs, select, unpack
 local getmetatable = getmetatable
 local tonumber = tonumber
 local type = type
-local math_max, math_min, math_pi = math.max, math.min, math.pi
+-- PERF: math_rad replaces the hand-rolled local rad() wrapper; math_pi is no longer needed.
+local math_max, math_min, math_rad = math.max, math.min, math.rad
 local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver = RegisterStateDriver
@@ -35,11 +36,6 @@ local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseBu
 -- ---------------------------------------------------------------------------
 -- Utility Functions
 -- ---------------------------------------------------------------------------
-
--- Converts degrees to radians for API rotations.
-local function rad(degrees)
-	return degrees * math_pi / 180
-end
 
 -- ---------------------------------------------------------------------------
 -- Frame Hiders
@@ -232,6 +228,19 @@ local function CreateShadow(frame, useBackdrop)
 	end
 	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
+	-- MIDNIGHT (12.0): a StatusBar/Frame that received a secret value (UnitHealth,
+	-- cast duration, ...) gains secret anchors that propagate to anchored children
+	-- like this shadow, making its width secret. Blizzard's BackdropTemplate
+	-- OnSizeChanged (Backdrop.lua SetupTextureCoordinates) then does `width / scale`
+	-- arithmetic and errors. Wrap that handler in pcall so a secret size becomes a
+	-- harmless no-op instead of a crash (matches the project's secret-guard pattern).
+	local onSizeChanged = shadow:GetScript("OnSizeChanged")
+	if onSizeChanged then
+		shadow:SetScript("OnSizeChanged", function(self, ...)
+			pcall(onSizeChanged, self, ...)
+		end)
+	end
+
 	frame.Shadow = shadow
 	return shadow
 end
@@ -274,8 +283,7 @@ local blizzTextures = {
 	"_RightSeparator",
 	"_LeftSeparator",
 	"Cover",
-	"Border",
-	"Background",
+	-- REASON: "Border" and "Background" were duplicated earlier in this table; removed to avoid redundant iteration.
 	"TopTex",
 	"TopLeftTex",
 	"TopRightTex",
@@ -562,8 +570,8 @@ end
 -- REASON: Standardizes editbox appearance by stripping textures and adding a border.
 local function SkinEditBox(self, height, width)
 	local frameName = self.GetName and self:GetName()
-	for _, region in pairs(blizzRegions) do
-		region = frameName and _G[frameName .. region] or self[region]
+	for _, regionName in ipairs(blizzRegions) do
+		local region = (frameName and _G[frameName .. regionName]) or self[regionName]
 		if region then
 			region:SetAlpha(0)
 		end
@@ -610,7 +618,8 @@ local arrowDegree = {
 
 function K.SetupArrow(self, direction)
 	self:SetTexture(C["Media"].Textures.ArrowTexture)
-	self:SetRotation(rad(arrowDegree[direction]))
+	-- REASON: math_rad replaces the removed local rad() wrapper; behaviour is identical.
+	self:SetRotation(math_rad(arrowDegree[direction]))
 end
 
 -- REASON: High-level wrapper to skin an arrow button.

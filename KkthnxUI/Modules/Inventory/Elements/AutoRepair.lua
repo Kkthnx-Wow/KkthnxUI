@@ -41,7 +41,7 @@ local function delayFunc()
 	end
 end
 
-local function autoRepair(override)
+autoRepair = function(override)
 	if isShown and not override then
 		-- REASON: Prevent double-execution if the function is re-triggered rapidly.
 		return
@@ -55,14 +55,15 @@ local function autoRepair(override)
 	repairAllCost, canRepair = GetRepairAllCost()
 
 	if canRepair and repairAllCost > 0 then
-		local t0
 
 		-- REASON: Check Guild Repair eligibility:
 		-- 1. Not in override mode (personal repair fallback).
 		-- 2. User setting 'AutoRepair' is set to 1 (Guild).
 		-- 3. Player is in a guild, maintains permission, and has sufficient withdraw allowance.
 		-- NOTE: 'GetGuildBankWithdrawMoney' creates a server query; result might be slightly latent.
-		if not override and C["Inventory"].AutoRepair == 1 and IsInGuild() and CanGuildBankRepair() and GetGuildBankWithdrawMoney() >= repairAllCost then
+		local guildWithdraw = GetGuildBankWithdrawMoney()
+		local guildCanCover = guildWithdraw == -1 or guildWithdraw >= repairAllCost
+		if not override and C["Inventory"].AutoRepair == 1 and IsInGuild() and CanGuildBankRepair() and guildCanCover then
 			-- REASON: 'true' argument specifies using Guild Bank funds.
 			RepairAllItems(true)
 		else

@@ -50,9 +50,15 @@ local isSystemEntered = false
 local lastClickTime = 0
 local CLICK_COOLDOWN = 60
 local MAX_ADDONS_SHOWN = 12
+local MEMORY_REFRESH_INTERVAL = 5
 
 local infoTable = {}
-local isScriptProfileEnabled = GetCVarBool("scriptProfile")
+local memoryTotal = 0
+local memoryUpdatedAt = 0
+-- REASON: SESSION_SCRIPT_PROFILE is the immutable session-start baseline used to detect if a reload is still
+-- pending. isScriptProfileEnabled tracks the live post-toggle state and is refreshed in onMouseUp.
+local SESSION_SCRIPT_PROFILE = GetCVarBool("scriptProfile")
+local isScriptProfileEnabled = SESSION_SCRIPT_PROFILE
 local disableString = "|cffff5555" .. _G.VIDEO_OPTIONS_DISABLED
 local enableString = "|cff55ff55" .. _G.VIDEO_OPTIONS_ENABLED
 local usageColor = { 0, 1, 0, 1, 1, 0, 1, 0, 0 }
@@ -87,7 +93,7 @@ end
 
 local function getSmoothColor(cur, max)
 	-- REASON: Returns a color gradient from K.oUF for visual representation of usage levels.
-	return K.RGBColorGradient(cur, max, unpack(usageColor))
+	return K.oUF:RGBColorGradient(cur, max, unpack(usageColor))
 end
 
 local function buildAddonList()
@@ -174,7 +180,12 @@ local function onEnter(self)
 	GameTooltip:ClearLines()
 
 	if Module.ShowMemory or not isScriptProfileEnabled then
-		local totalMem = updateMemoryUsage()
+		local now = GetTime()
+		if memoryTotal == 0 or (now - memoryUpdatedAt) >= MEMORY_REFRESH_INTERVAL then
+			memoryTotal = updateMemoryUsage()
+			memoryUpdatedAt = now
+		end
+		local totalMem = memoryTotal
 		GameTooltip:AddDoubleLine("System", formatMemory(totalMem), 0.4, 0.6, 1, 0.5, 0.7, 1)
 		GameTooltip:AddLine(" ")
 
@@ -265,6 +276,8 @@ local function onMouseUp(_, btn)
 		lastClickTime = currentTime
 		local memBefore = gcinfo()
 		collectgarbage("collect")
+		memoryTotal = 0
+		memoryUpdatedAt = 0
 		K.Print(string_format(K.InfoColorTint .. "%s:|r %s", L["Memory Collected"], formatMemory(memBefore - gcinfo())))
 
 		onEnter(nil)
@@ -274,8 +287,12 @@ local function onMouseUp(_, btn)
 	elseif btn == "MiddleButton" then
 		local currentValue = GetCVarBool("scriptProfile")
 		SetCVar("scriptProfile", currentValue and 0 or 1)
+		-- FIX: Refresh the live state so tooltip renders and CPU mode checks immediately reflect the new CVar.
+		isScriptProfileEnabled = GetCVarBool("scriptProfile")
 
-		if GetCVarBool("scriptProfile") == isScriptProfileEnabled then
+		-- REASON: Compare against SESSION_SCRIPT_PROFILE (session start), not the pre-toggle snapshot.
+		-- This correctly shows the reload prompt only when the live state still differs from session start.
+		if isScriptProfileEnabled == SESSION_SCRIPT_PROFILE then
 			_G.StaticPopup_Hide("CPUUSAGE")
 		else
 			_G.StaticPopup_Show("CPUUSAGE")

@@ -33,7 +33,7 @@ local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
 local UIErrorsFrame = _G.UIErrorsFrame
-local format = _G.format
+local string_format = _G.string.format
 local hooksecurefunc = _G.hooksecurefunc
 local strfind = _G.strfind
 local strupper = _G.strupper
@@ -76,7 +76,9 @@ function Module:Bind_RegisterMacro()
 	-- NOTE: Dynamically hook macro selector buttons as they are rendered in the scroll box.
 	hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local button = self.ScrollTarget:GetChildren()[i]
+			-- COMPAT: GetChildren() returns a multi-value tuple; `GetChildren()[i]` would
+			-- truncate to the first child and index it numerically (nil → error). Use select.
+			local button = select(i, self.ScrollTarget:GetChildren())
 			if not button.bindHooked then
 				button:HookScript("OnEnter", hookMacroButton)
 				button.bindHooked = true
@@ -118,14 +120,7 @@ function Module:Bind_Create()
 			for i = 1, #frame.bindings do
 				GameTooltip:AddDoubleLine(i, frame.bindings[i], 1, 1, 1, 0, 1, 0)
 			end
-			GameTooltip:AddLine(
-				L["Press the escape key or right click to unbind this action."]
-					or "Press the escape key or right click to unbind this action.",
-				1,
-				0.8,
-				0,
-				1
-			)
+			GameTooltip:AddLine(L["Press the escape key or right click to unbind this action."] or "Press the escape key or right click to unbind this action.", 1, 0.8, 0, 1)
 		end
 		GameTooltip:Show()
 	end)
@@ -244,7 +239,11 @@ function Module:Bind_Update(button, spellmacro)
 	end
 
 	-- NOTE: Refresh tooltips to show updated binding info.
-	frame:GetScript("OnEnter")
+	-- FIX: GetScript returns a function reference; it must be invoked to actually refresh the tooltip.
+	local onEnter = frame:GetScript("OnEnter")
+	if onEnter then
+		onEnter(frame)
+	end
 end
 
 local ignoreKeys = {
@@ -272,7 +271,7 @@ function Module:Bind_Listener(key)
 				SetBinding(frame.bindings[i])
 			end
 		end
-		K.Print(format(L["Clear Binds"], frame.tipName or frame.name))
+		K.Print(string_format(L["Clear Binds"], frame.tipName or frame.name))
 
 		Module:Bind_Update(frame.button, frame.spellmacro)
 		return
@@ -300,17 +299,7 @@ function Module:Bind_Listener(key)
 	else
 		SetBinding(alt .. ctrl .. shift .. meta .. key, frame.spellmacro .. " " .. frame.name)
 	end
-	K.Print(
-		(frame.tipName or frame.name)
-			.. " |cff00ff00"
-			.. L["Key Bound To"]
-			.. "|r "
-			.. alt
-			.. ctrl
-			.. shift
-			.. meta
-			.. key
-	)
+	K.Print((frame.tipName or frame.name) .. " |cff00ff00" .. L["Key Bound To"] .. "|r " .. alt .. ctrl .. shift .. meta .. key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
 end
@@ -423,10 +412,7 @@ function Module:Bind_CreateDialog()
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	checkBox.text:SetPoint("CENTER", 0, 0)
-	checkBox.text:SetText(
-		checkBox:GetChecked() and K.SystemColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r"
-			or K.GreyColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r"
-	)
+	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r" or K.GreyColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r")
 	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
 
 	Module.keybindDialog = frame

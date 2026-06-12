@@ -22,6 +22,8 @@ local pairs = pairs
 -- DATABASE HANDLING
 -- ---------------------------------------------------------------------------
 
+local CURRENT_SCHEMA_VERSION = 1
+
 local function DeepCopy(src)
 	local dest = {}
 	for k, v in pairs(src) do
@@ -32,6 +34,69 @@ local function DeepCopy(src)
 		end
 	end
 	return dest
+end
+
+local function DeepEqual(left, right)
+	if left == right then
+		return true
+	end
+
+	local leftType, rightType = type(left), type(right)
+	if leftType ~= rightType then
+		return false
+	end
+
+	if leftType ~= "table" then
+		return false
+	end
+
+	for key, value in pairs(left) do
+		if not DeepEqual(value, right[key]) then
+			return false
+		end
+	end
+
+	for key in pairs(right) do
+		if left[key] == nil then
+			return false
+		end
+	end
+
+	return true
+end
+
+local schemaMigrations = {
+	[1] = function()
+		for _, realmData in pairs(KkthnxUIDB.Settings) do
+			if type(realmData) == "table" then
+				for _, settings in pairs(realmData) do
+					if type(settings) == "table" then
+						local automation = settings.Automation
+						if automation and automation.AutoSkipCinematic ~= nil and automation.ConfirmCinematicSkip == nil then
+							automation.ConfirmCinematicSkip = automation.AutoSkipCinematic
+							automation.AutoSkipCinematic = nil
+						end
+					end
+				end
+			end
+		end
+	end,
+}
+
+local function KKUI_RunDatabaseMigrations()
+	local version = KkthnxUIDB.SchemaVersion or 0
+	if version >= CURRENT_SCHEMA_VERSION then
+		return
+	end
+
+	for targetVersion = version + 1, CURRENT_SCHEMA_VERSION do
+		local migration = schemaMigrations[targetVersion]
+		if migration then
+			migration()
+		end
+	end
+
+	KkthnxUIDB.SchemaVersion = CURRENT_SCHEMA_VERSION
 end
 
 local function KKUI_CreateDefaults()
@@ -54,40 +119,48 @@ end
 
 local function KKUI_LoadCustomSettings()
 	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
+	local removeGroups = {}
 
-	-- COMPAT: Schema Migration for legacy settings.
-	if Settings and Settings.Automation then
-		local automation = Settings.Automation
-		if automation.AutoSkipCinematic ~= nil and automation.ConfirmCinematicSkip == nil then
-			automation.ConfirmCinematicSkip = automation.AutoSkipCinematic
-			automation.AutoSkipCinematic = nil
-		end
-	end
-
-	-- REASON: Delta processing to keep the database size small by removing values that match defaults.
+	-- REASON: Delta processing keeps the database small by pruning values that match defaults.
 	for group, options in pairs(Settings) do
-		if C[group] then
+		local defaults = C[group]
+		if defaults and type(options) == "table" then
 			local changeCount = 0
+			local removeOptions = {}
 
 			for option, value in pairs(options) do
-				if C[group][option] ~= nil then
-					if C[group][option] == value then
-						Settings[group][option] = nil -- REASON: Value matches default, remove from DB.
+				local defaultValue = defaults[option]
+				if defaultValue ~= nil then
+					if DeepEqual(defaultValue, value) then
+						removeOptions[#removeOptions + 1] = option
 					else
 						changeCount = changeCount + 1
-						C[group][option] = value -- REASON: Overwrite Config with Saved value.
+						-- Copy table settings so runtime config changes cannot mutate SavedVariables by reference.
+						if type(value) == "table" then
+							defaults[option] = DeepCopy(value)
+						else
+							defaults[option] = value
+						end
 					end
+				else
+					removeOptions[#removeOptions + 1] = option
 				end
 			end
 
-			-- REASON: Clean up empty groups to prevent clutter.
+			for i = 1, #removeOptions do
+				options[removeOptions[i]] = nil
+			end
+
 			if changeCount == 0 then
-				Settings[group] = nil
+				removeGroups[#removeGroups + 1] = group
 			end
 		else
-			-- REASON: Clean up groups that no longer exist in Config.
-			Settings[group] = nil
+			removeGroups[#removeGroups + 1] = group
 		end
+	end
+
+	for i = 1, #removeGroups do
+		Settings[removeGroups[i]] = nil
 	end
 end
 
@@ -129,6 +202,7 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.ProfilePortraits = KkthnxUIDB.ProfilePortraits or {}
 	KkthnxUIDB.KeystoneInfo = KkthnxUIDB.KeystoneInfo or {}
 	KkthnxUIDB.DisabledAddOns = KkthnxUIDB.DisabledAddOns or {}
+	KkthnxUIDB.SchemaVersion = KkthnxUIDB.SchemaVersion or 0
 
 	-- REASON: Explicitly handle booleans for nil protection.
 	if KkthnxUIDB.ShowSlots == nil then
@@ -136,9 +210,7 @@ local function KKUI_VerifyDatabase()
 	end
 
 	-- 6) Versioning & Changelogs
-	-- REASON: Ensure these exist in the schema, even if eventually nil.
-	KkthnxUIDB.ChangelogVersion = KkthnxUIDB.ChangelogVersion or nil
-	KkthnxUIDB.DetectedVersion = KkthnxUIDB.DetectedVersion or nil
+	-- NOTE: These fields are managed externally; no initialization needed here.
 
 	-- REASON: Ensure this is a boolean false if nil.
 	KkthnxUIDB.ChangelogHighlightLatest = KkthnxUIDB.ChangelogHighlightLatest or false
@@ -203,8 +275,22 @@ local function KKUI_OnEvent(self, event, arg1)
 
 		-- REASON: Initialize Database.
 		KKUI_VerifyDatabase()
+		KKUI_RunDatabaseMigrations()
 		KKUI_CreateDefaults()
 		KKUI_LoadCustomSettings()
+
+		-- TEMPORARY (Midnight 12.0): force-disable AuraWatch, the Swing timer, and
+		-- floating CombatText regardless of the saved profile while their secret-value
+		-- handling is being reworked. Applied after settings load so it overrides the
+		-- profile; remove this block to restore the user's configured values.
+		if C["AuraWatch"] then
+			C["AuraWatch"].Enable = false
+		end
+		if C["Unitframe"] then
+			C["Unitframe"].CombatText = false
+			C["Unitframe"].PetCombatText = false
+			C["Unitframe"].SwingBar = false
+		end
 
 		-- REASON: Setup initial scaling.
 		if K.SetupUIScale then

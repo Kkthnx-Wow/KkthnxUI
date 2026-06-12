@@ -12,7 +12,6 @@ local Module = K:GetModule("Miscellaneous")
 
 -- PERF: Localize global functions and environment for faster lookups.
 local pairs = _G.pairs
-local select = _G.select
 local string_match = _G.string.match
 local table_insert = _G.table.insert
 local unpack = _G.unpack
@@ -35,9 +34,7 @@ local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.SetOnlyShowSk
 local CreateFrame = _G.CreateFrame
 local GetProfessionInfo = _G.GetProfessionInfo
 local GetProfessions = _G.GetProfessions
-local HookSecureFunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local IsPlayerSpell = _G.IsPlayerSpell
 local PlayerHasToy = _G.PlayerHasToy
 
@@ -137,7 +134,7 @@ end
 
 local tradeTabIndex = 1
 function Module:createNewTradeTab(professionSpellID, toyIDValue, itemIDValue)
-	local tabName, tradeTabTexture
+	local tabName, tradeTabTexture, _
 	if toyIDValue then
 		_, tabName, tradeTabTexture = C_ToyBox_GetToyInfo(toyIDValue)
 	elseif itemIDValue then

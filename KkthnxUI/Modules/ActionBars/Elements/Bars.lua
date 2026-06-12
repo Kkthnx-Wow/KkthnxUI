@@ -30,6 +30,18 @@ local GetCVarBool = GetCVarBool
 -- NOTE: Global layout constants for padding and spacing between buttons.
 local margin, padding = 6, 0
 
+local function GetActionBarFont()
+	local fontObject = _G.KkthnxUIFontOutline
+	if fontObject then
+		local font = select(1, fontObject:GetFont())
+		if font then
+			return font
+		end
+	end
+
+	return "Fonts\\FRIZQT__.TTF"
+end
+
 -- ---------------------------------------------------------------------------
 -- BAR SIZING & LAYOUT
 -- ---------------------------------------------------------------------------
@@ -53,37 +65,19 @@ function Module:UpdateAllSize()
 	Module:UpdateVehicleButton()
 end
 
-function Module:UpdateCastVFX(button)
-	local buttonWidth, buttonHeight = button:GetSize()
-	local maskWidth, maskHeight = buttonWidth * 1.5, buttonHeight * 1.5
-
-	local spellCastAnim = button.SpellCastAnimFrame
-	if spellCastAnim then
-		local endBurst = spellCastAnim.EndBurst
-		if endBurst then
-			endBurst.EndMask:SetSize(maskWidth, maskHeight)
-		end
-
-		local spellCastFill = spellCastAnim.Fill
-		if spellCastFill then
-			spellCastFill.FillMask:SetSize(maskWidth, maskHeight)
-		end
-	end
-	local interruptDisplay = button.InterruptDisplay
-	local interruptHighlight = interruptDisplay and interruptDisplay.Highlight
-	if interruptHighlight then
-		interruptHighlight.Mask:SetSize(maskWidth, maskHeight)
-	end
-end
-
 -- NOTE: Standardizes font settings across all button text elements.
 function Module:UpdateFontSize(button, fontSize)
-	-- Directly apply the path, new size, and style variables
-	button.Name:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
-	button.Count:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
-	button.HotKey:SetFont(K.UIFontOutlinePath, fontSize, K.UIFontOutlineStyle)
+	local font = GetActionBarFont()
+	local flags = K.UIFontOutlineStyle
 
-	Module:UpdateCastVFX(button)
+	button.Name:SetFontObject(K.UIFontOutline)
+	button.Name:SetFont(font, fontSize, flags)
+
+	button.Count:SetFontObject(K.UIFontOutline)
+	button.Count:SetFont(font, fontSize, flags)
+
+	button.HotKey:SetFontObject(K.UIFontOutline)
+	button.HotKey:SetFont(font, fontSize, flags)
 end
 
 -- REASON: Recalculates button positions and frame bounds based on rows and columns.
@@ -195,9 +189,10 @@ function Module:UpdateButtonConfig(i)
 	self.buttonConfig.showGrid = C["ActionBar"].Grid
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 	self.buttonConfig.actionButtonUI = true
+	local font = GetActionBarFont()
 
 	local hotkey = self.buttonConfig.text.hotkey
-	hotkey.font.font = K.UIFontOutlinePath
+	hotkey.font.font = font
 	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	hotkey.font.flags = K.UIFontOutlineStyle
 	hotkey.position.anchor = "TOPRIGHT"
@@ -207,7 +202,7 @@ function Module:UpdateButtonConfig(i)
 	hotkey.justifyH = "RIGHT"
 
 	local count = self.buttonConfig.text.count
-	count.font.font = K.UIFontOutlinePath
+	count.font.font = font
 	count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	count.font.flags = K.UIFontOutlineStyle
 	count.position.anchor = "BOTTOMRIGHT"
@@ -217,7 +212,7 @@ function Module:UpdateButtonConfig(i)
 	count.justifyH = "RIGHT"
 
 	local macro = self.buttonConfig.text.macro
-	macro.font.font = K.UIFontOutlinePath
+	macro.font.font = font
 	macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
 	macro.font.flags = K.UIFontOutlineStyle
 	macro.position.anchor = "BOTTOM"
@@ -249,7 +244,22 @@ end
 -- vehicles, stances, and overriding bars.
 local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
+local function DeferredUpdateBarVisibility()
+	Module:UpdateBarVisibility()
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", DeferredUpdateBarVisibility)
+end
+
+local function DeferredUpdateBarConfig()
+	Module:UpdateBarConfig()
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", DeferredUpdateBarConfig)
+end
+
 function Module:UpdateBarVisibility()
+	if InCombatLockdown() then
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", DeferredUpdateBarVisibility)
+		return
+	end
+
 	for i = 1, 8 do
 		local frame = _G["KKUI_ActionBar" .. i]
 		if frame then
@@ -267,6 +277,11 @@ function Module:UpdateBarVisibility()
 end
 
 function Module:UpdateBarConfig()
+	if InCombatLockdown() then
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", DeferredUpdateBarConfig)
+		return
+	end
+
 	SetCVar("ActionButtonUseKeyDown", C["ActionBar"].KeyDown and 1 or 0)
 
 	for i = 1, 8 do
@@ -330,22 +345,10 @@ function Module:CreateBars()
 
 	local BAR_DATA = {
 		[1] = { page = 1, bindName = "ACTIONBUTTON", anchor = { "BOTTOM", UIParent, "BOTTOM", 0, 4 } },
-		[2] = {
-			page = 6,
-			bindName = "MULTIACTIONBAR1BUTTON",
-			anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin },
-		},
-		[3] = {
-			page = 5,
-			bindName = "MULTIACTIONBAR2BUTTON",
-			anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin },
-		},
+		[2] = { page = 6, bindName = "MULTIACTIONBAR1BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin } },
+		[3] = { page = 5, bindName = "MULTIACTIONBAR2BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin } },
 		[4] = { page = 3, bindName = "MULTIACTIONBAR3BUTTON", anchor = { "RIGHT", UIParent, "RIGHT", -4, 0 } },
-		[5] = {
-			page = 4,
-			bindName = "MULTIACTIONBAR4BUTTON",
-			anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 },
-		},
+		[5] = { page = 4, bindName = "MULTIACTIONBAR4BUTTON", anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 } },
 		[6] = { page = 13, bindName = "MULTIACTIONBAR5BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 0 } },
 		[7] = { page = 14, bindName = "MULTIACTIONBAR6BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 40 } },
 		[8] = { page = 15, bindName = "MULTIACTIONBAR7BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 80 } },
@@ -457,7 +460,8 @@ function Module:OnEnable()
 		"UpdateBarVisibility",
 		"UpdateAllSize",
 		"HideBlizz",
-		"OnEnableCooldown", -- REASON: Hooks cooldown formatter after bars are created.
+		"CreateBarFadeGlobal",
+		"CreatePulseCD",
 	}
 
 	for _, funcName in ipairs(loadActionBarModules) do

@@ -8,13 +8,11 @@
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = K:GetModule("Skins")
 
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G
-local ipairs = _G.ipairs
 local select = _G.select
-local table_insert = _G.table.insert
+local tinsert = _G.table.insert
 
 local C_Item_IsCosmeticItem = _G.C_Item.IsCosmeticItem
 local CreateFrame = _G.CreateFrame
@@ -41,7 +39,7 @@ local FONT_SIZE_ILVL = 18
 -- Colors
 local WHITE_COLOR = { r = 1, g = 1, b = 1 }
 local ORANGE_COLOR = { r = 1, g = 0.5, b = 0 }
-local GOLD_BORDER_COLOR = { 255 / 255, 223 / 255, 0 / 255 }
+local GOLD_BORDER_COLOR = { 1, 223 / 255, 0 } -- 255/255 == 1, pre-computed
 local GREY_QUALITY_R = K.QualityColors[0].r
 
 -- Paths & Atlases
@@ -49,6 +47,23 @@ local DRESSING_ROOM_PATH = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingR
 local LEAVE_ITEM_TEXTURE = "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent"
 local ATLAS_COSMETIC = "CosmeticIconFrame"
 local ATLAS_AZERITE = "AzeriteIconFrame"
+
+-- Pre-compute tex coords used in the hot UpdateSize hook to avoid per-call division
+local CHAR_BG_TEX_L = 1 / 512
+local CHAR_BG_TEX_R = 479 / 512
+local CHAR_BG_TEX_T = 46 / 512
+local CHAR_BG_TEX_B = 455 / 512
+
+-- Cache UIFont data for the ilvl hook so GetFont() is never called inside a hot callback
+local ilvlFontPath, ilvlFontFlags
+local function GetCachedIlvlFont()
+	if not ilvlFontPath then
+		local _
+		ilvlFontPath, _, ilvlFontFlags = select(1, _G.KkthnxUIFont:GetFont()), select(2, _G.KkthnxUIFont:GetFont()), select(3, _G.KkthnxUIFont:GetFont())
+		ilvlFontFlags = ilvlFontFlags or ""
+	end
+	return ilvlFontPath, ilvlFontFlags
+end
 
 -- Helper Functions
 
@@ -79,6 +94,7 @@ local function UpdateAzeriteEmpoweredItem(self)
 end
 
 local function UpdateCosmetic(self)
+	if not self then return end
 	local itemLink = GetInventoryItemLink("player", self:GetID())
 	self.IconOverlay:SetShown(itemLink and C_Item_IsCosmeticItem(itemLink))
 end
@@ -107,6 +123,19 @@ local function ToggleIconBorder(slot, show)
 	if not show and slot.KKUI_Border then
 		ResetIconBorderColor(slot)
 	end
+end
+
+-- PERF: Use shared handlers for hooks to avoid closure allocations per slot
+local function IconBorder_OnSetVertexColor(self, r, g, b)
+	UpdateIconBorderColor(self:GetParent(), r, g, b)
+end
+
+local function IconBorder_OnHide(self)
+	ResetIconBorderColor(self:GetParent())
+end
+
+local function IconBorder_OnSetShown(self, show)
+	ToggleIconBorder(self:GetParent(), show)
 end
 
 local function StyleEquipmentSlot(slotName)
@@ -145,17 +174,9 @@ local function StyleEquipmentSlot(slotName)
 	end
 
 	-- Hook Overrides
-	hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
-		UpdateIconBorderColor(slot, r, g, b)
-	end)
-
-	hooksecurefunc(iconBorder, "Hide", function()
-		ResetIconBorderColor(slot)
-	end)
-
-	hooksecurefunc(iconBorder, "SetShown", function(_, show)
-		ToggleIconBorder(slot, show)
-	end)
+	hooksecurefunc(iconBorder, "SetVertexColor", IconBorder_OnSetVertexColor)
+	hooksecurefunc(iconBorder, "Hide", IconBorder_OnHide)
+	hooksecurefunc(iconBorder, "SetShown", IconBorder_OnSetShown)
 
 	-- Hook Azerite logic
 	hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
@@ -233,7 +254,7 @@ end
 -- Main Theme Registration
 
 -- REASON: Main entry point for Blizzard Character Frame skinning.
-table_insert(C.defaultThemes, function()
+tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
@@ -272,43 +293,62 @@ table_insert(C.defaultThemes, function()
 		"CharacterWristSlot",
 	}
 
-	for _, slotName in ipairs(equipmentSlots) do
-		StyleEquipmentSlot(slotName)
+	for i = 1, #equipmentSlots do
+		StyleEquipmentSlot(equipmentSlots[i])
 	end
 
 	-- Hooks
 	if CharacterFrame and not CharacterFrame.KKUI_Hooks then
 		-- Cosmetic Update Hook
-		hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-			if button then
-				UpdateCosmetic(button)
-			end
-		end)
+		hooksecurefunc("PaperDollItemSlotButton_Update", UpdateCosmetic)
 
 		-- Stats Pane ItemLevel Hook
 		if CharacterStatsPane and CharacterStatsPane.ItemLevelFrame then
-			hooksecurefunc("PaperDollFrame_UpdateStats", function()
-				-- Avoid taint by checking combat
+			local function UpdateItemLevelFont()
+				-- REASON: Avoid taint by checking combat
 				if InCombatLockdown() then
 					return
 				end
 
 				local ilvlValue = CharacterStatsPane.ItemLevelFrame.Value
 				if ilvlValue then
-					ilvlValue:SetFontObject(K.UIFont)
-					local fontPath, _, fontFlags = ilvlValue:GetFont()
-					ilvlValue:SetFont(fontPath, FONT_SIZE_ILVL, fontFlags)
+					-- FIX: Use cached font path/flags instead of SetFontObject + GetFont on every call.
+					-- SetFontObject was triggering unnecessary allocations on every stat update.
+					local path, flags = GetCachedIlvlFont()
+					ilvlValue:SetFont(path, FONT_SIZE_ILVL, flags)
 				end
-			end)
+			end
+			hooksecurefunc("PaperDollFrame_UpdateStats", UpdateItemLevelFont)
 		end
 
 		-- Character Frame Size & Background Hook
 		local playerClassTexture = DRESSING_ROOM_PATH .. K.Class
-		hooksecurefunc(CharacterFrame, "UpdateSize", function()
+		-- FIX: Track last subframe so the hook is a no-op when nothing changed.
+		-- Without this, every UpdateSize call (tab hover, resize events, etc.) was
+		-- redundantly calling SetSize, SetPoint, SetTexture, and SetTexCoord.
+		local lastActiveSubframe
+		-- FIX: Reset on both OnShow and OnHide.
+		-- OnHide alone isn't enough: Blizzard calls UpdateSize during addon initialization
+		-- (before the frame is ever shown), which primes the cache to "PaperDollFrame".
+		-- When the user then opens the frame, UpdateSize fires with the same value and
+		-- skips the entire layout. OnShow guarantees a clean slate on every real open.
+		local function ResetCharacterLayoutCache()
+			lastActiveSubframe = nil
+		end
+		CharacterFrame:HookScript("OnShow", ResetCharacterLayoutCache)
+		CharacterFrame:HookScript("OnHide", ResetCharacterLayoutCache)
+
+		local function UpdateCharacterFrameSize()
+			local currentSubframe = CharacterFrame.activeSubframe
+			if currentSubframe == lastActiveSubframe then
+				return
+			end
+			lastActiveSubframe = currentSubframe
+
 			local inset = CharacterFrame.Inset
 			local bg = inset and inset.Bg
 
-			if CharacterFrame.activeSubframe == "PaperDollFrame" then
+			if currentSubframe == "PaperDollFrame" then
 				CharacterFrame:SetSize(640, 431)
 				if inset then
 					inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
@@ -316,7 +356,8 @@ table_insert(C.defaultThemes, function()
 
 				if bg then
 					bg:SetTexture(playerClassTexture)
-					bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+					-- FIX: Use pre-computed constants instead of per-call division.
+					bg:SetTexCoord(CHAR_BG_TEX_L, CHAR_BG_TEX_R, CHAR_BG_TEX_T, CHAR_BG_TEX_B)
 					bg:SetHorizTile(false)
 					bg:SetVertTile(false)
 				end
@@ -329,7 +370,8 @@ table_insert(C.defaultThemes, function()
 					CharacterFrame.Background:Show()
 				end
 			end
-		end)
+		end
+		hooksecurefunc(CharacterFrame, "UpdateSize", UpdateCharacterFrameSize)
 
 		-- Sidebar Tabs Hook
 		hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", UpdateSidebarTabs)
@@ -356,20 +398,19 @@ table_insert(C.defaultThemes, function()
 			CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 64, -3)
 
 			-- Adjust Gear Enchant Animation Frames
-			local fxFrames = {
-				CharacterModelScene.GearEnchantAnimation.FrameFX.PurpleGlow,
-				CharacterModelScene.GearEnchantAnimation.FrameFX.BlueGlow,
-				CharacterModelScene.GearEnchantAnimation.FrameFX.Sparkles,
-				CharacterModelScene.GearEnchantAnimation.FrameFX.Mask,
-			}
-
-			for _, frame in ipairs(fxFrames) do
+			-- PERF: Avoid creating a table and closure for one-time initialization
+			local function SetFXFrame(frame)
 				if frame then
 					frame:ClearAllPoints()
 					frame:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
 					frame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
 				end
 			end
+			local gearEnchant = CharacterModelScene.GearEnchantAnimation.FrameFX
+			SetFXFrame(gearEnchant.PurpleGlow)
+			SetFXFrame(gearEnchant.BlueGlow)
+			SetFXFrame(gearEnchant.Sparkles)
+			SetFXFrame(gearEnchant.Mask)
 
 			local topFrame = CharacterModelScene.GearEnchantAnimation.TopFrame.Frame
 			if topFrame then

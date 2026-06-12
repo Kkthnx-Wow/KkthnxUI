@@ -83,6 +83,10 @@ local function onUpdateInviteKeyword()
 	autoInviteKeyword = C["Automation"].WhisperInvite
 end
 
+function Module:onUpdateInviteKeyword()
+	onUpdateInviteKeyword()
+end
+
 -- ---------------------------------------------------------------------------
 -- Module Registration
 -- ---------------------------------------------------------------------------

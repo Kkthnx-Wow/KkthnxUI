@@ -68,7 +68,7 @@ local onAttributeChanged = [[
 			self:ClearBindings()
 		end
 	end
-	
+
 	-- NOTE: Dynamically map the Extra Action Button bind to this button for seamless input.
 	if self:IsShown() then
 		self:ClearBindings()

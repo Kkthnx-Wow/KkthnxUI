@@ -28,10 +28,12 @@
    <Script file="Chat\Core.lua" />
    <Script file="Chat\Elements\Copy.lua" />
    <Script file="Chat\Elements\Emojis.lua" />
+   <Script file="Chat\Elements\Highlight.lua" />
    <Script file="Chat\Elements\History.lua" />
    <Script file="Chat\Elements\ILevel.lua" />
    <Script file="Chat\Elements\Rename.lua" />
    <Script file="Chat\Elements\URL.lua" />
+   <Script file="Chat\Elements\LootIcons.lua" />
    <!-- Inventory -->
    <Script file="Inventory\Core.lua" />
    <Script file="Inventory\Elements\Filters.lua" />
@@ -50,10 +52,15 @@
    <Script file="ActionBars\Keybind.lua" />
    <Script file="ActionBars\ButtonStyle.lua" />
    <Script file="ActionBars\Cooldown.lua" />
+   <Script file="ActionBars\Fader.lua" />
+   <Script file="ActionBars\Elements\PulseCD.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />
-   <Script file="Auras\Elements\AuraWatch.lua" />
+   <!-- TEMPORARY (Midnight 12.0): AuraWatch fully disabled while its secret-value/CLEU
+        handling is reworked. It still registered CLEU on PLAYER_LOGIN regardless of the
+        config flag, so unload the file entirely to guarantee none of its code runs. -->
+   <!-- <Script file="Auras\Elements\AuraWatch.lua" /> -->
    <Script file="Auras\Elements\Reminder.lua" />
    <Script file="Auras\Elements\Totems.lua" />
    <!-- Maps -->
@@ -63,14 +70,22 @@
    <Script file="Maps\Elements\MapReveal.lua" />
    <Script file="Maps\Elements\WowHeadLink.lua" />
    <!-- Unitframes Plugins -->
+   <Script file="UnitFrames\Plugins\oUF_CombatEvent.lua" />
    <Script file="UnitFrames\Plugins\oUF_AuraTrack.lua" />
-   <!-- <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" /> -->
+   <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
+   <Script file="UnitFrames\Plugins\oUF_Fader.lua" />
+   <!-- TEMPORARY (Midnight 12.0): floating CombatText / Swing timer disabled while their
+        secret-value handling is reworked. Player/Target gate element creation on the config
+        flags (still forced off in Loading.lua), so unloading these plugins is safe. -->
+   <!-- <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" /> -->
    <Script file="UnitFrames\Plugins\oUF_GCD.lua" />
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
+   <!-- <Script file="UnitFrames\Plugins\oUF_Swing.lua" /> -->
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
    <!-- Unitframes -->
    <Script file="UnitFrames\Core.lua" />
    <Script file="UnitFrames\Elements\Castbar.lua" />
+   <Script file="UnitFrames\Elements\BarSpark.lua" />
    <Script file="UnitFrames\Elements\Range.lua" />
    <Script file="UnitFrames\Elements\Tags.lua" />
    <Script file="UnitFrames\Elements\Tracking.lua" />
@@ -90,6 +105,8 @@
    <Script file="UnitFrames\Groups\Raid.lua" />
    <!-- Tooltip -->
    <Script file="Tooltip\Core.lua" />
+   <Script file="Tooltip\Elements\Achievement.lua" />
+   <Script file="Tooltip\Elements\InstanceLockCompare.lua" />
    <Script file="Tooltip\Elements\Hover.lua" />
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
@@ -97,15 +114,16 @@
    <Script file="Tooltip\Elements\Pet.lua" />
    <Script file="Tooltip\Elements\SpecLevel.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
+   <Script file="Tooltip\Elements\VendorLocation.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
-   <Script file="Miscellaneous\Elements\CombatAnimation.lua" />
    <Script file="Miscellaneous\Elements\ExpRep.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
    <Script file="Miscellaneous\Elements\MDGuildBest.lua" />
-   <Script file="Miscellaneous\Elements\MissingStats.lua" />
+   <!-- TEMPORARY (Midnight 12.0): MissingStats disabled while its secret-value handling is reworked. -->
+   <!-- <Script file="Miscellaneous\Elements\MissingStats.lua" /> -->
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
@@ -118,6 +136,7 @@
    <!-- Announcements -->
    <Script file="Announcements\Core.lua" />
    <Script file="Announcements\Elements\Countdown.lua" />
+   <Script file="Announcements\Elements\HealthAlert.lua" />
    <Script file="Announcements\Elements\Interrupt.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
    <Script file="Announcements\Elements\Keystone.lua" />
@@ -131,11 +150,11 @@
    <Script file="Automation\Elements\AutoDelves.lua" />
    <Script file="Automation\Elements\AutoHideTracker.lua" />
    <Script file="Automation\Elements\AutoKeystone.lua" />
-   <Script file="Automation\Elements\AutoKeystoneStart.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />
    <Script file="Automation\Elements\Goodbye.lua" />
+   <Script file="Automation\Elements\GuildInvite.lua" />
    <Script file="Automation\Elements\Invite.lua" />
    <Script file="Automation\Elements\PartySync.lua" />
    <Script file="Automation\Elements\Quest.lua" />
@@ -178,7 +197,9 @@
    <Script file="Skins\Blizzard\FrameXML\UIWidgets.lua" />
    <!-- Skins AddOns -->
    <Script file="Skins\Addons\Bartender4.lua" />
+   <Script file="Skins\Addons\BigDebuffs.lua" />
    <Script file="Skins\Addons\BigWigs.lua" />
+   <Script file="Skins\Addons\BugSack.lua" />
    <Script file="Skins\Addons\ButtonForge.lua" />
    <Script file="Skins\Addons\ChocolateBar.lua" />
    <Script file="Skins\Addons\DeadlyBossMods.lua" />

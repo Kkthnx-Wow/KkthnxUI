@@ -18,8 +18,8 @@ local string_split = _G.string.split
 
 local BattlePetToolTip_Show = _G.BattlePetToolTip_Show
 local BattlePetTooltip = _G.BattlePetTooltip
+local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
-local CommunitiesFrame = _G.CommunitiesFrame
 local EJ_GetEncounterInfo = _G.EJ_GetEncounterInfo
 local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
 local GameTooltip = _G.GameTooltip
@@ -50,6 +50,10 @@ local linkTypes = {
 
 -- REASON: Handles pet battle hyperlinks by extracting species and stats.
 function Module:HyperLink_SetPet(link)
+	if not BattlePetToolTip_Show then
+		return
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -3, 5)
 	GameTooltip:Show()
 
@@ -70,6 +74,12 @@ end
 -- REASON: Handles journal hyperlinks for instances, bosses, and abilities.
 function Module:HyperLink_SetJournal(link)
 	local _, idType, id, diffID = string_split(":", link)
+	id = tonumber(id)
+	diffID = tonumber(diffID) or 0
+	if not id then
+		return
+	end
+
 	local name, description, icon, idString
 
 	if idType == "0" then
@@ -80,6 +90,9 @@ function Module:HyperLink_SetJournal(link)
 		idString = BOSS .. "ID:"
 	elseif idType == "2" then
 		local info = Module:HyperLink_GetSectionInfo(id)
+		if not info then
+			return
+		end
 		name, description, icon = info.title, info.description, info.abilityIcon
 		name = icon and "|T" .. icon .. ":20:20:0:0:64:64:5:59:5:59:20|t " .. name or name
 		idString = L["Section"] .. "ID:"
@@ -91,7 +104,9 @@ function Module:HyperLink_SetJournal(link)
 
 	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -3, 5)
 	GameTooltip:AddDoubleLine(name, GetDifficultyInfo(diffID))
-	GameTooltip:AddLine(description, 1, 1, 1, 1)
+	if description then
+		GameTooltip:AddLine(description, 1, 1, 1, 1)
+	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(idString, K.InfoColor .. id)
 	GameTooltip:Show()
@@ -122,7 +137,9 @@ function Module:HyperLink_OnEnter(link, ...)
 end
 
 function Module:HyperLink_OnLeave(_, ...)
-	BattlePetTooltip:Hide()
+	if BattlePetTooltip then
+		BattlePetTooltip:Hide()
+	end
 	GameTooltip:Hide()
 	GameTooltip.__isHoverTip = nil
 
@@ -142,14 +159,27 @@ for i = 1, NUM_CHAT_WINDOWS do
 	end
 end
 
--- REASON: Hooks CommunitiesFrame message frame once the addon is loaded.
+-- REASON: Hooks CommunitiesFrame message frame whether it loaded before or after this file.
+local function hookCommunitiesMessageFrame()
+	local communitiesFrame = _G.CommunitiesFrame
+	local messageFrame = communitiesFrame and communitiesFrame.Chat and communitiesFrame.Chat.MessageFrame
+	if messageFrame then
+		orig1[messageFrame] = messageFrame:GetScript("OnHyperlinkEnter")
+		messageFrame:SetScript("OnHyperlinkEnter", Module.HyperLink_OnEnter)
+		orig2[messageFrame] = messageFrame:GetScript("OnHyperlinkLeave")
+		messageFrame:SetScript("OnHyperlinkLeave", Module.HyperLink_OnLeave)
+		return true
+	end
+end
+
 local function hookCommunitiesFrame(event, addon)
-	if addon == "Blizzard_Communities" then
-		if CommunitiesFrame and CommunitiesFrame.Chat and CommunitiesFrame.Chat.MessageFrame then
-			CommunitiesFrame.Chat.MessageFrame:SetScript("OnHyperlinkEnter", Module.HyperLink_OnEnter)
-			CommunitiesFrame.Chat.MessageFrame:SetScript("OnHyperlinkLeave", Module.HyperLink_OnLeave)
-		end
+	if addon == "Blizzard_Communities" and hookCommunitiesMessageFrame() then
 		K:UnregisterEvent(event, hookCommunitiesFrame)
 	end
 end
-K:RegisterEvent("ADDON_LOADED", hookCommunitiesFrame)
+
+if C_AddOns_IsAddOnLoaded("Blizzard_Communities") then
+	hookCommunitiesMessageFrame()
+else
+	K:RegisterEvent("ADDON_LOADED", hookCommunitiesFrame)
+end

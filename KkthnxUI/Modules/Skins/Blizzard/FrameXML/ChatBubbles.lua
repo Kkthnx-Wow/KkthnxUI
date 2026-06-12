@@ -21,12 +21,12 @@ local UIParent = _G.UIParent
 local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
-	if chatbubble.styled then
+	local frame = chatbubble:GetChildren()
+	if not frame or frame:IsForbidden() then
 		return
 	end
 
-	local frame = chatbubble:GetChildren()
-	if frame and not frame:IsForbidden() then
+	if not chatbubble.styled then
 		local bg = CreateFrame("Frame", nil, frame)
 		bg:SetFrameLevel(frame:GetFrameLevel())
 		bg:SetScale(UIParent:GetEffectiveScale())
@@ -39,26 +39,23 @@ local function reskinChatBubble(chatbubble)
 		local backdropColor = C["Media"].Backdrops.ColorBackdrop
 		bg.KKUI_Background:SetVertexColor(backdropColor[1], backdropColor[2], backdropColor[3], C["Skins"].ChatBubbleAlpha)
 
+		chatbubble.kkuiBG = bg
+		chatbubble.styled = true
+	end
+
+	-- REASON: Re-tint the border to the message's channel colour on each shared poll cycle so
+	-- recycled bubbles pick up the right colour. This replaces a permanent per-bubble OnUpdate
+	-- that polled text colour every 0.1s for the life of every bubble (pure wasted CPU).
+	local bg = chatbubble.kkuiBG
+	if bg then
 		local str = frame.String
 		if str and str.GetTextColor then
-			-- Throttle border color updates to reduce per-frame cost; use HookScript to avoid clobbering
-			local accum = 0
-			frame:HookScript("OnUpdate", function(_, elapsed)
-				accum = accum + (elapsed or 0)
-				if accum > 0.1 then
-					accum = 0
-					local r, g, b = str:GetTextColor()
-					bg.KKUI_Border:SetVertexColor(r, g, b)
-				end
-			end)
 			local r, g, b = str:GetTextColor()
-			bg.KKUI_Border:SetVertexColor(r, g, b)
+			bg.KKUI_Border:SetVertexColor(r or 1, g or 1, b or 1)
 		else
 			K.SetBorderColor(bg.KKUI_Border)
 		end
 	end
-
-	chatbubble.styled = true
 end
 
 -- REASON: Main entry point for Blizzard Chat Bubbles skinning.

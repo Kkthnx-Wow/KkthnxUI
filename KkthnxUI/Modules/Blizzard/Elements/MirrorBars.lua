@@ -28,7 +28,6 @@ local function setupMirrorBar(bar)
 	end
 
 	local text = bar.Text
-	local spark = bar.Spark
 
 	bar:SetSize(222, 22)
 	-- REASON: Removes default Blizzard textures to allow for KkthnxUI's border and backdrop.
@@ -43,7 +42,7 @@ local function setupMirrorBar(bar)
 
 	-- REASON: Adds a custom spark texture to the status bar to enhance visibility of the progress.
 	if statusbar and statusbar.GetStatusBarTexture then
-		spark = bar:CreateTexture(nil, "OVERLAY")
+		local spark = bar:CreateTexture(nil, "OVERLAY")
 		spark:SetSize(64, bar:GetHeight())
 		spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		spark:SetBlendMode("ADD")

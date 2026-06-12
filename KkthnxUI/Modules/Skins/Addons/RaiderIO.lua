@@ -28,7 +28,7 @@ function Module:ReskinRaiderIO()
 	end
 
 	if RaiderIO_ProfileTooltip then
-		RaiderIO_ProfileTooltip:SetScript("OnShow", function()
+		RaiderIO_ProfileTooltip:HookScript("OnShow", function()
 			ModuleTooltip.ReskinTooltip(RaiderIO_ProfileTooltip)
 		end)
 	end

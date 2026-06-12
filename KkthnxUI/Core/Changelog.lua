@@ -17,7 +17,7 @@ local CreateFrame = CreateFrame
 local UIParent = UIParent
 local pairs, ipairs, type = pairs, ipairs, type
 local table_concat = table.concat
-local string_format, string_rep = string.format, string.rep
+local _, string_rep = string.format, string.rep
 local GameTooltip, GameTooltip_Hide = GameTooltip, GameTooltip_Hide
 
 -- ---------------------------------------------------------------------------

@@ -21,8 +21,6 @@ local GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
 local ForEachAura = _G.AuraUtil.ForEachAura
 local debuffColor = _G.DebuffTypeColor
 local pairs = pairs
-local ipairs = ipairs
-local table_wipe = table.wipe
 
 -- Timer throttle for text updates (seconds)
 local TIMER_THROTTLE = 0.1
@@ -42,6 +40,13 @@ local function releaseCacheEntry(t)
 	t.priority = nil
 	t.AuraData = nil
 	cachePool[#cachePool + 1] = t
+end
+
+local function clearDebuffCache(cache)
+	for auraInstanceID, entry in pairs(cache) do
+		cache[auraInstanceID] = nil
+		releaseCacheEntry(entry)
+	end
 end
 
 -- Holds the dispel priority list.
@@ -168,13 +173,13 @@ local function ShowElement(self, unit, auraInstanceID)
 	local count = AuraData.applications
 	local duration = AuraData.duration
 	local expirationTime = AuraData.expirationTime
-	local color = debuffColor[AuraData.dispelName]
+	local color = debuffColor[AuraData.dispelName] or debuffColor.none
 
 	element.icon:SetTexture(AuraData.icon)
 	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	element:Show()
 
-	if duration and duration > 0 then
+	if duration and duration > 0 and expirationTime then
 		local start = expirationTime - duration
 		element.cd:SetCooldown(start, duration)
 		-- Store state for throttled OnUpdate updates
@@ -182,10 +187,20 @@ local function ShowElement(self, unit, auraInstanceID)
 		element._duration = duration
 		element._auraInstanceID = auraInstanceID
 		element:SetScript("OnUpdate", ElementOnUpdate)
+	else
+		element:SetScript("OnUpdate", nil)
+		element._accum = 0
+		element._expiresAt = nil
+		element._duration = nil
+		element._auraInstanceID = nil
+		element.cd:SetCooldown(0, 0)
+		element.timer:SetText("")
 	end
 
 	if count and count > 1 then
 		element.count:SetText(count)
+	else
+		element.count:SetText("")
 	end
 end
 
@@ -273,7 +288,7 @@ end
 
 -- Reset cache and full scan when isFullUpdate.
 local function FullUpdate(self, unit)
-	table_wipe(self.RaidDebuffs.debuffCache)
+	clearDebuffCache(self.RaidDebuffs.debuffCache)
 	HideElement(self, unit)
 
 	if ForEachAura then
@@ -389,6 +404,9 @@ local function Disable(self)
 	local element = self.RaidDebuffs
 
 	if element then
+		if element.debuffCache then
+			clearDebuffCache(element.debuffCache)
+		end
 		element.debuffCache = nil
 		self:UnregisterEvent("SPELLS_CHANGED", UpdateDispelList)
 		self:UnregisterEvent("UNIT_AURA", Update)

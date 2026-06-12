@@ -3,7 +3,9 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Simple pull countdown announcer (/pc or /jenkins).
--- - Design: Uses an OnUpdate handler on a hidden frame to manage timing intervals for chat messages.
+-- - Design: Uses C_Timer.NewTicker for clean interval-based chat messages. Replaces the
+--           previous OnUpdate approach which accumulated elapsed time every frame.
+-- - Events: N/A (slash command driven)
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
@@ -14,44 +16,29 @@ local Module = K:GetModule("Announcements")
 -- ---------------------------------------------------------------------------
 
 -- PERF: Cache frequently used globals for chat announcement performance.
-local UnitName, CreateFrame, SendChatMessage, IsInGroup, IsInRaid, UnitAffectingCombat = UnitName, CreateFrame, SendChatMessage, IsInGroup, IsInRaid, UnitAffectingCombat
+local UnitName = UnitName
+local SendChatMessage = SendChatMessage
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local UnitAffectingCombat = UnitAffectingCombat
+
+local C_Timer_NewTicker = C_Timer.NewTicker
 
 -- ---------------------------------------------------------------------------
 -- PULL COUNTDOWN
 -- ---------------------------------------------------------------------------
 
 function Module:CreatePullCountdown()
-	local PullCountdownHandler = CreateFrame("Frame")
-	local delay, target
-	local interval, lastupdate = 1.5, 0
+	local ticker
+	local delay
 
-	-- REASON: Ensure states are fully cleared to allow re-triggering or aborting.
+	-- REASON: Cancel the active ticker and reset state cleanly.
 	local function reset()
-		PullCountdownHandler:SetScript("OnUpdate", nil)
-		delay, target, lastupdate = nil, nil, 0
-	end
-
-	-- REASON: OnUpdate manages the non-blocking countdown sequence.
-	local function pull(_, elapsed)
-		target = UnitName("target") or ""
-
-		if not delay then
-			-- NOTE: This initial message starts the '3.. 2.. 1..' flow.
-			SendChatMessage((L["Pulling In"]):format(target, 3), K.CheckChat())
-			delay = 2
+		if ticker then
+			ticker:Cancel()
+			ticker = nil
 		end
-
-		lastupdate = lastupdate + elapsed
-		if lastupdate >= interval then
-			lastupdate = 0
-			if delay > 0 then
-				SendChatMessage(tostring(delay) .. "..", K.CheckChat())
-				delay = delay - 1
-			else
-				SendChatMessage(L["Leeeeeroy!"], K.CheckChat())
-				reset()
-			end
-		end
+		delay = nil
 	end
 
 	-- ---------------------------------------------------------------------------
@@ -70,13 +57,29 @@ function Module:CreatePullCountdown()
 		end
 
 		-- NOTE: Toggle functionality allows aborting a countdown already in progress.
-		if PullCountdownHandler:GetScript("OnUpdate") then
+		if ticker then
 			reset()
 			SendChatMessage(L["Pull ABORTED!"], K.CheckChat())
-		else
-			delay = tonumber(timer) or 3
-			PullCountdownHandler:SetScript("OnUpdate", pull)
+			return
 		end
+
+		local target = UnitName("target") or ""
+		delay = tonumber(timer) or 3
+
+		-- REASON: Send the initial "Pulling in X seconds" message immediately, then tick
+		-- every 1.5s. C_Timer.NewTicker replaces the old OnUpdate elapsed accumulator,
+		-- which ran every frame (~60 calls/sec) just to track 1.5-second intervals.
+		SendChatMessage((L["Pulling In"]):format(target, delay), K.CheckChat())
+
+		ticker = C_Timer_NewTicker(1.5, function()
+			if delay > 0 then
+				SendChatMessage(tostring(delay) .. "..", K.CheckChat())
+				delay = delay - 1
+			else
+				SendChatMessage(L["Leeeeeroy!"], K.CheckChat())
+				reset()
+			end
+		end)
 	end
 
 	-- ---------------------------------------------------------------------------

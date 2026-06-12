@@ -27,26 +27,13 @@ function Private.xpcall(func, ...)
 end
 
 function Private.unitExists(unit)
-	if not unit then return end
-	local exists = UnitExists(unit)
-	if issecretvalue and issecretvalue(exists) then exists = nil end
-
-	local visible = UnitIsVisible(unit)
-	if issecretvalue and issecretvalue(visible) then visible = nil end
-
-	return exists or visible
+	return unit and (UnitExists(unit) or UnitIsVisible(unit))
 end
 
 function Private.unitIsUnit(unit1, unit2)
 	-- TODO: use C_Secrets.CanCompareUnitTokens instead of pcall
 	local isOk, isUnit = pcall(UnitIsUnit, unit1, unit2)
-	if isOk then
-		if issecretvalue and issecretvalue(isUnit) then
-			return false
-		end
-		return isUnit
-	end
-	return false
+	return isOk and isUnit
 end
 
 local validator = CreateFrame('Frame')

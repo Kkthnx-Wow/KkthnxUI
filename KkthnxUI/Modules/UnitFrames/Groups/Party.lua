@@ -12,7 +12,6 @@ local Module = K:GetModule("Unitframes")
 
 -- REASON: Localize C-functions (Snake Case)
 local select = _G.select
-local unpack = _G.unpack
 
 -- REASON: Localize Globals
 local CreateFrame = _G.CreateFrame
@@ -26,7 +25,7 @@ function Module:CreateParty()
 	local partyPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+
 
 	-- REASON: Overlay frame for borders and indicators.
 	self.Overlay = CreateFrame("Frame", nil, self)
@@ -45,12 +44,11 @@ function Module:CreateParty()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
 	if C["Party"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	if C["Party"].HealthbarColor == 3 then
@@ -74,6 +72,10 @@ function Module:CreateParty()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
+
 	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Party"].PowerHeight)
@@ -83,10 +85,14 @@ function Module:CreateParty()
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true
-	self.Power.SetFrequentUpdates = true
+	self.Power.frequentUpdates = true
+
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
 
 	if C["Party"].Smooth then
-		-- K:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -162,8 +168,8 @@ function Module:CreateParty()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growthX"] = "RIGHT"
-		self.Buffs["growthY"] = "DOWN"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 6
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = 6
@@ -179,7 +185,7 @@ function Module:CreateParty()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "LEFT"
-	self.Debuffs["growthX"] = "RIGHT"
+	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5
@@ -279,7 +285,7 @@ function Module:CreateParty()
 		absorbBar:Hide()
 		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex:SetHorizTile(true)
 		tex:SetVertTile(true)
 
@@ -292,7 +298,7 @@ function Module:CreateParty()
 		overAbsorbBar:Hide()
 		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex2:SetHorizTile(true)
 		tex2:SetVertTile(true)
 
@@ -308,7 +314,7 @@ function Module:CreateParty()
 		healAbsorbBar:Hide()
 		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex3:SetHorizTile(true)
 		tex3:SetVertTile(true)
 
@@ -424,14 +430,14 @@ function Module:CreateParty()
 
 	-- REASON: Debuff Highlight
 	if C["Unitframe"].DebuffHighlight then
-		-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-		-- self.DebuffHighlight:SetAllPoints(self.Health)
-		-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-		-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		-- self.DebuffHighlight:SetBlendMode("ADD")
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
 
-		-- self.DebuffHighlightAlpha = 0.45
-		-- self.DebuffHighlightFilter = true
+		self.DebuffHighlightAlpha = 0.45
+		self.DebuffHighlightFilter = true
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

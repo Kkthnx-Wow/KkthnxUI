@@ -2,164 +2,262 @@
 -- Addon: KkthnxUI
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
--- - Purpose: High-performance cooldown timer replacement using Blizzard's native
---   numeric formatter API (C_StringUtil.CreateNumericRuleFormatter).
--- - Design: Hooks the cooldown frame metatable to attach a shared formatter with
---   configurable breakpoints and color modes, chosen from four presets plus a
---   Disabled option. The old manual OnUpdate timer loop has been removed in
---   favour of SetCountdownFormatter, which offloads rendering to the engine.
--- - Requires: C["ActionBar"]["CDFormat"] (1-5); 5 = Disabled.
+-- - Purpose: High-performance cooldown timer replacement.
+-- - Design: Provides custom font, scaling, and color coding for action button cooldowns.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = K:GetModule("ActionBar")
+local Module = K:NewModule("Cooldown")
 
 -- ---------------------------------------------------------------------------
 -- LOCALS & CACHING
 -- ---------------------------------------------------------------------------
 
--- PERF: Cache commonly used globals to avoid repeated table lookups.
-local pairs = pairs
-local SetCVar = _G.SetCVar
+-- PERF: Cache globals and frequently used table functions.
+local _G = _G
+local pairs, format, floor, strfind = pairs, string.format, math.floor, string.find
+local GetTime, GetActionCooldown, tonumber = _G.GetTime, _G.GetActionCooldown, tonumber
+local IsSecret = K.IsSecret
 
--- NOTE: Index 5 is the sentinel value that disables the custom formatter entirely.
-local DISABLE_INDEX = 5
+-- NOTE: Constants for visual consistency and logic thresholds.
+local FONT_SIZE = 19
+local MIN_DURATION = 2.5 -- REASON: Ignore short GCD-like durations to reduce visual clutter.
+local MIN_SCALE = 0.5 -- REASON: Hide numbers on buttons too small to read.
+local ICON_SIZE = 36
 
--- Shared numeric formatter instance – one per session, reused for all cooldowns.
-local numberFormatter = C_StringUtil.CreateNumericRuleFormatter()
+local day, hour, minute = 86400, 3600, 60
 
--- Registry of every cooldown frame we have injected the formatter into.
--- Keyed by the cooldown frame object so we only touch each frame once.
-local hookedCooldownFrames = {}
+local hideNumbers = {}
+local active = {}
 
--- ---------------------------------------------------------------------------
--- BREAKPOINT CONSTANTS
--- ---------------------------------------------------------------------------
-
-local ROUNDING_UP      = Enum.NumericRuleFormatRounding.Up
-local ROUNDING_NEAREST = Enum.NumericRuleFormatRounding.Nearest
-
--- Color objects used for urgent / warning / stable second ranges.
-local COLOR_RED    = CreateColor(1,   0,   0,   1)  -- < 3 s
-local COLOR_YELLOW = CreateColor(1,   1,   0,   1)  -- < 10 s
-local COLOR_DARK   = CreateColor(0.8, 0.8, 0.2, 1)  -- < 60 s
+-- PERF: Pre-computed format strings. K.MyClassColor is a constant that does not change at
+-- runtime; building these once at OnEnable eliminates 3x string concatenations per
+-- FormattedTimer call (which runs every frame for every active cooldown).
+local FMT_DAY
+local FMT_HOUR
+local FMT_MIN
 
 -- ---------------------------------------------------------------------------
--- BREAKPOINT TABLE
--- Helper: K.MyClassColor is a "|cffRRGGBB" prefix for the player's class color.
--- It is set during PLAYER_LOGIN by Init.lua and is safe to read at module load time
--- only if the module enables on PLAYER_LOGIN. We use a builder function so the
--- string is resolved after K.MyClassColor is populated.
+-- HELPER FUNCTIONS
 -- ---------------------------------------------------------------------------
 
--- NOTE: Build breakpoints lazily so K.MyClassColor is fully resolved at call time.
-local function BuildBreakPoints()
-	local myColor = K.MyClassColor  -- resolved |cffRRGGBB prefix, e.g. "|cff00ccff"
 
-	return {
-		-- Mode 1 – Colored with tenths: shows %.1f below 3 s, whole seconds up to
-		-- 10 s, then mm:ss, then compact labeled units in class color.
-		[1] = {
-			{ threshold = 0,       format = COLOR_RED:WrapTextInColorCode("%.1f"),  components = { { step = 0.1, rounding = ROUNDING_UP } } },
-			{ threshold = 3,       format = COLOR_YELLOW:WrapTextInColorCode("%d"), components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 10,      format = COLOR_DARK:WrapTextInColorCode("%d"),   components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 60,      format = "%d:%02d",                              components = { { div = 60 }, { mod = 60 } } },
-			{ threshold = 60 * 10, format = "%d" .. myColor .. "m|r",              components = { { div = 60,   step = 1, rounding = ROUNDING_NEAREST } } }, -- 10 min
-			{ threshold = 3600 * 2,format = "%d" .. myColor .. "h|r",              components = { { div = 3600, step = 1, rounding = ROUNDING_NEAREST } } }, -- 2 hr
-			{ threshold = 86400,   format = "%d" .. myColor .. "d|r",              components = { { div = 86400,step = 1, rounding = ROUNDING_NEAREST } } }, -- 1 day
-		},
+-- REASON: Converts seconds into a formatted string (Days, Hours, Minutes, Seconds).
+-- Includes color coding for urgency (Red for < 3s, Yellow for < 10s).
+function Module.FormattedTimer(s, modRate)
+	if s >= day then
+		return format(FMT_DAY, s / day + 0.5), s % day
+	elseif s > hour then
+		return format(FMT_HOUR, s / hour + 0.5), s % hour
+	elseif s >= minute then
+		if s < C["ActionBar"]["MmssTH"] then
+			return format("%d:%.2d", s / minute, s % minute), s - floor(s)
+		else
+			return format(FMT_MIN, s / minute + 0.5), s % minute
+		end
+	else
+		local colorStr = (s < 3 and "|cffff0000") or (s < 10 and "|cffffff00") or "|cffcccc33"
+		if s < C["ActionBar"]["TenthTH"] then
+			return format(colorStr .. "%.1f|r", s), (s - format("%.1f", s)) / modRate
+		else
+			return format(colorStr .. "%d|r", s + 0.5), (s - floor(s)) / modRate
+		end
+	end
+end
 
-		-- Mode 2 – Colored without tenths: same ranges as mode 1 but uses whole
-		-- seconds even below 3 s (less visual noise for some players).
-		[2] = {
-			{ threshold = 0,       format = COLOR_RED:WrapTextInColorCode("%d"),    components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 3,       format = COLOR_YELLOW:WrapTextInColorCode("%d"), components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 10,      format = COLOR_DARK:WrapTextInColorCode("%d"),   components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 60,      format = "%d:%02d",                              components = { { div = 60 }, { mod = 60 } } },
-			{ threshold = 60 * 10, format = "%d" .. myColor .. "m|r",              components = { { div = 60,   step = 1, rounding = ROUNDING_NEAREST } } },
-			{ threshold = 3600 * 2,format = "%d" .. myColor .. "h|r",              components = { { div = 3600, step = 1, rounding = ROUNDING_NEAREST } } },
-			{ threshold = 86400,   format = "%d" .. myColor .. "d|r",              components = { { div = 86400,step = 1, rounding = ROUNDING_NEAREST } } },
-		},
+function Module:StopTimer()
+	self.enabled = nil
+	self:Hide()
+end
 
-		-- Mode 3 – Plain with tenths: no color, tenths below 3 s, plain labels.
-		[3] = {
-			{ threshold = 0,       format = "%.1f",    components = { { step = 0.1, rounding = ROUNDING_UP } } },
-			{ threshold = 3,       format = "%d",      components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 60,      format = "%d:%02d", components = { { div = 60 }, { mod = 60 } } },
-			{ threshold = 60 * 10, format = "%dm",     components = { { div = 60,   step = 1, rounding = ROUNDING_NEAREST } } },
-			{ threshold = 3600 * 2,format = "%dh",     components = { { div = 3600, step = 1, rounding = ROUNDING_NEAREST } } },
-			{ threshold = 86400,   format = "%dd",     components = { { div = 86400,step = 1, rounding = ROUNDING_NEAREST } } },
-		},
+function Module:ForceUpdate()
+	self.nextUpdate = 0
+	self:Show()
+end
 
-		-- Mode 4 – Plain whole-seconds only: simplest preset, no color or tenths.
-		[4] = {
-			{ threshold = 0,       format = "%d",      components = { { div = 1, step = 1, rounding = ROUNDING_UP } } },
-			{ threshold = 60,      format = "%d:%02d", components = { { div = 60 }, { mod = 60 } } },
-			{ threshold = 60 * 10, format = "%dm",     components = { { div = 60,   step = 1, rounding = ROUNDING_NEAREST } } },
-			{ threshold = 3600 * 2,format = "%dh",     components = { { div = 3600, step = 1, rounding = ROUNDING_NEAREST } } },
-			{ threshold = 86400,   format = "%dd",     components = { { div = 86400,step = 1, rounding = ROUNDING_NEAREST } } },
-		},
-	}
+-- REASON: Dynamically adjust font size when the button is resized (e.g. during UI scaling).
+function Module:OnSizeChanged(width, height)
+	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
+	if fontScale == self.fontScale then
+		return
+	end
+	self.fontScale = fontScale
+
+	if fontScale < MIN_SCALE then
+		self:Hide()
+	else
+		self.text:SetFontObject(K.UIFontOutline)
+		self.text:SetFont(select(1, self.text:GetFont()), fontScale * FONT_SIZE, select(3, self.text:GetFont()))
+		self.text:SetShadowColor(0, 0, 0, 0)
+
+		if self.enabled then
+			Module.ForceUpdate(self)
+		end
+	end
 end
 
 -- ---------------------------------------------------------------------------
--- INTERNAL HELPERS
+-- CORE TIMER LOGIC
 -- ---------------------------------------------------------------------------
 
--- REASON: Called once per cooldown frame to attach (or remove) our formatter.
--- The hookedCooldownFrames guard ensures we only call SetCountdownFormatter once
--- per frame – subsequent hook fires for the same frame are skipped.
-local function ApplyFormatterToCooldown(cooldown)
-	if not cooldown or hookedCooldownFrames[cooldown] then
+-- REASON: Main update loop for active cooldowns. Calculates remaining time and
+-- updates the text based on modRate (haste/slow effects).
+function Module:TimerOnUpdate(elapsed)
+	if self.nextUpdate > 0 then
+		self.nextUpdate = self.nextUpdate - elapsed
+	else
+		-- NOTE: Safety check for modRate to avoid arithmetic errors.
+		if self.modRate == 0 then
+			self.modRate = 1
+		end
+		local passTime = GetTime() - self.start
+		local remain = passTime >= 0 and ((self.duration - passTime) / self.modRate) or self.duration
+		if remain > 0 then
+			local getTime, nextUpdate = Module.FormattedTimer(remain, self.modRate)
+			self.text:SetText(getTime)
+			self.nextUpdate = nextUpdate
+		else
+			Module.StopTimer(self)
+		end
+	end
+end
+
+function Module:ScalerOnSizeChanged(...)
+	Module.OnSizeChanged(self.timer, ...)
+end
+
+-- REASON: Creates the internal timer frame and font string when a cooldown is first tracked.
+function Module:OnCreate()
+	local scaler = CreateFrame("Frame", nil, self)
+	scaler:SetAllPoints(self)
+
+	local timer = CreateFrame("Frame", nil, scaler)
+	timer:Hide()
+	timer:SetAllPoints(scaler)
+	timer:SetScript("OnUpdate", Module.TimerOnUpdate)
+	scaler.timer = timer
+
+	local text = timer:CreateFontString(nil, "BACKGROUND")
+	text:SetPoint("CENTER", 1, 0)
+	text:SetJustifyH("CENTER")
+	timer.text = text
+
+	Module.OnSizeChanged(timer, scaler:GetSize())
+	scaler:SetScript("OnSizeChanged", Module.ScalerOnSizeChanged)
+
+	self.timer = timer
+	return timer
+end
+
+-- REASON: Main entry point for starting a cooldown timer. Hooks into Blizzard's SetCooldown.
+function Module:StartTimer(start, duration, modRate)
+	-- NOTE: Avoid forbidden frames (e.g. secure frames in combat that haven't been styled).
+	if self:IsForbidden() then
+		return
+	end
+	if self.noCooldownCount or hideNumbers[self] then
 		return
 	end
 
-	local isEnabled = C["ActionBar"]["CDFormat"] ~= DISABLE_INDEX
-	cooldown:SetCountdownFormatter(isEnabled and numberFormatter or nil)
-	hookedCooldownFrames[cooldown] = true
-end
-
--- ---------------------------------------------------------------------------
--- MODULE PUBLIC API
--- ---------------------------------------------------------------------------
-
--- REASON: Re-applies the breakpoints to the shared formatter without touching
--- the hooked frames. Called when only the mode changes but the formatter is
--- already injected everywhere.
-function Module:UpdateCooldownBreakPoints()
-	local mode = C["ActionBar"]["CDFormat"]
-	if mode == DISABLE_INDEX then
+	-- COMPAT: Option to ignore WeakAuras if they handle their own cooldown text.
+	local frameName = self.GetName and self:GetName()
+	if C["ActionBar"]["OverrideWA"] and frameName and strfind(frameName, "WeakAuras") then
+		self.noCooldownCount = true
 		return
 	end
 
-	local breakPoints = BuildBreakPoints()
-	numberFormatter:SetBreakpoints(breakPoints[mode])
-end
-
--- REASON: Full refresh – updates the CVar, rebuilds breakpoints, and propagates
--- the formatter (or nil) to every previously hooked cooldown frame.
--- Triggered by the GUI config dropdown callback.
-function Module:UpdateCooldownFormat()
-	local mode = C["ActionBar"]["CDFormat"]
-
-	if mode == DISABLE_INDEX then
-		-- User disabled custom cooldowns; turn off Blizzard's native numbers too.
-		SetCVar("countdownForCooldowns", 0)
-		for cooldown in pairs(hookedCooldownFrames) do
-			cooldown:SetCountdownFormatter(nil)
+	-- MIDNIGHT (12.0): Blizzard cooldown frames, especially the new Cooldown
+	-- Viewer, can pass secret start/duration values through Cooldown:SetCooldown.
+	-- This module's custom text needs Lua comparisons and arithmetic, so let the
+	-- native cooldown render those instead of touching the values.
+	if IsSecret(start) or IsSecret(duration) or IsSecret(modRate) then
+		if self.timer then
+			Module.StopTimer(self.timer)
 		end
 		return
 	end
 
-	-- Ensure Blizzard renders countdown numbers (required for SetCountdownFormatter).
-	SetCVar("countdownForCooldowns", 1)
+	local parent = self:GetParent()
+	start = tonumber(start) or 0
+	duration = tonumber(duration) or 0
+	modRate = tonumber(modRate) or 1
 
-	local breakPoints = BuildBreakPoints()
-	numberFormatter:SetBreakpoints(breakPoints[mode])
+	if start > 0 and duration > MIN_DURATION then
+		local timer = self.timer or Module.OnCreate(self)
+		timer.start = start
+		timer.duration = duration
+		timer.modRate = modRate
+		timer.enabled = true
+		timer.nextUpdate = 0
 
-	-- Propagate updated formatter to all already-hooked frames.
-	for cooldown in pairs(hookedCooldownFrames) do
-		cooldown:SetCountdownFormatter(numberFormatter)
+		-- NOTE: Cleanup logic for charge-based cooldowns to prevent overlapping timers.
+		local charge = parent and parent.chargeCooldown
+		local chargeTimer = charge and charge.timer
+		if chargeTimer and chargeTimer ~= timer then
+			Module.StopTimer(chargeTimer)
+		end
+
+		if timer.fontScale and timer.fontScale >= MIN_SCALE then
+			timer:Show()
+		end
+	elseif self.timer then
+		Module.StopTimer(self.timer)
+	end
+
+	-- NOTE: Sync visibility with Action Bar Fader if it's currently hiding the bar.
+	if parent and parent.__faderParent then
+		if self:GetEffectiveAlpha() > 0 then
+			self:Show()
+		else
+			self:Hide()
+		end
+	end
+
+	-- REASON: Suppress Blizzard's default numbers to avoid double-display.
+	if self.SetHideCountdownNumbers then
+		self:SetHideCountdownNumbers(true)
+	end
+end
+
+function Module:HideCooldownNumbers()
+	hideNumbers[self] = true
+	if self.timer then
+		Module.StopTimer(self.timer)
+	end
+end
+
+function Module:CooldownOnShow()
+	active[self] = true
+end
+
+function Module:CooldownOnHide()
+	active[self] = nil
+end
+
+local function shouldUpdateTimer(self, start)
+	if IsSecret(start) then
+		return true
+	end
+
+	local timer = self.timer
+	if not timer then
+		return true
+	end
+	return timer.start ~= start
+end
+
+function Module:CooldownUpdate()
+	local button = self:GetParent()
+	local start, duration, modRate = GetActionCooldown(button.action)
+
+	if shouldUpdateTimer(self, start) then
+		Module.StartTimer(self, start, duration, modRate)
+	end
+end
+
+function Module:ActionbarUpateCooldown()
+	for cooldown in pairs(active) do
+		Module.CooldownUpdate(cooldown)
 	end
 end
 
@@ -167,31 +265,37 @@ end
 -- INITIALIZATION
 -- ---------------------------------------------------------------------------
 
-function Module:OnEnableCooldown()
-	-- REASON: Build and apply initial breakpoints before any hooks fire so the
-	-- first frame that gets hooked already has the correct formatter state.
-	Module:UpdateCooldownBreakPoints()
-
-	-- REASON: Hook the cooldown frame metatable so every cooldown frame (current
-	-- and future) receives our formatter when any of these methods are called.
-	-- Using the metatable means we catch frames created by any AddOn, not just
-	-- Blizzard action buttons.
-	local cooldownMeta = getmetatable(ActionButton1Cooldown).__index
-	local methods = {
-		"SetCooldown",
-		"SetCooldownDuration",
-		"SetHideCountdownNumbers",
-		"SetCooldownFromDurationObject",
-	}
-	for _, method in pairs(methods) do
-		hooksecurefunc(cooldownMeta, method, ApplyFormatterToCooldown)
+function Module:OnSetHideCountdownNumbers(hide)
+	-- MIDNIGHT (12.0): Blizzard nameplate aura cooldowns can pass a secret boolean
+	-- here. Do not inspect it; our custom actionbar timer should not override those.
+	if IsSecret(hide) then
+		return
 	end
 
-	-- NOTE: Also hook the percentage-display helper so bars that switch to
-	-- percentage mode are cleanly removed from our formatter.
-	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", ApplyFormatterToCooldown)
+	local disable = not (hide or self.noCooldownCount or self:IsForbidden())
+	if disable then
+		self:SetHideCountdownNumbers(true)
+	end
+end
 
-	-- Apply the CVar state based on the current config value.
-	local isEnabled = C["ActionBar"]["CDFormat"] ~= DISABLE_INDEX
-	SetCVar("countdownForCooldowns", isEnabled and 1 or 0)
+function Module:OnEnable()
+	if not C["ActionBar"]["Cooldown"] then
+		return
+	end
+
+	-- PERF: Build format strings once now that K.MyClassColor is available.
+	FMT_DAY  = "%d" .. K.MyClassColor .. "d"
+	FMT_HOUR = "%d" .. K.MyClassColor .. "h"
+	FMT_MIN  = "%d" .. K.MyClassColor .. "m"
+
+	-- REASON: Hook the metatable of standard ActionButton cooldowns to catch all instances.
+	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
+	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
+	hooksecurefunc(cooldownIndex, "SetHideCountdownNumbers", Module.OnSetHideCountdownNumbers)
+	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
+
+	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
+
+	-- WARNING: Ensure the Blizzard CVar is disabled to prevent native number rendering.
+	SetCVar("countdownForCooldowns", 0)
 end

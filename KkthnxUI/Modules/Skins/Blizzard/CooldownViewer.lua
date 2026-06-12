@@ -47,21 +47,6 @@ local function ReskinCooldownViewerItem(item)
 		item.IconOverlay:SetAlpha(0)
 	end
 
-	-- NOTE: Handle the specific elements via their mixin accessors if they exist.
-	local cooldown = item.GetCooldownFrame and item:GetCooldownFrame()
-	if cooldown then
-		-- NOTE: ActionBars/Cooldown.lua usually handles the text styling for these.
-	end
-
-	local chargeCount = item.GetChargeCountFrame and item:GetChargeCountFrame()
-	if chargeCount then
-		-- Potential font styling for charges
-	end
-
-	local applications = item.GetApplicationsFrame and item:GetApplicationsFrame()
-	if applications then
-		-- Potential font styling for stacks
-	end
 
 	local bar = item.GetBarFrame and item:GetBarFrame()
 	if bar then

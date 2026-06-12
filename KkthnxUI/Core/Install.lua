@@ -11,6 +11,8 @@ local format = format or string.format
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
+local ChatFrame_AddChannel = ChatFrame_AddChannel
+local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
 local ChatFrame_RemoveChannel = ChatFrame_RemoveChannel
 local ChatTypeInfo = ChatTypeInfo
@@ -58,6 +60,52 @@ local developerCVarsCache = {}
 -- ---------------------------------------------------------------------------
 -- HELPER FUNCTIONS
 -- ---------------------------------------------------------------------------
+
+-- Midnight removed several deprecated ChatFrame_* globals when
+-- loadDeprecationFallbacks is disabled. Keep install-time chat setup working
+-- across old and new clients by routing through frame methods when available.
+local function AddChatChannel(chatFrame, channelName)
+	if not chatFrame or not channelName then
+		return
+	end
+
+	if ChatFrame_AddChannel then
+		ChatFrame_AddChannel(chatFrame, channelName)
+		return
+	end
+
+	if chatFrame.AddChannel then
+		chatFrame:AddChannel(channelName)
+		return
+	end
+
+	if chatFrame.ContainsChannel and chatFrame:ContainsChannel(channelName) then
+		return
+	end
+
+	chatFrame.channelList = chatFrame.channelList or {}
+	chatFrame.zoneChannelList = chatFrame.zoneChannelList or {}
+	for i = 1, #chatFrame.channelList do
+		if chatFrame.channelList[i] == channelName then
+			return
+		end
+	end
+
+	chatFrame.channelList[#chatFrame.channelList + 1] = channelName
+	chatFrame.zoneChannelList[#chatFrame.zoneChannelList + 1] = nil
+end
+
+local function RemoveChatChannel(chatFrame, channelName)
+	if not chatFrame or not channelName then
+		return
+	end
+
+	if ChatFrame_RemoveChannel then
+		ChatFrame_RemoveChannel(chatFrame, channelName)
+	elseif chatFrame.RemoveChannel then
+		chatFrame:RemoveChannel(channelName)
+	end
+end
 
 -- REASON: Batch apply CVars to avoid code repetition and ensure consistency.
 local function ApplyCVars(cvarTable)
@@ -263,12 +311,12 @@ function Module:ForceChatSettings()
 
 	-- REASON: Clean up default spam channels.
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, "LocalDefense")
-	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
-	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
-	ChatFrame_RemoveChannel(ChatFrame1, "Services")
+	RemoveChatChannel(ChatFrame1, TRADE)
+	RemoveChatChannel(ChatFrame1, GENERAL)
+	RemoveChatChannel(ChatFrame1, "LocalDefense")
+	RemoveChatChannel(ChatFrame1, "GuildRecruitment")
+	RemoveChatChannel(ChatFrame1, "LookingForGroup")
+	RemoveChatChannel(ChatFrame1, "Services")
 
 	for i = 1, #generalMessageGroups do
 		ChatFrame_AddMessageGroup(ChatFrame1, generalMessageGroups[i])
@@ -294,9 +342,10 @@ function Module:ForceChatSettings()
 	local Trade = FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
-	ChatFrame_AddMessageGroup(Trade, TRADE)
-	ChatFrame_AddMessageGroup(Trade, GENERAL)
-	ChatFrame_AddMessageGroup(Trade, L["Services"])
+	ChatFrame_RemoveAllMessageGroups(Trade)
+	AddChatChannel(Trade, TRADE)
+	AddChatChannel(Trade, GENERAL)
+	AddChatChannel(Trade, L["Services"])
 
 	-- Configure Loot Window (New)
 	local Loot = FCF_OpenNewWindow(L["Loot"])
@@ -495,6 +544,7 @@ local function ApplyTutorialStep(page)
 		local vars = KkthnxUIDB.Variables[K.Realm][K.Name]
 		vars.DBMRequest = vars.DBMRequest or true
 		vars.HekiliRequest = vars.HekiliRequest or true
+		vars.CursorTrailRequest = vars.CursorTrailRequest or true
 		local getAddOnProfiles = K:GetModule("AddOns")
 		if getAddOnProfiles then
 			print("getAddOnProfiles found")
@@ -593,7 +643,7 @@ local function YesTutor()
 	tutorProgressBar:SetPoint("TOP", tutor, "BOTTOM", 0, -6)
 	tutorProgressBar:SetSize(480, 22)
 	tutorProgressBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	-- K:SmoothBar(tutorProgressBar)
+	K:SmoothBar(tutorProgressBar)
 
 	tutorProgressBar.text = K.CreateFontString(tutorProgressBar, 13, "", "", false, "CENTER", 0, -1)
 
@@ -788,6 +838,7 @@ local function HelloWorld()
 		local vars = KkthnxUIDB.Variables[K.Realm][K.Name]
 		vars.DBMRequest = vars.DBMRequest or true
 		vars.HekiliRequest = vars.HekiliRequest or true
+		vars.CursorTrailRequest = vars.CursorTrailRequest or true
 		local getAddOnProfiles = K:GetModule("AddOns")
 		if getAddOnProfiles then
 			print("getAddOnProfiles found")
@@ -811,7 +862,7 @@ local function HelloWorld()
 	-- Social buttons using helper function
 	local goDiscord = CreateSocialButton(welcome, "TOPLEFT", goTutor, -30, 40, "Discord", "|CFF7289da", "https://discord.gg/Rc9wcK9cAB")
 	local goPaypal = CreateSocialButton(welcome, "LEFT", goDiscord, 96, 0, "Paypal", "|CFF0079C1", "https://www.paypal.com/paypalme/KkthnxTV")
-	local goPatreon = CreateSocialButton(welcome, "LEFT", goPaypal, 96, 0, "Patreon", "|CFFf96854", "https://www.patreon.com/kkthnx")
+	local _ = CreateSocialButton(welcome, "LEFT", goPaypal, 96, 0, "Patreon", "|CFFf96854", "https://www.patreon.com/kkthnx")
 end
 
 -- ====================================================

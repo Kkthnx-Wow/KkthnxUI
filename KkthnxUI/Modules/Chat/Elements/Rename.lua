@@ -1,43 +1,61 @@
 --[[-----------------------------------------------------------------------------
 -- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
+-- Author: Josh "Kkthnx" Russell (Ported from NDui)
 -- Notes:
 -- - Purpose: Renames chat channel prefixes, adds custom timestamps, and formats system messages.
--- - Design: Hooks AddMessage on all chat frames to apply non-tainting string rewrites.
--- - Events: CHAT_MSG_SYSTEM
+-- - Design: Hooks ChatFrame_AddMessageEventFilter to format messages before they hit AddMessage.
+-- - Events: CHAT_MSG_SYSTEM and all other chat events
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Chat")
 
--- PERF: Localize globals and API functions to minimize lookup overhead.
--- local _G = _G
--- local BetterDate = _G.BetterDate
--- local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
--- local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
--- local GetCVar = _G.GetCVar
--- local GetCVarBool = _G.GetCVarBool
--- local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
--- local date = _G.date
--- local rawget = _G.rawget
--- local string_find = string.find
--- local string_gsub = string.gsub
--- local table_insert = table.insert
--- local time = time
--- local tonumber = tonumber
-
+local _G = _G
 local gsub, strfind, strmatch, format, strsub, strlen, strupper = string.gsub, string.find, string.match, string.format, string.sub, string.len, string.upper
-local tostring = tostring
-local BetterDate, time, date, GetCVarBool = BetterDate, time, date, GetCVarBool
+local tostring, tonumber = tostring, tonumber
+local ipairs = ipairs
+local pairs = pairs
+local BetterDate, time, date, GetCVarBool, GetTime = BetterDate, time, date, GetCVarBool, GetTime
 local RemoveExtraSpaces = RemoveExtraSpaces
 local INTERFACE_ACTION_BLOCKED = INTERFACE_ACTION_BLOCKED
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_ChatInfo = C_ChatInfo
+local ChatFrameUtil = ChatFrameUtil
+local ChatTypeInfo = ChatTypeInfo
+local FCFManager_ShouldSuppressMessage = FCFManager_ShouldSuppressMessage or function()
+	return false
+end
+local GetBNPlayerLink = GetBNPlayerLink
+local GetPlayerLink = GetPlayerLink
+local PlaySound = PlaySound
+local SOUNDKIT = SOUNDKIT
+local FlashClientIcon = FlashClientIcon
+local ChatFrameConstants = ChatFrameConstants or {}
+local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
+
+-- API Fallbacks for older WoW clients (e.g. WotLK)
+local GetChatCategory = ChatFrameUtil and ChatFrameUtil.GetChatCategory or _G.ChatHistory_GetChatCategory or _G.Chat_GetChatCategory or function(chatType)
+	return chatType
+end
+local GetDecoratedSenderName = ChatFrameUtil and ChatFrameUtil.GetDecoratedSenderName or _G.GetColoredName or function(_, _, sender)
+	return sender
+end
+local GetPFlag = ChatFrameUtil and ChatFrameUtil.GetPFlag or function()
+	return ""
+end
+local ResolvePrefixedChannelName = ChatFrameUtil and ChatFrameUtil.ResolvePrefixedChannelName or _G.Chat_ResolvePrefixedChannelName or function(channelString)
+	return channelString
+end
+local SetLastTellTarget = ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget or function() end
+local FlashTabIfNotShown = ChatFrameUtil and ChatFrameUtil.FlashTabIfNotShown or _G.FCF_FlashTabIfNotShown or function() end
+local ReplaceIconAndGroupExpressions = C_ChatInfo and C_ChatInfo.ReplaceIconAndGroupExpressions or function(msg)
+	return msg
+end
+
 local colon = HEADER_COLON
 local isCN = strlen(colon) > 1
 
--- ---------------------------------------------------------------------------
--- Timestamp helpers
--- ---------------------------------------------------------------------------
+-- Timestamp
 local timestampFormat = {
 	[2] = "[%I:%M %p] ",
 	[3] = "[%I:%M:%S %p] ",
@@ -46,33 +64,19 @@ local timestampFormat = {
 }
 
 local function GetCurrentTime()
-	-- REASON: Use local time by default or realm/server time when the user prefers it.
 	local locTime = time()
 	local realmTime = not GetCVarBool("timeMgrUseLocalTime") and C_DateAndTime_GetCurrentCalendarTime()
 	if realmTime then
 		realmTime.day = realmTime.monthDay
 		realmTime.min = realmTime.minute
-		realmTime.sec = date("%S") -- no sec value for realm time
+		realmTime.sec = tonumber(date("%S")) -- no sec value for realm time
 		realmTime = time(realmTime)
 	end
 
 	return locTime, realmTime
 end
 
--- ---------------------------------------------------------------------------
--- Author logo helper
--- ---------------------------------------------------------------------------
-local function AddAuthorLogo(link, unitName)
-	-- REASON: Decorate known developer names with a small author badge.
-	if unitName and K.Devs[unitName] then
-		return "|T" .. C["Media"].Textures.LogoSmallTexture .. ":12:24|t" .. link
-	end
-	return link
-end
-
--- ---------------------------------------------------------------------------
--- Channel abbreviation data
--- ---------------------------------------------------------------------------
+-- Channel name abbr
 local LEADERSHIP = {
 	PartyLeader = strmatch(CHAT_PARTY_LEADER_GET, "|h%[(.-)%]|h"),
 	PartyGuide = strmatch(CHAT_PARTY_GUIDE_GET, "|h%[(.-)%]|h"),
@@ -131,8 +135,7 @@ local CHANNEL_ABBR_LOCALES = {
 local matchPattern = "(|H(%w+):?([^:]+):?(%d*)|h)%[(.-)%]|h"
 
 local function AbbrChannelName(prefix, linkType, channel, channelID, channelName)
-	-- REASON: Rewrite Blizzard channel links using shorter localized abbreviations.
-	if C["Chat"].ChannelAbbreviation == 1 then
+	if C["Chat"].ChannelAbbr == 1 then
 		return
 	end
 
@@ -144,7 +147,7 @@ local function AbbrChannelName(prefix, linkType, channel, channelID, channelName
 		return prefix .. "[" .. channelID .. "]|h"
 	end
 
-	local channels = C["Chat"].ChannelAbbreviation == 2 and CHANNEL_ABBR or CHANNEL_ABBR_LOCALES
+	local channels = C["Chat"].ChannelAbbr == 2 and CHANNEL_ABBR or CHANNEL_ABBR_LOCALES
 	local data = channels[channel]
 	if not data then
 		return prefix .. "[" .. channelName .. "]|h"
@@ -159,21 +162,7 @@ local function AbbrChannelName(prefix, linkType, channel, channelID, channelName
 	return prefix .. "[" .. abbr .. "]|h"
 end
 
--- ---------------------------------------------------------------------------
--- Colon removal helpers
--- ---------------------------------------------------------------------------
-local channels = {
-	SAY = not isCN,
-	YELL = not isCN,
-	WHISPER = not isCN,
-	GUILD = not isCN,
-	OFFICER = not isCN,
-	CHANNEL = not isCN,
-	PARTY = true,
-	RAID = true,
-	INSTANCE_CHAT = not isCN,
-}
-
+-- Kill colon before message
 local cnColonChannels = {
 	SAY = true,
 	YELL = true,
@@ -187,13 +176,6 @@ local cnColonChannels = {
 }
 
 local cnPattern = "(|Hplayer[^]]*:([^:]+):[^]]*%]|h.-)" .. colon .. "%s"
-local enPattern = "(|Hplayer[^]]*:([^:]+):[^]]*%]|h.-):%s"
-
-local function KillColon(link, tag)
-	if channels[tag] then
-		return link .. ": "
-	end
-end
 
 local function KillCNColon(link, tag)
 	if cnColonChannels[tag] then
@@ -209,12 +191,8 @@ local function highlightURL(_, url)
 	return " " .. convertLink("[" .. url .. "]", url) .. " "
 end
 
--- ---------------------------------------------------------------------------
--- Chat target helper
--- ---------------------------------------------------------------------------
 -- FCFManager_GetChatTarget clone (safeguard)
 local function GetChatTarget(chatGroup, playerTarget, channelTarget)
-	-- REASON: Mirror Blizzard's target selection logic for chat frame suppression.
 	if chatGroup == "CHANNEL" then
 		return tostring(channelTarget)
 	elseif chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" then
@@ -222,19 +200,13 @@ local function GetChatTarget(chatGroup, playerTarget, channelTarget)
 	end
 end
 
--- ---------------------------------------------------------------------------
--- State
--- ---------------------------------------------------------------------------
 -- Dedup cache: prevent double-processing when addons like WhisperPop
--- re-invoke event filters manually after WoW already processed them,
--- which would cause self:AddMessage to be called twice -> duplicate messages.
+-- re-invoke event filters manually after WoW already processed them
 local processedLines = {}
 local processedCount = 0
 local PROCESSED_LINES_MAX = 200
 
--- ---------------------------------------------------------------------------
--- Chat filter callback
--- ---------------------------------------------------------------------------
+-- Chat event filter: format message, respect window settings, use correct colors
 local function ChatMsgFilter(self, event, msg, sender, language, channelString, target, flags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, suppressRaidIcons)
 	if strfind(msg, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then
 		return true
@@ -249,15 +221,16 @@ local function ChatMsgFilter(self, event, msg, sender, language, channelString, 
 		processedLines[key] = true
 		processedCount = processedCount + 1
 		if processedCount > PROCESSED_LINES_MAX then
-			wipe(processedLines)
+			table.wipe(processedLines)
 			processedCount = 0
 		end
 	end
 
 	-- Per-window visibility check
 	local chatType = strsub(event, 10)
-	local chatGroup = ChatFrameUtil.GetChatCategory(chatType)
+	local chatGroup = GetChatCategory(chatType)
 	local channelLength = strlen(channelString)
+	local chatTarget
 
 	-- For CHANNEL type: check self.channelList (mirrors Blizzard's logic in MessageEventHandler)
 	-- For non-CHANNEL types: use FCFManager_ShouldSuppressMessage
@@ -277,7 +250,7 @@ local function ChatMsgFilter(self, event, msg, sender, language, channelString, 
 			end
 		end
 	else
-		local chatTarget = GetChatTarget(chatGroup, sender, channelIndex)
+		chatTarget = GetChatTarget(chatGroup, sender, channelIndex)
 		if FCFManager_ShouldSuppressMessage(self, chatGroup, chatTarget) then
 			return true
 		end
@@ -306,8 +279,8 @@ local function ChatMsgFilter(self, event, msg, sender, language, channelString, 
 		return
 	end
 
-	local coloredName = ChatFrameUtil.GetDecoratedSenderName(event, msg, sender, language, channelString, target, flags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile)
-	local pflag = ChatFrameUtil.GetPFlag(flags, zoneChannelID, channelIndex)
+	local coloredName = GetDecoratedSenderName(event, msg, sender, language, channelString, target, flags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile)
+	local pflag = GetPFlag(flags, zoneChannelID, channelIndex)
 
 	local playerLink
 	if chatType == "BN_WHISPER" or chatType == "BN_WHISPER_INFORM" then
@@ -317,54 +290,79 @@ local function ChatMsgFilter(self, event, msg, sender, language, channelString, 
 	end
 
 	msg = gsub(msg, "%%", "%%%%")
-	msg = C_ChatInfo.ReplaceIconAndGroupExpressions(msg, suppressRaidIcons)
+	msg = ReplaceIconAndGroupExpressions(msg, suppressRaidIcons)
 	msg = RemoveExtraSpaces(msg)
 
 	local outMsg = format(formatKey .. msg, pflag .. playerLink)
 
 	-- Add channel prefix for custom channels
 	if channelLength > 0 then
-		local channelName = ChatFrameUtil.ResolvePrefixedChannelName(channelString)
+		local channelName = ResolvePrefixedChannelName(channelString)
 		if channelName then
 			outMsg = "|Hchannel:channel:" .. (channelIndex or 0) .. "|h[" .. channelName .. "]|h " .. outMsg
 		end
 	end
 
-	-- Apply KkthnxUI modifications
+	-- Apply timestamp
 	if C["Chat"].TimestampFormat > 1 then
 		local locTime, realmTime = GetCurrentTime()
 		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat] .. "|r", realmTime or locTime)
 		outMsg = timeStamp .. outMsg
 	end
 
-	outMsg = gsub(outMsg, "(|Hplayer:([^|:]+))", AddAuthorLogo)
 	if isCN then
 		outMsg = gsub(outMsg, cnPattern, KillCNColon)
 	end
-	-- outMsg = gsub(outMsg, enPattern, KillColon)
 	outMsg = gsub(outMsg, matchPattern, AbbrChannelName)
+
+	-- Apply custom whisper coloring
+	if C["Chat"].WhisperColor and (chatType == "WHISPER_INFORM" or chatType == "BN_WHISPER_INFORM") then
+		info = { r = 0.6274, g = 0.3231, b = 0.6274, id = info.id }
+	end
 
 	self:AddMessage(outMsg, info.r, info.g, info.b, info.id)
 
-	-- Fix whipser reply
+	-- Fix whisper reply
 	if chatType == "WHISPER" or chatType == "BN_WHISPER" then
-		ChatFrameUtil.SetLastTellTarget(sender, chatType)
+		SetLastTellTarget(sender, chatType)
 		if not self.tellTimer or (GetTime() > self.tellTimer) then
-			PlaySound(SOUNDKIT.TELL_MESSAGE)
+			if SOUNDKIT and SOUNDKIT.TELL_MESSAGE then
+				PlaySound(SOUNDKIT.TELL_MESSAGE)
+			else
+				PlaySound(3081) -- fallback to standard tell sound ID
+			end
 		end
-		self.tellTimer = GetTime() + ChatFrameConstants.WhisperSoundAlertCooldown
-		-- We don't flash the app icon for front end chat for now.
+		self.tellTimer = GetTime() + (ChatFrameConstants.WhisperSoundAlertCooldown or 0)
 		if FlashClientIcon then
 			FlashClientIcon()
 		end
 	end
-	ChatFrameUtil.FlashTabIfNotShown(self, info, chatType, chatGroup, chatTarget)
+	FlashTabIfNotShown(self, info, chatType, chatGroup, chatTarget)
 
 	return true
 end
 
+-- ---------------------------------------------------------------------------
+-- Initialization
+-- ---------------------------------------------------------------------------
 function Module:CreateChatRename()
-	-- REASON: Register chat filters for all supported incoming message events.
+	-- REASON: Sets up global chat filters and initiates chat frame renaming.
+	local COME = rawget(_G, "L_CHAT_COME_ONLINE") or "has come |cff298F00online|r."
+	local GONE = rawget(_G, "L_CHAT_GONE_OFFLINE") or "has gone |cffff0000offline|r."
+
+	local function systemFilter(_, _, msg, ...)
+		-- REASON: Formats "friend came online/offline" messages for a cleaner aesthetic.
+		msg = gsub(msg, "%%|Hplayer:([^|]+)%%|h%%[([^%%]]+)%%]%%|h has come online%%.", function(player, name)
+			return "|Hplayer:" .. player .. "|h[" .. name .. "]|h " .. COME
+		end)
+		msg = gsub(msg, "%%[([^%%]]+)%%] has gone offline%%.", function(name)
+			return "[" .. name .. "] " .. GONE
+		end)
+		return false, msg, ...
+	end
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", systemFilter)
+
 	local events = {
 		"CHAT_MSG_SAY",
 		"CHAT_MSG_YELL",

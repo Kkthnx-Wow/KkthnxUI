@@ -7,7 +7,7 @@
 -- - Events: N/A
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local _, C = KkthnxUI[1], KkthnxUI[2]
 
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G

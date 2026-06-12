@@ -7,7 +7,7 @@
 -- - Events: ZONE_CHANGED, ZONE_CHANGED_INDOORS, ZONE_CHANGED_NEW_AREA, PLAYER_ENTERING_WORLD
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("DataText")
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
@@ -26,7 +26,6 @@ local UIParent = _G.UIParent
 local UnitExists = _G.UnitExists
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitName = _G.UnitName
-local ipairs = ipairs
 local math_ceil = math.ceil
 local math_floor = math.floor
 local math_max = math.max

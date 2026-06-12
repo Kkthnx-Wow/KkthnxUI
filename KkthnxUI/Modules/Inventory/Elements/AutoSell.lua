@@ -12,7 +12,6 @@ local Module = K:GetModule("Bags")
 
 -- PERF: Localize global functions to avoid hashtable lookups in high-frequency loops.
 local table_wipe = table.wipe
-local string_format = string.format
 
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -61,9 +60,7 @@ local function startSelling()
 							safeToSell = false
 						end
 					end
-					if not safeToSell then
-						-- skip this entry, continue to next
-					else
+					if safeToSell then
 						sellCache[key] = true
 						C_Container_UseContainerItem(bag, slot)
 						-- PERF: Use recursion with delay instead of a tightly packed loop to prevent client freeze.
@@ -120,7 +117,7 @@ local function updateAutoSell(event, ...)
 		K:RegisterEvent("UI_ERROR_MESSAGE", updateAutoSell)
 	elseif (event == "UI_ERROR_MESSAGE" and arg == errorText) or event == "MERCHANT_CLOSED" then
 		autoSellStop = true
-		K:UnregisterEvent("UI_ERROR_MESSAGE")
+		K:UnregisterEvent("UI_ERROR_MESSAGE", updateAutoSell)
 	end
 end
 

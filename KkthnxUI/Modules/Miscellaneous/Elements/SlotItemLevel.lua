@@ -27,11 +27,9 @@ local tonumber = _G.tonumber
 local type = _G.type
 
 local _G = _G
-local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
 local C_AzeriteEmpoweredItem_IsPowerSelected = _G.C_AzeriteEmpoweredItem.IsPowerSelected
 local C_Item_GetItemInfoInstant = _G.C_Item.GetItemInfoInstant
 local C_Spell_GetSpellInfo = _G.C_Spell.GetSpellInfo
-local C_Spell_GetSpellName = _G.C_Spell.GetSpellName
 local CreateFrame = _G.CreateFrame
 local GetCurrentGuildBankTab = _G.GetCurrentGuildBankTab
 local GetGuildBankItemLink = _G.GetGuildBankItemLink
@@ -42,8 +40,7 @@ local GetLootSlotInfo = _G.GetLootSlotInfo
 local GetLootSlotLink = _G.GetLootSlotLink
 local GetTradePlayerItemLink = _G.GetTradePlayerItemLink
 local GetTradeTargetItemLink = _G.GetTradeTargetItemLink
-local HookSecureFunc = _G.hooksecurefunc
-local IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
+local hooksecurefunc = _G.hooksecurefunc
 local IsSpellKnown = _G.IsSpellKnown
 local ItemLocation = _G.ItemLocation
 local ItemObject = _G.Item
@@ -572,7 +569,9 @@ local function calculateAverageGearLevel(targetUnit, displayFontString)
 	displayFontString:Show()
 end
 
-function Module:updateInspectFrameGearInfo(targetGUID)
+-- COMPAT: Dot syntax (not colon). K:RegisterEvent dispatches func(event, ...), so
+-- INSPECT_READY passes (event, targetGUID) and the leading event must be ignored.
+function Module.updateInspectFrameGearInfo(_, targetGUID)
 	local inspectFrame = _G.InspectFrame
 	if inspectFrame and inspectFrame.unit and UnitGUID(inspectFrame.unit) == targetGUID then
 		Module:setupGearItemLevelDisplay(inspectFrame, "Inspect", inspectFrame.unit)
@@ -690,7 +689,7 @@ local function setupScrappingGearDisplay(scrappingFrame)
 
 	for scrappingButton in scrappingFrame.ItemSlots.scrapButtons:EnumerateActive() do
 		if scrappingButton and not scrappingButton.iLvlHooked then
-			HookSecureFunc(scrappingButton, "RefreshIcon", onScrappingButtonUpdate)
+			hooksecurefunc(scrappingButton, "RefreshIcon", onScrappingButtonUpdate)
 			scrappingButton.iLvlHooked = true
 		end
 	end
@@ -700,7 +699,7 @@ local function onScrappingMachineLoaded(eventName, addonName)
 	if addonName == "Blizzard_ScrappingMachineUI" then
 		local machineFrame = _G.ScrappingMachineFrame
 		if machineFrame then
-			HookSecureFunc(machineFrame, "SetupScrapButtonPool", setupScrappingGearDisplay)
+			hooksecurefunc(machineFrame, "SetupScrapButtonPool", setupScrappingGearDisplay)
 			setupScrappingGearDisplay(machineFrame)
 		end
 		K:UnregisterEvent(eventName, onScrappingMachineLoaded)
@@ -770,7 +769,7 @@ local function replaceChatLinkWithItemLevel(itemLinkStr, itemNameText)
 	return modifiedChatLink
 end
 
-function Module:onGuildNewsTextUpdate(newsButton)
+function Module.onGuildNewsTextUpdate(newsButton)
 	if not newsButton or not newsButton.text or not newsButton.text.GetText then
 		return
 	end
@@ -828,7 +827,7 @@ local function onGuildBankLoaded(eventName, addonName)
 		return
 	end
 
-	HookSecureFunc(_G.GuildBankFrame, "Update", function(self)
+	hooksecurefunc(_G.GuildBankFrame, "Update", function(self)
 		if self.mode ~= "bank" then
 			return
 		end
@@ -901,7 +900,7 @@ function Module:createImprovedSlotItemLevelDisplay()
 
 	K:RegisterEvent("INSPECT_READY", Module.updateInspectFrameGearInfo)
 
-	HookSecureFunc("EquipmentFlyout_UpdateItems", function()
+	hooksecurefunc("EquipmentFlyout_UpdateItems", function()
 		for _, flyoutButton in pairs(_G.EquipmentFlyoutFrame.buttons) do
 			if flyoutButton:IsShown() then
 				setupFlyoutGearDisplay(flyoutButton)
@@ -911,15 +910,15 @@ function Module:createImprovedSlotItemLevelDisplay()
 
 	K:RegisterEvent("ADDON_LOADED", onScrappingMachineLoaded)
 
-	HookSecureFunc("MerchantFrameItem_UpdateQuality", updateMerchantItemQuality)
+	hooksecurefunc("MerchantFrameItem_UpdateQuality", updateMerchantItemQuality)
 
-	HookSecureFunc("TradeFrame_UpdatePlayerItem", updateTradePlayerItemLevel)
-	HookSecureFunc("TradeFrame_UpdateTargetItem", updateTradeTargetItemLevel)
+	hooksecurefunc("TradeFrame_UpdatePlayerItem", updateTradePlayerItemLevel)
+	hooksecurefunc("TradeFrame_UpdateTargetItem", updateTradeTargetItemLevel)
 
-	HookSecureFunc("GuildNewsButton_SetText", Module.onGuildNewsTextUpdate)
+	hooksecurefunc("GuildNewsButton_SetText", Module.onGuildNewsTextUpdate)
 
 	if _G.LootFrame and _G.LootFrame.ScrollBox then
-		HookSecureFunc(_G.LootFrame.ScrollBox, "Update", onLootScrollUpdate)
+		hooksecurefunc(_G.LootFrame.ScrollBox, "Update", onLootScrollUpdate)
 	end
 
 	K:RegisterEvent("ADDON_LOADED", onGuildBankLoaded)

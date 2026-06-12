@@ -14,7 +14,6 @@ local Module = K:GetModule("Announcements")
 -- ---------------------------------------------------------------------------
 
 -- PERF: Cache API references for bag scanning and Mythic+ lookups.
-local gsub = string.gsub
 local strlower = string.lower
 local format = string.format
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -27,7 +26,6 @@ local IsInGroup = IsInGroup
 local IsPartyLFG = IsPartyLFG
 local SendChatMessage = SendChatMessage
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS
-local ipairs = ipairs
 
 -- NOTE: Small cache table to track the last observed keystone to prevent duplicate announcements.
 local keystoneCache = { mapID = 0, level = 0 }
@@ -62,7 +60,10 @@ end
 -- ANNOUNCEMENT LOGIC
 -- ---------------------------------------------------------------------------
 
-function Module:AnnounceKeystone(event)
+-- COMPAT: Dot syntax (not colon). The dispatcher calls handlers as func(event, ...); a colon method
+-- would bind `self` to the event name and leave `event` holding the payload (e.g. isInitialLogin),
+-- so every `event == "..."` branch below would fail and the announcer would never fire.
+function Module.AnnounceKeystone(event)
 	if not C["Announcements"].KeystoneAlert then
 		return
 	end
@@ -98,7 +99,9 @@ end
 -- ---------------------------------------------------------------------------
 
 -- REASON: Respond to the '!keys' chat command to share the current keystone with the group/guild.
-function Module:OnKeystoneQuery(event, text)
+-- COMPAT: Dot syntax (not colon) so (event, text) line up with the dispatcher's func(event, ...);
+-- a colon method would shift `self`=event and `event`=message, `text`=sender (feature dead).
+function Module.OnKeystoneQuery(event, text)
 	if not C["Announcements"].KeystoneAlert then
 		return
 	end

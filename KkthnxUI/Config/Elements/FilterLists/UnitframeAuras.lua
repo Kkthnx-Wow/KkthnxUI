@@ -1,4 +1,4 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local _, C = KkthnxUI[1], KkthnxUI[2]
 
 local function Priority(priorityOverride, stackThreshold)
 	return {

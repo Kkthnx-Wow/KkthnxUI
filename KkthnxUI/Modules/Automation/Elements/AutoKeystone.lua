@@ -18,7 +18,7 @@ local C_Container_GetContainerItemID = C_Container.GetContainerItemID
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
 local C_Container_PickupContainerItem = C_Container.PickupContainerItem
 local C_Cursor_GetCursorItem = C_Cursor.GetCursorItem
-local C_Item_GetItemInfo = C_Item.GetItemInfo
+local C_Item_GetItemInfoInstant = C_Item.GetItemInfoInstant
 local Enum_BagIndex_ReagentBag = Enum.BagIndex.ReagentBag
 local Enum_ItemClass_Reagent = Enum.ItemClass.Reagent
 local Enum_ItemReagentSubclass_Keystone = Enum.ItemReagentSubclass.Keystone
@@ -30,7 +30,7 @@ local select = select
 -- ---------------------------------------------------------------------------
 local function isKeystone(itemID)
 	-- REASON: Filters for Mythic+ Keystones using official ItemClass and Subclass enums.
-	local class, subclass = select(12, C_Item_GetItemInfo(itemID))
+	local class, subclass = select(6, C_Item_GetItemInfoInstant(itemID))
 	return class == Enum_ItemClass_Reagent and subclass == Enum_ItemReagentSubclass_Keystone
 end
 
@@ -63,17 +63,31 @@ function Module:SetupAutoKeystone()
 	end
 end
 
-function Module:LoadAutoKeystone(event, addon)
-	if addon == "Blizzard_ChallengesUI" then
-		local challengesKeystoneFrame = _G.ChallengesKeystoneFrame
-		if challengesKeystoneFrame then
-			-- REASON: Hooks the OnShow script to trigger the keystone placement when the UI opens.
-			challengesKeystoneFrame:HookScript("OnShow", function()
-				self:SetupAutoKeystone()
-			end)
-		end
+local isKeystoneFrameHooked
+local function hookKeystoneFrame()
+	if isKeystoneFrameHooked then
+		return
+	end
 
-		K:UnregisterEvent(event, self.LoadAutoKeystone)
+	local challengesKeystoneFrame = _G["ChallengesKeystoneFrame"]
+	if not challengesKeystoneFrame then
+		return
+	end
+
+	isKeystoneFrameHooked = true
+	challengesKeystoneFrame:HookScript("OnShow", function()
+		Module:SetupAutoKeystone()
+	end)
+end
+
+-- COMPAT: Dot syntax (not colon). The shared dispatcher calls handlers as func(event, ...), and
+-- K:RegisterEvent never stores a context object (events[event][func] is always true), so a colon
+-- method bound `self` to the event name -> `addon` was nil and this branch never ran (auto-keystone
+-- never hooked the Challenges UI). Reference the upvalue `Module` directly instead of `self`.
+function Module.LoadAutoKeystone(event, addon)
+	if addon == "Blizzard_ChallengesUI" then
+		hookKeystoneFrame()
+		K:UnregisterEvent(event, Module.LoadAutoKeystone)
 	end
 end
 
@@ -83,5 +97,10 @@ function Module:CreateAutoKeystone()
 		return
 	end
 
-	K:RegisterEvent("ADDON_LOADED", self.LoadAutoKeystone, self)
+	-- NOTE: No context arg — K:RegisterEvent's 3rd param is a unit filter, not a `self` context.
+	if C_AddOns_IsAddOnLoaded("Blizzard_ChallengesUI") then
+		hookKeystoneFrame()
+	else
+		K:RegisterEvent("ADDON_LOADED", Module.LoadAutoKeystone)
+	end
 end

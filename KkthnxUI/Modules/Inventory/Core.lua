@@ -12,7 +12,6 @@ local Module = K:NewModule("Bags")
 
 -- PERF: Localize globals and API functions to minimize lookup overhead.
 local _G = _G
-local BankFrame_ShowPanel = _G.BankFrame_ShowPanel
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_Bank_CanPurchaseBankTab = _G.C_Bank.CanPurchaseBankTab
 local C_Bank_CanViewBank = _G.C_Bank.CanViewBank
@@ -28,23 +27,21 @@ local C_Spell_GetSpellName = _G.C_Spell.GetSpellName
 local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
 local DeleteCursorItem = _G.DeleteCursorItem
-local DepositReagentBank = _G.DepositReagentBank
 local GameTooltip = _G.GameTooltip
 local GetCVarBool = _G.GetCVarBool
 local GetContainerItemID = _G.C_Container.GetContainerItemID
 local GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
 local GetInventoryItemID = _G.GetInventoryItemID
-local GetRealZoneText = _G.GetRealZoneText
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsCosmeticItem = _G.C_Item.IsCosmeticItem
-local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
-local IsShiftKeyDown = _G.IsShiftKeyDown
 local OpenAllBags = _G.OpenAllBags
 local PickupContainerItem = _G.C_Container.PickupContainerItem
 local PlaySound = _G.PlaySound
 local SetCVar = _G.SetCVar
+local SetCVarBitfield = _G.SetCVarBitfield
+local SetItemCraftingQualityOverlay = _G.SetItemCraftingQualityOverlay
 local SortBags = _G.C_Container.SortBags
 local SortBankBags = _G.C_Container.SortBankBags
 local SplitContainerItem = _G.C_Container.SplitContainerItem
@@ -52,7 +49,6 @@ local StaticPopup_Hide = _G.StaticPopup_Hide
 local StaticPopup_Show = _G.StaticPopup_Show
 local StaticPopup_Visible = _G.StaticPopup_Visible
 -- local ToggleAllBags = _G.ToggleAllBags
-local UIParent = _G.UIParent
 local ipairs = _G.ipairs
 local math_ceil = _G.math.ceil
 local pairs = _G.pairs
@@ -96,10 +92,15 @@ function Module:ReverseSort()
 			local info = C_Container_GetContainerItemInfo(bagID, slotID)
 			local texture = info and info.iconFileID
 			local locked = info and info.isLocked
-			if (slotID <= numSlots / 2) and texture and not locked and not sortCache["b" .. bagID .. "s" .. slotID] then
+			-- PERF: Two-level numeric table avoids allocating a new heap string per slot on every sort pass.
+			local bagCache = sortCache[bagID]
+			if (slotID <= numSlots / 2) and texture and not locked and not (bagCache and bagCache[slotID]) then
 				PickupContainerItem(bagID, slotID)
 				PickupContainerItem(bagID, numSlots + 1 - slotID)
-				sortCache["b" .. bagID .. "s" .. slotID] = true
+				if not sortCache[bagID] then
+					sortCache[bagID] = {}
+				end
+				sortCache[bagID][slotID] = true
 			end
 		end
 	end
@@ -254,7 +255,7 @@ local function toggleWidgetVisibility(self)
 	isWidgetsHidden = not isWidgetsHidden
 
 	local buttons = self.__owner.widgetButtons
-	for index, button in pairs(buttons) do
+	for index, button in ipairs(buttons) do
 		if index > 2 then
 			button:SetShown(not isWidgetsHidden)
 		end
@@ -286,8 +287,8 @@ function Module:CreateCollapseArrow()
 	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
 	moneyTag:SetPoint("RIGHT", collapseArrow, "LEFT", -12, 0)
 
-	local moneyOverlay = CreateFrame("Frame", nil, UIParent)
-	moneyOverlay:SetParent(self)
+	-- FIX: Previously created with UIParent as parent then immediately re-parented to self; redundant assignment removed.
+	local moneyOverlay = CreateFrame("Frame", nil, self)
 	moneyOverlay:SetAllPoints(moneyTag)
 	moneyOverlay:SetScript("OnEnter", K.GoldButton_OnEnter)
 	moneyOverlay:SetScript("OnLeave", K.GoldButton_OnLeave)
@@ -330,29 +331,27 @@ function Module:CreateBagBar(settings, bagColumns)
 	self.BagBar = bagBar
 end
 
-function Module:CreateBagTab(settings, tabColumns, account)
+function Module:CreateBagTab(settings, columns, account)
 	local bagTab = self:SpawnPlugin("BagTab", settings.Bags, account)
 	bagTab:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
 	bagTab:CreateBorder()
 	bagTab.highlightFunction = searchHighlight
 	bagTab.isGlobal = true
 	bagTab:Hide()
-	bagTab.columns = tabColumns
+	bagTab.columns = columns
 	bagTab.UpdateAnchor = updateBagBarLayout
 	bagTab:UpdateAnchor()
 
-	if account then
-		local purchaseBtn = CreateFrame("Button", "KKUI_BankPurchaseButton", bagTab, "InsecureActionButtonTemplate")
-		purchaseBtn:SetSize(120, 22)
-		purchaseBtn:SetPoint("TOP", bagTab, "BOTTOM", 0, -5)
-		K.CreateFontString(purchaseBtn, 14, _G.PURCHASE, "info")
-		purchaseBtn:SkinButton()
-		purchaseBtn:Hide()
+	local purchaseBtn = CreateFrame("Button", "KKUI_BankPurchaseButton", bagTab, "InsecureActionButtonTemplate")
+	purchaseBtn:SetSize(120, 22)
+	purchaseBtn:SetPoint("TOP", bagTab, "BOTTOM", 0, -5)
+	K.CreateFontString(purchaseBtn, 14, _G.PURCHASE, "info")
+	purchaseBtn:SkinButton()
+	purchaseBtn:Hide()
 
-		purchaseBtn:RegisterForClicks("AnyUp", "AnyDown")
-		purchaseBtn:SetAttribute("type", "click")
-		purchaseBtn:SetAttribute("clickbutton", _G.BankFrame.BankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
-	end
+	purchaseBtn:RegisterForClicks("AnyUp", "AnyDown")
+	purchaseBtn:SetAttribute("type", "click")
+	purchaseBtn:SetAttribute("clickbutton", _G.BankFrame.BankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
 
 	self.BagBar = bagTab
 end
@@ -368,15 +367,12 @@ local function handleCloseOrReset(self, btn)
 		local tempAnchors = K.GetCharVars()["TempAnchor"]
 		tempAnchors[bag:GetName()] = nil
 		tempAnchors[bank:GetName()] = nil
-		tempAnchors[reagent:GetName()] = nil
 		tempAnchors[account:GetName()] = nil
 
 		bag:ClearAllPoints()
 		bag:SetPoint(unpack(bag.__anchor))
 		bank:ClearAllPoints()
 		bank:SetPoint(unpack(bank.__anchor))
-		reagent:ClearAllPoints()
-		reagent:SetPoint(unpack(bank.__anchor))
 		account:ClearAllPoints()
 		account:SetPoint(unpack(bank.__anchor))
 		PlaySound(_G.SOUNDKIT.IG_MINIMAP_OPEN)
@@ -411,29 +407,9 @@ function Module:CreateInventoryButton(parent, size, icon, title, clickFunc, isCl
 end
 
 function Module:CreateCloseButton(sourceFrame)
-	local function closeClick(self, btn)
-		if btn == "RightButton" then
-			local bag = self.__owner.main
-			local bank = self.__owner.bank
-			local account = self.__owner.accountbank
-			local tempAnchors = K.GetCharVars()["TempAnchor"]
-			tempAnchors[bag:GetName()] = nil
-			tempAnchors[bank:GetName()] = nil
-			tempAnchors[account:GetName()] = nil
-
-			bag:ClearAllPoints()
-			bag:SetPoint(unpack(bag.__anchor))
-			bank:ClearAllPoints()
-			bank:SetPoint(unpack(bank.__anchor))
-			account:ClearAllPoints()
-			account:SetPoint(unpack(bank.__anchor))
-			PlaySound(_G.SOUNDKIT.IG_MINIMAP_OPEN)
-		else
-			Module:CloseBags()
-		end
-	end
-
-	local closeBtn = Module:CreateInventoryButton(self, 18, "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32", _G.CLOSE .. "/" .. _G.RESET, closeClick, true)
+	-- REASON: Reuses the module-scope handleCloseOrReset directly; the previous inner closeClick closure
+	-- was a verbatim 25-line duplicate of that function with no behavioral difference.
+	local closeBtn = Module:CreateInventoryButton(self, 18, "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32", _G.CLOSE .. "/" .. _G.RESET, handleCloseOrReset, true)
 	closeBtn.__owner = sourceFrame
 
 	return closeBtn
@@ -445,11 +421,11 @@ function Module:CreateAccountBankButton()
 			return
 		end
 
-		if _G.BankFrame.BankPanel:ShouldShowLockPrompt() then
+		if BankFrame.BankPanel:ShouldShowLockPrompt() then
 			_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ACCOUNT_BANK_LOCKED_PROMPT)
 		else
 			PlaySound(_G.SOUNDKIT.IG_CHARACTER_INFO_TAB)
-			_G.BankFrame.BankPanel:SetBankType(ACCOUNT_BANK_TYPE)
+			BankFrame.BankPanel:SetBankType(ACCOUNT_BANK_TYPE)
 		end
 	end
 
@@ -646,7 +622,9 @@ function Module:CreateFreeSlots()
 	slotFrame:StyleButton()
 	slotFrame:SetScript("OnMouseUp", Module.FreeSlotOnDrop)
 	slotFrame:SetScript("OnReceiveDrag", Module.FreeSlotOnDrop)
-	K.AddTooltip(slotFrame, "_G.ANCHOR_RIGHT", "FreeSlots")
+	-- FIX: "_G.ANCHOR_RIGHT" was a Lua source string literal, not the anchor value "ANCHOR_RIGHT".
+	-- GameTooltip:SetOwner would not recognise it, causing silent tooltip positioning fallback.
+	K.AddTooltip(slotFrame, "ANCHOR_RIGHT", "FreeSlots")
 	slotFrame.__name = sourceName
 
 	local spaceTag = self:SpawnPlugin("TagDisplay", "|cff5C8BCF[space]|r", slotFrame)
@@ -661,7 +639,7 @@ end
 function Module:SelectToggleButton(activeID)
 	-- REASON: Ensures mutual exclusivity among the primary utility modes (Split, Favourite, Junk, Delete).
 	-- Activating one mode automatically deactivates any existing mode to prevent logic conflicts.
-	for index, button in pairs(toggleButtons) do
+	for index, button in ipairs(toggleButtons) do
 		if index ~= activeID then
 			button.__turnOff()
 		end
@@ -881,7 +859,7 @@ local function handleFavouriteTagging(self)
 	local itemLink = itemData and itemData.hyperlink
 	local targetID = itemData and itemData.itemID
 
-	if icon and rarity > _G.Enum.ItemQuality.Poor then
+	if icon and rarity and rarity > _G.Enum.ItemQuality.Poor then
 		ClearCursor()
 		Module.selectItemID = targetID
 		Module.CustomMenu[1].text = itemLink
@@ -930,8 +908,8 @@ local function handleJunkTagging(self)
 	local itemData = C_Container_GetContainerItemInfo(self.bagId, self.slotId)
 	local icon = itemData and itemData.iconFileID
 	local targetID = itemData and itemData.itemID
-	local sellPrice = select(11, _G.C_Item.GetItemInfo(targetID))
-	if icon and sellPrice > 0 then
+	local sellPrice = select(11, C_Item_GetItemInfo(targetID))
+	if icon and sellPrice and sellPrice > 0 then
 		local junkList = K.GetCharVars().CustomJunkList
 		if junkList[targetID] then
 			junkList[targetID] = nil
@@ -983,7 +961,7 @@ local function handleItemDeletion(self)
 	local itemData = C_Container_GetContainerItemInfo(self.bagId, self.slotId)
 	local icon = itemData and itemData.iconFileID
 	local rarity = itemData and itemData.quality
-	if IsControlKeyDown() and IsAltKeyDown() and icon and (rarity < _G.Enum.ItemQuality.Rare) then
+	if IsControlKeyDown() and IsAltKeyDown() and icon and rarity and (rarity < _G.Enum.ItemQuality.Rare) then
 		PickupContainerItem(self.bagId, self.slotId)
 		DeleteCursorItem()
 	end
@@ -1009,12 +987,14 @@ function Module:UpdateAllBags()
 	end
 end
 
-function Module:OpenBags()
+function Module.OpenBags()
 	OpenAllBags(true)
 end
 
-function Module:CloseBags()
-	if self.Bags and self.Bags:IsShown() then
+-- COMPAT: Dot syntax (not colon). K:RegisterEvent dispatches func(event, ...), so a colon
+-- handler would bind `self` to "TRADE_CLOSED" and skip the real Module.Bags check.
+function Module.CloseBags()
+	if Module.Bags and Module.Bags:IsShown() then
 		ToggleAllBags()
 	end
 end
@@ -1093,16 +1073,17 @@ function Module:OnEnable()
 		addNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
 		addNewContainer("Bag", 10, "BagAOE", filters.bagAOE)
 		addNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
-		addNewContainer("Bag", 18, "BagLegacy", filters.bagLegacy)
+		addNewContainer("Bag", 17, "BagLegacy", filters.bagLegacy)
 		addNewContainer("Bag", 19, "BagLower", filters.bagLower)
 		addNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		addNewContainer("Bag", 11, "BagCollection", filters.bagCollection)
-		addNewContainer("Bag", 15, "BagStone", filters.bagStone)
-		addNewContainer("Bag", 16, "Consumable", filters.bagConsumable)
-		addNewContainer("Bag", 13, "BagGoods", filters.bagGoods)
-		addNewContainer("Bag", 17, "BagQuest", filters.bagQuest)
-		addNewContainer("Bag", 14, "BagAnima", filters.bagAnima)
-		addNewContainer("Bag", 12, "BagDecor", filters.bagDecor)
+		addNewContainer("Bag", 14, "BagStone", filters.bagStone)
+		addNewContainer("Bag", 18, "BagKeystone", filters.bagKeystone)
+		addNewContainer("Bag", 15, "Consumable", filters.bagConsumable)
+		addNewContainer("Bag", 12, "BagGoods", filters.bagGoods)
+		addNewContainer("Bag", 16, "BagQuest", filters.bagQuest)
+		addNewContainer("Bag", 13, "BagAnima", filters.bagAnima)
+		addNewContainer("Bag", 21, "BagDecor", filters.bagDecor)
 
 		bagFrames.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		bagFrames.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
@@ -1116,15 +1097,15 @@ function Module:OnEnable()
 		addNewContainer("Bank", 9, "BankAOE", filters.bankAOE)
 		addNewContainer("Bank", 6, "BankAzeriteItem", filters.bankAzeriteItem)
 		addNewContainer("Bank", 10, "BankLegendary", filters.bankLegendary)
-		addNewContainer("Bank", 17, "BankLegacy", filters.bankLegacy)
-		addNewContainer("Bank", 18, "BankLower", filters.bankLower)
+		addNewContainer("Bank", 16, "BankLegacy", filters.bankLegacy)
+		addNewContainer("Bank", 17, "BankLower", filters.bankLower)
 		addNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
 		addNewContainer("Bank", 11, "BankCollection", filters.bankCollection)
-		addNewContainer("Bank", 15, "BankConsumable", filters.bankConsumable)
-		addNewContainer("Bank", 13, "BankGoods", filters.bankGoods)
-		addNewContainer("Bank", 16, "BankQuest", filters.bankQuest)
-		addNewContainer("Bank", 14, "BankAnima", filters.bankAnima)
-		addNewContainer("Bank", 12, "BankDecor", filters.bankDecor)
+		addNewContainer("Bank", 14, "BankConsumable", filters.bankConsumable)
+		addNewContainer("Bank", 12, "BankGoods", filters.bankGoods)
+		addNewContainer("Bank", 15, "BankQuest", filters.bankQuest)
+		addNewContainer("Bank", 13, "BankAnima", filters.bankAnima)
+		addNewContainer("Bank", 18, "BankDecor", filters.bankDecor)
 
 		bagFrames.bank = MyContainer:New("Bank", { Bags = "bank", BagType = "Bank" })
 		bagFrames.bank.__anchor = { "BOTTOMLEFT", 25, 50 }
@@ -1161,7 +1142,7 @@ function Module:OnEnable()
 		self:GetContainer("Bank"):Show()
 
 		if not isBagTypeInitialized then
-			-- Module:UpdateAllBags()
+			Module:UpdateAllBags()
 			Module:UpdateBagSize()
 			isBagTypeInitialized = true
 		end
@@ -1397,9 +1378,9 @@ function Module:OnEnable()
 			end
 		end
 
-		if self.ProfessionQualityOverlay then
+		if self.ProfessionQualityOverlay and SetItemCraftingQualityOverlay then
 			self.ProfessionQualityOverlay:SetAtlas(nil)
-			_G.SetItemCraftingQualityOverlay(self, item.link)
+			SetItemCraftingQualityOverlay(self, item.link)
 		end
 
 		local charVars = K.GetCharVars()
@@ -1461,8 +1442,8 @@ function Module:OnEnable()
 			self:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
 		end
 
-		if not item.texture and not _G.GameTooltip:IsForbidden() and _G.GameTooltip:GetOwner() == self then
-			_G.GameTooltip:Hide()
+		if not item.texture and not GameTooltip:IsForbidden() and GameTooltip:GetOwner() == self then
+			GameTooltip:Hide()
 		end
 
 		updateCanIMogIt(self, item)
@@ -1572,15 +1553,17 @@ function Module:OnEnable()
 		elseif name == "BagReagent" then
 			groupLabel = L["Reagent Bag"]
 		elseif name == "BagStone" then
-			groupLabel = _G.C_Spell.GetSpellName(404861)
+			groupLabel = C_Spell_GetSpellName(404861)
+		elseif name:match("Keystone$") then
+			groupLabel = _G.WEEKLY_REWARDS_MYTHIC_KEYSTONE
 		elseif string_match(name, "AOE") then
 			groupLabel = _G.ITEM_ACCOUNTBOUND_UNTIL_EQUIP
 		elseif string_match(name, "Lower") then
 			groupLabel = L["Lower Item Level"]
 		elseif string_match(name, "Legacy") then
 			groupLabel = L["Legacy Items"]
-		elseif strmatch(name, "Decor") then
-			groupLabel = AUCTION_CATEGORY_HOUSING
+		elseif string_match(name, "Decor") then
+			groupLabel = _G.AUCTION_CATEGORY_HOUSING
 		else
 			if name:match("Legendary$") then
 				groupLabel = _G.LOOT_JOURNAL_LEGENDARIES
@@ -1619,7 +1602,7 @@ function Module:OnEnable()
 		elseif name == "Bank" then
 			Module.CreateBagTab(self, settings, 6)
 			widgets[3] = Module.CreateBagToggle(self)
-			widgets[4] = Module.CreateAccountBankButton(self, bagFrames)
+			widgets[4] = Module.CreateAccountBankButton(self)
 		elseif name == "Account" then
 			Module.CreateBagTab(self, settings, 5, "account")
 			widgets[3] = Module.CreateBagToggle(self)
@@ -1670,7 +1653,7 @@ function Module:OnEnable()
 				container.freeSlot:SetSize(iconSize, iconSize)
 			end
 			if container.BagBar then
-				for _, bagBtn in pairs(container.BagBar.buttons) do
+				for _, bagBtn in ipairs(container.BagBar.buttons) do
 					bagBtn:SetSize(iconSize, iconSize)
 				end
 				container.BagBar:UpdateAnchor()
@@ -1693,12 +1676,12 @@ function Module:OnEnable()
 	end
 
 	function BagButton:OnUpdateButton()
-		local itemID = _G.GetInventoryItemID("player", (self.GetInventorySlot and self:GetInventorySlot()) or self.invID)
+		local itemID = GetInventoryItemID("player", (self.GetInventorySlot and self:GetInventorySlot()) or self.invID)
 		if not itemID then
 			return
 		end
 
-		local _, _, quality, _, _, _, _, _, _, _, _, classID, subClassID = _G.C_Item.GetItemInfo(itemID)
+		local _, _, quality, _, _, _, _, _, _, _, _, classID, subClassID = C_Item_GetItemInfo(itemID)
 		if not quality or quality == 1 then
 			quality = 0
 		end
@@ -1717,8 +1700,8 @@ function Module:OnEnable()
 		end
 	end
 
-	_G.C_Container.SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
-	_G.C_Container.SetInsertItemsLeftToRight(false)
+	C_Container_SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
+	C_Container_SetInsertItemsLeftToRight(false)
 
 	-- REASON: Brief toggle to force cargBags to recalculate slot groupings on load. This ensures
 	-- that the initial bag display correctly reflects the user's filtered categories and layout.
@@ -1755,25 +1738,26 @@ function Module:OnEnable()
 		end
 	end)
 
-	_G.SetCVarBitfield("closedInfoFrames", _G.LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true)
+	SetCVarBitfield("closedInfoFrames", _G.LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true)
 	_G.SetCVar("professionToolSlotsExampleShown", 1)
 	_G.SetCVar("professionAccessorySlotsExampleShown", 1)
 
 	hooksecurefunc(BankFrame.BankPanel, "SetBankType", function(self, bankType)
 		Module.Bags:GetContainer("Bank"):SetShown(bankType == CHAR_BANK_TYPE)
 		Module.Bags:GetContainer("Account"):SetShown(bankType == ACCOUNT_BANK_TYPE)
+		Module:UpdateAllBags()
 		if _G["KKUI_BankPurchaseButton"] then
-			_G["KKUI_BankPurchaseButton"]:SetShown(bankType == ACCOUNT_BANK_TYPE and C_Bank.CanPurchaseBankTab(ACCOUNT_BANK_TYPE))
+			_G["KKUI_BankPurchaseButton"]:SetShown(bankType == ACCOUNT_BANK_TYPE and C_Bank_CanPurchaseBankTab(ACCOUNT_BANK_TYPE))
 		end
 	end)
 
 	local throttlingFrame = CreateFrame("Frame", nil, bagFrames.main)
 	throttlingFrame:Hide()
-	throttlingFrame:SetScript("OnUpdate", function(_, elapsed)
-		throttlingFrame.delay = throttlingFrame.delay - elapsed
-		if throttlingFrame.delay < 0 then
+	throttlingFrame:SetScript("OnUpdate", function(self, elapsed)
+		self.delay = self.delay - elapsed
+		if self.delay < 0 then
 			Module:UpdateAllBags()
-			throttlingFrame:Hide()
+			self:Hide()
 		end
 	end)
 

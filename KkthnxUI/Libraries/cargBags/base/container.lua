@@ -20,17 +20,28 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
+-- Cache globals for performance
+local ipairs = ipairs
+local pairs = pairs
+local setmetatable = setmetatable
+local table_insert = table.insert
+local table_remove = table.remove
+
+local CreateFrame = CreateFrame
+
 --[[!
 	@class Container
 		The container class provides the virtual bags for cargBags
 ]]
 local Container = cargBags:NewClass("Container", nil, "Button")
 
-local mt_bags = {__index=function(self, bagID)
-	self[bagID] = CreateFrame("Frame", nil, self.container)
-	self[bagID]:SetID(bagID)
-	return self[bagID]
-end}
+local mt_bags = {
+	__index = function(self, bagID)
+		self[bagID] = CreateFrame("Frame", nil, self.container)
+		self[bagID]:SetID(bagID)
+		return self[bagID]
+	end,
+}
 
 --[[!
 	Creates a new instance of the class
@@ -41,19 +52,21 @@ end}
 ]]
 function Container:New(name, ...)
 	local implName = self.implementation.name
-	local container = setmetatable(CreateFrame("Frame", implName..name), self.__index)
+	local container = setmetatable(CreateFrame("Frame", implName .. name), self.__index)
 
 	container.name = name
 	container.buttons = {}
-	container.bags = setmetatable({container = container}, mt_bags)
+	container.bags = setmetatable({ container = container }, mt_bags)
 	container:ScheduleContentCallback()
 
 	container.implementation.contByName[name] = container -- Make this into pretty function?
-	table.insert(container.implementation.contByID, container)
+	table_insert(container.implementation.contByID, container)
 
 	container:SetParent(self.implementation)
 
-	if(container.OnCreate) then container:OnCreate(name, ...) end
+	if container.OnCreate then
+		container:OnCreate(name, ...)
+	end
 
 	return container
 end
@@ -68,9 +81,13 @@ function Container:AddButton(button)
 	button.container = self
 	button:SetParent(self.bags[button.bagId])
 	self:ScheduleContentCallback()
-	table.insert(self.buttons, button)
-	if(button.OnAdd) then button:OnAdd(self) end
-	if(self.OnButtonAdd) then self:OnButtonAdd(button) end
+	table_insert(self.buttons, button)
+	if button.OnAdd then
+		button:OnAdd(self)
+	end
+	if self.OnButtonAdd then
+		self:OnButtonAdd(button)
+	end
 end
 
 --[[!
@@ -81,12 +98,16 @@ end
 ]]
 function Container:RemoveButton(button)
 	for i, single in ipairs(self.buttons) do
-		if(button == single) then
+		if button == single then
 			self:ScheduleContentCallback()
 			button.container = nil
-			if(button.OnRemove) then button:OnRemove(self) end
-			if(self.OnButtonRemove) then self:OnButtonRemove(button) end
-			return table.remove(self.buttons, i)
+			if button.OnRemove then
+				button:OnRemove(self)
+			end
+			if self.OnButtonRemove then
+				self:OnButtonRemove(button)
+			end
+			return table_remove(self.buttons, i)
 		end
 	end
 end
@@ -94,12 +115,14 @@ end
 --[[
 	@callback OnContentsChanged()
 ]]
-local updater, scheduled = CreateFrame"Frame", {}
+local updater, scheduled = CreateFrame("Frame"), {}
 updater:Hide()
 updater:SetScript("OnUpdate", function(self)
 	self:Hide()
 	for container in pairs(scheduled) do
-		if(container.OnContentsChanged) then container:OnContentsChanged() end
+		if container.OnContentsChanged then
+			container:OnContentsChanged()
+		end
 		scheduled[container] = nil
 	end
 end)
@@ -109,7 +132,9 @@ end)
 ]]
 function Container:ScheduleContentCallback()
 	scheduled[self] = true
-	updater:Show()
+	if not updater:IsShown() then
+		updater:Show()
+	end
 end
 
 --[[
@@ -118,7 +143,7 @@ end
 	@param ... Arguments which are passed to the function
 ]]
 function Container:ApplyToButtons(func, ...)
-	for _, button in pairs(self.buttons) do
+	for _, button in ipairs(self.buttons) do
 		func(button, ...)
 	end
 end

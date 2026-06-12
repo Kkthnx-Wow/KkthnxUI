@@ -21,8 +21,7 @@ local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local InCombatLockdown = InCombatLockdown
 local IsInInstance = IsInInstance
 local IsPlayerSpell = IsPlayerSpell
-local UIParent = UIParent
-local UnitEnteredVehicle = UnitEnteredVehicle
+local UnitInVehicle = UnitInVehicle
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 local C_Item_GetItemCooldown = C_Item.GetItemCooldown
@@ -43,6 +42,8 @@ local isRegistered = false
 local itemsMerged = false
 local activeBuffs = {}
 local state = {}
+-- PERF: Pre-allocated lookup table for Reminder_AddItemGroup; reused across calls.
+local addedItems = {}
 
 -- REASON: Ensure the class table exists; some client forks can omit a class key.
 local groups = C.SpellReminderBuffs[K.Class]
@@ -98,7 +99,7 @@ local function UpdateState()
 	state.zonePvp = C_PvP_GetZonePVPInfo()
 
 	state.spec = GetSpecialization()
-	state.inVehicle = UnitEnteredVehicle("player")
+	state.inVehicle = UnitInVehicle("player")
 	state.isDead = UnitIsDeadOrGhost("player")
 end
 
@@ -127,8 +128,7 @@ local function ShouldShowReminder(cfg)
 
 	local inInst = true
 	if cfg.instance then
-		inInst = state.inInstance
-			and (state.instType == "scenario" or state.instType == "party" or state.instType == "raid")
+		inInst = state.inInstance and (state.instType == "scenario" or state.instType == "party" or state.instType == "raid")
 	end
 
 	local inPVP = true
@@ -156,16 +156,7 @@ local function ShouldShowReminder(cfg)
 		end
 	end
 
-	return inGroup
-		and inCombat
-		and inInst
-		and inPVP
-		and isKnownSpell
-		and isRightSpec
-		and isEquipped
-		and isNotOnCooldown
-		and not state.inVehicle
-		and not state.isDead
+	return inGroup and inCombat and inInst and inPVP and isKnownSpell and isRightSpec and isEquipped and isNotOnCooldown and not state.inVehicle and not state.isDead
 end
 
 -- ---------------------------------------------------------------------------
@@ -230,7 +221,14 @@ function Module:Reminder_UpdateAnchor()
 	parentFrame:SetWidth(index > 0 and (offset * index) or iconSize)
 end
 
-function Module:Reminder_OnEvent()
+function Module.Reminder_OnEvent(event, unit)
+	-- PERF: UNIT_AURA is dispatched from a shared all-units frame (AuraWatch registers it
+	-- unfiltered at load, so the "player" filter passed to K:RegisterEvent is ignored). Only the
+	-- player's auras matter here, so bail on every other unit's aura churn (huge in raids/M+).
+	if event == "UNIT_AURA" and unit ~= "player" then
+		return
+	end
+
 	if not parentFrame or not parentFrame:IsShown() then
 		return
 	end
@@ -255,28 +253,22 @@ function Module:Reminder_AddItemGroup()
 		return
 	end
 
-	-- REASON: Prevent duplicating item entries if CreateReminder is called multiple times.
-	local added = {}
+	-- PERF: Wipe the pre-allocated table instead of creating a new one each call.
+	table_wipe(addedItems)
 
 	-- PERF: Use ipairs for array iteration.
 	for _, cfg in ipairs(groups) do
 		if cfg and cfg.itemID then
-			added[cfg.itemID] = true
+			addedItems[cfg.itemID] = true
 		end
 	end
 
 	-- PERF: Use ipairs for array iteration.
 	for _, value in ipairs(C.SpellReminderBuffs["ITEMS"]) do
-		if
-			value
-			and not value.disable
-			and value.itemID
-			and not added[value.itemID]
-			and (C_Item_GetItemCount(value.itemID) > 0)
-		then
+		if value and not value.disable and value.itemID and not addedItems[value.itemID] and (C_Item_GetItemCount(value.itemID) > 0) then
 			value.texture = value.texture or C_Item_GetItemIconByID(value.itemID)
 			table_insert(groups, value)
-			added[value.itemID] = true
+			addedItems[value.itemID] = true
 		end
 	end
 
@@ -331,7 +323,7 @@ function Module:CreateReminder()
 
 		parentFrame:Show()
 		RegisterEvents()
-		Module:Reminder_OnEvent()
+		Module.Reminder_OnEvent()
 	else
 		if parentFrame then
 			parentFrame:Hide()

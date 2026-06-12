@@ -36,7 +36,6 @@ local BNToastFrame = _G.BNToastFrame
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_AddFriend = _G.C_FriendList.AddFriend
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_GuildInfo = _G.C_GuildInfo
 local C_Item_GetItemInfo = _G.C_Item.GetItemInfo
 local C_Item_GetItemQualityColor = _G.C_Item.GetItemQualityColor
 local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
@@ -47,7 +46,6 @@ local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
 local C_StorePublic = _G.C_StorePublic
 local C_SuperTrack_SetSuperTrackedUserWaypoint = _G.C_SuperTrack.SetSuperTrackedUserWaypoint
 local ChatEdit_ActivateChat = _G.ChatEdit_ActivateChat
-local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local CreateFrame = _G.CreateFrame
 local DurabilityFrame = _G.DurabilityFrame
 local GameMenuFrame = _G.GameMenuFrame
@@ -102,14 +100,18 @@ function Module:RegisterMisc(name, func)
 	end
 end
 
--- Enable Auto Chat Bubbles
+-- REASON: Named at module scope so it can be registered and unregistered when the setting changes at runtime.
+local function updateAutoBubble()
+	local _, instType = GetInstanceInfo()
+	_G.SetCVar("chatBubbles", instType == "raid" and 1 or 0)
+end
+
 local function enableAutoBubbles()
+	-- REASON: Toggle registration; unregister the event when disabled so no overhead is incurred.
 	if C["Misc"].AutoBubbles then
-		local function updateBubble()
-			local _, instType = GetInstanceInfo()
-			_G.SetCVar("chatBubbles", instType == "raid" and 1 or 0)
-		end
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateAutoBubble)
+	else
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", updateAutoBubble)
 	end
 end
 
@@ -119,14 +121,52 @@ K:RegisterEvent("READY_CHECK", function()
 end)
 
 -- Modify Delete Dialog
-local function modifyDeleteDialog()
-	local deleteItem = K.CopyTable(StaticPopupDialogs.DELETE_ITEM)
-	deleteItem.timeout = 5 -- also add a timeout
-	StaticPopupDialogs.DELETE_GOOD_ITEM = deleteItem
+local deleteDialogOverrides = {
+	{ target = "DELETE_GOOD_ITEM", source = "DELETE_ITEM" },
+	{ target = "DELETE_GOOD_QUEST_ITEM", source = "DELETE_QUEST_ITEM" },
+}
+local deleteDialogOriginals = {}
+local deleteDialogApplied
 
-	local deleteQuestItem = K.CopyTable(StaticPopupDialogs.DELETE_QUEST_ITEM)
-	deleteQuestItem.timeout = 5 -- also add a timeout
-	StaticPopupDialogs.DELETE_GOOD_QUEST_ITEM = deleteQuestItem
+local function modifyDeleteDialog()
+	if deleteDialogApplied or not StaticPopupDialogs then
+		return
+	end
+
+	for _, entry in ipairs(deleteDialogOverrides) do
+		local source = StaticPopupDialogs[entry.source]
+		if source then
+			deleteDialogOriginals[entry.target] = StaticPopupDialogs[entry.target]
+
+			local copy = K.CopyTable(source)
+			copy.timeout = 5
+			StaticPopupDialogs[entry.target] = copy
+		end
+	end
+
+	deleteDialogApplied = true
+end
+
+local function restoreDeleteDialog()
+	if not deleteDialogApplied or not StaticPopupDialogs then
+		return
+	end
+
+	for _, entry in ipairs(deleteDialogOverrides) do
+		if deleteDialogOriginals[entry.target] then
+			StaticPopupDialogs[entry.target] = deleteDialogOriginals[entry.target]
+		end
+	end
+
+	deleteDialogApplied = false
+end
+
+function Module:UpdateQuickDelete()
+	if C["Misc"].QuickDelete then
+		modifyDeleteDialog()
+	else
+		restoreDeleteDialog()
+	end
 end
 
 -- Enable Module and Initialize Miscellaneous Modules
@@ -175,7 +215,7 @@ function Module:OnEnable()
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
 	enableAutoBubbles()
-	modifyDeleteDialog()
+	self:UpdateQuickDelete()
 
 	if self.UpdateGuildInviteString then
 		self:UpdateGuildInviteString()
@@ -445,10 +485,18 @@ end
 
 -- REASON: Enhances the trade frame by showing if the target is a friend, guildy, or stranger.
 function Module:CreateTradeTargetInfo()
+	if not (_G.TradeFrame and _G.TradeFrameRecipientNameText) then
+		return
+	end
+
 	local infoText = K.CreateFontString(_G.TradeFrame, 16, "", "")
 	infoText:SetPoint("TOP", _G.TradeFrameRecipientNameText, "BOTTOM", 0, -8)
 
 	local function updateColor()
+		if not _G.TradeFrameRecipientNameText then
+			return
+		end
+
 		local r, g, b = K.UnitColor("NPC")
 		_G.TradeFrameRecipientNameText:SetTextColor(r or 1, g or 1, b or 1)
 
@@ -469,6 +517,7 @@ function Module:CreateTradeTargetInfo()
 
 	updateColor()
 	_G.TradeFrame:HookScript("OnShow", updateColor)
+	hooksecurefunc("TradeFrame_Update", updateColor)
 end
 
 -- REASON: Adds Alt+RightClick functionality to buy a full stack from a merchant instantly.
@@ -492,41 +541,48 @@ do
 		hasItemFrame = 1,
 	}
 
-	local originalMerchantItemButton_OnModifiedClick = _G.MerchantItemButton_OnModifiedClick
-	_G.MerchantItemButton_OnModifiedClick = function(self, ...)
-		if IsAltKeyDown() then
-			pendingItemID = self:GetID()
-			pendingItemLink = GetMerchantItemLink(pendingItemID)
-			if not pendingItemLink then
-				return
-			end
+	-- REASON: hooksecurefunc is the correct taint-safe approach; avoids clobbering Blizzard's dispatch chain.
+	-- WARNING: The original always runs before this hook; our stack-dialog feature is purely additive and
+	-- does not need to suppress the original modified-click behavior.
+	hooksecurefunc("MerchantItemButton_OnModifiedClick", function(self)
+		if not IsAltKeyDown() then
+			return
+		end
 
-			local name, _, quality, _, _, _, _, maxStack, _, texture = C_Item_GetItemInfo(pendingItemLink)
-			if maxStack and maxStack > 1 then
-				if not sessionCache[pendingItemLink] then
-					local r, g, b = C_Item_GetItemQualityColor(quality or 1)
-					StaticPopup_Show("BUY_STACK", " ", " ", {
-						["texture"] = texture,
-						["name"] = name,
-						["color"] = { r, g, b, 1 },
-						["link"] = pendingItemLink,
-						["index"] = pendingItemID,
-						["count"] = maxStack,
-					})
-				else
-					_G.BuyMerchantItem(pendingItemID, GetMerchantItemMaxStack(pendingItemID))
-				end
+		pendingItemID = self:GetID()
+		pendingItemLink = GetMerchantItemLink(pendingItemID)
+		if not pendingItemLink then
+			return
+		end
+
+		local name, _, quality, _, _, _, _, maxStack, _, texture = C_Item_GetItemInfo(pendingItemLink)
+		if maxStack and maxStack > 1 then
+			if not sessionCache[pendingItemLink] then
+				local r, g, b = C_Item_GetItemQualityColor(quality or 1)
+				StaticPopup_Show("BUY_STACK", " ", " ", {
+					["texture"] = texture,
+					["name"] = name,
+					["color"] = { r, g, b, 1 },
+					["link"] = pendingItemLink,
+					["index"] = pendingItemID,
+					["count"] = maxStack,
+				})
+			else
+				_G.BuyMerchantItem(pendingItemID, GetMerchantItemMaxStack(pendingItemID))
 			end
 		end
-		originalMerchantItemButton_OnModifiedClick(self, ...)
-	end
+	end)
 end
 
 -- REASON: Plays a distinct sound when receiving a resurrection request.
 do
+	-- REASON: Named constant to clarify intent and simplify future sound ID updates.
+	-- NOTE: 72978 is the "Spell_Resurrect" sound effect. Verify against SOUNDKIT if this ID breaks in a patch.
+	local SOUND_ID_RESURRECTION = 72978
+
 	local function soundOnResurrect()
 		if C["Unitframe"].ResurrectSound then
-			PlaySound("72978", "Master")
+			PlaySound(SOUND_ID_RESURRECTION, "Master")
 		end
 	end
 	K:RegisterEvent("RESURRECT_REQUEST", soundOnResurrect)

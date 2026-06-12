@@ -7,7 +7,7 @@
 -- - Events: PLAYER_REGEN_ENABLED (deferred), OnHide/OnShow (AutoHider)
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
 -- PERF: Localize globals to reduce lookup overhead.
@@ -49,7 +49,10 @@ end
 -- Deferred Action System
 -- ---------------------------------------------------------------------------
 -- REASON: Parent swapping frames can be blocked in combat; this deferred system ensures actions are applied safely.
+local driverPending
 local pendingAction
+local splashGuarded
+local trySetParent
 
 local function applyPending()
 	if not pendingAction or InCombatLockdown() then
@@ -69,24 +72,7 @@ local function applyPending()
 	end
 
 	pendingAction = nil
-	if Module.UnregisterEvent then
-		Module:UnregisterEvent("PLAYER_REGEN_ENABLED", applyPending)
-	end
-end
-
-local function trySetParent(frame, parent, actionName)
-	-- REASON: Defer SetParent calls if they are blocked by combat lockdown to prevent UI errors/taint.
-	if not frame then
-		return
-	end
-
-	local ok = pcall(frame.SetParent, frame, parent)
-	if not ok then
-		pendingAction = actionName
-		if Module.RegisterEvent then
-			Module:RegisterEvent("PLAYER_REGEN_ENABLED", applyPending)
-		end
-	end
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", applyPending)
 end
 
 -- ---------------------------------------------------------------------------
@@ -162,11 +148,51 @@ local function splashFrameOnHide(frame)
 	frame.showingQuestDialog = nil
 end
 
+local function ensureSplashGuard()
+	if splashGuarded then
+		return
+	end
+
+	local splash = _G.SplashFrame
+	if not splash then
+		return
+	end
+
+	splashGuarded = true
+	splash:SetScript("OnHide", splashFrameOnHide)
+end
+
+trySetParent = function(frame, parent, actionName)
+	-- REASON: Defer SetParent calls if they are blocked by combat lockdown to prevent UI errors/taint.
+	if not frame then
+		return
+	end
+
+	-- Reparenting taints ObjectiveTrackerFrame, so install the SplashFrame guard only when needed.
+	ensureSplashGuard()
+
+	local ok = pcall(frame.SetParent, frame, parent)
+	if not ok then
+		pendingAction = actionName
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", applyPending)
+	end
+end
+
 -- ---------------------------------------------------------------------------
 -- Module Initialization
 -- ---------------------------------------------------------------------------
 do
 	local autoHider
+
+	local function reapplyDriverAfterCombat()
+		if InCombatLockdown() then
+			return
+		end
+
+		driverPending = nil
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", reapplyDriverAfterCombat)
+		Module:ObjectiveTracker_AutoHide()
+	end
 
 	function Module:ObjectiveTracker_AutoHide()
 		if isAddOnLoaded("BigWigs") or isAddOnLoaded("DBM-Core") or isAddOnLoaded("DBM") then
@@ -191,6 +217,14 @@ do
 		end
 
 		local cfg = getTrackerConfig()
+		if InCombatLockdown() then
+			if not driverPending then
+				driverPending = true
+				K:RegisterEvent("PLAYER_REGEN_ENABLED", reapplyDriverAfterCombat)
+			end
+			return
+		end
+
 		if cfg.AutoHide then
 			-- REASON: Registers state driver to hide tracker during boss encounters or arena via secure state.
 			RegisterStateDriver(autoHider, "objectiveHider", "[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists]" .. "[@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists][@boss5,exists] 1;0")
@@ -203,11 +237,6 @@ end
 
 function Module:ObjectiveTracker_Setup()
 	Module:ObjectiveTracker_AutoHide()
-
-	local splash = _G.SplashFrame
-	if splash then
-		splash:SetScript("OnHide", splashFrameOnHide)
-	end
 end
 
 function Module:CreateAutoHideTracker()

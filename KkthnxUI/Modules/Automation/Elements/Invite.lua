@@ -12,12 +12,10 @@ local Module = K:GetModule("Automation")
 
 -- PERF: Localize globals and API functions to minimize lookup overhead.
 local AcceptGroup = AcceptGroup
-local C_BattleNet_GetAccountInfoByGUID = C_BattleNet.GetAccountInfoByGUID
+local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = C_FriendList.IsFriend
 local IsGuildMember = IsGuildMember
 local IsInGroup = IsInGroup
-local LFGInvitePopup = LFGInvitePopup
-local QueueStatusButton = QueueStatusButton
 local StaticPopupSpecial_Hide = StaticPopupSpecial_Hide
 local StaticPopup_Hide = StaticPopup_Hide
 
@@ -31,11 +29,12 @@ local previousInviterGUID
 -- ---------------------------------------------------------------------------
 local function handlePartyInvite(inviterGUID)
 	-- REASON: Filters invites to only auto-accept from trusted sources (friends, guild, BNet).
-	if IsInGroup() or QueueStatusButton:IsShown() or inviterGUID == previousInviterGUID then
+	local queueStatusButton = _G["QueueStatusButton"]
+	if IsInGroup() or (queueStatusButton and queueStatusButton:IsShown()) or inviterGUID == previousInviterGUID then
 		return
 	end
 
-	local accountInfo = C_BattleNet_GetAccountInfoByGUID(inviterGUID)
+	local accountInfo = C_BattleNet_GetGameAccountInfoByGUID(inviterGUID)
 	if accountInfo or C_FriendList_IsFriend(inviterGUID) or IsGuildMember(inviterGUID) then
 		AcceptGroup()
 		previousInviterGUID = inviterGUID
@@ -47,7 +46,10 @@ local function autoInvite(event, _, _, _, _, _, _, inviterGUID)
 		handlePartyInvite(inviterGUID)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		-- REASON: Clean up UI artifacts and reset state once the group roster updates.
-		StaticPopupSpecial_Hide(LFGInvitePopup)
+		local lfgInvitePopup = _G["LFGInvitePopup"]
+		if lfgInvitePopup then
+			StaticPopupSpecial_Hide(lfgInvitePopup)
+		end
 		StaticPopup_Hide("PARTY_INVITE")
 		previousInviterGUID = nil
 	end

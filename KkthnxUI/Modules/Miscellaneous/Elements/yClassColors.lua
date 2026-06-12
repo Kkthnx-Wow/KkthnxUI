@@ -15,6 +15,7 @@ local ipairs = _G.ipairs
 local select = _G.select
 local string_format = _G.string.format
 local string_gsub = _G.string.gsub
+local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
 local _G = _G
@@ -25,7 +26,7 @@ local GetCVar = _G.GetCVar
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
-local HookSecureFunc = _G.hooksecurefunc
+local hooksecurefunc = _G.hooksecurefunc
 
 -- SG: Constants
 local FRIENDS_BUTTON_TYPE_WOW = _G.FRIENDS_BUTTON_TYPE_WOW
@@ -70,6 +71,28 @@ local GUILD_RANK_COLOR_GRADIENT = { 1, 0, 0, 1, 1, 0, 0, 1, 0 }
 local GUILD_REPUTATION_COLOR_GRADIENT = { 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1 }
 
 local currentRosterViewType
+local rowScratch = {}
+
+local function getScrollBoxRows(scrollBox)
+	if not scrollBox then
+		return
+	end
+	if scrollBox.GetFrames then
+		return scrollBox:GetFrames()
+	end
+
+	local target = scrollBox.ScrollTarget
+	if not target then
+		return
+	end
+
+	table_wipe(rowScratch)
+	for i = 1, target:GetNumChildren() do
+		rowScratch[i] = select(i, target:GetChildren())
+	end
+	return rowScratch
+end
+
 local function setGuildRosterView(rosterViewType)
 	if not C["Misc"].YClassColors then
 		return
@@ -122,21 +145,21 @@ local function onGuildUIAddonLoaded(eventName, addonName)
 		return
 	end
 
-	HookSecureFunc("GuildRoster_SetView", function(rosterViewType)
+	hooksecurefunc("GuildRoster_SetView", function(rosterViewType)
 		if not C["Misc"].YClassColors then
 			return
 		end
 		setGuildRosterView(rosterViewType)
 	end)
 
-	HookSecureFunc("GuildRoster_Update", function()
+	hooksecurefunc("GuildRoster_Update", function()
 		if not C["Misc"].YClassColors then
 			return
 		end
 		refreshGuildRosterView()
 	end)
 
-	HookSecureFunc(_G.GuildRosterContainer, "update", function()
+	hooksecurefunc(_G.GuildRosterContainer, "update", function()
 		if not C["Misc"].YClassColors then
 			return
 		end
@@ -191,14 +214,14 @@ local function refreshFriendsList()
 	end
 
 	local currentPlayerZone = GetRealZoneText()
-	local friendScrollTarget = _G.FriendsListFrame.ScrollBox and _G.FriendsListFrame.ScrollBox.ScrollTarget
-	if not friendScrollTarget or not currentPlayerZone then
+	local friendsListFrame = _G.FriendsListFrame
+	local rows = friendsListFrame and getScrollBoxRows(friendsListFrame.ScrollBox)
+	if not rows or not currentPlayerZone then
 		return
 	end
 
-	local childCount = friendScrollTarget:GetNumChildren()
-	for friendIndex = 1, childCount do
-		local friendButton = select(friendIndex, friendScrollTarget:GetChildren())
+	for friendIndex = 1, #rows do
+		local friendButton = rows[friendIndex]
 		if friendButton and friendButton:IsShown() then
 			updateFriendListButton(friendButton, currentPlayerZone)
 		end
@@ -224,41 +247,67 @@ function Module:createYClassColorsInfrastructure()
 
 		K:RegisterEvent("ADDON_LOADED", onGuildUIAddonLoaded)
 
-		HookSecureFunc(_G.FriendsListFrame.ScrollBox, "Update", function()
-			if C["Misc"].YClassColors then
-				refreshFriendsList()
-			end
-		end)
-
-		HookSecureFunc(_G.C_FriendList, "SortWho", function(sortType)
-			currentWhoSortType = sortType
-		end)
-
-		HookSecureFunc(_G.WhoFrame.ScrollBox, "Update", function(whoScrollBox)
-			if not C["Misc"].YClassColors then
-				return
-			end
-
-			local scrollChildCount = whoScrollBox.ScrollTarget:GetNumChildren()
-			if not scrollChildCount then
-				return
-			end
-
-			for whoIndex = 1, scrollChildCount do
-				local whoRosterButton = select(whoIndex, whoScrollBox.ScrollTarget:GetChildren())
-				local whoInfoData = C_FriendList_GetWhoInfo(whoRosterButton.index)
-				if whoInfoData then
-					local guildName, levelValue, raceStr, areaName, classIdentifier = whoInfoData.fullGuildName, whoInfoData.level, whoInfoData.raceStr, whoInfoData.area, whoInfoData.filename
-					WHO_COLUMN_DATA_MAP.zone = areaName or ""
-					WHO_COLUMN_DATA_MAP.guild = guildName or ""
-					WHO_COLUMN_DATA_MAP.race = raceStr or ""
-
-					whoRosterButton.Name:SetTextColor(getClassColoredString(classIdentifier, true))
-					whoRosterButton.Level:SetText(getLevelDifficultyColorHex(levelValue) .. levelValue)
-					whoRosterButton.Variable:SetText(WHO_COLUMN_DATA_MAP[currentWhoSortType])
+		local friendsListFrame = _G.FriendsListFrame
+		if friendsListFrame and friendsListFrame.ScrollBox then
+			hooksecurefunc(friendsListFrame.ScrollBox, "Update", function()
+				if C["Misc"].YClassColors then
+					refreshFriendsList()
 				end
-			end
-		end)
+			end)
+		end
+
+		if _G.C_FriendList and _G.C_FriendList.SortWho then
+			hooksecurefunc(_G.C_FriendList, "SortWho", function(sortType)
+				currentWhoSortType = sortType
+			end)
+		end
+
+		local whoFrame = _G.WhoFrame
+		if whoFrame and whoFrame.ScrollBox then
+			hooksecurefunc(whoFrame.ScrollBox, "Update", function(whoScrollBox)
+				if not C["Misc"].YClassColors then
+					return
+				end
+
+				local rows = getScrollBoxRows(whoScrollBox)
+				if not rows then
+					return
+				end
+
+				for whoIndex = 1, #rows do
+					local whoRosterButton = rows[whoIndex]
+					local whoInfoData = whoRosterButton and C_FriendList_GetWhoInfo(whoRosterButton.index)
+					if whoInfoData then
+						local guildName, levelValue, raceStr, areaName, classIdentifier = whoInfoData.fullGuildName, whoInfoData.level, whoInfoData.raceStr, whoInfoData.area, whoInfoData.filename
+						WHO_COLUMN_DATA_MAP.zone = areaName or ""
+						WHO_COLUMN_DATA_MAP.guild = guildName or ""
+						WHO_COLUMN_DATA_MAP.race = raceStr or ""
+
+						if whoRosterButton.Name then
+							whoRosterButton.Name:SetTextColor(getClassColoredString(classIdentifier, true))
+						end
+						if whoRosterButton.Level then
+							whoRosterButton.Level:SetText(getLevelDifficultyColorHex(levelValue) .. levelValue)
+						end
+						if whoRosterButton.Variable then
+							whoRosterButton.Variable:SetText(WHO_COLUMN_DATA_MAP[currentWhoSortType])
+						end
+					end
+				end
+			end)
+		end
+	end
+
+	refreshFriendsList()
+	refreshGuildRosterView()
+end
+
+function Module:UpdateYClassColors()
+	if C["Misc"].YClassColors then
+		Module:createYClassColorsInfrastructure()
+	else
+		refreshFriendsList()
+		refreshGuildRosterView()
 	end
 end
 

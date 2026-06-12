@@ -7,13 +7,16 @@
 -- - Events: PLAYER_REGEN_ENABLED, UNIT_INVENTORY_CHANGED, PLAYER_TARGET_CHANGED, PLAYER_FOCUS_CHANGED, UNIT_FACTION
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = K.oUF
 
 -- Lua functions
+local ipairs = ipairs
+local next = next
 local pairs = pairs
+local rawget = rawget
 local string_format = string.format
 local unpack = unpack
 local math_min = math.min
@@ -24,9 +27,12 @@ local math_floor = math.floor
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CreateFrame = CreateFrame
 local GetRuneCooldown = GetRuneCooldown
+local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
 local IsInInstance = IsInInstance
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
+local tinsert = tinsert
 local UIParent = UIParent
 local RegisterStateDriver = RegisterStateDriver
 local UnitClass = UnitClass
@@ -38,10 +44,7 @@ local UnitIsPVP = UnitIsPVP
 local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsPlayer = UnitIsPlayer
 local UnitThreatSituation = UnitThreatSituation
-local GetInventorySlotInfo = GetInventorySlotInfo
-local GetInventoryItemLink = GetInventoryItemLink
-
-local FALLBACK_COLOR = { r = 1, g = 1, b = 1 }
+local IsSecret = K.IsSecret
 
 -- Custom variables
 local lastPvPSound = false
@@ -147,7 +150,7 @@ function Module:UpdateAllHeaders()
 		end
 	end
 
-	for _, header in _G.ipairs(self.headers) do
+	for _, header in ipairs(self.headers) do
 		local vis
 		if header.groupType == "party" then
 			vis = self:GetPartyVisibility()
@@ -206,7 +209,7 @@ function Module:ApplyPortraitAlphaFix(frame)
 	if background and not background.__baseAlpha then
 		local baseAlpha
 		if background.GetVertexColor then
-			local _r, _g, _b, a = background:GetVertexColor()
+			local _, _, _, a = background:GetVertexColor()
 			baseAlpha = a
 		end
 		background.__baseAlpha = baseAlpha or ((C["Media"] and C["Media"].Backdrops and C["Media"].Backdrops.ColorBackdrop and C["Media"].Backdrops.ColorBackdrop[4]) or 0.9)
@@ -337,16 +340,17 @@ function Module:UpdateThreat(_, unit)
 
 	-- REASON: Guard oUF threat table access.
 	if status and status > 1 and oUF and oUF.colors and oUF.colors.threat and oUF.colors.threat[status] then
-		local threatColor = oUF.colors.threat[status]
+		-- MIDNIGHT (12.0): oUF's colors.threat[i] are ColorMixin objects created via
+		-- oUF:CreateColor(GetThreatStatusColor(i)) and no longer carry numeric [1]/[2]/[3]
+		-- indices, so unpack() returned nils and SetVertexColor errored. Read via GetRGB.
+		local color = oUF.colors.threat[status]
 		local r, g, b
-
-		if type(threatColor.GetRGB) == "function" then
-			r, g, b = threatColor:GetRGB()
+		if color.GetRGB then
+			r, g, b = color:GetRGB()
 		else
-			r, g, b = unpack(threatColor)
+			r, g, b = color[1], color[2], color[3]
 		end
-
-		if r and g and b then
+		if r then
 			borderObject:SetVertexColor(r, g, b)
 		else
 			K.SetBorderColor(borderObject)
@@ -436,13 +440,6 @@ function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allA
 end
 
 -- Elements
-
-Module.smoothbars = {}
-function Module:SmoothBar(bar)
-	bar.smoothing = Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
-	Module.smoothbars[bar] = true
-end
-
 -- REASON: Handles OnEnter event for unit frames to show highlights and tooltips.
 local function UF_OnEnter(self)
 	if not self.disableTooltip then
@@ -476,13 +473,28 @@ function Module:CreateHeader(_, onKeyDown)
 	self:HookScript("OnLeave", UF_OnLeave)
 end
 
+-- REASON: Toggles castbar latency tracking for the player frame.
+function Module:ToggleCastBarLatency(frame)
+	frame = frame or _G.oUF_Player
+	if not frame then
+		return
+	end
+
+	if C["Unitframe"].CastbarLatency then
+		frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- REASON: Fix quests with WorldFrame interaction.
+		frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
+		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
+	else
+		frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
+		frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
+		frame:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
+		if frame.Castbar then
+			frame.Castbar.__sendTime = nil
+		end
+	end
+end
+
 -- Auras Helpers (oUF-style callbacks)
-
-local next = next
-
-local CreateFrame = CreateFrame
-local UnitIsPlayer = UnitIsPlayer
-local hooksecurefunc = hooksecurefunc
 
 -- Aura Icon Size Cache
 
@@ -594,14 +606,11 @@ function Module.PostCreateButton(element, button)
 	button.Count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
 	-- COOLDOWN CONFIG (IF PRESENT)
-	local isRaid = element.__owner.mystyle == "raid"
 	if button.Cooldown then
+		button.Cooldown.noOCC = true
+		button.Cooldown.noCooldownCount = true
 		button.Cooldown:SetReverse(true)
-		button.Cooldown:SetHideCountdownNumbers(isRaid)
-
-		button.CooldownText = button.Cooldown:GetRegions()
-		button.CooldownText:SetFontObject(K.UIFontOutline)
-		button.CooldownText:SetFont(select(1, button.CooldownText:GetFont()), fontSize, select(3, button.CooldownText:GetFont()))
+		button.Cooldown:SetHideCountdownNumbers(true)
 	end
 
 	-- ICON BASELINE
@@ -631,8 +640,7 @@ function Module.PostCreateButton(element, button)
 
 	-- REASON: Some templates may not have Overlay; avoid nil errors.
 	if button.Overlay then
-		button.Overlay:Hide()
-		button.Overlay = nil -- needs review
+		button.Overlay:SetTexture(nil)
 	end
 
 	-- STEALABLE INDICATOR (OPTIONAL)
@@ -642,14 +650,19 @@ function Module.PostCreateButton(element, button)
 		button.Stealable:Hide() -- REASON: Prevent "sticky" display between reused buttons.
 	end
 
-	if element.__owner.mystyle == "nameplate" then
-		hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
-		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
-		button.timer:ClearAllPoints()
-		button.timer:SetPoint("LEFT", button, "TOPLEFT", -2, 0)
-		button.Count:ClearAllPoints()
-		button.Count:SetPoint("RIGHT", button, "BOTTOMRIGHT", 5, 0)
+	-- CLICK HOOK (OPTIONAL SAFETY)
+	-- REASON: AuraModule might not exist in every load order; avoid hard errors.
+	if AuraModule and AuraModule.RemoveSpellFromIgnoreList then
+		button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 	end
+
+	-- TIMER TEXT (DURATION)
+	if not button.timer then
+		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
+	end
+
+	-- REASON: Keep texcoords correct when size changes.
+	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
 -- Icon Overrides
@@ -673,6 +686,21 @@ local dispellType = {
 
 -- REASON: Main post-update logic for aura buttons (Colors, Stealable, Icons).
 function Module.PostUpdateButton(element, button, unit, data)
+	local duration = data.duration
+	local expiration = data.expirationTime
+	local debuffType = data.dispelName
+	local buttonIsHarmful = button.isHarmful
+	local isPlayerAura = data.isPlayerAura
+	if IsSecret(debuffType) then
+		debuffType = nil
+	end
+	if IsSecret(buttonIsHarmful) then
+		buttonIsHarmful = nil
+	end
+	if IsSecret(isPlayerAura) then
+		isPlayerAura = false
+	end
+
 	local owner = element.__owner
 	local style = owner and owner.mystyle
 
@@ -683,7 +711,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 	-- DESATURATION RULES (HARMFUL + FILTEREDSTYLE)
 	-- REASON: filteredStyle must exist in your file; guard so missing table doesn't hard error.
 	if button.Icon then
-		if data.isHarmfulAura and filteredStyle[style] and not data.isPlayerAura then
+		if buttonIsHarmful == true and filteredStyle and filteredStyle[style] and not isPlayerAura then
 			button.Icon:SetDesaturated(true)
 		else
 			button.Icon:SetDesaturated(false)
@@ -692,17 +720,20 @@ function Module.PostUpdateButton(element, button, unit, data)
 
 	-- BORDER COLORING (DEBUFF TYPE)
 	-- REASON: oUF nameplate buttons may use Shadow border; unitframes use KKUI_Border.
-	if data.isHarmfulAura then
-		local color = C_UnitAuras.GetAuraDispelTypeColor(unit, data.auraInstanceID, element.dispelColorCurve) or FALLBACK_COLOR
+	if buttonIsHarmful == true then
+		local color
+		if oUF and oUF.colors and oUF.colors.debuff then
+			color = (debuffType and oUF.colors.debuff[debuffType]) or oUF.colors.debuff.none
+		end
 
 		if color then
 			if style == "nameplate" then
 				if button.Shadow and button.Shadow.SetBackdropBorderColor then
-					button.Shadow:SetBackdropBorderColor(color.r, color.g, color.b, 0.8)
+					button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 				end
 			else
 				if button.KKUI_Border and button.KKUI_Border.SetVertexColor then
-					button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+					button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
 				end
 			end
 		end
@@ -715,6 +746,48 @@ function Module.PostUpdateButton(element, button, unit, data)
 			if button.KKUI_Border then
 				K.SetBorderColor(button.KKUI_Border)
 			end
+		end
+	end
+
+	-- STEALABLE INDICATOR
+	-- REASON: Must explicitly hide when not applicable or it can "stick" on reused buttons.
+	if button.Stealable then
+		if debuffType and dispellType[debuffType] and not UnitIsPlayer(unit) and buttonIsHarmful == false then
+			button.Stealable:Show()
+		else
+			button.Stealable:Hide()
+		end
+	end
+
+	-- COOLDOWN/TIMER
+	if not IsSecret(duration) and not IsSecret(expiration) and duration and expiration and duration > 0 then
+		button.expiration = expiration
+		button:SetScript("OnUpdate", K.CooldownOnUpdate)
+		if button.timer then
+			button.timer:Show()
+		end
+	else
+		button:SetScript("OnUpdate", nil)
+		if button.timer then
+			button.timer:Hide()
+		end
+	end
+
+	-- REPLACE ICON TEXTURE (IF DEFINED)
+	-- REASON: ReplacedIcons uses spellID keys; data.spellId is the reliable source.
+	local spellID = data.spellId
+	local newTexture
+	if not IsSecret(spellID) and spellID then
+		newTexture = Module.ReplacedSpellIcons[spellID]
+	end
+	if newTexture and button.Icon then
+		button.Icon:SetTexture(newTexture)
+	end
+
+	-- BOLSTER STACKS DISPLAY (IF THIS IS THE CHOSEN BOLSTER AURA)
+	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
+		if button.Count then
+			button.Count:SetText(element.bolsterStacks)
 		end
 	end
 end
@@ -733,7 +806,8 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 
 	if allBuffs and activeBuffs then
 		for auraInstanceID, data in next, allBuffs do
-			if data and data.spellId == 209859 then
+			local spellID = data and data.spellId
+			if not IsSecret(spellID) and spellID == 209859 then
 				-- Keep first instance visible; hide duplicates but count stacks
 				if not element.bolsterInstanceID then
 					element.bolsterInstanceID = auraInstanceID
@@ -770,7 +844,9 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 			local spellList = C["Nameplate"].DotSpellList and C["Nameplate"].DotSpellList.Spells
 			if spellList then
 				for _, data in next, element.allDebuffs do
-					if data and data.isPlayerAura and spellList[data.spellId] then
+					local spellID = data and data.spellId
+					local isPlayerAura = data and data.isPlayerAura
+					if not IsSecret(spellID) and spellID and not IsSecret(isPlayerAura) and isPlayerAura and spellList[spellID] then
 						element.hasTheDot = true
 						break
 					end
@@ -794,6 +870,30 @@ function Module.CustomFilter(element, unit, data)
 	local isStealable = data.isStealable
 	local spellID = data.spellId
 	local nameplateShowAll = data.nameplateShowAll
+	local isPlayerAura = data.isPlayerAura
+	local isHarmful = data.isHarmful
+
+	if IsSecret(name) then
+		name = nil
+	end
+	if IsSecret(debuffType) then
+		debuffType = nil
+	end
+	if IsSecret(isStealable) then
+		isStealable = false
+	end
+	if IsSecret(spellID) then
+		spellID = nil
+	end
+	if IsSecret(nameplateShowAll) then
+		nameplateShowAll = false
+	end
+	if IsSecret(isPlayerAura) then
+		isPlayerAura = false
+	end
+	if IsSecret(isHarmful) then
+		isHarmful = nil
+	end
 
 	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
@@ -808,34 +908,41 @@ function Module.CustomFilter(element, unit, data)
 		-- NAMEONLY PLATES USE WHITELIST ONLY
 		-- REASON: Reduce clutter on name-only plates.
 		if owner and owner.plateType == "NameOnly" then
-			return C.NameplateWhiteList[spellID] == true
+			return spellID and C.NameplateWhiteList[spellID] == true
 		end
 
 		-- BLACKLIST ALWAYS BLOCKS
-		if C.NameplateBlackList[spellID] then
+		if spellID and C.NameplateBlackList[spellID] then
 			return false
 		end
 
 		-- DISPELL/STEAL SHOW
 		-- REASON: Highlight purgeable buffs on enemies (not player units).
-		if (isStealable or dispellType[debuffType]) and not UnitIsPlayer(unit) and not data.isHarmful then
+		if (isStealable or (debuffType and dispellType[debuffType])) and not UnitIsPlayer(unit) and isHarmful == false then
 			return true
 		end
 
 		-- WHITELIST ALWAYS SHOWS
-		if C.NameplateWhiteList[spellID] then
+		if spellID and C.NameplateWhiteList[spellID] then
 			return true
+		end
+
+		-- NAMEPLATES: normal player-aura mode should only show debuffs. Helpful
+		-- buffs on enemies are handled above when explicitly whitelisted or
+		-- purge/dispel-relevant; otherwise they clutter every plate in Midnight.
+		if isHarmful == false then
+			return false
 		end
 
 		-- AURA FILTER MODES
 		local auraFilter = C["Nameplate"].AuraFilter
-		return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
+		return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isPlayerAura)
 	end
 
 	-- UNITFRAMES: STRICT BOOLEAN RETURNS
 	-- REASON: Don't return strings (truthy) — keep it explicit + predictable.
 	if showDebuffType then
-		return data.isPlayerAura == true
+		return isPlayerAura == true
 	end
 
 	return name ~= nil
@@ -877,18 +984,7 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
-local function GetColor(color)
-	if not color then
-		return 1, 0, 0
-	elseif type(color[1]) == "number" then
-		return color[1], color[2], color[3]
-	else
-		return color.r, color.g, color.b
-	end
-end
-
 local function SetStatusBarColor(element, r, g, b)
-	r, g, b = r or 1, g or 0, b or 0
 	for i = 1, #element do
 		local bar = element[i]
 		bar:SetStatusBarColor(r, g, b)
@@ -898,8 +994,6 @@ end
 -- REASON: Updates class power displays (Combo points, runes, etc.) with special handling for Rogue/Druid combo points.
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
 	local prevColor = element.prevColor
-	local thisColor
-
 	-- REASON: Special handling for combo points with graduated colors.
 	if powerType == "COMBO_POINTS" then
 		local comboColors = element.__owner.colors.power["COMBO_POINTS_GRADUATED"]
@@ -910,23 +1004,19 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 				local colorIndex = math_min(i, #comboColors)
 				local color = comboColors[colorIndex]
 				if color then
-					local r, g, b = GetColor(color)
-					bar:SetStatusBarColor(r, g, b)
+					bar:SetStatusBarColor(color[1], color[2], color[3])
 				else
 					-- REASON: Fallback to first color if colorIndex is out of range.
 					local fallbackColor = comboColors[1]
-					local r, g, b = GetColor(fallbackColor)
-					bar:SetStatusBarColor(r, g, b)
+					bar:SetStatusBarColor(fallbackColor[1], fallbackColor[2], fallbackColor[3])
 				end
 			end
 			element.prevColor = cur -- REASON: Track current combo points for change detection.
 			return -- REASON: Exit early since we handled combo points.
 		else
 			-- REASON: Fallback to original logic if graduated colors not available.
-			if not cur or cur == 0 then
-				thisColor = nil
-			else
-				thisColor = cur == max and 1 or 2
+			if cur and cur > 0 then
+				local thisColor = cur == max and 1 or 2
 				if not prevColor or prevColor ~= thisColor then
 					local r, g, b = 1, 0, 0
 					if thisColor == 2 then
@@ -940,15 +1030,13 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 		end
 	else
 		-- REASON: Original logic for non-combo point power types.
-		if not cur or cur == 0 then
-			thisColor = nil
-		else
-			thisColor = cur == max and 1 or 2
+		if cur and cur > 0 then
+			local thisColor = cur == max and 1 or 2
 			if not prevColor or prevColor ~= thisColor then
 				local r, g, b = 1, 0, 0
 				if thisColor == 2 then
 					local color = element.__owner.colors.power[powerType]
-					r, g, b = GetColor(color)
+					r, g, b = color[1], color[2], color[3]
 				end
 				SetStatusBarColor(element, r, g, b)
 				element.prevColor = thisColor
@@ -1061,7 +1149,7 @@ local textScaleFrames = {
 -- REASON: Updates the text scale for all unit frame elements (Health, Power, Names, etc.).
 function Module:UpdateTextScale()
 	local scale = C["Unitframe"].AllTextScale
-	for _, frame in _G.ipairs(oUF.objects) do
+	for _, frame in ipairs(oUF.objects) do
 		local style = frame.mystyle
 		if style and textScaleFrames[style] then
 			if frame.Name then
@@ -1126,6 +1214,11 @@ function Module:CreateUnits()
 	if Module.headers then
 		wipe(Module.headers)
 	end
+
+	-- Re-apply persisted nameplate aura-filter edits onto the runtime data tables.
+	-- Done unconditionally (not just when nameplates are enabled) because MajorSpells
+	-- feeds castbars on other frames too. Idempotent, so re-running on profile switch is safe.
+	Module:ApplyNameplateAuraOverrides()
 	local horizonRaid = C["Raid"].HorizonRaid
 	local numGroups = C["Raid"].NumGroups
 	local raidWidth, raidHeight = C["Raid"].Width, C["Raid"].Height
@@ -1134,35 +1227,44 @@ function Module:CreateUnits()
 	local showTeamIndex = C["Raid"].ShowTeamIndex
 
 	if C["Nameplate"].Enable then
-		-- Module:SetupCVars()
-		-- Module:BlockAddons()
-		-- Module:CreateUnitTable()
-		-- Module:CreatePowerUnitTable()
-		-- Module:UpdateGroupRoles()
-		-- Module:QuestIconCheck()
-		-- Module:RefreshPlateOnFactionChanged()
+		Module:BlockAddons()
+		Module:CreateUnitTable()
+		Module:CreatePowerUnitTable()
+		Module:UpdateGroupRoles()
+		Module:QuestIconCheck()
+		Module:RefreshPlateOnFactionChanged()
 
-		-- oUF:RegisterStyle("Nameplates", Module.CreatePlates)
-		-- oUF:SetActiveStyle("Nameplates")
-		-- oUF:SpawnNamePlates("oUF_NPs", Module.PostUpdatePlates)
+		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
+		oUF:SetActiveStyle("Nameplates")
+
+		-- MIDNIGHT (12.0): the new oUF SpawnNamePlates(prefix) no longer accepts a
+		-- callback argument; add/remove are delivered via SetAddedCallback /
+		-- SetRemovedCallback on the returned driver. Storing the driver is also
+		-- required so sizing/click-through can route through it (see UpdateClickableSize).
+		-- Mirrors NDui's UF.NameplateDriver wiring.
+		Module.NameplateDriver = oUF:SpawnNamePlates("oUF_NPs")
+		Module.NameplateDriver:SetAddedCallback(Module.PostUpdatePlates)
+		Module.NameplateDriver:SetRemovedCallback(Module.PostUpdatePlates)
+
+		-- REASON: Run CVar/size setup after the driver exists so UpdateClickableSize
+		-- can push our dimensions through it on first load.
+		Module:SetupCVars()
 	end
 
 	do -- Playerplate-like PlayerFrame
-		-- oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
-		-- oUF:SetActiveStyle("PlayerPlate")
-		-- local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
-		-- plate.mover = K.Mover(plate, "PlayerPlate", "PlayerPlate", { "BOTTOM", UIParent, "BOTTOM", 0, 300 })
-		-- Module:TogglePlayerPlate()
+		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
+		oUF:SetActiveStyle("PlayerPlate")
+		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
+		plate.mover = K.Mover(plate, "PlayerPlate", "PlayerPlate", { "BOTTOM", UIParent, "BOTTOM", 0, 300 })
+		Module:TogglePlayerPlate()
 	end
 
 	do -- Fake nameplate for target class power
-		-- oUF:RegisterStyle("TargetPlate", Module.CreateTargetPlate)
-		-- oUF:SetActiveStyle("TargetPlate")
-		-- oUF:Spawn("player", "oUF_TargetPlate", true)
-		-- Module:ToggleTargetClassPower()
+		oUF:RegisterStyle("TargetPlate", Module.CreateTargetPlate)
+		oUF:SetActiveStyle("TargetPlate")
+		oUF:Spawn("player", "oUF_TargetPlate", true)
+		Module:ToggleTargetClassPower()
 	end
-
-	Module:UpdateCastBarColors()
 
 	if C["Unitframe"].Enable then
 		oUF:RegisterStyle("Player", Module.CreatePlayer)
@@ -1277,7 +1379,7 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local party = oUF:SpawnHeader(
-				"oUF_SimpleParty", nil,
+				"oUF_SimpleParty", nil, nil,
 				"showPlayer", C["Party"].ShowPlayer,
 				"showSolo", true,
 				"showParty", true,
@@ -1317,7 +1419,7 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local party = oUF:SpawnHeader(
-				"oUF_Party", nil,
+				"oUF_Party", nil, nil,
 				"showPlayer", C["Party"].ShowPlayer,
 				"showSolo", true,
 				"showParty", true,
@@ -1354,7 +1456,7 @@ function Module:CreateUnits()
 
 			-- stylua: ignore
 			local partyPet = oUF:SpawnHeader(
-				"oUF_PartyPet", "SecureGroupPetHeaderTemplate",
+				"oUF_PartyPet", "SecureGroupPetHeaderTemplate", nil,
 				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
@@ -1390,7 +1492,7 @@ function Module:CreateUnits()
 		-- stylua: ignore
 		local function CreateGroup(name, i)
 			local group = oUF:SpawnHeader(
-				name, nil,
+				name, nil, nil,
 				"showPlayer", true,
 				"showSolo", true,
 				"showParty", true,
@@ -1469,30 +1571,30 @@ function Module:CreateUnits()
 		end
 
 		if C["Raid"].MainTankFrames then
-			-- oUF:RegisterStyle("MainTank", Module.CreateRaid)
-			-- oUF:SetActiveStyle("MainTank")
+			oUF:RegisterStyle("MainTank", Module.CreateRaid)
+			oUF:SetActiveStyle("MainTank")
 
-			-- local horizonTankRaid = C["Raid"].HorizonRaid
-			-- local raidTankWidth, raidTankHeight = C["Raid"].Width, C["Raid"].Height
-			-- -- stylua: ignore
-			-- local raidtank = oUF:SpawnHeader(
-			-- 	"oUF_MainTank", nil, "raid",
-			-- 	"showRaid", true,
-			-- 	"xOffset", 6,
-			-- 	"yOffset", -6,
-			-- 	"groupFilter", "MAINTANK",
-			-- 	"point", horizonTankRaid and "LEFT" or "TOP",
-			-- 	"columnAnchorPoint", "LEFT",
-			-- 	"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
-			-- 	"oUF-initialConfigFunction", string_format([[
-			-- 		self:SetWidth(%d)
-			-- 		self:SetHeight(%d)
-			-- 	]], raidTankWidth, raidTankHeight)
-			-- )
+			local horizonTankRaid = C["Raid"].HorizonRaid
+			local raidTankWidth, raidTankHeight = C["Raid"].Width, C["Raid"].Height
+			-- stylua: ignore
+			local raidtank = oUF:SpawnHeader(
+				"oUF_MainTank", nil, nil,
+				"showRaid", true,
+				"xOffset", 6,
+				"yOffset", -6,
+				"groupFilter", "MAINTANK",
+				"point", horizonTankRaid and "LEFT" or "TOP",
+				"columnAnchorPoint", "LEFT",
+				"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
+				"oUF-initialConfigFunction", string_format([[ 
+					self:SetWidth(%d)
+					self:SetHeight(%d)
+				]], raidTankWidth, raidTankHeight)
+			)
 
-			-- local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)
-			-- raidtank:ClearAllPoints()
-			-- raidtank:SetPoint("TOPLEFT", raidtankMover)
+			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)
+			raidtank:ClearAllPoints()
+			raidtank:SetPoint("TOPLEFT", raidtankMover)
 		end
 	end
 
@@ -1521,39 +1623,9 @@ function Module:UpdateRaidDebuffIndicator()
 	end
 end
 
--- do
-local ChestSlotID = GetInventorySlotInfo("CHESTSLOT")
-local LegSlotID = GetInventorySlotInfo("LEGSSLOT")
-
-local chestSlotItem, legSlotItem -- local cache of the items
-
-local function OnUnitInventoryChanged(_, _, unit) -- limited to Mages only currently
-	if unit ~= "player" then
-		return
-	end
-
-	local ChestItem = GetInventoryItemLink("player", ChestSlotID) -- Mage: Regeneration
-	local LegItem = GetInventoryItemLink("player", LegSlotID) -- Mage: Mass Regeneration
-
-	if chestSlotItem ~= ChestItem or legSlotItem ~= LegItem then
-		chestSlotItem = ChestItem
-		legSlotItem = LegItem
-
-		Module:UpdateRangeSpells()
-	end
-end
--- end
-
-local function OnPlayerEnteringWorld()
-	Module:UpdateRangeSpells()
-end
-
 function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
-
-	K:RegisterEvent("UNIT_INVENTORY_CHANGED", OnUnitInventoryChanged)
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", OnPlayerEnteringWorld)
 
 	if C["Raid"].DebuffWatch or C["SimpleParty"].DebuffWatch then
 		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs

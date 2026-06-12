@@ -108,14 +108,7 @@ function Module:PositionAltPowerBar()
 		playerPowerBarAlt.ignoreFramePositionManager = true
 	end
 
-	K.Mover(
-		holder,
-		"PlayerPowerBarAlt",
-		"Alternative Power",
-		{ "TOP", UIParent, "TOP", -1, -130 },
-		ALT_POWER_WIDTH,
-		ALT_POWER_HEIGHT
-	)
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", { "TOP", UIParent, "TOP", -1, -130 }, ALT_POWER_WIDTH, ALT_POWER_HEIGHT)
 end
 
 function Module:UpdateAltPowerBarColors()
@@ -143,15 +136,9 @@ function Module:UpdateAltPowerBarSettings()
 		holder:SetSize(bar:GetSize())
 	end
 
-	-- K:SmoothBar(bar)
+	K:SmoothBar(bar)
 
-	Module:SetAltPowerBarText(
-		bar.text,
-		bar.powerName or "",
-		bar.powerValue or 0,
-		bar.powerMaxValue or 0,
-		bar.powerPercent or 0
-	)
+	Module:SetAltPowerBarText(bar.text, bar.powerName or "", bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0)
 end
 
 -- ---------------------------------------------------------------------------

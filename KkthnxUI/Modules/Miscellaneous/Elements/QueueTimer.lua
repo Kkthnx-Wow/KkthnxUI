@@ -21,7 +21,6 @@ local type = _G.type
 local _G = _G
 local CreateFrame = _G.CreateFrame
 local GetBattlefieldPortExpiration = _G.GetBattlefieldPortExpiration
-local GetBattlefieldStatus = _G.GetBattlefieldStatus
 local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySoundFile = _G.PlaySoundFile
@@ -39,6 +38,7 @@ local activePvPQueueIndex
 local queueUpdateFrame
 local hasPlayedWarningSound = false
 local elapsedSinceLastUpdate = 0
+local lastOpenSoundAt = 0
 
 -- REASON: Hides default Blizzard queue timer status bars to prevent UI clutter when custom timers are active.
 local function hideDefaultQueueTimers()
@@ -192,6 +192,14 @@ local function warnOnQueueExpiration(secondsUntilExpiration)
 	end
 end
 
+local function playQueueOpenSound()
+	local now = GetTime()
+	if C["Misc"].QueueTimerAudio and (now - lastOpenSoundAt) > 1 then
+		PlaySoundFile(QUEUE_WARNING_SOUND_ID, "master")
+		lastOpenSoundAt = now
+	end
+end
+
 local function updatePvEQueueUI()
 	local lfgDialog = _G.LFGDungeonReadyDialog
 	if lfgDialog and lfgDialog:IsShown() then
@@ -255,6 +263,7 @@ function Module:CreateQueueTimers()
 		Module:updateQueueExpiresDisplay(remainingPvETime, _G.LFGDungeonReadyDialog)
 		savePvEQueuePopTime()
 		hasPlayedWarningSound = false
+		playQueueOpenSound()
 		startQueueUpdateFrame()
 		hideDefaultQueueTimers()
 	end)
@@ -273,6 +282,7 @@ function Module:CreateQueueTimers()
 			activePvPQueueIndex = pvpIndex
 			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
 			hasPlayedWarningSound = false
+			playQueueOpenSound()
 			startQueueUpdateFrame()
 		end)
 	end
@@ -282,6 +292,7 @@ function Module:CreateQueueTimers()
 			activePvPQueueIndex = pvpIndex
 			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
 			hasPlayedWarningSound = false
+			playQueueOpenSound()
 			startQueueUpdateFrame()
 		else
 			if not remainingPvETime or remainingPvETime <= 0 then

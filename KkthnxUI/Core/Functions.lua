@@ -7,31 +7,34 @@
 -- - Events: PLAYER_ENTERING_WORLD, PLAYER_LEAVING_WORLD, PLAYER_LOGIN, PLAYER_TALENT_UPDATE, PLAYER_SPECIALIZATION_CHANGED
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 -- ---------------------------------------------------------------------------
 -- LOCALS & GLOBAL CACHING
 -- ---------------------------------------------------------------------------
 
 -- PERF: Cache Lua globals for speed and consistency.
-local _G = _G
-local ipairs, next, pairs, select, tostring, type, unpack = ipairs, next, pairs, select, tostring, type, unpack
+local ipairs, next, pairs, select, type, unpack = ipairs, next, pairs, select, type, unpack
 local tonumber = tonumber
 
 local table_insert = table.insert
 local table_wipe = table.wipe
-local strsplit = strsplit
 
 local math_abs = math.abs
 local math_floor = math.floor
-local math_rad = math.rad
+local math_modf = math.modf
+
+-- SECRET (Midnight 12.0): cache the global probes as upvalues; K.IsSecret/etc are
+-- hot-path guards called per-aura/per-frame. Both may be nil on pre-12.0 clients.
+local issecretvalue = rawget(_G, "issecretvalue")
+local issecrettable = rawget(_G, "issecrettable")
 
 local string_find = string.find
 local string_format = string.format
+local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
-local string_sub = string.sub
 
 local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
 local C_Timer_After = C_Timer.After
@@ -49,111 +52,85 @@ local UnitInPartyIsAI = UnitInPartyIsAI
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
-local AbbreviateNumbers = AbbreviateNumbers
-local CreateAbbreviateConfig = CreateAbbreviateConfig
+
+-- ---------------------------------------------------------------------------
+-- SECRET VALUE API (Midnight 12.0)
+-- ---------------------------------------------------------------------------
+
+-- REASON: Midnight returns "secret" values from combat/instance APIs that cannot
+-- be compared, used in arithmetic, or used as table keys without erroring.
+-- issecretvalue()/issecrettable() are themselves always safe to call (even on a
+-- secret). Centralize the guards here (mirroring oUF/NDui) so every module shares
+-- one API instead of redefining a local IsSecret helper in each file. Each module
+-- should alias these at file scope, e.g. `local IsSecret = K.IsSecret`.
+do
+	-- Returns true only when the value is a secret value.
+	function K.IsSecret(value)
+		return issecretvalue ~= nil and issecretvalue(value)
+	end
+
+	-- Convenience inverse: true when the value is safe to read/compare/index.
+	function K.NotSecret(value)
+		return issecretvalue == nil or not issecretvalue(value)
+	end
+
+	-- Returns true only when the object is a secret table (cannot be indexed).
+	function K.IsSecretTable(object)
+		return issecrettable ~= nil and issecrettable(object)
+	end
+
+	-- Convenience inverse: true when the table is safe to index/iterate.
+	function K.NotSecretTable(object)
+		return issecrettable == nil or not issecrettable(object)
+	end
+end
 
 -- ---------------------------------------------------------------------------
 -- CORE UTILITY API
--- ---------------------------------------------------------------------------\
-
--- Secret
-do
-	function K.IsSecretValue(value)
-		return issecretvalue and issecretvalue(value)
-	end
-
-	function K.NotSecretValue(value)
-		return not issecretvalue or not issecretvalue(value)
-	end
-
-	function K.IsSecretTable(object)
-		return issecrettable and issecrettable(object)
-	end
-
-	function K.NotSecretTable(object)
-		return not issecrettable or not issecrettable(object)
-	end
-
-	function K.SendChatMessage(...)
-		if C_ChatInfo.InChatMessagingLockdown() then
-			return
-		end
-		return C_ChatInfo.SendChatMessage(...)
-	end
-end
+-- ---------------------------------------------------------------------------
 
 do
 	function K.Print(...)
 		print("|cff3c9bedKkthnxUI:|r", ...)
 	end
 
-	K.NUMBER_ABBR_OPTIONS = {
-		[1] = {
-			config = CreateAbbreviateConfig({
-				{
-					breakpoint = 1e12,
-					abbreviation = "t",
-					significandDivisor = 1e10,
-					fractionDivisor = 1e2,
-					abbreviationIsGlobal = false,
-				},
-				{
-					breakpoint = 1e9,
-					abbreviation = "b",
-					significandDivisor = 1e7,
-					fractionDivisor = 1e2,
-					abbreviationIsGlobal = false,
-				},
-				{
-					breakpoint = 1e6,
-					abbreviation = "m",
-					significandDivisor = 1e4,
-					fractionDivisor = 1e2,
-					abbreviationIsGlobal = false,
-				},
-				{
-					breakpoint = 1e3,
-					abbreviation = "k",
-					significandDivisor = 1e2,
-					fractionDivisor = 1e1,
-					abbreviationIsGlobal = false,
-				},
-			}),
-		},
-		[2] = {
-			config = CreateAbbreviateConfig({
-				{
-					breakpoint = 1e12,
-					abbreviation = L["NumberCap3"],
-					significandDivisor = 1e10,
-					fractionDivisor = 1e2,
-					abbreviationIsGlobal = false,
-				},
-				{
-					breakpoint = 1e8,
-					abbreviation = L["NumberCap2"],
-					significandDivisor = 1e6,
-					fractionDivisor = 1e2,
-					abbreviationIsGlobal = false,
-				},
-				{
-					breakpoint = 1e4,
-					abbreviation = L["NumberCap1"],
-					significandDivisor = 1e3,
-					fractionDivisor = 1e1,
-					abbreviationIsGlobal = false,
-				},
-			}),
-		},
-	}
+	-- PERF: Optimized ShortValue with zero GC churn by using math for rounding instead of string.format
+	-- where possible. Cached format strings avoid repeated allocations in hot paths like damage meters.
+	local format1 = "%.1f"
 
-	-- Numberize
 	function K.ShortValue(n)
-		local options = K.NUMBER_ABBR_OPTIONS[C["General"].NumberPrefixStyle]
-		if options then
-			return AbbreviateNumbers(n, options)
-		else
+		if not n or type(n) ~= "number" then
+			return ""
+		end
+
+		local abs_n = math_abs(n)
+
+		-- NOTE: Avoid formatting small numbers to save CPU cycles and memory allocations.
+		if abs_n < 1e3 then
 			return n
+		end
+
+		local prefixStyle = C["General"].NumberPrefixStyle
+		local suffix, div = "", 1
+
+		-- REASON: Calculate suffix and divisor for SI-style or localized numbering.
+		if abs_n >= 1e12 then
+			suffix, div = (prefixStyle == 1 and "t" or "z"), 1e12
+		elseif abs_n >= 1e9 then
+			suffix, div = (prefixStyle == 1 and "b" or "y"), 1e9
+		elseif abs_n >= 1e6 then
+			suffix, div = (prefixStyle == 1 and "m" or "w"), 1e6
+		elseif abs_n >= 1e3 then
+			suffix, div = (prefixStyle == 1 and "k" or "w"), 1e3
+		end
+
+		-- PERF: Final formatting using math for rounding to avoid GC pressure.
+		local val = n / div
+		if val < 10 then
+			local rounded = math_floor(val * 10 + 0.5) / 10
+			return string_format(format1, rounded) .. suffix
+		else
+			return math_floor(val + 0.5) .. suffix
 		end
 	end
 
@@ -164,10 +141,6 @@ do
 
 		if idp ~= nil and type(idp) ~= "number" then
 			return
-		end
-
-		if not K.NotSecretValue(number) then
-			return number
 		end
 
 		idp = idp or 0
@@ -182,26 +155,40 @@ end
 -- ---------------------------------------------------------------------------
 
 do
+	-- PERF: Shared scratch table for path key splitting; avoids allocating a new table on every call.
+	-- NOTE: Safe for single-threaded use; Lua cannot interleave calls between SetValueByPath/GetValueByPath.
 	local keysTable = {}
-	-- REASON: Allows setting nested values via string paths (e.g., "General.FontSize").
-	-- PERF: Optimized to use a single strsplit and direct iteration.
+	local keysTableN = 0
+
+	-- REASON: Allows setting nested values via dot-delimited string paths (e.g., "General.FontSize").
+	-- PERF: Uses string_gmatch iteration into the reused keysTable instead of { strsplit(...) } per call.
 	function K.SetValueByPath(tbl, path, value)
 		if not path or not tbl then
 			return
 		end
 
-		local current = tbl
-		local keys = { strsplit(".", path) }
-		local n = #keys
+		-- REASON: Clear only the live portion of the buffer; avoids table_wipe overhead on a large table.
+		for i = 1, keysTableN do
+			keysTable[i] = nil
+		end
+		keysTableN = 0
 
-		for i = 1, n - 1 do
-			local key = keys[i]
+		for key in string_gmatch(path, "[^%.]+") do
+			keysTableN = keysTableN + 1
+			keysTable[keysTableN] = key
+		end
+
+		local current = tbl
+		for i = 1, keysTableN - 1 do
+			local key = keysTable[i]
 			if not current[key] or type(current[key]) ~= "table" then
 				current[key] = {}
 			end
 			current = current[key]
 		end
-		current[keys[n]] = value
+		if keysTableN > 0 then
+			current[keysTable[keysTableN]] = value
+		end
 	end
 
 	function K.GetValueByPath(tbl, path)
@@ -209,11 +196,20 @@ do
 			return nil
 		end
 
-		local current = tbl
-		local keys = { strsplit(".", path) }
+		-- PERF: Reuse the same buffer; clear only the live entries.
+		for i = 1, keysTableN do
+			keysTable[i] = nil
+		end
+		keysTableN = 0
 
-		for i = 1, #keys do
-			local key = keys[i]
+		for key in string_gmatch(path, "[^%.]+") do
+			keysTableN = keysTableN + 1
+			keysTable[keysTableN] = key
+		end
+
+		local current = tbl
+		for i = 1, keysTableN do
+			local key = keysTable[i]
 			if not current or type(current) ~= "table" or not current[key] then
 				return nil
 			end
@@ -249,14 +245,47 @@ do
 		if colorCache[key] then
 			return colorCache[key]
 		end
-		local hex = string_format(
-			"|cff%02x%02x%02x",
-			math_floor(r * factor + 0.5),
-			math_floor(g * factor + 0.5),
-			math_floor(b * factor + 0.5)
-		)
+		local hex = string_format("|cff%02x%02x%02x", math_floor(r * factor + 0.5), math_floor(g * factor + 0.5), math_floor(b * factor + 0.5))
 		colorCache[key] = hex
 		return hex
+	end
+
+	-- MIDNIGHT (12.0): oUF moved to C_CurveUtil color curves and dropped the classic
+	-- arithmetic gradient helpers (oUF:ColorGradient / oUF:RGBColorGradient). KkthnxUI
+	-- still relies on them for non-secret scalars (durability, memory, rep, zoom, health%),
+	-- so restore them on K.oUF here. Definitions are guarded so a future oUF that brings
+	-- the methods back will win, and we never edit the vendored library.
+	-- SECRET: callers may pass a value that becomes secret in combat/instances (e.g. a
+	-- health percentage); guard before any arithmetic and fall back to white.
+	local function ComputeGradient(a, b, ...)
+		if K.IsSecret(a) or K.IsSecret(b) then
+			return 1, 1, 1
+		end
+
+		local percent = a / b
+		if percent <= 0 then
+			local r, g, bl = ...
+			return r, g, bl
+		elseif percent >= 1 then
+			return select(select("#", ...) - 2, ...)
+		end
+
+		local num = select("#", ...) / 3
+		local segment, relperc = math_modf(percent * (num - 1))
+		local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
+		return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
+	end
+
+	if K.oUF and not K.oUF.RGBColorGradient then
+		function K.oUF:RGBColorGradient(...)
+			return ComputeGradient(...)
+		end
+	end
+
+	if K.oUF and not K.oUF.ColorGradient then
+		function K.oUF:ColorGradient(...)
+			return ComputeGradient(...)
+		end
 	end
 
 	-- COMPAT: Uses Blizzard's class-specific atlas textures for consistent UI iconography.
@@ -314,18 +343,7 @@ do
 		sizeX = sizeX or 0
 		sizeY = sizeY or 0
 
-		return string_format(
-			"|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t",
-			file,
-			sizeX,
-			sizeY,
-			atlasWidth,
-			atlasHeight,
-			atlasWidth * left,
-			atlasWidth * right,
-			atlasHeight * top,
-			atlasHeight * bottom
-		)
+		return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, sizeX, sizeY, atlasWidth, atlasHeight, atlasWidth * left, atlasWidth * right, atlasHeight * top, atlasHeight * bottom)
 	end
 end
 
@@ -363,7 +381,7 @@ do
 			table_wipe(list)
 		end
 
-		for word in string.gmatch(variable, "[^,%s]+") do
+		for word in string_gmatch(variable, "[^,%s]+") do
 			local converted = tonumber(word) or word
 			list[converted] = true
 		end
@@ -451,13 +469,13 @@ do
 		if not color then
 			return 1, 1, 1
 		end
-
 		return color.r, color.g, color.b
 	end
 
 	-- REASON: Centralized unit coloring logic (Class -> Tap Denied -> Reaction).
 	function K.UnitColor(unit)
 		local r, g, b = 1, 1, 1
+
 		if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
 			local class = select(2, UnitClass(unit))
 			if class then
@@ -468,33 +486,12 @@ do
 		else
 			local reaction = UnitReaction(unit, "player")
 			if reaction then
-				local color = K.Colors.reaction[reaction] or FACTION_BAR_COLORS[reaction]
-				r, g, b = color.r, color.g, color.b
+				local color = K.Colors.reaction[reaction]
+				r, g, b = color[1], color[2], color[3]
 			end
 		end
 
 		return r, g, b
-	end
-
-	local function colorsAndPercent(a, b, ...)
-		if a <= 0 or b == 0 then
-			return nil, ...
-		elseif a >= b then
-			return nil, select(-3, ...)
-		end
-
-		local num = select("#", ...) / 3
-		local segment, relperc = math.modf((a / b) * (num - 1))
-		return relperc, select((segment * 3) + 1, ...)
-	end
-
-	function K.RGBColorGradient(...)
-		local relperc, r1, g1, b1, r2, g2, b2 = colorsAndPercent(...)
-		if relperc then
-			return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
-		else
-			return r1, g1, b1
-		end
 	end
 end
 
@@ -513,13 +510,10 @@ do
 	end
 
 	-- REASON: Resolves the numeric NPC ID from a GUID; handles varying GUID formats.
+	-- GUID format: Creature-0-ServerID-InstanceID-ZoneID-NPCID-SpawnUID
+	-- Use greedy %d+ and %x+ for clarity and fewer backtrack attempts.
 	function K.GetNPCID(guid)
-		if K.IsSecretValue(guid) then
-			return
-		end
-
-		local id = tonumber(string_match((guid or ""), "%-(%d-)%-%x-$"))
-
+		local id = tonumber(string_match((guid or ""), "%-(%d+)%-%x+$"))
 		return id
 	end
 
@@ -588,9 +582,7 @@ do
 					if info.mode == "IN" then
 						frame:SetAlpha((info.fadeTimer / info.timeToFade) * info.diffAlpha + info.startAlpha)
 					else
-						frame:SetAlpha(
-							((info.timeToFade - info.fadeTimer) / info.timeToFade) * info.diffAlpha + info.endAlpha
-						)
+						frame:SetAlpha(((info.timeToFade - info.fadeTimer) / info.timeToFade) * info.diffAlpha + info.endAlpha)
 					end
 				else
 					frame:SetAlpha(info.endAlpha)
@@ -606,13 +598,7 @@ do
 							if info.finishedArgs then
 								info.finishedFunc(unpack(info.finishedArgs))
 							else
-								info.finishedFunc(
-									info.finishedArg1,
-									info.finishedArg2,
-									info.finishedArg3,
-									info.finishedArg4,
-									info.finishedArg5
-								)
+								info.finishedFunc(info.finishedArg1, info.finishedArg2, info.finishedArg3, info.finishedArg4, info.finishedArg5)
 							end
 
 							if not info.finishedFuncKeep then
@@ -775,8 +761,7 @@ do
 						slotData.gems[num] = lineData.gemIcon
 					elseif lineData.socketType then
 						num = num + 1
-						slotData.gems[num] =
-							format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", lineData.socketType)
+						slotData.gems[num] = string_format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", lineData.socketType)
 					end
 				end
 			end
@@ -898,7 +883,9 @@ do
 			if line.price then
 				return false
 			end
-			return line.leftText and isUnknownString[line.leftText]
+			if line.leftText and isUnknownString[line.leftText] then
+				return true
+			end
 		end
 	end
 end
@@ -1267,8 +1254,7 @@ do
 
 			local orig, _, tar, x, y = frame:GetPoint()
 			if KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
-				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"]
-					or {}
+				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] or {}
 				KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = { orig, "UIParent", tar, x, y }
 			end
 		end)
@@ -1280,14 +1266,8 @@ do
 		end
 
 		local name = self:GetName()
-		if
-			name
-			and KkthnxUIDB.Variables
-			and KkthnxUIDB.Variables[K.Realm]
-			and KkthnxUIDB.Variables[K.Realm][K.Name]
-		then
-			local anchorData = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"]
-				and KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]
+		if name and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
+			local anchorData = KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"] and KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]
 			if anchorData then
 				self:ClearAllPoints()
 				self:SetPoint(unpack(anchorData))
@@ -1448,15 +1428,7 @@ do
 		local copper = math_floor(value % 100)
 
 		if gold > 0 then
-			return string_format(
-				"%s%s %02d%s %02d%s",
-				BreakUpLargeNumbers(gold),
-				goldname,
-				silver,
-				silvername,
-				copper,
-				coppername
-			)
+			return string_format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
 		elseif silver > 0 then
 			return string_format("%d%s %02d%s", silver, silvername, copper, coppername)
 		else
@@ -1465,83 +1437,3 @@ do
 	end
 end
 
--- ---------------------------------------------------------------------------
--- UNIFIED WIDGET FACTORY
--- ---------------------------------------------------------------------------
-
--- NOTE: Centralized UI toolkit for consistent styling across all GUI modules.
--- This eliminates code duplication and ensures theme consistency.
-
-K.WidgetFactory = {}
-
--- REASON: Creates a colored background texture with default or custom alpha.
-function K.WidgetFactory.CreateBackdrop(parent, r, g, b, a)
-	local bg = parent:CreateTexture(nil, "BACKGROUND")
-	bg:SetAllPoints()
-	bg:SetTexture(C["Media"].Textures.White8x8Texture)
-	bg:SetVertexColor(r or 0.05, g or 0.05, b or 0.05, a or 0.9)
-	return bg
-end
-
--- REASON: Creates a styled button with hover effects and consistent theme-aware coloring.
--- PERF: Constant tables moved out of factory for reuse.
-local ACCENT_COLOR = { K.r, K.g, K.b }
-local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
-
-function K.WidgetFactory.CreateButton(parent, text, width, height, onClick)
-	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(width or 120, height or 28)
-
-	local buttonBg = button:CreateTexture(nil, "BACKGROUND")
-	buttonBg:SetAllPoints()
-	buttonBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	buttonBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-	button.KKUI_Background = buttonBg
-
-	local buttonBorder = button:CreateTexture(nil, "BORDER")
-	buttonBorder:SetPoint("TOPLEFT", -1, 1)
-	buttonBorder:SetPoint("BOTTOMRIGHT", 1, -1)
-	buttonBorder:SetTexture(C["Media"].Textures.White8x8Texture)
-	buttonBorder:SetVertexColor(0.3, 0.3, 0.3, 0.8)
-	button.KKUI_Border = buttonBorder
-
-	button:SetScript("OnEnter", function(self)
-		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
-		self.KKUI_Border:SetVertexColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-		if self.Text then
-			self.Text:SetTextColor(1, 1, 1, 1)
-		end
-	end)
-
-	button:SetScript("OnLeave", function(self)
-		self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
-		self.KKUI_Border:SetVertexColor(0.3, 0.3, 0.3, 0.8)
-		if self.Text then
-			self.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		end
-	end)
-
-	button:SetScript("OnMouseDown", function(self)
-		self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.6, ACCENT_COLOR[2] * 0.6, ACCENT_COLOR[3] * 0.6, 1)
-	end)
-
-	button:SetScript("OnMouseUp", function(self)
-		if self:IsMouseOver() then
-			self.KKUI_Background:SetVertexColor(ACCENT_COLOR[1] * 0.8, ACCENT_COLOR[2] * 0.8, ACCENT_COLOR[3] * 0.8, 1)
-		else
-			self.KKUI_Background:SetVertexColor(0.15, 0.15, 0.15, 1)
-		end
-	end)
-
-	button.Text = button:CreateFontString(nil, "OVERLAY")
-	button.Text:SetFontObject(K.UIFont)
-	button.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	button.Text:SetText(text)
-	button.Text:SetPoint("CENTER")
-
-	if onClick then
-		button:SetScript("OnClick", onClick)
-	end
-
-	return button
-end

@@ -60,10 +60,7 @@ function Module:SkinBag(bag)
 
 	icon:SetAllPoints()
 	-- REASON: Fallback to custom backpack texture if original is missing or specific ID matches.
-	icon:SetTexture(
-		(not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga"
-			or bag.oldTex
-	)
+	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
@@ -222,7 +219,7 @@ function Module:CreateInventoryBar()
 		hooksecurefunc(ReagentSlot, "SetBarExpanded", Module.SetSizeAndPositionBagBar)
 	end
 
-	K.Mover(bagBar, "BagBar", "BagBar", bagPosition)
+	-- K.Mover(bagBar, "BagBar", "BagBar", bagPosition)
 	if not bagBar.mover then
 		bagBar.mover = K.Mover(bagBar, "BagBar", "BagBar", bagPosition)
 	else

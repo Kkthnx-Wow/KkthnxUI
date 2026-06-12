@@ -45,7 +45,7 @@ function Module:CreateBoss()
 	self.Health.frequentUpdates = true
 
 	if C["Party"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	if C["Party"].HealthbarColor == 3 then
@@ -69,6 +69,10 @@ function Module:CreateBoss()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
+
 	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Boss"].PowerHeight)
@@ -78,10 +82,14 @@ function Module:CreateBoss()
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true
-	self.Power.SetFrequentUpdates = true
+	self.Power.frequentUpdates = true
+
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
 
 	if C["Boss"].Smooth then
-		-- K:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -159,8 +167,8 @@ function Module:CreateBoss()
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growthX"] = "RIGHT"
-	self.Buffs["growthY"] = "DOWN"
+	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs["growth-y"] = "DOWN"
 	self.Buffs.num = 6
 	self.Buffs.spacing = 6
 	self.Buffs.iconsPerRow = 6
@@ -176,7 +184,7 @@ function Module:CreateBoss()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "RIGHT"
-	self.Debuffs["growthX"] = "LEFT"
+	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5
@@ -233,16 +241,14 @@ function Module:CreateBoss()
 
 		Castbar.Time = timer
 		Castbar.Text = name
-		Castbar.timeToHold = 0.5
-		Castbar.PostCastStart = Module.UpdateCastBarColor
-		Castbar.PostCastInterruptible = Module.UpdateCastBarColor
-		Castbar.PostCastStop = Module.Castbar_FailedColor
-		Castbar.PostCastFail = Module.Castbar_FailedColor
-		Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		Castbar.CreatePip = Module.CreatePip
 		Castbar.PostUpdatePips = Module.PostUpdatePips
-		Castbar.CustomTimeText = Module.CustomTimeText
-		Castbar.CustomDelayText = Module.CustomTimeText
 
 		self.Castbar = Castbar
 	end

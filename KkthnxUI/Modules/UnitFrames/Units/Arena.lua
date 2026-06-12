@@ -45,7 +45,7 @@ function Module:CreateArena()
 	self.Health.frequentUpdates = true
 
 	if C["Arena"].Smooth then
-		-- K:SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	if C["Arena"].HealthbarColor == 3 then
@@ -78,10 +78,10 @@ function Module:CreateArena()
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true
-	self.Power.SetFrequentUpdates = true
+	self.Power.frequentUpdates = true
 
 	if C["Arena"].Smooth then
-		-- K:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -154,8 +154,8 @@ function Module:CreateArena()
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growthX"] = "RIGHT"
-	self.Buffs["growthY"] = "DOWN"
+	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs["growth-y"] = "DOWN"
 	self.Buffs.num = 6
 	self.Buffs.spacing = 6
 	self.Buffs.iconsPerRow = 6
@@ -171,8 +171,8 @@ function Module:CreateArena()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPRIGHT"
-	self.Debuffs["growthX"] = "LEFT"
-	self.Debuffs["growthY"] = "DOWN"
+	self.Debuffs["growth-x"] = "LEFT"
+	self.Debuffs["growth-y"] = "DOWN"
 	self.Debuffs:SetPoint("TOPRIGHT", self.Trinket, "TOPLEFT", -6, 0)
 	self.Debuffs.num = 2
 	self.Debuffs.iconsPerRow = 4
@@ -213,16 +213,11 @@ function Module:CreateArena()
 
 		self.Castbar.decimal = "%.2f"
 
-		self.Castbar.timeToHold = 0.5
-		self.Castbar.PostCastStart = Module.UpdateCastBarColor
-		self.Castbar.PostCastInterruptible = Module.UpdateCastBarColor
-		self.Castbar.PostCastStop = Module.Castbar_FailedColor
-		self.Castbar.PostCastFail = Module.Castbar_FailedColor
-		self.Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
-		self.Castbar.CreatePip = Module.CreatePip
-		self.Castbar.PostUpdatePips = Module.PostUpdatePips
-		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.CustomDelayText = Module.CustomTimeText
+		self.Castbar.OnUpdate = Module.OnCastbarUpdate
+		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostCastStop = Module.PostCastStop
+		self.Castbar.PostCastFail = Module.PostCastFailed
+		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 		self.Castbar.Text:SetFontObject(K.UIFont)

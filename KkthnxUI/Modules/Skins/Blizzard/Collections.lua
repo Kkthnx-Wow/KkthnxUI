@@ -11,7 +11,6 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G
-local type = _G.type
 
 -- Cache frequently accessed values
 -- REASON: Constants for Collections skinning.
@@ -21,7 +20,6 @@ local TEXTURE_PATH = "Interface\\DressUpFrame\\DressingRoom"
 -- REASON: Cache frames.
 local WardrobeFrame = _G.WardrobeFrame
 local WardrobeTransmogFrame = _G.WardrobeTransmogFrame
-local PetJournalTutorialButton = _G.PetJournalTutorialButton
 
 local function SafeSetPoint(frame, ...)
 	if frame and frame.SetPoint then

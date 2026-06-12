@@ -17,8 +17,7 @@ local math_max = _G.math.max
 local hooksecurefunc = _G.hooksecurefunc
 
 local C_Navigation = _G.C_Navigation
-local SuperTrackedFrame = _G.SuperTrackedFrame
-local TIMER_MINUTES_DISPLAY = _G.TIMER_MINUTES_DISPLAY
+local TIMER_MINUTES_DISPLAY = _G["TIMER_MINUTES_DISPLAY"]
 
 local GetDistance = C_Navigation and C_Navigation.GetDistance
 local WasClampedToScreen = C_Navigation and C_Navigation.WasClampedToScreen
@@ -27,15 +26,19 @@ local WasClampedToScreen = C_Navigation and C_Navigation.WasClampedToScreen
 local lastDistance, lastUpdate = nil, 0
 local emaSpeed -- exponentially smoothed speed (yards/sec)
 
+local function hideTime(self)
+	if self.TimeText then
+		self.TimeText:Hide()
+	end
+end
+
 local function updateArrival(self, elapsed)
 	if not C_Navigation or not GetDistance then
 		return
 	end
 
-	if self.isClamped then
-		if self.TimeText then
-			self.TimeText:Hide()
-		end
+	if WasClampedToScreen and WasClampedToScreen() then
+		hideTime(self)
 		lastDistance, lastUpdate, emaSpeed = nil, 0, nil
 		return
 	end
@@ -47,9 +50,7 @@ local function updateArrival(self, elapsed)
 
 	local distance = GetDistance() or 0
 	if distance <= 0 then
-		if self.TimeText then
-			self.TimeText:Hide()
-		end
+		hideTime(self)
 		lastDistance, lastUpdate = distance, 0
 		return
 	end
@@ -60,9 +61,7 @@ local function updateArrival(self, elapsed)
 	lastUpdate = 0
 
 	if not instSpeed or instSpeed <= 0 then
-		if self.TimeText then
-			self.TimeText:Hide()
-		end
+		hideTime(self)
 		return
 	end
 
@@ -96,23 +95,30 @@ local function updateAlpha(self)
 end
 
 local function SetupQuestNavigation()
-	if not SuperTrackedFrame or not SuperTrackedFrame.DistanceText then
+	local superTrackedFrame = _G["SuperTrackedFrame"]
+	if not superTrackedFrame or not superTrackedFrame.DistanceText then
 		return
 	end
 
 	-- Create or reuse the timer text
-	if not SuperTrackedFrame.TimeText then
-		local time = SuperTrackedFrame:CreateFontString(nil, "BACKGROUND", "GameFontNormal")
-		time:SetPoint("TOP", SuperTrackedFrame.DistanceText, "BOTTOM", 0, -2)
+	if not superTrackedFrame.TimeText then
+		local time = superTrackedFrame:CreateFontString(nil, "BACKGROUND", "GameFontNormal")
+		time:SetPoint("TOP", superTrackedFrame.DistanceText, "BOTTOM", 0, -2)
 		time:SetHeight(20)
 		time:SetJustifyV("TOP")
 		time:SetWordWrap(false) -- avoid wrapping; let width be automatic
-		SuperTrackedFrame.TimeText = time
+		superTrackedFrame.TimeText = time
 	end
 
 	-- Hook updates (idempotent hooks are safe)
-	SuperTrackedFrame:HookScript("OnUpdate", updateArrival)
-	hooksecurefunc(SuperTrackedFrame, "UpdateAlpha", updateAlpha)
+	if not superTrackedFrame.KKUI_QuestNavigationHooked then
+		superTrackedFrame:HookScript("OnUpdate", updateArrival)
+		superTrackedFrame:HookScript("OnHide", hideTime)
+		if superTrackedFrame.UpdateAlpha then
+			hooksecurefunc(superTrackedFrame, "UpdateAlpha", updateAlpha)
+		end
+		superTrackedFrame.KKUI_QuestNavigationHooked = true
+	end
 end
 
 -- REASON: Main entry point for Blizzard Quest Navigation skinning.

@@ -13,7 +13,6 @@ local Module = K:NewModule("WorldMap")
 -- PERF: Localize global functions and environment for faster lookups.
 local pcall = _G.pcall
 local select = _G.select
-local strmatch = _G.strmatch
 local tostring = _G.tostring
 local type = _G.type
 
@@ -96,11 +95,7 @@ function Module:UpdateCoords(elapsed)
 		cursorCoords:SetFormattedText(coordsFormat("Mouse", not cursorX), 100 * (cursorX or 0), 100 * (cursorY or 0))
 
 		local x, y = K.GetPlayerMapPos(currentMapID)
-		playerCoords:SetFormattedText(
-			coordsFormat(PLAYER, not (currentMapID and x and (x ~= 0 or y ~= 0))),
-			100 * (x or 0),
-			100 * (y or 0)
-		)
+		playerCoords:SetFormattedText(coordsFormat(PLAYER, not (currentMapID and x and (x ~= 0 or y ~= 0))), 100 * (x or 0), 100 * (y or 0))
 
 		self.elapsed = 0
 	end

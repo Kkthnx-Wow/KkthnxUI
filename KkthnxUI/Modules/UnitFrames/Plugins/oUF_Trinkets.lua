@@ -37,7 +37,6 @@ local Update = function(self, event, ...)
 
 	if event == "ARENA_COOLDOWNS_UPDATE" then
 		local unit = ...
-		local tunit = self.unit
 
 		if self.unit == unit then
 			C_PvP_RequestCrowdControlSpell(unit)

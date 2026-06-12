@@ -40,12 +40,14 @@ function Module:ReskinDominos()
 		local btname = _G[name .. "Name"]
 		local normal = _G[name .. "NormalTexture"]
 
-		flash:SetTexture("")
+		if flash then
+			flash:SetTexture("")
+		end
 		button:SetNormalTexture("")
 
 		if border then
 			border:Hide()
-			border = K.Noop
+-- 			border = K.Noop
 		end
 
 		if count then
@@ -68,8 +70,10 @@ function Module:ReskinDominos()
 			button:CreateBackdrop()
 			button.KKUI_Backdrop:SetAllPoints()
 
-			icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-			icon:SetAllPoints()
+			if icon then
+				icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				icon:SetAllPoints()
+			end
 
 			button.isSkinned = true
 		end
@@ -111,20 +115,28 @@ function Module:ReskinDominos()
 			button:CreateBackdrop()
 			button.KKUI_Backdrop:SetAllPoints()
 
-			icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-			icon:SetAllPoints()
+			if icon then
+				icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				icon:SetAllPoints()
+			end
 
 			if pet then
 				local autocast = _G[name .. "AutoCastable"]
-				autocast:SetSize((button:GetWidth() * 2) - 10, (button:GetWidth() * 2) - 10)
-				autocast:ClearAllPoints()
-				autocast:SetPoint("CENTER", button, 0, 0)
+				if autocast then
+					autocast:SetSize((button:GetWidth() * 2) - 10, (button:GetWidth() * 2) - 10)
+					autocast:ClearAllPoints()
+					autocast:SetPoint("CENTER", button, 0, 0)
+				end
 
 				local shine = _G[name .. "Shine"]
-				shine:SetSize(button:GetWidth(), button:GetWidth())
+				if shine then
+					shine:SetSize(button:GetWidth(), button:GetWidth())
+				end
 
 				local cooldown = _G[name .. "Cooldown"]
-				cooldown:SetSize(button:GetWidth() - 2, button:GetWidth() - 2)
+				if cooldown then
+					cooldown:SetSize(button:GetWidth() - 2, button:GetWidth() - 2)
+				end
 			end
 
 			button.isSkinned = true

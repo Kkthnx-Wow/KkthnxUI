@@ -93,6 +93,14 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 
 	-- NOTE: AuraWatch movers are handled separately due to their dynamic nature.
 	if not isAuraWatch then
+		-- REASON: Detect duplicate value keys early; two movers sharing the same key silently overwrite
+		-- each other's saved position in KkthnxUIDB, so the later-registered frame always loads wrong.
+		for _, existingMover in ipairs(MoverList) do
+			if existingMover.__value == value then
+				K.Print("|cffff4444Mover WARNING:|r Duplicate key '" .. tostring(value) .. "' registered. DB position saving may be overwritten.")
+				break
+			end
+		end
 		table_insert(MoverList, mover)
 	end
 
@@ -441,6 +449,7 @@ local function CreateConsole()
 		arrows[i].__index = i
 		arrows[i].__offset = arrowData.offset
 		arrows[i]:SetScript("OnClick", arrowOnClick)
+		arrows[i]:SetPoint("CENTER", arrowData.x, arrowData.y)
 		arrows[i].Icon:SetPoint("TOPLEFT", 3, -3)
 		arrows[i].Icon:SetPoint("BOTTOMRIGHT", -3, 3)
 		arrows[i].Icon:SetRotation(math_rad(arrowData.degree))

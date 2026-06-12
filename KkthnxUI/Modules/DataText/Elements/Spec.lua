@@ -16,13 +16,10 @@ local BLUE_FONT_COLOR = _G.BLUE_FONT_COLOR
 local C_ClassTalents_GetLastSelectedSavedConfigID = _G.C_ClassTalents.GetLastSelectedSavedConfigID
 local C_ClassTalents_GetStarterBuildActive = _G.C_ClassTalents.GetStarterBuildActive
 local C_ClassTalents_LoadConfig = _G.C_ClassTalents.LoadConfig
-local C_ClassTalents_SetStarterBuildActive = _G.C_ClassTalents.SetStarterBuildActive
-local C_ClassTalents_UpdateLastSelectedSavedConfigID = _G.C_ClassTalents.UpdateLastSelectedSavedConfigID
 local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_SpecializationInfo_CanPlayerUsePVPTalentUI = _G.C_SpecializationInfo.CanPlayerUsePVPTalentUI
 local C_SpecializationInfo_GetAllSelectedPvpTalentIDs = _G.C_SpecializationInfo.GetAllSelectedPvpTalentIDs
 local C_Spell_GetSpellName = _G.C_Spell.GetSpellName
-local C_Traits_GetConfigInfo = _G.C_Traits.GetConfigInfo
 local CLUB_FINDER_SPEC = _G.CLUB_FINDER_SPEC
 local CreateFrame = _G.CreateFrame
 local DropDownList1 = _G.DropDownList1
@@ -64,7 +61,10 @@ local specMenu
 local numSpecs
 local numLocalBase
 
-local PVP_ICON_TEXTURE = C_CurrencyInfo_GetCurrencyInfo(1792).iconFileID
+-- SAFETY: Guard the currency lookup; GetCurrencyInfo can return nil early in load, and indexing
+-- .iconFileID on nil would abort this file at parse time. addIcon() tolerates a nil texture.
+local pvpCurrency = C_CurrencyInfo_GetCurrencyInfo(1792)
+local PVP_ICON_TEXTURE = pvpCurrency and pvpCurrency.iconFileID
 
 local EVENT_LIST = {
 	"PLAYER_ENTERING_WORLD",
@@ -323,12 +323,12 @@ function Module:CreateSpecDataText()
 
 	specDataText.Text = K.CreateFontString(specDataText, 12)
 	specDataText.Text:ClearAllPoints()
-	specDataText.Text:SetPoint("LEFT", specDataText, "LEFT", 24, 0)
+	specDataText.Text:SetPoint("LEFT", specDataText, "LEFT", 18, 0)
 
 	specDataText.Texture = specDataText:CreateTexture(nil, "ARTWORK")
-	specDataText.Texture:SetPoint("LEFT", specDataText, "LEFT", 0, 2)
+	specDataText.Texture:SetPoint("LEFT", specDataText, "LEFT", 0, 1)
 	specDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\TalentsIcon")
-	specDataText.Texture:SetSize(24, 24)
+	specDataText.Texture:SetSize(16, 16)
 	specDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	for _, event in pairs(EVENT_LIST) do
@@ -355,5 +355,5 @@ function Module:CreateSpecDataText()
 		end
 	end)
 
-	specDataText.mover = K.Mover(specDataText, "SpecDT", "SpecDT", { "LEFT", UIParent, "LEFT", 0, -210 }, 56, 12)
+	specDataText.mover = K.Mover(specDataText, "SpecDT", "SpecDT", { "LEFT", UIParent, "LEFT", 2, -210 }, 56, 12)
 end

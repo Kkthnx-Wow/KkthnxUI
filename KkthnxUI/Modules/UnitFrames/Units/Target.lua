@@ -12,12 +12,10 @@ local Module = K:GetModule("Unitframes")
 
 -- PERF: Localize C-functions (Snake Case)
 local select = _G.select
-local unpack = _G.unpack
 
 -- PERF: Localize Globals
 local CreateFrame = _G.CreateFrame
 local SetCVar = _G.SetCVar
-local C_AddOns = _G.C_AddOns
 local UIParent = _G.UIParent
 
 function Module:CreateTarget()
@@ -28,7 +26,7 @@ function Module:CreateTarget()
 	local targetPortraitStyle = C["Unitframe"].PortraitStyle
 
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+
 
 	Module.CreateHeader(self)
 
@@ -50,6 +48,10 @@ function Module:CreateTarget()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
+	if C["Unitframe"].Smooth then
+		K:SmoothBar(self.Health)
+	end
+
 	if C["Unitframe"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
@@ -70,6 +72,10 @@ function Module:CreateTarget()
 	self.Health.Value:SetFontObject(K.UIFont)
 	self:Tag(self.Health.Value, "[hp]")
 
+	-- REASON: Health spark — tracks the visual HP edge; hidden when full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
+
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(C["Unitframe"].TargetPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
@@ -81,8 +87,7 @@ function Module:CreateTarget()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		Module:SmoothBar(self.Health)
-		Module:SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -90,6 +95,10 @@ function Module:CreateTarget()
 	self.Power.Value:SetFontObject(K.UIFont)
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
+
+	-- REASON: Power spark — tracks the visual power edge; hidden when full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
@@ -148,8 +157,8 @@ function Module:CreateTarget()
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
-		self.Debuffs["growthX"] = "RIGHT"
-		self.Debuffs["growthY"] = "UP"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 14
@@ -167,8 +176,8 @@ function Module:CreateTarget()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growthX"] = "RIGHT"
-		self.Buffs["growthY"] = "DOWN"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 20
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
@@ -222,19 +231,18 @@ function Module:CreateTarget()
 		Castbar.stageString = stage
 
 		Castbar.decimal = "%.2f"
+
 		Castbar.Time = timer
 		Castbar.Text = name
-
 		Castbar.timeToHold = 0.5
-		Castbar.PostCastStart = Module.UpdateCastBarColor
-		Castbar.PostCastInterruptible = Module.UpdateCastBarColor
-		Castbar.PostCastStop = Module.Castbar_FailedColor
-		Castbar.PostCastFail = Module.Castbar_FailedColor
-		Castbar.PostCastInterrupted = Module.Castbar_UpdateInterrupted
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		Castbar.CreatePip = Module.CreatePip
 		Castbar.PostUpdatePips = Module.PostUpdatePips
-		Castbar.CustomTimeText = Module.CustomTimeText
-		Castbar.CustomDelayText = Module.CustomTimeText
 
 		local mover = K.Mover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 }, Castbar:GetHeight() + Castbar:GetWidth() + 6, Castbar:GetHeight())
 		Castbar:ClearAllPoints()
@@ -281,7 +289,7 @@ function Module:CreateTarget()
 		absorbBar:Hide()
 		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex:SetHorizTile(true)
 		tex:SetVertTile(true)
 
@@ -294,7 +302,7 @@ function Module:CreateTarget()
 		overAbsorbBar:Hide()
 		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex2:SetHorizTile(true)
 		tex2:SetVertTile(true)
 
@@ -310,7 +318,7 @@ function Module:CreateTarget()
 		healAbsorbBar:Hide()
 		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
 		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
 		tex3:SetHorizTile(true)
 		tex3:SetVertTile(true)
 
@@ -355,6 +363,27 @@ function Module:CreateTarget()
 	Level:SetFontObject(K.UIFont)
 	self:Tag(Level, "[fulllevel]")
 	self.Level = Level
+
+	if C["Unitframe"].CombatText then
+		local parentFrame = CreateFrame("Frame", nil, UIParent)
+		local FloatingCombatFeedback = CreateFrame("Frame", nil, parentFrame)
+		FloatingCombatFeedback:SetSize(32, 32)
+		K.Mover(FloatingCombatFeedback, "CombatText", "TargetCombatText", { "BOTTOM", self, "TOPRIGHT", 0, 120 })
+
+		for i = 1, 36 do
+			FloatingCombatFeedback[i] = FloatingCombatFeedback:CreateFontString("$parentText", "OVERLAY")
+		end
+
+		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
+		FloatingCombatFeedback.fontFlags = "OUTLINE"
+		FloatingCombatFeedback.abbreviateNumbers = true
+		FloatingCombatFeedback:SetFrameStrata("HIGH")
+
+		self.FloatingCombatFeedback = FloatingCombatFeedback
+
+		-- Default CombatText
+		SetCVar("enableFloatingCombatText", 0)
+	end
 
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
@@ -413,14 +442,14 @@ function Module:CreateTarget()
 	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -6, 6)
 
 	if C["Unitframe"].DebuffHighlight then
-		-- self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-		-- self.DebuffHighlight:SetAllPoints(self.Health)
-		-- self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-		-- self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		-- self.DebuffHighlight:SetBlendMode("ADD")
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
 
-		-- self.DebuffHighlightAlpha = 0.45
-		-- self.DebuffHighlightFilter = true
+		self.DebuffHighlightAlpha = 0.45
+		self.DebuffHighlightFilter = true
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

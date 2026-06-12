@@ -37,7 +37,6 @@ local UIParent = UIParent
 local ReloadUI = ReloadUI
 local PlaySound = PlaySound
 local SOUNDKIT = SOUNDKIT
-local SetPortraitTexture = SetPortraitTexture
 
 -- Utility Functions
 
@@ -49,40 +48,40 @@ local function trim(str)
 	return str:match("^%s*(.-)%s*$") or ""
 end
 
--- Add trim method to string metatable if not already present
-if not string.trim then
-	string.trim = trim
-end
-
--- Configuration Constants
-
--- Profile System Configuration
-local PROFILE_VERSION = "2.0.0"
-local PROFILE_PREFIX = "KkthnxUI:Profile:"
-local PROFILE_NAME_MAX_LENGTH = 32
-
 -- UI Constants
 
--- Panel Dimensions (match main GUI proportions)
+-- Panel Dimensions: shared metrics come from K.GUILayout (WidgetFactory.lua).
+-- NOTE: the profile manager is intentionally narrower than the main config, so
+-- PANEL_WIDTH stays a local 560 and does NOT read layout.PanelWidth.
+local layout = K.GUILayout
 local PANEL_WIDTH = 560
-local PANEL_HEIGHT = 640
+local PANEL_HEIGHT = layout.PanelHeight
 local LIST_WIDTH = 200
 local LIST_HEIGHT = 420
-local BUTTON_HEIGHT = 28
-local SPACING = 8
-local HEADER_HEIGHT = 40
+local BUTTON_HEIGHT = layout.RowHeight
+local SPACING = layout.Spacing
+local HEADER_HEIGHT = layout.HeaderHeight
 
--- Colors (match main GUI design exactly)
-local ACCENT_COLOR = { K.r, K.g, K.b }
-local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
-local SUCCESS_COLOR = { 0.3, 0.9, 0.3 }
-local ERROR_COLOR = { 0.9, 0.3, 0.3 }
-local WARNING_COLOR = { 0.9, 0.7, 0.2 }
+-- Colors: pull from the shared K.GUITheme (WidgetFactory.lua) so the profile
+-- manager matches the main config exactly. PERF: alias to file-scope locals.
+-- NOTE: matches main GUI -> dimmed accent (AccentDim), not the full Accent.
+local theme = K.GUITheme
+local ACCENT_COLOR = theme.AccentDim
+local TEXT_COLOR = theme.Text
+local SUCCESS_COLOR = theme.Success
+local ERROR_COLOR = theme.Error
+local WARNING_COLOR = theme.Warning
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
-local SIDEBAR_COLOR = { 0.05, 0.05, 0.05, 0.95 }
-local WIDGET_BG = { 0.12, 0.12, 0.12, 0.8 }
-local BUTTON_HOVER = { 0.18, 0.18, 0.18, 1 }
-local SELECTED_BG = { 0.15, 0.15, 0.15, 0.9 }
+local SIDEBAR_COLOR = theme.Sidebar
+local WIDGET_BG = theme.WidgetBg
+local BUTTON_HOVER = theme.ButtonHover
+local SELECTED_BG = theme.Selected
+-- Detail-panel text tiers + faction tints (no more raw grays/colors inline).
+local HEADER_COLOR = theme.Header
+local MUTED_COLOR = theme.Muted
+local HINT_COLOR = theme.Hint
+local FACTION_ALLIANCE = theme.FactionAlliance
+local FACTION_HORDE = theme.FactionHorde
 
 -- ProfileGUI Module Core
 
@@ -102,632 +101,64 @@ local ProfileGUI = {
 -- Use unified widget factory from K.WidgetFactory
 local CreateColoredBackground = K.WidgetFactory.CreateBackdrop
 local CreateButton = K.WidgetFactory.CreateButton
+local ProfileDialogs = K.ProfileDialogs
 
--- Simplified EditBox
-local function CreateEditBox(parent, width, height, multiline)
-	local editBox = CreateFrame("EditBox", nil, parent)
-	editBox:SetSize(width or 200, height or 32)
-	editBox:SetFontObject(K.UIFont)
-	editBox:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	editBox:SetAutoFocus(false)
-	editBox:SetTextInsets(8, 8, 4, 4)
+-- Profile service bridge
+local ProfileService = K.ProfileService
 
-	if multiline then
-		editBox:SetMultiLine(true)
-		editBox:SetMaxLetters(0)
-	end
-
-	-- Simple background (matching main GUI exactly)
-	local inputBg = editBox:CreateTexture(nil, "BACKGROUND")
-	inputBg:SetAllPoints()
-	inputBg:SetTexture(C["Media"].Textures.White8x8Texture)
-	inputBg:SetVertexColor(0.1, 0.1, 0.1, 1)
-
-	-- Simple focus effects (matching main GUI exactly)
-	editBox:SetScript("OnEditFocusGained", function(self)
-		inputBg:SetVertexColor(0.15, 0.15, 0.15, 1)
-	end)
-
-	editBox:SetScript("OnEditFocusLost", function(self)
-		inputBg:SetVertexColor(0.1, 0.1, 0.1, 1)
-	end)
-
-	editBox:SetScript("OnEscapePressed", function(self)
-		self:ClearFocus()
-	end)
-
-	return editBox
-end
-
--- Profile Data Management
-
--- Profile Data Management
+-- REASON: Keep the ProfileGUI public method names stable for every existing UI
+-- call site, but move DB/storage/import/export responsibilities into
+-- ProfileService.lua. The GUI layer should arrange frames, not own persistence.
 function ProfileGUI:GetCurrentProfileKey()
-	return K.Realm .. "-" .. K.Name
+	return ProfileService:GetCurrentProfileKey()
 end
 
 function ProfileGUI:GetAllProfiles()
-	local profiles = {}
-
-	if not KkthnxUIDB or not KkthnxUIDB.Settings then
-		return profiles
-	end
-
-	for realm, realmData in pairs(KkthnxUIDB.Settings) do
-		for name, profileData in pairs(realmData) do
-			local profileKey = realm .. "-" .. name
-			local displayName = name .. " (" .. realm .. ")"
-
-			profiles[profileKey] = {
-				key = profileKey,
-				name = name,
-				realm = realm,
-				displayName = displayName,
-				data = profileData,
-				isCurrent = (profileKey == self:GetCurrentProfileKey()),
-				lastModified = profileData.LastModified or 0,
-			}
-		end
-	end
-
-	return profiles
+	return ProfileService:GetAllProfiles()
 end
 
--- Profile Validation
-
 function ProfileGUI:ValidateProfileName(name)
-	if not name or type(name) ~= "string" then
-		return false, "Profile name must be a string"
-	end
-
-	if #name == 0 then
-		return false, "Profile name cannot be empty"
-	end
-
-	if #name > PROFILE_NAME_MAX_LENGTH then
-		return false, "Profile name too long (max " .. PROFILE_NAME_MAX_LENGTH .. " characters)"
-	end
-
-	-- Check for invalid characters
-	if name:match('[%\\/:*?"<>|]') then
-		return false, "Profile name contains invalid characters"
-	end
-
-	-- Check for reserved names
-	local reservedNames = { "Default", "Backup", "Temp", "Cache", "Config", "Settings", "Variables" }
-	for _, reserved in ipairs(reservedNames) do
-		if name:lower() == reserved:lower() then
-			return false, "Profile name '" .. name .. "' is reserved"
-		end
-	end
-
-	return true
+	return ProfileService:ValidateProfileName(name)
 end
 
 function ProfileGUI:ValidateProfileData(data)
-	if not data or type(data) ~= "table" then
-		return false, "Invalid profile data structure"
-	end
-
-	-- Check for required fields
-	if not data.Version then
-		return false, "Profile missing version information"
-	end
-
-	if not data.Settings and not data.Variables then
-		return false, "Profile contains no configuration data"
-	end
-
-	return true
-end
-
--- Profile Import/Export
-
--- Prune settings by removing metadata keys and values equal to defaults
-local function KKUI_PruneSettingsByDefaults(currentTable, defaultTable)
-	local META = {
-		LastModified = true,
-		CreatedAt = true,
-		CreatedBy = true,
-		ImportedAt = true,
-		ImportedBy = true,
-		ImportedFrom = true,
-		ResetAt = true,
-		ResetBy = true,
-		RenamedFrom = true,
-		RenamedAt = true,
-		LastSwitched = true,
-		SwitchedFrom = true,
-	}
-
-	local function prune(curr, defs, depth)
-		depth = depth or 0
-		if depth > 20 or type(curr) ~= "table" then
-			return curr
-		end
-		local out = {}
-		for k, v in pairs(curr) do
-			if not META[k] then
-				local dv = (type(defs) == "table") and defs[k] or nil
-				if type(v) == "table" then
-					local pruned = prune(v, dv, depth + 1)
-					if type(pruned) == "table" then
-						local hasAny
-						for _ in pairs(pruned) do
-							hasAny = true
-							break
-						end
-						if hasAny then
-							out[k] = pruned
-						end
-					else
-						out[k] = pruned
-					end
-				else
-					if v ~= dv then
-						out[k] = v
-					end
-				end
-			end
-		end
-		return out
-	end
-
-	return prune(currentTable, defaultTable, 0)
-end
-
--- Prune Variables by removing ephemeral keys and empty tables
-local function KKUI_PruneVariables(varsTable)
-	if type(varsTable) ~= "table" then
-		return {}
-	end
-	local DROP = {
-		TempAnchor = true,
-		InstallComplete = true,
-		DBMRequest = true,
-		MaxDpsRequest = true,
-		CursorTrailRequest = true,
-		HekiliRequest = true,
-		ResetDetails = true,
-	}
-	local function clean(t, depth)
-		depth = depth or 0
-		if depth > 20 or type(t) ~= "table" then
-			return t
-		end
-		local out = {}
-		for k, v in pairs(t) do
-			if not DROP[k] then
-				if type(v) == "table" then
-					local child = clean(v, depth + 1)
-					local hasAny
-					if type(child) == "table" then
-						for _ in pairs(child) do
-							hasAny = true
-							break
-						end
-					end
-					if hasAny then
-						out[k] = child
-					end
-				else
-					out[k] = v
-				end
-			end
-		end
-		return out
-	end
-	return clean(varsTable, 0)
+	return ProfileService:ValidateProfileData(data)
 end
 
 function ProfileGUI:ExportProfile(profileKey)
-	local profiles = self:GetAllProfiles()
-	local profile = profiles[profileKey or self:GetCurrentProfileKey()]
-
-	if not profile then
-		return nil, "Profile not found"
-	end
-
-	-- Check if libraries are available
-	if not K.LibSerialize or not K.LibDeflate then
-		return nil, "Required libraries not available for export"
-	end
-
-	-- Snapshot settings and prune to only differences from defaults
-	local settingsSnapshot = K.CopyTable(KkthnxUIDB.Settings[profile.realm][profile.name] or {})
-	if K.Defaults and type(K.Defaults) == "table" then
-		settingsSnapshot = KKUI_PruneSettingsByDefaults(settingsSnapshot, K.Defaults)
-	end
-
-	-- Snapshot Variables
-	local variablesSnapshot =
-		K.CopyTable(KkthnxUIDB.Variables[profile.realm] and KkthnxUIDB.Variables[profile.realm][profile.name] or {})
-
-	-- Prepare the export data structure
-	local exportData = {
-		Version = PROFILE_VERSION,
-		ExportedAt = time(),
-		ExportedBy = K.Name .. "@" .. K.Realm,
-		Settings = settingsSnapshot,
-		Variables = variablesSnapshot,
-	}
-
-	-- Debug: Validate export data before serialization
-	if not exportData.Settings or type(exportData.Settings) ~= "table" then
-		return nil, "Export failed: Invalid settings data"
-	end
-
-	local serialized = K.LibSerialize:Serialize(exportData)
-	if not serialized then
-		return nil, "Failed to serialize profile data"
-	end
-
-	-- Debug: Check serialized data
-	if type(serialized) ~= "string" or #serialized == 0 then
-		return nil, "Failed to serialize profile data - invalid output"
-	end
-
-	local compressed = K.LibDeflate:CompressDeflate(serialized)
-	if not compressed then
-		return nil, "Failed to compress profile data"
-	end
-
-	local encoded = K.LibDeflate:EncodeForPrint(compressed)
-	if not encoded then
-		return nil, "Failed to encode profile data"
-	end
-
-	return PROFILE_PREFIX .. encoded, nil
+	return ProfileService:ExportProfile(profileKey)
 end
 
 function ProfileGUI:ImportProfile(profileString, applyToCurrent)
-	if not profileString or type(profileString) ~= "string" then
-		return false, "Invalid profile string"
-	end
-
-	-- Trim the profile string to remove any leading/trailing whitespace
-	profileString = profileString:trim()
-
-	-- Check if libraries are available
-	if not K.LibSerialize or not K.LibDeflate then
-		return false, "Required libraries not available for import"
-	end
-
-	-- Support both old and new profile formats
-	local isNewFormat = profileString:find(PROFILE_PREFIX, 1, true)
-	local isOldFormat = profileString:find("KkthnxUI:Profile:", 1, true)
-
-	if not isNewFormat and not isOldFormat then
-		return false, "Invalid profile format (missing KkthnxUI prefix)"
-	end
-
-	-- Remove appropriate prefix
-	local dataString
-	if isNewFormat then
-		dataString = profileString:sub(#PROFILE_PREFIX + 1)
-	else
-		dataString = profileString:sub(#"KkthnxUI:Profile:" + 1)
-	end
-
-	-- Decode and decompress with error handling
-	local decoded = K.LibDeflate:DecodeForPrint(dataString)
-	if not decoded then
-		return false, "Failed to decode profile data"
-	end
-
-	local decompressed = K.LibDeflate:DecompressDeflate(decoded)
-	if not decompressed then
-		return false, "Failed to decompress profile data - invalid compression"
-	end
-
-	-- Deserialize with error handling
-	local success, data = K.LibSerialize:Deserialize(decompressed)
-	if not success or not data then
-		return false, "Failed to parse profile data"
-	end
-
-	-- If code matches current export exactly
-	local currentExport = (function()
-		local ok, out = pcall(function()
-			return self:ExportProfile(self:GetCurrentProfileKey())
-		end)
-		if ok then
-			return out
-		end
-		return nil
-	end)()
-	if applyToCurrent and type(currentExport) == "string" then
-		local pasted = profileString:trim()
-		if pasted == currentExport then
-			return false, "You are currently using this profile"
-		end
-	end
-
-	-- Validate data structure
-	if not data.Settings or type(data.Settings) ~= "table" then
-		return false, "Invalid profile data - missing or invalid settings"
-	end
-
-	-- Check version compatibility
-	if data.Version and data.Version ~= PROFILE_VERSION then
-		print("|cff669DFFKkthnxUI:|r Warning: Profile version mismatch. Some settings may not work correctly.")
-	end
-
-	-- Ensure database integrity
-	if not self:EnsureDatabaseIntegrity() then
-		return false, "Database not available"
-	end
-
-	if applyToCurrent then
-		-- Apply to current character's profile
-		local currentProfileName = K.Name
-
-		-- Deep copy the imported data to current character
-		KkthnxUIDB.Settings[K.Realm][currentProfileName] = K.CopyTable(data.Settings)
-		KkthnxUIDB.Variables[K.Realm][currentProfileName] = K.CopyTable(data.Variables or {})
-
-		-- Ensure installer is marked complete for the current character
-		KkthnxUIDB.Variables[K.Realm][currentProfileName].InstallComplete = true
-
-		-- Add import metadata
-		KkthnxUIDB.Settings[K.Realm][currentProfileName].ImportedAt = time()
-		KkthnxUIDB.Settings[K.Realm][currentProfileName].ImportedBy = K.Name
-		KkthnxUIDB.Settings[K.Realm][currentProfileName].ImportedFrom = data.ProfileName or "Unknown"
-		KkthnxUIDB.Settings[K.Realm][currentProfileName].LastModified = time()
-
-		return true, "Profile applied to " .. currentProfileName .. " successfully"
-	else
-		-- Create new profile entry
-		local profileName = data.ProfileName or "Imported Profile"
-		local valid, error = self:ValidateProfileName(profileName)
-		if not valid then
-			return false, error
-		end
-
-		-- Check if profile already exists
-		local currentKey = K.Realm .. "-" .. profileName
-		local existingProfiles = self:GetAllProfiles()
-		if existingProfiles[currentKey] then
-			return false, "Profile '" .. profileName .. "' already exists"
-		end
-
-		-- Deep copy the imported data
-		KkthnxUIDB.Settings[K.Realm][profileName] = K.CopyTable(data.Settings)
-		KkthnxUIDB.Variables[K.Realm][profileName] = K.CopyTable(data.Variables or {})
-
-		-- Mark imported profile as installed to skip tutorial on future activation
-		if KkthnxUIDB.Variables[K.Realm][profileName] then
-			KkthnxUIDB.Variables[K.Realm][profileName].InstallComplete = true
-		end
-
-		-- Add import metadata
-		KkthnxUIDB.Settings[K.Realm][profileName].ImportedAt = time()
-		KkthnxUIDB.Settings[K.Realm][profileName].ImportedBy = K.Name
-		KkthnxUIDB.Settings[K.Realm][profileName].ImportedFrom = data.ProfileName or "Unknown"
-		KkthnxUIDB.Settings[K.Realm][profileName].LastModified = time()
-
-		return true, "Profile created as '" .. profileName .. "' successfully"
-	end
+	return ProfileService:ImportProfile(profileString, applyToCurrent)
 end
 
 function ProfileGUI:CreateProfile(profileName, sourceProfile)
-	-- Ensure database integrity
-	if not self:EnsureDatabaseIntegrity() then
-		return false, "Database not available"
+	local success, message = ProfileService:CreateProfile(profileName, sourceProfile)
+	if success then
+		self:StoreCharacterMetadata(K.Name, K.Realm)
 	end
-
-	local valid, error = self:ValidateProfileName(profileName)
-	if not valid then
-		return false, error
-	end
-
-	-- Check if profile already exists
-	local profileKey = K.Realm .. "-" .. profileName
-	local existingProfiles = self:GetAllProfiles()
-	if existingProfiles[profileKey] then
-		return false, "Profile '" .. profileName .. "' already exists"
-	end
-
-	-- Create profile structure
-	if not KkthnxUIDB.Settings[K.Realm] then
-		KkthnxUIDB.Settings[K.Realm] = {}
-	end
-	if not KkthnxUIDB.Variables[K.Realm] then
-		KkthnxUIDB.Variables[K.Realm] = {}
-	end
-
-	if sourceProfile then
-		-- Copy from source profile
-		local profiles = self:GetAllProfiles()
-		local source = profiles[sourceProfile]
-
-		if source then
-			KkthnxUIDB.Settings[K.Realm][profileName] =
-				K.CopyTable(KkthnxUIDB.Settings[source.realm][source.name] or {})
-			KkthnxUIDB.Variables[K.Realm][profileName] =
-				K.CopyTable(KkthnxUIDB.Variables[source.realm][source.name] or {})
-		else
-			return false, "Source profile not found"
-		end
-	else
-		-- Create with current character settings as base
-		local currentSettings = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
-		local currentVariables = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
-
-		KkthnxUIDB.Settings[K.Realm][profileName] = K.CopyTable(currentSettings)
-		KkthnxUIDB.Variables[K.Realm][profileName] = K.CopyTable(currentVariables)
-	end
-
-	-- Add metadata
-	KkthnxUIDB.Settings[K.Realm][profileName].CreatedAt = time()
-	KkthnxUIDB.Settings[K.Realm][profileName].CreatedBy = K.Name
-	KkthnxUIDB.Settings[K.Realm][profileName].LastModified = time()
-
-	-- Ensure current character metadata is stored
-	self:StoreCharacterMetadata(K.Name, K.Realm)
-
-	return true, "Profile created successfully"
+	return success, message
 end
 
 function ProfileGUI:RenameProfile(profileKey, newName)
-	-- Ensure database integrity
-	if not self:EnsureDatabaseIntegrity() then
-		return false, "Database not available"
-	end
-
-	local valid, error = self:ValidateProfileName(newName)
-	if not valid then
-		return false, error
-	end
-
-	-- Get the profile data
-	local profiles = self:GetAllProfiles()
-	local profile = profiles[profileKey]
-	if not profile then
-		return false, "Profile not found"
-	end
-
-	-- Check if this is the current profile
-	if profile.isCurrent then
-		return false, "Cannot rename the currently active profile"
-	end
-
-	-- Check if new name already exists
-	local newProfileKey = profile.realm .. "-" .. newName
-	if profiles[newProfileKey] then
-		return false, "Profile '" .. newName .. "' already exists"
-	end
-
-	-- Get the actual data from the database
-	local oldSettings = KkthnxUIDB.Settings[profile.realm][profile.name]
-	local oldVariables = KkthnxUIDB.Variables[profile.realm][profile.name]
-
-	if not oldSettings then
-		return false, "Profile data not found"
-	end
-
-	-- Create new profile with copied data
-	KkthnxUIDB.Settings[profile.realm][newName] = K.CopyTable(oldSettings)
-	if oldVariables then
-		KkthnxUIDB.Variables[profile.realm][newName] = K.CopyTable(oldVariables)
-	end
-
-	-- Update metadata for the renamed profile
-	KkthnxUIDB.Settings[profile.realm][newName].LastModified = time()
-	KkthnxUIDB.Settings[profile.realm][newName].RenamedFrom = profile.name
-	KkthnxUIDB.Settings[profile.realm][newName].RenamedAt = time()
-
-	-- Remove old profile data
-	KkthnxUIDB.Settings[profile.realm][profile.name] = nil
-	if KkthnxUIDB.Variables[profile.realm] then
-		KkthnxUIDB.Variables[profile.realm][profile.name] = nil
-	end
-
-	-- Update selected profile if it was the renamed one
-	if self.SelectedProfile == profileKey then
+	local success, message, newProfileKey = ProfileService:RenameProfile(profileKey, newName)
+	if success and self.SelectedProfile == profileKey then
 		self.SelectedProfile = newProfileKey
 	end
-
-	return true, "Profile renamed successfully"
+	return success, message
 end
 
 function ProfileGUI:DeleteProfile(profileKey)
-	if profileKey == self:GetCurrentProfileKey() then
-		return false, "Cannot delete the currently active profile"
-	end
-
-	local profiles = self:GetAllProfiles()
-	local profile = profiles[profileKey]
-
-	if not profile then
-		return false, "Profile not found"
-	end
-
-	-- Delete from database
-	if KkthnxUIDB.Settings[profile.realm] then
-		KkthnxUIDB.Settings[profile.realm][profile.name] = nil
-	end
-	if KkthnxUIDB.Variables[profile.realm] then
-		KkthnxUIDB.Variables[profile.realm][profile.name] = nil
-	end
-
-	return true, "Profile deleted successfully"
+	return ProfileService:DeleteProfile(profileKey)
 end
 
 function ProfileGUI:SwitchProfile(profileKey)
-	-- Ensure database integrity
-	if not self:EnsureDatabaseIntegrity() then
-		return false, "Database not available"
-	end
-
-	if profileKey == self:GetCurrentProfileKey() then
-		return false, "Already using this profile"
-	end
-
-	local profiles = self:GetAllProfiles()
-	local profile = profiles[profileKey]
-
-	if not profile then
-		return false, "Profile not found"
-	end
-
-	-- Switch the profile by copying the profile data to current character
-	local sourceSettings = KkthnxUIDB.Settings[profile.realm][profile.name]
-	local sourceVariables = KkthnxUIDB.Variables[profile.realm][profile.name]
-
-	if sourceSettings then
-		KkthnxUIDB.Settings[K.Realm][K.Name] = K.CopyTable(sourceSettings)
-	end
-
-	if sourceVariables then
-		if not KkthnxUIDB.Variables[K.Realm] then
-			KkthnxUIDB.Variables[K.Realm] = {}
-		end
-		KkthnxUIDB.Variables[K.Realm][K.Name] = K.CopyTable(sourceVariables)
-		-- Ensure installer is marked complete after switching profiles
-		KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = true
-	end
-
-	-- Add switch metadata
-	KkthnxUIDB.Settings[K.Realm][K.Name].LastSwitched = time()
-	KkthnxUIDB.Settings[K.Realm][K.Name].SwitchedFrom = profileKey
-	KkthnxUIDB.Settings[K.Realm][K.Name].LastModified = time()
-
-	return true, "Profile switch initiated"
+	return ProfileService:SwitchProfile(profileKey)
 end
 
 function ProfileGUI:ResetProfile(profileKey)
-	local profile = profileKey and self:GetAllProfiles()[profileKey] or nil
-
-	if not profile then
-		-- Reset current profile to defaults
-		if KkthnxUIDB.Settings[K.Realm] then
-			KkthnxUIDB.Settings[K.Realm][K.Name] = K.CopyTable(K.Defaults or {})
-		end
-		if KkthnxUIDB.Variables[K.Realm] then
-			KkthnxUIDB.Variables[K.Realm][K.Name] = {}
-		end
-
-		-- Add reset metadata
-		KkthnxUIDB.Settings[K.Realm][K.Name].ResetAt = time()
-		KkthnxUIDB.Settings[K.Realm][K.Name].ResetBy = K.Name
-		KkthnxUIDB.Settings[K.Realm][K.Name].LastModified = time()
-	else
-		-- Reset specified profile to defaults
-		if KkthnxUIDB.Settings[profile.realm] then
-			KkthnxUIDB.Settings[profile.realm][profile.name] = K.CopyTable(K.Defaults or {})
-		end
-		if KkthnxUIDB.Variables[profile.realm] then
-			KkthnxUIDB.Variables[profile.realm][profile.name] = {}
-		end
-
-		-- Add reset metadata
-		KkthnxUIDB.Settings[profile.realm][profile.name].ResetAt = time()
-		KkthnxUIDB.Settings[profile.realm][profile.name].ResetBy = K.Name
-		KkthnxUIDB.Settings[profile.realm][profile.name].LastModified = time()
-	end
-
-	return true, "Profile reset successfully"
+	return ProfileService:ResetProfile(profileKey)
 end
 
 -- UI Creation
@@ -876,7 +307,7 @@ function ProfileGUI:CreateProfileListButton(profile)
 	portraitFrame:SetPoint("LEFT", 12, 0)
 
 	-- Portrait background
-	local portraitBg = CreateColoredBackground(portraitFrame, 0.12, 0.12, 0.12, 1)
+	local _ = CreateColoredBackground(portraitFrame, 0.12, 0.12, 0.12, 1)
 
 	-- Portrait border
 	local portraitBorder = portraitFrame:CreateTexture(nil, "BORDER")
@@ -975,31 +406,26 @@ function ProfileGUI:ShowRenameProfileDialog()
 		return
 	end
 
-	local dialog = self:CreateInputDialog(
-		"Rename Profile",
-		"Enter a new name for the profile '" .. profile.name .. "':",
-		profile.name,
-		function(newName)
-			if not newName or newName == "" then
-				self:ShowStatusMessage("Profile name cannot be empty", "error")
-				return
-			end
-
-			if newName == profile.name then
-				self:ShowStatusMessage("New name must be different from current name", "error")
-				return
-			end
-
-			local success, error = self:RenameProfile(self.SelectedProfile, newName)
-			if success then
-				self:ShowStatusMessage("Profile renamed successfully", "success")
-				self:RefreshProfileList()
-				self:UpdateInfoPanel()
-			else
-				self:ShowStatusMessage(error, "error")
-			end
+	local _ = self:CreateInputDialog("Rename Profile", "Enter a new name for the profile '" .. profile.name .. "':", profile.name, function(newName)
+		if not newName or newName == "" then
+			self:ShowStatusMessage("Profile name cannot be empty", "error")
+			return
 		end
-	)
+
+		if newName == profile.name then
+			self:ShowStatusMessage("New name must be different from current name", "error")
+			return
+		end
+
+		local success, error = self:RenameProfile(self.SelectedProfile, newName)
+		if success then
+			self:ShowStatusMessage("Profile renamed successfully", "success")
+			self:RefreshProfileList()
+			self:UpdateInfoPanel()
+		else
+			self:ShowStatusMessage(error, "error")
+		end
+	end)
 end
 
 -- Helper function to update profile button state
@@ -1133,6 +559,9 @@ function ProfileGUI:UpdateInfoPanel()
 
 	local yOffset = -12
 	local maxWidth = 290 -- Prevent text overflow
+	-- REASON: sub-rows used to fake indentation by jamming "  " into the string.
+	-- Use a real x-offset so everything lines up on a grid instead of eyeballed spaces.
+	local indentX = 26
 
 	-- Profile name header
 	if not self.InfoElements.NameLabel then
@@ -1160,7 +589,7 @@ function ProfileGUI:UpdateInfoPanel()
 		self.InfoElements.StatusLabel:SetTextColor(SUCCESS_COLOR[1], SUCCESS_COLOR[2], SUCCESS_COLOR[3], 1)
 		self.InfoElements.StatusLabel:SetText("Currently Active")
 	else
-		self.InfoElements.StatusLabel:SetTextColor(0.7, 0.7, 0.7, 1)
+		self.InfoElements.StatusLabel:SetTextColor(MUTED_COLOR[1], MUTED_COLOR[2], MUTED_COLOR[3], 1)
 		self.InfoElements.StatusLabel:SetText("Available")
 	end
 	self.InfoElements.StatusLabel:SetPoint("TOPLEFT", 15, yOffset)
@@ -1175,7 +604,7 @@ function ProfileGUI:UpdateInfoPanel()
 		self.InfoElements.CharacterHeader:SetWidth(maxWidth)
 		self.InfoElements.CharacterHeader:SetJustifyH("LEFT")
 	end
-	self.InfoElements.CharacterHeader:SetTextColor(0.8, 0.8, 0.8, 1)
+	self.InfoElements.CharacterHeader:SetTextColor(HEADER_COLOR[1], HEADER_COLOR[2], HEADER_COLOR[3], 1)
 	self.InfoElements.CharacterHeader:SetText("Character Information:")
 	self.InfoElements.CharacterHeader:SetPoint("TOPLEFT", 15, yOffset)
 	self.InfoElements.CharacterHeader:Show()
@@ -1190,8 +619,8 @@ function ProfileGUI:UpdateInfoPanel()
 		self.InfoElements.CharacterLabel:SetJustifyH("LEFT")
 	end
 	self.InfoElements.CharacterLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	self.InfoElements.CharacterLabel:SetText("  Name: " .. profile.name .. " @ " .. profile.realm)
-	self.InfoElements.CharacterLabel:SetPoint("TOPLEFT", 15, yOffset)
+	self.InfoElements.CharacterLabel:SetText("Name: " .. profile.name .. " @ " .. profile.realm)
+	self.InfoElements.CharacterLabel:SetPoint("TOPLEFT", indentX, yOffset)
 	self.InfoElements.CharacterLabel:Show()
 	yOffset = yOffset - 14
 
@@ -1206,8 +635,8 @@ function ProfileGUI:UpdateInfoPanel()
 			self.InfoElements.ClassLabel:SetJustifyH("LEFT")
 		end
 		self.InfoElements.ClassLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		self.InfoElements.ClassLabel:SetText("  Class: ")
-		self.InfoElements.ClassLabel:SetPoint("TOPLEFT", 15, yOffset)
+		self.InfoElements.ClassLabel:SetText("Class: ")
+		self.InfoElements.ClassLabel:SetPoint("TOPLEFT", indentX, yOffset)
 		self.InfoElements.ClassLabel:Show()
 
 		-- Class value (class color)
@@ -1245,8 +674,8 @@ function ProfileGUI:UpdateInfoPanel()
 			self.InfoElements.RaceLabel:SetJustifyH("LEFT")
 		end
 		self.InfoElements.RaceLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		self.InfoElements.RaceLabel:SetText("  Race: " .. race)
-		self.InfoElements.RaceLabel:SetPoint("TOPLEFT", 15, yOffset)
+		self.InfoElements.RaceLabel:SetText("Race: " .. race)
+		self.InfoElements.RaceLabel:SetPoint("TOPLEFT", indentX, yOffset)
 		self.InfoElements.RaceLabel:Show()
 		yOffset = yOffset - 14
 	elseif self.InfoElements.RaceLabel then
@@ -1264,8 +693,8 @@ function ProfileGUI:UpdateInfoPanel()
 			self.InfoElements.FactionLabel:SetJustifyH("LEFT")
 		end
 		self.InfoElements.FactionLabel:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-		self.InfoElements.FactionLabel:SetText("  Faction: ")
-		self.InfoElements.FactionLabel:SetPoint("TOPLEFT", 15, yOffset)
+		self.InfoElements.FactionLabel:SetText("Faction: ")
+		self.InfoElements.FactionLabel:SetPoint("TOPLEFT", indentX, yOffset)
 		self.InfoElements.FactionLabel:Show()
 
 		-- Faction value (faction color)
@@ -1274,11 +703,11 @@ function ProfileGUI:UpdateInfoPanel()
 			self.InfoElements.FactionValue:SetFontObject(K.UIFont)
 			self.InfoElements.FactionValue:SetJustifyH("LEFT")
 		end
-		-- Color faction appropriately
+		-- Color faction appropriately (tints centralized in K.GUITheme)
 		if faction == "Alliance" then
-			self.InfoElements.FactionValue:SetTextColor(0.2, 0.5, 1, 1)
+			self.InfoElements.FactionValue:SetTextColor(FACTION_ALLIANCE[1], FACTION_ALLIANCE[2], FACTION_ALLIANCE[3], 1)
 		elseif faction == "Horde" then
-			self.InfoElements.FactionValue:SetTextColor(1, 0.2, 0.2, 1)
+			self.InfoElements.FactionValue:SetTextColor(FACTION_HORDE[1], FACTION_HORDE[2], FACTION_HORDE[3], 1)
 		else
 			self.InfoElements.FactionValue:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 		end
@@ -1302,7 +731,7 @@ function ProfileGUI:UpdateInfoPanel()
 		self.InfoElements.MetadataHeader:SetWidth(maxWidth)
 		self.InfoElements.MetadataHeader:SetJustifyH("LEFT")
 	end
-	self.InfoElements.MetadataHeader:SetTextColor(0.8, 0.8, 0.8, 1)
+	self.InfoElements.MetadataHeader:SetTextColor(HEADER_COLOR[1], HEADER_COLOR[2], HEADER_COLOR[3], 1)
 	self.InfoElements.MetadataHeader:SetText("Profile Details:")
 	self.InfoElements.MetadataHeader:SetPoint("TOPLEFT", 15, yOffset - 4)
 	self.InfoElements.MetadataHeader:Show()
@@ -1317,11 +746,50 @@ function ProfileGUI:UpdateInfoPanel()
 			self.InfoElements.ModifiedLabel:SetWidth(maxWidth)
 			self.InfoElements.ModifiedLabel:SetJustifyH("LEFT")
 		end
-		self.InfoElements.ModifiedLabel:SetTextColor(0.7, 0.7, 0.7, 1)
-		self.InfoElements.ModifiedLabel:SetText("  Modified: " .. date("%Y-%m-%d %H:%M", profile.lastModified))
-		self.InfoElements.ModifiedLabel:SetPoint("TOPLEFT", 15, yOffset)
+		self.InfoElements.ModifiedLabel:SetTextColor(MUTED_COLOR[1], MUTED_COLOR[2], MUTED_COLOR[3], 1)
+		self.InfoElements.ModifiedLabel:SetText("Modified: " .. date("%Y-%m-%d %H:%M", profile.lastModified))
+		self.InfoElements.ModifiedLabel:SetPoint("TOPLEFT", indentX, yOffset)
 		self.InfoElements.ModifiedLabel:Show()
 		yOffset = yOffset - 14
+	end
+
+	-- Customized-settings count: ties directly to the delta-storage model and
+	-- fills the dead space below with something actually useful. GetProfileDataSize
+	-- returns (changed, total); we surface "changed" -- i.e. how far this profile
+	-- strays from defaults. A fresh/default profile reads "0 (defaults)".
+	if not self.InfoElements.CustomizedLabel then
+		self.InfoElements.CustomizedLabel = self.InfoPanel:CreateFontString(nil, "OVERLAY")
+		self.InfoElements.CustomizedLabel:SetFontObject(K.UIFont)
+		self.InfoElements.CustomizedLabel:SetWidth(maxWidth)
+		self.InfoElements.CustomizedLabel:SetJustifyH("LEFT")
+	end
+	local changedCount = self:GetProfileDataSize(profile.data)
+	self.InfoElements.CustomizedLabel:SetTextColor(MUTED_COLOR[1], MUTED_COLOR[2], MUTED_COLOR[3], 1)
+	if changedCount and changedCount > 0 then
+		self.InfoElements.CustomizedLabel:SetText("Customized: " .. changedCount .. " setting" .. (changedCount == 1 and "" or "s"))
+	else
+		self.InfoElements.CustomizedLabel:SetText("Customized: none (defaults)")
+	end
+	self.InfoElements.CustomizedLabel:SetPoint("TOPLEFT", indentX, yOffset)
+	self.InfoElements.CustomizedLabel:Show()
+	yOffset = yOffset - 14
+
+	-- Last switched (only when we have the metadata; non-active profiles mostly).
+	local lastSwitched = profile.data and profile.data.LastSwitched
+	if lastSwitched and type(lastSwitched) == "number" and lastSwitched > 946684800 then
+		if not self.InfoElements.SwitchedLabel then
+			self.InfoElements.SwitchedLabel = self.InfoPanel:CreateFontString(nil, "OVERLAY")
+			self.InfoElements.SwitchedLabel:SetFontObject(K.UIFont)
+			self.InfoElements.SwitchedLabel:SetWidth(maxWidth)
+			self.InfoElements.SwitchedLabel:SetJustifyH("LEFT")
+		end
+		self.InfoElements.SwitchedLabel:SetTextColor(MUTED_COLOR[1], MUTED_COLOR[2], MUTED_COLOR[3], 1)
+		self.InfoElements.SwitchedLabel:SetText("Last switched: " .. date("%Y-%m-%d %H:%M", lastSwitched))
+		self.InfoElements.SwitchedLabel:SetPoint("TOPLEFT", indentX, yOffset)
+		self.InfoElements.SwitchedLabel:Show()
+		yOffset = yOffset - 14
+	elseif self.InfoElements.SwitchedLabel then
+		self.InfoElements.SwitchedLabel:Hide()
 	end
 
 	-- Action hint
@@ -1332,14 +800,25 @@ function ProfileGUI:UpdateInfoPanel()
 		self.InfoElements.HintLabel:SetWidth(maxWidth)
 		self.InfoElements.HintLabel:SetJustifyH("LEFT")
 	end
-	self.InfoElements.HintLabel:SetTextColor(0.5, 0.5, 0.5, 1)
+	-- REASON: only meaningful when the profile is NOT active. For the active one the
+	-- green "Currently Active" header already says it -- don't repeat the same fact.
 	if profile.isCurrent then
-		self.InfoElements.HintLabel:SetText("This profile is currently active")
+		self.InfoElements.HintLabel:Hide()
 	else
+		self.InfoElements.HintLabel:SetTextColor(HINT_COLOR[1], HINT_COLOR[2], HINT_COLOR[3], 1)
 		self.InfoElements.HintLabel:SetText("Use 'Switch To' to activate this profile")
+		self.InfoElements.HintLabel:SetPoint("TOPLEFT", 15, yOffset - 4)
+		self.InfoElements.HintLabel:Show()
+		yOffset = yOffset - 18 -- account for the hint so the box grows to contain it
 	end
-	self.InfoElements.HintLabel:SetPoint("TOPLEFT", 15, yOffset - 4)
-	self.InfoElements.HintLabel:Show()
+
+	-- REASON: the content height is genuinely variable -- class/race/faction may be
+	-- missing, the hint only shows when inactive, last-switched only when present.
+	-- A fixed 178px box either clipped text out the bottom (the bug) or left a dead
+	-- gap. Size the box to the real content instead. yOffset is the running top
+	-- cursor (negative as it descends); flip it and add bottom padding for height.
+	-- The control panel is anchored to this box's bottom, so it reflows cleanly.
+	self.InfoPanel:SetHeight(math.max(120, -yOffset + 12))
 end
 
 -- Main UI Creation with Simplified Design
@@ -1631,13 +1110,32 @@ function ProfileGUI:ShowExportDialog()
 		return
 	end
 
-	-- Reuse singleton dialog if already created
-	if self.ExportDialog and self.ExportDialog:IsShown() then
+	-- Reuse singleton dialog if already created.
+	-- REASON: new frames start visible, so the first export worked by accident.
+	-- After closing, the existing singleton is hidden and MUST be shown explicitly;
+	-- rebuilding children on the hidden frame made the second click look dead.
+	if self.ExportDialog then
 		if self.ExportDialog._exportBox then
 			self.ExportDialog._exportBox:SetText(exportString)
 			self.ExportDialog._exportBox:SetCursorPosition(0)
 			self.ExportDialog._exportBox:HighlightText()
 		end
+		if self.ExportDialog._profileInfo then
+			local profiles = self:GetAllProfiles()
+			local profile = profiles[self.SelectedProfile]
+			if profile then
+				self.ExportDialog._profileInfo:SetText("Profile: " .. profile.name .. " (" .. profile.realm .. ")")
+			end
+		end
+		self.ExportDialog:SetParent(UIParent)
+		self.ExportDialog:Show()
+		self.ExportDialog:Raise()
+		C_Timer.After(0.1, function()
+			if self.ExportDialog and self.ExportDialog:IsShown() and self.ExportDialog._exportBox then
+				self.ExportDialog._exportBox:SetFocus()
+				self.ExportDialog._exportBox:HighlightText()
+			end
+		end)
 		return self.ExportDialog
 	end
 
@@ -1822,15 +1320,25 @@ function ProfileGUI:ShowExportDialog()
 		exportBox:HighlightText()
 	end)
 
+	dialog._profileInfo = profileInfo
 	dialog._exportBox = exportBox
 	self.ExportDialog = dialog
+	dialog:Show()
 	return dialog
 end
 
 -- Import Dialog - Enhanced with better styling
 function ProfileGUI:ShowImportDialog()
 	-- Reuse singleton dialog if available
-	if self.ImportDialog and self.ImportDialog:IsShown() then
+	if self.ImportDialog then
+		self.ImportDialog:SetParent(UIParent)
+		self.ImportDialog:Show()
+		self.ImportDialog:Raise()
+		C_Timer.After(0.1, function()
+			if self.ImportDialog and self.ImportDialog:IsShown() and self.ImportDialog._importBox then
+				self.ImportDialog._importBox:SetFocus()
+			end
+		end)
 		return self.ImportDialog
 	end
 	local dialog = self.ImportDialog or CreateFrame("Frame", nil, UIParent)
@@ -1994,7 +1502,7 @@ function ProfileGUI:ShowImportDialog()
 
 	importBox:SetScript("OnEditFocusLost", function(self)
 		local text = self:GetText()
-		if text == "" or text:trim() == "" then
+		if text == "" or trim(text) == "" then
 			self:SetText(placeholder)
 			self:SetTextColor(0.6, 0.6, 0.6, 1)
 			isPlaceholder = true
@@ -2020,7 +1528,8 @@ function ProfileGUI:ShowImportDialog()
 	modeLabel:SetPoint("BOTTOMLEFT", statusText, "BOTTOMLEFT", 5, -30)
 
 	-- Apply to current button
-	local applyButton = CreateButton(content, "Apply to Current", 140, 24, function()
+	local applyButton, createButton
+	applyButton = CreateButton(content, "Apply to Current", 140, 24, function()
 		applyToCurrent = true
 		applyButton.Text:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 		createButton.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
@@ -2030,7 +1539,7 @@ function ProfileGUI:ShowImportDialog()
 	applyButton.Text:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 
 	-- Create new profile button
-	local createButton = CreateButton(content, "Create New Profile", 140, 24, function()
+	createButton = CreateButton(content, "Create New Profile", 140, 24, function()
 		applyToCurrent = false
 		createButton.Text:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
 		applyButton.Text:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
@@ -2041,14 +1550,14 @@ function ProfileGUI:ShowImportDialog()
 	-- Validation function
 	local function ValidateImportCode()
 		local code = importBox:GetText()
-		if isPlaceholder or not code or code == "" or code:trim() == "" then
+		if isPlaceholder or not code or code == "" or trim(code) == "" then
 			statusText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
 			statusText:SetText("Please paste a profile code")
 			return false
 		end
 
 		-- Trim the code
-		code = code:trim()
+		code = trim(code)
 
 		-- Check format
 		local isValidFormat = code:find("KkthnxUI:Profile:", 1, true)
@@ -2080,13 +1589,10 @@ function ProfileGUI:ShowImportDialog()
 			self:UpdateInfoPanel()
 			self:UpdateButtonStates()
 			dialog:Hide()
-			dialog:SetParent(nil)
 
 			-- Ask if user wants to reload UI
 			if applyToCurrent then
-				self:ShowReloadUIDialog(
-					"Profile applied successfully. Would you like to reload the UI to ensure all changes take effect?"
-				)
+				self:ShowReloadUIDialog("Profile applied successfully. Would you like to reload the UI to ensure all changes take effect?")
 			end
 		else
 			statusText:SetTextColor(ERROR_COLOR[1], ERROR_COLOR[2], ERROR_COLOR[3], 1)
@@ -2119,46 +1625,13 @@ function ProfileGUI:ShowImportDialog()
 
 	dialog._importBox = importBox
 	self.ImportDialog = dialog
+	dialog:Show()
 	return dialog
 end
 
 -- Simple dialog helper for basic text display
 function ProfileGUI:CreateSimpleDialog(title, message, content)
-	local dialog = CreateFrame("Frame", nil, UIParent)
-	dialog:SetSize(400, 250)
-	dialog:SetPoint("CENTER")
-	dialog:SetFrameStrata("TOOLTIP")
-	dialog:EnableMouse(true)
-
-	CreateColoredBackground(dialog, 0.08, 0.08, 0.08, 0.95)
-
-	-- Title
-	local titleText = dialog:CreateFontString(nil, "OVERLAY")
-	titleText:SetFontObject(K.UIFont)
-	titleText:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-	titleText:SetText(title)
-	titleText:SetPoint("TOP", 0, -15)
-
-	-- Message
-	local messageText = dialog:CreateFontString(nil, "OVERLAY")
-	messageText:SetFontObject(K.UIFont)
-	messageText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	messageText:SetText(message)
-	messageText:SetPoint("TOP", titleText, "BOTTOM", 0, -15)
-
-	-- Content box
-	local contentBox = CreateEditBox(dialog, 360, 120, true)
-	contentBox:SetPoint("TOP", messageText, "BOTTOM", 0, -15)
-	contentBox:SetText(content or "")
-
-	-- Close button
-	local closeButton = CreateButton(dialog, "Close", 100, BUTTON_HEIGHT, function()
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
-	closeButton:SetPoint("BOTTOM", 0, 15)
-
-	return dialog
+	return ProfileDialogs:CreateSimpleDialog(title, message, content)
 end
 
 -- Show/Hide functions
@@ -2280,25 +1753,20 @@ end
 
 -- Dialog creation functions
 function ProfileGUI:ShowCreateProfileDialog()
-	local dialog = self:CreateInputDialog(
-		"Create New Profile",
-		"Enter a name for the new profile:",
-		"",
-		function(profileName)
-			if not profileName or profileName == "" then
-				self:ShowStatusMessage("Profile name cannot be empty", "error")
-				return
-			end
-
-			local success, error = self:CreateProfile(profileName)
-			if success then
-				self:ShowStatusMessage("Profile created successfully", "success")
-				self:RefreshProfileList()
-			else
-				self:ShowStatusMessage(error, "error")
-			end
+	local _ = self:CreateInputDialog("Create New Profile", "Enter a name for the new profile:", "", function(profileName)
+		if not profileName or profileName == "" then
+			self:ShowStatusMessage("Profile name cannot be empty", "error")
+			return
 		end
-	)
+
+		local success, error = self:CreateProfile(profileName)
+		if success then
+			self:ShowStatusMessage("Profile created successfully", "success")
+			self:RefreshProfileList()
+		else
+			self:ShowStatusMessage(error, "error")
+		end
+	end)
 end
 
 function ProfileGUI:ShowCopyProfileDialog()
@@ -2310,25 +1778,20 @@ function ProfileGUI:ShowCopyProfileDialog()
 	local profiles = self:GetAllProfiles()
 	local sourceProfile = profiles[self.SelectedProfile]
 
-	local dialog = self:CreateInputDialog(
-		"Copy Profile",
-		"Enter a name for the copied profile:",
-		sourceProfile.name .. " Copy",
-		function(profileName)
-			if not profileName or profileName == "" then
-				self:ShowStatusMessage("Profile name cannot be empty", "error")
-				return
-			end
-
-			local success, error = self:CreateProfile(profileName, self.SelectedProfile)
-			if success then
-				self:ShowStatusMessage("Profile copied successfully", "success")
-				self:RefreshProfileList()
-			else
-				self:ShowStatusMessage(error, "error")
-			end
+	local _ = self:CreateInputDialog("Copy Profile", "Enter a name for the copied profile:", sourceProfile.name .. " Copy", function(profileName)
+		if not profileName or profileName == "" then
+			self:ShowStatusMessage("Profile name cannot be empty", "error")
+			return
 		end
-	)
+
+		local success, error = self:CreateProfile(profileName, self.SelectedProfile)
+		if success then
+			self:ShowStatusMessage("Profile copied successfully", "success")
+			self:RefreshProfileList()
+		else
+			self:ShowStatusMessage(error, "error")
+		end
+	end)
 end
 
 function ProfileGUI:ShowDeleteConfirmation()
@@ -2345,22 +1808,18 @@ function ProfileGUI:ShowDeleteConfirmation()
 		return
 	end
 
-	local dialog = self:CreateConfirmDialog(
-		"Delete Profile",
-		"Are you sure you want to delete the profile '" .. profile.name .. "'?\n\nThis action cannot be undone.",
-		function()
-			local success, error = self:DeleteProfile(self.SelectedProfile)
-			if success then
-				self:ShowStatusMessage("Profile deleted successfully", "success")
-				self.SelectedProfile = nil
-				self:RefreshProfileList()
-				self:UpdateInfoPanel()
-				self:UpdateButtonStates()
-			else
-				self:ShowStatusMessage(error, "error")
-			end
+	local _ = self:CreateConfirmDialog("Delete Profile", "Are you sure you want to delete the profile '" .. profile.name .. "'?\n\nThis action cannot be undone.", function()
+		local success, error = self:DeleteProfile(self.SelectedProfile)
+		if success then
+			self:ShowStatusMessage("Profile deleted successfully", "success")
+			self.SelectedProfile = nil
+			self:RefreshProfileList()
+			self:UpdateInfoPanel()
+			self:UpdateButtonStates()
+		else
+			self:ShowStatusMessage(error, "error")
 		end
-	)
+	end)
 end
 
 function ProfileGUI:ShowResetConfirmation()
@@ -2368,497 +1827,72 @@ function ProfileGUI:ShowResetConfirmation()
 	local profile = self.SelectedProfile and profiles[self.SelectedProfile]
 	local profileName = profile and profile.name or "current profile"
 
-	local dialog = self:CreateConfirmDialog(
-		"Reset Profile",
-		"Are you sure you want to reset '" .. profileName .. "' to default settings?\n\nThis action cannot be undone.",
-		function()
-			local success, error = self:ResetProfile(self.SelectedProfile)
-			if success then
-				self:ShowStatusMessage("Profile reset successfully", "success")
-				self:RefreshProfileList()
-			else
-				self:ShowStatusMessage(error, "error")
-			end
+	local _ = self:CreateConfirmDialog("Reset Profile", "Are you sure you want to reset '" .. profileName .. "' to default settings?\n\nThis action cannot be undone.", function()
+		local success, error = self:ResetProfile(self.SelectedProfile)
+		if success then
+			self:ShowStatusMessage("Profile reset successfully", "success")
+			self:RefreshProfileList()
+		else
+			self:ShowStatusMessage(error, "error")
 		end
-	)
+	end)
 end
 
 -- Character metadata and utility functions
 function ProfileGUI:GetClassFromGoldInfo(name, realm)
-	-- First check Gold data (class is at index 2)
-	if KkthnxUIDB.Gold and KkthnxUIDB.Gold[realm] and KkthnxUIDB.Gold[realm][name] then
-		local classFromGold = KkthnxUIDB.Gold[realm][name][2]
-		if classFromGold and classFromGold ~= "NONE" then
-			return classFromGold
-		end
-	end
-
-	-- Fallback to ProfilePortraits if available
-	if
-		KkthnxUIDB.ProfilePortraits
-		and KkthnxUIDB.ProfilePortraits[realm]
-		and KkthnxUIDB.ProfilePortraits[realm][name]
-	then
-		return KkthnxUIDB.ProfilePortraits[realm][name].class
-	end
-
-	return "NONE"
+	return ProfileService:GetClassFromGoldInfo(name, realm) or "NONE"
 end
 
 -- Store character metadata for better portraits
 function ProfileGUI:StoreCharacterMetadata(name, realm)
-	-- Only store for current character to avoid API limitations
-	if realm == K.Realm and name == K.Name then
-		-- Check if we need to refresh the data
-		if not self:ShouldRefreshCharacterData(name, realm) then
-			return
-		end
-
-		-- Ensure ProfilePortraits structure exists
-		if not KkthnxUIDB.ProfilePortraits then
-			KkthnxUIDB.ProfilePortraits = {}
-		end
-		if not KkthnxUIDB.ProfilePortraits[realm] then
-			KkthnxUIDB.ProfilePortraits[realm] = {}
-		end
-
-		-- Get current character data with validation
-		local class = K.Class or UnitClass("player")
-		local race = K.Race or UnitRace("player")
-		local gender = K.Sex or UnitSex("player")
-		local faction = K.Faction or UnitFactionGroup("player")
-
-		-- Validate the data before storing
-		if class and race and gender and faction then
-			-- Store portrait metadata separately from Gold data
-			KkthnxUIDB.ProfilePortraits[realm][name] = {
-				class = class,
-				race = race,
-				gender = gender,
-				faction = faction,
-				lastUpdated = time(),
-			}
-		end
-
-		-- Ensure current profile has LastModified timestamp
-		if KkthnxUIDB.Settings and KkthnxUIDB.Settings[realm] and KkthnxUIDB.Settings[realm][name] then
-			if not KkthnxUIDB.Settings[realm][name].LastModified then
-				KkthnxUIDB.Settings[realm][name].LastModified = time()
-			end
-		end
+	-- Only store for current character to avoid API limitations.
+	if realm == K.Realm and name == K.Name and self:ShouldRefreshCharacterData(name, realm) then
+		ProfileService:StoreCharacterMetadata(name, realm)
+		ProfileService:UpdateCurrentProfileTimestamp()
 	end
 end
 
 -- Get race info from portrait storage
 function ProfileGUI:GetRaceFromPortraitData(name, realm)
-	if
-		KkthnxUIDB.ProfilePortraits
-		and KkthnxUIDB.ProfilePortraits[realm]
-		and KkthnxUIDB.ProfilePortraits[realm][name]
-	then
-		return KkthnxUIDB.ProfilePortraits[realm][name].race
-	end
-	return nil
+	return ProfileService:GetRaceFromPortraitData(name, realm)
 end
 
 -- Get gender info from portrait storage
 function ProfileGUI:GetGenderFromPortraitData(name, realm)
-	if
-		KkthnxUIDB.ProfilePortraits
-		and KkthnxUIDB.ProfilePortraits[realm]
-		and KkthnxUIDB.ProfilePortraits[realm][name]
-	then
-		return KkthnxUIDB.ProfilePortraits[realm][name].gender
-	end
-	return nil
+	return ProfileService:GetGenderFromPortraitData(name, realm)
 end
 
 -- Helper function to convert race name to atlas format
 function ProfileGUI:GetRaceAtlasName(race, gender)
-	if not race or not gender then
-		return nil
-	end
-
-	-- Ensure gender is a number and valid
-	local genderNum = tonumber(gender)
-	if not genderNum or (genderNum ~= 2 and genderNum ~= 3) then
-		return nil
-	end
-
-	-- Convert gender number to string
-	local genderStr = (genderNum == 3) and "female" or "male"
-
-	-- Map WoW race names to atlas names
-	local raceMap = {
-		["Human"] = "human",
-		["Dwarf"] = "dwarf",
-		["Night Elf"] = "nightelf",
-		["Gnome"] = "gnome",
-		["Draenei"] = "draenei",
-		["Worgen"] = "worgen",
-		["Void Elf"] = "voidelf",
-		["Lightforged Draenei"] = "lightforged",
-		["Dark Iron Dwarf"] = "darkirondwarf",
-		["KulTiran"] = "kultiran",
-		["Mechagnome"] = "mechagnome",
-		["Orc"] = "orc",
-		["Undead"] = "undead",
-		["Tauren"] = "tauren",
-		["Troll"] = "troll",
-		["Blood Elf"] = "bloodelf",
-		["Goblin"] = "goblin",
-		["Nightborne"] = "nightborne",
-		["Highmountain Tauren"] = "highmountain",
-		["Maghar Orc"] = "magharorc",
-		["Zandalari Troll"] = "zandalari",
-		["Vulpera"] = "vulpera",
-		["Pandaren"] = "pandaren",
-		["Dracthyr"] = "dracthyr",
-		["Earthen"] = "earthen",
-	}
-
-	local atlasRace = raceMap[race]
-	if atlasRace then
-		return "raceicon-" .. atlasRace .. "-" .. genderStr
-	end
-
-	return nil
+	return K.ProfilePortraits:GetRaceAtlasName(race, gender)
 end
 
 -- Portrait setup function
 function ProfileGUI:SetupPortrait(portrait, name, realm)
-	-- For current character, always use real player portrait
-	if realm == K.Realm and name == K.Name then
-		-- Use SetPortraitTexture directly but override the mask
-		SetPortraitTexture(portrait, "player")
-		-- Override the circular mask with square coordinates
-		portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-	else
-		-- For other characters, use priority system:
-		-- 1. Try race portrait (with gender)
-		-- 2. Fall back to class icon
-		-- 3. Fall back to generic race icon
-		-- 4. Fall back to unknown icon
-
-		local race = self:GetRaceFromPortraitData(name, realm)
-		local gender = self:GetGenderFromPortraitData(name, realm)
-		local class = self:GetClassFromGoldInfo(name, realm)
-
-		-- Try race portrait with gender first
-		local raceAtlas = self:GetRaceAtlasName(race, gender)
-		if raceAtlas then
-			local success = pcall(function()
-				portrait:SetAtlas(raceAtlas)
-			end)
-			if success then
-				-- Trim race icon padding for cleaner look
-				portrait:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-				return
-			end
-		end
-
-		-- Fall back to class icon
-		if class and class ~= "NONE" then
-			local className = class:lower()
-			local success = pcall(function()
-				portrait:SetAtlas("classicon-" .. className)
-			end)
-			if success then
-				-- Class icons don't need trimming
-				portrait:SetTexCoord(0, 1, 0, 1)
-				return
-			end
-		end
-
-		-- Fall back to generic race icon (human male as default)
-		if race then
-			local fallbackAtlas = self:GetRaceAtlasName(race, 2) -- Try male version
-			if fallbackAtlas then
-				local success = pcall(function()
-					portrait:SetAtlas(fallbackAtlas)
-				end)
-				if success then
-					portrait:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-					return
-				end
-			end
-		end
-
-		-- Final fallback - try human male, then use a solid color if that fails
-		local success = pcall(function()
-			portrait:SetAtlas("raceicon-human-male")
-		end)
-		if success then
-			portrait:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		else
-			-- Ultimate fallback - set to a solid color texture
-			portrait:SetTexture(C["Media"].Textures.White8x8Texture)
-			portrait:SetVertexColor(0.3, 0.3, 0.3, 1)
-			portrait:SetTexCoord(0, 1, 0, 1)
-		end
-	end
+	return K.ProfilePortraits:SetupPortrait(portrait, name, realm)
 end
 
 -- Helper function to get character faction from gold data
 function ProfileGUI:GetFactionFromGoldInfo(name, realm)
-	-- First check Gold data (faction is at index 3)
-	if KkthnxUIDB.Gold and KkthnxUIDB.Gold[realm] and KkthnxUIDB.Gold[realm][name] then
-		local factionFromGold = KkthnxUIDB.Gold[realm][name][3]
-		if factionFromGold then
-			return factionFromGold
-		end
-	end
-
-	-- Fallback to ProfilePortraits if available
-	if
-		KkthnxUIDB.ProfilePortraits
-		and KkthnxUIDB.ProfilePortraits[realm]
-		and KkthnxUIDB.ProfilePortraits[realm][name]
-	then
-		return KkthnxUIDB.ProfilePortraits[realm][name].faction
-	end
-
-	return "Unknown"
+	return ProfileService:GetFactionFromGoldInfo(name, realm)
 end
 
--- Returns (changedCount, totalCount). changedCount compares against K.Defaults if available.
 function ProfileGUI:GetProfileDataSize(profileData)
-	if not profileData then
-		return 0, 0
-	end
-	-- Ignore metadata keys that are not user configuration
-	local META = {
-		LastModified = true,
-		CreatedAt = true,
-		CreatedBy = true,
-		ImportedAt = true,
-		ImportedBy = true,
-		ImportedFrom = true,
-		ResetAt = true,
-		ResetBy = true,
-		RenamedFrom = true,
-		RenamedAt = true,
-		LastSwitched = true,
-		SwitchedFrom = true,
-	}
-	local function countTotal(t, depth)
-		depth = depth or 0
-		if depth > 20 or type(t) ~= "table" then
-			return 0
-		end
-		local count = 0
-		for k, v in pairs(t) do
-			if not META[k] then
-				count = count + 1
-				if type(v) == "table" then
-					count = count + countTotal(v, depth + 1)
-				end
-			end
-		end
-		return count
-	end
-	local function countDiffs(curr, defaults, depth)
-		depth = depth or 0
-		if depth > 20 then
-			return 0
-		end
-		if type(curr) ~= "table" then
-			if curr ~= defaults then
-				return 1
-			else
-				return 0
-			end
-		end
-		local diffs = 0
-		for k, v in pairs(curr) do
-			if not META[k] then
-				local dv = (type(defaults) == "table") and defaults[k] or nil
-				if type(v) == "table" then
-					diffs = diffs + countDiffs(v, dv, depth + 1)
-				else
-					if v ~= dv then
-						diffs = diffs + 1
-					end
-				end
-			end
-		end
-		return diffs
-	end
-	local total = countTotal(profileData)
-	local changed = 0
-	if K.Defaults and type(K.Defaults) == "table" then
-		changed = countDiffs(profileData, K.Defaults)
-	else
-		local function countLeaves(t)
-			local c = 0
-			if type(t) == "table" then
-				for k, v in pairs(t) do
-					if not META[k] then
-						if type(v) == "table" then
-							c = c + countLeaves(v)
-						else
-							c = c + 1
-						end
-					end
-				end
-			end
-			return c
-		end
-		changed = countLeaves(profileData)
-	end
-	return changed, total
+	return ProfileService:GetProfileDataSize(profileData)
 end
 
 -- Returns (enabledCount, disabledCount) by scanning booleans in the profile (ignoring metadata)
 function ProfileGUI:GetBooleanStats(profileData)
-	if not profileData then
-		return 0, 0
-	end
-	local META = {
-		LastModified = true,
-		CreatedAt = true,
-		CreatedBy = true,
-		ImportedAt = true,
-		ImportedBy = true,
-		ImportedFrom = true,
-		ResetAt = true,
-		ResetBy = true,
-		RenamedFrom = true,
-		RenamedAt = true,
-		LastSwitched = true,
-		SwitchedFrom = true,
-	}
-	local on, off = 0, 0
-	local function walk(t, depth)
-		depth = depth or 0
-		if depth > 20 or type(t) ~= "table" then
-			return
-		end
-		for k, v in pairs(t) do
-			if not META[k] then
-				if type(v) == "boolean" then
-					if v then
-						on = on + 1
-					else
-						off = off + 1
-					end
-				elseif type(v) == "table" then
-					walk(v, depth + 1)
-				end
-			end
-		end
-	end
-	walk(profileData, 0)
-	return on, off
+	return ProfileService:GetBooleanStats(profileData)
 end
 
 -- Dialog Helper Functions
 function ProfileGUI:CreateInputDialog(title, message, defaultText, onConfirm)
-	local dialog = CreateFrame("Frame", nil, UIParent)
-	dialog:SetSize(350, 180)
-	dialog:SetPoint("CENTER")
-	dialog:SetFrameStrata("TOOLTIP")
-	dialog:SetFrameLevel(120)
-	dialog:EnableMouse(true)
-
-	CreateColoredBackground(dialog, 0.08, 0.08, 0.08, 0.95)
-
-	-- Title
-	local titleText = dialog:CreateFontString(nil, "OVERLAY")
-	titleText:SetFontObject(K.UIFont)
-	titleText:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-	titleText:SetText(title)
-	titleText:SetPoint("TOP", 0, -15)
-
-	-- Message
-	local messageText = dialog:CreateFontString(nil, "OVERLAY")
-	messageText:SetFontObject(K.UIFont)
-	messageText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	messageText:SetText(message)
-	messageText:SetPoint("TOP", titleText, "BOTTOM", 0, -15)
-
-	-- Input box
-	local inputBox = CreateEditBox(dialog, 250, 28)
-	inputBox:SetPoint("TOP", messageText, "BOTTOM", 0, -20)
-	inputBox:SetText(defaultText or "")
-	inputBox:SetFocus()
-
-	-- Buttons
-	local confirmButton = CreateButton(dialog, "OK", 80, BUTTON_HEIGHT, function()
-		local text = inputBox:GetText()
-		if onConfirm then
-			onConfirm(text)
-		end
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
-	confirmButton:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -10, 15)
-
-	local cancelButton = CreateButton(dialog, "Cancel", 80, BUTTON_HEIGHT, function()
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
-	cancelButton:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", 10, 15)
-
-	-- Handle Enter key
-	inputBox:SetScript("OnEnterPressed", function()
-		confirmButton:Click()
-	end)
-
-	-- Handle Escape key
-	inputBox:SetScript("OnEscapePressed", function()
-		cancelButton:Click()
-	end)
-
-	return dialog
+	return ProfileDialogs:CreateInputDialog(title, message, defaultText, onConfirm)
 end
 
 function ProfileGUI:CreateConfirmDialog(title, message, onConfirm, onCancel)
-	local dialog = CreateFrame("Frame", nil, UIParent)
-	dialog:SetSize(350, 150)
-	dialog:SetPoint("CENTER")
-	dialog:SetFrameStrata("TOOLTIP")
-	dialog:SetFrameLevel(120)
-	dialog:EnableMouse(true)
-
-	CreateColoredBackground(dialog, 0.08, 0.08, 0.08, 0.95)
-
-	-- Title
-	local titleText = dialog:CreateFontString(nil, "OVERLAY")
-	titleText:SetFontObject(K.UIFont)
-	titleText:SetTextColor(ACCENT_COLOR[1], ACCENT_COLOR[2], ACCENT_COLOR[3], 1)
-	titleText:SetText(title)
-	titleText:SetPoint("TOP", 0, -15)
-
-	-- Message (support multi-line)
-	local messageText = dialog:CreateFontString(nil, "OVERLAY")
-	messageText:SetFontObject(K.UIFont)
-	messageText:SetTextColor(TEXT_COLOR[1], TEXT_COLOR[2], TEXT_COLOR[3], TEXT_COLOR[4])
-	messageText:SetText(message)
-	messageText:SetPoint("TOP", titleText, "BOTTOM", 0, -20)
-	messageText:SetWidth(300)
-	messageText:SetJustifyH("CENTER")
-
-	-- Buttons
-	local confirmButton = CreateButton(dialog, "Yes", 80, BUTTON_HEIGHT, function()
-		if onConfirm then
-			onConfirm()
-		end
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
-	confirmButton:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -10, 15)
-
-	local cancelButton = CreateButton(dialog, "No", 80, BUTTON_HEIGHT, function()
-		if onCancel then
-			onCancel()
-		end
-		dialog:Hide()
-		dialog:SetParent(nil)
-	end)
-	cancelButton:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", 10, 15)
-
-	return dialog
+	return ProfileDialogs:CreateConfirmDialog(title, message, onConfirm, onCancel)
 end
 
 -- Initialize ProfileGUI
@@ -2866,21 +1900,7 @@ K.ProfileGUI = ProfileGUI
 
 -- Enhanced safety check for database integrity
 function ProfileGUI:EnsureDatabaseIntegrity()
-	if not KkthnxUIDB then
-		KkthnxUIDB = {}
-	end
-	if not KkthnxUIDB.Settings then
-		KkthnxUIDB.Settings = {}
-	end
-	if not KkthnxUIDB.Settings[K.Realm] then
-		KkthnxUIDB.Settings[K.Realm] = {}
-	end
-	if not KkthnxUIDB.Variables then
-		KkthnxUIDB.Variables = {}
-	end
-	if not KkthnxUIDB.Variables[K.Realm] then
-		KkthnxUIDB.Variables[K.Realm] = {}
-	end
+	ProfileService:EnsureProfileStorage(K.Realm, K.Name)
 	return true
 end
 
@@ -2913,9 +1933,7 @@ function ProfileGUI:SwitchToProfile(profileKey)
 		self:UpdateButtonStates()
 
 		-- Ask if user wants to reload UI
-		self:ShowReloadUIDialog(
-			"Profile switched successfully. Would you like to reload the UI to ensure all changes take effect?"
-		)
+		self:ShowReloadUIDialog("Profile switched successfully. Would you like to reload the UI to ensure all changes take effect?")
 		return true
 	else
 		self:ShowStatusMessage(error or "Failed to switch profile", "error")
@@ -3014,11 +2032,7 @@ end
 
 -- Helper function to check if character metadata needs refreshing
 function ProfileGUI:ShouldRefreshCharacterData(name, realm)
-	if
-		not KkthnxUIDB.ProfilePortraits
-		or not KkthnxUIDB.ProfilePortraits[realm]
-		or not KkthnxUIDB.ProfilePortraits[realm][name]
-	then
+	if not KkthnxUIDB.ProfilePortraits or not KkthnxUIDB.ProfilePortraits[realm] or not KkthnxUIDB.ProfilePortraits[realm][name] then
 		return true -- No data exists
 	end
 
@@ -3043,12 +2057,7 @@ function ProfileGUI:ShouldRefreshCharacterData(name, realm)
 		local currentFaction = K.Faction or UnitFactionGroup("player")
 
 		if currentClass and currentRace and currentGender and currentFaction then
-			if
-				data.class ~= currentClass
-				or data.race ~= currentRace
-				or data.gender ~= currentGender
-				or data.faction ~= currentFaction
-			then
+			if data.class ~= currentClass or data.race ~= currentRace or data.gender ~= currentGender or data.faction ~= currentFaction then
 				return true
 			end
 		end
@@ -3065,13 +2074,11 @@ function ProfileGUI:UpdateCurrentProfileTimestamp()
 	end
 
 	-- Update the current character's LastModified timestamp
-	if not KkthnxUIDB.Settings[K.Realm][K.Name] then
-		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
-	end
+	local settingsByRealm = ProfileService:EnsureProfileStorage(K.Realm, K.Name)
 
 	-- Use time() for proper Unix timestamp
 	local currentTime = time()
-	KkthnxUIDB.Settings[K.Realm][K.Name].LastModified = currentTime
+	settingsByRealm[K.Name].LastModified = currentTime
 end
 
 -- Helper function to migrate existing profiles to have LastModified timestamps
@@ -3084,10 +2091,12 @@ function ProfileGUI:MigrateProfileTimestamps()
 	local migrated = 0
 
 	for realm, realmData in pairs(KkthnxUIDB.Settings) do
-		for name, profileData in pairs(realmData) do
-			if type(profileData) == "table" and not profileData.LastModified then
-				profileData.LastModified = currentTime
-				migrated = migrated + 1
+		if type(realmData) == "table" then
+			for name, profileData in pairs(realmData) do
+				if type(profileData) == "table" and not profileData.LastModified then
+					profileData.LastModified = currentTime
+					migrated = migrated + 1
+				end
 			end
 		end
 	end

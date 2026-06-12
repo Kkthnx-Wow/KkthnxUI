@@ -15,7 +15,6 @@ local table_insert = _G.table.insert
 local hooksecurefunc = _G.hooksecurefunc
 
 local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
-local GameMenuFrame = _G.GameMenuFrame
 local Game16Font = _G.Game16Font
 
 -- REASON: Main entry point for Blizzard Game Menu skinning.

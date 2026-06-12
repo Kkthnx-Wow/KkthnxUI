@@ -28,6 +28,8 @@ local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 local Container = cargBags.classes.Container
 local ItemButton = cargBags.classes.ItemButton
+local table_sort = table.sort
+local type = type
 
 --[[################################
 	Layouts
@@ -37,9 +39,11 @@ local ItemButton = cargBags.classes.ItemButton
 Container.layouts = {}
 
 function Container:LayoutButtons(layout, ...)
-	return self.layouts[layout](self, ...)
+	local func = self.layouts and self.layouts[layout]
+	if func then
+		return func(self, ...)
+	end
 end
-
 
 --[[################################
 	Plugins
@@ -49,9 +53,9 @@ end
 cargBags.plugins = {}
 
 function Implementation:SpawnPlugin(name, ...)
-	if(cargBags.plugins[name]) then
+	if cargBags.plugins[name] then
 		local plugin = cargBags.plugins[name](self, ...)
-		if(plugin) then
+		if plugin then
 			plugin.parent = self
 		end
 		return plugin
@@ -63,7 +67,6 @@ function cargBags:RegisterPlugin(name, func)
 	cargBags.plugins[name] = func
 end
 
-
 --[[################################
 	Sorts
 		Sort-functions for your containers
@@ -72,7 +75,7 @@ end
 Container.sorts = {}
 
 function Container:SortButtons(arg1)
-	table.sort(self.buttons, self.sorts[arg1] or arg1)
+	table_sort(self.buttons, self.sorts[arg1] or arg1)
 end
 
 --[[################################

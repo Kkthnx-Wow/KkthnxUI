@@ -42,7 +42,13 @@ CALLBACKS
 local _, ns = ...
 local cargBags = ns.cargBags
 
+local abs = abs
+local floor = floor
+local format = format
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
+local GetMoney = GetMoney
+local ipairs = ipairs
+local mod = mod
 
 local tagPool, tagEvents = {}, {}
 local object
@@ -64,7 +70,7 @@ local function setTagString(self, tagString)
 	self.tagString = tagString
 	for tag in tagString:gmatch("%[([^%]:]+):?.-]") do
 		if self.tagEvents[tag] then
-			for _, event in pairs(self.tagEvents[tag]) do
+			for _, event in ipairs(self.tagEvents[tag]) do
 				self.implementation:RegisterEvent(event, self, updater)
 			end
 		end
@@ -111,8 +117,8 @@ local function GetNumFreeSlots(name)
 		end
 		return totalFree
 	elseif name == "Bank" then
-		local numFreeSlots = GetContainerNumFreeSlots(-1)
-		for bagID = 6, 12 do
+		local numFreeSlots = 0
+		for bagID = 6, 11 do
 			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots
@@ -122,7 +128,7 @@ local function GetNumFreeSlots(name)
 		return GetContainerNumFreeSlots(5)
 	elseif name == "Account" then
 		local numFreeSlots = 0
-		for bagID = 13, 17 do
+		for bagID = 12, 16 do
 			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots

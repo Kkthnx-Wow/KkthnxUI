@@ -16,6 +16,7 @@ local Module = {}
 local type = type
 local unpack = unpack
 local error = error
+local IsSecret = K.IsSecret
 
 -- ---------------------------------------------------------------------------
 -- Internal State & Config
@@ -42,13 +43,6 @@ local function GetTileCount(border, w)
 	end
 
 	local offset = border.__offset or 0
-	if type(w) ~= "number" or (K.NotSecretValue and not K.NotSecretValue(w)) then
-		return 1
-	end
-	if type(offset) ~= "number" or (K.NotSecretValue and not K.NotSecretValue(offset)) then
-		offset = 0
-	end
-
 	return (w + 2 * offset) / size
 end
 
@@ -68,6 +62,10 @@ local function OnBorderResize(self)
 	end
 
 	local w = self:GetWidth()
+	if IsSecret(w) then
+		return
+	end
+
 	local tile = GetTileCount(border, w)
 	UpdateTextureCoords(border, tile)
 end

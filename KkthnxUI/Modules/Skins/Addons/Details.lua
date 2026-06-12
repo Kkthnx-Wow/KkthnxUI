@@ -121,7 +121,7 @@ local function ReskinDetails()
 	listener:RegisterEvent("DETAILS_INSTANCE_OPEN")
 	function listener:OnDetailsEvent(event, instance)
 		if event == "DETAILS_INSTANCE_OPEN" then
-			if not instance.styled and instance:GetId() == 2 then
+			if not instance.styled and instance:GetId() == 2 and instance1 then
 				instance1:SetSize(260, 112)
 				EmbedWindow(instance, -3, 140, 250, 112)
 			end

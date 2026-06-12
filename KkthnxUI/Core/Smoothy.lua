@@ -1,123 +1,51 @@
 local K = KkthnxUI[1]
-local bar_UpdateFrame = CreateFrame("Frame")
 
--- ls_UI, lightspark
+-- MIDNIGHT (12.0): The old smoothing here replaced StatusBar:SetValue /
+-- SetMinMaxValues and animated the fill in Lua (Lerp + ratio math). Health and
+-- power values are now secret in combat/instances, so any arithmetic or
+-- comparison on them throws "attempt to compare a secret number value".
+--
+-- Blizzard's StatusBar widget gained native interpolation that does the easing
+-- inside the engine (secret-safe). The bundled oUF already forwards
+-- `element.smoothing` to SetValue(value, interpolation) for Health, Power,
+-- AlternativePower and Castbar, so we just flag the bar with an interpolation
+-- enum instead of hooking it -- this mirrors NDui's UF:SmoothBar.
 
-local math_abs = math.abs
-
-local Lerp = Lerp
 local next = next
+local tonumber = _G.tonumber
+local Enum = _G.Enum
 
-local activeObjects = {}
+-- REASON: Resolve the interpolation enums defensively in case a flavor lacks them.
+local INTERPOLATION = Enum and Enum.StatusBarInterpolation
+local SMOOTH = (INTERPOLATION and INTERPOLATION.ExponentialEaseOut) or 1
+local IMMEDIATE = (INTERPOLATION and INTERPOLATION.Immediate) or 0
+
+-- REASON: Track smoothed bars so a live smoothing toggle can re-apply to all of them.
 local handledObjects = {}
+local smoothingEnabled = true
 
-local TARGET_FPS = 60
-local AMOUNT = 0.33
-
-local function clamp(v, min, max)
-	min = min or 0
-	max = max or 1
-	v = tonumber(v)
-
-	if v > max then
-		return max
-	elseif v < min then
-		return min
-	end
-
-	return v
-end
-
-local function isCloseEnough(new, target, range)
-	if range > 0 then
-		return math_abs((new - target) / range) <= 0.001
-	end
-
-	return true
-end
-
-local function onUpdate(_, elapsed)
-	for object, target in next, activeObjects do
-		local new = Lerp(object._value, target, clamp(AMOUNT * elapsed * TARGET_FPS))
-		if isCloseEnough(new, target, object._max - object._min) then
-			new = target
-			activeObjects[object] = nil
-		end
-
-		object:SetValue_(new)
-		object._value = new
-	end
-end
-
-local function bar_SetSmoothedValue(self, value)
-	self._value = self:GetValue()
-	activeObjects[self] = clamp(value, self._min, self._max)
-end
-
-local function bar_SetSmoothedMinMaxValues(self, min, max)
-	self:SetMinMaxValues_(min, max)
-
-	if self._max and self._max ~= max then
-		local ratio = 1
-		if max ~= 0 and self._max and self._max ~= 0 then
-			ratio = max / (self._max or max)
-		end
-
-		local target = activeObjects[self]
-		if target then
-			activeObjects[self] = target * ratio
-		end
-
-		local cur = self._value
-		if cur then
-			self:SetValue_(cur * ratio)
-			self._value = cur * ratio
-		end
-	end
-
-	self._min = min
-	self._max = max
+local function ApplySmoothing(bar)
+	-- NOTE: oUF reads bar.smoothing and passes it to SetValue(value, interpolation).
+	bar.smoothing = smoothingEnabled and SMOOTH or IMMEDIATE
 end
 
 function K:SmoothBar(bar)
-	bar._min, bar._max = bar:GetMinMaxValues()
-	bar._value = bar:GetValue()
-
-	bar.SetValue_ = bar.SetValue
-	bar.SetMinMaxValues_ = bar.SetMinMaxValues
-	bar.SetValue = bar_SetSmoothedValue
-	bar.SetMinMaxValues = bar_SetSmoothedMinMaxValues
-
 	handledObjects[bar] = true
-
-	if not bar_UpdateFrame:GetScript("OnUpdate") then
-		bar_UpdateFrame:SetScript("OnUpdate", onUpdate)
-	end
+	ApplySmoothing(bar)
 end
 
 function K:DesmoothBar(bar)
-	if activeObjects[bar] then
-		bar:SetValue_(activeObjects[bar])
-		activeObjects[bar] = nil
-	end
-
-	if bar.SetValue_ then
-		bar.SetValue = bar.SetValue_
-		bar.SetValue_ = nil
-	end
-
-	if bar.SetMinMaxValues_ then
-		bar.SetMinMaxValues = bar.SetMinMaxValues_
-		bar.SetMinMaxValues_ = nil
-	end
-
 	handledObjects[bar] = nil
-
-	if not next(handledObjects) then
-		bar_UpdateFrame:SetScript("OnUpdate", nil)
-	end
+	bar.smoothing = IMMEDIATE
 end
 
 function K:SetSmoothingAmount(amount)
-	AMOUNT = clamp(amount, 0.1, 1)
+	-- MIDNIGHT (12.0): native interpolation has no per-amount knob like the old
+	-- Lua lerp did, so treat any positive amount as "smoothing on" (ExponentialEaseOut)
+	-- and <= 0 as "off" (Immediate). Re-apply to every tracked bar so the change is live.
+	smoothingEnabled = (tonumber(amount) or 0) > 0
+
+	for bar in next, handledObjects do
+		ApplySmoothing(bar)
+	end
 end

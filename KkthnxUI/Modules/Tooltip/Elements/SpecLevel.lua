@@ -7,7 +7,7 @@
 -- - Events: INSPECT_READY, UNIT_INVENTORY_CHANGED
 -----------------------------------------------------------------------------]]
 
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Tooltip")
 
 -- REASON: Localize globals for performance and stack safety.
@@ -53,83 +53,83 @@ local cache, weapon, currentUNIT, currentGUID = {}, {}
 
 local Tooltip_TierSets = {
 	-- WARRIOR
-	[249950] = true,
-	[249951] = true,
-	[249952] = true,
-	[249953] = true,
-	[249955] = true,
+	[237608] = true,
+	[237609] = true,
+	[237610] = true,
+	[237611] = true,
+	[237613] = true,
 	-- PALADIN
-	[249959] = true,
-	[249960] = true,
-	[249961] = true,
-	[249962] = true,
-	[249964] = true,
+	[237617] = true,
+	[237618] = true,
+	[237619] = true,
+	[237620] = true,
+	[237622] = true,
 	-- HUNTER
-	[249986] = true,
-	[249987] = true,
-	[249988] = true,
-	[249989] = true,
-	[249991] = true,
+	[237644] = true,
+	[237645] = true,
+	[237646] = true,
+	[237647] = true,
+	[237649] = true,
 	-- ROGUE
-	[250004] = true,
-	[250005] = true,
-	[250006] = true,
-	[250007] = true,
-	[250009] = true,
+	[237662] = true,
+	[237663] = true,
+	[237664] = true,
+	[237665] = true,
+	[237667] = true,
 	-- PRIEST
-	[250049] = true,
-	[250054] = true,
-	[250050] = true,
-	[250051] = true,
-	[250052] = true,
+	[237707] = true,
+	[237712] = true,
+	[237708] = true,
+	[237709] = true,
+	[237710] = true,
 	-- DEATHKNIGHT
-	[249968] = true,
-	[249969] = true,
-	[249970] = true,
-	[249971] = true,
-	[249973] = true,
+	[237626] = true,
+	[237627] = true,
+	[237628] = true,
+	[237629] = true,
+	[237631] = true,
 	-- SHAMAN
-	[249977] = true,
-	[249978] = true,
-	[249979] = true,
-	[249980] = true,
-	[249982] = true,
+	[237635] = true,
+	[237636] = true,
+	[237637] = true,
+	[237638] = true,
+	[237640] = true,
 	-- MAGE
-	[250058] = true,
-	[250059] = true,
-	[250060] = true,
-	[250061] = true,
-	[250063] = true,
+	[237718] = true,
+	[237716] = true,
+	[237721] = true,
+	[237719] = true,
+	[237717] = true,
 	-- WARLOCK
-	[250040] = true,
-	[250041] = true,
-	[250042] = true,
-	[250043] = true,
-	[250045] = true,
+	[237698] = true,
+	[237703] = true,
+	[237699] = true,
+	[237700] = true,
+	[237701] = true,
 	-- MONK
-	[250013] = true,
-	[250014] = true,
-	[250015] = true,
-	[250016] = true,
-	[250018] = true,
+	[237671] = true,
+	[237672] = true,
+	[237673] = true,
+	[237674] = true,
+	[237676] = true,
 	-- DRUID
-	[250022] = true,
-	[250023] = true,
-	[250024] = true,
-	[250025] = true,
-	[250027] = true,
+	[237682] = true,
+	[237680] = true,
+	[237685] = true,
+	[237683] = true,
+	[237681] = true,
 	-- DEMONHUNTER
-	[250031] = true,
-	[250032] = true,
-	[250033] = true,
-	[250034] = true,
-	[250036] = true,
+	[237689] = true,
+	[237690] = true,
+	[237691] = true,
+	[237692] = true,
+	[237694] = true,
 	-- EVOKER
-	[249995] = true,
-	[249996] = true,
-	[249997] = true,
-	[249998] = true,
-	[250000] = true,
+	[237653] = true,
+	[237654] = true,
+	[237655] = true,
+	[237656] = true,
+	[237658] = true,
 }
 
 local formatSets = {
@@ -139,11 +139,6 @@ local formatSets = {
 	[4] = " |cffc745f9(4/4)", -- purple
 	[5] = " |cffc745f9(5/5)", -- purple
 }
-
-local function checkUnitGUID(unit)
-	local guid = UnitGUID(unit)
-	return K.NotSecretValue(guid) and guid
-end
 
 -- REASON: Throttles inspect requests to prevent server spam and Blizzard API limits.
 function Module:InspectOnUpdate(elapsed)
@@ -161,7 +156,7 @@ function Module:InspectOnUpdate(elapsed)
 		self:Hide()
 		ClearInspectPlayer()
 
-		if currentUNIT and checkUnitGUID(currentUNIT) == currentGUID then
+		if currentUNIT and UnitGUID(currentUNIT) == currentGUID then
 			K:RegisterEvent("INSPECT_READY", Module.GetInspectInfo)
 			NotifyInspect(currentUNIT)
 		end
@@ -176,22 +171,18 @@ local lastTime = 0
 -- REASON: Event handler for inspect results and inventory updates.
 function Module:GetInspectInfo(...)
 	if self == "UNIT_INVENTORY_CHANGED" then
-		if InCombatLockdown() then
-			return
-		end
-
 		local thisTime = GetTime()
 		if thisTime - lastTime > 0.1 then
 			lastTime = thisTime
 
 			local unit = ...
-			if checkUnitGUID(unit) == currentGUID then
+			if UnitGUID(unit) == currentGUID then
 				Module:InspectUnit(unit, true)
 			end
 		end
 	elseif self == "INSPECT_READY" then
 		local guid = ...
-		if K.NotSecretValue(guid) and guid == currentGUID then
+		if guid == currentGUID then
 			local level = Module:GetUnitItemLevel(currentUNIT)
 			cache[guid].level = level
 			cache[guid].getTime = GetTime()
@@ -209,7 +200,8 @@ K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
 
 -- REASON: Injects or updates the item level line in the GameTooltip.
 function Module:SetupItemLevel(level)
-	if not Module:UnitExists("mouseover") or UnitGUID("mouseover") ~= currentGUID then
+	local _, unit = GameTooltip:GetUnit()
+	if not unit or UnitGUID(unit) ~= currentGUID then
 		return
 	end
 
@@ -218,7 +210,7 @@ function Module:SetupItemLevel(level)
 		local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
 		local text = line:GetText()
 
-		if text and K.NotSecretValue(text) and string_find(text, levelPrefix) then
+		if text and string_find(text, levelPrefix) then
 			levelLineFound = true
 			line:SetText(levelPrefix .. (level or isPending))
 			break
@@ -231,7 +223,7 @@ function Module:SetupItemLevel(level)
 end
 
 function Module:GetUnitItemLevel(unit)
-	if not unit or checkUnitGUID(unit) ~= currentGUID then
+	if not unit or UnitGUID(unit) ~= currentGUID then
 		return
 	end
 
@@ -271,9 +263,9 @@ function Module:GetUnitItemLevel(unit)
 								-- Legacy artifact relic scan; skip if API removed
 								if GetItemGem then
 									local relics = { select(4, string_split(":", itemLink)) }
-									for i = 1, 3 do
-										local relicID = relics[i] ~= "" and relics[i]
-										local relicLink = select(2, GetItemGem(itemLink, i))
+									for j = 1, 3 do
+										local relicID = relics[j] ~= "" and relics[j]
+										local relicLink = select(2, GetItemGem(itemLink, j))
 										if relicID and not relicLink then
 											delay = true
 											break
@@ -352,10 +344,9 @@ function Module:InspectUnit(unit, forced)
 		level = self:GetUnitItemLevel("player")
 		self:SetupItemLevel(level)
 	else
-		if not unit or checkUnitGUID(unit) ~= currentGUID then
+		if not unit or UnitGUID(unit) ~= currentGUID then
 			return
 		end
-
 		if not UnitIsPlayer(unit) then
 			return
 		end
@@ -392,7 +383,7 @@ function Module:InspectUnitItemLevel(unit)
 	if not unit or not CanInspect(unit) then
 		return
 	end
-	currentUNIT, currentGUID = unit, checkUnitGUID(unit)
+	currentUNIT, currentGUID = unit, UnitGUID(unit)
 	if not cache[currentGUID] then
 		cache[currentGUID] = {}
 	end

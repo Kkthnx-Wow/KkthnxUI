@@ -12,7 +12,6 @@ local Module = K:NewModule("Loot")
 
 -- PERF: Localize global functions and environment for faster lookups in high-frequency loot events.
 local math_max = math.max
-local string_format = string.format
 local table_insert = table.insert
 
 local _G = _G
@@ -26,7 +25,6 @@ local GetCVarBool = _G.GetCVarBool
 local GetLootSlotInfo = _G.GetLootSlotInfo
 local GetLootSlotLink = _G.GetLootSlotLink
 local GetNumLootItems = _G.GetNumLootItems
-local HandleModifiedItemClick = _G.HandleModifiedItemClick
 local IsFishingLoot = _G.IsFishingLoot
 local IsModifiedClick = _G.IsModifiedClick
 local LootSlot = _G.LootSlot
@@ -219,7 +217,7 @@ function Module:LOOT_SLOT_CLEARED(slotID)
 	anchorSlots(lootFrame)
 end
 
-function Module:LOOT_CLOSED()
+function Module.LOOT_CLOSED()
 	StaticPopup_Hide("LOOT_BIND")
 	lootFrame:Hide()
 
@@ -228,19 +226,21 @@ function Module:LOOT_CLOSED()
 	end
 
 	-- FastLoot bridge
-	if self.FastLoot_OnLootClosed then
-		self:FastLoot_OnLootClosed()
+	if Module.FastLoot_OnLootClosed then
+		Module:FastLoot_OnLootClosed()
 	end
 end
 
-function Module:LOOT_OPENED(_, isAutoLoot)
+-- COMPAT: Dot syntax (not colon). K:RegisterEvent dispatches func(event, ...), so a colon
+-- handler would bind `self` to "LOOT_OPENED" and shift isAutoLoot to nil.
+function Module.LOOT_OPENED(_, isAutoLoot)
 	-- REASON: Main handler for opening the custom loot frame.
 	lootFrame:Show()
 
 	-- REASON: FastLoot bridge: allow FasterLoot.lua to lock autoloot state or suppress the frame
 	-- based on user interaction or automated looting settings.
-	if self.FastLoot_OnLootOpened then
-		self:FastLoot_OnLootOpened(isAutoLoot)
+	if Module.FastLoot_OnLootOpened then
+		Module:FastLoot_OnLootOpened(isAutoLoot)
 	end
 
 	if not lootFrame:IsShown() then
@@ -343,8 +343,7 @@ function Module:LOOT_OPENED(_, isAutoLoot)
 
 	local color = ITEM_QUALITY_COLORS[maxQuality]
 	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, 0.8)
-	-- lootFrame:SetWidth(math_max(maxWidth + 60, lootFrame.title:GetStringWidth() + 5))
-	lootFrame:SetWidth(maxWidth + 60)
+	lootFrame:SetWidth(math_max(maxWidth + 60, lootFrame.title:GetStringWidth() + 5))
 end
 
 function Module:OPEN_MASTER_LOOT_LIST()

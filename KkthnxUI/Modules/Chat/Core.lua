@@ -17,7 +17,6 @@ local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatEdit_ParseText = ChatEdit_ParseText
 local ChatFrame_SendTell = ChatFrame_SendTell
 local ConsoleExec = ConsoleExec
 local CreateFrame = CreateFrame
@@ -38,6 +37,7 @@ local PlaySound = PlaySound
 local SetCVar = SetCVar
 local UnitName = UnitName
 local hooksecurefunc = hooksecurefunc
+local IsSecret = K.IsSecret
 local ipairs = ipairs
 local pcall = pcall
 local select = select
@@ -45,7 +45,6 @@ local string_find = string.find
 local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 local string_len = string.len
-local string_lower = string.lower
 local string_sub = string.sub
 local table_unpack = unpack
 local tostring = tostring
@@ -65,6 +64,13 @@ local repeatedText
 local MIN_REPEAT_CHARACTERS = 5
 
 Module.MuteCache = {}
+
+-- PERF: Addon load state cannot change mid-session; compute this once to avoid 4 C_AddOns lookups
+-- per scroll event, mouse interaction, and whisper handler that each previously guarded separately.
+local CHAT_ADDON_CONFLICT = C_AddOns_IsAddOnLoaded("Prat-3.0")
+	or C_AddOns_IsAddOnLoaded("Chatter")
+	or C_AddOns_IsAddOnLoaded("BasicChatMods")
+	or C_AddOns_IsAddOnLoaded("Glass")
 
 local whisperEvents = {
 	["CHAT_MSG_WHISPER"] = true,
@@ -395,12 +401,8 @@ function Module:UpdateEditBoxColor()
 		return
 	end
 
-	if
-		C_AddOns_IsAddOnLoaded("Prat-3.0")
-		or C_AddOns_IsAddOnLoaded("Chatter")
-		or C_AddOns_IsAddOnLoaded("BasicChatMods")
-		or C_AddOns_IsAddOnLoaded("Glass")
-	then
+	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
+	if CHAT_ADDON_CONFLICT then
 		return
 	end
 
@@ -454,12 +456,8 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if
-		C_AddOns_IsAddOnLoaded("Prat-3.0")
-		or C_AddOns_IsAddOnLoaded("Chatter")
-		or C_AddOns_IsAddOnLoaded("BasicChatMods")
-		or C_AddOns_IsAddOnLoaded("Glass")
-	then
+	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
+	if CHAT_ADDON_CONFLICT then
 		return
 	end
 
@@ -504,12 +502,8 @@ function Module:QuickMouseScroll(dir)
 		return
 	end
 
-	if
-		C_AddOns_IsAddOnLoaded("Prat-3.0")
-		or C_AddOns_IsAddOnLoaded("Chatter")
-		or C_AddOns_IsAddOnLoaded("BasicChatMods")
-		or C_AddOns_IsAddOnLoaded("Glass")
-	then
+	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
+	if CHAT_ADDON_CONFLICT then
 		return
 	end
 
@@ -573,6 +567,10 @@ end
 
 function Module:PlayWhisperSound(event, _, author)
 	-- REASON: Plays a notification sound for whispers, respecting a cooldown to avoid spam.
+	-- SECRET (12.0): whisper author can be a secret value inside instances; never touch it then.
+	if IsSecret(author) then
+		return
+	end
 	if whisperEvents[event] then
 		local name = Ambiguate(author, "none")
 		local currentTime = GetTime()
@@ -607,12 +605,8 @@ function Module:OnEnable()
 	end
 
 	-- COMPAT: Skip custom skinning if total-replacement chat addons are loaded.
-	if
-		C_AddOns_IsAddOnLoaded("Prat-3.0")
-		or C_AddOns_IsAddOnLoaded("Chatter")
-		or C_AddOns_IsAddOnLoaded("BasicChatMods")
-		or C_AddOns_IsAddOnLoaded("Glass")
-	then
+	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
+	if CHAT_ADDON_CONFLICT then
 		return
 	end
 
@@ -630,10 +624,11 @@ function Module:OnEnable()
 	end)
 
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
+	-- MIDNIGHT (12.0): FloatingChatFrame_OnEvent and ChatFrame_MessageEventHandler
+	-- were removed as globals. Mirror NDui: tab whisper coloring routes through the
+	-- floating chat frame manager, and whisper detection hooks the message-filter pass.
 	hooksecurefunc("FloatingChatFrameManager_OnEvent", Module.UpdateTabEventColors)
-	hooksecurefunc(ChatFrameUtil, "ProcessMessageEventFilters", Module.PlayWhisperSound)
-	-- hooksecurefunc("FCF_MinimizeFrame", Module.HandleMinimizedFrame)
-	hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
+	hooksecurefunc(_G.ChatFrameUtil, "ProcessMessageEventFilters", Module.PlayWhisperSound)
 
 	if _G.CHAT_OPTIONS then
 		_G.CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
@@ -657,6 +652,8 @@ function Module:OnEnable()
 		"CreateCopyURL",
 		"CreateEmojis",
 		"CreateVoiceActivity",
+		"CreateChatHighlight",
+		"CreateLootIcons",
 	}
 
 	for _, funcName in ipairs(loadChatModulesList) do
