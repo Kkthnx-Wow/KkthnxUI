@@ -9,6 +9,8 @@
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
+local K = KkthnxUI[1]
+local NotSecret = K.NotSecret
 
 -- REASON: Localize globals for performance
 local _G = _G
@@ -173,13 +175,17 @@ local function ShowElement(self, unit, auraInstanceID)
 	local count = AuraData.applications
 	local duration = AuraData.duration
 	local expirationTime = AuraData.expirationTime
-	local color = debuffColor[AuraData.dispelName] or debuffColor.none
+	-- SECRET (12.0): dispelName/duration/expirationTime/applications can all be
+	-- secret in instances. Gate every read used as a table key, in arithmetic, or
+	-- in a comparison; fall back to safe defaults so the icon still shows.
+	local dispelName = AuraData.dispelName
+	local color = (NotSecret(dispelName) and debuffColor[dispelName]) or debuffColor.none
 
 	element.icon:SetTexture(AuraData.icon)
 	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	element:Show()
 
-	if duration and duration > 0 and expirationTime then
+	if NotSecret(duration) and NotSecret(expirationTime) and duration and duration > 0 and expirationTime then
 		local start = expirationTime - duration
 		element.cd:SetCooldown(start, duration)
 		-- Store state for throttled OnUpdate updates
@@ -197,7 +203,7 @@ local function ShowElement(self, unit, auraInstanceID)
 		element.timer:SetText("")
 	end
 
-	if count and count > 1 then
+	if NotSecret(count) and count and count > 1 then
 		element.count:SetText(count)
 	else
 		element.count:SetText("")
@@ -274,12 +280,13 @@ local function FilterAura(self, unit, auraInstanceID, AuraData)
 	local debuffCache = self.RaidDebuffs.debuffCache
 
 	if AuraData then -- added aura or valid update
-		if AuraData.isHarmful then
-			local dispelName = AuraData.dispelName
-
-			if dispelName and dispelList[dispelName] then
-				cacheWrite(self, unit, auraInstanceID, priorityList[dispelName], AuraData)
-			end
+		-- SECRET (12.0): AuraData.isHarmful is secret. dispelList only contains
+		-- dispellable debuff types, so a non-secret dispelName found there is a
+		-- harmful aura we care about; this both replaces the isHarmful gate and
+		-- guards the dispelList/priorityList table-key lookups.
+		local dispelName = AuraData.dispelName
+		if NotSecret(dispelName) and dispelName and dispelList[dispelName] then
+			cacheWrite(self, unit, auraInstanceID, priorityList[dispelName], AuraData)
 		end
 	elseif debuffCache[auraInstanceID] then -- removed aura or invalid update
 		cacheWrite(self, unit, auraInstanceID, nil, nil)

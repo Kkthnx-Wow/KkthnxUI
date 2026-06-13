@@ -398,7 +398,7 @@ function Module:CreateSimpleParty()
 		TargetHighlight:Hide()
 
 		local function UpdateSimplePartyTargetGlow()
-			if self.unit and UnitIsUnit("target", self.unit) then
+			if self.unit and K.UnitIsUnit("target", self.unit) then
 				TargetHighlight:Show()
 			else
 				TargetHighlight:Hide()

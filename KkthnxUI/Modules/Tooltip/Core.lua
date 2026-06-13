@@ -115,10 +115,19 @@ local npcIDstring = "%s " .. K.InfoColor .. "%s"
 local specPrefix = "|cffFFCC00" .. SPECIALIZATION .. ": " .. K.InfoColor
 
 -- REASON: Utility to retrieve unit and GUID from tooltip data.
+-- SECRET (12.0): data.guid is secret on restricted units, and feeding it to
+-- UnitTokenFromGUID yields a secret unit token that then errors when passed to
+-- UnitExists/UnitIsPlayer/etc. Drop the secret guid and fall back to the plain
+-- "mouseover" token so callers always get a readable (or nil) unit. Mirrors NDui.
 function Module:GetUnit()
 	local data = self:GetTooltipData()
 	local guid = data and data.guid
-	local unit = guid and UnitTokenFromGUID(guid)
+	if IsSecret(guid) then
+		guid = nil
+	end
+
+	local mouseover = UnitExists("mouseover") and "mouseover"
+	local unit = (guid and UnitTokenFromGUID(guid)) or mouseover
 	return unit, guid
 end
 
@@ -142,10 +151,16 @@ function Module:UpdateFactionLine(lineData)
 		return
 	end
 
+	local linetext = lineData.leftText
+	-- SECRET (12.0): the line text can be a secret string on restricted units;
+	-- comparing it below would error, so bail early (mirrors NDui).
+	if IsSecret(linetext) then
+		return
+	end
+
 	local unit = Module.GetUnit(self)
 	local unitClass = unit and UnitIsPlayer(unit) and UnitClass(unit)
 	local unitCreature = unit and UnitCreatureType(unit)
-	local linetext = lineData.leftText
 
 	if linetext == PVP then
 		return true
@@ -170,16 +185,25 @@ function Module:GetLevelLine()
 			break
 		end
 
+		-- SECRET (12.0): tooltip line text can be secret while tainted; string.find
+		-- on a secret string errors, so skip lines we cannot safely read.
 		local linetext = tiptext:GetText()
-		if linetext and string_find(linetext, LEVEL) then
+		if linetext and K.NotSecret(linetext) and string_find(linetext, LEVEL) then
 			return tiptext
 		end
 	end
 end
 
 -- REASON: Retrieves the unit's target name with class/relationship coloring.
+-- SECRET (12.0): the target token's identity can be secret in instances, so a
+-- secret unit (or a secret UnitIsUnit result) must not hit a boolean test.
 function Module:GetTarget(unit)
-	if UnitIsUnit(unit, "player") then
+	if IsSecret(unit) then
+		return ""
+	end
+
+	local isYou = UnitIsUnit(unit, "player")
+	if K.NotSecret(isYou) and isYou then
 		return string_format("|cffff0000%s|r", ">" .. string_upper(YOU) .. "<")
 	else
 		return K.RGBToHex(K.UnitColor(unit)) .. UnitName(unit) .. "|r"
@@ -256,27 +280,46 @@ function Module:OnTooltipSetUnit()
 
 	local isShiftKeyDown = IsShiftKeyDown()
 	local isPlayer = UnitIsPlayer(unit)
+	if IsSecret(isPlayer) then
+		return
+	end
 
 	if isPlayer then
 		local name, realm = UnitName(unit)
 		local pvpName = UnitPVPName(unit)
 		local relationship = UnitRealmRelationship(unit)
 
-		if not C["Tooltip"].HideTitle and pvpName and pvpName ~= "" then
+		if not C["Tooltip"].HideTitle and pvpName and K.NotSecret(pvpName) and pvpName ~= "" then
 			name = pvpName
 		end
 
-		if realm and realm ~= "" then
+		if realm and K.NotSecret(realm) and realm ~= "" then
 			if isShiftKeyDown or not C["Tooltip"].HideRealm then
 				name = name .. "-" .. realm
-			elseif relationship == LE_REALM_RELATION_COALESCED then
+			elseif K.NotSecret(relationship) and relationship == LE_REALM_RELATION_COALESCED then
 				name = name .. FOREIGN_SERVER_LABEL
-			elseif relationship == LE_REALM_RELATION_VIRTUAL then
+			elseif K.NotSecret(relationship) and relationship == LE_REALM_RELATION_VIRTUAL then
 				name = name .. INTERACTIVE_SERVER_LABEL
 			end
 		end
 
-		local status = (UnitIsAFK(unit) and AFK) or (UnitIsDND(unit) and DND) or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
+		-- SECRET (12.0): these unit-state APIs can return secret booleans on
+		-- restricted tooltips. Never use them directly in boolean chains.
+		local status
+		local isAFK = UnitIsAFK(unit)
+		if K.NotSecret(isAFK) and isAFK then
+			status = AFK
+		else
+			local isDND = UnitIsDND(unit)
+			if K.NotSecret(isDND) and isDND then
+				status = DND
+			else
+				local isConnected = UnitIsConnected(unit)
+				if K.NotSecret(isConnected) and not isConnected then
+					status = PLAYER_OFFLINE
+				end
+			end
+		end
 		if status then
 			status = string_format(" |cffffcc00[%s]|r", status)
 		end
@@ -284,7 +327,7 @@ function Module:OnTooltipSetUnit()
 
 		if C["Tooltip"].FactionIcon then
 			local faction = UnitFactionGroup(unit)
-			if faction and faction ~= "Neutral" then
+			if faction and K.NotSecret(faction) and faction ~= "Neutral" then
 				Module.InsertFactionFrame(self, faction)
 			end
 		end
@@ -292,8 +335,10 @@ function Module:OnTooltipSetUnit()
 		if C["Tooltip"].LFDRole then
 			local unitColor
 			local unitRole = UnitGroupRolesAssigned(unit)
+			local inParty = UnitInParty(unit)
+			local inRaid = UnitInRaid(unit)
 
-			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (unitRole ~= "NONE") then
+			if IsInGroup() and K.NotSecret(inParty) and K.NotSecret(inRaid) and (inParty or inRaid) and K.NotSecret(unitRole) and (unitRole ~= "NONE") then
 				if unitRole == "HEALER" then
 					unitRole = HEALER
 					unitColor = "|cff00ff96" -- RGB: 0, 255, 150
@@ -312,20 +357,27 @@ function Module:OnTooltipSetUnit()
 		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 		local hasText = GameTooltipTextLeft2:GetText()
 
-		if guildName and hasText then
+		if guildName and K.NotSecret(guildName) and hasText and K.NotSecret(hasText) then
 			local myGuild, _, _, myGuildRealm = GetGuildInfo("player")
-			if IsInGuild() and guildName == myGuild and guildRealm == myGuildRealm then
+			local sameGuild = IsInGuild() and myGuild and K.NotSecret(myGuild) and K.NotSecret(guildRealm) and K.NotSecret(myGuildRealm) and guildName == myGuild and guildRealm == myGuildRealm
+			if sameGuild then
 				GameTooltipTextLeft2:SetTextColor(0.25, 1, 0.25)
 			else
 				GameTooltipTextLeft2:SetTextColor(0.6, 0.8, 1)
 			end
 
-			rankIndex = rankIndex + 1
+			if K.NotSecret(rankIndex) then
+				rankIndex = rankIndex + 1
+			else
+				rankIndex = 0
+			end
 			if C["Tooltip"].HideRank then
+				rank = ""
+			elseif rank and IsSecret(rank) then
 				rank = ""
 			end
 
-			if guildRealm and isShiftKeyDown then
+			if guildRealm and K.NotSecret(guildRealm) and isShiftKeyDown then
 				guildName = guildName .. "-" .. guildRealm
 			end
 
@@ -344,13 +396,11 @@ function Module:OnTooltipSetUnit()
 	local text = GameTooltipTextLeft1:GetText()
 
 	if text then
+		-- SECRET (12.0): GetRaidTargetIndex can return a secret number; only read
+		-- it when it's safe to compare (mirrors NDui's NotSecret guard).
 		local ricon = GetRaidTargetIndex(unit)
-		if ricon and ricon > 8 then
-			ricon = nil
-		end
-
-		ricon = ricon and ICON_LIST[ricon] .. "18|t " or ""
-		GameTooltipTextLeft1:SetFormattedText("%s%s%s", ricon, hexColor, text)
+		local riconStr = (ricon and K.NotSecret(ricon) and ricon <= 8) and (ICON_LIST[ricon] .. "18|t ") or ""
+		GameTooltipTextLeft1:SetFormattedText("%s%s%s", riconStr, hexColor, text)
 	end
 
 	local alive = not UnitIsDeadOrGhost(unit)
@@ -384,11 +434,10 @@ function Module:OnTooltipSetUnit()
 	end
 
 	if UnitExists(unit .. "target") then
+		-- SECRET (12.0): same guard as the unit raid icon above.
 		local tarRicon = GetRaidTargetIndex(unit .. "target")
-		if tarRicon and tarRicon > 8 then
-			tarRicon = nil
-		end
-		local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon] .. "10|t") or "", Module:GetTarget(unit .. "target"))
+		local tarRiconStr = (tarRicon and K.NotSecret(tarRicon) and tarRicon <= 8) and (ICON_LIST[tarRicon] .. "10|t") or ""
+		local tar = string_format("%s%s", tarRiconStr, Module:GetTarget(unit .. "target"))
 		self:AddLine(TARGET .. ": " .. tar)
 	end
 
@@ -576,12 +625,18 @@ function Module:ReskinTooltip()
 
 	local data = self.GetTooltipData and self:GetTooltipData()
 	if data then
-		local link = data.guid and C_Item_GetItemLinkByGUID(data.guid) or data.hyperlink
-		if link then
+		-- SECRET (12.0): data.guid can be secret on restricted items and must not be
+		-- passed to C_Item.GetItemLinkByGUID. Fall back to the hyperlink (mirrors NDui).
+		local guid = data.guid
+		local link = (guid and K.NotSecret(guid) and C_Item_GetItemLinkByGUID(guid)) or data.hyperlink
+		if link and K.NotSecret(link) then
 			local quality = select(3, C_Item_GetItemInfo(link))
-			local color = K.QualityColors[quality or 1]
-			if color then
-				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+			-- SECRET (12.0): quality is used as a table key below; a secret key errors.
+			if K.NotSecret(quality) then
+				local color = K.QualityColors[quality or 1]
+				if color then
+					self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+				end
 			end
 		end
 	end
@@ -596,8 +651,16 @@ function Module:FixRecipeItemNameWidth()
 	local name = self:GetName()
 	for i = 1, self:NumLines() do
 		local line = _G[name .. "TextLeft" .. i]
-		if line and line:GetHeight() > 40 then
-			line:SetWidth(line:GetWidth() + 2)
+		if line then
+			-- SECRET (12.0): bag item tooltip font metrics can be secret while tainted.
+			-- This resize is only cosmetic, so skip it unless both reads are safe.
+			local height = line:GetHeight()
+			if K.NotSecret(height) and height > 40 then
+				local width = line:GetWidth()
+				if K.NotSecret(width) then
+					line:SetWidth(width + 2)
+				end
+			end
 		end
 	end
 end
@@ -605,7 +668,15 @@ end
 -- REASON: Forces a tooltip data refresh when a modifier key state changes.
 function Module:ResetUnit(btn)
 	if btn == "LSHIFT" and UnitExists("mouseover") then
-		GameTooltip:RefreshData()
+		-- SECRET (12.0): RefreshData re-runs Blizzard's own tooltip pipeline
+		-- (GameTooltip_UnitColor -> UnitPlayerControlled, etc.), which throws on a
+		-- secret unit because our event path has tainted execution. Swallow only the
+		-- secret-value error and surface anything else (mirrors the secret tooltip
+		-- guard convention rather than fighting taint).
+		local ok, err = pcall(GameTooltip.RefreshData, GameTooltip)
+		if not ok and not (type(err) == "string" and string_find(err, "secret")) then
+			error(err, 0)
+		end
 	end
 end
 

@@ -277,12 +277,19 @@ local function AW_CreateBarWidgets(parent, texture)
 	return iconFrame, closeButton
 end
 
+local function runAuraWatchMoverCommand(command)
+	local auraWatchCommand = _G.SlashCmdList and _G.SlashCmdList.AuraWatch
+	if auraWatchCommand then
+		auraWatchCommand(command)
+	end
+end
+
 local function auraWatchShow()
-	SlashCmdList.AuraWatch("move")
+	runAuraWatchMoverCommand("move")
 end
 
 local function auraWatchHide()
-	SlashCmdList.AuraWatch("lock")
+	runAuraWatchMoverCommand("lock")
 end
 
 local function CreatePanel()

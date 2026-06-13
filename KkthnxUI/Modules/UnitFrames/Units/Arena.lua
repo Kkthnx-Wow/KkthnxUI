@@ -131,6 +131,8 @@ function Module:CreateArena()
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
@@ -259,7 +261,7 @@ function Module:CreateArena()
 		self.TargetHighlight:Hide()
 
 		local function UpdateArenaTargetGlow()
-			if UnitIsUnit("target", self.unit) then
+			if K.UnitIsUnit("target", self.unit) then
 				self.TargetHighlight:Show()
 			else
 				self.TargetHighlight:Hide()

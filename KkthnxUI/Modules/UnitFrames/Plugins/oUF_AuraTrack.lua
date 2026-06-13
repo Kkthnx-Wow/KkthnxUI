@@ -9,6 +9,7 @@
 
 local K = KkthnxUI[1]
 local oUF = K.oUF
+local NotSecret = K.NotSecret
 
 -- REASON: Localize frequently used APIs and utilities for performance
 local CreateFrame = _G.CreateFrame
@@ -240,14 +241,19 @@ local function Update(self, _, unit)
 	for i = 1, 40 do
 		local _, texture, count, _, duration, expiration, caster, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 
-		local track = AuraTrack.Tracker[spellID]
-		if track and (caster == "player" or caster == "pet") then
-			ID = ID + 1
+		-- SECRET (12.0): spellID/caster/duration/expiration can be secret in
+		-- instances. spellID is a table key and duration/expiration feed cooldown
+		-- arithmetic, so skip the aura entirely unless every read is safe.
+		if NotSecret(spellID) and NotSecret(caster) and NotSecret(duration) and NotSecret(expiration) and NotSecret(count) then
+			local track = AuraTrack.Tracker[spellID]
+			if track and (caster == "player" or caster == "pet") then
+				ID = ID + 1
 
-			if AuraTrack.Icons then
-				UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
-			else
-				UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
+				if AuraTrack.Icons then
+					UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
+				else
+					UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
+				end
 			end
 		end
 	end

@@ -42,10 +42,24 @@ end
 
 local function GetHealthPercent(unit)
 	local maxHealth = UnitHealthMax(unit)
+	-- SECRET (12.0): in combat/instances UnitHealth(Max) return secret numbers that
+	-- cannot be compared or used in arithmetic. There is no readable way to compute a
+	-- percent in that state, so bail (nil) and let the caller skip the alert instead
+	-- of crashing. This effectively disables in-combat health alerts under Midnight.
+	if K.IsSecret(maxHealth) then
+		return nil
+	end
+
 	if maxHealth == 0 then
 		return 0
 	end
-	return (UnitHealth(unit) / maxHealth) * 100
+
+	local health = UnitHealth(unit)
+	if K.IsSecret(health) then
+		return nil
+	end
+
+	return (health / maxHealth) * 100
 end
 
 local function ShouldCheckPlayerHealth()
@@ -68,16 +82,21 @@ end
 
 -- REASON: Handles the state engine for alert triggering and recovery.
 local function HandleHealthAlert(unit, threshold, recoveryThreshold, alertFlag, lastAlertTime, messageCallback, soundCallback)
-	if UnitIsDead(unit) then
+	-- SECRET (12.0): UnitIsDead can be a secret boolean in combat; only act on it
+	-- when readable, otherwise fall through (GetHealthPercent will bail safely).
+	local dead = UnitIsDead(unit)
+	if K.NotSecret(dead) and dead then
 		debugLog("Skipping health check for %s (unit is dead)", unit)
 		return alertFlag, lastAlertTime
 	end
 
-	local healthPercent = K.Round(GetHealthPercent(unit), 1)
-	if not healthPercent then
+	local rawPercent = GetHealthPercent(unit)
+	if not rawPercent then
 		debugLog("Health percent for %s is nil, skipping.", unit)
 		return alertFlag, lastAlertTime
 	end
+
+	local healthPercent = K.Round(rawPercent, 1)
 
 	debugLog("%s health: %.1f%%", unit, healthPercent)
 	local currentTime = time()

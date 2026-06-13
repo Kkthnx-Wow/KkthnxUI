@@ -25,6 +25,9 @@ local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 
+local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
+
 local targetTable = {}
 
 -- REASON: Scans the group to find who is targeting the unit and adds a line to the tooltip.
@@ -37,7 +40,8 @@ function Module:ScanTargets(unit)
 		return
 	end
 
-	if not UnitExists(unit) then
+	-- SECRET (12.0): a secret unit can't be passed to UnitExists.
+	if IsSecret(unit) or not UnitExists(unit) then
 		return
 	end
 
@@ -46,10 +50,18 @@ function Module:ScanTargets(unit)
 	local isInRaid = IsInRaid()
 	for i = 1, GetNumGroupMembers() do
 		local member = (isInRaid and "raid" .. i or "party" .. i)
-		if UnitIsUnit(unit, member .. "target") and not UnitIsUnit("player", member) and not UnitIsDeadOrGhost(member) then
-			local color = K.RGBToHex(K.UnitColor(member))
-			local name = color .. UnitName(member) .. "|r"
-			tinsert(targetTable, name)
+		-- SECRET (12.0): in instances the target identity is hidden, so
+		-- UnitIsUnit returns a secret boolean that must not hit a boolean test.
+		-- Skip the member entirely when any of these reads are secret.
+		local isTarget = UnitIsUnit(unit, member .. "target")
+		if NotSecret(isTarget) and isTarget then
+			local isSelf = UnitIsUnit("player", member)
+			local isDead = UnitIsDeadOrGhost(member)
+			if NotSecret(isSelf) and NotSecret(isDead) and not isSelf and not isDead then
+				local color = K.RGBToHex(K.UnitColor(member))
+				local name = color .. UnitName(member) .. "|r"
+				tinsert(targetTable, name)
+			end
 		end
 	end
 

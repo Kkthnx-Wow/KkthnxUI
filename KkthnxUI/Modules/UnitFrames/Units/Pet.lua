@@ -138,6 +138,8 @@ function Module:CreatePet()
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")

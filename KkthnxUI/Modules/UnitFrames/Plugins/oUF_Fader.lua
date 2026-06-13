@@ -74,14 +74,30 @@ local events = setmetatable({
 	end,
 })
 
+-- SECRET (12.0): unit health/power, dead-or-ghost, and can-attack state are
+-- secret in combat/instances. Testing or comparing them raw errors, so route
+-- every such read through these guards. A secret value is treated as "unknown"
+-- (returns nil), which fails the condition closed rather than crashing.
+local NotSecret = K.NotSecret
+
+local function SafeBool(value)
+	if NotSecret(value) then
+		return value
+	end
+end
+
+local function SafeEqual(a, b)
+	return NotSecret(a) and NotSecret(b) and a == b
+end
+
 -- Conditions
 local conditions = setmetatable({
 	PlayerHostileTarget = function()
-		return UnitCanAttack("player", "target")
+		return SafeBool(UnitCanAttack("player", "target"))
 	end,
 
 	UnitHostileTarget = function(_, unit)
-		return unit and UnitCanAttack(unit, unit .. "target")
+		return unit and SafeBool(UnitCanAttack(unit, unit .. "target"))
 	end,
 
 	PlayerTarget = function()
@@ -101,19 +117,19 @@ local conditions = setmetatable({
 	end,
 
 	UnitMaxHealth = function(_, unit)
-		return unit and not UnitIsDeadOrGhost(unit) and UnitHealth(unit) == UnitHealthMax(unit)
+		return unit and not SafeBool(UnitIsDeadOrGhost(unit)) and SafeEqual(UnitHealth(unit), UnitHealthMax(unit))
 	end,
 
 	PlayerMaxHealth = function(_, unit)
-		return unit and not UnitIsDeadOrGhost("player") and UnitHealth("player") == UnitHealthMax("player")
+		return unit and not SafeBool(UnitIsDeadOrGhost("player")) and SafeEqual(UnitHealth("player"), UnitHealthMax("player"))
 	end,
 
 	UnitMaxMana = function(_, unit)
-		return unit and not UnitIsDeadOrGhost(unit) and UnitPower(unit) == UnitPowerMax(unit)
+		return unit and not SafeBool(UnitIsDeadOrGhost(unit)) and SafeEqual(UnitPower(unit), UnitPowerMax(unit))
 	end,
 
 	PlayerMaxMana = function(_, unit)
-		return unit and not UnitIsDeadOrGhost("player") and UnitPower("player") == UnitPowerMax("player")
+		return unit and not SafeBool(UnitIsDeadOrGhost("player")) and SafeEqual(UnitPower("player"), UnitPowerMax("player"))
 	end,
 
 	Stealth = IsStealthed,
@@ -122,18 +138,18 @@ local conditions = setmetatable({
 	Combat = InCombatLockdown,
 
 	PlayerNotMaxHealth = function(_, unit)
-		return unit and UnitHealth("player") ~= UnitHealthMax("player")
+		return unit and not SafeEqual(UnitHealth("player"), UnitHealthMax("player"))
 	end,
 
 	PlayerNotMaxMana = function(_, unit)
 		local _, powerTypeString = UnitPowerType("player")
 		if powerTypeString ~= "RAGE" and powerTypeString ~= "RUNIC_POWER" then
-			return unit and UnitPower("player") ~= UnitPowerMax("player")
+			return unit and not SafeEqual(UnitPower("player"), UnitPowerMax("player"))
 		end
 	end,
 
 	Casting = function(_, unit)
-		return unit and (UnitCastingInfo(unit) or UnitChannelInfo(unit))
+		return unit and (SafeBool(UnitCastingInfo(unit)) or SafeBool(UnitChannelInfo(unit)))
 	end,
 
 	Arena = function(_, unit)

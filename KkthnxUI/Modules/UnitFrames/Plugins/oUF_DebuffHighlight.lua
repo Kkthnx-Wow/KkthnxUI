@@ -55,6 +55,8 @@ local CanDispel = {
 local dispellist = CanDispel[K.Class] or {}
 local origColors = {}
 
+local NotSecret = K.NotSecret
+
 local function GetDebuffType(unitToken, filter)
 	-- Check if the unit is assistable
 	if not UnitCanAssist("player", unitToken) then
@@ -69,9 +71,12 @@ local function GetDebuffType(unitToken, filter)
 			break
 		end
 
-		-- Check if this is a valid debuff
-		if aura.isHarmful and (not filter or (filter and dispellist[aura.dispelName])) then
-			return aura.dispelName, aura.icon
+		-- SECRET (12.0): the "HARMFUL" query already guarantees a debuff, so we drop
+		-- the secret aura.isHarmful read. dispelName feeds dispellist/DebuffTypeColor
+		-- lookups (table keys), so it must be non-secret before we touch it.
+		local dispelName = aura.dispelName
+		if NotSecret(dispelName) and (not filter or dispellist[dispelName]) then
+			return dispelName, aura.icon
 		end
 
 		i = i + 1

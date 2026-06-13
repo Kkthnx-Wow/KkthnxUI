@@ -97,10 +97,19 @@ local importantSpells = {
 function Module:UpdateItemAlert(unit, castID, spellID)
 	-- REASON: Filters by group unit residency and whitelist presence.
 	-- Compares spellID to castID to handle potential duplicates or re-triggers.
-	if groupUnits[unit] and importantSpells[spellID] and importantSpells[spellID] ~= castID then
+	-- SECRET (12.0): UNIT_SPELLCAST_SUCCEEDED can deliver secret unit/cast/spell
+	-- values in instances. Secret values cannot be used as table keys, compared,
+	-- passed to C_Spell, or sent to chat, so fail closed and skip the announcement.
+	if K.IsSecret(unit) or K.IsSecret(castID) or K.IsSecret(spellID) then
+		return
+	end
+
+	local trackedCastID = groupUnits[unit] and importantSpells[spellID]
+	if trackedCastID and trackedCastID ~= castID then
 		local spellLink = C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)
-		if spellLink then
-			SendChatMessage(string_format(L["%s used %s"] or "%s used %s", UnitName(unit), spellLink), K.CheckChat())
+		local unitName = UnitName(unit)
+		if spellLink and K.NotSecret(spellLink) and unitName and K.NotSecret(unitName) then
+			SendChatMessage(string_format(L["%s used %s"] or "%s used %s", unitName, spellLink), K.CheckChat())
 			-- NOTE: Store the castID for this spellID to prevent redundant alerts from the same cast events.
 			importantSpells[spellID] = castID
 		end

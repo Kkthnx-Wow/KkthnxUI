@@ -148,6 +148,8 @@ function Module:CreateBoss()
 		if bossPortraitStyle == 5 then
 			Module:ApplyPortraitAlphaFix(self)
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
@@ -270,7 +272,7 @@ function Module:CreateBoss()
 		self.TargetHighlight:Hide()
 
 		local function UpdateBossTargetGlow()
-			if UnitIsUnit("target", self.unit) then
+			if K.UnitIsUnit("target", self.unit) then
 				self.TargetHighlight:Show()
 			else
 				self.TargetHighlight:Hide()

@@ -137,6 +137,8 @@ function Module:CreateTargetOfTarget()
 		if targetOfTargetPortraitStyle == 5 then
 			Module:ApplyPortraitAlphaFix(self)
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	-- REASON: Level Tag

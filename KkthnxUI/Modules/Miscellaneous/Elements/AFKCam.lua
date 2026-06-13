@@ -360,7 +360,9 @@ local function afkModeOnEvent(self, event, ...)
 		return
 	end
 
-	if UnitIsAFK("player") and not C_PetBattles_IsInBattle() then
+	-- SECRET (12.0): UnitIsAFK can return a secret boolean; never branch on it raw.
+	local isAFK = UnitIsAFK("player")
+	if K.NotSecret(isAFK) and isAFK and not C_PetBattles_IsInBattle() then
 		setAFKMode(self, true)
 	else
 		setAFKMode(self, false)

@@ -66,8 +66,10 @@ function Module:AddLineForID(id, linkType, noadd)
 			break
 		end
 
+		-- SECRET (12.0): tooltip line text can be a secret string while tainted; comparing
+		-- it errors, so skip secret lines (worst case we add a duplicate ID line).
 		local text = line:GetText()
-		if text and text == linkType then
+		if text and K.NotSecret(text) and text == linkType then
 			return
 		end
 	end
@@ -156,7 +158,10 @@ function Module:CreateTooltipID()
 			Module.AddLineForID(self, id, types.spell)
 		end
 
-		if caster then
+		-- SECRET (12.0): sourceUnit can be a secret unit token in instances. Passing it to
+		-- GetUnitName routes into Blizzard's UnitRealmRelationship, which errors on a secret
+		-- argument. Skip the "From" line when the caster token can't be safely read.
+		if caster and K.NotSecret(caster) then
 			local name = GetUnitName(caster, true)
 			local hexColor = K.RGBToHex(K.UnitColor(caster))
 			self:AddDoubleLine(L["From"] .. ":", hexColor .. (name or UNKNOWN))
@@ -174,7 +179,10 @@ function Module:CreateTooltipID()
 		if id then
 			Module.AddLineForID(self, id, types.spell)
 		end
-		if caster then
+		-- SECRET (12.0): sourceUnit can be a secret unit token in instances. Passing it to
+		-- GetUnitName routes into Blizzard's UnitRealmRelationship, which errors on a secret
+		-- argument. Skip the "From" line when the caster token can't be safely read.
+		if caster and K.NotSecret(caster) then
 			local name = GetUnitName(caster, true)
 			local hexColor = K.RGBToHex(K.UnitColor(caster))
 			self:AddDoubleLine(L["From"] .. ":", hexColor .. (name or UNKNOWN))

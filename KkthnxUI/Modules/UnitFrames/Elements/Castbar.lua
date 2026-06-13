@@ -212,13 +212,23 @@ local function UpdateSpellTarget(self, unit)
 	local unitTarget = unit and unit .. "target"
 	if unitTarget and UnitExists(unitTarget) then
 		local nameString
-		if UnitIsUnit(unitTarget, "player") then
+		-- SECRET (12.0): on restricted nameplates UnitIsUnit returns a secret
+		-- boolean that cannot be branched on; treat it as "not the player".
+		local isYou = UnitIsUnit(unitTarget, "player")
+		if K.NotSecret(isYou) and isYou then
 			nameString = string_format("|cffff0000%s|r", ">" .. string_upper(YOU) .. "<")
 		else
 			-- REASON: Class color the name if possible.
 			nameString = K.RGBToHex(K.UnitColor(unitTarget)) .. UnitName(unitTarget)
 		end
-		if self._lastSpellTarget ~= nameString then
+
+		-- SECRET (12.0): UnitName can yield a secret string; the result inherits
+		-- that secret state. Comparing/caching a secret errors, so just push it to
+		-- the widget (SetText accepts secrets) and skip the change-cache that turn.
+		if IsSecret(nameString) then
+			self.spellTarget:SetText(nameString)
+			self._lastSpellTarget = nil
+		elseif self._lastSpellTarget ~= nameString then
 			self.spellTarget:SetText(nameString)
 			self._lastSpellTarget = nameString
 		end
@@ -243,7 +253,7 @@ local function UpdateCastBarColor(self, unit)
 		local reaction = UnitReaction(unit, "player")
 		local color = (reaction and K.Colors.reaction[reaction]) or K.Colors.castbar.CastingColor
 		self:SetStatusBarColor(color[1], color[2], color[3])
-	elseif sbTex and not UnitIsUnit(unit, "player") then
+	elseif sbTex and not K.UnitIsUnit(unit, "player") then
 		-- SECRET (12.0): grey for non-interruptible, casting color otherwise. The
 		-- engine evaluates the secret boolean for us (mirrors NDui's approach), so we
 		-- never perform a forbidden boolean test on self.notInterruptible.

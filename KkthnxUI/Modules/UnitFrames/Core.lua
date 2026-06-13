@@ -44,7 +44,12 @@ local UnitIsPVP = UnitIsPVP
 local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsPlayer = UnitIsPlayer
 local UnitThreatSituation = UnitThreatSituation
+local UnitGUID = UnitGUID
+local UnitIsConnected = UnitIsConnected
+local UnitIsVisible = UnitIsVisible
+local SetPortraitTexture = SetPortraitTexture
 local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
 
 -- Custom variables
 local lastPvPSound = false
@@ -249,6 +254,92 @@ function Module:ApplyPortraitAlphaFix(frame)
 
 	if background and background.SetAlpha then
 		background:SetAlpha(scaleSeed * (background.__baseAlpha or 1))
+	end
+end
+
+-- SECRET (12.0): oUF's stock portrait element filters events through Private.unitIsUnit,
+-- whose result can itself be a secret boolean in instances. ElvUI's current oUF avoids
+-- that check and updates self.unit directly, treating secret GUIDs as "changed"; we mirror
+-- that pattern here via Portrait.Override so the vendored oUF files stay untouched.
+-- Mirrors stock oUF: availability is just connected + visible (no IsVisible/model-ready
+-- gating, which caused the model to stick on the blank/"?" state after the initial spawn
+-- ForceUpdate fired before the element was shown). Secret booleans fail open.
+local function ReadPortraitAvailability(unit)
+	local connected = UnitIsConnected(unit)
+	if IsSecret(connected) then
+		connected = true
+	end
+
+	local visible = UnitIsVisible(unit)
+	if IsSecret(visible) then
+		visible = true
+	end
+
+	return connected and visible
+end
+
+function Module.PortraitOverride(self, event)
+	local element = self.Portrait
+	local unit = self.unit
+	if not element or not unit then
+		return
+	end
+
+	local guid = UnitGUID(unit)
+	local secretGUID = IsSecret(guid)
+	local newGUID = secretGUID or (NotSecret(element.guid) and element.guid ~= guid)
+
+	if newGUID then
+		element.guid = secretGUID and nil or guid
+	end
+
+	if element.PreUpdate then
+		element:PreUpdate(unit)
+	end
+
+	local isAvailable = ReadPortraitAvailability(unit)
+	local hasStateChanged = newGUID or event ~= "OnUpdate" or element.state ~= isAvailable
+
+	if hasStateChanged then
+		if element:IsObjectType("PlayerModel") then
+			element:ClearModel()
+			element:SetCamDistanceScale(isAvailable and 1 or 0.25)
+			element:SetPortraitZoom(isAvailable and 1 or 0)
+			element:SetPosition(0, 0, isAvailable and 0 or 0.25)
+
+			if not isAvailable then
+				element:SetModel([[Interface\Buttons\TalkToMeQuestionMark.m2]])
+			else
+				element:SetUnit(unit)
+			end
+		else
+			local class, _
+			if element.showClass then
+				_, class = UnitClass(unit)
+				if IsSecret(class) then
+					class = nil
+				end
+			end
+
+			if class then
+				element:SetAtlas("classicon-" .. class)
+			else
+				SetPortraitTexture(element, unit)
+			end
+		end
+
+		element.state = isAvailable
+	end
+
+	if element.PostUpdate then
+		return element:PostUpdate(unit, hasStateChanged)
+	end
+end
+
+-- REASON: Installs the secret-safe portrait override on a spawned frame (any portrait type).
+function Module:SecurePortrait(frame)
+	if frame and frame.Portrait then
+		frame.Portrait.Override = Module.PortraitOverride
 	end
 end
 
@@ -538,6 +629,17 @@ end
 
 -- REASON: Updates the size and height of an aura container based on width and icons per row.
 function Module:UpdateAuraContainer(width, element, maxAuras)
+	-- SECRET (12.0): width comes from a parent:GetWidth() that can be secret on
+	-- restricted nameplates. Bail out of the layout math rather than throwing, but
+	-- still guarantee a column count exists so oUF's SetPosition never reads
+	-- element:GetWidth(). Fall back to a single row (maxAuras columns).
+	if IsSecret(width) then
+		if not element.maxCols then
+			element.maxCols = (maxAuras and maxAuras > 0) and maxAuras or 1
+		end
+		return
+	end
+
 	local iconsPerRow = element.iconsPerRow
 	local spacing = element.spacing or 0
 
@@ -552,8 +654,22 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 
 	local newH = (size + spacing) * maxLines
 
-	-- REASON: Only apply changes when something actually differs to reduce layout churn.
-	if element.size ~= size or element:GetWidth() ~= width or element:GetHeight() ~= newH then
+	-- SECRET (12.0): pin the column count so oUF's SetPosition never has to read
+	-- element:GetWidth() -- that value becomes secret on restricted nameplates and
+	-- crashes its width-based arithmetic. Mirrors NDui's maxCols approach.
+	local sizeX = (size or 0) + spacing
+	if iconsPerRow then
+		element.maxCols = iconsPerRow
+	elseif sizeX > 0 and width > 0 then
+		local cols = math_floor(width / sizeX + 0.5)
+		element.maxCols = cols > 0 and cols or 1
+	end
+
+	-- REASON: Only apply changes when something actually differs to reduce layout
+	-- churn. Guard the GetWidth() read in case the element itself is restricted.
+	local curWidth = element:GetWidth()
+	local widthChanged = IsSecret(curWidth) or curWidth ~= width
+	if element.size ~= size or widthChanged or element:GetHeight() ~= newH then
 		element.size = size
 		element:SetWidth(width)
 		element:SetHeight(newH)
@@ -689,7 +805,9 @@ function Module.PostUpdateButton(element, button, unit, data)
 	local duration = data.duration
 	local expiration = data.expirationTime
 	local debuffType = data.dispelName
-	local buttonIsHarmful = button.isHarmful
+	-- SECRET (12.0): the raw isHarmful field is secret and oUF never copies it onto the
+	-- button; use the safe derived data.isHarmfulAura (true for a debuff, nil for a buff).
+	local buttonIsHarmful = data.isHarmfulAura
 	local isPlayerAura = data.isPlayerAura
 	if IsSecret(debuffType) then
 		debuffType = nil
@@ -870,8 +988,11 @@ function Module.CustomFilter(element, unit, data)
 	local isStealable = data.isStealable
 	local spellID = data.spellId
 	local nameplateShowAll = data.nameplateShowAll
+	-- SECRET (12.0): oUF derives the safe flags isPlayerAura / isHarmfulAura because
+	-- the raw isPlayerAura/isHarmful fields are secret. isHarmfulAura is `true` for a
+	-- debuff and `nil` for a buff (never `false`), so test it with `not`, not `== false`.
 	local isPlayerAura = data.isPlayerAura
-	local isHarmful = data.isHarmful
+	local isHarmful = data.isHarmfulAura
 
 	if IsSecret(name) then
 		name = nil
@@ -918,7 +1039,7 @@ function Module.CustomFilter(element, unit, data)
 
 		-- DISPELL/STEAL SHOW
 		-- REASON: Highlight purgeable buffs on enemies (not player units).
-		if (isStealable or (debuffType and dispellType[debuffType])) and not UnitIsPlayer(unit) and isHarmful == false then
+		if (isStealable or (debuffType and dispellType[debuffType])) and not UnitIsPlayer(unit) and not isHarmful then
 			return true
 		end
 
@@ -930,7 +1051,7 @@ function Module.CustomFilter(element, unit, data)
 		-- NAMEPLATES: normal player-aura mode should only show debuffs. Helpful
 		-- buffs on enemies are handled above when explicitly whitelisted or
 		-- purge/dispel-relevant; otherwise they clutter every plate in Midnight.
-		if isHarmful == false then
+		if not isHarmful then
 			return false
 		end
 

@@ -142,6 +142,8 @@ function Module:CreateFocus()
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	-- REASON: Aura Debuffs

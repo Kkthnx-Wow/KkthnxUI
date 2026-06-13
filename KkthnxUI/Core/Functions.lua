@@ -83,6 +83,20 @@ do
 	function K.NotSecretTable(object)
 		return issecrettable == nil or not issecrettable(object)
 	end
+
+	-- Safe UnitIsUnit: token comparison (ShouldUnitComparisonBeSecret) returns a
+	-- secret boolean in instances, so testing the raw result errors. This mirrors
+	-- oUF's Private.unitIsUnit shim. Fail closed: a secret result becomes false so
+	-- callers (target glows, mouseover checks) simply don't trigger rather than
+	-- crash. Returns a plain boolean that is always safe to test.
+	local UnitIsUnit = UnitIsUnit
+	function K.UnitIsUnit(unitA, unitB)
+		local result = UnitIsUnit(unitA, unitB)
+		if issecretvalue ~= nil and issecretvalue(result) then
+			return false
+		end
+		return result
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -473,21 +487,49 @@ do
 	end
 
 	-- REASON: Centralized unit coloring logic (Class -> Tap Denied -> Reaction).
+	-- SECRET (12.0): in instances a unit's identity is hidden, so UnitIsPlayer /
+	-- UnitIsTapDenied / UnitReaction return secret booleans/values that can't be
+	-- boolean-tested. Bail to white whenever any read is secret (mirrors NDui's
+	-- safe fallback) so callers like the tooltip never crash on a secret identity.
 	function K.UnitColor(unit)
 		local r, g, b = 1, 1, 1
 
-		if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
+		if K.IsSecret(unit) then
+			return r, g, b
+		end
+
+		local isPlayer = UnitIsPlayer(unit)
+		if K.IsSecret(isPlayer) then
+			return r, g, b
+		end
+
+		if not isPlayer then
+			local isAI = UnitInPartyIsAI(unit)
+			if K.IsSecret(isAI) then
+				return r, g, b
+			end
+			isPlayer = isAI
+		end
+
+		if isPlayer then
 			local class = select(2, UnitClass(unit))
-			if class then
+			if class and K.NotSecret(class) then
 				r, g, b = K.ColorClass(class)
 			end
-		elseif UnitIsTapDenied(unit) then
-			r, g, b = 0.6, 0.6, 0.6
 		else
-			local reaction = UnitReaction(unit, "player")
-			if reaction then
-				local color = K.Colors.reaction[reaction]
-				r, g, b = color[1], color[2], color[3]
+			local tapped = UnitIsTapDenied(unit)
+			if K.IsSecret(tapped) then
+				return r, g, b
+			end
+
+			if tapped then
+				r, g, b = 0.6, 0.6, 0.6
+			else
+				local reaction = UnitReaction(unit, "player")
+				if reaction and K.NotSecret(reaction) then
+					local color = K.Colors.reaction[reaction]
+					r, g, b = color[1], color[2], color[3]
+				end
 			end
 		end
 

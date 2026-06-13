@@ -39,7 +39,9 @@ function Module:SetupTooltipIcon(icon)
 	local title = icon and _G[self:GetName() .. "TextLeft1"]
 	local titleText = title and title:GetText()
 
-	if titleText and not strfind(titleText, ":20:20:") then
+	-- SECRET (12.0): tooltip line text can be a secret string while tainted; strfind/gsub on
+	-- a secret string errors, so skip those lines (worst case the icon isn't prepended).
+	if titleText and K.NotSecret(titleText) and not strfind(titleText, ":20:20:") then
 		title:SetFormattedText("|T%s:20:20:" .. newString .. ":%d|t %s", icon, 20, titleText)
 	end
 
@@ -50,7 +52,7 @@ function Module:SetupTooltipIcon(icon)
 		end
 
 		local text = line:GetText()
-		if text and text ~= " " then
+		if text and K.NotSecret(text) and text ~= " " then
 			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T%1:14:14:" .. newString .. "|t")
 			if count > 0 then
 				line:SetText(newText)

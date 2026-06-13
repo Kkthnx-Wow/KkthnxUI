@@ -148,6 +148,8 @@ function Module:CreateParty()
 		if partyPortraitStyle == 5 then
 			Module:ApplyPortraitAlphaFix(self)
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	-- REASON: Level Tag
@@ -368,7 +370,7 @@ function Module:CreateParty()
 		TargetHighlight:Hide()
 
 		local function UpdatePartyTargetGlow()
-			if UnitIsUnit("target", self.unit) then
+			if K.UnitIsUnit("target", self.unit) then
 				TargetHighlight:Show()
 			else
 				TargetHighlight:Hide()

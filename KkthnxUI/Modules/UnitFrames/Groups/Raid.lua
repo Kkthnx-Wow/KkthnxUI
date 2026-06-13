@@ -391,7 +391,7 @@ function Module:CreateRaid()
 		TargetHighlight:Hide()
 
 		local function UpdateRaidTargetGlow()
-			if UnitIsUnit("target", self.unit) then
+			if K.UnitIsUnit("target", self.unit) then
 				TargetHighlight:Show()
 			else
 				TargetHighlight:Hide()

@@ -163,6 +163,8 @@ function Module:CreatePlayer()
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		Module:SecurePortrait(self)
 	end
 
 	if C["Unitframe"].ClassResources then

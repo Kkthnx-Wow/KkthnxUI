@@ -382,13 +382,32 @@ function Module:CheckThreatStatus(unit)
 	end
 
 	-- REASON: Determine if the unit is targeting a tank or the player to decide nameplate color.
+	-- SECRET (12.0): a nameplate's target identity is hidden in instances, so
+	-- UnitIsUnit returns a secret boolean and UnitName a secret string that can't be
+	-- branched on or used as a table key. Only resolve the off-tank role when every
+	-- read is readable; otherwise keep the previous "NONE" default.
 	local unitTarget = unit .. "target"
-	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
+	local unitRole = "NONE"
 
+	if isInGroup and UnitExists(unitTarget) then
+		local isPlayerTarget = UnitIsUnit(unitTarget, "player")
+		if K.NotSecret(isPlayerTarget) and not isPlayerTarget then
+			local targetName = UnitName(unitTarget)
+			if targetName and K.NotSecret(targetName) then
+				unitRole = groupRoles[targetName] or "NONE"
+			end
+		end
+	end
+
+	-- SECRET (12.0): UnitThreatSituation can be secret on restricted units; the
+	-- caller boolean-tests/compares status, so return nil when it isn't readable.
+	local status
 	if K.Role == "Tank" and unitRole == "TANK" then
-		return true, UnitThreatSituation(unitTarget, unit)
+		status = UnitThreatSituation(unitTarget, unit)
+		return true, (K.NotSecret(status) and status) or nil
 	else
-		return false, UnitThreatSituation("player", unit)
+		status = UnitThreatSituation("player", unit)
+		return false, (K.NotSecret(status) and status) or nil
 	end
 end
 
@@ -418,7 +437,7 @@ local TARGET_NPC_FILTER = { scale = 1.2 }
 function Module:ApplyStyleFilter(unit)
 	local npcID = self.npcID
 	local name = self.unitName
-	local isTarget = UnitIsUnit(unit, "target")
+	local isTarget = K.UnitIsUnit(unit, "target")
 
 	-- REASON: Reset style filter changes before applying new ones to prevent state leaking between units.
 	if self._styleFiltered then
@@ -503,7 +522,7 @@ function Module:ApplyStyleFilter(unit)
 	end
 
 	-- REASON: Targeted units can have a specific color override if enabled.
-	if C["Nameplate"].ColoredTarget and isTarget and not UnitIsUnit(unit, "player") then
+	if C["Nameplate"].ColoredTarget and isTarget and not K.UnitIsUnit(unit, "player") then
 		self.Health:SetStatusBarColor(unpack(C["Nameplate"].TargetColor))
 		self._styleFiltered = true
 	end
@@ -696,7 +715,7 @@ function Module:UpdateTargetChange()
 
 	-- REASON: Toggle target indicators based on currently selected unit and player options.
 	if C["Nameplate"].TargetIndicator ~= 1 then
-		local isTarget = UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player")
+		local isTarget = K.UnitIsUnit(unit, "target") and not K.UnitIsUnit(unit, "player")
 		element:SetShown(isTarget)
 
 		-- PERF: Only play/stop animations if the state actually changes.
@@ -1064,7 +1083,7 @@ function Module:IsMouseoverUnit()
 
 	-- REASON: Use UnitIsUnit to check if the mouse is currently over this nameplate's unit.
 	if self:IsVisible() and UnitExists("mouseover") then
-		return UnitIsUnit("mouseover", self.unit)
+		return K.UnitIsUnit("mouseover", self.unit)
 	end
 
 	return false
@@ -1076,7 +1095,7 @@ function Module:UpdateMouseoverShown()
 	end
 
 	-- REASON: Show the highlight indicator and start the OnUpdate tracker if the unit is moused over.
-	if self:IsShown() and UnitIsUnit("mouseover", self.unit) then
+	if self:IsShown() and K.UnitIsUnit("mouseover", self.unit) then
 		self.HighlightIndicator:Show()
 		self.HighlightUpdater:Show()
 	else
@@ -1801,7 +1820,7 @@ end
 function Module:PlateVisibility(event)
 	-- REASON: Manage the visibility of the personal resource display, often fading it out out-of-combat.
 	local auras = self.Auras
-	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and UnitIsUnit("player", self.unit) then
+	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and K.UnitIsUnit("player", self.unit) then
 		K.UIFrameFadeIn(self.Health, 0.2, self.Health:GetAlpha(), 1)
 		K.UIFrameFadeIn(self.Power, 0.2, self.Power:GetAlpha(), 1)
 		if auras then

@@ -30,13 +30,15 @@ local lastPrintAtBySpellId = {}
 -- ---------------------------------------------------------------------------
 local function isBadAura(badList, aura)
 	-- REASON: Checks both spell ID and name against the bad list for maximum compatibility.
+	-- SECRET (12.0): aura.spellId/aura.name can be secret in instances and cannot be
+	-- used as table keys, so only match on readable values (fails closed otherwise).
 	local spellId = aura.spellId
 	local name = aura.name
-	if spellId and badList[spellId] then
+	if spellId and K.NotSecret(spellId) and badList[spellId] then
 		return true
 	end
 
-	if name and badList[name] then
+	if name and K.NotSecret(name) and badList[name] then
 		return true
 	end
 
@@ -45,8 +47,10 @@ end
 
 local function printRemoved(aura)
 	-- REASON: Throttles chat output for the same spell to avoid spamming the user.
+	-- SECRET (12.0): a secret spellId can't key the throttle table or feed GetSpellLink.
 	local spellId = aura.spellId
-	if spellId then
+	local hasReadableId = spellId and K.NotSecret(spellId)
+	if hasReadableId then
 		local now = GetTime()
 		local lastAt = lastPrintAtBySpellId[spellId] or 0
 		if now - lastAt <= 1.0 then
@@ -55,7 +59,8 @@ local function printRemoved(aura)
 		lastPrintAtBySpellId[spellId] = now
 	end
 
-	local link = (spellId and C_Spell_GetSpellLink(spellId)) or aura.name or "Unknown"
+	local name = aura.name
+	local link = (hasReadableId and C_Spell_GetSpellLink(spellId)) or (name and K.NotSecret(name) and name) or "Unknown"
 	local msgRemoved = L["Removed Bad Buff: %s"] or "Removed Bad Buff: %s"
 	K.Print(K.SystemColor .. string_format(msgRemoved, link) .. "|r")
 end

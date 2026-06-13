@@ -57,6 +57,7 @@ function Module:CreatePartyPet()
 	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
 	self.Portrait:SetAllPoints()
 	self.Portrait:SetAlpha(0.4)
+	Module:SecurePortrait(self)
 
 	self.Name = self.Overlay:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self.Overlay, "TOPLEFT", 3, -15)
@@ -79,7 +80,7 @@ function Module:CreatePartyPet()
 		self.PartyPetHighlight:Hide()
 
 		local function UpdatePartyPetTargetGlow()
-			if UnitIsUnit("target", self.unit) then
+			if K.UnitIsUnit("target", self.unit) then
 				self.PartyPetHighlight:Show()
 			else
 				self.PartyPetHighlight:Hide()

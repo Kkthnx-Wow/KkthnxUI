@@ -76,6 +76,7 @@ local UNKNOWN_LEVEL_STRING = "|cffff0000??|r"
 local BOSS_STRING = "|cffAF5050Boss|r"
 
 local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
 
 local function SafeShortValue(value)
 	if value == nil then
@@ -160,46 +161,90 @@ end
 oUF.Tags.Events["power"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
 oUF.Tags.Methods["color"] = function(unit)
-	local class = select(2, UnitClass(unit))
-	local reaction = UnitReaction(unit, "player")
-
-	if UnitIsTapDenied(unit) then
+	-- SECRET (12.0): boss/instance units hide identity, so these return secret
+	-- booleans/values that can't be branched on or used as table keys. Fall back to
+	-- white whenever a read is secret (mirrors K.UnitColor's safe fallback).
+	local tapped = UnitIsTapDenied(unit)
+	if NotSecret(tapped) and tapped then
 		return K.RGBToHex(oUF.colors.tapped)
-	elseif UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
-		return K.RGBToHex(K.Colors.class[class])
-	elseif reaction then
-		return K.RGBToHex(K.Colors.reaction[reaction])
-	else
+	end
+
+	local isPlayer = UnitIsPlayer(unit)
+	if IsSecret(isPlayer) then
 		return K.RGBToHex(1, 1, 1)
 	end
+
+	if not isPlayer then
+		local isAI = UnitInPartyIsAI(unit)
+		if IsSecret(isAI) then
+			return K.RGBToHex(1, 1, 1)
+		end
+		isPlayer = isAI
+	end
+
+	if isPlayer then
+		local class = select(2, UnitClass(unit))
+		if class and NotSecret(class) then
+			return K.RGBToHex(K.Colors.class[class])
+		end
+		return K.RGBToHex(1, 1, 1)
+	end
+
+	local reaction = UnitReaction(unit, "player")
+	if reaction and NotSecret(reaction) then
+		return K.RGBToHex(K.Colors.reaction[reaction])
+	end
+
+	return K.RGBToHex(1, 1, 1)
 end
 oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FACTION UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["afkdnd"] = function(unit)
-	if UnitIsAFK(unit) then
+	-- SECRET (12.0): UnitIsAFK/UnitIsDND return secret booleans on boss/instance
+	-- units and must not be boolean-tested directly.
+	local afk = UnitIsAFK(unit)
+	if NotSecret(afk) and afk then
 		return AFK_STRING
-	elseif UnitIsDND(unit) then
-		return DND_STRING
-	else
-		return ""
 	end
+
+	local dnd = UnitIsDND(unit)
+	if NotSecret(dnd) and dnd then
+		return DND_STRING
+	end
+
+	return ""
 end
 oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
-	if UnitIsDead(unit) then
+	-- SECRET (12.0): all of these state APIs can return secret booleans on
+	-- restricted units; gate each before the boolean test.
+	local dead = UnitIsDead(unit)
+	if NotSecret(dead) and dead then
 		return DEAD_STRING
-	elseif UnitIsGhost(unit) then
-		return GHOST_STRING
-	elseif not UnitIsConnected(unit) and GetNumArenaOpponentSpecs() == 0 then
-		return OFFLINE_STRING
-	elseif UnitIsAFK(unit) then
-		return AFK_STRING
-	elseif UnitIsDND(unit) then
-		return DND_STRING
-	else
-		return ""
 	end
+
+	local ghost = UnitIsGhost(unit)
+	if NotSecret(ghost) and ghost then
+		return GHOST_STRING
+	end
+
+	local connected = UnitIsConnected(unit)
+	if NotSecret(connected) and not connected and GetNumArenaOpponentSpecs() == 0 then
+		return OFFLINE_STRING
+	end
+
+	local afk = UnitIsAFK(unit)
+	if NotSecret(afk) and afk then
+		return AFK_STRING
+	end
+
+	local dnd = UnitIsDND(unit)
+	if NotSecret(dnd) and dnd then
+		return DND_STRING
+	end
+
+	return ""
 end
 
 oUF.Tags.Events["DDG"] = "PLAYER_FLAGS_CHANGED UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION"
@@ -365,10 +410,16 @@ local tooltipLine2, tooltipLine3
 
 -- REASON: Displays guild for players or title for NPCs on nameplates when in NameOnly mode.
 oUF.Tags.Methods["npctitle"] = function(unit)
+	-- SECRET (12.0): on restricted nameplates UnitIsPlayer returns a secret boolean
+	-- that cannot be branched on, so bail when the identity is hidden.
 	local isPlayer = UnitIsPlayer(unit)
+	if IsSecret(isPlayer) then
+		return
+	end
+
 	if isPlayer and NameOnlyGuild then
 		local guildName = GetGuildInfo(unit)
-		if guildName then
+		if guildName and K.NotSecret(guildName) then
 			return "<" .. guildName .. ">"
 		end
 	elseif not isPlayer and NameOnlyTitle then
@@ -382,7 +433,9 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 
 		local textLine = GetCVarBool("colorblindmode") and tooltipLine3 or tooltipLine2
 		local title = textLine and textLine:GetText()
-		if title and not string_find(title, "^" .. LEVEL) then
+		-- SECRET (12.0): the scanned title string can be secret in instances;
+		-- string_find performs a string conversion that errors on secret strings.
+		if title and K.NotSecret(title) and not string_find(title, "^" .. LEVEL) then
 			return title
 		end
 	end

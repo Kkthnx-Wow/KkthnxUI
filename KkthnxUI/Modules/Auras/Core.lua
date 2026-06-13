@@ -41,6 +41,7 @@ local unpack = _G.unpack
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
 local C_UnitAuras_GetAuraApplicationDisplayCount = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraApplicationDisplayCount
 local C_UnitAuras_GetAuraDispelTypeColor = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDispelTypeColor
+local C_UnitAuras_GetAuraDuration = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDuration
 local DAY, HOUR, MINUTE = 86400, 3600, 60
 local MIN_SPELL_COUNT, MAX_SPELL_COUNT = 2, 999
 
@@ -217,6 +218,41 @@ function Module:StartAuraTimer(button, timeLeft)
 	Module.UpdateTimer(button, 0)
 end
 
+local function GetNativeAuraDuration(unit, auraInstanceID)
+	if not (C_UnitAuras_GetAuraDuration and unit and auraInstanceID) then
+		return nil
+	end
+
+	-- MIDNIGHT (12.0): use Blizzard's DurationObject for aura cooldowns so
+	-- restricted timing data is rendered by the engine instead of Lua.
+	local ok, auraDuration = pcall(C_UnitAuras_GetAuraDuration, unit, auraInstanceID)
+	if ok then
+		return auraDuration
+	end
+end
+
+local function StyleNativeCooldownText(button)
+	local cooldown = button.Cooldown
+	if not cooldown then
+		return
+	end
+
+	if not cooldown.Text then
+		cooldown.Text = cooldown:GetRegions()
+	end
+
+	local text = cooldown.Text
+	if text then
+		local font, _, flags = button.timer:GetFont()
+		text:ClearAllPoints()
+		text:SetPoint("TOP", cooldown, "BOTTOM", 1, 5)
+		text:SetFontObject(K.UIFontOutline)
+		text:SetFont(font, select(2, button.timer:GetFont()), flags)
+		--text:SetTextColor(K.r, K.g, K.b)
+		text:SetShadowColor(0, 0, 0, 0)
+	end
+end
+
 function Module:GetSpellStat(arg16, arg17, arg18)
 	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
 end
@@ -231,10 +267,23 @@ function Module:UpdateAuras(button, index)
 	local duration = auraData.duration
 	local expirationTime = auraData.expirationTime
 	local auraInstanceID = auraData.auraInstanceID
+	local auraDuration = GetNativeAuraDuration(unit, auraInstanceID)
 
-	if not IsSecret(duration) and not IsSecret(expirationTime) and duration and expirationTime and duration > 0 then
+	if auraDuration and button.Cooldown then
+		button.Cooldown:SetCooldownFromDurationObject(auraDuration)
+		button.Cooldown:Show()
+		button.timeLeft = nil
+		button.timer:SetText("")
+		button:SetScript("OnUpdate", nil)
+	elseif not IsSecret(duration) and not IsSecret(expirationTime) and duration and expirationTime and duration > 0 then
+		if button.Cooldown then
+			button.Cooldown:Clear()
+		end
 		Module:StartAuraTimer(button, expirationTime - _G.GetTime())
 	else
+		if button.Cooldown then
+			button.Cooldown:Clear()
+		end
 		button.timeLeft = nil
 		button.timer:SetText("")
 		button:SetScript("OnUpdate", nil)
@@ -367,6 +416,7 @@ function Module:UpdateHeader(header)
 		child.timer:SetFontObject(K.UIFontOutline)
 		local timerFont, _, timerFlags = child.timer:GetFont()
 		child.timer:SetFont(timerFont, fontSize, timerFlags)
+		StyleNativeCooldownText(child)
 
 		-- WARNING: Blizzard bug fix: icons aren't being hidden when reducing the maximum number of buttons.
 		if index > (cfg.maxWraps * cfg.wrapAfter) and child:IsShown() then
@@ -465,6 +515,13 @@ function Module:CreateAuraIcon(button)
 	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 5)
 	button.timer:SetFontObject(K.UIFontOutline)
 	button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
+
+	button.Cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+	button.Cooldown:SetAllPoints(button.icon)
+	button.Cooldown:SetDrawSwipe(false)
+	button.Cooldown:SetDrawBling(false)
+	button.Cooldown:SetHideCountdownNumbers(false)
+	StyleNativeCooldownText(button)
 
 	button:StyleButton()
 	button:CreateBorder()

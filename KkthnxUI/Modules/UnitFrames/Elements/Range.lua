@@ -46,6 +46,14 @@ local myClass = select(2, UnitClass("player"))
 
 local IsSecret = K.IsSecret
 
+local function ReadableBool(value)
+	if IsSecret(value) then
+		return nil
+	end
+
+	return value and true or false
+end
+
 -- PERF: Pre-cache group unit tokens to avoid high-frequency string concatenations on every update frame.
 -- REASON: This completely eliminates string allocations and subsequent GC overhead during group scanning.
 local groupUnits = {
@@ -61,7 +69,8 @@ end
 
 -- REASON: Returns the unit token (partyN/raidN) for a given unit GUID/name if they are in your group.
 local function GetGroupUnit(unit)
-	if UnitIsUnit(unit, "player") then
+	local isPlayer = ReadableBool(UnitIsUnit(unit, "player"))
+	if isPlayer then
 		return
 	end
 
@@ -70,13 +79,15 @@ local function GetGroupUnit(unit)
 	end
 
 	-- REASON: Only scan group if unit isn't already a token.
-	if UnitInParty(unit) or UnitInRaid(unit) then
+	local inParty = ReadableBool(UnitInParty(unit))
+	local inRaid = ReadableBool(UnitInRaid(unit))
+	if inParty or inRaid then
 		local isInRaid = IsInRaid()
 		local prefix = isInRaid and "raid" or "party"
 		local tokens = groupUnits[prefix]
 		for i = 1, GetNumGroupMembers() do
 			local groupUnit = tokens[i]
-			if groupUnit and UnitIsUnit(unit, groupUnit) then
+			if groupUnit and ReadableBool(UnitIsUnit(unit, groupUnit)) then
 				return groupUnit
 			end
 		end
@@ -297,8 +308,10 @@ end
 local function FriendlyInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
-	if UnitIsPlayer(unit) then
-		if UnitPhaseReason and UnitPhaseReason(unit) then
+	local isPlayer = ReadableBool(UnitIsPlayer(unit))
+	if isPlayer then
+		local phaseReason = UnitPhaseReason and UnitPhaseReason(unit)
+		if not IsSecret(phaseReason) and phaseReason then
 			return false
 		end
 	end
@@ -337,19 +350,31 @@ local function Update(self, event)
 	local maxAlpha = element.MaxAlpha or element.insideAlpha
 	local minAlpha = element.MinAlpha or element.outsideAlpha
 
-	if self.forceInRange or unit == "player" then
+	local forceInRange = ReadableBool(self.forceInRange)
+	local forceNotInRange = ReadableBool(self.forceNotInRange)
+
+	if forceInRange or unit == "player" then
 		element.RangeAlpha = maxAlpha
-	elseif self.forceNotInRange then
+	elseif forceNotInRange then
 		element.RangeAlpha = minAlpha
 	elseif unit then
-		if UnitIsDeadOrGhost(unit) then
+		local isDead = ReadableBool(UnitIsDeadOrGhost(unit))
+		local canAttack = ReadableBool(UnitCanAttack("player", unit))
+		local isPet = ReadableBool(UnitIsUnit("pet", unit))
+		local isConnected = ReadableBool(UnitIsConnected(unit))
+
+		if isDead then
 			element.RangeAlpha = UnitInSpellsRange(unit, 3) == true and maxAlpha or minAlpha
-		elseif UnitCanAttack("player", unit) then
+		elseif canAttack then
 			element.RangeAlpha = UnitInSpellsRange(unit, 1) and maxAlpha or minAlpha
-		elseif UnitIsUnit("pet", unit) then
+		elseif isPet then
 			element.RangeAlpha = UnitInSpellsRange(unit, 4) and maxAlpha or minAlpha
-		elseif UnitIsConnected(unit) then
+		elseif isConnected then
 			element.RangeAlpha = FriendlyInRange(unit) and maxAlpha or minAlpha
+		elseif isDead == nil or canAttack == nil or isPet == nil or isConnected == nil then
+			-- SECRET (12.0): If classification booleans are unreadable, keep the
+			-- frame visible rather than testing a secret value or fading on unknowns.
+			element.RangeAlpha = maxAlpha
 		else
 			element.RangeAlpha = minAlpha
 		end

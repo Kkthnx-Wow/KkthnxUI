@@ -248,6 +248,13 @@ end
 -- LOCK & UNLOCK LOGIC
 -- ---------------------------------------------------------------------------
 
+local function RunAuraWatchMoverCommand(command)
+	local auraWatchCommand = _G.SlashCmdList and _G.SlashCmdList.AuraWatch
+	if auraWatchCommand then
+		auraWatchCommand(command)
+	end
+end
+
 function Module:UnlockElements()
 	-- PERF: Use ipairs for array iteration.
 	for i = 1, #MoverList do
@@ -270,7 +277,7 @@ function Module:LockElements()
 	f:Hide()
 	-- NOTE: Ensure related systems are also locked and grid overlays are removed.
 	_G.SlashCmdList["KKUI_TOGGLEGRID"]("1")
-	SlashCmdList.AuraWatch("lock")
+	RunAuraWatchMoverCommand("lock")
 end
 
 -- REASON: Resetting all mover logic requires a full UI reload to re-initialize original positions.
@@ -336,9 +343,9 @@ local function CreateConsole()
 	bu[3]:SetScript("OnClick", function(self)
 		self.state = not self.state
 		if self.state then
-			SlashCmdList.AuraWatch("move")
+			RunAuraWatchMoverCommand("move")
 		else
-			SlashCmdList.AuraWatch("lock")
+			RunAuraWatchMoverCommand("lock")
 		end
 	end)
 

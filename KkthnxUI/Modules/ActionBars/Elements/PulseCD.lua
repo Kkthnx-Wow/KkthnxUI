@@ -9,6 +9,7 @@
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
+local NotSecret = K.NotSecret
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
 local GetTime = GetTime
@@ -103,6 +104,11 @@ local function OnUpdate(_, update)
 				if name and pulse_ignored_spells[name] then
 					ReleaseTable(v)
 					watching[i] = nil
+				elseif not (NotSecret(start) and NotSecret(duration)) then
+					-- SECRET (12.0): duration/start feed threshold checks and remaining
+					-- arithmetic; drop this watch entry rather than error in instances.
+					ReleaseTable(v)
+					watching[i] = nil
 				else
 					if enabled ~= 0 then
 						if duration and duration > C["ActionBar"].PulseCDThreshold and texture then
@@ -126,13 +132,18 @@ local function OnUpdate(_, update)
 		end
 
 		for i, cd in pairs(cooldowns) do
-			local remaining = cd.duration - (GetTime() - cd.start)
-			if remaining <= 0.2 then
-				local anim = GetTable()
-				anim.texture = cd.texture
-				anim.isPet = cd.isPet
-				anim.name = cd.name
-				table_insert(animating, anim)
+			if NotSecret(cd.duration) and NotSecret(cd.start) then
+				local remaining = cd.duration - (GetTime() - cd.start)
+				if remaining <= 0.2 then
+					local anim = GetTable()
+					anim.texture = cd.texture
+					anim.isPet = cd.isPet
+					anim.name = cd.name
+					table_insert(animating, anim)
+					ReleaseTable(cd)
+					cooldowns[i] = nil
+				end
+			else
 				ReleaseTable(cd)
 				cooldowns[i] = nil
 			end
@@ -215,21 +226,30 @@ function Module:CreatePulseCD()
 		for i, cd in pairs(cooldowns) do
 			if cd.type == "spell" then
 				local cdInfo = C_Spell_GetSpellCooldown(cd.id)
-				if cdInfo and cdInfo.startTime then
+				if cdInfo and cdInfo.startTime and NotSecret(cdInfo.startTime) and NotSecret(cdInfo.duration) then
 					cd.start = cdInfo.startTime
 					cd.duration = cdInfo.duration
+				elseif cdInfo and (not NotSecret(cdInfo.startTime) or not NotSecret(cdInfo.duration)) then
+					ReleaseTable(cd)
+					cooldowns[i] = nil
 				end
 			elseif cd.type == "item" then
 				local start, duration = C_Item_GetItemCooldown(i)
-				if start then
+				if NotSecret(start) and NotSecret(duration) and start then
 					cd.start = start
 					cd.duration = duration
+				elseif not NotSecret(start) or not NotSecret(duration) then
+					ReleaseTable(cd)
+					cooldowns[i] = nil
 				end
 			elseif cd.type == "pet" then
 				local start, duration = GetPetActionCooldown(cd.id)
-				if start then
+				if NotSecret(start) and NotSecret(duration) and start then
 					cd.start = start
 					cd.duration = duration
+				elseif not NotSecret(start) or not NotSecret(duration) then
+					ReleaseTable(cd)
+					cooldowns[i] = nil
 				end
 			end
 		end
