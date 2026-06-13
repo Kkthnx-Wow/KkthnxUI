@@ -279,10 +279,12 @@ local function KKUI_OnEvent(self, event, arg1)
 		KKUI_CreateDefaults()
 		KKUI_LoadCustomSettings()
 
-		-- TEMPORARY (Midnight 12.0): force-disable AuraWatch, the Swing timer, and
-		-- floating CombatText regardless of the saved profile while their secret-value
-		-- handling is being reworked. Applied after settings load so it overrides the
-		-- profile; remove this block to restore the user's configured values.
+		-- TEMPORARY (Midnight 12.0): AuraWatch, the Swing timer, floating CombatText and
+		-- MissingStats are fully disabled while their secret-value handling is reworked.
+		-- The module/plugin files are unloaded in Modules\Load_Modules.xml so none of their
+		-- code runs; these flags are forced off as well so the UnitFrames (Player/Target)
+		-- skip building the now-unloaded Swing/CombatText elements regardless of the saved
+		-- profile. To restore: re-enable the file loads in the XML and remove this block.
 		if C["AuraWatch"] then
 			C["AuraWatch"].Enable = false
 		end

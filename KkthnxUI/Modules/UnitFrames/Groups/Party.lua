@@ -168,8 +168,8 @@ function Module:CreateParty()
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs.growthX = "RIGHT"
+		self.Buffs.growthY = "DOWN"
 		self.Buffs.num = 6
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = 6
@@ -185,7 +185,7 @@ function Module:CreateParty()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "LEFT"
-	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs.growthX = "RIGHT"
 	self.Debuffs:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5

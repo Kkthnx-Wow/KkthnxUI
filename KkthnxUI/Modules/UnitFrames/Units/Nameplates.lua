@@ -1417,8 +1417,8 @@ function Module:CreatePlates()
 	self.Auras = CreateFrame("Frame", nil, self)
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Auras.spacing = 4
-	self.Auras.initdialAnchor = "BOTTOMLEFT"
-	self.Auras["growth-y"] = "UP"
+	self.Auras.initialAnchor = "BOTTOMLEFT"
+	self.Auras.growthY = "UP"
 
 	-- REASON: Adjust aura position if class resource bars are enabled on nameplates.
 	if C["Nameplate"].NameplateClassPower then

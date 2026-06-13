@@ -154,8 +154,8 @@ function Module:CreateArena()
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growth-x"] = "RIGHT"
-	self.Buffs["growth-y"] = "DOWN"
+	self.Buffs.growthX = "RIGHT"
+	self.Buffs.growthY = "DOWN"
 	self.Buffs.num = 6
 	self.Buffs.spacing = 6
 	self.Buffs.iconsPerRow = 6
@@ -171,8 +171,8 @@ function Module:CreateArena()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "TOPRIGHT"
-	self.Debuffs["growth-x"] = "LEFT"
-	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs.growthX = "LEFT"
+	self.Debuffs.growthY = "DOWN"
 	self.Debuffs:SetPoint("TOPRIGHT", self.Trinket, "TOPLEFT", -6, 0)
 	self.Debuffs.num = 2
 	self.Debuffs.iconsPerRow = 4

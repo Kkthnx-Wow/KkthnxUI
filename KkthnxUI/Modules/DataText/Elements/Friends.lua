@@ -96,6 +96,28 @@ local menuList = {
 -- ---------------------------------------------------------------------------
 -- Utility Functions
 -- ---------------------------------------------------------------------------
+local function getClassHex(class)
+	local r, g, b = K.ColorClass(class)
+	return K.RGBToHex(r, g, b)
+end
+
+local function getBattleNetRealmSuffix(info)
+	local realmName = info.realmName or info.realmDisplayName
+
+	if info.wowProjectID == WOW_PROJECT_CATA then
+		local realmFromPresence, count = string_gsub(info.richPresence or "", "^.-%-%s", "")
+		if count and count > 0 then
+			realmName = realmFromPresence
+		end
+	end
+
+	if not realmName or realmName == "" or realmName == K.Realm then
+		return ""
+	end
+
+	return "-" .. realmName
+end
+
 local function getClientLogo(client, size)
 	-- REASON: Returns an inline atlas markup for the client's Battle.net icon.
 	size = size or 0
@@ -471,8 +493,7 @@ local function buttonOnClick(self, button)
 						if info and info.clientProgram == BNET_CLIENT_WOW and info.wowProjectID == WOW_PROJECT_ID and info.playerGuid then
 							menuList[mIndex] = menuList[mIndex] or {}
 							local entry = menuList[mIndex]
-							local color = K.ColorClass(K.ClassList[info.className] or info.className)
-							entry.text = string_format("%s%s|r %s", K.RGBToHex(color.r, color.g, color.b), info.characterName or _G.UNKNOWN, getInviteText(info.playerGuid, info.factionName))
+							entry.text = string_format("%s%s|r %s", getClassHex(K.ClassList[info.className] or info.className), info.characterName or _G.UNKNOWN, getInviteText(info.playerGuid, info.factionName))
 							entry.notCheckable = true
 							entry.arg1 = info.gameAccountID
 							entry.arg2 = info.playerGuid
@@ -544,16 +565,9 @@ local function buttonOnEnter(self)
 							charName = _G.TimerunningUtil.AddSmallIcon(charName)
 						end
 
-						local rName = (K.Realm == info.realmName or info.realmName == "") and "" or "-" .. info.realmName
-						if info.wowProjectID == WOW_PROJECT_CATA then
-							local r, count = string_gsub(info.richPresence or "", "^.-%-%s", "")
-							if count and count > 0 then
-								rName = "-" .. r
-							end
-						end
+						local rName = getBattleNetRealmSuffix(info)
 
-						local color = K.ColorClass(K.ClassList[info.className] or info.className)
-						local classHex = K.RGBToHex(color.r, color.g, color.b)
+						local classHex = getClassHex(K.ClassList[info.className] or info.className)
 						local factionIconString = (info.factionName == "Horde" or info.factionName == "Alliance") and ("|TInterface\\FriendsFrame\\PlusManz-" .. info.factionName .. ":16:|t") or ""
 
 						GameTooltip:AddLine(string_format("%s%s %s%s%s", factionIconString, info.characterLevel or 0, classHex, charName, rName))
@@ -584,8 +598,7 @@ local function buttonOnEnter(self)
 		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
 		GameTooltip:AddLine(" ")
 		local name, level, class, area, _, note = unpack(data)
-		local color = K.ColorClass(class)
-		GameTooltip:AddLine(string_format("%s %s%s", level, K.RGBToHex(color.r, color.g, color.b), name))
+		GameTooltip:AddLine(string_format("%s %s%s", level, getClassHex(class), name))
 		GameTooltip:AddLine(string_format("%s%s", inactiveColor, area))
 		if note and note ~= "" then
 			GameTooltip:AddLine(" ")
