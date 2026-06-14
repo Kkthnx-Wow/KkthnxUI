@@ -13,6 +13,7 @@ local oUF = K.oUF
 -- REASON: Localize C-functions (Snake Case)
 local select = _G.select
 local string_find = _G.string.find
+local string_format = _G.string.format
 
 -- REASON: Localize Globals
 local AFK = _G.AFK
@@ -103,7 +104,7 @@ end
 local function FormatHealthValue(health, percentage)
 	local formattedValue = SafeShortValue(health)
 	if formattedValue and percentage and percentage < 100 then
-		formattedValue = formattedValue .. " - " .. GetHealthColor(percentage)
+		formattedValue = string_format("%s - %s", formattedValue, GetHealthColor(percentage))
 	end
 	return formattedValue
 end
@@ -150,7 +151,7 @@ oUF.Tags.Methods["power"] = function(unit)
 	-- REASON: Display power value - percentage for key units, just percentage for others.
 	if unit == "player" or unit == "target" or unit == "focus" then
 		if per < 100 and UnitPowerType(unit) == 0 and maxPower ~= 0 then
-			return SafeShortValue(cur) .. " - " .. per
+			return string_format("%s - %s", SafeShortValue(cur), per)
 		else
 			return SafeShortValue(cur)
 		end
@@ -350,7 +351,7 @@ oUF.Tags.Methods["nppp"] = function(unit)
 	else
 		color = NP_POWER_LOW
 	end
-	return color .. per .. "|r"
+	return string_format("%s%s|r", color, per)
 end
 oUF.Tags.Events["nppp"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER"
 
@@ -493,7 +494,7 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 	end
 
 	local perc = cur / maxHealth
-	return SafeShortValue(cur) .. " - " .. K.MyClassColor .. K.Round(perc * 100) .. "%"
+	return string_format("%s - %s%s%%", SafeShortValue(cur), K.MyClassColor, K.Round(perc * 100))
 end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 

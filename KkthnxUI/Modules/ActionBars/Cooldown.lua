@@ -36,14 +36,44 @@ function Module:GetCooldownText(cooldown)
 	return cooldown.Text
 end
 
+-- REASON: The Cooldown widget metatable is shared by non-actionbar cooldowns
+-- such as nameplate auras. Avoid styling those from this actionbar module,
+-- because their size/start/duration values can be protected secrets.
+function Module:IsActionCooldown(cooldown)
+	local parent = cooldown and cooldown:GetParent()
+	local parentCooldown = parent and (parent.cooldown or parent.Cooldown)
+	if not parent or parent:IsForbidden() or parentCooldown ~= cooldown then
+		return false
+	end
+
+	local parentName = parent.GetName and parent:GetName()
+	return parentName
+		and (
+			parentName == "KKUI_LeaveVehicleButton"
+			or parentName == "KKUI_ExtraQuestButton"
+			or strfind(parentName, "^KKUI_ActionBar%d+Button%d+$")
+			or strfind(parentName, "^PetActionButton%d+$")
+			or strfind(parentName, "^StanceButton%d+$")
+			or strfind(parentName, "^ExtraActionButton%d+$")
+			or strfind(parentName, "^SpellFlyoutPopupButton%d+$")
+		)
+end
+
 -- REASON: Scale the native countdown font to match button size.
-function Module:UpdateCooldownFont(cooldown)
+function Module:UpdateCooldownFont(cooldown, width, height)
+	if not Module:IsActionCooldown(cooldown) then
+		return
+	end
+
 	local text = Module:GetCooldownText(cooldown)
 	if not text then
 		return
 	end
 
-	local width, height = cooldown:GetSize()
+	if not width or not height then
+		width, height = cooldown:GetSize()
+	end
+
 	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
 	if fontScale == cooldown.fontScale then
 		return
@@ -65,8 +95,8 @@ function Module:UpdateCooldownFont(cooldown)
 	end
 end
 
-function Module:OnCooldownSizeChanged(cooldown)
-	Module:UpdateCooldownFont(cooldown)
+function Module:OnCooldownSizeChanged(cooldown, width, height)
+	Module:UpdateCooldownFont(cooldown, width, height)
 end
 
 -- ---------------------------------------------------------------------------
@@ -77,7 +107,7 @@ end
 -- so every action-button cooldown is configured before the engine draws numbers.
 function Module:StyleCooldown()
 	local cooldown = self
-	if cooldown.__styled or cooldown:IsForbidden() or cooldown.noCooldownCount then
+	if cooldown.__styled or cooldown:IsForbidden() or cooldown.noCooldownCount or not Module:IsActionCooldown(cooldown) then
 		return
 	end
 
@@ -113,8 +143,8 @@ function Module:StyleCooldown()
 
 	if not cooldown.__sizeHooked then
 		cooldown.__sizeHooked = true
-		cooldown:HookScript("OnSizeChanged", function(self)
-			Module:OnCooldownSizeChanged(self)
+		cooldown:HookScript("OnSizeChanged", function(self, width, height)
+			Module:OnCooldownSizeChanged(self, width, height)
 		end)
 	end
 end

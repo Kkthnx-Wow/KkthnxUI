@@ -17,6 +17,7 @@ local DebuffTypeColor = _G.DebuffTypeColor
 local GameTooltip = _G.GameTooltip
 local GetInventoryItemQuality = _G.GetInventoryItemQuality
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local GetTime = _G.GetTime
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -150,19 +151,38 @@ function Module:BuildBuffFrame()
 	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
 
+-- PERF: FormatAuraTime runs per visible aura on every timer tick. The class color
+-- is constant for the session, so build the d/h/m/s format strings once (lazily,
+-- because K.MyClassColor isn't populated yet at file-load time) instead of
+-- re-concatenating them on each call.
+local AURA_DAY_FMT, AURA_HOUR_FMT, AURA_MINUTE_FMT, AURA_SECOND_FMT
+local function EnsureAuraTimeFormats()
+	if AURA_DAY_FMT then
+		return
+	end
+
+	local color = K.MyClassColor or ""
+	AURA_DAY_FMT = "%d" .. color .. "d"
+	AURA_HOUR_FMT = "%d" .. color .. "h"
+	AURA_MINUTE_FMT = "%d" .. color .. "m"
+	AURA_SECOND_FMT = "%d" .. color .. "s"
+end
+
 function Module:FormatAuraTime(s)
+	EnsureAuraTimeFormats()
+
 	if s >= DAY then
-		return string_format("%d" .. K.MyClassColor .. "d", s / DAY), s % DAY
+		return string_format(AURA_DAY_FMT, s / DAY), s % DAY
 	elseif s >= 2 * HOUR then
-		return string_format("%d" .. K.MyClassColor .. "h", s / HOUR), s % HOUR
+		return string_format(AURA_HOUR_FMT, s / HOUR), s % HOUR
 	elseif s >= 10 * MINUTE then
-		return string_format("%d" .. K.MyClassColor .. "m", s / MINUTE), s % MINUTE
+		return string_format(AURA_MINUTE_FMT, s / MINUTE), s % MINUTE
 	elseif s >= MINUTE then
 		local m = math_floor(s / MINUTE)
 		local sec = math_floor(s - m * MINUTE)
 		return string_format("%d:%02d", m, sec), s - math_floor(s)
 	elseif s > 10 then
-		return string_format("%d" .. K.MyClassColor .. "s", s), s - math_floor(s)
+		return string_format(AURA_SECOND_FMT, s), s - math_floor(s)
 	elseif s > 5 then
 		return string_format("|cffffff00%.1f|r", s), s - (math_floor(s * 10) / 10)
 	else
@@ -279,7 +299,7 @@ function Module:UpdateAuras(button, index)
 		if button.Cooldown then
 			button.Cooldown:Clear()
 		end
-		Module:StartAuraTimer(button, expirationTime - _G.GetTime())
+		Module:StartAuraTimer(button, expirationTime - GetTime())
 	else
 		if button.Cooldown then
 			button.Cooldown:Clear()

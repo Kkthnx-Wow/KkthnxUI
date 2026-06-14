@@ -131,6 +131,16 @@ function Module:OnCastbarUpdate(elapsed)
 		-- Duration can never reach the arithmetic / SetFormattedText paths below.
 		if durationObject and not durationObject:HasSecretValues() then
 			local decimal = self.decimal
+			-- PERF: this runs every frame for the whole cast. self.decimal is a fixed
+			-- format ("%.1f"/"%.2f") set once at castbar creation, so cache the two
+			-- composed "cur - total" formats on the bar instead of re-concatenating
+			-- them each frame. Rebuild only if decimal ever changes.
+			if self._timeFmtFor ~= decimal then
+				self._timeFmtFor = decimal
+				self._timeFmt = decimal .. " - " .. decimal
+				self._timeFmtDelay = decimal .. " - |cffff0000" .. decimal
+			end
+
 			local total = durationObject:GetTotalDuration()
 			-- channels count down (remaining), casts/empowers count up (elapsed)
 			local cur = self.channeling and durationObject:GetRemainingDuration() or durationObject:GetElapsedDuration()
@@ -138,14 +148,14 @@ function Module:OnCastbarUpdate(elapsed)
 			-- REASON: Display logic differs for player (with latency) vs other units.
 			if self.__owner.unit == "player" then
 				if self.delay and self.delay ~= 0 then
-					self.Time:SetFormattedText(decimal .. " - |cffff0000" .. decimal, cur, total)
+					self.Time:SetFormattedText(self._timeFmtDelay, cur, total)
 				else
-					self.Time:SetFormattedText(decimal .. " - " .. decimal, cur, total)
+					self.Time:SetFormattedText(self._timeFmt, cur, total)
 				end
 			elseif total and total > 1e4 then
 				self.Time:SetText("∞ - ∞")
 			else
-				self.Time:SetFormattedText(decimal .. " - " .. decimal, cur, total)
+				self.Time:SetFormattedText(self._timeFmt, cur, total)
 			end
 
 			-- REASON: Handle Empowered spells (pips/stages) off the elapsed time.

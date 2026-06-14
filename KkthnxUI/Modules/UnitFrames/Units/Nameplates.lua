@@ -376,6 +376,19 @@ function Module:UpdateGroupRoles()
 	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
 end
 
+-- PERF: nameplate units are a small fixed set ("nameplateN"), and threat checks run
+-- on frequent health updates across every visible plate. Cache the derived "...target"
+-- token so we stop allocating a fresh string on each call. Bounded by the unit set.
+local targetTokenCache = {}
+local function GetTargetToken(unit)
+	local token = targetTokenCache[unit]
+	if not token then
+		token = unit .. "target"
+		targetTokenCache[unit] = token
+	end
+	return token
+end
+
 function Module:CheckThreatStatus(unit)
 	if not UnitExists(unit) then
 		return
@@ -386,7 +399,7 @@ function Module:CheckThreatStatus(unit)
 	-- UnitIsUnit returns a secret boolean and UnitName a secret string that can't be
 	-- branched on or used as a table key. Only resolve the off-tank role when every
 	-- read is readable; otherwise keep the previous "NONE" default.
-	local unitTarget = unit .. "target"
+	local unitTarget = GetTargetToken(unit)
 	local unitRole = "NONE"
 
 	if isInGroup and UnitExists(unitTarget) then

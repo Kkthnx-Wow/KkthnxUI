@@ -24,6 +24,7 @@ local GetBattlefieldPortExpiration = _G.GetBattlefieldPortExpiration
 local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySoundFile = _G.PlaySoundFile
+local PVPReadyDialog_Showing = _G.PVPReadyDialog_Showing
 local SecondsToTime = _G.SecondsToTime
 
 -- SG: Constants
@@ -211,7 +212,7 @@ end
 
 local function updatePvPQueueUI()
 	local pvpDialog = _G.PVPReadyDialog
-	if activePvPQueueIndex and pvpDialog and _G.PVPReadyDialog_Showing(activePvPQueueIndex) then
+	if activePvPQueueIndex and pvpDialog and PVPReadyDialog_Showing(activePvPQueueIndex) then
 		local secondsValue = GetBattlefieldPortExpiration(activePvPQueueIndex)
 		if secondsValue and secondsValue > 0 then
 			warnOnQueueExpiration(secondsValue)

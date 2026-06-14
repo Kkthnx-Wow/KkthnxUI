@@ -18,6 +18,7 @@ local table_remove = table.remove
 local wipe = wipe
 local pairs = pairs
 local next = next
+local select = select
 
 -- PERF: Cache frequent WoW API calls
 local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown

@@ -18,6 +18,11 @@ local UnitAura = _G.UnitAura
 
 local math_floor = _G.math.floor
 
+-- PERF: the UnitAura fallback below is the per-aura hot path on UNIT_AURA scans,
+-- so cache the C_* methods it leans on instead of re-resolving them each call.
+local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
+local AuraUtil_UnpackAuraData = _G.AuraUtil and _G.AuraUtil.UnpackAuraData
+
 local Tracker = {
 	-- PRIEST
 	[194384] = { 1, 1, 0.66 }, -- Redeemer
@@ -88,13 +93,13 @@ local Tracker = {
 
 if not UnitAura then
 	UnitAura = function(unitToken, index, filter)
-		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
+		local auraData = C_UnitAuras_GetAuraDataByIndex(unitToken, index, filter)
 
 		if not auraData then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		return AuraUtil_UnpackAuraData(auraData)
 	end
 end
 
