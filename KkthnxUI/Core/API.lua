@@ -33,6 +33,57 @@ local UIParent = UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
+K.borderRegistry = K.borderRegistry or {}
+
+local function RegisterBorder(border)
+	if border then
+		K.borderRegistry[#K.borderRegistry + 1] = border
+	end
+end
+
+function K.RefreshBorderColors()
+	local registry = K.borderRegistry
+	if not registry then
+		return
+	end
+
+	for i = 1, #registry do
+		local border = registry[i]
+		if border and border.SetVertexColor then
+			K.SetBorderColor(border)
+		end
+	end
+end
+
+function K.RefreshBorderStyle()
+	local General = C.General
+	local style = General and General.BorderStyle or "KkthnxUI"
+	local borderSize = (style == "KkthnxUI") and 12 or 10
+	local texture = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. style .. "\\Border.tga"
+
+	K.BorderSize = borderSize
+
+	local registry = K.borderRegistry
+	if registry then
+		for i = 1, #registry do
+			local border = registry[i]
+			if border and border.SetTexture then
+				border:SetTexture(texture)
+				if border.SetSize then
+					border:SetSize(borderSize)
+				end
+			end
+		end
+	end
+
+	K.RefreshBorderColors()
+
+	local actionBar = K:GetModule("ActionBar")
+	if actionBar and actionBar.RefreshActionBarBorders then
+		actionBar:RefreshActionBarBorders()
+	end
+end
+
 -- ---------------------------------------------------------------------------
 -- Utility Functions
 -- ---------------------------------------------------------------------------
@@ -155,6 +206,7 @@ local function CreateBorder(bFrame, ...)
 	end
 
 	bFrame.KKUI_Border = kkui_border
+	RegisterBorder(kkui_border)
 
 	-- Add the Background
 	AddBackground(bFrame, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor)

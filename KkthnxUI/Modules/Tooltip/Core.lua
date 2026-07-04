@@ -10,6 +10,10 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Tooltip")
 
+local function IsTooltipModuleEnabled()
+	return C["Tooltip"].Enable ~= false
+end
+
 -- REASON: Localize globals for performance and stack safety.
 local _G = _G
 local ipairs = _G.ipairs
@@ -79,8 +83,6 @@ local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitHealth = _G.UnitHealth
-local UnitHealthMax = _G.UnitHealthMax
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
@@ -100,7 +102,6 @@ local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
 local UnitTokenFromGUID = _G.UnitTokenFromGUID
 local YOU = _G.YOU
-local AbbreviateNumbers = _G.AbbreviateNumbers
 local hooksecurefunc = _G.hooksecurefunc
 
 local IsSecret = K.IsSecret
@@ -114,20 +115,66 @@ local classification = {
 local npcIDstring = "%s " .. K.InfoColor .. "%s"
 local specPrefix = "|cffFFCC00" .. SPECIALIZATION .. ": " .. K.InfoColor
 
--- REASON: Utility to retrieve unit and GUID from tooltip data.
--- SECRET (12.0): data.guid is secret on restricted units, and feeding it to
--- UnitTokenFromGUID yields a secret unit token that then errors when passed to
--- UnitExists/UnitIsPlayer/etc. Drop the secret guid and fall back to the plain
--- "mouseover" token so callers always get a readable (or nil) unit. Mirrors NDui.
+-- REASON: Resolve the unit token shown on a tooltip (Midnight-safe).
+-- SECRET (12.0): data.guid is secret on restricted units; never pass it to
+-- UnitTokenFromGUID when secret. Falls back to mouseover and owner unit.
+function Module:GetDisplayedUnit(tt)
+	tt = tt or self
+	if tt.GetPrimaryTooltipData then
+		if tt.IsTooltipType and not tt:IsTooltipType(Enum.TooltipDataType.Unit) then
+			return
+		end
+		local data = tt:GetPrimaryTooltipData()
+		local guid = data and data.guid
+		if guid and K.NotSecret(guid) then
+			return UnitTokenFromGUID(guid)
+		end
+		return
+	end
+
+	local _, unit = tt:GetUnit()
+	return unit
+end
+
+function Module:GetUnitToken(tt)
+	tt = tt or self
+	if not tt or tt:IsForbidden() then
+		return
+	end
+
+	local mouseoverExists = UnitExists("mouseover")
+	local mouseover = (K.NotSecret(mouseoverExists) and mouseoverExists) and "mouseover" or nil
+
+	local unit = Module.GetDisplayedUnit(tt)
+	if unit then
+		if K.IsSecretUnit(unit) then
+			return mouseover
+		end
+		local exists = UnitExists(unit)
+		return (K.NotSecret(exists) and exists and unit) or mouseover
+	end
+
+	local owner = tt.GetOwner and tt:GetOwner()
+	local ownerUnit = owner and owner.GetAttribute and owner:GetAttribute("unit")
+	if ownerUnit and K.NotSecret(ownerUnit) then
+		if K.IsSecretUnit(ownerUnit) then
+			return mouseover
+		end
+		local exists = UnitExists(ownerUnit)
+		return (K.NotSecret(exists) and exists and ownerUnit) or mouseover
+	end
+
+	return mouseover
+end
+
+-- Backward-compatible: returns unit token and guid (guid may be nil when secret).
 function Module:GetUnit()
+	local unit = Module.GetUnitToken(self)
 	local data = self:GetTooltipData()
 	local guid = data and data.guid
 	if IsSecret(guid) then
 		guid = nil
 	end
-
-	local mouseover = UnitExists("mouseover") and "mouseover"
-	local unit = (guid and UnitTokenFromGUID(guid)) or mouseover
 	return unit, guid
 end
 
@@ -143,6 +190,9 @@ end
 
 -- REASON: Restyles the faction line in the tooltip (e.g., Horde/Alliance coloring).
 function Module:UpdateFactionLine(lineData)
+	if not IsTooltipModuleEnabled() then
+		return
+	end
 	if self:IsForbidden() then
 		return
 	end
@@ -158,9 +208,21 @@ function Module:UpdateFactionLine(lineData)
 		return
 	end
 
-	local unit = Module.GetUnit(self)
-	local unitClass = unit and UnitIsPlayer(unit) and UnitClass(unit)
-	local unitCreature = unit and UnitCreatureType(unit)
+	local unit = Module.GetUnitToken(self)
+	if not unit or K.IsSecretUnit(unit) then
+		return
+	end
+
+	local isPlayer = UnitIsPlayer(unit)
+	isPlayer = K.NotSecret(isPlayer) and isPlayer
+	local unitClass = isPlayer and UnitClass(unit)
+	if unitClass and IsSecret(unitClass) then
+		unitClass = nil
+	end
+	local unitCreature = UnitCreatureType(unit)
+	if unitCreature and IsSecret(unitCreature) then
+		unitCreature = nil
+	end
 
 	if linetext == PVP then
 		return true
@@ -264,6 +326,10 @@ end
 
 -- REASON: Extensive handler for unit tooltips, adding name, title, realm, status, guild, role, level, and target info.
 function Module:OnTooltipSetUnit()
+	if not IsTooltipModuleEnabled() then
+		return
+	end
+
 	if self:IsForbidden() or self ~= GameTooltip then
 		return
 	end
@@ -273,9 +339,20 @@ function Module:OnTooltipSetUnit()
 		return
 	end
 
-	local unit, guid = Module.GetUnit(self)
-	if not unit or not UnitExists(unit) then
+	local unit = Module.GetUnitToken(self)
+	if not unit or K.IsSecretUnit(unit) then
 		return
+	end
+
+	local exists = UnitExists(unit)
+	if not (K.NotSecret(exists) and exists) then
+		return
+	end
+
+	local data = self.GetPrimaryTooltipData and self:GetPrimaryTooltipData() or self:GetTooltipData()
+	local guid = data and data.guid
+	if IsSecret(guid) then
+		guid = nil
 	end
 
 	local isShiftKeyDown = IsShiftKeyDown()
@@ -458,78 +535,6 @@ function Module:OnTooltipSetUnit()
 	Module.CreatePetInfo(self, unit)
 end
 
--- REASON: Colors the status bar by unit (class/reaction). Driven by the Unit
--- tooltip post-call so we read the unit identity once, not on every bar value
--- change. self is the GameTooltip here.
--- SECRET (12.0): in instances a unit's identity is secret; K.UnitColor would
--- error reading it, so fall back to friendly green (mirrors NDui).
-function Module:UpdateStatusBarColor()
-	if self:IsForbidden() or not self.StatusBar then
-		return
-	end
-
-	local unit = Module.GetUnit(self)
-	if not unit then
-		return
-	end
-
-	if IsSecret(unit) then
-		self.StatusBar:SetStatusBarColor(0, 1, 0)
-	else
-		self.StatusBar:SetStatusBarColor(K.UnitColor(unit))
-	end
-end
-
--- REASON: Updates the health bar text. Hooked to StatusBar:UpdateUnitHealth
--- (the Midnight method that drives the bar) so self is the StatusBar; its parent
--- is the GameTooltip we read the unit from.
--- SECRET (12.0): UnitHealth can return a secret number. AbbreviateNumbers is
--- secret-safe (returns a secret string usable by SetText), so we never do raw
--- arithmetic on the value the way the old SetValue hook did.
-function Module:RefreshStatusBar()
-	if not self.text then
-		self.text = K.CreateFontString(self, 11, nil, "")
-	end
-
-	local unit = Module.GetUnit(self:GetParent())
-	local ok, value = pcall(UnitHealth, unit)
-	if ok and value then
-		self.text:SetText(AbbreviateNumbers(value))
-	else
-		self.text:SetText("")
-	end
-end
-
--- REASON: Applies KkthnxUI styling (position, texture, border) to the default tooltip status bar.
-function Module:ReskinStatusBar()
-	self.StatusBar:ClearAllPoints()
-	self.StatusBar:SetPoint("BOTTOMLEFT", self.bg, "TOPLEFT", 0, 6)
-	self.StatusBar:SetPoint("BOTTOMRIGHT", self.bg, "TOPRIGHT", -0, 6)
-	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	self.StatusBar:SetHeight(12)
-	self.StatusBar:CreateBorder()
-end
-
--- REASON: Hooks status bar creation to apply custom styling.
-function Module:GameTooltip_ShowStatusBar()
-	if not self or self:IsForbidden() then
-		return
-	end
-
-	if not self.statusBarPool then
-		return
-	end
-
-	local bar = self.statusBarPool:GetNextActive()
-	if bar and not bar.styled then
-		bar:StripTextures()
-		bar:CreateBorder()
-		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-
-		bar.styled = true
-	end
-end
-
 -- REASON: Hooks progress bar creation to apply custom styling.
 function Module:GameTooltip_ShowProgressBar()
 	if not self or self:IsForbidden() then
@@ -567,6 +572,10 @@ local anchorIndex = {
 local mover
 -- REASON: Customizes tooltip anchor based on user settings (CursorMode, TipAnchor).
 function Module:GameTooltip_SetDefaultAnchor(parent)
+	if not IsTooltipModuleEnabled() then
+		return
+	end
+
 	if self:IsForbidden() then
 		return
 	end
@@ -587,8 +596,33 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 	end
 end
 
+function Module:UpdateAnchor()
+	if C["Tooltip"].CursorMode ~= 1 or not mover then
+		return
+	end
+
+	if GameTooltip:IsShown() then
+		GameTooltip:ClearAllPoints()
+		GameTooltip:SetPoint(anchorIndex[C["Tooltip"].TipAnchor], mover)
+	end
+end
+
+function Module:UpdateCursorMode()
+	if not GameTooltip:IsShown() then
+		return
+	end
+
+	local owner = GameTooltip:GetOwner() or UIParent
+	GameTooltip:SetOwner(owner, cursorIndex[C["Tooltip"].CursorMode])
+	Module:UpdateAnchor()
+end
+
 -- REASON: Main function to apply KkthnxUI borders and quality colors to various tooltips.
 function Module:ReskinTooltip()
+	if not IsTooltipModuleEnabled() then
+		return
+	end
+
 	if not self then
 		return
 	end
@@ -644,6 +678,10 @@ end
 
 -- REASON: FIX: Workaround for Blizzard's recipe item name wrapping issues.
 function Module:FixRecipeItemNameWidth()
+	if not IsTooltipModuleEnabled() then
+		return
+	end
+
 	if not self.GetName then
 		return
 	end
@@ -665,18 +703,45 @@ function Module:FixRecipeItemNameWidth()
 	end
 end
 
--- REASON: Forces a tooltip data refresh when a modifier key state changes.
-function Module:ResetUnit(btn)
-	if btn == "LSHIFT" and UnitExists("mouseover") then
-		-- SECRET (12.0): RefreshData re-runs Blizzard's own tooltip pipeline
-		-- (GameTooltip_UnitColor -> UnitPlayerControlled, etc.), which throws on a
-		-- secret unit because our event path has tainted execution. Swallow only the
-		-- secret-value error and surface anything else (mirrors the secret tooltip
-		-- guard convention rather than fighting taint).
-		local ok, err = pcall(GameTooltip.RefreshData, GameTooltip)
-		if not ok and not (type(err) == "string" and string_find(err, "secret")) then
-			error(err, 0)
-		end
+-- REASON: Forces a tooltip data refresh when shift is held (extended info).
+local function IsSecretTooltipPipelineError(err)
+	if type(err) ~= "string" then
+		return false
+	end
+	local lower = string.lower(err)
+	return string_find(lower, "secret") ~= nil or string_find(lower, "unitplayercontrolled") ~= nil
+end
+
+function Module.ResetUnit(event, btn)
+	if btn ~= "LSHIFT" or not IsShiftKeyDown() then
+		return
+	end
+
+	if not GameTooltip:IsShown() then
+		return
+	end
+
+	local mouseoverExists = UnitExists("mouseover")
+	if not (K.NotSecret(mouseoverExists) and mouseoverExists) then
+		return
+	end
+
+	if K.IsSecretUnit("mouseover") then
+		return
+	end
+
+	local unit = Module.GetUnitToken(GameTooltip)
+	if not unit or K.IsSecret(unit) or K.IsSecretUnit(unit) then
+		return
+	end
+
+	-- SECRET (12.0): RefreshData re-runs Blizzard's tooltip pipeline
+	-- (GameTooltip_UnitColor -> UnitPlayerControlled). That throws when the unit
+	-- token is secret and our handler has tainted execution — skip instead of
+	-- fighting Blizzard's secure path.
+	local ok, err = pcall(GameTooltip.RefreshData, GameTooltip)
+	if not ok and not IsSecretTooltipPipelineError(err) then
+		error(err, 0)
 	end
 end
 
@@ -727,17 +792,9 @@ function Module:OnEnable()
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.OnTooltipSetUnit)
 
-	-- MIDNIGHT (12.0): the bar value is now driven by StatusBar:UpdateUnitHealth
-	-- (secret-safe), and SetValue receives secret normalized health. Disable the
-	-- default OnValueChanged text handler, then drive our text from UpdateUnitHealth
-	-- and our bar color from the Unit post-call. Mirrors NDui's Tip.lua.
-	GameTooltip.StatusBar:SetScript("OnValueChanged", nil)
-	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.UpdateStatusBarColor)
-	hooksecurefunc(GameTooltip.StatusBar, "UpdateUnitHealth", Module.RefreshStatusBar)
 	TooltipDataProcessor.AddLinePreCall(Enum.TooltipDataLineType.None, Module.UpdateFactionLine)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.FixRecipeItemNameWidth)
 
-	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
 	hooksecurefunc(TooltipComparisonManager, "AnchorShoppingTooltips", Module.AnchorShoppingTooltips)
@@ -745,6 +802,7 @@ function Module:OnEnable()
 
 	-- REASON: Initialize sub-modules for icons, IDs, etc.
 	local loadTooltipModules = {
+		"CreateTooltipStatusBar",
 		"CreateTooltipIcons",
 		"CreateTooltipID",
 		"CreateMountSource",

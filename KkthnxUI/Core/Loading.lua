@@ -175,8 +175,6 @@ local function KKUI_VerifyDatabase()
 
 	-- 3) Set Character Variable Defaults
 	local charData = KkthnxUIDB.Variables[K.Realm][K.Name]
-	charData.AuraWatchList = charData.AuraWatchList or { Switcher = {}, IgnoreSpells = {} }
-	charData.AuraWatchMover = charData.AuraWatchMover or {}
 	charData.AutoQuest = charData.AutoQuest or false
 	charData.AutoQuestIgnoreNPC = charData.AutoQuestIgnoreNPC or {}
 	charData.BindType = charData.BindType or 1
@@ -278,21 +276,6 @@ local function KKUI_OnEvent(self, event, arg1)
 		KKUI_RunDatabaseMigrations()
 		KKUI_CreateDefaults()
 		KKUI_LoadCustomSettings()
-
-		-- TEMPORARY (Midnight 12.0): AuraWatch, the Swing timer, floating CombatText and
-		-- MissingStats are fully disabled while their secret-value handling is reworked.
-		-- The module/plugin files are unloaded in Modules\Load_Modules.xml so none of their
-		-- code runs; these flags are forced off as well so the UnitFrames (Player/Target)
-		-- skip building the now-unloaded Swing/CombatText elements regardless of the saved
-		-- profile. To restore: re-enable the file loads in the XML and remove this block.
-		if C["AuraWatch"] then
-			C["AuraWatch"].Enable = false
-		end
-		if C["Unitframe"] then
-			C["Unitframe"].CombatText = false
-			C["Unitframe"].PetCombatText = false
-			C["Unitframe"].SwingBar = false
-		end
 
 		-- REASON: Setup initial scaling.
 		if K.SetupUIScale then

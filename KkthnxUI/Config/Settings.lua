@@ -101,13 +101,6 @@ C["ActionBar"] = {
 	BarFadeCasting = true,
 	BarFadeHealth = true,
 	BarFadeVehicle = true,
-
-	PulseCD = false,
-	PulseCDSize = 75,
-	PulseCDAnimScale = 1.5,
-	PulseCDHoldTime = 0.5,
-	PulseCDThreshold = 3,
-	PulseCDSound = false,
 }
 
 -- Announcements
@@ -115,18 +108,10 @@ C["Announcements"] = {
 	AlertInChat = false,
 	AlertOnlyInWorld = false,
 	KeystoneAlert = false,
-	BrokenAlert = false,
-	DispellAlert = false,
 	HealthAlert = false,
-	InstAlertOnly = true,
-	InterruptAlert = false,
 	ItemAlert = false,
-	KillingBlow = false,
 	OnlyCompleteRing = false,
-	OwnDispell = true,
-	OwnInterrupt = true,
 	PullCountdown = true,
-	PvPEmote = false,
 	QuestNotifier = false,
 	QuestProgress = false,
 	RareAlert = false,
@@ -135,8 +120,6 @@ C["Announcements"] = {
 	RareAlertPopup = true,
 	RareAlertClickToTarget = true,
 	ResetInstance = true,
-	SaySapped = false,
-	AlertChannel = 2,
 	QuestProgressEveryNth = 1,
 	AnnounceWorldQuests = false,
 }
@@ -225,6 +208,7 @@ C["Auras"] = {
 	Enable = true,
 	HideBlizBuff = false,
 	Reminder = false,
+	ReminderGlow = true,
 	ReverseBuffs = false,
 	ReverseDebuffs = false,
 	TotemSize = 32,
@@ -273,13 +257,6 @@ C["DataText"] = {
 	Spec = false,
 	System = true,
 	Time = true,
-}
-
-C["AuraWatch"] = {
-	Enable = true,
-	ClickThrough = false,
-	IconScale = 1,
-	DeprecatedAuras = false,
 }
 
 -- General
@@ -421,6 +398,10 @@ C["Nameplate"] = {
 	PlateWidth = 200,
 	PowerUnitList = "",
 	QuestIndicator = true,
+	QuestProgressMode = 1, -- 1=Always 2=Target 3=Hover 4=Modifier 5=Never
+	QuestShowPartyQuest = true,
+	QuestProgressFormat = 1, -- 1=completed (3/7) 2=remaining
+	QuestProgressModifier = 1, -- 1=Alt 2=Ctrl 3=Shift
 	SecureColor = { 1, 0, 1 },
 	SelectedScale = 1.1,
 	ShowPlayerPlate = false,
@@ -476,9 +457,11 @@ C["Tooltip"] = {
 	InstanceLock = true,
 	LFDRole = false,
 	MDScore = true,
+	HealthBarText = "currentmax",
 	ShowIDs = false,
 	ShowMount = false,
 	SpecLevelByShift = true,
+	StatusBarHeight = 12,
 	TargetBy = true,
 	VendorLocation = false,
 	VendorLocationOpenMap = true,
@@ -490,18 +473,14 @@ C["Tooltip"] = {
 C["Unitframe"] = {
 	AdditionalPower = false,
 	AllTextScale = 1, -- Testing
-	AutoAttack = true,
 	CastClassColor = false,
 	CastReactionColor = false,
 	CastbarLatency = true,
 	ClassResources = true,
 	CombatFade = false,
-	CombatText = false,
 	DebuffHighlight = true,
 	Enable = true,
-	FCTOverHealing = false,
 	GlobalCooldown = true,
-	HotsDots = true,
 	OnlyShowPlayerDebuff = false,
 	Range = true,
 
@@ -525,12 +504,6 @@ C["Unitframe"] = {
 	HideMaxPlayerLevel = false,
 	Smooth = false,
 	Stagger = true,
-
-	SwingBar = false,
-	SwingWidth = 274,
-	SwingHeight = 14,
-	SwingTimer = true,
-	OffOnTop = false,
 
 	-- Target
 	TargetHealthHeight = 34,

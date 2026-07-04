@@ -138,6 +138,14 @@ local function RegisterBigDebuffs()
 	}
 end
 
+function Module:SetBigDebuffsEnabled(enabled)
+	if enabled then
+		RegisterBigDebuffs()
+	elseif _G.BigDebuffs and BigDebuffs.anchors then
+		BigDebuffs.anchors["KkthnxUI"] = nil
+	end
+end
+
 -- REASON: Use the standard RegisterSkin deferred mechanism so this only runs
 -- after BigDebuffs has fully loaded and initialized its anchors table.
 Module:RegisterSkin("BigDebuffs", RegisterBigDebuffs)

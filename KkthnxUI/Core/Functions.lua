@@ -84,6 +84,21 @@ do
 		return issecrettable == nil or not issecrettable(object)
 	end
 
+	local ShouldUnitIdentityBeSecret = C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret
+
+	-- True when a unit token's identity is hidden (instances / restricted).
+	function K.IsSecretUnit(unit)
+		if not (unit and ShouldUnitIdentityBeSecret) then
+			return false
+		end
+		local ok, value = pcall(ShouldUnitIdentityBeSecret, unit)
+		return ok and value
+	end
+
+	function K.NotSecretUnit(unit)
+		return not K.IsSecretUnit(unit)
+	end
+
 	-- Safe UnitIsUnit: token comparison (ShouldUnitComparisonBeSecret) returns a
 	-- secret boolean in instances, so testing the raw result errors. This mirrors
 	-- oUF's Private.unitIsUnit shim. Fail closed: a secret result becomes false so
@@ -96,6 +111,289 @@ do
 			return false
 		end
 		return result
+	end
+
+	--- Read a boolean when safe; returns true/false, or nil when secret.
+	function K.BooleanIsTrue(value)
+		if K.NotSecret(value) then
+			return value and true or false
+		end
+		return nil
+	end
+
+	local dispelColorCurve
+
+	--- Midnight dispel ColorCurve for C_UnitAuras.GetAuraDispelTypeColor (shared by Auras + oUF hooks).
+	function K.GetDispelColorCurve(oUFRef)
+		if dispelColorCurve ~= nil then
+			return dispelColorCurve or nil
+		end
+
+		local CurveUtil = C_CurveUtil
+		local oUF = oUFRef or K.oUF
+		if not (CurveUtil and CurveUtil.CreateColorCurve and oUF and oUF.Enum and oUF.colors) then
+			dispelColorCurve = false
+			return nil
+		end
+
+		local curve = CurveUtil.CreateColorCurve()
+		if Enum and Enum.LuaCurveType then
+			curve:SetType(Enum.LuaCurveType.Step)
+		end
+
+		for _, dispelIndex in next, oUF.Enum.DispelType do
+			local color = oUF.colors.dispel[dispelIndex]
+			if color then
+				curve:AddPoint(dispelIndex, color)
+			end
+		end
+
+		dispelColorCurve = curve
+		return curve
+	end
+
+	--- Resolve debuff border RGB via aura instance + dispel curve (no secret dispelName read).
+	function K.GetAuraDispelBorderRGB(unit, auraInstanceID, oUFRef)
+		local curve = K.GetDispelColorCurve(oUFRef)
+		if not (curve and auraInstanceID and C_UnitAuras and C_UnitAuras.GetAuraDispelTypeColor) then
+			return nil
+		end
+
+		local ok, color = pcall(C_UnitAuras.GetAuraDispelTypeColor, unit, auraInstanceID, curve)
+		if not ok or not color then
+			return nil
+		end
+
+		if color.GetRGB then
+			return color:GetRGB()
+		end
+
+		if color.r and color.g and color.b then
+			return color.r, color.g, color.b
+		end
+
+		return nil
+	end
+
+	--- NexEnhance alias: true when a value is safe to read/compare/index.
+	function K.CanAccessValue(value)
+		return K.NotSecret(value)
+	end
+
+	--- Hide cooldown swipe when a DurationObject reports zero (permanent aura).
+	function K.MaskCooldownSwipeFromDurationObject(cooldown, durObj)
+		if not (cooldown and durObj and durObj.IsZero and cooldown.SetAlphaFromBoolean) then
+			return
+		end
+		cooldown:SetAlphaFromBoolean(durObj:IsZero(), 0, 1)
+	end
+
+	local DISPEL_INDEX_TO_NAME = {
+		[1] = "Magic",
+		[2] = "Curse",
+		[3] = "Disease",
+		[4] = "Poison",
+	}
+
+	local function colorDistance(r, g, b, cr, cg, cb)
+		local dr, dg, db = r - cr, g - cg, b - cb
+		return dr * dr + dg * dg + db * db
+	end
+
+	--- Resolve dispel type name from aura instance when dispelName is secret.
+	function K.GetAuraDispelTypeName(unit, auraInstanceID, oUFRef)
+		local oUF = oUFRef or K.oUF
+		local curve = K.GetDispelColorCurve(oUF)
+		if not (curve and auraInstanceID and C_UnitAuras and C_UnitAuras.GetAuraDispelTypeColor and oUF and oUF.colors) then
+			return nil
+		end
+
+		local ok, color = pcall(C_UnitAuras.GetAuraDispelTypeColor, unit, auraInstanceID, curve)
+		if not ok or not color then
+			return nil
+		end
+
+		local cr, cg, cb
+		if color.GetRGB then
+			cr, cg, cb = color:GetRGB()
+		elseif color.r then
+			cr, cg, cb = color.r, color.g, color.b
+		end
+
+		if not (cr and K.NotSecret(cr) and K.NotSecret(cg) and K.NotSecret(cb)) then
+			return nil
+		end
+
+		local bestName, bestDist
+		for index, name in pairs(DISPEL_INDEX_TO_NAME) do
+			local ref = oUF.colors.dispel[index]
+			if ref then
+				local rr, rg, rb
+				if ref.GetRGB then
+					rr, rg, rb = ref:GetRGB()
+				elseif ref.r then
+					rr, rg, rb = ref.r, ref.g, ref.b
+				elseif ref[1] then
+					rr, rg, rb = ref[1], ref[2], ref[3]
+				end
+				if rr and K.NotSecret(rr) then
+					local d = colorDistance(cr, cg, cb, rr, rg, rb)
+					if not bestDist or d < bestDist then
+						bestDist = d
+						bestName = name
+					end
+				end
+			end
+		end
+
+		return bestName
+	end
+end
+do
+	local UnitIsPlayer = UnitIsPlayer
+	local UnitReaction = UnitReaction
+	local UnitSelectionType = UnitSelectionType
+	local UnitSelectionColor = UnitSelectionColor
+	local UnitIsFriend = UnitIsFriend
+	local UnitPlayerControlled = UnitPlayerControlled
+	local UnitIsOwnerOrControllerOfUnit = UnitIsOwnerOrControllerOfUnit
+	local UnitIsOtherPlayersPet = UnitIsOtherPlayersPet
+	local CompactUnitFrame_IsOnThreatListWithPlayer = CompactUnitFrame_IsOnThreatListWithPlayer
+	local FACTION_BAR_COLORS = FACTION_BAR_COLORS
+
+	local SELECTION_TYPE_TO_FACTION = {
+		[0] = 2,
+		[1] = 3,
+		[2] = 4,
+		[3] = 5,
+	}
+
+	local SELECTION_RGB_REFS = {
+		{ 2, 1.0, 0.0, 0.0 },
+		{ 3, 1.0, 0.5, 0.0 },
+		{ 4, 1.0, 1.0, 0.0 },
+		{ 5, 0.0, 1.0, 0.0 },
+	}
+
+	local function colorDistance(r, g, b, cr, cg, cb)
+		local dr, dg, db = r - cr, g - cg, b - cb
+		return dr * dr + dg * dg + db * db
+	end
+
+	local function factionIndexFromSelectionRGB(sr, sg, sb)
+		local bestIdx, bestDist
+		for i = 1, #SELECTION_RGB_REFS do
+			local ref = SELECTION_RGB_REFS[i]
+			local d = colorDistance(sr, sg, sb, ref[2], ref[3], ref[4])
+			if not bestDist or d < bestDist then
+				bestDist = d
+				bestIdx = ref[1]
+			end
+		end
+		return bestIdx
+	end
+
+	local function resolveFactionTint(factionIdx)
+		local color = FACTION_BAR_COLORS and FACTION_BAR_COLORS[factionIdx]
+		if not color then
+			return nil
+		end
+
+		if factionIdx == 3 then
+			local mix = 0.7
+			return color.r + (1.0 - color.r) * mix, color.g + (0.52 - color.g) * mix, color.b + (0.0 - color.b) * mix
+		end
+
+		return color.r, color.g, color.b
+	end
+
+	function K.IsFriendlyControlledUnit(unit)
+		if not unit or K.IsSecret(unit) or K.IsSecretUnit(unit) then
+			return false
+		end
+
+		if K.UnitIsUnit(unit, "pet") then
+			return true
+		end
+
+		if UnitIsOtherPlayersPet then
+			local otherPet = UnitIsOtherPlayersPet(unit)
+			if K.NotSecret(otherPet) and otherPet then
+				return true
+			end
+		end
+
+		if not UnitPlayerControlled then
+			return false
+		end
+
+		local controlled = UnitPlayerControlled(unit)
+		if K.IsSecret(controlled) or not controlled then
+			return false
+		end
+
+		if UnitIsOwnerOrControllerOfUnit then
+			local owned = UnitIsOwnerOrControllerOfUnit("player", unit)
+			if K.NotSecret(owned) and owned then
+				return true
+			end
+		end
+
+		if UnitIsFriend then
+			local friend = UnitIsFriend("player", unit)
+			if K.NotSecret(friend) and friend then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	--- NPC reaction tint using UnitSelectionType/Color with UnitReaction fallback.
+	function K.GetNpcReactionColor(unit)
+		if not unit or not FACTION_BAR_COLORS or K.IsSecret(unit) or K.IsSecretUnit(unit) then
+			return nil
+		end
+
+		if K.IsFriendlyControlledUnit(unit) then
+			return resolveFactionTint(5)
+		end
+
+		local factionIdx
+
+		if UnitSelectionType then
+			local selType = UnitSelectionType(unit, false)
+			if K.NotSecret(selType) and selType ~= nil then
+				factionIdx = SELECTION_TYPE_TO_FACTION[selType]
+			end
+		end
+
+		if not factionIdx and UnitSelectionColor then
+			local sr, sg, sb = UnitSelectionColor(unit, false)
+			if K.NotSecret(sr) and K.NotSecret(sg) and K.NotSecret(sb) then
+				factionIdx = factionIndexFromSelectionRGB(sr, sg, sb)
+			end
+		end
+
+		if not factionIdx then
+			local reaction = UnitReaction(unit, "player")
+			if K.IsSecret(reaction) or not reaction then
+				return nil
+			end
+			factionIdx = reaction
+		end
+
+		if CompactUnitFrame_IsOnThreatListWithPlayer and UnitIsFriend then
+			local onThreat = CompactUnitFrame_IsOnThreatListWithPlayer(unit)
+			if K.NotSecret(onThreat) and onThreat then
+				local isFriend = UnitIsFriend("player", unit)
+				if K.NotSecret(isFriend) and not isFriend then
+					factionIdx = 2
+				end
+			end
+		end
+
+		return resolveFactionTint(factionIdx)
 	end
 end
 
@@ -113,7 +411,7 @@ do
 	local format1 = "%.1f"
 
 	function K.ShortValue(n)
-		if not n or type(n) ~= "number" then
+		if not n or type(n) ~= "number" or K.IsSecret(n) then
 			return ""
 		end
 
@@ -436,21 +734,23 @@ do
 			return
 		end
 
-		local fs = self:CreateFontString(nil, "OVERLAY")
+		local fs
+		if not textstyle or textstyle == "" then
+			fs = K.CreatePlainFS(self, size, text, "OVERLAY")
+		else
+			fs = self:CreateFontString(nil, "OVERLAY")
+			if not fs then
+				return
+			end
+			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "OUTLINE")
+			fs:SetShadowOffset(0, 0)
+			fs:SetText(text)
+		end
 
-		-- REASON: Ensures the font string is valid and applies consistent outlining or shadows.
 		if not fs then
 			return
 		end
 
-		if not textstyle or textstyle == "" then
-			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "")
-			fs:SetShadowOffset(1, -1 / 2)
-		else
-			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "OUTLINE")
-			fs:SetShadowOffset(0, 0)
-		end
-		fs:SetText(text)
 		fs:SetWordWrap(false)
 
 		if classcolor and type(classcolor) == "boolean" then
@@ -469,6 +769,46 @@ do
 		end
 
 		return fs
+	end
+
+	-- REASON: 12.0.7 slug-shadow workaround — duplicate string with manual offset shadow.
+	function K.StripColorCodes(text)
+		if not text then
+			return ""
+		end
+		return string_gsub(string_gsub(text, "|c%x%x%x%x%x%x%x", ""), "|r", "")
+	end
+
+	function K.CreatePlainFS(parent, size, text, layer)
+		local lyr = layer or "OVERLAY"
+		local sz = size or 12
+		local font = select(1, KkthnxUIFont:GetFont())
+
+		local shadow = parent:CreateFontString(nil, lyr)
+		shadow:SetFont(font, sz, "")
+		shadow:SetTextColor(0, 0, 0, 0.85)
+
+		local fs = parent:CreateFontString(nil, lyr)
+		fs:SetFont(font, sz, "")
+		fs.kkShadow = shadow
+		shadow:SetPoint("CENTER", fs, "CENTER", 1, -1)
+
+		if text then
+			K.SetPlainText(fs, text)
+		end
+		return fs
+	end
+
+	function K.SetPlainText(fs, text)
+		fs:SetText(text or "")
+		local shadow = fs.kkShadow
+		if shadow then
+			shadow:SetText(K.StripColorCodes(text))
+		end
+	end
+
+	function K.SetPlainFormattedText(fs, fmt, ...)
+		K.SetPlainText(fs, string_format(fmt, ...))
 	end
 end
 
@@ -554,8 +894,14 @@ do
 	-- REASON: Resolves the numeric NPC ID from a GUID; handles varying GUID formats.
 	-- GUID format: Creature-0-ServerID-InstanceID-ZoneID-NPCID-SpawnUID
 	-- Use greedy %d+ and %x+ for clarity and fewer backtrack attempts.
+	-- SECRET (12.0): UnitGUID can return a secret string in instances; string_match
+	-- on it throws, so bail before any Lua string ops (fail closed -> nil).
 	function K.GetNPCID(guid)
-		local id = tonumber(string_match((guid or ""), "%-(%d+)%-%x+$"))
+		if not guid or K.IsSecret(guid) then
+			return nil
+		end
+
+		local id = tonumber(string_match(guid, "%-(%d+)%-%x+$"))
 		return id
 	end
 
@@ -1260,6 +1606,80 @@ do
 
 		return glowFrame
 	end
+
+	-- Tutorial-frame glow ring (NexEnhance-style). opts.outset, opts.blend ("BLEND"|"ADD"), opts.color {r,g,b}.
+	local GLOW_TEX_H = "Interface/TutorialFrame/UIFrameTutorialGlow"
+	local GLOW_TEX_V = "Interface/TutorialFrame/UIFrameTutorialGlowVertical"
+
+	function K.CreateGlowBorder(frame, opts)
+		if not frame or frame.kkGlowBorder then
+			return frame
+		end
+
+		opts = opts or {}
+		local out = opts.outset or 8
+		local blend = opts.blend or "ADD"
+		local color = opts.color
+
+		local topLeft = frame:CreateTexture(nil, "BORDER")
+		topLeft:SetTexture(GLOW_TEX_H)
+		topLeft:SetSize(16, 16)
+		topLeft:SetTexCoord(0.03125, 0.53125, 0.570312, 0.695312)
+		topLeft:SetPoint("TOPLEFT", frame, "TOPLEFT", -out, out)
+
+		local topRight = frame:CreateTexture(nil, "BORDER")
+		topRight:SetTexture(GLOW_TEX_H)
+		topRight:SetSize(16, 16)
+		topRight:SetTexCoord(0.03125, 0.53125, 0.710938, 0.835938)
+		topRight:SetPoint("TOPRIGHT", frame, "TOPRIGHT", out - 1, out)
+
+		local bottomLeft = frame:CreateTexture(nil, "BORDER")
+		bottomLeft:SetTexture(GLOW_TEX_H)
+		bottomLeft:SetSize(16, 16)
+		bottomLeft:SetTexCoord(0.03125, 0.53125, 0.289062, 0.414062)
+		bottomLeft:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", -out, -out)
+
+		local bottomRight = frame:CreateTexture(nil, "BORDER")
+		bottomRight:SetTexture(GLOW_TEX_H)
+		bottomRight:SetSize(16, 16)
+		bottomRight:SetTexCoord(0.03125, 0.53125, 0.429688, 0.554688)
+		bottomRight:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", out, -out)
+
+		local top = frame:CreateTexture(nil, "BORDER")
+		top:SetTexture(GLOW_TEX_H)
+		top:SetPoint("TOPLEFT", topLeft, "TOPRIGHT")
+		top:SetPoint("BOTTOMRIGHT", topRight, "BOTTOMLEFT")
+		top:SetTexCoord(0, 0.5, 0.148438, 0.273438)
+
+		local bottom = frame:CreateTexture(nil, "BORDER")
+		bottom:SetTexture(GLOW_TEX_H)
+		bottom:SetPoint("TOPLEFT", bottomLeft, "TOPRIGHT")
+		bottom:SetPoint("BOTTOMRIGHT", bottomRight, "BOTTOMLEFT")
+		bottom:SetTexCoord(0, 0.5, 0.0078125, 0.132812)
+
+		local left = frame:CreateTexture(nil, "BORDER")
+		left:SetTexture(GLOW_TEX_V)
+		left:SetPoint("TOPLEFT", topLeft, "BOTTOMLEFT")
+		left:SetPoint("BOTTOMRIGHT", bottomLeft, "TOPRIGHT")
+		left:SetTexCoord(0.015625, 0.265625, 0, 1)
+
+		local right = frame:CreateTexture(nil, "BORDER")
+		right:SetTexture(GLOW_TEX_V)
+		right:SetPoint("TOPLEFT", topRight, "BOTTOMLEFT", 1, 0)
+		right:SetPoint("BOTTOMRIGHT", bottomRight, "TOPRIGHT", 1, 0)
+		right:SetTexCoord(0.296875, 0.546875, 0, 1)
+
+		for _, piece in next, { topLeft, topRight, bottomLeft, bottomRight, top, bottom, left, right } do
+			piece:SetBlendMode(blend)
+			if color then
+				piece:SetDesaturated(true)
+				piece:SetVertexColor(color[1], color[2], color[3])
+			end
+		end
+
+		frame.kkGlowBorder = true
+		return frame
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -1363,6 +1783,15 @@ do
 
 		self:SetAlpha(0)
 		self:SetScale(0.0001)
+	end
+
+	function K.ShowInterfaceOption(self)
+		if not self then
+			return
+		end
+
+		self:SetAlpha(1)
+		self:SetScale(1)
 	end
 end
 

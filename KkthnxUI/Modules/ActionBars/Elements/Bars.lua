@@ -297,7 +297,7 @@ end
 -- ---------------------------------------------------------------------------
 
 -- REASON: Forces the secure override system to recognize keybinds assigned to custom bars.
-function Module:ReassignBindings()
+function Module.ReassignBindings(event)
 	-- WARNING: Secure binding overrides CANNOT be changed in combat.
 	if InCombatLockdown() then
 		return
@@ -319,7 +319,7 @@ function Module:ReassignBindings()
 	end
 end
 
-function Module:ClearBindings()
+function Module.ClearBindings(event)
 	if InCombatLockdown() then
 		return
 	end
@@ -444,6 +444,16 @@ function Module:OnEnable()
 		return
 	end
 
+	if C["ActionBar"].Enable then
+		Module:InitActionBars()
+	end
+end
+
+function Module:InitActionBars()
+	if Module.actionBarsInitialized then
+		return
+	end
+
 	if not C["ActionBar"].Enable then
 		return
 	end
@@ -461,7 +471,6 @@ function Module:OnEnable()
 		"UpdateAllSize",
 		"HideBlizz",
 		"CreateBarFadeGlobal",
-		"CreatePulseCD",
 	}
 
 	for _, funcName in ipairs(loadActionBarModules) do
@@ -476,9 +485,9 @@ function Module:OnEnable()
 
 	-- NOTE: Sync bindings based on current battle state.
 	if C_PetBattles.IsInBattle() then
-		Module:ClearBindings()
+		Module.ClearBindings()
 	else
-		Module:ReassignBindings()
+		Module.ReassignBindings()
 	end
 	K:RegisterEvent("UPDATE_BINDINGS", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_CLOSE", Module.ReassignBindings)
@@ -486,5 +495,83 @@ function Module:OnEnable()
 
 	if AdiButtonAuras then
 		AdiButtonAuras:RegisterLAB("LibActionButton-1.0")
+	end
+
+	Module.actionBarsInitialized = true
+end
+
+local KKUI_BAR_FRAMES = {
+	"KKUI_ActionBar1",
+	"KKUI_ActionBar2",
+	"KKUI_ActionBar3",
+	"KKUI_ActionBar4",
+	"KKUI_ActionBar5",
+	"KKUI_ActionBar6",
+	"KKUI_ActionBar7",
+	"KKUI_ActionBar8",
+	"KKUI_ActionBarPet",
+	"KKUI_ActionBarStance",
+	"KKUI_ActionBarExtra",
+	"KKUI_ActionBarZone",
+	"KKUI_ActionBarExit",
+	"KKUI_MenuBar",
+	"KKUI_BarFader",
+}
+
+local function setActionBarFramesShown(shown)
+	for i = 1, #KKUI_BAR_FRAMES do
+		local frame = _G[KKUI_BAR_FRAMES[i]]
+		if frame then
+			frame:SetShown(shown)
+			if frame.mover then
+				frame.mover:SetShown(shown)
+			end
+		end
+	end
+end
+
+function Module:SetActionBarEnabled(enabled)
+	if enabled then
+		Module:InitActionBars()
+		if not Module.actionBarsInitialized then
+			return
+		end
+
+		if not Module:IsBlizzActionBarSuppressed() then
+			Module:HideBlizz()
+		end
+
+		Module:UpdateBarVisibility()
+
+		local petBar = _G.KKUI_ActionBarPet
+		if petBar and petBar.frameVisibility then
+			UnregisterStateDriver(petBar, "visibility")
+			RegisterStateDriver(petBar, "visibility", petBar.frameVisibility)
+		end
+
+		if Module.UpdateStanceBar then
+			Module:UpdateStanceBar()
+		end
+	else
+		if not InCombatLockdown() then
+			Module.ClearBindings()
+		end
+
+		for i = 1, 8 do
+			local frame = _G["KKUI_ActionBar" .. i]
+			if frame then
+				UnregisterStateDriver(frame, "visibility")
+				frame:Hide()
+				if frame.mover then
+					frame.mover:Hide()
+				end
+			end
+		end
+
+		setActionBarFramesShown(false)
+
+		if Module.ShowBlizz then
+			Module:ShowBlizz()
+		end
 	end
 end

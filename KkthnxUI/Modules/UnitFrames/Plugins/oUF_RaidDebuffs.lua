@@ -179,7 +179,17 @@ local function ShowElement(self, unit, auraInstanceID)
 	-- secret in instances. Gate every read used as a table key, in arithmetic, or
 	-- in a comparison; fall back to safe defaults so the icon still shows.
 	local dispelName = AuraData.dispelName
-	local color = (NotSecret(dispelName) and debuffColor[dispelName]) or debuffColor.none
+	local color
+	if NotSecret(dispelName) and debuffColor[dispelName] then
+		color = debuffColor[dispelName]
+	else
+		local r, g, b = K.GetAuraDispelBorderRGB(unit, auraInstanceID, oUF)
+		if r then
+			color = { r = r, g = g, b = b }
+		else
+			color = debuffColor.none
+		end
+	end
 
 	element.icon:SetTexture(AuraData.icon)
 	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
@@ -287,6 +297,11 @@ local function FilterAura(self, unit, auraInstanceID, AuraData)
 		local dispelName = AuraData.dispelName
 		if NotSecret(dispelName) and dispelName and dispelList[dispelName] then
 			cacheWrite(self, unit, auraInstanceID, priorityList[dispelName], AuraData)
+		elseif AuraData.auraInstanceID then
+			local resolved = K.GetAuraDispelTypeName(unit, AuraData.auraInstanceID, oUF)
+			if resolved and dispelList[resolved] then
+				cacheWrite(self, unit, auraInstanceID, priorityList[resolved], AuraData)
+			end
 		end
 	elseif debuffCache[auraInstanceID] then -- removed aura or invalid update
 		cacheWrite(self, unit, auraInstanceID, nil, nil)

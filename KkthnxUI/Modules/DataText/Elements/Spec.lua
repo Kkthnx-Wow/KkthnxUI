@@ -315,6 +315,21 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateSpecDataText()
 	-- REASON: Main entry point for specialization DataText; sets up frame, fonts, and automatic resizing logic.
+	if specDataText then
+		if C["DataText"].Spec then
+			specDataText:Show()
+			if specDataText.mover then
+				specDataText.mover:Show()
+			end
+		else
+			specDataText:Hide()
+			if specDataText.mover then
+				specDataText.mover:Hide()
+			end
+		end
+		return
+	end
+
 	if not C["DataText"].Spec then
 		return
 	end
@@ -356,4 +371,14 @@ function Module:CreateSpecDataText()
 	end)
 
 	specDataText.mover = K.Mover(specDataText, "SpecDT", "SpecDT", { "LEFT", UIParent, "LEFT", 2, -210 }, 56, 12)
+
+	Module:RegisterAppearanceRefresher(function()
+		if not specDataText then
+			return
+		end
+		if specDataText.Texture then
+			specDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		end
+		onEvent(specDataText, "PLAYER_SPECIALIZATION_CHANGED", "player")
+	end)
 end

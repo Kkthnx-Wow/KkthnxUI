@@ -71,6 +71,7 @@ end
 
 function Module:createRaidToolHeader()
 	local raidHeader = CreateFrame("Button", nil, _G.UIParent)
+	Module._raidToolHeader = raidHeader
 	raidHeader:SetSize(120, 28)
 	raidHeader:SetFrameLevel(2)
 	raidHeader:SkinButton()
@@ -109,7 +110,9 @@ function Module:createRaidToolHeader()
 					raidMenu:SetPoint("BOTTOM", self, "TOP", 0, 6)
 				end
 
-				self.buttons[2].text:SetText(IsInRaid() and _G.CONVERT_TO_PARTY or _G.CONVERT_TO_RAID)
+				if self.raidControlButtons and self.raidControlButtons[2] then
+					self.raidControlButtons[2].text:SetText(IsInRaid() and _G.CONVERT_TO_PARTY or _G.CONVERT_TO_RAID)
+				end
 				if raidMenu.UpdateState then
 					raidMenu:UpdateState()
 				end
@@ -721,9 +724,10 @@ function Module:createRaidManagementMenu(parentFrame)
 end
 
 function Module:setupEasyMarker()
-	if not C["Misc"].EasyMarking then
+	if not C["Misc"].EasyMarking or Module._easyMarkerHooked then
 		return
 	end
+	Module._easyMarkerHooked = true
 
 	local easyMarkerMenuList = {}
 
@@ -775,6 +779,9 @@ function Module:setupEasyMarker()
 
 	-- REASON: Hooks the WorldFrame to trigger a context menu for raid targets when clicking with a modifier key over a unit.
 	_G.WorldFrame:HookScript("OnMouseDown", function(_, mouseButton)
+		if not C["Misc"].EasyMarking or not C["Misc"].RaidTool then
+			return
+		end
 		if mouseButton == "LeftButton" and getMarkerModifierState() and UnitExists("mouseover") then
 			if not IsInGroup() or (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
 				local currentMarkerIndex = GetRaidTargetIndex("mouseover")
@@ -898,6 +905,11 @@ function Module:reanchorUIWidgets()
 end
 
 function Module:createImprovedRaidTool()
+	if Module._raidToolHeader then
+		Module:UpdateRaidTool()
+		return
+	end
+
 	if not C["Misc"].RaidTool then
 		return
 	end
@@ -913,6 +925,31 @@ function Module:createImprovedRaidTool()
 	Module:setupEasyMarker()
 	Module:createWorldMarkerBar()
 	Module:reanchorUIWidgets()
+end
+
+function Module:UpdateRaidTool()
+	if C["Misc"].RaidTool then
+		if not Module._raidToolHeader then
+			Module:createImprovedRaidTool()
+		else
+			Module:updateRaidToolVisibility(Module._raidToolHeader)
+			Module._raidToolHeader:Show()
+		end
+	elseif Module._raidToolHeader then
+		Module._raidToolHeader:Hide()
+		if Module._raidToolHeader.menu then
+			Module._raidToolHeader.menu:Hide()
+		end
+	end
+end
+
+function Module:UpdateEasyMarking()
+	if C["Misc"].EasyMarking and C["Misc"].RaidTool then
+		if not Module._raidToolHeader then
+			Module:UpdateRaidTool()
+		end
+		Module:setupEasyMarker()
+	end
 end
 
 Module:RegisterMisc("RaidTool", Module.createImprovedRaidTool)

@@ -108,6 +108,16 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateLatencyDataText()
 	-- REASON: Entry point for latency DataText; calculates layout based on the presence of the System DataText.
+	if latencyDataText then
+		if not C["DataText"].Latency then
+			latencyDataText:Hide()
+			return
+		end
+		latencyDataText:SetScript("OnUpdate", nil)
+		latencyDataText:Hide()
+		latencyDataText = nil
+	end
+
 	if not C["DataText"].Latency then
 		return
 	end
@@ -136,4 +146,10 @@ function Module:CreateLatencyDataText()
 	latencyDataText:SetScript("OnEnter", onEnter)
 	latencyDataText:SetScript("OnLeave", onLeave)
 	latencyDataText:SetScript("OnUpdate", onUpdate)
+
+	Module:RegisterAppearanceRefresher(function()
+		if latencyDataText and latencyDataText.Texture then
+			latencyDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		end
+	end)
 end

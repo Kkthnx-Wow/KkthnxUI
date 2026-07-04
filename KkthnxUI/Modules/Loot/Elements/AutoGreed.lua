@@ -72,9 +72,9 @@ end
 
 function Module:CreateAutoGreed()
 	local maxLevel = GetMaxLevelForExpansionLevel(GetExpansionLevel())
-	if not C["Loot"].AutoGreed or K.Level ~= maxLevel then
-		return
+	if C["Loot"].AutoGreed and K.Level == maxLevel then
+		K:RegisterEvent("START_LOOT_ROLL", setupAutoGreed)
+	else
+		K:UnregisterEvent("START_LOOT_ROLL", setupAutoGreed)
 	end
-
-	K:RegisterEvent("START_LOOT_ROLL", setupAutoGreed)
 end

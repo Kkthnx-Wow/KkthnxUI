@@ -7,7 +7,7 @@
 -- - Events: N/A
 -----------------------------------------------------------------------------]]
 
-local K = KkthnxUI[1]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
 -- REASON: Localize globals for performance and stack safety.
@@ -76,6 +76,10 @@ local function AddLine(self, source, isCollectedText, type, noadd)
 end
 
 local function HandleAura(self, id)
+	if not C["Tooltip"].ShowMount then
+		return
+	end
+
 	if IsShiftKeyDown() and UnitIsPlayer("target") and UnitName("target") ~= K.Name then
 		local mountInfo = id and GetMountInfoBySpell(id)
 		if mountInfo then
@@ -85,6 +89,10 @@ local function HandleAura(self, id)
 end
 
 function Module:CreateMountSource()
+	if not C["Tooltip"].ShowMount then
+		return
+	end
+
 	if C_AddOns.IsAddOnLoaded("MountsSource") then
 		return
 	end

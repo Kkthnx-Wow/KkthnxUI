@@ -9,6 +9,7 @@
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
+local NotSecret = K.NotSecret
 
 -- PERF: Localize global functions and environment for faster lookups.
 local math_floor = _G.math.floor
@@ -38,7 +39,9 @@ function Module:createImprovedStatFrames()
 	local enhancementList = _G.PAPERDOLL_STATCATEGORIES[2].stats
 
 	-- SG: Inject Missing Attributes
-	table_insert(attributeList, { stat = "ARMOR" })
+	-- ARMOR omitted: injecting it into PAPERDOLL_STATCATEGORIES makes Blizzard call
+	-- GetArmorEffectiveness with secret armor in instances (12.0). NexEnhance adds
+	-- extra rows post-update instead; Blizzard already surfaces armor elsewhere.
 	table_insert(attributeList, { stat = "STAGGER", hideAt = 0, roles = { _G.Enum.LFGRole.Tank } })
 	table_insert(attributeList, {
 		stat = "ATTACK_DAMAGE",
@@ -125,6 +128,9 @@ function Module:createImprovedStatFrames()
 		end
 
 		local averageLevel, equippedLevel = GetAverageItemLevel()
+		if not NotSecret(averageLevel) or not NotSecret(equippedLevel) then
+			return
+		end
 		local minimumLevel = C_PaperDollInfo_GetMinItemLevel() or 0
 		local itemLevelValue = math_max(minimumLevel, equippedLevel)
 		itemLevelValue = math_floor(itemLevelValue * 10 + 0.5) / 10
@@ -139,7 +145,10 @@ function Module:createImprovedStatFrames()
 
 	hooksecurefunc("PaperDollFrame_SetLabelAndText", function(statFrame, labelText, _, isStatPercentage)
 		if isStatPercentage or labelText == _G.STAT_HASTE then
-			statFrame.Value:SetFormattedText("%.2f%%", statFrame.numericValue)
+			local numericValue = statFrame.numericValue
+			if NotSecret(numericValue) then
+				statFrame.Value:SetFormattedText("%.2f%%", numericValue)
+			end
 		end
 	end)
 
@@ -175,6 +184,5 @@ function Module:createImprovedStatFrames()
 	end)
 end
 
--- TEMPORARY (Midnight 12.0): MissingStats disabled while secret-value handling is
--- reworked. Re-enable by uncommenting the registration below.
--- Module:RegisterMisc("MissingStats", Module.createImprovedStatFrames)
+-- Midnight (12.0): secret guards on item-level / percentage stats before display.
+Module:RegisterMisc("MissingStats", Module.createImprovedStatFrames)

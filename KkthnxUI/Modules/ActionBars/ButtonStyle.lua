@@ -117,6 +117,34 @@ function Module:UpdateBarBorderColor(button)
 	end
 end
 
+local function refreshBarButtonBorder(button)
+	if button and button.__bg then
+		Module:UpdateBarBorderColor(button)
+	end
+end
+
+function Module:RefreshActionBarBorders()
+	for barIndex = 1, 8 do
+		for buttonIndex = 1, 12 do
+			refreshBarButtonBorder(_G["KKUI_ActionBar" .. barIndex .. "Button" .. buttonIndex])
+		end
+	end
+
+	local petBar = _G.KKUI_ActionBarPet
+	if petBar and petBar.actionButtons then
+		for i = 1, #petBar.actionButtons do
+			refreshBarButtonBorder(petBar.actionButtons[i])
+		end
+	end
+
+	local stanceBar = _G.KKUI_ActionBarStance
+	if stanceBar and stanceBar.actionButtons then
+		for i = 1, #stanceBar.actionButtons do
+			refreshBarButtonBorder(stanceBar.actionButtons[i])
+		end
+	end
+end
+
 -- REASON: Apply unified KkthnxUI skinning to a specific action button.
 -- This hides default Blizzard elements and applies custom borders and textures.
 function Module:StyleActionButton(button)

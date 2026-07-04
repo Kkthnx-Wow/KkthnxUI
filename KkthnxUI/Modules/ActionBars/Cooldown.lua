@@ -17,6 +17,9 @@ local Module = K:NewModule("Cooldown")
 local _G = _G
 local select, strfind = select, string.find
 local hooksecurefunc = hooksecurefunc
+local GetCVar = _G.GetCVar
+local SetCVar = _G.SetCVar
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 
 -- NOTE: Visual constants carried over from the old custom renderer.
 local FONT_SIZE = 19
@@ -111,6 +114,10 @@ function Module:StyleCooldown()
 		return
 	end
 
+	if not C["ActionBar"]["Cooldown"] then
+		return
+	end
+
 	-- COMPAT: Option to ignore WeakAuras if they handle their own cooldown text.
 	local frameName = cooldown.GetName and cooldown:GetName()
 	if C["ActionBar"]["OverrideWA"] and frameName and strfind(frameName, "WeakAuras") then
@@ -156,20 +163,88 @@ function Module:HideCooldownNumbers()
 	end
 end
 
+local function applyCooldownThreshold(cooldown)
+	if cooldown and Module:IsActionCooldown(cooldown) and cooldown.SetCountdownAbbrevThreshold then
+		cooldown:SetCountdownAbbrevThreshold(C["ActionBar"]["MmssTH"])
+	end
+end
+
+function Module:RefreshCooldownThresholds()
+	if not C["ActionBar"]["Cooldown"] then
+		return
+	end
+
+	local actionBar = K:GetModule("ActionBar")
+	if actionBar and actionBar.buttons then
+		for i = 1, #actionBar.buttons do
+			local button = actionBar.buttons[i]
+			applyCooldownThreshold(button and (button.cooldown or button.Cooldown))
+		end
+	end
+
+	if NUM_PET_ACTION_SLOTS then
+		for i = 1, NUM_PET_ACTION_SLOTS do
+			local button = _G["PetActionButton" .. i]
+			applyCooldownThreshold(button and (button.cooldown or button.Cooldown))
+		end
+	end
+
+	for i = 1, 10 do
+		local button = _G["StanceButton" .. i]
+		applyCooldownThreshold(button and (button.cooldown or button.Cooldown))
+	end
+end
+
+local originalCountdownCVar
+
+function Module:InstallCooldownHooks()
+	if self._hooksInstalled then
+		return
+	end
+
+	local template = _G.ActionButton1Cooldown
+	if not template then
+		return
+	end
+
+	self._hooksInstalled = true
+
+	local cooldownIndex = getmetatable(template).__index
+	local cooldownMethods = {
+		"SetCooldown",
+		"SetCooldownFromDurationObject",
+		"SetCooldownFromExpirationTime",
+		"SetCooldownUNIX",
+	}
+	for i = 1, #cooldownMethods do
+		local method = cooldownMethods[i]
+		if cooldownIndex[method] then
+			hooksecurefunc(cooldownIndex, method, Module.StyleCooldown)
+		end
+	end
+	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
+end
+
+function Module:ApplyCooldownSettings()
+	local enabled = C["ActionBar"]["Cooldown"]
+
+	if originalCountdownCVar == nil then
+		originalCountdownCVar = GetCVar("countdownForCooldowns") or "0"
+	end
+
+	if enabled then
+		self:InstallCooldownHooks()
+		SetCVar("countdownForCooldowns", "1")
+		self:RefreshCooldownThresholds()
+	else
+		SetCVar("countdownForCooldowns", originalCountdownCVar)
+	end
+end
+
 -- ---------------------------------------------------------------------------
 -- INITIALIZATION
 -- ---------------------------------------------------------------------------
 
 function Module:OnEnable()
-	if not C["ActionBar"]["Cooldown"] then
-		return
-	end
-
-	-- REASON: Hook the metatable of standard ActionButton cooldowns to catch all instances.
-	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
-	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StyleCooldown)
-	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
-
-	-- REASON: Let the engine render countdown numbers (secret-safe in Midnight).
-	SetCVar("countdownForCooldowns", 1)
+	Module:ApplyCooldownSettings()
 end

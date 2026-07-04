@@ -607,6 +607,21 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateGuildDataText()
 	-- REASON: Main entry point for Guild DataText; registers events and sets up frame visuals.
+	if guildDataText then
+		if C["DataText"].Guild then
+			guildDataText:Show()
+			if guildDataText.mover then
+				guildDataText.mover:Show()
+			end
+		else
+			guildDataText:Hide()
+			if guildDataText.mover then
+				guildDataText.mover:Hide()
+			end
+		end
+		return
+	end
+
 	if not C["DataText"].Guild then
 		return
 	end
@@ -633,6 +648,16 @@ function Module:CreateGuildDataText()
 	guildDataText:SetScript("OnMouseUp", onMouseUp)
 
 	guildDataText.mover = K.Mover(guildDataText, "GuildDT", "GuildDT", { "LEFT", UIParent, "LEFT", 2, -240 }, 56, 12)
+
+	Module:RegisterAppearanceRefresher(function()
+		if not guildDataText then
+			return
+		end
+		if guildDataText.Texture then
+			guildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		end
+		onEvent(guildDataText, "GUILD_ROSTER_UPDATE", true)
+	end)
 end
 
 K.Delay(5, function()

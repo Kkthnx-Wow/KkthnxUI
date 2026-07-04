@@ -166,6 +166,24 @@ C.AutoQuestData = {
 		[31664] = 88604, -- Nat's Fishing Journal
 	},
 
+	-- Quests never auto-selected/accepted (consequences or instant item grants)
+	BlockQuestID = {
+		[43923] = true, -- Get Your Own! (Starlight Rose)
+		[43924] = true, -- Get Your Own! (Leyblood)
+		[43925] = true, -- Get Your Own! (Runescale Koi)
+		[71162] = true, -- Dragon Isles waygate
+		[71165] = true, -- Dragon Isles waygate
+	},
+
+	-- Auto-turn-in OK, but player must pick up available quests manually
+	SelectOnlyIgnoreNPC = {
+		[87706] = true, -- Gazmolf Futzwangler (Ashran)
+		[70022] = true, -- Ku'ma (Timeless Isle)
+		[12944] = true, -- Lokhtos Darkbargainer
+		[87393] = true, -- Sallee Silverclamp (Stormshield)
+		[10307] = true, -- Witch Doctor Mau'ari
+	},
+
 	-- Currency item values override for reward selection
 	CashRewards = {
 		[45724] = 1e5, -- Champion's Purse

@@ -289,6 +289,9 @@ function Module:CreateStyle()
 	anim.fader:SetDuration(1)
 	anim.fader:SetSmoothing("OUT")
 
+	Module.minimapMailPulse = minimapMailPulse
+	Module.minimapMailAnim = anim
+
 	-- REASON: Updates the border pulse animation based on combat status or pending invites/mail.
 	local function updateMinimapBorderAnimation()
 		local borderColor
@@ -650,6 +653,48 @@ function Module:UpdateMinimapScale()
 	end
 end
 
+Module.UpdateSize = Module.UpdateMinimapScale
+
+function Module:UpdateEasyVolume()
+	if C["Minimap"].EasyVolume then
+		if not self.VolumeText then
+			self:CreateSoundVolume()
+		end
+	elseif self.VolumeText then
+		local parent = self.VolumeText:GetParent()
+		if parent then
+			parent:Hide()
+		end
+	end
+end
+
+function Module:UpdateMailPulse()
+	if self.minimapMailPulse then
+		if C["Minimap"].MailPulse then
+			self.minimapMailPulse:Show()
+		else
+			if self.minimapMailAnim and self.minimapMailAnim:IsPlaying() then
+				self.minimapMailAnim:Stop()
+			end
+			self.minimapMailPulse:Hide()
+		end
+	end
+end
+
+function Module:UpdateRecycleBin()
+	self:CreateRecycleBin()
+end
+
+function Module:UpdateCalendar()
+	Module:ShowCalendar()
+end
+
+function Module:UpdateQueueStatusText()
+	if not C["Minimap"].QueueStatusText then
+		Module:ClearQueueStatus()
+	end
+end
+
 -- REASON: Required by LibDBIcon-1.0 and similar libraries to determine circular vs square button placement.
 -- FIX: The previous version lazily initialized UpdateMinimapScale() here on first call, hiding a side-effect
 -- inside a utility stub. Scale is now initialized explicitly in OnEnable; this function is pure.
@@ -673,7 +718,7 @@ function Module:ShowCalendar()
 
 	if C["Minimap"].Calendar then
 		if not isGameTimeFrameStyled then
-			local calendarText = gameTimeFrame:CreateFontString(nil, "OVERLAY")
+			local calendarText = K.CreatePlainFS(gameTimeFrame, 12, nil, "OVERLAY")
 
 			gameTimeFrame:SetParent(Minimap)
 			gameTimeFrame:SetFrameLevel(16)
@@ -684,10 +729,7 @@ function Module:ShowCalendar()
 
 			calendarText:ClearAllPoints()
 			calendarText:SetPoint("CENTER", 0, -4)
-			calendarText:SetFontObject(K.UIFont)
-			calendarText:SetFont(select(1, calendarText:GetFont()), 12, select(3, calendarText:GetFont()))
 			calendarText:SetTextColor(0, 0, 0)
-			calendarText:SetShadowOffset(0, 0)
 			calendarText:SetAlpha(0.9)
 
 			-- REASON: Skins the calendar icon and updates the date text whenever it changes.
@@ -699,7 +741,7 @@ function Module:ShowCalendar()
 				gameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
 
 				if C_DateAndTime_GetCurrentCalendarTime then
-					calendarText:SetText(C_DateAndTime_GetCurrentCalendarTime().monthDay)
+					K.SetPlainText(calendarText, C_DateAndTime_GetCurrentCalendarTime().monthDay)
 				end
 			end)
 
@@ -821,7 +863,7 @@ function Module:SetupHybridMinimap()
 	end
 end
 
-function Module:HybridMinimapOnLoad(addon)
+function Module.HybridMinimapOnLoad(event, addon)
 	if addon == "Blizzard_HybridMinimap" then
 		Module:SetupHybridMinimap()
 		K:UnregisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)
@@ -948,36 +990,22 @@ function Module:BlizzardACF()
 end
 
 function Module:OnEnable()
-	if not C["Minimap"].Enable then
-		return
+	if C["Minimap"].Enable then
+		self:InitMinimap()
 	end
+end
 
-	-- REASON: Shape and Position. Sets the minimap as a square and initializes its mover.
+function Module:ApplyMinimapCustomization()
 	Minimap:SetFrameLevel(10)
 	Minimap:SetMaskTexture(C["Media"].Textures.White8x8Texture)
 
-	if _G.DropDownList1 then
-		_G.DropDownList1:SetClampedToScreen(true)
+	if Minimap.mover then
+		Minimap:ClearAllPoints()
+		Minimap:SetPoint("TOPRIGHT", Minimap.mover)
 	end
 
-	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", { "TOPRIGHT", UIParent, "TOPRIGHT", -4, -4 })
-	Minimap:ClearAllPoints()
-	Minimap:SetPoint("TOPRIGHT", minimapMover)
-	Minimap.mover = minimapMover
-
-	self:HideMinimapClock()
-	self:ShowCalendar()
 	self:UpdateMinimapScale()
 
-	if _G.QueueStatusButton then
-		Module:CreateQueueStatusText()
-	end
-
-	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
-	Minimap:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
-
-	-- REASON: Hides standard Blizzard Minimap elements to prevent clutter.
 	if MinimapCluster then
 		MinimapCluster:EnableMouse(false)
 		if MinimapCluster.Tracking then
@@ -1005,6 +1033,90 @@ function Module:OnEnable()
 		K.HideInterfaceOption(_G.MinimapCompassTexture)
 	end
 
+	if _G.KKUI_MinimapBorder then
+		_G.KKUI_MinimapBorder:Show()
+	end
+
+	self:HideMinimapClock()
+end
+
+function Module:RestoreDefaultMinimapLayout()
+	if MinimapCluster then
+		Minimap:SetParent(MinimapCluster)
+		Minimap:ClearAllPoints()
+		Minimap:SetPoint("CENTER", MinimapCluster, "CENTER", 0, 0)
+
+		MinimapCluster:EnableMouse(true)
+		if MinimapCluster.Tracking then
+			K.ShowInterfaceOption(MinimapCluster.Tracking)
+		end
+		if MinimapCluster.BorderTop then
+			MinimapCluster.BorderTop:Show()
+		end
+		if MinimapCluster.ZoneTextButton then
+			MinimapCluster.ZoneTextButton:Show()
+		end
+	end
+
+	Minimap:SetMaskTexture("Interface\\BUTTONS\\UI-Minimap-Button")
+	Minimap:SetArchBlobRingScalar(1)
+	Minimap:SetQuestBlobRingScalar(1)
+
+	if Minimap.ZoomIn then
+		K.ShowInterfaceOption(Minimap.ZoomIn)
+	end
+	if Minimap.ZoomOut then
+		K.ShowInterfaceOption(Minimap.ZoomOut)
+	end
+	if _G.MinimapCompassTexture then
+		K.ShowInterfaceOption(_G.MinimapCompassTexture)
+	end
+
+	if _G.KKUI_MinimapBorder then
+		_G.KKUI_MinimapBorder:Hide()
+	end
+
+	if _G.TimeManagerClockButton then
+		_G.TimeManagerClockButton:Show()
+	end
+
+	if self.minimapMailPulse then
+		if self.minimapMailAnim and self.minimapMailAnim:IsPlaying() then
+			self.minimapMailAnim:Stop()
+		end
+		self.minimapMailPulse:Hide()
+	end
+
+	self:UpdateEasyVolume()
+	self:UpdateCalendar()
+	self:UpdateQueueStatusText()
+end
+
+function Module:InitMinimap()
+	if self._minimapInitialized then
+		return
+	end
+	self._minimapInitialized = true
+
+	if _G.DropDownList1 then
+		_G.DropDownList1:SetClampedToScreen(true)
+	end
+
+	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", { "TOPRIGHT", UIParent, "TOPRIGHT", -4, -4 })
+	Minimap.mover = minimapMover
+
+	self:ApplyMinimapCustomization()
+
+	self:ShowCalendar()
+
+	if _G.QueueStatusButton then
+		Module:CreateQueueStatusText()
+	end
+
+	Minimap:EnableMouseWheel(true)
+	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
+	Minimap:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
+
 	if MinimapCluster and MinimapCluster.KillEditMode then
 		MinimapCluster:KillEditMode()
 	end
@@ -1031,4 +1143,29 @@ function Module:OnEnable()
 
 	-- REASON: HybridMinimap. Skins the hybrid minimap (e.g., inside raids/dungeons) when loaded.
 	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)
+end
+
+function Module:SetMinimapEnabled(enabled)
+	if enabled then
+		self:InitMinimap()
+		Minimap:Show()
+		if Minimap.mover then
+			Minimap.mover:Show()
+		end
+		self:ApplyMinimapCustomization()
+		self:UpdateCalendar()
+		self:UpdateRecycleBin()
+		self:UpdateQueueStatusText()
+		self:UpdateMailPulse()
+	else
+		if Minimap.mover then
+			Minimap.mover:Hide()
+		end
+		self:RestoreDefaultMinimapLayout()
+	end
+
+	local dataText = K:GetModule("DataText")
+	if dataText and dataText.UpdateLocationTextVisibility then
+		dataText:UpdateLocationTextVisibility()
+	end
 end

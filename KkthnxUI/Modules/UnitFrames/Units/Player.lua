@@ -187,6 +187,7 @@ function Module:CreatePlayer()
 
 		self.Debuffs.PostCreateButton = Module.PostCreateButton
 		self.Debuffs.PostUpdateButton = Module.PostUpdateButton
+		self.Debuffs.showDebuffType = true
 	end
 
 	-- REASON: Buffs
@@ -480,82 +481,6 @@ function Module:CreatePlayer()
 		GCD.Width = 128 / 2
 
 		self.GCD = GCD
-	end
-
-	-- REASON: Combat Text
-	if C["Unitframe"].CombatText then
-		if C_AddOns.IsAddOnLoaded("MikScrollingBattleText") or C_AddOns.IsAddOnLoaded("Parrot") or C_AddOns.IsAddOnLoaded("xCT") or C_AddOns.IsAddOnLoaded("sct") then
-			C["Unitframe"].CombatText = false
-			return
-		end
-
-		local parentFrame = CreateFrame("Frame", nil, UIParent)
-		local FloatingCombatFeedback = CreateFrame("Frame", nil, parentFrame)
-		FloatingCombatFeedback:SetSize(32, 32)
-		K.Mover(FloatingCombatFeedback, "CombatText", "PlayerCombatText", { "BOTTOM", self, "TOPLEFT", 0, 120 })
-
-		for i = 1, 36 do
-			FloatingCombatFeedback[i] = FloatingCombatFeedback:CreateFontString("$parentText", "OVERLAY")
-		end
-
-		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
-		FloatingCombatFeedback.fontFlags = "OUTLINE"
-		FloatingCombatFeedback.abbreviateNumbers = true
-		FloatingCombatFeedback:SetFrameStrata("HIGH")
-
-		self.FloatingCombatFeedback = FloatingCombatFeedback
-	end
-
-	-- REASON: Swing Timer
-	if C["Unitframe"].SwingBar then
-		local width, height = C["Unitframe"].SwingWidth, C["Unitframe"].SwingHeight
-
-		local bar = CreateFrame("Frame", nil, self)
-		bar:SetSize(width, height)
-		bar.mover = K.Mover(bar, "UFs SwingBar", "Swing", { "BOTTOM", UIParent, "BOTTOM", 0, 176 })
-		bar:ClearAllPoints()
-		bar:SetPoint("CENTER", bar.mover)
-
-		local two = CreateFrame("StatusBar", nil, bar)
-		two:SetStatusBarTexture(UnitframeTexture)
-		two:SetStatusBarColor(0.20, 0.60, 0.80) -- Light blue color
-		two:CreateBorder()
-		two:Hide()
-		two:SetAllPoints()
-
-		local main = CreateFrame("StatusBar", nil, bar)
-		main:SetStatusBarTexture(UnitframeTexture)
-		main:SetStatusBarColor(0.20, 0.80, 0.20) -- Light green color
-		main:CreateBorder()
-		main:Hide()
-		main:SetAllPoints()
-
-		local off = CreateFrame("StatusBar", nil, bar)
-		off:SetStatusBarTexture(UnitframeTexture)
-		off:SetStatusBarColor(0.80, 0.20, 0.20) -- Light red color
-		off:CreateBorder()
-		off:Hide()
-		if C["Unitframe"].OffOnTop then
-			off:SetPoint("BOTTOMLEFT", bar, "TOPLEFT", 0, 6)
-			off:SetPoint("BOTTOMRIGHT", bar, "TOPRIGHT", 0, 6)
-		else
-			off:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", 0, -6)
-			off:SetPoint("TOPRIGHT", bar, "BOTTOMRIGHT", 0, -6)
-		end
-		off:SetHeight(height)
-
-		bar.Text = K.CreateFontString(bar, 12, "")
-		bar.Text:SetShown(C["Unitframe"].SwingTimer)
-		bar.TextMH = K.CreateFontString(main, 12, "")
-		bar.TextMH:SetShown(C["Unitframe"].SwingTimer)
-		bar.TextOH = K.CreateFontString(off, 12, "")
-		bar.TextOH:SetShown(C["Unitframe"].SwingTimer)
-
-		self.Swing = bar
-		self.Swing.Twohand = two
-		self.Swing.Mainhand = main
-		self.Swing.Offhand = off
-		self.Swing.hideOoc = true
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")

@@ -111,7 +111,7 @@ end
 function Module:CreateAutoBadBuffs()
 	-- REASON: Entry point to enable/disable the bad buff removal automation.
 	if C["Automation"].NoBadBuffs then
-		K:RegisterEvent("UNIT_AURA", removeBadBuffsNow, "player")
+		K:RegisterUnitEvent("UNIT_AURA", removeBadBuffsNow, "player")
 	else
 		K:UnregisterEvent("UNIT_AURA", removeBadBuffsNow)
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED", removeBadBuffsNow)

@@ -121,11 +121,23 @@ function Module:CreateRecycleBin()
 	end
 
 	-- REASON: Reuses existing frames if they were already created during a session toggling.
-	if _G.RecycleBinFrame then
-		_G.RecycleBinFrame:Show()
-	end
 	if _G.RecycleBinToggleButton then
-		_G.RecycleBinToggleButton:Show()
+		local point, x, y = getToggleAnchor(C["Minimap"].RecycleBinPosition)
+		_G.RecycleBinToggleButton:ClearAllPoints()
+		_G.RecycleBinToggleButton:SetPoint(point, x, y)
+		if _G.RecycleBinFrame then
+			local binPoint, bx, by = getBinAnchor(C["Minimap"].RecycleBinPosition)
+			_G.RecycleBinFrame:ClearAllPoints()
+			_G.RecycleBinFrame:SetPoint(binPoint, _G.RecycleBinToggleButton, "BOTTOMLEFT", bx, by)
+		end
+		if C["Minimap"].ShowRecycleBin then
+			_G.RecycleBinToggleButton:Show()
+		else
+			_G.RecycleBinToggleButton:Hide()
+			if _G.RecycleBinFrame then
+				_G.RecycleBinFrame:Hide()
+			end
+		end
 		return
 	end
 

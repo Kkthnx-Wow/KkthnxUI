@@ -2362,16 +2362,8 @@ function ExtraGUI:RegisterBuiltinConfigs()
 	self:RegisterExtraConfig("Party.Enable", function(parent)
 		local yOffset = -10
 
-		-- Hook function for size updates
-		local function UpdateUnitSimplePartySize()
-			local unitframeModule = K:GetModule("Unitframes")
-			if unitframeModule and unitframeModule.UpdateSimplePartySize then
-				unitframeModule:UpdateSimplePartySize()
-			end
-		end
-
 		-- Enable Simple Party (main toggle)
-		local enableSimpleSwitch = self:CreateSwitch(parent, "SimpleParty.Enable", L["Enable Simple Party (Raid-Style)"] or "Enable Simple Party (Raid-Style)", L["Use compact raid-style party frames instead of traditional party frames (requires reload)"] or "Use compact raid-style party frames instead of traditional party frames (requires reload)")
+		local enableSimpleSwitch = self:CreateSwitch(parent, "SimpleParty.Enable", L["Enable Simple Party (Raid-Style)"] or "Enable Simple Party (Raid-Style)", L["Use compact raid-style party frames instead of traditional party frames"] or "Use compact raid-style party frames instead of traditional party frames")
 		enableSimpleSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2391,31 +2383,16 @@ function ExtraGUI:RegisterBuiltinConfigs()
 		yOffset = yOffset - 35
 
 		-- Horizontal Layout
-		local horizonSwitch = self:CreateSwitch(parent, "SimpleParty.HorizonParty", L["Horizontal Party Frames"] or "Horizontal Party Frames", L["Arrange party frames horizontally instead of vertically (requires reload)"] or "Arrange party frames horizontally instead of vertically (requires reload)")
+		local horizonSwitch = self:CreateSwitch(parent, "SimpleParty.HorizonParty", L["Horizontal Party Frames"] or "Horizontal Party Frames", L["Arrange party frames horizontally instead of vertically"] or "Arrange party frames horizontally instead of vertically")
 		horizonSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Power Bar Options
-		local function UpdatePowerBarVisibility()
-			local oUF = K.oUF
-			if not oUF then
-				return
-			end
-
-			-- Force update power bar visibility for all party frames
-			for _, object in next, oUF.objects do
-				if object.unit and object.unit:match("^party%d") and object.UpdateSimplePartyPower then
-					-- Call the stored update function directly
-					object:UpdateSimplePartyPower(nil, object.unit)
-				end
-			end
-		end
-
-		local powerBarSwitch = self:CreateSwitch(parent, "SimpleParty.PowerBarShow", L["Enable Power Bars"] or "Enable Power Bars", L["Show power bars on all party frames"] or "Show power bars on all party frames", UpdatePowerBarVisibility)
+		local powerBarSwitch = self:CreateSwitch(parent, "SimpleParty.PowerBarShow", L["Enable Power Bars"] or "Enable Power Bars", L["Show power bars on all party frames"] or "Show power bars on all party frames")
 		powerBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local manaBarSwitch = self:CreateSwitch(parent, "SimpleParty.ManabarShow", L["Only Show Mana"], L["Display mana bars on party frames"] or "Display mana bars on party frames", UpdatePowerBarVisibility)
+		local manaBarSwitch = self:CreateSwitch(parent, "SimpleParty.ManabarShow", L["Only Show Mana"], L["Display mana bars on party frames"] or "Display mana bars on party frames")
 		manaBarSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 		self:DependsOn(manaBarSwitch, "SimpleParty.PowerBarShow", true)
@@ -2427,38 +2404,16 @@ function ExtraGUI:RegisterBuiltinConfigs()
 		yOffset = yOffset - 40
 
 		-- Health Height Slider
-		local heightSlider = self:CreateSlider(parent, "SimpleParty.HealthHeight", L["Frame Height"] or "Frame Height", 20, 100, 1, L["Height of simple party member frames (requires reload)"] or "Height of simple party member frames (requires reload)", UpdateUnitSimplePartySize)
+		local heightSlider = self:CreateSlider(parent, "SimpleParty.HealthHeight", L["Frame Height"] or "Frame Height", 20, 100, 1, L["Height of simple party member frames"] or "Height of simple party member frames")
 		heightSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Health Width Slider
-		local widthSlider = self:CreateSlider(parent, "SimpleParty.HealthWidth", L["Frame Width"] or "Frame Width", 20, 100, 1, L["Width of simple party member frames (requires reload)"] or "Width of simple party member frames (requires reload)", UpdateUnitSimplePartySize)
+		local widthSlider = self:CreateSlider(parent, "SimpleParty.HealthWidth", L["Frame Width"] or "Frame Width", 20, 100, 1, L["Width of simple party member frames"] or "Width of simple party member frames")
 		widthSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		-- Power Bar Height Slider (live update)
-		local function UpdatePowerBarHeight()
-			local oUF = K.oUF
-			if not oUF then
-				return
-			end
-
-			local newHeight = C["SimpleParty"].PowerBarHeight
-
-			for _, object in next, oUF.objects do
-				if object.Power and object.unit and object.unit:match("^party%d") then
-					-- Update power bar height
-					object.Power:SetHeight(newHeight)
-
-					-- Trigger the update function to reposition health bar correctly
-					if object.UpdateSimplePartyPower then
-						object:UpdateSimplePartyPower(nil, object.unit)
-					end
-				end
-			end
-		end
-
-		local powerHeightSlider = self:CreateSlider(parent, "SimpleParty.PowerBarHeight", L["Power Bar Height"] or "Power Bar Height", 2, 15, 1, L["Height of power bars on simple party frames"] or "Height of power bars on simple party frames", UpdatePowerBarHeight)
+		local powerHeightSlider = self:CreateSlider(parent, "SimpleParty.PowerBarHeight", L["Power Bar Height"] or "Power Bar Height", 2, 15, 1, L["Height of power bars on simple party frames"] or "Height of power bars on simple party frames")
 		powerHeightSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -2483,11 +2438,6 @@ function ExtraGUI:RegisterBuiltinConfigs()
 		-- Buffs Section Header
 		CreateSectionHeader(parent, L["Raid Buffs"] or "Raid Buffs", EXTRA_PANEL_WIDTH - 40, yOffset)
 		yOffset = yOffset - 40
-
-		-- Raid Buffs Enable
-		local raidBuffsEnable = self:CreateSwitch(parent, "SimpleParty.RaidBuffs", L["Enable Raid Buffs"] or "Enable Raid Buffs", L["Show raid buffs on simple party frames"] or "Show raid buffs on simple party frames")
-		raidBuffsEnable:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
 
 		-- Raid Buffs Style Dropdown
 		local raidBuffsOptions = {

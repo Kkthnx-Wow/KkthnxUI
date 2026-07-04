@@ -47,16 +47,13 @@ local updater
 
 -- REASON: Main entry point to make any frame moveable. Creates an overlay "mover"
 -- that acts as the anchor for the target frame.
-function K:Mover(text, value, anchor, width, height, isAuraWatch)
+function K:Mover(text, value, anchor, width, height)
 	-- NOTE: Safety check to ensure K:Mover is called correctly as a method.
 	if not self or type(self) ~= "table" then
 		return
 	end
 
 	local key = "Mover"
-	if isAuraWatch then
-		key = "AuraWatchMover"
-	end
 
 	-- NOTE: Use unique naming to facilitate debugging and avoid potential global table overlaps.
 	local uniqueName = "KKUI_Mover_" .. tostring(value or "Anon")
@@ -84,25 +81,21 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	mover.__key = key
 	mover.__value = value
 	mover.__anchor = anchor
-	mover.isAuraWatch = isAuraWatch
 	mover:SetScript("OnEnter", Module.Mover_OnEnter)
 	mover:SetScript("OnLeave", Module.Mover_OnLeave)
 	mover:SetScript("OnDragStart", Module.Mover_OnDragStart)
 	mover:SetScript("OnDragStop", Module.Mover_OnDragStop)
 	mover:SetScript("OnMouseUp", Module.Mover_OnClick)
 
-	-- NOTE: AuraWatch movers are handled separately due to their dynamic nature.
-	if not isAuraWatch then
-		-- REASON: Detect duplicate value keys early; two movers sharing the same key silently overwrite
-		-- each other's saved position in KkthnxUIDB, so the later-registered frame always loads wrong.
-		for _, existingMover in ipairs(MoverList) do
-			if existingMover.__value == value then
-				K.Print("|cffff4444Mover WARNING:|r Duplicate key '" .. tostring(value) .. "' registered. DB position saving may be overwritten.")
-				break
-			end
+	-- REASON: Detect duplicate value keys early; two movers sharing the same key silently overwrite
+	-- each other's saved position in KkthnxUIDB, so the later-registered frame always loads wrong.
+	for _, existingMover in ipairs(MoverList) do
+		if existingMover.__value == value then
+			K.Print("|cffff4444Mover WARNING:|r Duplicate key '" .. tostring(value) .. "' registered. DB position saving may be overwritten.")
+			break
 		end
-		table_insert(MoverList, mover)
 	end
+	table_insert(MoverList, mover)
 
 	-- WARNING: Ensure the target frame supports standard positioning methods to avoid script errors.
 	if self.ClearAllPoints and self.SetPoint then
@@ -198,11 +191,7 @@ end
 function Module:Mover_OnClick(btn)
 	-- REASON: Shift+RightClick provides a quick toggle for visibility on standard movers.
 	if IsShiftKeyDown() and btn == "RightButton" then
-		if self.isAuraWatch then
-			UIErrorsFrame:AddMessage(K.InfoColor .. "You can't hide AuraWatch mover by that.")
-		else
-			self:Hide()
-		end
+		self:Hide()
 	-- REASON: Ctrl+RightClick restores the hardcoded default position for the specific element.
 	elseif IsControlKeyDown() and btn == "RightButton" then
 		self:ClearAllPoints()
@@ -248,13 +237,6 @@ end
 -- LOCK & UNLOCK LOGIC
 -- ---------------------------------------------------------------------------
 
-local function RunAuraWatchMoverCommand(command)
-	local auraWatchCommand = _G.SlashCmdList and _G.SlashCmdList.AuraWatch
-	if auraWatchCommand then
-		auraWatchCommand(command)
-	end
-end
-
 function Module:UnlockElements()
 	-- PERF: Use ipairs for array iteration.
 	for i = 1, #MoverList do
@@ -277,7 +259,6 @@ function Module:LockElements()
 	f:Hide()
 	-- NOTE: Ensure related systems are also locked and grid overlays are removed.
 	_G.SlashCmdList["KKUI_TOGGLEGRID"]("1")
-	RunAuraWatchMoverCommand("lock")
 end
 
 -- REASON: Resetting all mover logic requires a full UI reload to re-initialize original positions.
@@ -287,7 +268,6 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 	button2 = CANCEL,
 	OnAccept = function()
 		table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"])
-		table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["AuraWatchMover"])
 		_G.ReloadUI()
 	end,
 }
@@ -313,8 +293,8 @@ local function CreateConsole()
 	f.text:SetText(K.Title .. " Movers Config")
 	f.text:SetWordWrap(false)
 
-	local bu, text = {}, { LOCK, "Grids", "AuraWatch", RESET }
-	for i = 1, 4 do
+	local bu, text = {}, { LOCK, "Grids", RESET }
+	for i = 1, 3 do
 		bu[i] = CreateFrame("Button", nil, f)
 		bu[i]:SetSize(100, 24)
 		bu[i]:SkinButton()
@@ -327,8 +307,6 @@ local function CreateConsole()
 
 		if i == 1 then
 			bu[i]:SetPoint("BOTTOMLEFT", 6, 36)
-		elseif i == 3 then
-			bu[i]:SetPoint("TOP", bu[1], "BOTTOM", 0, -6)
 		else
 			bu[i]:SetPoint("LEFT", bu[i - 1], "RIGHT", 6, 0)
 		end
@@ -340,16 +318,7 @@ local function CreateConsole()
 		_G.SlashCmdList["KKUI_TOGGLEGRID"]("64")
 	end)
 
-	bu[3]:SetScript("OnClick", function(self)
-		self.state = not self.state
-		if self.state then
-			RunAuraWatchMoverCommand("move")
-		else
-			RunAuraWatchMoverCommand("lock")
-		end
-	end)
-
-	bu[4]:SetScript("OnClick", function()
+	bu[3]:SetScript("OnClick", function()
 		StaticPopup_Show("RESET_MOVER")
 	end)
 

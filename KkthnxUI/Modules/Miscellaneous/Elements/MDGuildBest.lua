@@ -322,7 +322,7 @@ function Module:getOwnedKeystoneInfo()
 end
 
 -- REASON: Persists the current player's keystone information to the account-wide database for cross-character tracking.
-function Module:updateAccountKeystoneData()
+function Module.updateAccountKeystoneData(event)
 	local database = ensureDatabase()
 	local dungeonMapID, keystoneLevelValue = Module:getOwnedKeystoneInfo()
 	if dungeonMapID then

@@ -28,6 +28,9 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
+local Ambiguate = _G.Ambiguate
+local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
+local INTERRUPTED = _G.INTERRUPTED
 local YOU = _G.YOU
 
 -- SECRET (12.0): spellID from UnitCastingInfo/UnitChannelInfo is secret on
@@ -390,6 +393,29 @@ function Module:PostCastFailed()
 	self.fadeOut = true
 	self:Show()
 	ResetSpellTarget(self)
+end
+
+-- REASON: Nameplate castbars show who interrupted via UNIT_SPELLCAST_* (no CLEU).
+function Module:PostCastInterrupted(unit, interruptedBy)
+	if not interruptedBy or IsSecret(interruptedBy) then
+		return
+	end
+
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(interruptedBy)
+	if not name or name == "" or IsSecret(name) then
+		return
+	end
+
+	local r, g, b = K.ColorClass(class)
+	local color = K.RGBToHex(r, g, b)
+	local interrupterName = Ambiguate(name, "short")
+
+	if self.Text then
+		self.Text:SetFormattedText("%s [ %s%s|r ]", INTERRUPTED, color, interrupterName)
+	end
+	if self.Time then
+		self.Time:SetText("")
+	end
 end
 
 Module.PipColors = {

@@ -44,15 +44,15 @@ function Module:CreateBoss()
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
-	if C["Party"].Smooth then
+	if C["Boss"].Smooth then
 		K:SmoothBar(self.Health)
 	end
 
-	if C["Party"].HealthbarColor == 3 then
+	if C["Boss"].HealthbarColor == 3 then
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
-	elseif C["Party"].HealthbarColor == 2 then
+	elseif C["Boss"].HealthbarColor == 2 then
 		self.Health.colorSmooth = false
 		self.Health.colorClass = false
 		self.Health.colorReaction = false

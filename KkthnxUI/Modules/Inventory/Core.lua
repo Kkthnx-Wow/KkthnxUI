@@ -999,6 +999,51 @@ function Module.CloseBags()
 	end
 end
 
+function Module:SetInventoryEnabled(enabled)
+	if enabled then
+		if not self.initComplete then
+			self:InitBags()
+		end
+
+		if not self.initComplete then
+			if self.initConflict then
+				K.Print("|cff3c9bedKkthnxUI:|r Custom inventory disabled — " .. self.initConflict .. " is loaded.")
+			end
+			return
+		end
+
+		if self.Bags then
+			self.Bags:Show()
+		end
+
+		local bagBar = _G.KKUI_BagBar
+		if bagBar then
+			bagBar:Show()
+		end
+
+		self:UpdateBagAnchor()
+		return
+	end
+
+	if self.Bags then
+		if self.Bags:IsShown() and _G.ToggleAllBags then
+			_G.ToggleAllBags()
+		end
+		self.Bags:Hide()
+	end
+
+	if self.Bags and self.Bags.contByName then
+		for _, container in pairs(self.Bags.contByName) do
+			container:Hide()
+		end
+	end
+
+	local bagBar = _G.KKUI_BagBar
+	if bagBar then
+		bagBar:Hide()
+	end
+end
+
 function Module:OnEnable()
 	local loadInventoryModules = {
 		"CreateInventoryBar",
@@ -1016,6 +1061,16 @@ function Module:OnEnable()
 		end
 	end
 
+	if C["Inventory"].Enable then
+		Module:InitBags()
+	end
+end
+
+function Module:InitBags()
+	if Module.initComplete then
+		return
+	end
+
 	if not C["Inventory"].Enable then
 		return
 	end
@@ -1026,6 +1081,7 @@ function Module:OnEnable()
 	local conflictAddons = { "AdiBags", "ArkInventory", "cargBags_Nivaya", "cargBags", "Bagnon", "Combuctor", "TBag", "BaudBag" }
 	for _, addon in ipairs(conflictAddons) do
 		if _G.C_AddOns.IsAddOnLoaded(addon) then
+			Module.initConflict = addon
 			return
 		end
 	end
@@ -1660,6 +1716,19 @@ function Module:OnEnable()
 			end
 			container:OnContentsChanged(true)
 		end
+	end
+
+	function Module:UpdateBagAnchor()
+		if not Module.initComplete then
+			return
+		end
+		for _, container in pairs(Backpack.contByName) do
+			container:OnContentsChanged(false)
+		end
+	end
+
+	function Module:UpdateSortOrder()
+		C_Container_SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
 	end
 
 	local BagButton = Backpack:GetClass("BagButton", true, "BagButton")

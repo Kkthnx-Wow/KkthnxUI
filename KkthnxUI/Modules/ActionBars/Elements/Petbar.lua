@@ -166,11 +166,6 @@ end
 -- ---------------------------------------------------------------------------
 
 function Module.PetBarOnEvent(event, unit)
-	-- NOTE: Filter out unit events from non-player/non-pet sources immediately for performance.
-	if (event == "UNIT_PET" or event == "UNIT_FLAGS") and unit and unit ~= "player" and unit ~= "pet" then
-		return
-	end
-
 	-- REASON: UNIT_FLAGS often triggers for harmless changes (buffs/debuffs)
 	-- that only require a quick usability check rather than a full icon scan.
 	if event == "UNIT_FLAGS" then
@@ -230,8 +225,8 @@ function Module:CreatePetbar()
 	Module:UpdatePetBar(PetActionBar)
 
 	-- Register all relevant events for pet bar management.
-	K:RegisterEvent("UNIT_PET", Module.PetBarOnEvent)
-	K:RegisterEvent("UNIT_FLAGS", Module.PetBarOnEvent)
+	K:RegisterUnitEvent("UNIT_PET", Module.PetBarOnEvent, "player")
+	K:RegisterUnitEvent("UNIT_FLAGS", Module.PetBarOnEvent, "pet")
 	K:RegisterEvent("PET_UI_UPDATE", Module.PetBarOnEvent)
 	K:RegisterEvent("PET_BAR_UPDATE", Module.PetBarOnEvent)
 	K:RegisterEvent("PLAYER_CONTROL_LOST", Module.PetBarOnEvent)

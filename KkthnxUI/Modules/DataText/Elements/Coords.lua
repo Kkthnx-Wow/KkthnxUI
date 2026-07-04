@@ -179,6 +179,21 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateCoordsDataText()
 	-- REASON: Entry point for coordinate DataText creation; initializes frame, textures, and scripts.
+	if coordsDataText then
+		if C["DataText"].Coords then
+			coordsDataText:Show()
+			if coordsDataText.mover then
+				coordsDataText.mover:Show()
+			end
+		else
+			coordsDataText:Hide()
+			if coordsDataText.mover then
+				coordsDataText.mover:Hide()
+			end
+		end
+		return
+	end
+
 	if not C["DataText"].Coords then
 		return
 	end
@@ -211,4 +226,10 @@ function Module:CreateCoordsDataText()
 
 	-- REASON: Registers the frame with the KkthnxUI mover system for user-controlled positioning.
 	coordsDataText.mover = K.Mover(coordsDataText, "CoordsDT", "CoordsDT", { "TOP", UIParent, "TOP", 0, -90 }, 56, 24)
+
+	Module:RegisterAppearanceRefresher(function()
+		if coordsDataText and coordsDataText.Texture then
+			coordsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		end
+	end)
 end

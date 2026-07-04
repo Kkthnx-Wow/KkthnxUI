@@ -173,7 +173,15 @@ local function RegisterUpdateHook(configPath, hookFunction)
 	if not GUI.UpdateHooks[configPath] then
 		GUI.UpdateHooks[configPath] = {}
 	end
-	tinsert(GUI.UpdateHooks[configPath], hookFunction)
+
+	local hooks = GUI.UpdateHooks[configPath]
+	for i = 1, #hooks do
+		if hooks[i] == hookFunction then
+			return
+		end
+	end
+
+	tinsert(hooks, hookFunction)
 	DebugLog("Hook registered. Total hooks for " .. configPath .. ": " .. #GUI.UpdateHooks[configPath])
 end
 
@@ -226,8 +234,13 @@ function SetConfigValue(configPath, value, requiresReload, settingName)
 		DebugLog("Value changed, executing hooks")
 		ExecuteUpdateHooks(configPath, value, oldValue)
 
-		-- Check for reload requirement (simple: no hook = needs reload)
-		local hasHook = GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] > 0
+		if K.TriggerSettingCallback then
+			K:TriggerSettingCallback(configPath, value, oldValue)
+		end
+
+		-- Check for reload requirement (hook, prefix callback, or explicit force)
+		local hasHook = (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] > 0)
+			or (K.HasSettingLiveUpdate and K:HasSettingLiveUpdate(configPath))
 		DebugLog("Hook check for " .. configPath .. ": " .. tostring(hasHook) .. " (hooks count: " .. (GUI.UpdateHooks[configPath] and #GUI.UpdateHooks[configPath] or 0) .. ")")
 
 		if RequiresReload(configPath, hasHook, requiresReload) then

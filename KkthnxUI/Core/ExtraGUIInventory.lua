@@ -44,13 +44,6 @@ local function SetConfigValue(configPath, value, settingName)
 	K.GUIConfigService:SetValue(configPath, value)
 end
 
-local function UpdateBagStatus()
-	local inventoryModule = K:GetModule("Bags")
-	if inventoryModule and inventoryModule.UpdateAllBags then
-		inventoryModule:UpdateAllBags()
-	end
-end
-
 function ExtraGUIInventory:Register(extraGUI)
 	extraGUI:RegisterExtraConfig("Inventory.ItemFilter", function(parent)
 		local yOffset = -10
@@ -58,13 +51,13 @@ function ExtraGUIInventory:Register(extraGUI)
 
 		for i = 1, #filterRows do
 			local row = filterRows[i]
-			local switch = extraGUI:CreateSwitch(parent, row[1], row[2], row[3], UpdateBagStatus)
+			local switch = extraGUI:CreateSwitch(parent, row[1], row[2], row[3])
 			switch:SetPoint("TOPLEFT", 0, yOffset)
 			widgets[#widgets + 1] = switch
 			yOffset = yOffset - 35
 		end
 
-		local gatherEmptySwitch = extraGUI:CreateSwitch(parent, gatherEmptyRow[1], gatherEmptyRow[2], gatherEmptyRow[3], UpdateBagStatus)
+		local gatherEmptySwitch = extraGUI:CreateSwitch(parent, gatherEmptyRow[1], gatherEmptyRow[2], gatherEmptyRow[3])
 		gatherEmptySwitch:SetPoint("TOPLEFT", 0, yOffset)
 		widgets[#widgets + 1] = gatherEmptySwitch
 		yOffset = yOffset - 35

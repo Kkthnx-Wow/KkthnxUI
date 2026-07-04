@@ -75,6 +75,11 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateLocationDataText()
 	-- REASON: Main entry point for the location text; manages frames above the Minimap.
+	if locationDataText then
+		Module:UpdateLocationTextVisibility()
+		return
+	end
+
 	if not C["DataText"].Location or not Minimap then
 		return
 	end
@@ -120,4 +125,19 @@ function Module:CreateLocationDataText()
 	end
 
 	locationDataText:SetScript("OnEvent", onEvent)
+end
+
+function Module:UpdateLocationTextVisibility()
+	if not locationDataText then
+		return
+	end
+
+	if C["Minimap"].LocationText == 2 or not C["Minimap"].Enable or not C["DataText"].Location then
+		locationDataText:Hide()
+	elseif C["Minimap"].LocationText == 1 then
+		locationDataText:Show()
+		onEvent()
+	else
+		locationDataText:Hide()
+	end
 end

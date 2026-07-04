@@ -149,7 +149,6 @@ K.ChangelogData = {
 				"Improved Guild datatext for better performance and stability",
 				"Enhanced MicroMenu and LeaveVehicle action bar elements",
 				"Updated various announcement modules: Interrupt, ItemAlert, Keystone, QuestNotifier, RareAlert, ResetInstance",
-				"Improved AuraWatch system and core aura functionality",
 				"Enhanced automation modules: AutoOpen, BadBuffs, DeclineDuel, Goodbye, Quest, Screenshot, SetRole, SkipCinematic, Summon",
 				"Renamed AutoSkipCinematic to ConfirmCinematicSkip for clarity",
 				"Removed redundant AutoOpenItems setting (merged into automation)",

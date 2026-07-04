@@ -74,7 +74,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Automation Implementation
 -- ---------------------------------------------------------------------------
-function Module:SetupAutoBestReward()
+function Module.SetupAutoBestReward(event)
 	-- REASON: Discovers the best reward and updates the visual highlight icon position.
 	local questRewards = getQuestRewards()
 	if not questRewards then
@@ -93,8 +93,15 @@ function Module:SetupAutoBestReward()
 end
 
 function Module:CreateAutoBestReward()
-	-- REASON: Feature entry point; initializes the coin icon indicator and hooks standard quest panels.
-	if C["Automation"].AutoReward then
+	if not C["Automation"].AutoReward then
+		if questRewardGoldIconFrame then
+			questRewardGoldIconFrame:Hide()
+		end
+		K:UnregisterEvent("QUEST_COMPLETE", Module.SetupAutoBestReward)
+		return
+	end
+
+	if not questRewardGoldIconFrame then
 		questRewardGoldIconFrame = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
 		questRewardGoldIconFrame:SetFrameStrata("HIGH")
 		questRewardGoldIconFrame:SetSize(20, 20)
@@ -110,9 +117,7 @@ function Module:CreateAutoBestReward()
 				questRewardGoldIconFrame:Hide()
 			end)
 		end
-
-		K:RegisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
-	else
-		K:UnregisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
 	end
+
+	K:RegisterEvent("QUEST_COMPLETE", Module.SetupAutoBestReward)
 end

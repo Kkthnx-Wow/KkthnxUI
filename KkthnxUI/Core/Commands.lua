@@ -48,6 +48,13 @@ end)
 -- COMMAND LOGIC HELPERS
 -- ---------------------------------------------------------------------------
 
+local function ToggleReminderTest()
+	local auras = K:GetModule("Auras")
+	if auras and auras.Reminder_ToggleTest then
+		auras:Reminder_ToggleTest()
+	end
+end
+
 local function ToggleEventTrace()
 	if EventTraceEnabled then
 		EventTrace:UnregisterAllEvents()
@@ -347,6 +354,7 @@ local function CreateCommandWindow()
 		{ "/kk deletequestitems", "Lists all quest items for manual deletion." },
 		{ "/kk gmticket", "Opens the GM ticket window." },
 		{ "/kk gui", "Opens the KkthnxUI settings window." },
+		{ "/kk reminder", "Preview buff reminder icons for positioning (/moveui)." },
 		{ "/kk keybindframe", "Opens the key binding window." },
 		{ "/kk readycheck", "Initiates a ready check." },
 		{ "/kk resetinstance", "Resets the current instance." },
@@ -364,7 +372,6 @@ local function CreateCommandWindow()
 		{ "/install", "Installs or resets KkthnxUI and opens the installation wizard." },
 		{ "/jenkins", "Starts the pull countdown for the group or raid." },
 		{ "/kb", "Toggles the keybinding interface for KkthnxUI." },
-		{ "/kkaw", "Opens the aurawatch frame for KkthnxUI." },
 		{ "/moveui", "Allows the user to move UI elements." },
 		{ "/pc", "Alternative command for pull countdown." },
 		{ "/rl", "Shortcut to reload the user interface quickly." },
@@ -412,6 +419,7 @@ end
 
 -- REASON: Table-based command mapping for better performance and maintainability.
 local commandMap = {
+	reminder = ToggleReminderTest,
 	eventtrace = ToggleEventTrace,
 	gui = ToggleGUI,
 	volume = SetVolume,

@@ -17,9 +17,6 @@ local mediaFolder = K.MediaFolder
 -- REASON: Centralized table for all internal media assets. Used for both static
 -- references and dynamic GUI population.
 C["Media"] = {
-	["Sounds"] = {
-		KillingBlow = mediaFolder .. "Sounds\\KillingBlow.ogg",
-	},
 	["Backdrops"] = {
 		ColorBackdrop = { 0.060, 0.060, 0.060, 0.9 },
 	},

@@ -26,7 +26,7 @@ local UNKNOWN_NAME = _G.UNKNOWN or "Unknown"
 -- ---------------------------------------------------------------------------
 -- Internal Logic
 -- ---------------------------------------------------------------------------
-function Module:duelRequested(name)
+function Module.duelRequested(event, name)
 	-- REASON: Instantly cancels the duel request and hides the associated blizzard popup.
 	CancelDuel()
 	StaticPopup_Hide("DUEL_REQUESTED")
@@ -36,7 +36,7 @@ function Module:duelRequested(name)
 	K.Print(CONFIRMATION_COLOR .. string_format(msgDuel, name) .. COLOR_RESET)
 end
 
-function Module:petBattleDuelRequested(name)
+function Module.petBattleDuelRequested(event, name)
 	-- REASON: Instantly cancels the pet battle pvp duel request and hides the associated blizzard popup.
 	if C_PetBattles_CancelPVPDuel then
 		C_PetBattles_CancelPVPDuel()
@@ -59,14 +59,14 @@ function Module:CreateAutoDeclineDuels()
 	end
 
 	if automationConfig.AutoDeclineDuels then
-		K:RegisterEvent("DUEL_REQUESTED", self.duelRequested)
+		K:RegisterEvent("DUEL_REQUESTED", Module.duelRequested)
 	else
-		K:UnregisterEvent("DUEL_REQUESTED", self.duelRequested)
+		K:UnregisterEvent("DUEL_REQUESTED", Module.duelRequested)
 	end
 
 	if automationConfig.AutoDeclinePetDuels then
-		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", self.petBattleDuelRequested)
+		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.petBattleDuelRequested)
 	else
-		K:UnregisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", self.petBattleDuelRequested)
+		K:UnregisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.petBattleDuelRequested)
 	end
 end

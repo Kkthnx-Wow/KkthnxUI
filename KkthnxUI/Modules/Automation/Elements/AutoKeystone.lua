@@ -94,6 +94,7 @@ end
 function Module:CreateAutoKeystone()
 	-- REASON: Avoid conflicts with other keystone addons and respect user configuration.
 	if C_AddOns_IsAddOnLoaded("AngryKeystones") or not C["Automation"].AutoKeystone then
+		K:UnregisterEvent("ADDON_LOADED", Module.LoadAutoKeystone)
 		return
 	end
 

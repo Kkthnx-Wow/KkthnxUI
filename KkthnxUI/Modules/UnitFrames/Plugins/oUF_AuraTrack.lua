@@ -9,19 +9,19 @@
 
 local K = KkthnxUI[1]
 local oUF = K.oUF
+local IsSecret = K.IsSecret
+local IsSecretTable = K.IsSecretTable
 local NotSecret = K.NotSecret
 
 -- REASON: Localize frequently used APIs and utilities for performance
 local CreateFrame = _G.CreateFrame
 local GetTime = _G.GetTime
-local UnitAura = _G.UnitAura
 
 local math_floor = _G.math.floor
 
--- PERF: the UnitAura fallback below is the per-aura hot path on UNIT_AURA scans,
--- so cache the C_* methods it leans on instead of re-resolving them each call.
+-- PERF: read aura rows directly; UnitAura/AuraUtil.UnpackAuraData unpacks points and
+-- errors when that table is secret in instances (12.0).
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
-local AuraUtil_UnpackAuraData = _G.AuraUtil and _G.AuraUtil.UnpackAuraData
 
 local Tracker = {
 	-- PRIEST
@@ -91,15 +91,31 @@ local Tracker = {
 	[20707] = { 0.8, 0.4, 0.8 }, -- Soulstone
 }
 
-if not UnitAura then
-	UnitAura = function(unitToken, index, filter)
-		local auraData = C_UnitAuras_GetAuraDataByIndex(unitToken, index, filter)
+local function ReadTrackedAura(auraData)
+	if not auraData then
+		return
+	end
 
-		if not auraData then
-			return nil
-		end
+	-- Midnight: UnpackAuraData unpack(auraData.points) errors when points is secret.
+	if auraData.points and (IsSecret(auraData.points) or IsSecretTable(auraData.points)) then
+		return
+	end
 
-		return AuraUtil_UnpackAuraData(auraData)
+	local spellID = auraData.spellId
+	local caster = auraData.sourceUnit
+	local duration = auraData.duration
+	local expiration = auraData.expirationTime
+	local count = auraData.applications
+	local texture = auraData.icon
+
+	if NotSecret(spellID)
+		and NotSecret(caster)
+		and NotSecret(duration)
+		and NotSecret(expiration)
+		and NotSecret(count)
+		and NotSecret(texture)
+	then
+		return spellID, texture, count, duration, expiration, caster
 	end
 end
 
@@ -243,21 +259,22 @@ local function Update(self, _, unit)
 	AuraTrack.Spacing = AuraTrack.Spacing or 6
 	AuraTrack.IconSize = (AuraTrack:GetWidth() / AuraTrack.MaxAuras) - AuraTrack.Spacing - (AuraTrack.Spacing / AuraTrack.MaxAuras)
 
-	for i = 1, 40 do
-		local _, texture, count, _, duration, expiration, caster, _, _, spellID = UnitAura(unit, i, "HELPFUL")
+	if C_UnitAuras_GetAuraDataByIndex then
+		for i = 1, 40 do
+			local spellID, texture, count, duration, expiration, caster = ReadTrackedAura(
+				C_UnitAuras_GetAuraDataByIndex(unit, i, "HELPFUL")
+			)
 
-		-- SECRET (12.0): spellID/caster/duration/expiration can be secret in
-		-- instances. spellID is a table key and duration/expiration feed cooldown
-		-- arithmetic, so skip the aura entirely unless every read is safe.
-		if NotSecret(spellID) and NotSecret(caster) and NotSecret(duration) and NotSecret(expiration) and NotSecret(count) then
-			local track = AuraTrack.Tracker[spellID]
-			if track and (caster == "player" or caster == "pet") then
-				ID = ID + 1
+			if spellID then
+				local track = AuraTrack.Tracker[spellID]
+				if track and (caster == "player" or caster == "pet") then
+					ID = ID + 1
 
-				if AuraTrack.Icons then
-					UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
-				else
-					UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
+					if AuraTrack.Icons then
+						UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
+					else
+						UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
+					end
 				end
 			end
 		end

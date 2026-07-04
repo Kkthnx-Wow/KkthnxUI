@@ -53,11 +53,22 @@ local function disableTutorialCVars()
 	end
 end
 
+local function restoreTutorialCVars()
+	for i = 1, #tutorialCVars do
+		pcall(SetCVar, tutorialCVars[i], "1")
+	end
+end
+
 function Module:AutoDismissHelpTips()
 	-- REASON: Hooks the HelpTip:Show function to immediately dismiss any new help tips that appear.
 	if not C["General"].NoTutorialButtons then
 		return
 	end
+
+	if Module._tutorialDismissHooked then
+		return
+	end
+	Module._tutorialDismissHooked = true
 
 	local helpTip = _G.HelpTip
 	if helpTip then
@@ -159,4 +170,12 @@ function Module:CreateTutorialDisabling()
 
 	Module:AutoDismissHelpTips()
 	Module:ShutdownAllTutorials()
+end
+
+function Module:UpdateNoTutorialButtons()
+	if C["General"].NoTutorialButtons then
+		Module:CreateTutorialDisabling()
+	else
+		restoreTutorialCVars()
+	end
 end

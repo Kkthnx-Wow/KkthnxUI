@@ -49,10 +49,10 @@ local SOCKET_WATCH_LIST = {
 -- ---------------------------------------------------------------------------
 local function isItemWithLevel(link)
 	-- REASON: Verifies if a hyperlink corresponds to an item that typically has a meaningful level (equipment).
-	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
-	if name and level and rarity > 1 and (classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor) then
+	local info = GetItemInfo(link)
+	if info and info.itemName and info.itemLevel and info.itemQuality > 1 and (info.classID == Enum.ItemClass.Weapon or info.classID == Enum.ItemClass.Armor) then
 		local itemLevel = K.GetItemLevel(link)
-		return name, itemLevel
+		return info.itemName, itemLevel
 	end
 end
 

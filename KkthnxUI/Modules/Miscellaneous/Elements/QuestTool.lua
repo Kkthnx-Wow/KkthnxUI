@@ -36,6 +36,27 @@ local WATCHED_QUESTS = {
 }
 
 local activeQuestCache = {}
+local questToolActive = false
+local isFirstGossipAutomationStep = false
+
+local function onQuestGossipShow()
+	if not C["Misc"].QuestTool then
+		return
+	end
+
+	local unitGUID = UnitGUID("npc")
+	if unitGUID then
+		local npcID = K.GetNPCID(unitGUID)
+		if npcID == 174498 then
+			C_GossipInfo_SelectOption(3)
+		elseif npcID == 174371 then
+			if C_Item_GetItemCount(183961) > 0 and C_GossipInfo_GetNumOptions() == 5 then
+				C_GossipInfo_SelectOption(isFirstGossipAutomationStep and 2 or 5)
+				isFirstGossipAutomationStep = not isFirstGossipAutomationStep
+			end
+		end
+	end
+end
 
 local QUEST_TARGET_NPCS = {
 	[170080] = true, -- Boggart
@@ -56,13 +77,13 @@ function Module:initializeActiveQuestCache()
 	end
 end
 
-function Module:onQuestAcceptedUpdateCache(questID)
+function Module.onQuestAcceptedUpdateCache(event, questID)
 	if WATCHED_QUESTS[questID] then
 		activeQuestCache[questID] = WATCHED_QUESTS[questID]
 	end
 end
 
-function Module:onQuestRemovedUpdateCache(questID)
+function Module.onQuestRemovedUpdateCache(event, questID)
 	if WATCHED_QUESTS[questID] then
 		activeQuestCache[questID] = nil
 	end
@@ -73,13 +94,18 @@ local function isActionTextMatch(message, searchText)
 end
 
 -- REASON: Analyzes monster emotes to apply overlay glows to specific action bar buttons required for quest mechanics.
-function Module:updateQuestActionGlow(monsterMessage)
+function Module.updateQuestActionGlow(event, monsterMessage)
+	if not C["Misc"].QuestTool then
+		return
+	end
+
 	if GetOverrideBarSkin() and (activeQuestCache[59585] or activeQuestCache[64271]) then
 		for i = 1, 3 do
 			local actionButton = _G["ActionButton" .. i]
 			local _, spellID = GetActionInfo(actionButton.action)
-			local spellName = spellID and C_Spell_GetSpellInfo(spellID)
-			if (ACTION_REPLACEMENT_STRINGS[spellName] and isActionTextMatch(monsterMessage, ACTION_REPLACEMENT_STRINGS[spellName])) or isActionTextMatch(monsterMessage, spellName) then
+			local spellInfo = spellID and C_Spell_GetSpellInfo(spellID)
+			local spellName = spellInfo and spellInfo.name
+			if (spellName and ACTION_REPLACEMENT_STRINGS[spellName] and isActionTextMatch(monsterMessage, ACTION_REPLACEMENT_STRINGS[spellName])) or isActionTextMatch(monsterMessage, spellName) then
 				K.ShowOverlayGlow(actionButton)
 			else
 				K.HideOverlayGlow(actionButton)
@@ -87,11 +113,11 @@ function Module:updateQuestActionGlow(monsterMessage)
 		end
 		Module.isQuestGlowActive = true
 	else
-		Module:clearQuestActionGlow()
+		Module.clearQuestActionGlow()
 	end
 end
 
-function Module:clearQuestActionGlow()
+function Module.clearQuestActionGlow(event)
 	if Module.isQuestGlowActive then
 		Module.isQuestGlowActive = nil
 		for i = 1, 3 do
@@ -102,6 +128,10 @@ end
 
 -- REASON: Adds an indicator to unit tooltips when a specific NPC required for a tracked quest is identified.
 function Module:onQuestUnitTooltipUpdate()
+	if not C["Misc"].QuestTool then
+		return
+	end
+
 	if not activeQuestCache[60739] and not activeQuestCache[62453] then
 		return
 	end
@@ -113,10 +143,48 @@ function Module:onQuestUnitTooltipUpdate()
 	end
 end
 
-function Module:CreateQuestTool()
-	if not C["Misc"].QuestTool then
+function Module:DisableQuestTool()
+	if not questToolActive then
 		return
 	end
+
+	questToolActive = false
+	K:UnregisterEvent("QUEST_ACCEPTED", Module.onQuestAcceptedUpdateCache)
+	K:UnregisterEvent("QUEST_REMOVED", Module.onQuestRemovedUpdateCache)
+	K:UnregisterEvent("CHAT_MSG_MONSTER_SAY", Module.updateQuestActionGlow)
+	K:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.clearQuestActionGlow)
+	K:UnregisterEvent("GOSSIP_SHOW", onQuestGossipShow)
+		Module.clearQuestActionGlow()
+
+	if Module.QuestHandler then
+		Module.QuestHandler:Hide()
+	end
+	if Module.QuestTip then
+		Module.QuestTip:Hide()
+	end
+end
+
+function Module:CreateQuestTool()
+	if not C["Misc"].QuestTool then
+		Module:DisableQuestTool()
+		return
+	end
+
+	if Module.QuestHandler then
+		questToolActive = true
+		Module.QuestHandler:Show()
+		K:RegisterEvent("QUEST_ACCEPTED", Module.onQuestAcceptedUpdateCache)
+		K:RegisterEvent("QUEST_REMOVED", Module.onQuestRemovedUpdateCache)
+		if C["ActionBar"].Enable then
+			K:RegisterEvent("CHAT_MSG_MONSTER_SAY", Module.updateQuestActionGlow)
+			K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.clearQuestActionGlow)
+		end
+		K:RegisterEvent("GOSSIP_SHOW", onQuestGossipShow)
+		Module:initializeActiveQuestCache()
+		return
+	end
+
+	questToolActive = true
 
 	local questHandler = CreateFrame("Frame", nil, _G.UIParent)
 	Module.QuestHandler = questHandler
@@ -142,22 +210,7 @@ function Module:CreateQuestTool()
 	-- SG: Tooltip identification for specific npc-finding quests
 	_G.TooltipDataProcessor.AddTooltipPostCall(_G.Enum.TooltipDataType.Unit, Module.onQuestUnitTooltipUpdate)
 
-	-- REASON: Automates specific gossip options for select NPCs to streamline repetitive quest interactions.
-	local isFirstAutomationStep = false
-	K:RegisterEvent("GOSSIP_SHOW", function()
-		local unitGUID = UnitGUID("npc")
-		if unitGUID then
-			local npcID = K.GetNPCID(unitGUID)
-			if npcID == 174498 then
-				C_GossipInfo_SelectOption(3)
-			elseif npcID == 174371 then
-				if C_Item_GetItemCount(183961) > 0 and C_GossipInfo_GetNumOptions() == 5 then
-					C_GossipInfo_SelectOption(isFirstAutomationStep and 2 or 5)
-					isFirstAutomationStep = not isFirstAutomationStep
-				end
-			end
-		end
-	end)
+	K:RegisterEvent("GOSSIP_SHOW", onQuestGossipShow)
 end
 
 Module:RegisterMisc("QuestTool", Module.CreateQuestTool)

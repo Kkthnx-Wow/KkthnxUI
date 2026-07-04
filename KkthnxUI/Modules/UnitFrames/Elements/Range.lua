@@ -10,6 +10,7 @@
 local _, ns = ...
 local oUF = ns.oUF
 local K, C = unpack(KkthnxUI)
+local UnitFrames = K:GetModule("Unitframes")
 
 local _FRAMES = {}
 local rangeTimer
@@ -454,3 +455,24 @@ local function Disable(self)
 end
 
 oUF:AddElement("RangeFader", nil, Enable, Disable)
+
+function UnitFrames:RefreshRangeFading()
+	local enabled = C["Unitframe"].Range
+	local oUF = K.oUF
+
+	if oUF and oUF.objects then
+		for _, frame in next, oUF.objects do
+			if frame.RangeFader then
+				if enabled then
+					if frame.EnableElement then
+						frame:EnableElement("RangeFader")
+					end
+				elseif frame.DisableElement then
+					frame:DisableElement("RangeFader")
+				end
+			end
+		end
+	end
+
+	OnRangeUpdate()
+end

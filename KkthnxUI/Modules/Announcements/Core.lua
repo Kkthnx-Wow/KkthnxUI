@@ -18,15 +18,12 @@ function Module:OnEnable()
 	-- Each corresponding function must be registered to the Module object.
 	local loadAnnouncementModules = {
 		"CreateHealthAnnounce",
-		"CreateInterruptAnnounce",
 		"CreateItemAnnounce",
 		"CreateKeystoneAnnounce",
-		"CreateKillingBlow",
 		"CreatePullCountdown",
 		"CreateQuestNotifier",
 		"CreateRareAnnounce",
 		"CreateResetInstance",
-		"CreateSaySappedAnnounce",
 	}
 
 	-- REASON: Use pcall to ensure that a failure in one announcement element

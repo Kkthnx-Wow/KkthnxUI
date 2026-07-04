@@ -131,3 +131,49 @@ function Module:OnEnable()
 		end
 	end
 end
+
+local function ApplyFontSize(fontObject, size)
+	if not fontObject or not fontObject.SetFont then
+		return
+	end
+
+	local font, _, style = KkthnxUIFont:GetFont()
+	fontObject:SetFont(font, size, style or "")
+end
+
+function Module:UpdateQuestFonts()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
+	local size = C["Skins"].QuestFontSize or 11
+	local questFonts = {
+		_G.QuestFont,
+		_G.QuestFont_Shadow_Small,
+		_G.QuestFont_Shadow_Huge,
+		_G.QuestFont_Large,
+		_G.QuestFont_Huge,
+		_G.QuestFont_Super_Huge,
+	}
+
+	for i = 1, #questFonts do
+		ApplyFontSize(questFonts[i], size)
+	end
+end
+
+function Module:UpdateObjectiveFonts()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
+	local size = C["Skins"].ObjectiveFontSize or 12
+	local objectiveFonts = {
+		_G.ObjectiveTrackerFont12,
+		_G.ObjectiveTrackerLineFont,
+		_G.GameFontNormalMed2,
+	}
+
+	for i = 1, #objectiveFonts do
+		ApplyFontSize(objectiveFonts[i], size)
+	end
+end

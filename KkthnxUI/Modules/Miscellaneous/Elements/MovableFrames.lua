@@ -107,6 +107,10 @@ local hookedFrames = {}
 
 -- REASON: Handles the start of a drag operation on the left mouse button, using a cached parent frame reference if applicable.
 local function onFrameMouseDown(frame, mouseButton)
+	if not C["General"].MoveBlizzardFrames then
+		return
+	end
+
 	if mouseButton ~= "LeftButton" then
 		return
 	end
@@ -120,6 +124,10 @@ end
 
 -- REASON: Terminates a drag operation on the left mouse button release.
 local function onFrameMouseUp(frame, mouseButton)
+	if not C["General"].MoveBlizzardFrames then
+		return
+	end
+
 	if mouseButton ~= "LeftButton" then
 		return
 	end
@@ -205,9 +213,15 @@ local function checkFrameExistence()
 end
 
 function Module:CreateMoveBlizzardFrames()
+	if Module._blizzardFramesMovable then
+		return
+	end
+
 	if not C["General"].MoveBlizzardFrames then
 		return
 	end
+
+	Module._blizzardFramesMovable = true
 
 	makeFramesMovable(MOVABLE_FRAMES)
 	checkFrameExistence()
@@ -221,4 +235,10 @@ function Module:CreateMoveBlizzardFrames()
 	end
 
 	K:RegisterEvent("ADDON_LOADED", onAddonLoaded)
+end
+
+function Module:UpdateMoveBlizzardFrames()
+	if C["General"].MoveBlizzardFrames then
+		Module:CreateMoveBlizzardFrames()
+	end
 end

@@ -47,7 +47,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Automation Functions
 -- ---------------------------------------------------------------------------
-function Module:SetupAutoRole()
+function Module.SetupAutoRole(event)
 	if not shouldSetupAutoRole() then
 		return
 	end
@@ -69,8 +69,8 @@ function Module:CreateAutoSetRole()
 	local rolePollPopup = _G.RolePollPopup
 
 	if not C["Automation"].AutoSetRole then
-		K:UnregisterEvent("PLAYER_TALENT_UPDATE", self.SetupAutoRole)
-		K:UnregisterEvent("GROUP_ROSTER_UPDATE", self.SetupAutoRole)
+		K:UnregisterEvent("PLAYER_TALENT_UPDATE", Module.SetupAutoRole)
+		K:UnregisterEvent("GROUP_ROSTER_UPDATE", Module.SetupAutoRole)
 		-- REASON: Re-enable the standard Blizzard popup if automation is disabled.
 		if rolePollPopup and rolePollPopup.RegisterEvent then
 			rolePollPopup:RegisterEvent("ROLE_POLL_BEGIN")
@@ -78,13 +78,13 @@ function Module:CreateAutoSetRole()
 		return
 	end
 
-	K:RegisterEvent("PLAYER_TALENT_UPDATE", self.SetupAutoRole)
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.SetupAutoRole)
+	K:RegisterEvent("PLAYER_TALENT_UPDATE", Module.SetupAutoRole)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.SetupAutoRole)
 
 	-- REASON: Suppress the standard Blizzard role poll popup when automation is handling roles.
 	if rolePollPopup and rolePollPopup.UnregisterEvent then
 		rolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
 	end
 
-	self:SetupAutoRole()
+	Module.SetupAutoRole()
 end

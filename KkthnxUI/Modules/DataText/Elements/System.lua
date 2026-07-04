@@ -306,6 +306,15 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateSystemDataText()
 	-- REASON: Entry point for the system performance DataText; initializes the FPS readout and profiling logic.
+	if systemDataText then
+		if C["DataText"].System then
+			systemDataText:Show()
+		else
+			systemDataText:Hide()
+		end
+		return
+	end
+
 	if not C["DataText"].System then
 		return
 	end
@@ -331,4 +340,10 @@ function Module:CreateSystemDataText()
 	systemDataText:SetScript("OnUpdate", onUpdate)
 
 	K.SystemDataText = systemDataText -- REASON: Allows other DataText modules to anchor to this one.
+
+	Module:RegisterAppearanceRefresher(function()
+		if systemDataText and systemDataText.Texture then
+			systemDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		end
+	end)
 end

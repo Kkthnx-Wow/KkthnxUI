@@ -868,6 +868,21 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateSocialDataText()
 	-- REASON: Entry point for the Social/Friends DataText; sets up textures, fonts, and event registration.
+	if friendsDataText then
+		if C["DataText"].Friends then
+			friendsDataText:Show()
+			if friendsDataText.mover then
+				friendsDataText.mover:Show()
+			end
+		else
+			friendsDataText:Hide()
+			if friendsDataText.mover then
+				friendsDataText.mover:Hide()
+			end
+		end
+		return
+	end
+
 	if not C["DataText"].Friends then
 		return
 	end
@@ -903,4 +918,14 @@ function Module:CreateSocialDataText()
 	friendsDataText:SetScript("OnMouseUp", onMouseUp)
 
 	friendsDataText.mover = K.Mover(friendsDataText, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 2, -270 }, MIN_DT_WIDTH, 12)
+
+	Module:RegisterAppearanceRefresher(function()
+		if not friendsDataText then
+			return
+		end
+		if friendsDataText.Texture then
+			friendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		end
+		onEvent(friendsDataText, "CHAT_MSG_SYSTEM", "")
+	end)
 end

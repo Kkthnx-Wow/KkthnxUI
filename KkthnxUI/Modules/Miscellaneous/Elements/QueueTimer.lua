@@ -59,6 +59,17 @@ local function hideDefaultQueueTimers()
 end
 
 -- REASON: Injects custom font strings into a ready dialog frame for displaying remaining time and instance information.
+local function setQueueLabelText(fs, text)
+	if not fs then
+		return
+	end
+	if fs.kkShadow then
+		K.SetPlainText(fs, text or "")
+	else
+		fs:SetText(text or "")
+	end
+end
+
 local function createCustomQueueLabels(dialogFrame)
 	if not dialogFrame or not dialogFrame.label or dialogFrame.queueTimerLabels then
 		return
@@ -66,33 +77,20 @@ local function createCustomQueueLabels(dialogFrame)
 
 	local frameWidth = dialogFrame:GetWidth()
 
-	dialogFrame.customLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.customLabel = K.CreatePlainFS(dialogFrame, 15, "Queue expires in", "OVERLAY")
 	dialogFrame.customLabel:SetPoint("TOP", dialogFrame.label, "TOP", 0, 0)
-	dialogFrame.customLabel:SetText("Queue expires in")
-	local fontPath = select(1, dialogFrame.customLabel:GetFont())
-	dialogFrame.customLabel:SetFont(fontPath, 15, "")
-	dialogFrame.customLabel:SetShadowOffset(1, -1)
 	dialogFrame.customLabel:SetWidth(frameWidth)
 
-	dialogFrame.timerLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.timerLabel = K.CreatePlainFS(dialogFrame, 24, nil, "OVERLAY")
 	dialogFrame.timerLabel:SetPoint("TOP", dialogFrame.customLabel, "BOTTOM", 0, -5)
-	fontPath = select(1, dialogFrame.timerLabel:GetFont())
-	dialogFrame.timerLabel:SetFont(fontPath, 24, "")
-	dialogFrame.timerLabel:SetShadowOffset(1, -1)
 	dialogFrame.timerLabel:SetWidth(frameWidth)
 
-	dialogFrame.bgLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.bgLabel = K.CreatePlainFS(dialogFrame, 15, nil, "OVERLAY")
 	dialogFrame.bgLabel:SetPoint("TOP", dialogFrame.timerLabel, "BOTTOM", 0, -4)
-	fontPath = select(1, dialogFrame.bgLabel:GetFont())
-	dialogFrame.bgLabel:SetFont(fontPath, 15, "")
-	dialogFrame.bgLabel:SetShadowOffset(1, -1)
 	dialogFrame.bgLabel:SetWidth(frameWidth)
 
-	dialogFrame.statusTextLabel = dialogFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	dialogFrame.statusTextLabel = K.CreatePlainFS(dialogFrame, 11, nil, "OVERLAY")
 	dialogFrame.statusTextLabel:SetPoint("TOP", dialogFrame.bgLabel, "BOTTOM", 0, -3)
-	fontPath = select(1, dialogFrame.statusTextLabel:GetFont())
-	dialogFrame.statusTextLabel:SetFont(fontPath, 11, "")
-	dialogFrame.statusTextLabel:SetShadowOffset(1, -1)
 	dialogFrame.statusTextLabel:SetWidth(frameWidth)
 
 	dialogFrame.queueTimerLabels = true
@@ -119,19 +117,15 @@ function Module:updateQueueExpiresDisplay(timeRemaining, dialogFrame, isPvPQueue
 	end
 
 	if dialogFrame.timerLabel then
-		dialogFrame.timerLabel:SetText(getQueueExpiresText(secondsRemaining))
+		setQueueLabelText(dialogFrame.timerLabel, getQueueExpiresText(secondsRemaining))
 	end
 
 	if dialogFrame.bgLabel and dialogFrame.statusTextLabel and dialogFrame.instanceInfo and dialogFrame.instanceInfo.name and (dialogFrame.instanceInfo:IsShown() or isPvPQueue) then
-		dialogFrame.bgLabel:SetText(dialogFrame.instanceInfo.name:GetText() or "")
-		dialogFrame.statusTextLabel:SetText(dialogFrame.instanceInfo.statusText and dialogFrame.instanceInfo.statusText:GetText() or "")
+		setQueueLabelText(dialogFrame.bgLabel, dialogFrame.instanceInfo.name:GetText() or "")
+		setQueueLabelText(dialogFrame.statusTextLabel, dialogFrame.instanceInfo.statusText and dialogFrame.instanceInfo.statusText:GetText() or "")
 	else
-		if dialogFrame.bgLabel then
-			dialogFrame.bgLabel:SetText("")
-		end
-		if dialogFrame.statusTextLabel then
-			dialogFrame.statusTextLabel:SetText("")
-		end
+		setQueueLabelText(dialogFrame.bgLabel, "")
+		setQueueLabelText(dialogFrame.statusTextLabel, "")
 	end
 end
 
@@ -253,55 +247,99 @@ local function stopQueueUpdateFrame()
 	hasPlayedWarningSound = false
 end
 
-function Module:CreateQueueTimers()
+local queueTimersActive = false
+local pvpDisplayHooked = false
+
+local function onLfgProposalShow()
 	if not C["Misc"].QueueTimers then
 		return
 	end
 
-	K:RegisterEvent("LFG_PROPOSAL_SHOW", function()
-		remainingPvETime = PVE_QUEUE_EXPIRE_BASE
-		recalculateRemainingPvETime()
-		Module:updateQueueExpiresDisplay(remainingPvETime, _G.LFGDungeonReadyDialog)
-		savePvEQueuePopTime()
+	remainingPvETime = PVE_QUEUE_EXPIRE_BASE
+	recalculateRemainingPvETime()
+	Module:updateQueueExpiresDisplay(remainingPvETime, _G.LFGDungeonReadyDialog)
+	savePvEQueuePopTime()
+	hasPlayedWarningSound = false
+	playQueueOpenSound()
+	startQueueUpdateFrame()
+	hideDefaultQueueTimers()
+end
+
+local function onLfgQueueDone()
+	stopQueueUpdateFrame()
+	clearPvEQueuePopTime()
+end
+
+local function onPvpReadyDialogDisplay(_, pvpIndex)
+	if not C["Misc"].QueueTimers then
+		return
+	end
+
+	activePvPQueueIndex = pvpIndex
+	Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
+	hasPlayedWarningSound = false
+	playQueueOpenSound()
+	startQueueUpdateFrame()
+end
+
+local function onBattlefieldStatus(_, pvpIndex)
+	if not C["Misc"].QueueTimers then
+		return
+	end
+
+	if _G.GetBattlefieldStatus(pvpIndex) == "confirm" then
+		activePvPQueueIndex = pvpIndex
+		Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
 		hasPlayedWarningSound = false
 		playQueueOpenSound()
 		startQueueUpdateFrame()
-		hideDefaultQueueTimers()
-	end)
+	else
+		if not remainingPvETime or remainingPvETime <= 0 then
+			activePvPQueueIndex = nil
+			stopQueueUpdateFrame()
+		end
+	end
+end
 
-	local function onLfgQueueDone()
-		stopQueueUpdateFrame()
-		clearPvEQueuePopTime()
+function Module:DisableQueueTimers()
+	if not queueTimersActive then
+		return
 	end
 
+	queueTimersActive = false
+	K:UnregisterEvent("LFG_PROPOSAL_SHOW", onLfgProposalShow)
+	K:UnregisterEvent("LFG_PROPOSAL_SUCCEEDED", onLfgQueueDone)
+	K:UnregisterEvent("LFG_PROPOSAL_DONE", onLfgQueueDone)
+	K:UnregisterEvent("LFG_PROPOSAL_FAILED", onLfgQueueDone)
+	K:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS", onBattlefieldStatus)
+	stopQueueUpdateFrame()
+	clearPvEQueuePopTime()
+	activePvPQueueIndex = nil
+end
+
+function Module:CreateQueueTimers()
+	if not C["Misc"].QueueTimers then
+		Module:DisableQueueTimers()
+		return
+	end
+
+	if queueTimersActive then
+		return
+	end
+
+	queueTimersActive = true
+
+	K:RegisterEvent("LFG_PROPOSAL_SHOW", onLfgProposalShow)
 	K:RegisterEvent("LFG_PROPOSAL_SUCCEEDED", onLfgQueueDone)
 	K:RegisterEvent("LFG_PROPOSAL_DONE", onLfgQueueDone)
 	K:RegisterEvent("LFG_PROPOSAL_FAILED", onLfgQueueDone)
 
-	if _G.PVPReadyDialog_Display then
-		hooksecurefunc("PVPReadyDialog_Display", function(_, pvpIndex)
-			activePvPQueueIndex = pvpIndex
-			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
-			hasPlayedWarningSound = false
-			playQueueOpenSound()
-			startQueueUpdateFrame()
-		end)
+	if not pvpDisplayHooked and _G.PVPReadyDialog_Display then
+		hooksecurefunc("PVPReadyDialog_Display", onPvpReadyDialogDisplay)
+		pvpDisplayHooked = true
 	end
 
-	K:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function(_, pvpIndex)
-		if _G.GetBattlefieldStatus(pvpIndex) == "confirm" then
-			activePvPQueueIndex = pvpIndex
-			Module:updateQueueExpiresDisplay(GetBattlefieldPortExpiration(pvpIndex) or 0, _G.PVPReadyDialog, true)
-			hasPlayedWarningSound = false
-			playQueueOpenSound()
-			startQueueUpdateFrame()
-		else
-			if not remainingPvETime or remainingPvETime <= 0 then
-				activePvPQueueIndex = nil
-				stopQueueUpdateFrame()
-			end
-		end
-	end)
+	K:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", onBattlefieldStatus)
 end
 
 Module:RegisterMisc("QueueTimer", Module.CreateQueueTimers)

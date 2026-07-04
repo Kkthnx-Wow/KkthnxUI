@@ -181,6 +181,7 @@ function Module:CreateArena()
 
 	Module:UpdateAuraContainer(arenaWidth, self.Debuffs, self.Debuffs.num)
 
+	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateButton = Module.PostCreateButton
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 

@@ -20,8 +20,6 @@ local GetInventoryItemTexture = _G.GetInventoryItemTexture
 local GetTime = _G.GetTime
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsControlKeyDown = _G.IsControlKeyDown
 local RegisterAttributeDriver = _G.RegisterAttributeDriver
 local RegisterStateDriver = _G.RegisterStateDriver
 local SecureHandlerSetFrameRef = _G.SecureHandlerSetFrameRef
@@ -48,41 +46,20 @@ local MIN_SPELL_COUNT, MAX_SPELL_COUNT = 2, 999
 
 local IsSecret = K.IsSecret
 
--- MIDNIGHT (12.0): C_UnitAuras.GetAuraDispelTypeColor(unit, auraInstanceID, curve)
--- requires a dispel ColorCurve as its 3rd argument; without it the call errors
--- ("bad argument #3"). The curve lets us color debuff borders by dispel type
--- without ever reading the now-secret dispelName field. Build it once, mirroring
--- the oUF Auras element.
-local dispelColorCurve
+-- MIDNIGHT (12.0): dispel curve lives in K.GetDispelColorCurve (shared with oUF aura hooks).
 local function GetDispelColorCurve()
-	if dispelColorCurve ~= nil then
-		return dispelColorCurve or nil
-	end
-
-	local CurveUtil = _G.C_CurveUtil
-	local oUF = K.oUF
-	if not (CurveUtil and CurveUtil.CreateColorCurve and oUF and oUF.Enum and oUF.colors) then
-		dispelColorCurve = false -- mark as attempted so we don't retry every call
-		return nil
-	end
-
-	local curve = CurveUtil.CreateColorCurve()
-	if _G.Enum and _G.Enum.LuaCurveType then
-		curve:SetType(_G.Enum.LuaCurveType.Step)
-	end
-
-	for _, dispelIndex in next, oUF.Enum.DispelType do
-		local color = oUF.colors.dispel[dispelIndex]
-		if color then
-			curve:AddPoint(dispelIndex, color)
-		end
-	end
-
-	dispelColorCurve = curve
-	return curve
+	return K.GetDispelColorCurve(K.oUF)
 end
 
 function Module:OnEnable()
+	Module:InitAuras()
+end
+
+function Module:InitAuras()
+	if Module.aurasInitialized then
+		return
+	end
+
 	local loadAuraModules = {
 		"HideBlizBuff",
 		"BuildBuffFrame",
@@ -99,6 +76,26 @@ function Module:OnEnable()
 				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
 			end
 		end
+	end
+
+	Module.aurasInitialized = true
+end
+
+function Module:SetAurasEnabled(enabled)
+	if enabled then
+		if not Module.aurasInitialized then
+			Module:InitAuras()
+		else
+			Module:BuildBuffFrame()
+			if Module.UpdateAuraLayout then
+				Module:UpdateAuraLayout()
+			end
+		end
+	elseif Module.BuffFrame then
+		Module.BuffFrame:Hide()
+	end
+	if not enabled and Module.DebuffFrame then
+		Module.DebuffFrame:Hide()
 	end
 end
 
@@ -118,6 +115,17 @@ end
 
 function Module:BuildBuffFrame()
 	if not C["Auras"].Enable then
+		return
+	end
+
+	if Module.BuffFrame then
+		Module.BuffFrame:Show()
+		if Module.DebuffFrame then
+			Module.DebuffFrame:Show()
+		end
+		if Module.UpdateAuraLayout then
+			Module:UpdateAuraLayout()
+		end
 		return
 	end
 
@@ -448,6 +456,49 @@ function Module:UpdateHeader(header)
 	end
 end
 
+Module._DeferredUpdateAuraLayout = Module._DeferredUpdateAuraLayout or function()
+	Module:UpdateAuraLayout()
+end
+
+function Module:UpdateAuraLayout()
+	if not C["Auras"].Enable or not Module.settings then
+		return
+	end
+
+	if InCombatLockdown() then
+		if not Module._pendingAuraLayout then
+			Module._pendingAuraLayout = true
+			if not Module._pendingAuraLayoutRegistered then
+				Module._pendingAuraLayoutRegistered = true
+				K:RegisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateAuraLayout)
+			end
+		end
+		return
+	end
+
+	Module._pendingAuraLayout = nil
+
+	local cfg = C["Auras"]
+	Module.settings.Buffs.size = cfg.BuffSize
+	Module.settings.Buffs.wrapAfter = cfg.BuffsPerRow
+	Module.settings.Buffs.reverseGrow = cfg.ReverseBuffs
+	Module.settings.Debuffs.size = cfg.DebuffSize
+	Module.settings.Debuffs.wrapAfter = cfg.DebuffsPerRow
+	Module.settings.Debuffs.reverseGrow = cfg.ReverseDebuffs
+
+	if Module.BuffFrame then
+		Module:UpdateHeader(Module.BuffFrame)
+	end
+	if Module.DebuffFrame then
+		Module:UpdateHeader(Module.DebuffFrame)
+	end
+
+	if Module._pendingAuraLayoutRegistered then
+		Module._pendingAuraLayoutRegistered = nil
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateAuraLayout)
+	end
+end
+
 function Module:CreateAuraHeader(filter)
 	local name = "KKUI_PlayerDebuffs"
 	if filter == "HELPFUL" then
@@ -485,13 +536,6 @@ function Module:CreateAuraHeader(filter)
 	header:Show()
 
 	return header
-end
-
-function Module:RemoveSpellFromIgnoreList()
-	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] then
-		K.GetCharVars().AuraWatchList.IgnoreSpells[self.spellID] = nil
-		K.Print(string_format(L["RemoveFromIgnoreList"], "", self.spellID))
-	end
 end
 
 function Module:Button_SetTooltip(button)
@@ -548,7 +592,6 @@ function Module:CreateAuraIcon(button)
 
 	-- button:RegisterForClicks("RightButtonUp", "RightButtonDown")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
-	button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
 	button:SetScript("OnEnter", Module.Button_OnEnter)
 	button:SetScript("OnLeave", K.HideTooltip)
 end

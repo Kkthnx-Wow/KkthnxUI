@@ -171,14 +171,18 @@ function Module:SetupHealthAnnounce()
 end
 
 function Module:CreateHealthAnnounce()
+	if Module.healthAlertTicker then
+		Module.healthAlertTicker:Cancel()
+		Module.healthAlertTicker = nil
+	end
+
 	if not C["Announcements"].HealthAlert then
 		debugLog("Health alert system disabled in settings.")
 		return
 	end
 
 	debugLog("Initializing health alert system...")
-	-- PERF: Use a 1-second ticker to balance responsiveness and CPU usage.
-	C_Timer.NewTicker(1, function()
+	Module.healthAlertTicker = C_Timer.NewTicker(1, function()
 		Module:SetupHealthAnnounce()
 	end)
 end

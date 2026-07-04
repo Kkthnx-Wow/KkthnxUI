@@ -55,7 +55,8 @@ local UnitPowerMax = _G.UnitPowerMax
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitStagger = _G.UnitStagger
-local AbbreviateNumbers = _G.AbbreviateNumbers
+local UnitPowerDisplayMod = _G.UnitPowerDisplayMod
+local Enum = _G.Enum
 
 -- REASON: Precomputed atlas strings for role icons to avoid branching and allocations per update.
 local ROLE_ATLAS = {
@@ -76,6 +77,34 @@ local DND_STRING = "|cffCFCFCF <" .. DND .. ">|r"
 local UNKNOWN_LEVEL_STRING = "|cffff0000??|r"
 local BOSS_STRING = "|cffAF5050Boss|r"
 
+-- PERF: unit tokens are stable ("party1", "raid3", ...); cache derived "...target"
+-- strings so tag hot paths stop allocating every UNIT_HEALTH fire.
+local targetTokenCache = {}
+local function GetTargetToken(unit)
+	local token = targetTokenCache[unit]
+	if not token then
+		token = unit .. "target"
+		targetTokenCache[unit] = token
+	end
+	return token
+end
+
+-- PERF: health gradient tags rebuild the same hex+percent string for the same
+-- rounded percentage across many frames; cache by integer percent bucket.
+local healthColorCache = {}
+local function GetHealthColor(percentage)
+	local bucket = K.Round(percentage)
+	local cached = healthColorCache[bucket]
+	if cached then
+		return cached
+	end
+
+	local r, g, b = oUF:ColorGradient(percentage, 100, 1, 0.1, 0.1, 1, 0.5, 0, 1, 0.9, 0.3, 1, 1, 1)
+	cached = K.RGBToHex(r, g, b) .. bucket
+	healthColorCache[bucket] = cached
+	return cached
+end
+
 local IsSecret = K.IsSecret
 local NotSecret = K.NotSecret
 
@@ -92,12 +121,6 @@ local function SafeShortValue(value)
 	end
 
 	return K.ShortValue(value)
-end
-
--- REASON: Returns a smoothly transitioning hex color string based on health percentage.
-local function GetHealthColor(percentage)
-	local r, g, b = oUF:ColorGradient(percentage, 100, 1, 0.1, 0.1, 1, 0.5, 0, 1, 0.9, 0.3, 1, 1, 1)
-	return K.RGBToHex(r, g, b) .. percentage
 end
 
 -- REASON: Formats health value, appending percentage if below 100%.
@@ -124,7 +147,13 @@ local function GetUnitHealthPerc(unit)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	local connected = UnitIsConnected(unit)
+	if NotSecret(connected) and not connected then
+		return oUF.Tags.Methods["DDG"](unit)
+	end
+
+	local dead = UnitIsDeadOrGhost(unit)
+	if NotSecret(dead) and dead then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local percentage, currentHealth = GetUnitHealthPerc(unit)
@@ -196,6 +225,11 @@ oUF.Tags.Methods["color"] = function(unit)
 		return K.RGBToHex(K.Colors.reaction[reaction])
 	end
 
+	local r, g, b = K.GetNpcReactionColor(unit)
+	if r then
+		return K.RGBToHex(r, g, b)
+	end
+
 	return K.RGBToHex(1, 1, 1)
 end
 oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FACTION UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
@@ -254,7 +288,8 @@ oUF.Tags.Events["DDG"] = "PLAYER_FLAGS_CHANGED UNIT_HEALTH UNIT_MAXHEALTH UNIT_N
 -- Level Tags
 -- ---------------------------------------------------------------------------
 oUF.Tags.Methods["fulllevel"] = function(unit)
-	if not UnitIsConnected(unit) then
+	local connected = UnitIsConnected(unit)
+	if NotSecret(connected) and not connected then
 		return "??"
 	end
 
@@ -266,6 +301,11 @@ oUF.Tags.Methods["fulllevel"] = function(unit)
 		realLevel = UnitLevel(unit)
 		level = UnitEffectiveLevel(unit)
 	end
+
+	if IsSecret(level) or IsSecret(realLevel) then
+		return UNKNOWN_LEVEL_STRING
+	end
+
 	color = K.RGBToHex(GetCreatureDifficultyColor(level))
 
 	if level > 0 then
@@ -276,14 +316,16 @@ oUF.Tags.Methods["fulllevel"] = function(unit)
 	end
 
 	class = UnitClassification(unit)
-	if class == "worldboss" then
-		str = BOSS_STRING
-	elseif class == "rareelite" then
-		str = str .. "|cffAF5050R|r+"
-	elseif class == "elite" then
-		str = str .. "|cffAF5050+|r"
-	elseif class == "rare" then
-		str = str .. "|cffAF5050R|r"
+	if class and NotSecret(class) then
+		if class == "worldboss" then
+			str = BOSS_STRING
+		elseif class == "rareelite" then
+			str = str .. "|cffAF5050R|r+"
+		elseif class == "elite" then
+			str = str .. "|cffAF5050+|r"
+		elseif class == "rare" then
+			str = str .. "|cffAF5050R|r"
+		end
 	end
 
 	return str
@@ -294,17 +336,28 @@ oUF.Tags.Events["fulllevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_C
 -- RaidFrame Tags
 -- ---------------------------------------------------------------------------
 oUF.Tags.Methods["raidhp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	local connected = UnitIsConnected(unit)
+	if NotSecret(connected) and not connected then
 		return oUF.Tags.Methods["DDG"](unit)
-	elseif C["Raid"].HealthFormat == 2 then
+	end
+
+	local dead = UnitIsDeadOrGhost(unit)
+	if NotSecret(dead) and dead then
+		return oUF.Tags.Methods["DDG"](unit)
+	end
+
+	local format = C["Raid"].HealthFormat
+	if format == 1 then
+		return ""
+	elseif format == 2 then
 		local per = GetUnitHealthPerc(unit)
 		if per then
 			return GetHealthColor(per)
 		end
-	elseif C["Raid"].HealthFormat == 3 then
+	elseif format == 3 then
 		local cur = UnitHealth(unit)
 		return SafeShortValue(cur)
-	elseif C["Raid"].HealthFormat == 4 then
+	elseif format == 4 then
 		local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
 		if IsSecret(health) or IsSecret(maxHealth) then
 			return
@@ -323,6 +376,16 @@ oUF.Tags.Events["raidhp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CO
 -- Nameplate Tags
 -- ---------------------------------------------------------------------------
 oUF.Tags.Methods["nphp"] = function(unit)
+	local connected = UnitIsConnected(unit)
+	if NotSecret(connected) and not connected then
+		return
+	end
+
+	local dead = UnitIsDeadOrGhost(unit)
+	if NotSecret(dead) and dead then
+		return
+	end
+
 	local per, cur = GetUnitHealthPerc(unit)
 	if C["Nameplate"].FullHealth then
 		return FormatHealthValue(cur, per)
@@ -339,7 +402,7 @@ local NP_POWER_LOW = K.RGBToHex(0.8, 0.8, 1)
 oUF.Tags.Methods["nppp"] = function(unit)
 	local cur, maxPower = UnitPower(unit), UnitPowerMax(unit)
 	if IsSecret(cur) or IsSecret(maxPower) then
-		return
+		return UnitPowerType(unit) == 0 and nil or SafeShortValue(cur)
 	end
 
 	local per = maxPower == 0 and 0 or K.Round(cur / maxPower * 100)
@@ -358,6 +421,9 @@ oUF.Tags.Events["nppp"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER"
 -- REASON: Formats nameplate level differently, hiding the text if it matches the player's level to reduce clutter.
 oUF.Tags.Methods["nplevel"] = function(unit)
 	local level = UnitLevel(unit)
+	if IsSecret(level) then
+		return ""
+	end
 
 	if level and level ~= K.Level then
 		if level > 0 then
@@ -382,7 +448,9 @@ local NPClassifies = {
 }
 oUF.Tags.Methods["nprare"] = function(unit)
 	local class = UnitClassification(unit)
-	return class and NPClassifies[class]
+	if NotSecret(class) and class then
+		return NPClassifies[class]
+	end
 end
 oUF.Tags.Events["nprare"] = "UNIT_CLASSIFICATION_CHANGED"
 
@@ -421,7 +489,7 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 	if isPlayer and NameOnlyGuild then
 		local guildName = GetGuildInfo(unit)
 		if guildName and K.NotSecret(guildName) then
-			return "<" .. guildName .. ">"
+			return string_format("<%s>", guildName)
 		end
 	elseif not isPlayer and NameOnlyTitle then
 		scanTip:SetOwner(K.UIFrameHider, "ANCHOR_NONE")
@@ -445,24 +513,42 @@ oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
 
 -- REASON: Displays guild name in brackets.
 oUF.Tags.Methods["guildname"] = function(unit)
-	if not UnitIsPlayer(unit) then
+	local isPlayer = UnitIsPlayer(unit)
+	if not (NotSecret(isPlayer) and isPlayer) then
 		return
 	end
 
 	local guildName = GetGuildInfo(unit)
-	if guildName then
-		return "<" .. guildName .. ">"
+	if guildName and NotSecret(guildName) then
+		return string_format("<%s>", guildName)
 	end
 end
 oUF.Tags.Events["guildname"] = "UNIT_NAME_UPDATE"
 
 -- REASON: Target of unit name tag.
 oUF.Tags.Methods["tarname"] = function(unit)
-	local tarUnit = unit .. "target"
-	if UnitExists(tarUnit) then
-		local tarClass = select(2, UnitClass(tarUnit))
-		return K.RGBToHex(K.Colors.class[tarClass]) .. UnitName(tarUnit)
+	local tarUnit = GetTargetToken(unit)
+	local exists = UnitExists(tarUnit)
+	if NotSecret(exists) and not exists then
+		return
 	end
+
+	local name = UnitName(tarUnit)
+	if not name then
+		return
+	end
+
+	-- SECRET (12.0): class-colored concatenation is unsafe on secret names.
+	if IsSecret(name) then
+		return name
+	end
+
+	local tarClass = select(2, UnitClass(tarUnit))
+	if tarClass and NotSecret(tarClass) then
+		return string_format("%s%s", K.RGBToHex(K.Colors.class[tarClass]), name)
+	end
+
+	return name
 end
 oUF.Tags.Events["tarname"] = "UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE UNIT_HEALTH"
 
@@ -486,7 +572,7 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 	local cur = UnitStagger(unit) or 0
 	local maxHealth = UnitHealthMax(unit)
 	if IsSecret(cur) or IsSecret(maxHealth) then
-		return
+		return SafeShortValue(cur)
 	end
 
 	if cur == 0 or maxHealth == 0 then
@@ -498,13 +584,168 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
+local POWER_COMBO = Enum.PowerType.ComboPoints
+local POWER_HOLY = Enum.PowerType.HolyPower
+local POWER_CHI = Enum.PowerType.Chi
+local POWER_ESSENCE = Enum.PowerType.Essence
+local POWER_ARCANE = Enum.PowerType.ArcaneCharges
+local POWER_SOUL = Enum.PowerType.SoulShards
+local POWER_ENERGY = Enum.PowerType.Energy
+
+local C_UnitAuras_GetAuraDataBySpellID = C_UnitAuras and C_UnitAuras.GetAuraDataBySpellID
+local C_UnitAuras_GetPlayerAuraBySpellID = C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID
+local C_Spell_GetSpellMaxCumulativeAuraApplications = C_Spell and C_Spell.GetSpellMaxCumulativeAuraApplications
+
+local SPELL_ICICLES = 205473
+local SPELL_MAELSTROM_WEAPON = 344179
+local SPELL_TIP_OF_THE_SPEAR = 260286
+local SPELL_DARK_HEART = 1225789
+local SPELL_VOID_METAMORPHOSIS = 1217607
+local SPELL_SILENCE_THE_WHISPERS = 1227702
+
+local function GetAuraBySpellID(unit, spellID)
+	if unit == "player" and C_UnitAuras_GetPlayerAuraBySpellID then
+		return C_UnitAuras_GetPlayerAuraBySpellID(spellID)
+	end
+	if C_UnitAuras_GetAuraDataBySpellID then
+		return C_UnitAuras_GetAuraDataBySpellID(unit, spellID)
+	end
+end
+
+local function GetAuraApplicationCount(unit, spellID)
+	local aura = GetAuraBySpellID(unit, spellID)
+	if not aura then
+		return 0
+	end
+
+	local count = aura.applications
+	if count == nil or IsSecret(count) then
+		return count
+	end
+
+	return count
+end
+
+local function GetAuraMaxApplications(spellID)
+	if not (spellID and C_Spell_GetSpellMaxCumulativeAuraApplications) then
+		return
+	end
+	return C_Spell_GetSpellMaxCumulativeAuraApplications(spellID)
+end
+
+local function GetUnitClassPowerValues(unit)
+	if not UnitExists(unit) then
+		return
+	end
+
+	local _, class = UnitClass(unit)
+	if IsSecret(class) or not class then
+		return
+	end
+
+	if class == "ROGUE" then
+		return UnitPower(unit, POWER_COMBO), UnitPowerMax(unit, POWER_COMBO)
+	end
+
+	if class == "DRUID" then
+		local powerType = UnitPowerType(unit)
+		if NotSecret(powerType) and powerType == POWER_ENERGY then
+			return UnitPower(unit, POWER_COMBO), UnitPowerMax(unit, POWER_COMBO)
+		end
+		return
+	end
+
+	if class == "PALADIN" then
+		return UnitPower(unit, POWER_HOLY), UnitPowerMax(unit, POWER_HOLY)
+	end
+
+	if class == "MONK" then
+		return UnitPower(unit, POWER_CHI), UnitPowerMax(unit, POWER_CHI)
+	end
+
+	if class == "EVOKER" then
+		return UnitPower(unit, POWER_ESSENCE), UnitPowerMax(unit, POWER_ESSENCE)
+	end
+
+	if class == "MAGE" then
+		local icicles = GetAuraApplicationCount(unit, SPELL_ICICLES)
+		if icicles == nil or IsSecret(icicles) then
+			if icicles then
+				return icicles, GetAuraMaxApplications(SPELL_ICICLES)
+			end
+		elseif icicles > 0 then
+			return icicles, GetAuraMaxApplications(SPELL_ICICLES)
+		end
+		return UnitPower(unit, POWER_ARCANE), UnitPowerMax(unit, POWER_ARCANE)
+	end
+
+	if class == "WARLOCK" then
+		local cur = UnitPower(unit, POWER_SOUL, true)
+		if IsSecret(cur) then
+			return cur, UnitPowerMax(unit, POWER_SOUL)
+		end
+		local mod = UnitPowerDisplayMod(POWER_SOUL)
+		if mod and mod > 0 and not IsSecret(mod) then
+			cur = cur / mod
+		end
+		return cur, UnitPowerMax(unit, POWER_SOUL)
+	end
+
+	if class == "HUNTER" then
+		return GetAuraApplicationCount(unit, SPELL_TIP_OF_THE_SPEAR), GetAuraMaxApplications(SPELL_TIP_OF_THE_SPEAR)
+	end
+
+	if class == "SHAMAN" then
+		return GetAuraApplicationCount(unit, SPELL_MAELSTROM_WEAPON), GetAuraMaxApplications(SPELL_MAELSTROM_WEAPON)
+	end
+
+	if class == "DEMONHUNTER" then
+		if GetAuraBySpellID(unit, SPELL_VOID_METAMORPHOSIS) then
+			return GetAuraApplicationCount(unit, SPELL_SILENCE_THE_WHISPERS), GetAuraMaxApplications(SPELL_SILENCE_THE_WHISPERS)
+		end
+		return GetAuraApplicationCount(unit, SPELL_DARK_HEART), GetAuraMaxApplications(SPELL_DARK_HEART)
+	end
+end
+
+local function FormatClassPowerTag(cur, max)
+	if cur == nil then
+		return
+	end
+	if IsSecret(cur) or IsSecret(max) then
+		return SafeShortValue(cur)
+	end
+	if max and max > 0 then
+		return string_format("%s/%s", SafeShortValue(cur), SafeShortValue(max))
+	end
+	return SafeShortValue(cur)
+end
+
+oUF.Tags.Methods["cpoints"] = function(unit)
+	if not UnitExists(unit) then
+		return
+	end
+
+	local cur = UnitPower(unit, POWER_COMBO)
+	local max = UnitPowerMax(unit, POWER_COMBO)
+	return FormatClassPowerTag(cur, max)
+end
+oUF.Tags.Events["cpoints"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER PLAYER_TARGET_CHANGED"
+
+oUF.Tags.Methods["classpower"] = function(unit)
+	local cur, max = GetUnitClassPowerValues(unit)
+	return FormatClassPowerTag(cur, max)
+end
+oUF.Tags.Events["classpower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_AURA PLAYER_TARGET_CHANGED PLAYER_SPECIALIZATION_CHANGED"
+
 -- REASON: LFD/LFR Role icon.
 oUF.Tags.Methods["lfdrole"] = function(unit)
 	if not IsInGroup() then
 		return
 	end
 
-	if not (UnitInParty(unit) or UnitInRaid(unit)) then
+	local inParty = UnitInParty(unit)
+	local inRaid = UnitInRaid(unit)
+	if not ((NotSecret(inParty) and inParty) or (NotSecret(inRaid) and inRaid)) then
 		return
 	end
 

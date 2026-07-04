@@ -169,6 +169,37 @@ function Module:UpdateQuickDelete()
 	end
 end
 
+function Module:UpdateBossBanner()
+	Module:CreateBossBanner()
+end
+
+function Module:UpdateBossEmote()
+	Module:CreateBossEmote()
+end
+
+function Module:UpdateAutoBubbles()
+	enableAutoBubbles()
+end
+
+function Module:UpdateExpRepBar()
+	local bar = _G.KKUI_ExpRepBar
+	if C["Misc"].ExpRep then
+		if bar then
+			bar:Show()
+		else
+			Module:CreateExpbar()
+		end
+	elseif bar then
+		bar:Hide()
+	end
+end
+
+function Module:UpdateMuteSounds()
+	if Module.updateMutedSounds then
+		Module.updateMutedSounds()
+	end
+end
+
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
 	for name, func in next, KKUI_MISC_MODULE do
@@ -445,7 +476,7 @@ end
 
 -- REASON: Toggles the boss kill/loot banner based on user configuration.
 function Module:CreateBossBanner()
-	if C["Misc"].HideBanner and not C["Misc"].KillingBlow then
+	if C["Misc"].HideBanner then
 		_G.BossBanner:UnregisterAllEvents()
 	else
 		_G.BossBanner:RegisterEvent("BOSS_KILL")
@@ -948,3 +979,5 @@ function Module:UpdateMaxCameraZoom()
 	value = math_min(math_max(value, 1), 2.6)
 	_G.SetCVar("cameraDistanceMaxZoomFactor", value)
 end
+
+Module.UpdateMaxZoomLevel = Module.UpdateMaxCameraZoom

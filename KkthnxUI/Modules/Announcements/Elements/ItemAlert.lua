@@ -90,11 +90,15 @@ local importantSpells = {
 	[462213] = true, -- Hearty Midnight Gala Feast (Warband)
 }
 
+local lastAnnounceCastID = {}
+
 -- ---------------------------------------------------------------------------
 -- EVENT HANDLERS
 -- ---------------------------------------------------------------------------
 
-function Module:UpdateItemAlert(unit, castID, spellID)
+-- COMPAT: Dot syntax (not colon). K:RegisterEvent calls func(event, ...); a colon method
+-- would bind `self` to the event name and shift unit/cast/spell args (announcements fail).
+function Module.UpdateItemAlert(event, unit, castID, spellID)
 	-- REASON: Filters by group unit residency and whitelist presence.
 	-- Compares spellID to castID to handle potential duplicates or re-triggers.
 	-- SECRET (12.0): UNIT_SPELLCAST_SUCCEEDED can deliver secret unit/cast/spell
@@ -105,13 +109,16 @@ function Module:UpdateItemAlert(unit, castID, spellID)
 	end
 
 	local trackedCastID = groupUnits[unit] and importantSpells[spellID]
-	if trackedCastID and trackedCastID ~= castID then
-		local spellLink = C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)
+	if trackedCastID and lastAnnounceCastID[spellID] ~= castID then
+		local spellLink = C_Spell_GetSpellLink(spellID)
+		if not spellLink then
+			local spellInfo = C_Spell_GetSpellInfo(spellID)
+			spellLink = spellInfo and spellInfo.name
+		end
 		local unitName = UnitName(unit)
 		if spellLink and K.NotSecret(spellLink) and unitName and K.NotSecret(unitName) then
 			SendChatMessage(string_format(L["%s used %s"] or "%s used %s", unitName, spellLink), K.CheckChat())
-			-- NOTE: Store the castID for this spellID to prevent redundant alerts from the same cast events.
-			importantSpells[spellID] = castID
+			lastAnnounceCastID[spellID] = castID
 		end
 	end
 end
@@ -120,7 +127,7 @@ end
 -- UTILITY & REGISTRATION
 -- ---------------------------------------------------------------------------
 
-function Module:CheckGroupStatus()
+function Module.CheckGroupStatus(event)
 	-- REASON: Manage event registration based on group state to reduce solo CPU usage.
 	if IsInGroup() then
 		K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
@@ -130,17 +137,15 @@ function Module:CheckGroupStatus()
 end
 
 function Module:CreateItemAnnounce()
-	-- NOTE: Pre-set faction-specific lust link for potential future logic usage.
-	Module.factionSpell = (K.Faction == "Alliance" and 32182 or 2825)
-	Module.factionSpell = C_Spell_GetSpellLink(Module.factionSpell) or C_Spell_GetSpellInfo(Module.factionSpell)
-
 	if C["Announcements"].ItemAlert then
 		Module:CheckGroupStatus()
 		K:RegisterEvent("GROUP_LEFT", Module.CheckGroupStatus)
 		K:RegisterEvent("GROUP_JOINED", Module.CheckGroupStatus)
+		K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.CheckGroupStatus)
 	else
 		K:UnregisterEvent("GROUP_LEFT", Module.CheckGroupStatus)
 		K:UnregisterEvent("GROUP_JOINED", Module.CheckGroupStatus)
+		K:UnregisterEvent("GROUP_ROSTER_UPDATE", Module.CheckGroupStatus)
 		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
 	end
 end

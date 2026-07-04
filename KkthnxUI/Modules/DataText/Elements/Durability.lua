@@ -214,6 +214,15 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateDurabilityDataText()
 	-- REASON: Entry point for durability DataText; attaches a stylized button to the Character Frame.
+	if durabilityDataText then
+		if C["Misc"].SlotDurability then
+			durabilityDataText:Show()
+		else
+			durabilityDataText:Hide()
+		end
+		return
+	end
+
 	if not C["Misc"].SlotDurability then
 		return
 	end

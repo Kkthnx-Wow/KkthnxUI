@@ -152,7 +152,7 @@ local questMatchPatterns = {
 -- EVENT LOGIC
 -- ---------------------------------------------------------------------------
 
-function Module:FindQuestProgress(_, message)
+function Module.FindQuestProgress(event, message)
 	if not message then
 		return
 	end
@@ -199,7 +199,7 @@ function Module:FindQuestProgress(_, message)
 	end
 end
 
-function Module:HandleQuestAccept(questID)
+function Module.HandleQuestAccept(event, questID)
 	if not questID then
 		return
 	end
@@ -247,7 +247,7 @@ local function ScanQuestCompletion()
 	initialCheckComplete = true
 end
 
-function Module:HandleQuestCompletion()
+function Module.HandleQuestCompletion(event)
 	-- PERF: QUEST_LOG_UPDATE fires excessively; debounce the scan to once per 300ms.
 	if _debounceQueued then
 		return
@@ -259,7 +259,7 @@ function Module:HandleQuestCompletion()
 	end)
 end
 
-function Module:HandleWorldQuestCompletion(questID)
+function Module.HandleWorldQuestCompletion(event, questID)
 	-- REASON: World quest completion triggers separately via QUEST_TURNED_IN.
 	if C_QuestLog.IsWorldQuest(questID) and questID and not completedQuests[questID] then
 		if IsQuestIgnored(questID) then
@@ -287,7 +287,7 @@ local dragonGlyphAchievements = {
 	[16578] = true, -- Sodra Sulcus
 }
 
-function Module:HandleDragonGlyph(achievementID, criteriaString)
+function Module.HandleDragonGlyph(event, achievementID, criteriaString)
 	-- REASON: Special handling for Dragonriding glyph collection prompts.
 	if dragonGlyphAchievements[achievementID] then
 		SendQuestMessage(criteriaString .. " " .. COLLECTED)

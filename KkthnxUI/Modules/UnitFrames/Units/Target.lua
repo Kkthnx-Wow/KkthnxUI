@@ -169,6 +169,7 @@ function Module:CreateTarget()
 		Module:UpdateAuraContainer(targetWidth, self.Debuffs, self.Debuffs.num)
 
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+		self.Debuffs.showDebuffType = true
 		self.Debuffs.PostCreateButton = Module.PostCreateButton
 		self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 	end
@@ -365,27 +366,6 @@ function Module:CreateTarget()
 	Level:SetFontObject(K.UIFont)
 	self:Tag(Level, "[fulllevel]")
 	self.Level = Level
-
-	if C["Unitframe"].CombatText then
-		local parentFrame = CreateFrame("Frame", nil, UIParent)
-		local FloatingCombatFeedback = CreateFrame("Frame", nil, parentFrame)
-		FloatingCombatFeedback:SetSize(32, 32)
-		K.Mover(FloatingCombatFeedback, "CombatText", "TargetCombatText", { "BOTTOM", self, "TOPRIGHT", 0, 120 })
-
-		for i = 1, 36 do
-			FloatingCombatFeedback[i] = FloatingCombatFeedback:CreateFontString("$parentText", "OVERLAY")
-		end
-
-		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
-		FloatingCombatFeedback.fontFlags = "OUTLINE"
-		FloatingCombatFeedback.abbreviateNumbers = true
-		FloatingCombatFeedback:SetFrameStrata("HIGH")
-
-		self.FloatingCombatFeedback = FloatingCombatFeedback
-
-		-- Default CombatText
-		SetCVar("enableFloatingCombatText", 0)
-	end
 
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")

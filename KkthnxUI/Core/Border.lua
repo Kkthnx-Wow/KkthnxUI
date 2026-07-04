@@ -225,5 +225,11 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	border:SetOffset(-4)
 	border:SetSize(K.BorderSize)
 
+	local style = C and C["General"] and C["General"].BorderStyle or "KkthnxUI"
+	border:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. style .. "\\Border.tga")
+
+	K.borderRegistry = K.borderRegistry or {}
+	K.borderRegistry[#K.borderRegistry + 1] = border
+
 	return border
 end

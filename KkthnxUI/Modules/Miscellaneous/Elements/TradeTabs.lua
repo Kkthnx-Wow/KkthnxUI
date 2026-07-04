@@ -93,7 +93,7 @@ function Module:updateProfessionData()
 	end
 end
 
-function Module:updateTradeTabsState()
+function Module.updateTradeTabsState(event)
 	for _, tradeTab in pairs(tradeTabList) do
 		local professionSpellID = tradeTab.spellID
 		local itemIDValue = tradeTab.itemID
@@ -234,7 +234,7 @@ function Module:setupTradeSkillFilterIcons()
 end
 
 local isModuleInitialized
-function Module:onTradeTabsModuleLoad()
+function Module.onTradeTabsModuleLoad(event)
 	isModuleInitialized = true
 
 	Module:updateProfessionData()

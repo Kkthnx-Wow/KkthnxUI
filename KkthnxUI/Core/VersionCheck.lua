@@ -171,11 +171,20 @@ function Module:OnGroupRosterUpdate()
 	end
 end
 
-function Module:OnEnable()
-	if not C["General"].VersionCheck then
+function Module.OnAddonMessage(event, ...)
+	Module:OnVersionCheckMessage(event, ...)
+end
+
+function Module.OnGroupRoster(event)
+	Module:OnGroupRosterUpdate()
+end
+
+function Module:EnableVersionCheck()
+	if self.isActive then
 		return
 	end
 
+	self.isActive = true
 	self.lastCheckTime = 0
 	self.isInitialized = false
 
@@ -183,16 +192,15 @@ function Module:OnEnable()
 
 	C_ChatInfo_RegisterAddonMessagePrefix(VERSION_CHECK_PREFIX)
 
-	K:RegisterEvent("CHAT_MSG_ADDON", function(...)
-		self:OnVersionCheckMessage(...)
-	end)
-
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", function()
-		self:OnGroupRosterUpdate()
-	end)
+	K:RegisterEvent("CHAT_MSG_ADDON", Module.OnAddonMessage)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.OnGroupRoster)
 
 	-- REASON: Delay initial check to ensure addon loading churn has settled.
 	C_Timer_After(2, function()
+		if not self.isActive then
+			return
+		end
+
 		self:InitializeVersionCheck()
 
 		if IsInGuild() then
@@ -202,4 +210,30 @@ function Module:OnEnable()
 
 		self:OnGroupRosterUpdate()
 	end)
+end
+
+function Module:DisableVersionCheck()
+	if not self.isActive then
+		return
+	end
+
+	self.isActive = false
+	K:UnregisterEvent("CHAT_MSG_ADDON", Module.OnAddonMessage)
+	K:UnregisterEvent("GROUP_ROSTER_UPDATE", Module.OnGroupRoster)
+end
+
+function Module:ApplyVersionCheckSetting()
+	if C["General"].VersionCheck then
+		self:EnableVersionCheck()
+	else
+		self:DisableVersionCheck()
+	end
+end
+
+function Module:OnEnable()
+	self:ApplyVersionCheckSetting()
+end
+
+function Module:OnDisable()
+	self:DisableVersionCheck()
 end

@@ -161,6 +161,7 @@ function Module:CreateFocus()
 		Module:UpdateAuraContainer(focusWidth, self.Debuffs, self.Debuffs.num)
 
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+		self.Debuffs.showDebuffType = true
 		self.Debuffs.PostCreateButton = Module.PostCreateButton
 		self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 	end

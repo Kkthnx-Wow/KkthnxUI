@@ -133,3 +133,12 @@ function Module:CreateTotems()
 	Module:totemBarInit()
 	hooksecurefunc(TotemFrame, "Update", Module.totemBarUpdate)
 end
+
+function Module:UpdateTotemBar()
+	if not C["Auras"].Totems or not _G.KKUI_TotemBar then
+		return
+	end
+
+	Module:totemBarInit()
+	Module:totemBarUpdate()
+end

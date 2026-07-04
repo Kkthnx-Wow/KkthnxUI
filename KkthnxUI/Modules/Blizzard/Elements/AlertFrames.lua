@@ -27,7 +27,7 @@ local parentFrame
 local anchorPosition = "TOP"
 local anchorPoint = "BOTTOM"
 local anchorYOffset = -6
-local talkingHeadHidden
+local talkingHeadShowHooked
 
 -- ---------------------------------------------------------------------------
 -- Anchor Logic
@@ -137,22 +137,37 @@ local function removeTalkingHeadSubSystem()
 	end
 end
 
--- REASON: Disables the Talking Head UI if requested by the user to reduce screen clutter.
-local function noTalkingHeads()
+local function applyTalkingHeadSuppression()
 	if not C["Misc"].NoTalkingHead then
 		return
 	end
 
 	local talkingHeadFrame = _G["TalkingHeadFrame"]
-	if not talkingHeadFrame or talkingHeadHidden then
+	if not talkingHeadFrame then
 		return
 	end
 
-	talkingHeadHidden = true
+	if not talkingHeadShowHooked then
+		talkingHeadShowHooked = true
+		hooksecurefunc(talkingHeadFrame, "Show", function(self)
+			if C["Misc"].NoTalkingHead then
+				self:Hide()
+			end
+		end)
+	end
+
 	talkingHeadFrame:UnregisterAllEvents()
-	hooksecurefunc(talkingHeadFrame, "Show", function(self)
-		self:Hide()
-	end)
+	talkingHeadFrame:Hide()
+end
+
+local function restoreTalkingHeadEvents()
+	local talkingHeadFrame = _G["TalkingHeadFrame"]
+	if not talkingHeadFrame then
+		return
+	end
+
+	talkingHeadFrame:RegisterEvent("TALKINGHEAD_REQUESTED")
+	talkingHeadFrame:RegisterEvent("TALKINGHEAD_CLOSE")
 end
 
 function Module.AlertFrames_OnAddonLoaded(event, addonName)
@@ -162,7 +177,7 @@ function Module.AlertFrames_OnAddonLoaded(event, addonName)
 
 	K:UnregisterEvent(event, Module.AlertFrames_OnAddonLoaded)
 	removeTalkingHeadSubSystem()
-	noTalkingHeads()
+	applyTalkingHeadSuppression()
 end
 
 -- ---------------------------------------------------------------------------
@@ -194,8 +209,23 @@ function Module:CreateAlertFrames()
 	hooksecurefunc("GroupLootContainer_Update", Module.UpdateGroupLootContainer)
 
 	if _G["TalkingHeadFrame"] then
-		noTalkingHeads()
+		applyTalkingHeadSuppression()
 	elseif C["Misc"].NoTalkingHead then
 		K:RegisterEvent("ADDON_LOADED", Module.AlertFrames_OnAddonLoaded)
+	end
+end
+
+function Module:UpdateNoTalkingHead()
+	if C["Misc"].NoTalkingHead then
+		removeTalkingHeadSubSystem()
+
+		if _G["TalkingHeadFrame"] then
+			applyTalkingHeadSuppression()
+		else
+			K:RegisterEvent("ADDON_LOADED", Module.AlertFrames_OnAddonLoaded)
+		end
+	else
+		K:UnregisterEvent("ADDON_LOADED", Module.AlertFrames_OnAddonLoaded)
+		restoreTalkingHeadEvents()
 	end
 end

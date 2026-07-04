@@ -178,10 +178,15 @@ local function HandleVendorModifiedClick(itemLink)
 end
 
 function Module:CreateVendorLocation()
+	if Module._vendorLocationInitialized then
+		return
+	end
+
 	if not TooltipDataProcessor or not TooltipDataProcessor.AddTooltipPostCall then
 		return
 	end
 
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, AddVendorLocation)
 	hooksecurefunc("HandleModifiedItemClick", HandleVendorModifiedClick)
+	Module._vendorLocationInitialized = true
 end

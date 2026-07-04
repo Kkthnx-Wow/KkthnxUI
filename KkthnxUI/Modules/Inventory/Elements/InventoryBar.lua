@@ -17,7 +17,8 @@ local hooksecurefunc = hooksecurefunc
 
 local CreateFrame = CreateFrame
 local GetCVarBool = GetCVarBool
-local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
+-- COMPAT (12.0.7): CalculateTotalNumberOfFreeBagSlots moved off _G into C_Container.
+local C_Container_CalculateTotalNumberOfFreeBagSlots = _G.C_Container.CalculateTotalNumberOfFreeBagSlots
 local NUM_BAG_FRAMES = NUM_BAG_FRAMES
 
 -- REASON: File-local storage for button references to avoid global queries.
@@ -64,7 +65,7 @@ function Module:SkinBag(bag)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
-function Module:SetSizeAndPositionBagBar()
+function Module.SetSizeAndPositionBagBar(event)
 	if not bagBar then
 		return
 	end
@@ -131,11 +132,11 @@ function Module:SetSizeAndPositionBagBar()
 	Module:UpdateMainButtonCount()
 end
 
-function Module:UpdateMainButtonCount()
+function Module.UpdateMainButtonCount(event)
 	local mainCount = buttonList[1].Count
 	-- COMPAT: Reflects CVar 'displayFreeBagSlots' state.
 	mainCount:SetShown(GetCVarBool("displayFreeBagSlots"))
-	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
+	mainCount:SetText(C_Container_CalculateTotalNumberOfFreeBagSlots())
 end
 
 function Module:BagButton_UpdateTextures()
@@ -234,5 +235,27 @@ function Module:CreateInventoryBar()
 		-- REASON: KkthnxUI provides its own bag bar layout logic and configuration.
 		-- We hide the default Blizzard expansion arrow to prevent visual clutter and conflicting behaviors.
 		K.HideInterfaceOption(_G.BagBarExpandToggle)
+	end
+end
+
+function Module:UpdateBagBar()
+	if not C["ActionBar"].Enable then
+		return
+	end
+
+	local bar = _G.KKUI_BagBar
+	if C["Inventory"].BagBar then
+		if not bar then
+			Module:CreateInventoryBar()
+			bar = _G.KKUI_BagBar
+		end
+		if bar then
+			bar:Show()
+			if Module.SetSizeAndPositionBagBar then
+				Module:SetSizeAndPositionBagBar()
+			end
+		end
+	elseif bar then
+		bar:Hide()
 	end
 end

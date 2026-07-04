@@ -35,8 +35,11 @@ local function ReskinFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g
 		obj:SetShadowColor(sr, sg, sb, sa)
 	end
 
-	if sox and soy then
+	if sox ~= nil and soy ~= nil then
 		obj:SetShadowOffset(sox, soy)
+	else
+		-- MIDNIGHT (12.0.7): zero shadow offset avoids slug-shadow rendering glitches on reskinned fonts.
+		obj:SetShadowOffset(0, 0)
 	end
 
 	if r and g and b then
@@ -64,7 +67,7 @@ table_insert(C.defaultThemes, function()
 	_G.UNIT_NAME_FONT = NAMEFONT
 	_G.DAMAGE_TEXT_FONT = COMBAT
 
-	ReskinFont(_G.CombatTextFont, COMBAT, 120, nil, nil, nil, nil, nil, 1, -1)
+	ReskinFont(_G.CombatTextFont, COMBAT, 120, nil, nil, nil, nil, nil, 0, 0)
 
 	local BUBBLE = GetKkthnxUIFont
 	ReskinFont(_G.ChatBubbleFont, BUBBLE, 9, GetKkthnxUIFontStyle) -- 13
@@ -190,7 +193,7 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.SystemFont_Outlineoutline_WTF, NORMAL, stock and enormous or 32, outline) -- 32  World Map
 	ReskinFont(_G.SystemFont_Shadow_Huge1, NORMAL, 20, outline) -- Raid Warning, Boss emote frame too
 	ReskinFont(_G.SystemFont_Shadow_Huge3, NORMAL, 22) -- 25  FlightMap
-	ReskinFont(_G.SystemFont_Shadow_Huge4, NORMAL, 27, nil, nil, nil, nil, nil, 1, -1)
+	ReskinFont(_G.SystemFont_Shadow_Huge4, NORMAL, 27, nil, nil, nil, nil, nil, 0, 0)
 	ReskinFont(_G.SystemFont_Shadow_Large, NORMAL, 15)
 	ReskinFont(_G.SystemFont_Shadow_Large2, NORMAL, 18) -- Auction House ItemDisplay
 	ReskinFont(_G.SystemFont_Shadow_Large_Outline, NUMBER, 20, outline) -- 16

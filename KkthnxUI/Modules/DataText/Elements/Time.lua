@@ -9,6 +9,7 @@
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
+local NotSecret = K.NotSecret
 
 -- PERF: Localize globals and API functions to reduce lookup overhead.
 local _G = _G
@@ -252,7 +253,15 @@ local function checkTimeWalker(event)
 	if numEvents > 0 then
 		for i = 1, numEvents do
 			local info = C_Calendar_GetDayEvent(0, calDate.monthDay, i)
-			if info and string_find(info.title, _G.PLAYER_DIFFICULTY_TIMEWALKER) and info.sequenceType ~= "END" then
+			-- Midnight (12.0): calendar fields (title, sequenceType, iconTexture) can be
+			-- secret in instances; string.find / comparisons error on secret strings.
+			if info
+				and NotSecret(info.title)
+				and NotSecret(info.sequenceType)
+				and NotSecret(info.iconTexture)
+				and string_find(info.title, _G.PLAYER_DIFFICULTY_TIMEWALKER)
+				and info.sequenceType ~= "END"
+			then
 				isTimeWalker = true
 				walkerTexture = info.iconTexture
 				break
@@ -332,7 +341,7 @@ function Module:OnEnter()
 	isHeaderAdded = false
 	for _, q in ipairs(QUEST_LIST) do
 		if q.name and C_QuestLog_IsQuestFlaggedCompleted(q.id) then
-			if (not q.twBadge) or (q.twBadge and isTimeWalker and (walkerTexture == q.texture or walkerTexture == q.texture - 1)) then
+			if (not q.twBadge) or (q.twBadge and isTimeWalker and NotSecret(walkerTexture) and (walkerTexture == q.texture or walkerTexture == q.texture - 1)) then
 				addTooltipTitle(_G.QUESTS_LABEL)
 				GameTooltip:AddDoubleLine(q.itemID and getItemLink(q.itemID) or (q.questName and QuestUtils_GetQuestName(q.id)) or q.name, _G.QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
@@ -475,6 +484,15 @@ end
 -- ---------------------------------------------------------------------------
 function Module:CreateTimeDataText()
 	-- REASON: Entry point for the Minimap clock DataText; sets up anchoring and scripts.
+	if timeDataText then
+		if C["DataText"].Time then
+			timeDataText:Show()
+		else
+			timeDataText:Hide()
+		end
+		return
+	end
+
 	if not C["DataText"].Time or not _G.Minimap then
 		return
 	end

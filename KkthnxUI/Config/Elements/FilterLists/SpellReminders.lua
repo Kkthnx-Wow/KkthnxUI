@@ -1,97 +1,43 @@
 local C = KkthnxUI[2]
 
+-- Core raid-buff / consumable reminders (aligned with NexEnhance ReminderBuffs, 12.x).
+-- Each entry: spells = { [spellID] = true }, optional depend/depends, spec, combat, instance, pvp, inGroup, itemID, equip, weaponIndex.
 C.SpellReminderBuffs = {
 	ITEMS = {
 		{
-			itemID = 190384, -- 9.0 Permanent Attribute Rune
+			itemID = 190384, -- 9.0 permanent stat rune
 			spells = {
-				[393438] = true, -- Dragon Empowerment Rune itemID 201325
-				[367405] = true, -- Permanent Rune buff
+				[393438] = true, -- Draconic Augment Rune (item 201325)
+				[367405] = true, -- permanent rune buff
 			},
 			instance = true,
-			disable = true, -- Disabled until a new rune comes out
+			disable = true, -- disabled until a new rune exists
 		},
-		{
-			itemID = 194307, -- Nest Guardian's Promise
-			spells = {
-				[394457] = true,
-			},
-			equip = true,
-			instance = true,
-			inGroup = true,
-		},
-		--[=[
-		{   itemID = 178742, -- Bottled Toxin Trinket
-			spells = {
-				[345545] = true,
-			},
-			equip = true,
-			instance = true,
-			combat = true,
-		},
-		{   itemID = 190958, -- Ultimate Arcanum
-			spells = {
-				[368512] = true,
-			},
-			equip = true,
-			instance = true,
-			inGroup = true,
-		},
-		]=]
 	},
 	MAGE = {
 		{
-			spells = { -- Arcane Familiar
-				[210126] = true,
-			},
-			depend = 205022,
-			spec = 1,
-			combat = true,
-			instance = true,
-			pvp = true,
-		},
-		{
-			spells = { -- Arcane Intellect
-				[1459] = true,
-			},
+			spells = { [1459] = true, [432778] = true }, -- Arcane Intellect (+ alternate raid buff id)
 			depend = 1459,
 			instance = true,
 		},
 	},
 	PRIEST = {
 		{
-			spells = { -- Power Word: Fortitude
-				[21562] = true,
-			},
+			spells = { [21562] = true }, -- Power Word: Fortitude
 			depend = 21562,
 			instance = true,
 		},
 	},
 	WARRIOR = {
 		{
-			spells = { -- Battle Shout
-				[6673] = true,
-			},
+			spells = { [6673] = true }, -- Battle Shout
 			depend = 6673,
 			instance = true,
 		},
 	},
 	SHAMAN = {
 		{
-			spells = {
-				[192106] = true, -- Lightning Shield
-				[974] = true, -- Earth Shield
-				[52127] = true, -- Water Shield
-			},
-			depend = 192106,
-			combat = true,
-			instance = true,
-			pvp = true,
-		},
-		{
-			spells = {
-				[33757] = true, -- Windfury Weapon
-			},
+			spells = { [319773] = true }, -- Windfury Weapon (enchant buff)
 			depend = 33757,
 			combat = true,
 			instance = true,
@@ -100,9 +46,7 @@ C.SpellReminderBuffs = {
 			spec = 2,
 		},
 		{
-			spells = {
-				[318038] = true, -- Flametongue Weapon
-			},
+			spells = { [319778] = true }, -- Flametongue Weapon (enchant buff)
 			depend = 318038,
 			combat = true,
 			instance = true,
@@ -110,45 +54,60 @@ C.SpellReminderBuffs = {
 			weaponIndex = 2,
 			spec = 2,
 		},
+		{
+			spells = { [462854] = true }, -- Skyfury
+			depend = 462854,
+			instance = true,
+		},
 	},
 	ROGUE = {
 		{
-			spells = { -- Damage Poisons
-				[2823] = true, -- Deadly Poison
-				[8679] = true, -- Wound Poison
-				[315584] = true, -- Instant Poison
-				[381664] = true, -- Enhanced Poison
+			spells = {
+				[2823] = true,
+				[8679] = true,
+				[315584] = true,
+				[381664] = true,
 			},
 			texture = 132273,
-			depend = 315584,
+			depends = { 2823, 8679, 315584, 381664 },
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
 		{
-			spells = { -- Utility Poisons
-				[3408] = true, -- Crippling Poison
-				[5761] = true, -- Numbing Poison
-				[381637] = true, -- Withering Poison
+			spells = {
+				[3408] = true,
+				[5761] = true,
+				[381637] = true,
 			},
-			depend = 3408,
+			depends = { 3408, 5761, 381637 },
 			pvp = true,
 		},
 	},
 	EVOKER = {
 		{
-			spells = { -- Blessing of the Bronze Dragonflight
+			spells = {
+				[381732] = true,
+				[381741] = true,
+				[381746] = true,
 				[381748] = true,
+				[381749] = true,
+				[381750] = true,
+				[381751] = true,
+				[381752] = true,
+				[381753] = true,
+				[381754] = true,
+				[381756] = true,
+				[381757] = true,
+				[381758] = true,
 			},
-			depend = 364342,
+			depend = 364342, -- Blessing of the Bronze
 			instance = true,
 		},
 	},
 	DRUID = {
 		{
-			spells = { -- Mark of the Wild
-				[1126] = true,
-			},
+			spells = { [1126] = true, [432661] = true }, -- Mark of the Wild (+ alternate raid buff id)
 			depend = 1126,
 			instance = true,
 		},

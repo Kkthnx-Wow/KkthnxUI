@@ -168,6 +168,34 @@ function Module:EnableMapFading(frame)
 	fadeFrame:Show()
 end
 
+function Module:UpdateMapFading()
+	if fadeFrame and fadeFrame.FadeObject and fadeFrame.FadeObject.FadeSettings then
+		local settings = fadeFrame.FadeObject.FadeSettings
+		settings.minAlpha = C["WorldMap"].AlphaWhenMoving
+		settings.fadePredicate = Module.MapShouldFade
+	end
+
+	if C["WorldMap"].FadeWhenMoving and _G.WorldMapFrame:IsShown() then
+		Module:EnableMapFading(_G.WorldMapFrame)
+	elseif fadeFrame then
+		Module:StopMapFromFading()
+		_G.WorldMapFrame:SetAlpha(1)
+	end
+end
+
+function Module:UpdateMapSize()
+	if C["WorldMap"].SmallWorldMap and _G.WorldMapFrame and not _G.WorldMapFrame:IsMaximized() then
+		smallerMapScale = C["WorldMap"].SmallWorldMapScale or 0.9
+		Module:SetSmallWorldMap()
+	end
+end
+
+function Module:UpdateMapReveal()
+	if Module.MapData_RefreshOverlays then
+		Module:MapData_RefreshOverlays(true)
+	end
+end
+
 -- REASON: Intercepts Blizzard's frame fader to apply custom fading logic to the WorldMap.
 function Module.UpdateMapFade(...)
 	local arg1, arg2 = ...

@@ -26,7 +26,7 @@ local GameTooltip = _G.GameTooltip
 local ItemRefTooltip = _G.ItemRefTooltip
 
 local GetItemCount = _G.GetItemCount
-local GetItemInfo = _G.GetItemInfo
+local C_Item_GetItemInfo = C_Item.GetItemInfo
 local GetUnitName = _G.GetUnitName
 local IsPlayerSpell = _G.IsPlayerSpell
 
@@ -85,7 +85,8 @@ function Module:AddLineForID(id, linkType, noadd)
 	if linkType == types.item then
 		local bagCount = GetItemCount(id)
 		local bankCount = C_Item.GetItemCount(id, true, nil, true, true) - bagCount
-		local itemStackCount = select(8, GetItemInfo(id))
+		local itemInfo = C_Item_GetItemInfo(id)
+		local itemStackCount = itemInfo and itemInfo.stackCount
 
 		if bankCount > 0 then
 			self:AddDoubleLine(BAGSLOT .. "/" .. BANK .. ":", K.InfoColor .. bagCount .. "/" .. bankCount)

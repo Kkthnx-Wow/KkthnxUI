@@ -39,7 +39,7 @@ local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
 local GetItemGem = _G.GetItemGem
-local GetItemInfo = _G.GetItemInfo
+local C_Item_GetItemInfo = C_Item.GetItemInfo
 local HEIRLOOMS = _G.HEIRLOOMS
 local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
 local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
@@ -168,9 +168,26 @@ updater:SetScript("OnUpdate", Module.InspectOnUpdate)
 updater:Hide()
 
 local lastTime = 0
+local inspectInventoryUnit
+
+local function clearInspectInventoryWatch()
+	if inspectInventoryUnit then
+		K:UnregisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
+		inspectInventoryUnit = nil
+	end
+end
+
+local function setInspectInventoryWatch(unit)
+	clearInspectInventoryWatch()
+	if unit and not UnitIsUnit(unit, "player") then
+		K:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo, unit)
+		inspectInventoryUnit = unit
+	end
+end
+
 -- REASON: Event handler for inspect results and inventory updates.
-function Module:GetInspectInfo(...)
-	if self == "UNIT_INVENTORY_CHANGED" then
+function Module.GetInspectInfo(event, ...)
+	if event == "UNIT_INVENTORY_CHANGED" then
 		local thisTime = GetTime()
 		if thisTime - lastTime > 0.1 then
 			lastTime = thisTime
@@ -180,7 +197,7 @@ function Module:GetInspectInfo(...)
 				Module:InspectUnit(unit, true)
 			end
 		end
-	elseif self == "INSPECT_READY" then
+	elseif event == "INSPECT_READY" then
 		local guid = ...
 		if guid == currentGUID then
 			local level = Module:GetUnitItemLevel(currentUNIT)
@@ -193,10 +210,10 @@ function Module:GetInspectInfo(...)
 				Module:InspectUnit(currentUNIT, true)
 			end
 		end
-		K:UnregisterEvent(self, Module.GetInspectInfo)
+		clearInspectInventoryWatch()
+		K:UnregisterEvent(event, Module.GetInspectInfo)
 	end
 end
-K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
 
 -- REASON: Injects or updates the item level line in the GameTooltip.
 function Module:SetupItemLevel(level)
@@ -242,7 +259,10 @@ function Module:GetUnitItemLevel(unit)
 				if not itemLink then
 					delay = true
 				else
-					local _, _, quality, level, _, _, _, _, slot = GetItemInfo(itemLink)
+					local itemInfo = C_Item_GetItemInfo(itemLink)
+					local quality = itemInfo and itemInfo.itemQuality
+					local level = itemInfo and itemInfo.itemLevel
+					local slot = itemInfo and itemInfo.itemEquipLoc
 					if (not quality) or not level then
 						delay = true
 					else
@@ -341,10 +361,12 @@ function Module:InspectUnit(unit, forced)
 	local level
 
 	if UnitIsUnit(unit, "player") then
+		clearInspectInventoryWatch()
 		level = self:GetUnitItemLevel("player")
 		self:SetupItemLevel(level)
 	else
 		if not unit or UnitGUID(unit) ~= currentGUID then
+			clearInspectInventoryWatch()
 			return
 		end
 		if not UnitIsPlayer(unit) then
@@ -370,6 +392,7 @@ function Module:InspectUnit(unit, forced)
 		end
 
 		self:SetupItemLevel()
+		setInspectInventoryWatch(unit)
 		updater.retries = 0
 		updater:Show()
 	end

@@ -658,6 +658,11 @@ function Module:CreateExpbar()
 		return
 	end
 
+	if _G.KKUI_ExpRepBar then
+		_G.KKUI_ExpRepBar:Show()
+		return
+	end
+
 	local expRepBar = CreateFrame("StatusBar", "KKUI_ExpRepBar", _G.MinimapCluster)
 	expRepBar:SetPoint("TOP", _G.Minimap, "BOTTOM", 0, -6)
 	expRepBar:SetHeight(16)

@@ -41,6 +41,11 @@ local hooksecurefunc = _G.hooksecurefunc
 local ipairs = _G.ipairs
 local next = _G.next
 local select = _G.select
+local string_gsub = _G.string.gsub
+
+local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
+local SetPlainText = K.SetPlainText
 
 -- REASON: Constants used for loot quality coloring and quest item identification.
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
@@ -60,6 +65,16 @@ local COIN_TEXTURE_IDS = {
 	[133788] = true,
 	[133789] = true,
 }
+
+-- SECRET (12.0): FontStrings fed secret text (UnitName, loot item names) can return a
+-- secret number from GetStringWidth; arithmetic on that throws. Fail closed to 0.
+local function SafeStringWidth(fontString)
+	local width = fontString:GetStringWidth()
+	if IsSecret(width) then
+		return 0
+	end
+	return width or 0
+end
 
 -- REASON: FastLoot bridge (Retail-only). Adjusts the visibility without closing the session.
 function Module:SetLootFrameSuppressed(isSuppressed)
@@ -83,7 +98,7 @@ local function slotOnEnter(slot)
 end
 
 local function slotOnLeave(slot)
-	if slot.quality and (slot.quality > 1) then
+	if slot.quality and NotSecret(slot.quality) and slot.quality > 1 then
 		local color = ITEM_QUALITY_COLORS[slot.quality]
 		slot.drop:SetVertexColor(color.r, color.g, color.b)
 	else
@@ -169,21 +184,16 @@ local function createSlot(slotID)
 	icon:SetAllPoints()
 	slot.icon = icon
 
-	local count = iconFrame:CreateFontString(nil, "OVERLAY")
+	local count = K.CreatePlainFS(iconFrame, slotSize / 2.5, "1", "OVERLAY")
 	count:SetJustifyH("RIGHT")
 	count:SetPoint("BOTTOMRIGHT", iconFrame, -2, 2)
-	count:SetFontObject(K.UIFontOutline)
-	count:SetFont(select(1, count:GetFont()), slotSize / 2.5, select(3, count:GetFont()))
-	count:SetText(1)
 	slot.count = count
 
-	local name = slot:CreateFontString(nil, "OVERLAY")
+	local name = K.CreatePlainFS(slot, slotSize / 2.5, nil, "OVERLAY")
 	name:SetJustifyH("LEFT")
 	name:SetPoint("LEFT", slot)
 	name:SetPoint("RIGHT", icon, "LEFT")
 	name:SetNonSpaceWrap(true)
-	name:SetFontObject(K.UIFontOutline)
-	name:SetFont(select(1, name:GetFont()), slotSize / 2.5, select(3, name:GetFont()))
 	slot.name = name
 
 	local drop = slot:CreateTexture(nil, "ARTWORK")
@@ -204,7 +214,7 @@ local function createSlot(slotID)
 	return slot
 end
 
-function Module:LOOT_SLOT_CLEARED(slotID)
+function Module.LOOT_SLOT_CLEARED(event, slotID)
 	if not lootFrame:IsShown() then
 		return
 	end
@@ -248,11 +258,14 @@ function Module.LOOT_OPENED(_, isAutoLoot)
 	end
 
 	if IsFishingLoot() then
-		lootFrame.title:SetText(L["Fishy Loot"])
+		SetPlainText(lootFrame.title, L["Fishy Loot"])
 	elseif not UnitIsFriend("player", "target") and UnitIsDead("target") then
-		lootFrame.title:SetText(UnitName("target"))
+		local targetName = UnitName("target")
+		-- SECRET (12.0): corpse target names can be secret; route straight to SetText
+		-- when readable, otherwise fall back so GetStringWidth stays safe later.
+		SetPlainText(lootFrame.title, (targetName and NotSecret(targetName)) and targetName or LOOT)
 	else
-		lootFrame.title:SetText(LOOT)
+		SetPlainText(lootFrame.title, LOOT)
 	end
 
 	lootFrame:ClearAllPoints()
@@ -273,20 +286,21 @@ function Module.LOOT_OPENED(_, isAutoLoot)
 		for i = 1, numItems do
 			local slot = lootFrame.slots[i] or createSlot(i)
 			local textureID, item, itemCount, _, quality, _, isQuestItem, questId, isActive = GetLootSlotInfo(i)
-			local color = ITEM_QUALITY_COLORS[quality or 0]
+			local safeQuality = (quality and NotSecret(quality)) and quality or 0
+			local color = ITEM_QUALITY_COLORS[safeQuality]
 
-			if COIN_TEXTURE_IDS[textureID] then
-				item = item:gsub("\n", ", ")
+			if textureID and NotSecret(textureID) and COIN_TEXTURE_IDS[textureID] and item and NotSecret(item) then
+				item = string_gsub(item, "\n", ", ")
 			end
 
-			if itemCount and (itemCount > 1) then
-				slot.count:SetText(itemCount)
+			if itemCount and NotSecret(itemCount) and itemCount > 1 then
+				SetPlainText(slot.count, itemCount)
 				slot.count:Show()
 			else
 				slot.count:Hide()
 			end
 
-			if quality and (quality > 1) then
+			if safeQuality > 1 then
 				slot.drop:SetVertexColor(color.r, color.g, color.b)
 				slot.iconFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 				slot.drop:Show()
@@ -295,15 +309,15 @@ function Module.LOOT_OPENED(_, isAutoLoot)
 				slot.drop:Hide()
 			end
 
-			slot.quality = quality
-			slot.name:SetText(item)
+			slot.quality = safeQuality > 0 and safeQuality or nil
+			SetPlainText(slot.name, item)
 			slot.name:SetTextColor(color.r, color.g, color.b)
 			slot.icon:SetTexture(textureID)
 
-			maxWidth = math_max(maxWidth, slot.name:GetStringWidth())
+			maxWidth = math_max(maxWidth, SafeStringWidth(slot.name))
 
-			if quality then
-				maxQuality = math_max(maxQuality, quality)
+			if safeQuality > 0 then
+				maxQuality = math_max(maxQuality, safeQuality)
 			end
 
 			local questTexture = slot.questTexture
@@ -327,11 +341,11 @@ function Module.LOOT_OPENED(_, isAutoLoot)
 		local slot = lootFrame.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
-		slot.name:SetText(L["Empty Slot"])
+		SetPlainText(slot.name, L["Empty Slot"])
 		slot.name:SetTextColor(color.r, color.g, color.b)
 		slot.icon:SetTexture()
 
-		maxWidth = math_max(maxWidth, slot.name:GetStringWidth())
+		maxWidth = math_max(maxWidth, SafeStringWidth(slot.name))
 
 		slot.count:Hide()
 		slot.drop:Hide()
@@ -343,20 +357,30 @@ function Module.LOOT_OPENED(_, isAutoLoot)
 
 	local color = ITEM_QUALITY_COLORS[maxQuality]
 	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, 0.8)
-	lootFrame:SetWidth(math_max(maxWidth + 60, lootFrame.title:GetStringWidth() + 5))
+	lootFrame:SetWidth(math_max(maxWidth + 60, SafeStringWidth(lootFrame.title) + 5))
 end
 
-function Module:OPEN_MASTER_LOOT_LIST()
+function Module.OPEN_MASTER_LOOT_LIST(event)
 	MasterLooterFrame_Show(LootFrameRef.selectedLootButton)
 end
 
-function Module:UPDATE_MASTER_LOOT_LIST()
+function Module.UPDATE_MASTER_LOOT_LIST(event)
 	if LootFrameRef.selectedLootButton then
 		MasterLooterFrame_UpdatePlayers()
 	end
 end
 
 function Module:OnEnable()
+	if C["Loot"].Enable then
+		Module:InitLoot()
+	end
+end
+
+function Module:InitLoot()
+	if Module.lootInitialized then
+		return
+	end
+
 	if not C["Loot"].Enable then
 		return
 	end
@@ -374,9 +398,7 @@ function Module:OnEnable()
 		lootFrame:SetFrameStrata(LootFrameRef:GetFrameStrata())
 	end
 	lootFrame:SetToplevel(true)
-	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
-	lootFrame.title:SetFontObject(K.UIFontOutline)
-	lootFrame.title:SetFont(select(1, lootFrame.title:GetFont()), 13, select(3, lootFrame.title:GetFont()))
+	lootFrame.title = K.CreatePlainFS(lootFrame, 13, nil, "OVERLAY")
 	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 5)
 	lootFrame.slots = {}
 	lootFrame:SetScript("OnHide", frameOnHide)
@@ -385,37 +407,84 @@ function Module:OnEnable()
 	self.lootFrame = lootFrame
 	self.lootFrameHolder = lootFrameHolder
 
-	K:RegisterEvent("LOOT_OPENED", Module.LOOT_OPENED)
-	K:RegisterEvent("LOOT_SLOT_CLEARED", Module.LOOT_SLOT_CLEARED)
-	K:RegisterEvent("LOOT_CLOSED", Module.LOOT_CLOSED)
-	K:RegisterEvent("OPEN_MASTER_LOOT_LIST", Module.OPEN_MASTER_LOOT_LIST)
-	K:RegisterEvent("UPDATE_MASTER_LOOT_LIST", Module.UPDATE_MASTER_LOOT_LIST)
-
 	K.Mover(lootFrameHolder, "LootFrame", "LootFrame", { "TOPLEFT", 418, -186 })
-
-	if LootFrameRef then
-		LootFrameRef:UnregisterAllEvents()
-	end
-	table_insert(_G.UISpecialFrames, "KKUI_LootFrame")
 
 	if MasterLooterFrameRef then
 		hooksecurefunc(MasterLooterFrameRef, "Hide", MasterLooterFrameRef.ClearAllPoints)
 	end
 
-	local loadLootModules = {
-		"CreateAutoConfirm",
-		"CreateAutoGreed",
-		"CreateFasterLoot",
-		"CreateGroupLoot",
-	}
+	table_insert(_G.UISpecialFrames, "KKUI_LootFrame")
+	Module.lootInitialized = true
+	Module:EnableLoot()
+end
 
-	for _, funcName in ipairs(loadLootModules) do
-		local func = self[funcName]
-		if type(func) == "function" then
-			local success, err = pcall(func, self)
-			if not success then
-				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
-			end
-		end
+local function registerLootEvents()
+	K:RegisterEvent("LOOT_OPENED", Module.LOOT_OPENED)
+	K:RegisterEvent("LOOT_SLOT_CLEARED", Module.LOOT_SLOT_CLEARED)
+	K:RegisterEvent("LOOT_CLOSED", Module.LOOT_CLOSED)
+	K:RegisterEvent("OPEN_MASTER_LOOT_LIST", Module.OPEN_MASTER_LOOT_LIST)
+	K:RegisterEvent("UPDATE_MASTER_LOOT_LIST", Module.UPDATE_MASTER_LOOT_LIST)
+end
+
+local function unregisterLootEvents()
+	K:UnregisterEvent("LOOT_OPENED", Module.LOOT_OPENED)
+	K:UnregisterEvent("LOOT_SLOT_CLEARED", Module.LOOT_SLOT_CLEARED)
+	K:UnregisterEvent("LOOT_CLOSED", Module.LOOT_CLOSED)
+	K:UnregisterEvent("OPEN_MASTER_LOOT_LIST", Module.OPEN_MASTER_LOOT_LIST)
+	K:UnregisterEvent("UPDATE_MASTER_LOOT_LIST", Module.UPDATE_MASTER_LOOT_LIST)
+end
+
+function Module:DisableLoot()
+	unregisterLootEvents()
+
+	if Module.lootFrame then
+		Module.lootFrame:Hide()
+	end
+	if lootFrameHolder then
+		lootFrameHolder:Hide()
+	end
+
+	Module:CreateAutoConfirm()
+	Module:CreateAutoGreed()
+	Module:CreateFasterLoot()
+	if Module.DisableGroupLoot then
+		Module:DisableGroupLoot()
+	end
+
+	if LootFrameRef then
+		LootFrameRef:RegisterEvent("LOOT_OPENED")
+		LootFrameRef:RegisterEvent("LOOT_SLOT_CLEARED")
+		LootFrameRef:RegisterEvent("LOOT_SLOT_CHANGED")
+		LootFrameRef:RegisterEvent("LOOT_CLOSED")
+	end
+end
+
+function Module:EnableLoot()
+	if not Module.lootInitialized then
+		Module:InitLoot()
+		return
+	end
+
+	registerLootEvents()
+
+	if lootFrameHolder then
+		lootFrameHolder:Show()
+	end
+
+	if LootFrameRef then
+		LootFrameRef:UnregisterAllEvents()
+	end
+
+	Module:CreateAutoConfirm()
+	Module:CreateAutoGreed()
+	Module:CreateFasterLoot()
+	Module:CreateGroupLoot()
+end
+
+function Module:SetLootEnabled(enabled)
+	if enabled then
+		Module:EnableLoot()
+	else
+		Module:DisableLoot()
 	end
 end

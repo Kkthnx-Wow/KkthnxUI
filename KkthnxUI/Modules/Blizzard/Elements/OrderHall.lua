@@ -67,7 +67,7 @@ function Module:OrderHall_Refresh()
 	self.numCategory = #categoryInfo
 end
 
-function Module:OrderHall_OnShiftDown(btn)
+function Module.OrderHall_OnShiftDown(event, btn)
 	-- REASON: Updates the tooltip visibility/content when the player toggles the Shift key.
 	if btn == "LSHIFT" or btn == "RSHIFT" then
 		Module.OrderHall_OnEnter(Module.OrderHallIcon)

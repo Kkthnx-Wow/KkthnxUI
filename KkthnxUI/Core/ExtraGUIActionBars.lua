@@ -1,5 +1,5 @@
 ---@diagnostic disable: undefined-global
-local K, C, L = unpack(KkthnxUI)
+local K, L = unpack(KkthnxUI)
 
 --[[-----------------------------------------------------------------------------
 -- ExtraGUIActionBars
@@ -9,48 +9,33 @@ local K, C, L = unpack(KkthnxUI)
 -- REASON: ExtraGUI.lua had eight copy-pasted bar registrations plus eight
 -- one-line scale helpers. A loop expresses the real structure: every action bar
 -- exposes the same size/per-row/count/font/fade controls with bar-specific paths.
+-- Live updates are handled by Modules/ActionBars/Settings.lua prefix callbacks.
 -----------------------------------------------------------------------------]]
 
 local ExtraGUIActionBars = {}
 K.ExtraGUIActionBars = ExtraGUIActionBars
 
-local function UpdateActionBarScale(barName)
-	K:GetModule("ActionBar"):UpdateActionSize(barName)
-end
-
-local function UpdateABFaderState()
-	local actionBarModule = K:GetModule("ActionBar")
-	if not actionBarModule.fadeParent then
-		return
-	end
-	actionBarModule:UpdateFaderState()
-	actionBarModule.fadeParent:SetAlpha(C["ActionBar"].BarFadeAlpha)
-end
-
 local function CreateBarPanel(extraGUI, barIndex, barName)
 	return function(parent)
 		local yOffset = -10
-		local function onScaleChanged()
-			UpdateActionBarScale(barName)
-		end
 
-		local sizeSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Size", L["Button Size"], 20, 80, 1, L[barName .. "Size Desc"], onScaleChanged)
+		local sizeSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Size", L["Button Size"], 20, 80, 1, L[barName .. "Size Desc"])
 		sizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local perRowSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "PerRow", L["Button PerRow"], 1, 12, 1, L[barName .. "PerRow Desc"], onScaleChanged)
+		local perRowSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "PerRow", L["Button PerRow"], 1, 12, 1, L[barName .. "PerRow Desc"])
 		perRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local numSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Num", L["Button Num"], 1, 12, 1, L[barName .. "Num Desc"], onScaleChanged)
+		local numSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Num", L["Button Num"], 1, 12, 1, L[barName .. "Num Desc"])
 		numSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local fontSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Font", L["Button FontSize"], 8, 20, 1, L[barName .. "Font Desc"], onScaleChanged)
+		local fontSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Font", L["Button FontSize"], 8, 20, 1, L[barName .. "Font Desc"])
 		fontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local fadeSwitch = extraGUI:CreateSwitch(parent, "ActionBar." .. barName .. "Fade", L["Enable Fade for Bar " .. barIndex], L["Allows Bar " .. barIndex .. " to fade based on the specified conditions"], UpdateABFaderState)
+		local fadeSwitch = extraGUI:CreateSwitch(parent, "ActionBar." .. barName .. "Fade", L["Enable Fade for Bar " .. barIndex], L["Allows Bar " .. barIndex .. " to fade based on the specified conditions"])
 		fadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -65,4 +50,3 @@ function ExtraGUIActionBars:Register(extraGUI)
 		extraGUI:RegisterExtraConfig("ActionBar." .. barName, CreateBarPanel(extraGUI, barIndex, barName), "Bar " .. barIndex)
 	end
 end
-

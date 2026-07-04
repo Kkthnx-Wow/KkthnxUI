@@ -79,6 +79,11 @@ local function GetDebuffType(unitToken, filter)
 			return dispelName, aura.icon
 		end
 
+		local resolved = aura.auraInstanceID and K.GetAuraDispelTypeName(unitToken, aura.auraInstanceID, oUF)
+		if resolved and (not filter or dispellist[resolved]) then
+			return resolved, aura.icon
+		end
+
 		i = i + 1
 	end
 end

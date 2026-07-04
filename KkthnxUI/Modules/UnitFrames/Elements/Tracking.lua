@@ -41,7 +41,6 @@ local COLOR_YELLOW = "|CFFFFFF00"
 
 -- REASON: Spell Info Compatibility Layer for Retail/Classic.
 do
-	local GetSpellInfo = _G.GetSpellInfo
 	local C_Spell_GetSpellInfo = _G.C_Spell and _G.C_Spell.GetSpellInfo
 	local spellCache = {}
 
@@ -72,9 +71,6 @@ do
 				spellID = info.spellID
 				originalIconID = info.originalIconID
 			end
-		elseif GetSpellInfo then
-			-- Classic / fallback API
-			name, rank, iconID, castTime, minRange, maxRange, spellID, originalIconID = GetSpellInfo(spell)
 		end
 
 		-- Cache the result

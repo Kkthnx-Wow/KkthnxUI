@@ -128,28 +128,28 @@ end
 function Module:CreateKeystoneAnnounce()
 	-- COMPAT: Prevent conflicts with external addons like MythicKeyReporter.
 	if C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("MythicKeyReporter") then
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", self.AnnounceKeystone)
-		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", self.AnnounceKeystone)
-		K:UnregisterEvent("ITEM_CHANGED", self.AnnounceKeystone)
-		K:UnregisterEvent("CHAT_MSG_PARTY", self.OnKeystoneQuery)
-		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", self.OnKeystoneQuery)
-		K:UnregisterEvent("CHAT_MSG_GUILD", self.OnKeystoneQuery)
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.AnnounceKeystone)
+		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", Module.AnnounceKeystone)
+		K:UnregisterEvent("ITEM_CHANGED", Module.AnnounceKeystone)
+		K:UnregisterEvent("CHAT_MSG_PARTY", Module.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", Module.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_GUILD", Module.OnKeystoneQuery)
 		return
 	end
 
 	if C["Announcements"].KeystoneAlert then
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", self.AnnounceKeystone)
-		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", self.AnnounceKeystone)
-		K:RegisterEvent("ITEM_CHANGED", self.AnnounceKeystone)
-		K:RegisterEvent("CHAT_MSG_PARTY", self.OnKeystoneQuery)
-		K:RegisterEvent("CHAT_MSG_PARTY_LEADER", self.OnKeystoneQuery)
-		K:RegisterEvent("CHAT_MSG_GUILD", self.OnKeystoneQuery)
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AnnounceKeystone)
+		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.AnnounceKeystone)
+		K:RegisterEvent("ITEM_CHANGED", Module.AnnounceKeystone)
+		K:RegisterEvent("CHAT_MSG_PARTY", Module.OnKeystoneQuery)
+		K:RegisterEvent("CHAT_MSG_PARTY_LEADER", Module.OnKeystoneQuery)
+		K:RegisterEvent("CHAT_MSG_GUILD", Module.OnKeystoneQuery)
 	else
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", self.AnnounceKeystone)
-		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", self.AnnounceKeystone)
-		K:UnregisterEvent("ITEM_CHANGED", self.AnnounceKeystone)
-		K:UnregisterEvent("CHAT_MSG_PARTY", self.OnKeystoneQuery)
-		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", self.OnKeystoneQuery)
-		K:UnregisterEvent("CHAT_MSG_GUILD", self.OnKeystoneQuery)
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.AnnounceKeystone)
+		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", Module.AnnounceKeystone)
+		K:UnregisterEvent("ITEM_CHANGED", Module.AnnounceKeystone)
+		K:UnregisterEvent("CHAT_MSG_PARTY", Module.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_PARTY_LEADER", Module.OnKeystoneQuery)
+		K:UnregisterEvent("CHAT_MSG_GUILD", Module.OnKeystoneQuery)
 	end
 end

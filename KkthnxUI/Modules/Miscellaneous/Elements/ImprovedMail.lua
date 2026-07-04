@@ -26,7 +26,7 @@ local DeleteInboxItem = _G.DeleteInboxItem
 local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
 local GetInboxItem = _G.GetInboxItem
 local GetInboxNumItems = _G.GetInboxNumItems
-local GetItemInfo = _G.GetItemInfo
+local GetItemInfo = _G.C_Item.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMoney = _G.GetMoney
 local GetSendMailPrice = _G.GetSendMailPrice
@@ -69,16 +69,16 @@ local function getItemInfoCached(itemID)
 		return cacheEntry.name, cacheEntry.quality, cacheEntry.texture
 	end
 
-	local name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemID)
-	if name then
-		itemInfoCache[itemID] = { name = name, quality = quality, texture = texture }
+	local info = GetItemInfo(itemID)
+	if info and info.itemName then
+		itemInfoCache[itemID] = { name = info.itemName, quality = info.itemQuality, texture = info.iconFileID }
 		itemInfoCacheOrder[#itemInfoCacheOrder + 1] = itemID
 		if #itemInfoCacheOrder > ITEM_INFO_CACHE_LIMIT then
 			local oldestItemID = table_remove(itemInfoCacheOrder, 1)
 			itemInfoCache[oldestItemID] = nil
 		end
+		return info.itemName, info.itemQuality, info.iconFileID
 	end
-	return name, quality, texture
 end
 
 -- REASON: Invalidates cache entries when the server provides updated item data to ensure fresh information.
@@ -341,6 +341,7 @@ function Module:createCollectCurrentButton()
 
 	local collectAllButton = Module:createMailControlButton(_G.OpenMailFrame, 82, 22, L["Take All"], { "RIGHT", "OpenMailReplyButton", "LEFT", -1, 0 })
 	collectAllButton:SetScript("OnClick", Module.collectCurrentMailAttachments)
+	Module.CollectCurrentButton = collectAllButton
 end
 
 -- REASON: Monitors for inventory errors during mass collection to blacklist stuck items or stop the process.
@@ -446,14 +447,75 @@ function Module:arrangeDefaultMailElements()
 	_G.SendMailMailButton:HookScript("OnLeave", K.HideTooltip)
 end
 
+local function onMailInboxUpdate()
+	if not isCollectingGold then
+		return
+	end
+	local currentFirstMailDayRemaining = select(7, GetInboxHeaderInfo(1)) or 0
+	local currentCount, totalCount = GetInboxNumItems()
+	if (currentFirstMailDayRemaining ~= 0 and currentFirstMailDayRemaining ~= firstMailDayRemaining) or (currentCount ~= lastInboxCount or totalCount ~= lastInboxTotalCount) then
+		firstMailDayRemaining = currentFirstMailDayRemaining
+		lastInboxCount, lastInboxTotalCount = currentCount, totalCount
+		currentMailIndex = currentCount
+	end
+end
+
+local function setImprovedMailUIVisible(visible)
+	for i = 1, INBOX_ITEMS_PER_PAGE do
+		local mailItemButton = _G["MailItem" .. i .. "Button"]
+		if mailItemButton and mailItemButton.KKUI_DeleteButton then
+			mailItemButton.KKUI_DeleteButton:SetShown(visible)
+		end
+	end
+
+	if Module.GoldButton then
+		Module.GoldButton:SetShown(visible)
+	end
+	if Module.CollectCurrentButton then
+		Module.CollectCurrentButton:SetShown(visible)
+	end
+end
+
+function Module:DisableImprovedMail()
+	if not Module._improvedMailInitialized then
+		return
+	end
+
+	isCollectingGold = false
+	currentMailIndex = 0
+	Module:UpdateOpeningText(false)
+	setImprovedMailUIVisible(false)
+
+	if Module._mailUpdateFrame then
+		Module._mailUpdateFrame:UnregisterEvent("MAIL_INBOX_UPDATE")
+		Module._mailUpdateFrame:SetScript("OnEvent", nil)
+	end
+
+	Module._improvedMailActive = false
+end
+
 function Module:CreateImprovedMail()
 	if not C["Misc"].EnhancedMail then
+		Module:DisableImprovedMail()
 		return
 	end
 
 	if _G.C_AddOns.IsAddOnLoaded("Postal") then
 		return
 	end
+
+	if Module._improvedMailInitialized then
+		Module._improvedMailActive = true
+		setImprovedMailUIVisible(true)
+		if Module._mailUpdateFrame then
+			Module._mailUpdateFrame:RegisterEvent("MAIL_INBOX_UPDATE")
+			Module._mailUpdateFrame:SetScript("OnEvent", onMailInboxUpdate)
+		end
+		return
+	end
+
+	Module._improvedMailInitialized = true
+	Module._improvedMailActive = true
 
 	for i = 1, INBOX_ITEMS_PER_PAGE do
 		local mailItemButton = _G["MailItem" .. i .. "Button"]
@@ -470,18 +532,8 @@ function Module:CreateImprovedMail()
 	-- REASON: Monitors the inbox for updates during mass gold collection to reset indices if the mailbox content changes.
 	local mailUpdateFrame = CreateFrame("Frame")
 	mailUpdateFrame:RegisterEvent("MAIL_INBOX_UPDATE")
-	mailUpdateFrame:SetScript("OnEvent", function()
-		if not isCollectingGold then
-			return
-		end
-		local currentFirstMailDayRemaining = select(7, GetInboxHeaderInfo(1)) or 0
-		local currentCount, totalCount = GetInboxNumItems()
-		if (currentFirstMailDayRemaining ~= 0 and currentFirstMailDayRemaining ~= firstMailDayRemaining) or (currentCount ~= lastInboxCount or totalCount ~= lastInboxTotalCount) then
-			firstMailDayRemaining = currentFirstMailDayRemaining
-			lastInboxCount, lastInboxTotalCount = currentCount, totalCount
-			currentMailIndex = currentCount
-		end
-	end)
+	mailUpdateFrame:SetScript("OnEvent", onMailInboxUpdate)
+	Module._mailUpdateFrame = mailUpdateFrame
 end
 
 Module:RegisterMisc("ImprovedMail", Module.CreateImprovedMail)

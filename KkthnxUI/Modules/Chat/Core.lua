@@ -204,7 +204,8 @@ local function updateChatAnchor(self, _, _, _, x, y)
 end
 
 local isScaling = false
-function Module:UpdateChatSize()
+
+function Module.UpdateChatSize(event)
 	-- REASON: Resizes the chat frame according to the user's config, ensuring consistent layout across UI scales.
 	if not C["Chat"].Lock then
 		return
@@ -231,6 +232,64 @@ function Module:UpdateChatSize()
 	chatFrame1:SetHeight(C["Chat"].Height)
 
 	isScaling = false
+end
+
+function Module:UpdateChatFading()
+	if not C["Chat"].Enable then
+		return
+	end
+
+	local fading = C["Chat"].Fading
+	local timeVisible = C["Chat"].FadingTimeVisible
+
+	for i = 1, _G.NUM_CHAT_WINDOWS do
+		local frame = _G["ChatFrame" .. i]
+		if frame and frame.styled then
+			frame:SetFading(fading)
+			frame:SetTimeVisible(timeVisible)
+		end
+	end
+end
+
+function Module:UpdateChatLock()
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if C["Chat"].Lock then
+		if not self.lockHooksInstalled then
+			K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
+			local chatFrame1 = _G.ChatFrame1
+			if chatFrame1 then
+				hooksecurefunc(chatFrame1, "SetPoint", updateChatAnchor)
+				hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
+				if _G.FCF_SavePositionAndDimensions then
+					_G.FCF_SavePositionAndDimensions(chatFrame1)
+				end
+			end
+			self.lockHooksInstalled = true
+			self.lockScaleRegistered = true
+		end
+		Module:UpdateChatSize()
+	elseif self.lockScaleRegistered then
+		K:UnregisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
+		self.lockScaleRegistered = false
+	end
+end
+
+function Module:UpdateChatFreedom()
+	if not _G.BNFeaturesEnabledAndConnected() then
+		return
+	end
+
+	if C["Chat"].Freedom then
+		if _G.GetCVar("portal") == "CN" then
+			_G.ConsoleExec("portal TW")
+		end
+		_G.SetCVar("profanityFilter", 0)
+	else
+		_G.SetCVar("profanityFilter", 1)
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -590,24 +649,67 @@ end
 -- ---------------------------------------------------------------------------
 -- Initialization
 -- ---------------------------------------------------------------------------
+local savedChatStyle
+local savedChatMouseScroll
+
+function Module:RestoreDefaultChatChrome()
+	if CHAT_ADDON_CONFLICT then
+		return
+	end
+
+	if savedChatStyle then
+		SetCVar("chatStyle", savedChatStyle)
+	end
+	if savedChatMouseScroll then
+		SetCVar("chatMouseScroll", savedChatMouseScroll)
+	end
+
+	for _, chatFrameName in ipairs(CHAT_FRAMES) do
+		local frame = _G[chatFrameName]
+		if frame then
+			frame:EnableDrawLayer("BORDER")
+			frame:EnableDrawLayer("BACKGROUND")
+			if frame.__background then
+				frame.__background:Hide()
+			end
+		end
+	end
+end
+
 function Module:OnEnable()
-	-- REASON: Centralized initialization for the Chat module; applies skins, mounts elements, and sets CVars.
+	if C["Chat"].Enable then
+		Module:InitChat()
+	end
+end
+
+function Module:InitChat()
+	if Module.chatInitialized then
+		return
+	end
+
 	if not C["Chat"].Enable then
 		return
 	end
 
+	-- REASON: Centralized initialization for the Chat module; applies skins, mounts elements, and sets CVars.
 	-- REASON: Hide the default Quick Join button if the Friends DataText is active to prevent redundancy.
 	local quickJoinToastButton = _G.QuickJoinToastButton
 	if C["DataText"].Friends and quickJoinToastButton then
 		quickJoinToastButton:SetAlpha(0)
 		quickJoinToastButton:EnableMouse(false)
 		quickJoinToastButton:UnregisterAllEvents()
+		Module._quickJoinModified = true
 	end
 
 	-- COMPAT: Skip custom skinning if total-replacement chat addons are loaded.
 	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
 	if CHAT_ADDON_CONFLICT then
 		return
+	end
+
+	if not savedChatStyle then
+		savedChatStyle = GetCVar("chatStyle")
+		savedChatMouseScroll = GetCVar("chatMouseScroll")
 	end
 
 	for i = 1, NUM_CHAT_WINDOWS do
@@ -669,28 +771,53 @@ function Module:OnEnable()
 	-- -----------------------------------------------------------------------
 	-- Chat Locking
 	-- -----------------------------------------------------------------------
-	if C["Chat"].Lock then
-		Module:UpdateChatSize()
-		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
-		local chatFrame1 = _G.ChatFrame1
-		hooksecurefunc(chatFrame1, "SetPoint", updateChatAnchor)
-		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
-		FCF_SavePositionAndDimensions(chatFrame1)
-	end
+	Module:UpdateChatLock()
 
 	-- -----------------------------------------------------------------------
 	-- Language Filter
 	-- -----------------------------------------------------------------------
-	if not BNFeaturesEnabledAndConnected() then
-		return
-	end
+	Module:UpdateChatFreedom()
+	Module.chatInitialized = true
+end
 
-	if C["Chat"].Freedom then
-		if GetCVar("portal") == "CN" then
-			ConsoleExec("portal TW")
+function Module:SetChatEnabled(enabled)
+	if enabled then
+		Module:InitChat()
+		if Module.chatInitialized then
+			if Module.UpdateChatButtons then
+				Module:UpdateChatButtons()
+			end
+			Module:UpdateChatFading()
+			Module:UpdateChatLock()
 		end
-		SetCVar("profanityFilter", 0)
 	else
-		SetCVar("profanityFilter", 1)
+		local chatFrames = {
+			"KKUI_ChatCopyButton",
+			"KKUI_ChatConfigButton",
+			"KKUI_ChatRollButton",
+			"KKUI_CopyChat",
+			"KKUI_ChatMenu",
+		}
+		for i = 1, #chatFrames do
+			local frame = _G[chatFrames[i]]
+			if frame then
+				frame:Hide()
+			end
+		end
+
+		if Module.RestoreDefaultChatChrome then
+			Module:RestoreDefaultChatChrome()
+		end
+
+		if Module._quickJoinModified then
+			local quickJoinToastButton = _G.QuickJoinToastButton
+			if quickJoinToastButton then
+				quickJoinToastButton:SetAlpha(1)
+				quickJoinToastButton:EnableMouse(true)
+				if _G.QuickJoinToastButton_OnLoad then
+					pcall(_G.QuickJoinToastButton_OnLoad, quickJoinToastButton)
+				end
+			end
+		end
 	end
 end

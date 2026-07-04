@@ -20,7 +20,8 @@ local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_Timer_NewTicker = _G.C_Timer.NewTicker
 local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMarketPrice
 local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
-local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
+-- COMPAT (12.0.7): CalculateTotalNumberOfFreeBagSlots moved off _G into C_Container.
+local C_Container_CalculateTotalNumberOfFreeBagSlots = _G.C_Container.CalculateTotalNumberOfFreeBagSlots
 local CreateFrame = _G.CreateFrame
 local Enum = _G.Enum
 local GameTooltip = _G.GameTooltip
@@ -123,7 +124,7 @@ end
 
 local function getSlotString()
 	-- REASON: Formats the bag slot count with color coding based on available space.
-	local num = CalculateTotalNumberOfFreeBagSlots()
+	local num = C_Container_CalculateTotalNumberOfFreeBagSlots()
 	local color = (num < 10) and "|cffff0000" or "|cff00ff00"
 	return string_format(SLOT_STRING, color, num)
 end
@@ -421,21 +422,52 @@ K.GoldButton_OnLeave = onLeave
 -- ---------------------------------------------------------------------------
 -- Initialization
 -- ---------------------------------------------------------------------------
+local function setupGoldDisplay()
+	if not goldDataText or goldDataText.Text then
+		return
+	end
+
+	goldDataText.Text = K.CreateFontString(goldDataText, 12)
+	goldDataText.Text:ClearAllPoints()
+	goldDataText.Text:SetPoint("LEFT", goldDataText, "LEFT", 18, 0)
+
+	goldDataText.Texture = goldDataText:CreateTexture(nil, "ARTWORK")
+	goldDataText.Texture:SetPoint("LEFT", goldDataText, "LEFT", 0, 1)
+	goldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\BagsIcon")
+	goldDataText.Texture:SetSize(16, 16)
+	goldDataText.Texture:SetVertexColor(table_unpack(C["DataText"].IconColor))
+
+	goldDataText:SetScript("OnMouseUp", onMouseUp)
+	goldDataText.mover = K.Mover(goldDataText, "GoldDT", "GoldDT", { "LEFT", UIParent, "LEFT", 2, -300 }, 56, 12)
+
+	local currentWidth = (goldDataText.Text:GetStringWidth() or 0) + ((goldDataText.Texture and goldDataText.Texture:GetWidth()) or 0)
+	goldDataText.mover:SetWidth(math_max(currentWidth, 56))
+end
+
 function Module:CreateGoldDataText()
 	-- REASON: Entry point for the financial DataText element; sets up frame, textures, and event listeners.
+	if goldDataText then
+		if C["DataText"].Gold then
+			setupGoldDisplay()
+			goldDataText:Show()
+			if goldDataText.mover then
+				goldDataText.mover:Show()
+			end
+			updateDisplay(GetMoney())
+		else
+			goldDataText:Hide()
+			if goldDataText.mover then
+				goldDataText.mover:Hide()
+			end
+		end
+		return
+	end
+
 	goldDataText = CreateFrame("Frame", nil, UIParent)
 	goldDataText:SetHitRectInsets(-16, 0, -10, -10)
 
 	if C["DataText"].Gold then
-		goldDataText.Text = K.CreateFontString(goldDataText, 12)
-		goldDataText.Text:ClearAllPoints()
-		goldDataText.Text:SetPoint("LEFT", goldDataText, "LEFT", 18, 0)
-
-		goldDataText.Texture = goldDataText:CreateTexture(nil, "ARTWORK")
-		goldDataText.Texture:SetPoint("LEFT", goldDataText, "LEFT", 0, 1)
-		goldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\BagsIcon")
-		goldDataText.Texture:SetSize(16, 16)
-		goldDataText.Texture:SetVertexColor(table_unpack(C["DataText"].IconColor))
+		setupGoldDisplay()
 	end
 
 	for _, eventName in ipairs(EVENT_LIST) do
@@ -462,11 +494,16 @@ function Module:CreateGoldDataText()
 	goldDataText:SetScript("OnLeave", onLeave)
 
 	if C["DataText"].Gold then
-		goldDataText:SetScript("OnMouseUp", onMouseUp)
-		-- REASON: Registers the frame with the mover system for user-controlled layout.
-		goldDataText.mover = K.Mover(goldDataText, "GoldDT", "GoldDT", { "LEFT", UIParent, "LEFT", 2, -300 }, 56, 12)
-
-		local currentWidth = (goldDataText.Text:GetStringWidth() or 0) + ((goldDataText.Texture and goldDataText.Texture:GetWidth()) or 0)
-		goldDataText.mover:SetWidth(math_max(currentWidth, 56))
+		updateDisplay(GetMoney())
 	end
+
+	Module:RegisterAppearanceRefresher(function()
+		if not goldDataText then
+			return
+		end
+		if goldDataText.Texture then
+			goldDataText.Texture:SetVertexColor(table_unpack(C["DataText"].IconColor))
+		end
+		updateDisplay(GetMoney())
+	end)
 end

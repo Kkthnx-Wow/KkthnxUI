@@ -203,8 +203,48 @@ K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REA
 
 local eventsFrame = CreateFrame("Frame")
 local events = {} -- events[event] = { func1 = true, func2 = true }
+local unitEvents = {} -- events subscribed via RegisterUnitEvent
 local modules = {}
 local modulesQueue = {}
+
+-- REASON: eventsFrame:RegisterEvent is protected during combat lockdown. When a
+-- module subscribes to a new event mid-fight (e.g. lazy CLEU from a nameplate
+-- enabling), queue the frame registration until regen instead of erroring.
+local pendingEventRegistration = {}
+
+local function FlushPendingEventRegistration()
+	events["PLAYER_REGEN_ENABLED"][FlushPendingEventRegistration] = nil
+
+	for event, info in pairs(pendingEventRegistration) do
+		if events[event] then
+			if info.unit1 then
+				eventsFrame:RegisterUnitEvent(event, info.unit1, info.unit2)
+			else
+				eventsFrame:RegisterEvent(event)
+			end
+		end
+	end
+	pendingEventRegistration = {}
+end
+
+local function RegisterEventsFrame(event, unit1, unit2)
+	if InCombatLockdown() then
+		pendingEventRegistration[event] = { unit1 = unit1, unit2 = unit2 }
+		local regenHandlers = events["PLAYER_REGEN_ENABLED"]
+		if not regenHandlers then
+			regenHandlers = {}
+			events["PLAYER_REGEN_ENABLED"] = regenHandlers
+		end
+		regenHandlers[FlushPendingEventRegistration] = true
+		return
+	end
+
+	if unit1 then
+		eventsFrame:RegisterUnitEvent(event, unit1, unit2)
+	else
+		eventsFrame:RegisterEvent(event)
+	end
+end
 
 local isScaling = false
 local pendingScaleApply = false
@@ -264,6 +304,11 @@ K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 }
 -- Event System
 -- ---------------------------------------------------------------------------
 
+-- REASON: Pre-register regen so combat-deferred event subscriptions can queue
+-- FlushPendingEventRegistration without calling RegisterEvent again in combat.
+eventsFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+events["PLAYER_REGEN_ENABLED"] = {}
+
 -- NOTE: Centralized dispatcher to minimize the number of OnEvent handlers.
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	local funcs = events[event]
@@ -304,7 +349,7 @@ end)
 -- after login instead, so we mirror that: K:RegisterEvent below performs the actual
 -- eventsFrame:RegisterEvent the first time a module subscribes (post-PLAYER_LOGIN).
 
-function K:RegisterEvent(event, func, unit1, unit2)
+function K:RegisterEvent(event, func)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
 	end
@@ -316,11 +361,27 @@ function K:RegisterEvent(event, func, unit1, unit2)
 
 	if not events[event] then
 		events[event] = {}
-		if unit1 then
-			eventsFrame:RegisterUnitEvent(event, unit1, unit2)
-		else
-			eventsFrame:RegisterEvent(event)
-		end
+		RegisterEventsFrame(event)
+	end
+
+	events[event][func] = true
+end
+
+function K:RegisterUnitEvent(event, func, unit1, unit2)
+	if not func or type(func) ~= "function" then
+		K.Print(string_format("RegisterUnitEvent error: invalid function for '%s'", event))
+		return
+	end
+
+	if not unit1 then
+		K.Print(string_format("RegisterUnitEvent error: missing unit token for '%s'", event))
+		return
+	end
+
+	if not events[event] then
+		events[event] = {}
+		unitEvents[event] = true
+		RegisterEventsFrame(event, unit1, unit2)
 	end
 
 	events[event][func] = true
@@ -336,8 +397,16 @@ function K:UnregisterEvent(event, func)
 		funcs[func] = nil
 
 		if not next(funcs) then
+			if event == "PLAYER_REGEN_ENABLED" then
+				return
+			end
+
 			events[event] = nil
-			eventsFrame:UnregisterEvent(event)
+			unitEvents[event] = nil
+			pendingEventRegistration[event] = nil
+			if not InCombatLockdown() then
+				eventsFrame:UnregisterEvent(event)
+			end
 		end
 	end
 end

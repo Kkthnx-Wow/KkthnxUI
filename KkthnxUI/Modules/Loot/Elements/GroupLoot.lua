@@ -21,6 +21,7 @@ local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
+local SetPlainText = K.SetPlainText
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
 local GetLootRollItemLink = _G.GetLootRollItemLink
 local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
@@ -42,6 +43,7 @@ local cachedIndex = {}
 Module.RollBars = {}
 
 local parentFrame
+local groupLootActive = false
 local rollTypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [4] = "transmog", [0] = "pass" }
 
 local function clickRoll(button)
@@ -192,8 +194,7 @@ local function createRollButton(parent, texture, rollType, tipText, points, isAt
 	button.rolltype = rollType
 	button.tiptext = tipText
 
-	button.text = button:CreateFontString(nil, nil)
-	button.text:SetFontObject(K.UIFontOutline)
+	button.text = K.CreatePlainFS(button, 14, nil, "OVERLAY")
 	button.text:SetPoint("CENTER", 0, rollType == 2 and 1 or rollType == 0 and -1.2 or 0)
 
 	return button
@@ -222,13 +223,11 @@ function Module:CreateRollBar(name)
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(unpack(K.TexCoords))
 
-	button.stack = button:CreateFontString(nil, "OVERLAY")
+	button.stack = K.CreatePlainFS(button, 12, nil, "OVERLAY")
 	button.stack:SetPoint("BOTTOMRIGHT", -1, 2)
-	button.stack:SetFontObject(K.UIFontOutline)
 
-	button.ilvl = button:CreateFontString(nil, "OVERLAY")
+	button.ilvl = K.CreatePlainFS(button, 12, nil, "OVERLAY")
 	button.ilvl:SetPoint("BOTTOMLEFT", 1, 1)
-	button.ilvl:SetFontObject(K.UIFontOutline)
 
 	local status = CreateFrame("StatusBar", nil, bar)
 	status:SetAllPoints(bar)
@@ -252,13 +251,11 @@ function Module:CreateRollBar(name)
 	bar.disenchant = isDisenchantEnabled and createRollButton(bar, [[lootroll-toast-icon-disenchant]], 3, ROLL_DISENCHANT, { "LEFT", bar.greed, "RIGHT", 3, 0 }, true)
 	bar.pass = createRollButton(bar, [[lootroll-toast-icon-pass]], 0, PASS, { "LEFT", bar.disenchant or bar.greed, "RIGHT", 3, 0 }, true)
 
-	local bind = bar:CreateFontString()
+	local bind = K.CreatePlainFS(bar, 12, nil, "ARTWORK")
 	bind:SetPoint("LEFT", bar.pass, "RIGHT", 3, 0)
-	bind:SetFontObject(K.UIFontOutline)
 	bar.fsbind = bind
 
-	local loot = bar:CreateFontString(nil, "ARTWORK")
-	loot:SetFontObject(K.UIFontOutline)
+	local loot = K.CreatePlainFS(bar, 12, nil, "ARTWORK")
 	loot:SetPoint("LEFT", bind, "RIGHT", 0, 0)
 	loot:SetPoint("RIGHT", bar, "RIGHT", -5, 0)
 	loot:SetSize(200, 10)
@@ -290,7 +287,7 @@ local function getFrame()
 	return bar
 end
 
-function Module:LootRoll_Start(rollID, rollTime)
+function Module.LootRoll_Start(event, rollID, rollTime)
 	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(rollID)
 
 	if not name then
@@ -349,7 +346,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 
 	bar.fsbind:SetText(bop and L["BoP"] or L["BoE"])
 	bar.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
-	bar.fsloot:SetText(name)
+	SetPlainText(bar.fsloot, name)
 	bar.status.elapsed = 1
 	bar.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
 	bar.status:SetMinMaxValues(0, rollTime)
@@ -416,7 +413,7 @@ function Module:LootRoll_UpdateDrops(encounterID, lootListID)
 	end
 end
 
-function Module:LootRoll_EncounterEnd(id, _, _, _, status)
+function Module.LootRoll_EncounterEnd(event, id, _, _, _, status)
 	if status == 1 then
 		Module.EncounterID = id
 	end
@@ -433,17 +430,51 @@ function Module:LootRoll_Cancel(_, rollID)
 	end
 end
 
-function Module:CreateGroupLoot()
-	if not C["Loot"].GroupLoot then
+function Module:DisableGroupLoot()
+	if not groupLootActive then
 		return
 	end
 
-	parentFrame = CreateFrame("Frame", nil, UIParent)
-	parentFrame:SetSize(rollWidth, rollHeight)
-	K.Mover(parentFrame, "GroupLootMover", "GroupLootMover", { "TOP", UIParent, 0, -200 })
+	groupLootActive = false
+	K:UnregisterEvent("ENCOUNTER_END", Module.LootRoll_EncounterEnd)
+	K:UnregisterEvent("START_LOOT_ROLL", Module.LootRoll_Start)
 
-	K:RegisterEvent("ENCOUNTER_END", self.LootRoll_EncounterEnd)
-	K:RegisterEvent("START_LOOT_ROLL", self.LootRoll_Start)
+	if parentFrame then
+		parentFrame:Hide()
+	end
+
+	for _, bar in next, Module.RollBars do
+		if bar:IsShown() then
+			bar:Hide()
+		end
+	end
+
+	_G.UIParent:RegisterEvent("START_LOOT_ROLL")
+	_G.UIParent:RegisterEvent("CANCEL_LOOT_ROLL")
+end
+
+function Module:CreateGroupLoot()
+	if not C["Loot"].GroupLoot then
+		Module:DisableGroupLoot()
+		return
+	end
+
+	if groupLootActive then
+		return
+	end
+
+	groupLootActive = true
+
+	if not parentFrame then
+		parentFrame = CreateFrame("Frame", nil, UIParent)
+		parentFrame:SetSize(rollWidth, rollHeight)
+		K.Mover(parentFrame, "GroupLootMover", "GroupLootMover", { "TOP", UIParent, 0, -200 })
+	end
+
+	parentFrame:Show()
+
+	K:RegisterEvent("ENCOUNTER_END", Module.LootRoll_EncounterEnd)
+	K:RegisterEvent("START_LOOT_ROLL", Module.LootRoll_Start)
 
 	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")
 	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
@@ -490,7 +521,7 @@ function Module:LootRollTest()
 		local color = ITEM_QUALITY_COLORS[quality]
 		testFrame.button.icon:SetTexture(icon)
 		testFrame.button.link = link
-		testFrame.fsloot:SetText(name)
+		SetPlainText(testFrame.fsloot, name)
 		testFrame.fsbind:SetText(isBoP and "BoP" or "BoE")
 		testFrame.fsbind:SetVertexColor(isBoP and 1 or 0.3, isBoP and 0.3 or 1, isBoP and 0.1 or 0.3)
 

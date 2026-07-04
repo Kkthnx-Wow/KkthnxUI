@@ -2,8 +2,9 @@
 -- Addon: KkthnxUI
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
--- - Purpose: Completely suppresses Blizzard's default action bar art and logic.
--- - Design: Unregisters events and clears scripts from vanilla frames to prevent interference.
+-- - Purpose: Suppress Blizzard default action bar art while KKUI bars are active.
+-- - Design: Reparents vanilla bar containers to UIFrameHider (reversible via ShowBlizz).
+--   Script wiping is limited to chrome-only frames so live disable can restore bars.
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]
@@ -15,8 +16,16 @@ local Module = K:GetModule("ActionBar")
 
 local _G = _G
 local next = next
+local pcall = pcall
+local strmatch = string.match
+local UIParent = UIParent
 
--- NOTE: List of scripts to wipe from Blizzard frames to ensure they remain inert.
+local savedParents = {}
+local blizzSuppressed = false
+local origShowAllGrids
+local buttonEventsHooked
+
+-- NOTE: Scripts wiped only on chrome frames — not on bar containers we restore live.
 local scripts = {
 	"OnShow",
 	"OnHide",
@@ -30,12 +39,8 @@ local scripts = {
 	"OnMouseUp",
 }
 
--- REASON: These frames are parented to a hidden frame to keep them out of sight.
--- MIDNIGHT (12.0): the bottom bar container was renamed MainMenuBar -> MainActionBar.
--- Referencing the old (now nil) MainMenuBar left the real art frame visible, so
--- Blizzard's default bar art bled through. StanceBar is hidden here too (we only
--- reparent the individual StanceButtons), matching NDui's Hide_blizzart list.
-local framesToHide = {
+-- REASON: Reparent-only hide keeps Blizzard bar logic intact for ShowBlizz restore.
+local framesToSuppress = {
 	MainActionBar,
 	MultiBarBottomLeft,
 	MultiBarBottomRight,
@@ -50,23 +55,11 @@ local framesToHide = {
 	StanceBar,
 }
 
--- REASON: These frames have their events and scripts disabled for performance and stability.
-local framesToDisable = {
-	MainActionBar,
-	MultiBarBottomLeft,
-	MultiBarBottomRight,
-	MultiBarLeft,
-	MultiBarRight,
-	MultiBar5,
-	MultiBar6,
-	MultiBar7,
-	PossessActionBar,
-	PetActionBar,
-	StanceBar,
+-- REASON: Chrome-only — never wipe action bar container scripts (breaks live restore).
+local chromeToDisable = {
 	MicroButtonAndBagsBar,
 	StatusTrackingBarManager,
 	MainMenuBarVehicleLeaveButton,
-	OverrideActionBar,
 	OverrideActionBarExpBar,
 	OverrideActionBarHealthBar,
 	OverrideActionBarPowerBar,
@@ -74,10 +67,9 @@ local framesToDisable = {
 }
 
 -- ---------------------------------------------------------------------------
--- HIDE BLIZZARD ART
+-- HELPERS
 -- ---------------------------------------------------------------------------
 
--- REASON: Iteratively removes all interactive capability from a frame.
 local function DisableAllScripts(frame)
 	for _, script in next, scripts do
 		if frame:HasScript(script) then
@@ -86,7 +78,6 @@ local function DisableAllScripts(frame)
 	end
 end
 
--- NOTE: Filters the ActionButtonEventsFrame to only allow ExtraActionButtons.
 local function buttonEventsRegisterFrame(self, added)
 	local frames = self.frames
 	for index = #frames, 1, -1 do
@@ -104,56 +95,113 @@ local function buttonEventsRegisterFrame(self, added)
 	end
 end
 
--- ---------------------------------------------------------------------------
--- EVENT SUPPRESSION
--- ---------------------------------------------------------------------------
-
--- REASON: Disabling default events is critical to prevent "ghost" action bar changes
--- where the game thinks a bar should be visible or positioned in a specific way.
-local function DisableDefaultBarEvents() -- credit: Simpy
-	-- NOTE: Shut down some events for things we don't use
+local function DisableDefaultBarEvents()
 	_G.ActionBarController:UnregisterAllEvents()
-	_G.ActionBarController:RegisterEvent("SETTINGS_LOADED") -- REASON: Needed for page controller to spawn properly.
-	_G.ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- REASON: Allows the Extra Action Bar to function.
+	_G.ActionBarController:RegisterEvent("SETTINGS_LOADED")
+	_G.ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
 
 	_G.ActionBarActionEventsFrame:UnregisterAllEvents()
 
-	-- NOTE: Used for ExtraActionButton and TotemBar (on Wrath/Classic).
 	_G.ActionBarButtonEventsFrame:UnregisterAllEvents()
-	_G.ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED") -- REASON: Handles swap logic.
-	_G.ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN") -- REASON: Cooldown synchronization.
+	_G.ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+	_G.ActionBarButtonEventsFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
 
-	hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
-	buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
+	if not buttonEventsHooked then
+		buttonEventsHooked = true
+		hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
+		buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
+	end
 
-	-- REASON: Stop Blizzard from flashing all empty action slots (the default grid
-	-- art) when dragging spells or toggling the option. Mirrors NDui's stub.
+	if not origShowAllGrids then
+		origShowAllGrids = MultiActionBar_ShowAllGrids
+	end
 	MultiActionBar_ShowAllGrids = K.Noop
 end
 
+local function RestoreDefaultBarEvents()
+	if _G.ActionBarController_OnLoad then
+		pcall(_G.ActionBarController_OnLoad, _G.ActionBarController)
+	end
+
+	if origShowAllGrids then
+		MultiActionBar_ShowAllGrids = origShowAllGrids
+		origShowAllGrids = nil
+	end
+end
+
+local function RefreshBlizzardBars()
+	if _G.ActionBarController_UpdateAll then
+		pcall(_G.ActionBarController_UpdateAll, true)
+	end
+	if _G.MultiActionBar_Update then
+		pcall(_G.MultiActionBar_Update)
+	end
+	if _G.MainMenuBarArtFrame and _G.MainMenuBarArtFrame.Show then
+		_G.MainMenuBarArtFrame:Show()
+	end
+end
+
 -- ---------------------------------------------------------------------------
--- CORE HIDING LOGIC
+-- HIDE / SHOW BLIZZARD BARS
 -- ---------------------------------------------------------------------------
 
 function Module:HideBlizz()
-	-- NOTE: Move frames to our global hider cage.
-	for _, frame in next, framesToHide do
-		frame:SetParent(K.UIFrameHider)
+	if blizzSuppressed then
+		return
+	end
+	blizzSuppressed = true
+
+	for _, frame in next, framesToSuppress do
+		if frame then
+			if not savedParents[frame] then
+				savedParents[frame] = frame:GetParent()
+			end
+			frame:SetParent(K.UIFrameHider)
+		end
 	end
 
-	-- NOTE: Kill event listening and script execution.
-	for _, frame in next, framesToDisable do
-		frame:UnregisterAllEvents()
-		DisableAllScripts(frame)
+	for _, frame in next, chromeToDisable do
+		if frame then
+			frame:UnregisterAllEvents()
+			DisableAllScripts(frame)
+			if frame == StatusTrackingBarManager then
+				frame:Hide()
+			end
+		end
 	end
 
 	DisableDefaultBarEvents()
 
-	-- NOTE: Resolve specific Blizzard UI edge cases.
-	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD") -- Ensure vehicle leave button can still signal.
-	SetCVar("showTokenFrame", 1) -- Force token panel visibility if user configuration is missing.
+	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
+	SetCVar("showTokenFrame", 1)
+end
 
-	-- PERF: Disable the default experience/reputation bars entirely.
-	StatusTrackingBarManager:UnregisterAllEvents()
-	StatusTrackingBarManager:Hide()
+function Module:ShowBlizz()
+	if not blizzSuppressed then
+		return
+	end
+	blizzSuppressed = false
+
+	for _, frame in next, framesToSuppress do
+		if frame then
+			local parent = savedParents[frame]
+			frame:SetParent(parent or UIParent)
+			frame:Show()
+			savedParents[frame] = nil
+		end
+	end
+
+	RestoreDefaultBarEvents()
+	RefreshBlizzardBars()
+
+	if StatusTrackingBarManager then
+		StatusTrackingBarManager:Show()
+		if _G.StatusTrackingBarManager_OnLoad then
+			pcall(_G.StatusTrackingBarManager_OnLoad, StatusTrackingBarManager)
+		end
+	end
+end
+
+function Module:IsBlizzActionBarSuppressed()
+	return blizzSuppressed
 end

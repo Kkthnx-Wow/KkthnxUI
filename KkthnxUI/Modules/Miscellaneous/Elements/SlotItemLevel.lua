@@ -58,11 +58,10 @@ local INVSLOT_LAST_EQUIPPED = _G.INVSLOT_LAST_EQUIPPED
 local INVSLOT_BODY = _G.INVSLOT_BODY
 local INVSLOT_TABARD = _G.INVSLOT_TABARD
 
--- REASON: Fallback logic for retrieving item info across different WoW versions/expansions.
+-- REASON: Retail item info via C_Item namespace.
 local function getItemInfoCompat(itemIdentifier)
-	local getItemInfoFunc = _G.C_Item and _G.C_Item.GetItemInfo or _G.GetItemInfo
-	if getItemInfoFunc then
-		return getItemInfoFunc(itemIdentifier)
+	if _G.C_Item and _G.C_Item.GetItemInfo then
+		return _G.C_Item.GetItemInfo(itemIdentifier)
 	end
 end
 
@@ -78,8 +77,6 @@ local function getSpellInfoWrapper(spellIdentifier)
 			return
 		end
 		return spellInfoData.name, spellInfoData.rank, spellInfoData.iconID, spellInfoData.castTime, spellInfoData.minRange, spellInfoData.maxRange, spellInfoData.spellID, spellInfoData.originalIconID
-	else
-		return _G.GetSpellInfo(spellIdentifier)
 	end
 end
 
