@@ -202,6 +202,90 @@ do
 		return nil
 	end
 
+	-- Incident (DebuffHighlight, Jul 2026): _G.DebuffTypeColor is gone in Midnight.
+	-- Blizzard/oUF ship DEBUFF_TYPE_*_COLOR into oUF.colors.dispel; prefer
+	-- GetAuraDispelTypeColor for live auras, and this name table for plain keys.
+	local debuffTypeColorTable
+
+	local function colorToRGBTable(color)
+		if not color then
+			return nil
+		end
+		if color.GetRGB then
+			local r, g, b = color:GetRGB()
+			return { r = r, g = g, b = b }
+		end
+		if color.r then
+			return { r = color.r, g = color.g, b = color.b }
+		end
+		if color[1] then
+			return { r = color[1], g = color[2], b = color[3] }
+		end
+		return nil
+	end
+
+	--- Name-keyed {r,g,b} table replacing removed DebuffTypeColor (Magic/Curse/…).
+	function K.GetDebuffTypeColorTable(oUFRef)
+		if debuffTypeColorTable then
+			return debuffTypeColorTable
+		end
+
+		local colors = {
+			-- Classic Blizzard fallbacks if oUF colors are not ready yet.
+			none = { r = 0.80, g = 0.00, b = 0.00 },
+			Magic = { r = 0.20, g = 0.60, b = 1.00 },
+			Curse = { r = 0.60, g = 0.00, b = 1.00 },
+			Disease = { r = 0.60, g = 0.40, b = 0.00 },
+			Poison = { r = 0.00, g = 0.60, b = 0.00 },
+			Bleed = { r = 1.00, g = 0.20, b = 0.20 },
+		}
+
+		local oUF = oUFRef or K.oUF
+		local dispel = oUF and oUF.colors and oUF.colors.dispel
+		local dt = oUF and oUF.Enum and oUF.Enum.DispelType
+		local sourced = false
+		if dispel and dt then
+			local map = {
+				none = dt.None,
+				Magic = dt.Magic,
+				Curse = dt.Curse,
+				Disease = dt.Disease,
+				Poison = dt.Poison,
+				Bleed = dt.Bleed,
+			}
+			for name, idx in pairs(map) do
+				local converted = colorToRGBTable(dispel[idx])
+				if converted then
+					colors[name] = converted
+					sourced = true
+				end
+			end
+		else
+			-- Direct Blizzard ColorMixin globals (same source oUF colors.lua uses).
+			local blizzard = {
+				none = _G.DEBUFF_TYPE_NONE_COLOR,
+				Magic = _G.DEBUFF_TYPE_MAGIC_COLOR,
+				Curse = _G.DEBUFF_TYPE_CURSE_COLOR,
+				Disease = _G.DEBUFF_TYPE_DISEASE_COLOR,
+				Poison = _G.DEBUFF_TYPE_POISON_COLOR,
+				Bleed = _G.DEBUFF_TYPE_BLEED_COLOR,
+			}
+			for name, color in pairs(blizzard) do
+				local converted = colorToRGBTable(color)
+				if converted then
+					colors[name] = converted
+					sourced = true
+				end
+			end
+		end
+
+		-- Only cache once we have real Blizzard/oUF colors; otherwise retry next call.
+		if sourced then
+			debuffTypeColorTable = colors
+		end
+		return colors
+	end
+
 	--- True when a value is safe to read/compare/index.
 	function K.CanAccessValue(value)
 		return K.NotSecret(value)

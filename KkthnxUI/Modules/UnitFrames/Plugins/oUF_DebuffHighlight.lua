@@ -16,8 +16,10 @@ local _G = _G
 local ipairs = _G.ipairs
 local UnitCanAssist = _G.UnitCanAssist
 local GetSpecialization = _G.GetSpecialization
-local DebuffTypeColor = _G.DebuffTypeColor
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
+
+-- Incident (Jul 2026): _G.DebuffTypeColor removed in Midnight. Prefer instance
+-- RGB via GetAuraDispelTypeColor; name table is oUF.colors.dispel / DEBUFF_TYPE_*.
 
 local CanDispel = {
 	["DRUID"] = {
@@ -72,16 +74,16 @@ local function GetDebuffType(unitToken, filter)
 		end
 
 		-- SECRET (12.0): the "HARMFUL" query already guarantees a debuff, so we drop
-		-- the secret aura.isHarmful read. dispelName feeds dispellist/DebuffTypeColor
-		-- lookups (table keys), so it must be non-secret before we touch it.
+		-- the secret aura.isHarmful read. dispelName feeds dispellist lookups
+		-- (table keys), so it must be non-secret before we touch it.
 		local dispelName = aura.dispelName
 		if NotSecret(dispelName) and (not filter or dispellist[dispelName]) then
-			return dispelName, aura.icon
+			return dispelName, aura.icon, aura.auraInstanceID
 		end
 
 		local resolved = aura.auraInstanceID and K.GetAuraDispelTypeName(unitToken, aura.auraInstanceID, oUF)
 		if resolved and (not filter or dispellist[resolved]) then
-			return resolved, aura.icon
+			return resolved, aura.icon, aura.auraInstanceID
 		end
 
 		i = i + 1
@@ -107,13 +109,18 @@ local function Update(object, _, unit)
 		return
 	end
 
-	local debuffType, texture = GetDebuffType(unit, object.DebuffHighlightFilter)
+	local debuffType, texture, auraInstanceID = GetDebuffType(unit, object.DebuffHighlightFilter)
 	if debuffType then
-		local color = DebuffTypeColor[debuffType]
 		if object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(texture)
 		else
-			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 0.5)
+			local r, g, b = K.GetAuraDispelBorderRGB(unit, auraInstanceID, oUF)
+			if not r then
+				local typeColors = K.GetDebuffTypeColorTable(oUF)
+				local color = typeColors[debuffType] or typeColors.none
+				r, g, b = color.r, color.g, color.b
+			end
+			object.DebuffHighlight:SetVertexColor(r, g, b, object.DebuffHighlightAlpha or 0.5)
 		end
 	else
 		if object.DebuffHighlightUseTexture then

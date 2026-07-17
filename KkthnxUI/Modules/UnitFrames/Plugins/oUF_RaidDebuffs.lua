@@ -22,7 +22,10 @@ local GetAuraDataByAuraInstanceID = _G.C_UnitAuras.GetAuraDataByAuraInstanceID
 local GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
 local GetAuraDuration = _G.C_UnitAuras.GetAuraDuration
 local ForEachAura = _G.AuraUtil.ForEachAura
-local debuffColor = _G.DebuffTypeColor
+-- Incident (Jul 2026): _G.DebuffTypeColor removed; name table from oUF/Blizzard DEBUFF_TYPE_*.
+local function GetDebuffTypeColors()
+	return K.GetDebuffTypeColorTable(oUF)
+end
 local pairs = pairs
 
 -- Raid debuff swipe sits at 0.7 so the icon stays readable under the pie.
@@ -184,6 +187,7 @@ local function ShowElement(self, unit, auraInstanceID)
 	-- in a comparison; fall back to safe defaults so the icon still shows.
 	local dispelName = AuraData.dispelName
 	local color
+	local debuffColor = GetDebuffTypeColors()
 	if NotSecret(dispelName) and debuffColor[dispelName] then
 		color = debuffColor[dispelName]
 	else
@@ -249,7 +253,7 @@ end
 -- Hide the debuff element.
 local function HideElement(self, unit)
 	local element = self.RaidDebuffs
-	local color = debuffColor["none"]
+	local color = GetDebuffTypeColors().none
 
 	-- Stop OnUpdate timer and clear state
 	element:SetScript("OnUpdate", nil)

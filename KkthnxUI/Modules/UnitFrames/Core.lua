@@ -345,7 +345,9 @@ function Module:ApplyPortraitAlphaFix(frame)
 			if p and p.IsObjectType and p:IsObjectType("PlayerModel") then
 				local scale = (value or 1)
 				local alpha = scale * (p.__baseAlpha or 1)
-				if p.SetModelAlpha then
+				-- SetModelAlpha every tick resets the 3D portrait visually — only push when changed.
+				if p.SetModelAlpha and p.__lastModelAlpha ~= alpha then
+					p.__lastModelAlpha = alpha
 					p:SetModelAlpha(alpha)
 				end
 				local b = p.KKUI_Border
@@ -413,8 +415,12 @@ local function EnsurePortraitFallback(element)
 	return element.__fallbackTexture
 end
 
-local function ShowPortrait2DFallback(element, unit)
-	element:ClearModel()
+-- textureOnly: already on the 2D overlay — just swap the portrait art.
+-- Calling ClearModel here on every UNIT_PORTRAIT_UPDATE is what made ToT blink.
+local function ShowPortrait2DFallback(element, unit, textureOnly)
+	if not textureOnly then
+		element:ClearModel()
+	end
 	local tex = EnsurePortraitFallback(element)
 	SetPortraitTexture(tex, unit)
 	K.UnsnapPortraitTexture(tex)
@@ -444,6 +450,16 @@ local function ShouldUse2DFallback(element, unit, isAvailable)
 	return false
 end
 
+-- 3D PlayerModel only needs a full ClearModel/SetUnit on these. UNIT_PORTRAIT_UPDATE and
+-- PORTRAITS_UPDATED spam on targettarget and would reload the model every few frames.
+local PORTRAIT_MODEL_RELOAD = {
+	ForceUpdate = true,
+	UNIT_MODEL_CHANGED = true,
+	UNIT_CONNECTION = true,
+	PARTY_MEMBER_ENABLE = true,
+	PARTY_MEMBER_DISABLE = true,
+}
+
 function Module.PortraitOverride(self, event)
 	local element = self.Portrait
 	local unit = self.unit
@@ -451,13 +467,27 @@ function Module.PortraitOverride(self, event)
 		return
 	end
 
+	-- Incident (ToT portrait, Jul 2026): `newGUID = secretGUID or …` made every update a
+	-- "GUID change" while identity was restricted, so ClearModel/SetUnit ran on a loop.
+	-- Mirror stock oUF: skip GUID compares when either side is secret; track secret↔plain
+	-- transitions so we still reload once when restrictions flip.
 	local guid = UnitGUID(unit)
 	local secretGUID = IsSecret(guid)
-	local newGUID = secretGUID or (NotSecret(element.guid) and element.guid ~= guid)
-
-	if newGUID then
-		element.guid = secretGUID and nil or guid
-		element.__fallbackGUID = nil
+	local newGUID
+	if secretGUID then
+		newGUID = not element.__guidWasSecret
+		element.__guidWasSecret = true
+		element.guid = nil
+		if newGUID then
+			element.__fallbackGUID = nil
+		end
+	else
+		newGUID = element.__guidWasSecret or element.guid ~= guid
+		element.__guidWasSecret = nil
+		if newGUID then
+			element.guid = guid
+			element.__fallbackGUID = nil
+		end
 	end
 
 	if element.PreUpdate then
@@ -466,13 +496,19 @@ function Module.PortraitOverride(self, event)
 
 	local isAvailable = ReadPortraitAvailability(unit)
 	local use2DFallback = ShouldUse2DFallback(element, unit, isAvailable)
-	local hasStateChanged = newGUID
-		or event ~= "OnUpdate"
-		or element.state ~= isAvailable
-		or element.__usingFallback ~= use2DFallback
+	local availabilityChanged = element.state ~= isAvailable
+	local fallbackChanged = (not not element.__usingFallback) ~= use2DFallback
+	local isPlayerModel = element:IsObjectType("PlayerModel")
+
+	local hasStateChanged
+	if isPlayerModel then
+		hasStateChanged = newGUID or availabilityChanged or fallbackChanged or PORTRAIT_MODEL_RELOAD[event]
+	else
+		hasStateChanged = newGUID or availabilityChanged or event ~= "OnUpdate"
+	end
 
 	if hasStateChanged then
-		if element:IsObjectType("PlayerModel") then
+		if isPlayerModel then
 			if not isAvailable then
 				HidePortrait2DFallback(element)
 				element:ClearModel()
@@ -520,13 +556,13 @@ function Module.PortraitOverride(self, event)
 		element.state = isAvailable
 	end
 
-	-- Refresh 2D fallback when Blizzard portrait data updates (same unit, new texture).
+	-- Same unit, new Blizzard portrait art — refresh the 2D overlay only (no ClearModel).
 	if element.__usingFallback and isAvailable and (
 		event == "UNIT_PORTRAIT_UPDATE"
 		or event == "PORTRAITS_UPDATED"
 		or event == "UNIT_MODEL_CHANGED"
 	) then
-		ShowPortrait2DFallback(element, unit)
+		ShowPortrait2DFallback(element, unit, true)
 	end
 
 	if element.PostUpdate then

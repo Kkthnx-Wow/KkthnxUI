@@ -13,7 +13,7 @@ local Module = K:NewModule("Auras")
 -- PERF: Cache frequent APIs and globals to reduce table lookups in hot paths.
 local _G = _G
 local CreateFrame = _G.CreateFrame
-local DebuffTypeColor = _G.DebuffTypeColor
+-- Incident (Jul 2026): _G.DebuffTypeColor removed; prefer GetAuraDispelTypeColor, name table fallback.
 local GameTooltip = _G.GameTooltip
 local GetInventoryItemQuality = _G.GetInventoryItemQuality
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
@@ -336,11 +336,12 @@ function Module:UpdateAuras(button, index)
 
 		if not color then
 			local dispelName = auraData.dispelName
+			local typeColors = K.GetDebuffTypeColorTable(K.oUF)
 			if not IsSecret(dispelName) then
-				color = DebuffTypeColor[dispelName or "none"]
+				color = typeColors[dispelName or "none"]
 			end
+			color = color or typeColors.none
 		end
-		color = color or DebuffTypeColor.none
 
 		-- The curve API returns a ColorMixin (has :GetRGB); the fallback tables expose r/g/b.
 		local r, g, b
