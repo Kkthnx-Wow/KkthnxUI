@@ -26,7 +26,8 @@ local function GetNamePattern(name)
 end
 
 local function HighlightFilter(_, _, msg, ...)
-	if not msg then
+	-- SECRET (12.0): never gsub opaque chat text under messaging lockdown.
+	if not msg or K.IsSecret(msg) then
 		return
 	end
 

@@ -18,6 +18,7 @@ local string_match = string.match
 local string_format = string.format
 local GetTime = GetTime
 local ipairs = ipairs
+local IsSecret = K.IsSecret
 -- REASON: SendChatMessage global is a deprecated shim;
 -- C_ChatInfo.SendChatMessage is the live API. This file previously called the
 -- bare global directly with no local alias at all.
@@ -57,6 +58,12 @@ Module._lastResetTime = 0
 -- ---------------------------------------------------------------------------
 
 local function SetupResetInstance(_, text)
+	-- SECRET (12.0): CHAT_MSG_SYSTEM payload can be locked down; string.match /
+	-- tostring on a secret string throws (execution tainted by KKUI).
+	if not text or IsSecret(text) then
+		return
+	end
+
 	-- PERF: Primary duplicate guard.
 	local now = GetTime()
 	if text == Module._lastResetText and (now - (Module._lastResetTime or 0)) < 1 then
@@ -67,6 +74,9 @@ local function SetupResetInstance(_, text)
 		-- REASON: Match the incoming system message against our precomputed patterns.
 		if string_match(text, info.match) then
 			local instance = string_match(text, info.capture) or ""
+			if IsSecret(instance) then
+				return
+			end
 			Module._lastResetText = text
 			Module._lastResetTime = now
 			-- NOTE: Transmit the friendly formatted message to the group chat.

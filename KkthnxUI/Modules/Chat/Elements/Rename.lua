@@ -208,6 +208,11 @@ local PROCESSED_LINES_MAX = 200
 
 -- Chat event filter: format message, respect window settings, use correct colors
 local function ChatMsgFilter(self, event, msg, sender, language, channelString, target, flags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, suppressRaidIcons)
+	-- SECRET (12.0): chat payload can be opaque under messaging lockdown.
+	if not msg or K.IsSecret(msg) then
+		return
+	end
+
 	if strfind(msg, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then
 		return true
 	end
@@ -351,6 +356,10 @@ function Module:CreateChatRename()
 	local GONE = rawget(_G, "L_CHAT_GONE_OFFLINE") or "has gone |cffff0000offline|r."
 
 	local function systemFilter(_, _, msg, ...)
+		-- SECRET (12.0): CHAT_MSG_SYSTEM text can be locked down; gsub throws.
+		if not msg or K.IsSecret(msg) then
+			return
+		end
 		-- REASON: Formats "friend came online/offline" messages for a cleaner aesthetic.
 		msg = gsub(msg, "%%|Hplayer:([^|]+)%%|h%%[([^%%]]+)%%]%%|h has come online%%.", function(player, name)
 			return "|Hplayer:" .. player .. "|h[" .. name .. "]|h " .. COME

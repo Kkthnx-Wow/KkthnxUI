@@ -851,9 +851,9 @@ L["Enable GCD Ticker"] = "Enable GCD Ticker"
 
 -- 5.c) Slider labels
 L["Button Size"] = "Button Size"
-L["Button PerRow"] = "Button PerRow"
-L["Button Num"] = "Button Num"
-L["Button FontSize"] = "Button FontSize"
+L["Button PerRow"] = "Buttons Per Row"
+L["Button Num"] = "Buttons"
+L["Button FontSize"] = "Button Font Size"
 L["Fade Alpha"] = "Fade Alpha"
 L["Fade Delay"] = "Fade Delay"
 L["BagBar Size"] = "BagBar Size"

@@ -54,6 +54,10 @@ local tostring = _G.tostring
 local type = _G.type
 local unpack = _G.unpack
 
+-- BagInit defines these as file locals too — widgets must not rely on a shared global.
+local ACCOUNT_BANK_TYPE = _G.Enum.BankType.Account
+local CHAR_BANK_TYPE = _G.Enum.BankType.Character
+
 local isDeleteEnabled = false
 local isFavouriteEnabled = false
 local isSplitEnabled = false

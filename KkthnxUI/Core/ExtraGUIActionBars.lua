@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-global
-local K, L = unpack(KkthnxUI)
+-- KkthnxUI = { K, C, L } — two-value unpack binds L to C and blanks every label.
+local K, _, L = unpack(KkthnxUI)
 
 --[[-----------------------------------------------------------------------------
 -- ExtraGUIActionBars
@@ -19,19 +20,19 @@ local function CreateBarPanel(extraGUI, barIndex, barName)
 	return function(parent)
 		local yOffset = -10
 
-		local sizeSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Size", L["Button Size"], 20, 80, 1, L[barName .. "Size Desc"])
+		local sizeSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Size", L["Button Size"] or "Button Size", 20, 80, 1, L[barName .. "Size Desc"])
 		sizeSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local perRowSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "PerRow", L["Button PerRow"], 1, 12, 1, L[barName .. "PerRow Desc"])
+		local perRowSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "PerRow", L["Button PerRow"] or "Buttons Per Row", 1, 12, 1, L[barName .. "PerRow Desc"])
 		perRowSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local numSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Num", L["Button Num"], 1, 12, 1, L[barName .. "Num Desc"])
+		local numSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Num", L["Button Num"] or "Buttons", 1, 12, 1, L[barName .. "Num Desc"])
 		numSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local fontSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Font", L["Button FontSize"], 8, 20, 1, L[barName .. "Font Desc"])
+		local fontSlider = extraGUI:CreateSlider(parent, "ActionBar." .. barName .. "Font", L["Button FontSize"] or "Button Font Size", 8, 20, 1, L[barName .. "Font Desc"])
 		fontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
@@ -41,11 +42,13 @@ local function CreateBarPanel(extraGUI, barIndex, barName)
 			{ text = L["LEFT"] or "LEFT", value = 3 },
 			{ text = L["RIGHT"] or "RIGHT", value = 4 },
 		}
-		local flyoutDropdown = extraGUI:CreateDropdown(parent, "ActionBar." .. barName .. "Flyout", L["Flyout Direction"], flyoutOptions, L["ActionBar.Flyout Desc"])
+		local flyoutDropdown = extraGUI:CreateDropdown(parent, "ActionBar." .. barName .. "Flyout", L["Flyout Direction"] or "Flyout Direction", flyoutOptions, L["ActionBar.Flyout Desc"])
 		flyoutDropdown:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		local fadeSwitch = extraGUI:CreateSwitch(parent, "ActionBar." .. barName .. "Fade", L["Enable Fade for Bar " .. barIndex], L["Allows Bar " .. barIndex .. " to fade based on the specified conditions"])
+		local fadeLabel = L["Enable Fade for Bar " .. barIndex] or ("Enable Fade for Bar " .. barIndex)
+		local fadeTip = L["Allows Bar " .. barIndex .. " to fade based on the specified conditions"] or ("Allows Bar " .. barIndex .. " to fade based on the specified conditions")
+		local fadeSwitch = extraGUI:CreateSwitch(parent, "ActionBar." .. barName .. "Fade", fadeLabel, fadeTip)
 		fadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 

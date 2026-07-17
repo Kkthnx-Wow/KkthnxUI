@@ -116,6 +116,11 @@ local function formatDungeonScore(link, score)
 end
 
 function Module:UpdateChatItemLevel(_, msg, ...)
+	-- SECRET (12.0): never gsub opaque chat text under messaging lockdown.
+	if not msg or K.IsSecret(msg) then
+		return
+	end
+
 	-- REASON: Main message filter; dispatches replacement logic for items and dungeon scores.
 	msg = string_gsub(msg, "(|Hitem:%d+:.-|h.-|h)", convertItemLevel)
 	msg = string_gsub(msg, "(|HdungeonScore:(%d+):.-|h.-|h)", formatDungeonScore)

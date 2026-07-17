@@ -763,8 +763,8 @@ end
 
 -- REASON: Strips ISNEW markers from strings and returns a boolean for visual tagging.
 local function ProcessNewTag(name)
-	-- Handle nil or empty strings gracefully
-	if not name or name == "" then
+	-- Handle nil or empty strings gracefully (also catches wrong L=C unpack bugs).
+	if type(name) ~= "string" or name == "" then
 		return "", false
 	end
 
@@ -801,7 +801,10 @@ function ExtraGUI:CreateSwitch(parent, configPath, text, tooltip, hookFunction, 
 	-- Background
 	CreateColoredBackground(widget, 0.12, 0.12, 0.12, 0.8)
 
-	-- Process NEW tag from text
+	-- Process NEW tag from text (nil L lookups must not blank the row forever).
+	if type(text) ~= "string" or text == "" then
+		text = configPath or ""
+	end
 	local cleanText, hasNewTag = ProcessNewTag(text)
 	local showNewTag = isNew or hasNewTag
 
@@ -948,7 +951,10 @@ function ExtraGUI:CreateSlider(parent, configPath, text, minVal, maxVal, step, t
 	-- Background
 	CreateColoredBackground(widget, 0.12, 0.12, 0.12, 0.8)
 
-	-- Process NEW tag from text
+	-- Process NEW tag from text (nil L lookups must not blank the row forever).
+	if type(text) ~= "string" or text == "" then
+		text = configPath or ""
+	end
 	local cleanText, hasNewTag = ProcessNewTag(text)
 	local showNewTag = isNew or hasNewTag
 
@@ -1172,7 +1178,10 @@ function ExtraGUI:CreateDropdown(parent, configPath, text, options, tooltip, hoo
 	-- Background
 	CreateColoredBackground(widget, 0.12, 0.12, 0.12, 0.8)
 
-	-- Process NEW tag from text
+	-- Process NEW tag from text (nil L lookups must not blank the row forever).
+	if type(text) ~= "string" or text == "" then
+		text = configPath or ""
+	end
 	local cleanText, hasNewTag = ProcessNewTag(text)
 	local showNewTag = isNew or hasNewTag
 
