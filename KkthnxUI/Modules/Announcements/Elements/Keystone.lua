@@ -24,7 +24,9 @@ local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeyston
 local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
 local IsInGroup = IsInGroup
 local IsPartyLFG = IsPartyLFG
-local SendChatMessage = SendChatMessage
+-- REASON: SendChatMessage global is a deprecated shim;
+-- C_ChatInfo.SendChatMessage is the live API.
+local SendChatMessage = C_ChatInfo.SendChatMessage
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS
 
 -- NOTE: Small cache table to track the last observed keystone to prevent duplicate announcements.

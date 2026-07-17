@@ -23,6 +23,8 @@ local CreateFrame = CreateFrame
 local FCF_SavePositionAndDimensions = FCF_SavePositionAndDimensions
 local GeneralDockManager = _G.GeneralDockManager
 local GetCVar = GetCVar
+local GetCVarBool = _G.GetCVarBool
+local C_ChallengeMode = _G.C_ChallengeMode
 local GetChannelName = GetChannelName
 local GetInstanceInfo = GetInstanceInfo
 local GetTime = GetTime
@@ -46,6 +48,7 @@ local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 local string_len = string.len
 local string_sub = string.sub
+local table_remove = table.remove
 local table_unpack = unpack
 local tostring = tostring
 local type = type
@@ -62,6 +65,7 @@ local maxLines = 2048
 local charCount = 0
 local repeatedText
 local MIN_REPEAT_CHARACTERS = 5
+local MAX_EDIT_HISTORY = 50
 
 Module.MuteCache = {}
 
@@ -106,6 +110,84 @@ end
 -- ---------------------------------------------------------------------------
 -- EditBox Logic
 -- ---------------------------------------------------------------------------
+local function editHistoryRestricted()
+	if GetCVarBool and GetCVarBool("addonChatRestrictionsForced") then
+		return true
+	end
+	if C_ChallengeMode and C_ChallengeMode.IsChallengeModeActive and C_ChallengeMode.IsChallengeModeActive() then
+		return true
+	end
+	return false
+end
+
+local function installEditHistory(editBox)
+	if not editBox or editBox.kkHistoryInstalled then
+		return
+	end
+
+	editBox.kkHistoryInstalled = true
+	editBox.kkHistory = {}
+	editBox.kkHistIdx = 0
+
+	hooksecurefunc(editBox, "AddHistoryLine", function(self, text)
+		if IsSecret(text) then
+			return
+		end
+		local history = self.kkHistory
+		local last = history[#history]
+		if last and IsSecret(last) then
+			history[#history] = nil
+		end
+		if history[#history] ~= text then
+			history[#history + 1] = text
+			if #history > MAX_EDIT_HISTORY then
+				table_remove(history, 1)
+			end
+		end
+	end)
+
+	editBox:HookScript("OnKeyDown", function(self, key)
+		if key ~= "UP" and key ~= "DOWN" then
+			return
+		end
+		if editHistoryRestricted() then
+			return
+		end
+
+		local history = self.kkHistory
+		if #history == 0 then
+			return
+		end
+
+		if key == "UP" then
+			self.kkHistIdx = self.kkHistIdx + 1
+			if self.kkHistIdx > #history then
+				self.kkHistIdx = #history
+			end
+		else
+			self.kkHistIdx = self.kkHistIdx - 1
+			if self.kkHistIdx < 0 then
+				self.kkHistIdx = 0
+			end
+		end
+
+		if self.kkHistIdx == 0 then
+			self:SetText("")
+		else
+			local entry = history[#history - self.kkHistIdx + 1]
+			if not entry or IsSecret(entry) then
+				self:SetText("")
+			else
+				self:SetText(entry)
+			end
+		end
+	end)
+
+	editBox:HookScript("OnEditFocusLost", function(self)
+		self.kkHistIdx = 0
+	end)
+end
+
 local function editBoxOnTextChanged(self)
 	-- REASON: Main handler for chat edit box changes; handles spam prevention, shortcuts, and character counting.
 	local text = self:GetText()
@@ -343,6 +425,7 @@ function Module:SkinChat()
 	eb:CreateBorder()
 	updateEditboxFont(eb)
 	eb:Hide()
+	installEditHistory(eb)
 	eb:HookScript("OnTextChanged", editBoxOnTextChanged)
 
 	local lang = _G[name .. "EditBoxLanguage"]

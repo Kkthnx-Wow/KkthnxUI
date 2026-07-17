@@ -125,3 +125,15 @@ function Module:CreateAutoSell()
 	K:RegisterEvent("MERCHANT_SHOW", updateAutoSell)
 	K:RegisterEvent("MERCHANT_CLOSED", updateAutoSell)
 end
+
+function Module:SetAutoSellEnabled(enabled)
+	if enabled then
+		K:RegisterEvent("MERCHANT_SHOW", updateAutoSell)
+		K:RegisterEvent("MERCHANT_CLOSED", updateAutoSell)
+	else
+		autoSellStop = true
+		K:UnregisterEvent("MERCHANT_SHOW", updateAutoSell)
+		K:UnregisterEvent("MERCHANT_CLOSED", updateAutoSell)
+		K:UnregisterEvent("UI_ERROR_MESSAGE", updateAutoSell)
+	end
+end

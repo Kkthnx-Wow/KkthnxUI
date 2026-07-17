@@ -1,5 +1,5 @@
 --[[-----------------------------------------------------------------------------
--- Internal signal bus (NexEnhance/Plumber pattern). WoW events use K:RegisterEvent;
+-- Internal signal bus. WoW events use K:RegisterEvent;
 -- cross-module reactions use K:RegisterCallback("SettingChanged.Section.Key", ...).
 -----------------------------------------------------------------------------]]
 

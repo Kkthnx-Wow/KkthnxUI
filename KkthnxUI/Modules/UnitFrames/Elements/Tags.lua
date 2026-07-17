@@ -55,7 +55,6 @@ local UnitPowerMax = _G.UnitPowerMax
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitStagger = _G.UnitStagger
-local UnitPowerDisplayMod = _G.UnitPowerDisplayMod
 local Enum = _G.Enum
 
 -- REASON: Precomputed atlas strings for role icons to avoid branching and allocations per update.
@@ -161,6 +160,8 @@ oUF.Tags.Methods["hp"] = function(unit)
 			return FormatHealthValue(currentHealth, percentage)
 		elseif percentage then
 			return GetHealthColor(percentage)
+		elseif currentHealth then
+			return SafeShortValue(currentHealth)
 		end
 	end
 end
@@ -350,17 +351,19 @@ oUF.Tags.Methods["raidhp"] = function(unit)
 	if format == 1 then
 		return ""
 	elseif format == 2 then
-		local per = GetUnitHealthPerc(unit)
+		local per, cur = GetUnitHealthPerc(unit)
 		if per then
 			return GetHealthColor(per)
 		end
+		-- Secret HP: % unavailable — show abbreviated value like Ellesmere / [hp].
+		return SafeShortValue(cur)
 	elseif format == 3 then
 		local cur = UnitHealth(unit)
 		return SafeShortValue(cur)
 	elseif format == 4 then
 		local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
 		if IsSecret(health) or IsSecret(maxHealth) then
-			return
+			return SafeShortValue(health)
 		end
 
 		local loss = maxHealth - health
@@ -391,6 +394,8 @@ oUF.Tags.Methods["nphp"] = function(unit)
 		return FormatHealthValue(cur, per)
 	elseif per and per < 100 then
 		return GetHealthColor(per)
+	elseif not per and cur then
+		return SafeShortValue(cur)
 	end
 end
 oUF.Tags.Events["nphp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION"
@@ -402,7 +407,11 @@ local NP_POWER_LOW = K.RGBToHex(0.8, 0.8, 1)
 oUF.Tags.Methods["nppp"] = function(unit)
 	local cur, maxPower = UnitPower(unit), UnitPowerMax(unit)
 	if IsSecret(cur) or IsSecret(maxPower) then
-		return UnitPowerType(unit) == 0 and nil or SafeShortValue(cur)
+		local powerType = UnitPowerType(unit)
+		if NotSecret(powerType) and powerType == 0 then
+			return
+		end
+		return SafeShortValue(cur)
 	end
 
 	local per = maxPower == 0 and 0 or K.Round(cur / maxPower * 100)
@@ -416,7 +425,7 @@ oUF.Tags.Methods["nppp"] = function(unit)
 	end
 	return string_format("%s%s|r", color, per)
 end
-oUF.Tags.Events["nppp"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER"
+oUF.Tags.Events["nppp"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
 -- REASON: Formats nameplate level differently, hiding the text if it matches the player's level to reduce clutter.
 oUF.Tags.Methods["nplevel"] = function(unit)
@@ -458,7 +467,11 @@ oUF.Tags.Methods["pppower"] = function(unit)
 	local cur = UnitPower(unit)
 	local maxPower = UnitPowerMax(unit)
 	if IsSecret(cur) or IsSecret(maxPower) then
-		return UnitPowerType(unit) == 0 and nil or SafeShortValue(cur)
+		local powerType = UnitPowerType(unit)
+		if NotSecret(powerType) and powerType == 0 then
+			return
+		end
+		return SafeShortValue(cur)
 	end
 
 	local per = maxPower == 0 and 0 or K.Round(cur / maxPower * 100)
@@ -470,14 +483,7 @@ oUF.Tags.Methods["pppower"] = function(unit)
 end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
-local NameOnlyGuild = false
-local NameOnlyTitle = true
-
--- PERF: Lazy-cache left tooltip lines to avoid high-frequency string format and dynamic lookups on _G.
--- REASON: Resolving these once lazily guarantees load-order safety while completely eliminating memory allocations.
-local tooltipLine2, tooltipLine3
-
--- REASON: Displays guild for players or title for NPCs on nameplates when in NameOnly mode.
+-- REASON: NPC title in NameOnly mode; guild on players uses [guildname] separately.
 oUF.Tags.Methods["npctitle"] = function(unit)
 	-- SECRET (12.0): on restricted nameplates UnitIsPlayer returns a secret boolean
 	-- that cannot be branched on, so bail when the identity is hidden.
@@ -486,21 +492,13 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 		return
 	end
 
-	if isPlayer and NameOnlyGuild then
-		local guildName = GetGuildInfo(unit)
-		if guildName and K.NotSecret(guildName) then
-			return string_format("<%s>", guildName)
-		end
-	elseif not isPlayer and NameOnlyTitle then
+	if not isPlayer and C["Nameplate"].NameOnly then
 		scanTip:SetOwner(K.UIFrameHider, "ANCHOR_NONE")
 		scanTip:SetUnit(unit)
 
-		if not tooltipLine2 then
-			tooltipLine2 = _G.KKUI_ScanTooltipTextLeft2
-			tooltipLine3 = _G.KKUI_ScanTooltipTextLeft3
-		end
-
-		local textLine = GetCVarBool("colorblindmode") and tooltipLine3 or tooltipLine2
+		local line2 = _G.KKUI_ScanTooltipTextLeft2
+		local line3 = _G.KKUI_ScanTooltipTextLeft3
+		local textLine = GetCVarBool("colorblindmode") and line3 or line2
 		local title = textLine and textLine:GetText()
 		-- SECRET (12.0): the scanned title string can be secret in instances;
 		-- string_find performs a string conversion that errors on secret strings.
@@ -552,14 +550,23 @@ oUF.Tags.Methods["tarname"] = function(unit)
 end
 oUF.Tags.Events["tarname"] = "UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE UNIT_HEALTH"
 
--- REASON: Alternative power value (e.g. Boss mechanics).
+-- REASON: Alternative power value (boss mechanics). Hide when the unit has no alt-power bar —
+-- Midnight can hand back a secret 0, and AbbreviateNumbers then paints a stray "0".
 oUF.Tags.Methods["altpower"] = function(unit)
-	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
-	if IsSecret(cur) then
-		return SafeShortValue(cur)
+	local maxPower = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
+	if NotSecret(maxPower) and (not maxPower or maxPower <= 0) then
+		return
 	end
 
-	return cur > 0 and cur
+	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
+	if NotSecret(cur) then
+		return (cur > 0) and cur or nil
+	end
+
+	-- Secret current only when we know the bar exists (plain max > 0).
+	if NotSecret(maxPower) and maxPower > 0 then
+		return SafeShortValue(cur)
+	end
 end
 oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
 
@@ -582,160 +589,7 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 	local perc = cur / maxHealth
 	return string_format("%s - %s%s%%", SafeShortValue(cur), K.MyClassColor, K.Round(perc * 100))
 end
-oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
-
-local POWER_COMBO = Enum.PowerType.ComboPoints
-local POWER_HOLY = Enum.PowerType.HolyPower
-local POWER_CHI = Enum.PowerType.Chi
-local POWER_ESSENCE = Enum.PowerType.Essence
-local POWER_ARCANE = Enum.PowerType.ArcaneCharges
-local POWER_SOUL = Enum.PowerType.SoulShards
-local POWER_ENERGY = Enum.PowerType.Energy
-
-local C_UnitAuras_GetAuraDataBySpellID = C_UnitAuras and C_UnitAuras.GetAuraDataBySpellID
-local C_UnitAuras_GetPlayerAuraBySpellID = C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID
-local C_Spell_GetSpellMaxCumulativeAuraApplications = C_Spell and C_Spell.GetSpellMaxCumulativeAuraApplications
-
-local SPELL_ICICLES = 205473
-local SPELL_MAELSTROM_WEAPON = 344179
-local SPELL_TIP_OF_THE_SPEAR = 260286
-local SPELL_DARK_HEART = 1225789
-local SPELL_VOID_METAMORPHOSIS = 1217607
-local SPELL_SILENCE_THE_WHISPERS = 1227702
-
-local function GetAuraBySpellID(unit, spellID)
-	if unit == "player" and C_UnitAuras_GetPlayerAuraBySpellID then
-		return C_UnitAuras_GetPlayerAuraBySpellID(spellID)
-	end
-	if C_UnitAuras_GetAuraDataBySpellID then
-		return C_UnitAuras_GetAuraDataBySpellID(unit, spellID)
-	end
-end
-
-local function GetAuraApplicationCount(unit, spellID)
-	local aura = GetAuraBySpellID(unit, spellID)
-	if not aura then
-		return 0
-	end
-
-	local count = aura.applications
-	if count == nil or IsSecret(count) then
-		return count
-	end
-
-	return count
-end
-
-local function GetAuraMaxApplications(spellID)
-	if not (spellID and C_Spell_GetSpellMaxCumulativeAuraApplications) then
-		return
-	end
-	return C_Spell_GetSpellMaxCumulativeAuraApplications(spellID)
-end
-
-local function GetUnitClassPowerValues(unit)
-	if not UnitExists(unit) then
-		return
-	end
-
-	local _, class = UnitClass(unit)
-	if IsSecret(class) or not class then
-		return
-	end
-
-	if class == "ROGUE" then
-		return UnitPower(unit, POWER_COMBO), UnitPowerMax(unit, POWER_COMBO)
-	end
-
-	if class == "DRUID" then
-		local powerType = UnitPowerType(unit)
-		if NotSecret(powerType) and powerType == POWER_ENERGY then
-			return UnitPower(unit, POWER_COMBO), UnitPowerMax(unit, POWER_COMBO)
-		end
-		return
-	end
-
-	if class == "PALADIN" then
-		return UnitPower(unit, POWER_HOLY), UnitPowerMax(unit, POWER_HOLY)
-	end
-
-	if class == "MONK" then
-		return UnitPower(unit, POWER_CHI), UnitPowerMax(unit, POWER_CHI)
-	end
-
-	if class == "EVOKER" then
-		return UnitPower(unit, POWER_ESSENCE), UnitPowerMax(unit, POWER_ESSENCE)
-	end
-
-	if class == "MAGE" then
-		local icicles = GetAuraApplicationCount(unit, SPELL_ICICLES)
-		if icicles == nil or IsSecret(icicles) then
-			if icicles then
-				return icicles, GetAuraMaxApplications(SPELL_ICICLES)
-			end
-		elseif icicles > 0 then
-			return icicles, GetAuraMaxApplications(SPELL_ICICLES)
-		end
-		return UnitPower(unit, POWER_ARCANE), UnitPowerMax(unit, POWER_ARCANE)
-	end
-
-	if class == "WARLOCK" then
-		local cur = UnitPower(unit, POWER_SOUL, true)
-		if IsSecret(cur) then
-			return cur, UnitPowerMax(unit, POWER_SOUL)
-		end
-		local mod = UnitPowerDisplayMod(POWER_SOUL)
-		if mod and mod > 0 and not IsSecret(mod) then
-			cur = cur / mod
-		end
-		return cur, UnitPowerMax(unit, POWER_SOUL)
-	end
-
-	if class == "HUNTER" then
-		return GetAuraApplicationCount(unit, SPELL_TIP_OF_THE_SPEAR), GetAuraMaxApplications(SPELL_TIP_OF_THE_SPEAR)
-	end
-
-	if class == "SHAMAN" then
-		return GetAuraApplicationCount(unit, SPELL_MAELSTROM_WEAPON), GetAuraMaxApplications(SPELL_MAELSTROM_WEAPON)
-	end
-
-	if class == "DEMONHUNTER" then
-		if GetAuraBySpellID(unit, SPELL_VOID_METAMORPHOSIS) then
-			return GetAuraApplicationCount(unit, SPELL_SILENCE_THE_WHISPERS), GetAuraMaxApplications(SPELL_SILENCE_THE_WHISPERS)
-		end
-		return GetAuraApplicationCount(unit, SPELL_DARK_HEART), GetAuraMaxApplications(SPELL_DARK_HEART)
-	end
-end
-
-local function FormatClassPowerTag(cur, max)
-	if cur == nil then
-		return
-	end
-	if IsSecret(cur) or IsSecret(max) then
-		return SafeShortValue(cur)
-	end
-	if max and max > 0 then
-		return string_format("%s/%s", SafeShortValue(cur), SafeShortValue(max))
-	end
-	return SafeShortValue(cur)
-end
-
-oUF.Tags.Methods["cpoints"] = function(unit)
-	if not UnitExists(unit) then
-		return
-	end
-
-	local cur = UnitPower(unit, POWER_COMBO)
-	local max = UnitPowerMax(unit, POWER_COMBO)
-	return FormatClassPowerTag(cur, max)
-end
-oUF.Tags.Events["cpoints"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER PLAYER_TARGET_CHANGED"
-
-oUF.Tags.Methods["classpower"] = function(unit)
-	local cur, max = GetUnitClassPowerValues(unit)
-	return FormatClassPowerTag(cur, max)
-end
-oUF.Tags.Events["classpower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_AURA PLAYER_TARGET_CHANGED PLAYER_SPECIALIZATION_CHANGED"
+oUF.Tags.Events["monkstagger"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_AURA UNIT_DISPLAYPOWER PLAYER_SPECIALIZATION_CHANGED"
 
 -- REASON: LFD/LFR Role icon.
 oUF.Tags.Methods["lfdrole"] = function(unit)

@@ -14,6 +14,7 @@ local Module = K:GetModule("Automation")
 local _G = _G
 local C_Item_GetItemInfo = C_Item.GetItemInfo
 local CreateFrame = CreateFrame
+local GetItemInfoFromHyperlink = GetItemInfoFromHyperlink
 local GetNumQuestChoices = GetNumQuestChoices
 local GetQuestItemInfo = GetQuestItemInfo
 local GetQuestItemLink = GetQuestItemLink
@@ -24,6 +25,13 @@ local select = select
 -- State
 -- ---------------------------------------------------------------------------
 local questRewardGoldIconFrame
+-- REASON: when an item's link/sell-price hasn't been
+-- cached yet, GetQuestItemLink returns nil and the previous code silently
+-- treated that choice as worth 0 — meaning the actual best reward could be
+-- skipped just because its data hadn't loaded. Track that we're waiting so
+-- QUEST_ITEM_UPDATE (already used for exactly this in Automation/Quest.lua's
+-- QuickQuest engine) can re-trigger the scan once the data arrives.
+local awaitingItemData = false
 
 -- ---------------------------------------------------------------------------
 -- Internal Logic
@@ -51,6 +59,7 @@ end
 local function getBestQuestReward(questRewards)
 	-- REASON: Calculates the highest value reward based on vendor sell price and item rarity.
 	local bestValue, bestItem = 0, nil
+	awaitingItemData = false
 
 	for i, _ in ipairs(questRewards) do
 		local questLink = GetQuestItemLink("choice", i)
@@ -58,13 +67,32 @@ local function getBestQuestReward(questRewards)
 			local _, _, amount = GetQuestItemInfo("choice", i)
 			local itemSellPrice = select(11, C_Item_GetItemInfo(questLink)) or 0
 			local itemRarity = select(3, C_Item_GetItemInfo(questLink)) or 0
-			local itemUsefulness = (itemRarity == 6) and 5 or itemRarity
-
-			local totalValue = itemSellPrice * amount + itemUsefulness
-			if totalValue > bestValue then
-				bestValue = totalValue
-				bestItem = i
+			-- BUGFIX: special
+			-- cash-equivalent rewards (e.g. Champion's Purse) don't have a normal vendor
+			-- sell price; C["AutoQuestData"].CashRewards already exists for exactly this
+			-- in QuickQuest, reused here instead of adding a second, duplicate table.
+			local itemID = GetItemInfoFromHyperlink and GetItemInfoFromHyperlink(questLink)
+			local cashValue = itemID and C["AutoQuestData"] and C["AutoQuestData"].CashRewards and C["AutoQuestData"].CashRewards[itemID]
+			if cashValue then
+				itemSellPrice = cashValue
 			end
+
+			-- SECRET (12.0): sell price / stack amount can be secret values in rare
+			-- cases; skip arithmetic on them rather than risk a compare error.
+			if K.NotSecret(itemSellPrice) and K.NotSecret(amount) then
+				local itemUsefulness = (itemRarity == 6) and 5 or itemRarity
+				local totalValue = itemSellPrice * (amount or 1) + itemUsefulness
+				if totalValue > bestValue then
+					bestValue = totalValue
+					bestItem = i
+				end
+			end
+		else
+			-- BUGFIX: link not cached yet — prime it and mark
+			-- that we need to re-scan once QUEST_ITEM_UPDATE fires, instead of silently
+			-- treating this choice as worthless.
+			awaitingItemData = true
+			GetQuestItemInfo("choice", i)
 		end
 	end
 
@@ -92,12 +120,22 @@ function Module.SetupAutoBestReward(event)
 	end
 end
 
+-- REASON: named (not anonymous) so it can be correctly
+-- unregistered by the same reference when the feature is disabled.
+function Module.OnBestRewardItemDataUpdate()
+	if awaitingItemData and _G.QuestFrame and _G.QuestFrame:IsShown() then
+		Module.SetupAutoBestReward()
+	end
+end
+
 function Module:CreateAutoBestReward()
 	if not C["Automation"].AutoReward then
 		if questRewardGoldIconFrame then
 			questRewardGoldIconFrame:Hide()
 		end
 		K:UnregisterEvent("QUEST_COMPLETE", Module.SetupAutoBestReward)
+		K:UnregisterEvent("QUEST_ITEM_UPDATE", Module.OnBestRewardItemDataUpdate)
+		awaitingItemData = false
 		return
 	end
 
@@ -115,9 +153,15 @@ function Module:CreateAutoBestReward()
 		if questFrameRewardPanel then
 			questFrameRewardPanel:HookScript("OnHide", function()
 				questRewardGoldIconFrame:Hide()
+				awaitingItemData = false
 			end)
 		end
 	end
 
 	K:RegisterEvent("QUEST_COMPLETE", Module.SetupAutoBestReward)
+	-- REASON: re-run the scan once a previously-uncached
+	-- item's data actually arrives, but only while we're actually waiting on one
+	-- and the quest reward frame is still open — avoids scanning on every
+	-- unrelated QUEST_ITEM_UPDATE firing elsewhere in the game.
+	K:RegisterEvent("QUEST_ITEM_UPDATE", Module.OnBestRewardItemDataUpdate)
 end

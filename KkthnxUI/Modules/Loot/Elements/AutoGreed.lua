@@ -1,80 +1,128 @@
 --[[-----------------------------------------------------------------------------
 -- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
 -- Notes:
--- - Purpose: Automatically rolls Greed or Disenchant on uncommon items at max level.
--- - Design: Only triggers for non-BoP items of uncommon quality when Need is not an option.
--- - Events: START_LOOT_ROLL
+-- - Purpose: Auto Greed / Disenchant on low-rarity group loot at max level.
+-- - Design: Skip when Need is available; only confirm BoP/DE prompts for rolls
+--   we started (ourRolls) — never silently confirm a manual click.
+-- - Midnight: GetLootRollItemInfo quality is not SecretReturns (12.0.7).
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Loot")
 
--- PERF: Localize global functions and environment for faster lookups.
 local _G = _G
-local GetExpansionLevel = _G.GetExpansionLevel
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
-local GetLootRollItemLink = _G.GetLootRollItemLink
-local GetMaxLevelForExpansionLevel = _G.GetMaxLevelForExpansionLevel
 local RollOnLoot = _G.RollOnLoot
-local Item_CreateFromItemLink = _G.Item.CreateFromItemLink
+local ConfirmLootRoll = _G.ConfirmLootRoll
+local StaticPopup_Hide = _G.StaticPopup_Hide
+local GetMaxLevelForPlayerExpansion = _G.GetMaxLevelForPlayerExpansion
+local wipe = wipe
 
--- REASON: Roll types defined by the WoW API: 0/nil pass, 1 need, 2 greed, 3 disenchant.
-local ROLL_GREED = 2
-local ROLL_DISENCHANT = 3
-local DEFAULT_DE_ILVL_CUTOFF = 0
+local ROLL_GREED = _G.LOOT_ROLL_TYPE_GREED or 2
+local ROLL_DISENCHANT = _G.LOOT_ROLL_TYPE_DISENCHANT or 3
 
-local function setupAutoGreed(_, rollID)
-	if not rollID then
+local UNCOMMON = Enum.ItemQuality.Uncommon
+local RARE = Enum.ItemQuality.Rare
+
+-- Roll IDs we initiated — only auto-confirm those.
+local ourRolls = {}
+local eventsRegistered = false
+
+local function AtMaxLevel()
+	return (K.Level or 0) >= GetMaxLevelForPlayerExpansion()
+end
+
+local function ChooseRoll(canGreed, canDisenchant)
+	local preferDE = C["Loot"].AutoGreedPreferDE ~= false
+	if preferDE and canDisenchant then
+		return ROLL_DISENCHANT
+	end
+	if canGreed then
+		return ROLL_GREED
+	end
+	if canDisenchant then
+		return ROLL_DISENCHANT
+	end
+	return nil
+end
+
+local function OnStartLootRoll(_, rollID)
+	if not C["Loot"].AutoGreed or not rollID then
+		return
+	end
+	if C["Loot"].AutoGreedMaxLevelOnly ~= false and not AtMaxLevel() then
 		return
 	end
 
-	local _, _, _, quality, bindOnPickUp, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
+	local _, name, _, quality, bindOnPickUp, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
+	if not name then
+		return
+	end
 
-	-- REASON: If Need is possible, never auto-roll to allow the player manually deciding the priority.
+	-- Need is possible — leave the decision to the player.
 	if canNeed then
 		return
 	end
 
-	-- REASON: Uncommon quality only (quality 2) and skip BoP items to prevent accidental soulbinding.
-	if quality ~= 2 or bindOnPickUp then
+	-- Cold loot data: don't guess rarity.
+	if quality == nil then
 		return
 	end
 
-	local link = GetLootRollItemLink(rollID)
-	if not link then
+	local maxQuality = C["Loot"].AutoGreedIncludeRares and RARE or UNCOMMON
+	if quality < UNCOMMON or quality > maxQuality then
 		return
 	end
 
-	-- REASON: If no automated roll option is available, exit early.
-	if not canGreed and not canDisenchant then
+	if bindOnPickUp and C["Loot"].AutoGreedSkipBoP ~= false then
 		return
 	end
 
-	local item = Item_CreateFromItemLink(link)
-	item:ContinueOnItemLoad(function()
-		-- REASON: Roll might have expired or been completed by the time item data is ready; re-verify.
-		local _, nameNow = GetLootRollItemInfo(rollID)
-		if not nameNow then
-			return
-		end
+	local rollType = ChooseRoll(canGreed, canDisenchant)
+	if not rollType then
+		return
+	end
 
-		local itemLevel = item:GetCurrentItemLevel() or 0
-		local cutoff = (C["Loot"] and C["Loot"].AutoGreedDECutoff) or DEFAULT_DE_ILVL_CUTOFF
+	ourRolls[rollID] = rollType
+	RollOnLoot(rollID, rollType)
+end
 
-		if canDisenchant and itemLevel > cutoff then
-			RollOnLoot(rollID, ROLL_DISENCHANT)
-		else
-			RollOnLoot(rollID, ROLL_GREED)
-		end
-	end)
+local function ConfirmOurRoll(_, rollID, rollType)
+	if not C["Loot"].AutoGreed or C["Loot"].AutoGreedAutoConfirm == false then
+		return
+	end
+	if not ourRolls[rollID] then
+		return
+	end
+
+	ourRolls[rollID] = nil
+	ConfirmLootRoll(rollID, rollType)
+	StaticPopup_Hide("CONFIRM_LOOT_ROLL")
+end
+
+local function OnCancelLootRoll(_, rollID)
+	ourRolls[rollID] = nil
 end
 
 function Module:CreateAutoGreed()
-	local maxLevel = GetMaxLevelForExpansionLevel(GetExpansionLevel())
-	if C["Loot"].AutoGreed and K.Level == maxLevel then
-		K:RegisterEvent("START_LOOT_ROLL", setupAutoGreed)
+	if C["Loot"].AutoGreed then
+		if eventsRegistered then
+			return
+		end
+		eventsRegistered = true
+		K:RegisterEvent("START_LOOT_ROLL", OnStartLootRoll)
+		K:RegisterEvent("CONFIRM_LOOT_ROLL", ConfirmOurRoll)
+		K:RegisterEvent("CONFIRM_DISENCHANT_ROLL", ConfirmOurRoll)
+		K:RegisterEvent("CANCEL_LOOT_ROLL", OnCancelLootRoll)
 	else
-		K:UnregisterEvent("START_LOOT_ROLL", setupAutoGreed)
+		if not eventsRegistered then
+			return
+		end
+		eventsRegistered = false
+		wipe(ourRolls)
+		K:UnregisterEvent("START_LOOT_ROLL", OnStartLootRoll)
+		K:UnregisterEvent("CONFIRM_LOOT_ROLL", ConfirmOurRoll)
+		K:UnregisterEvent("CONFIRM_DISENCHANT_ROLL", ConfirmOurRoll)
+		K:UnregisterEvent("CANCEL_LOOT_ROLL", OnCancelLootRoll)
 	end
 end

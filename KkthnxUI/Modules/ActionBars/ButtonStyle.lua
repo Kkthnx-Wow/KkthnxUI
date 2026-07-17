@@ -15,10 +15,12 @@ local Module = K:GetModule("ActionBar")
 
 -- NOTE: Reference localized strings for keybinds to ensure compatibility across all game clients.
 -- Fallback to hardcoded English strings if the global is missing in a specific WoW version.
-local L_BUTTON = _G.KEY_BUTTON3:gsub("3", "") or "Button"
+-- BUGFIX: the fallback must guard the nil case BEFORE calling :gsub() on it — `nil:gsub(...)`
+-- errors immediately, which defeats the whole point of the `or` fallback below.
+local L_BUTTON = (_G.KEY_BUTTON3 and _G.KEY_BUTTON3:gsub("3", "")) or "Button"
 local L_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP or "Mouse Wheel Up"
 local L_MOUSEWHEELDN = _G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down"
-local L_NUMPAD = _G.KEY_NUMPAD0:gsub("0", "") or "Num Pad"
+local L_NUMPAD = (_G.KEY_NUMPAD0 and _G.KEY_NUMPAD0:gsub("0", "")) or "Num Pad"
 local L_PAGEUP = _G.KEY_PAGEUP or "Page Up"
 local L_PAGEDOWN = _G.KEY_PAGEDOWN or "Page Down"
 local L_SPACE = _G.KEY_SPACE or "Space"

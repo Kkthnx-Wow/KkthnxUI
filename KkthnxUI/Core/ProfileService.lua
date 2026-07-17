@@ -44,6 +44,8 @@ local META_KEYS = {
 	SwitchedFrom = true,
 }
 
+K.ProfileMetaKeys = META_KEYS
+
 local function trim(str)
 	if not str then
 		return ""

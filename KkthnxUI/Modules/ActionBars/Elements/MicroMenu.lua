@@ -97,6 +97,19 @@ local function SetupMicroButtonTextures(button)
 	end
 end
 
+-- REASON: Counterpart to RestoreBlizzardMicroMenu; called wherever KKUI's own menu
+-- bar is (re)shown so the two never render on top of each other. Split out because
+-- CreateMicroMenu has both a full-build path and an early "already exists" return
+-- that both need to reach this, not just the end of the full-build path.
+local function SuppressBlizzardMicroMenu()
+	if _G.BagsBar then
+		_G.BagsBar:Hide()
+	end
+	if _G.MicroButtonAndBagsBar then
+		_G.MicroButtonAndBagsBar:Hide()
+	end
+end
+
 -- ---------------------------------------------------------------------------
 -- FADING LOGIC
 -- ---------------------------------------------------------------------------
@@ -215,6 +228,7 @@ function Module:CreateMicroMenu()
 			_G.KKUI_MenuBar:Hide()
 		end
 		self:CleanupMicroMenu()
+		self:RestoreBlizzardMicroMenu()
 		return
 	end
 
@@ -223,11 +237,13 @@ function Module:CreateMicroMenu()
 			_G.KKUI_MenuBar:Hide()
 		end
 		self:CleanupMicroMenu()
+		self:RestoreBlizzardMicroMenu()
 		return
 	end
 
 	if _G.KKUI_MenuBar then
 		_G.KKUI_MenuBar:Show()
+		SuppressBlizzardMicroMenu()
 		return
 	end
 
@@ -292,16 +308,11 @@ function Module:CreateMicroMenu()
 	end
 	MainMenuMicroButton:SetScript("OnUpdate", nil)
 
-	local BagsBar = _G.BagsBar
-	local MicroButtonAndBagsBar = _G.MicroButtonAndBagsBar
-	if BagsBar then
-		BagsBar:Hide()
-		BagsBar:UnregisterAllEvents()
-	end
-	if MicroButtonAndBagsBar then
-		MicroButtonAndBagsBar:Hide()
-		MicroButtonAndBagsBar:UnregisterAllEvents()
-	end
+	-- BUGFIX: previously called :UnregisterAllEvents() here too, which made the bar
+	-- effectively dead (bag counts/micro button state stop updating) even after being
+	-- shown again. Hiding alone is sufficient to suppress it visually and keeps the
+	-- restore path in RestoreBlizzardMicroMenu() below a trivial, fully-safe :Show().
+	SuppressBlizzardMicroMenu()
 
 	local MicroMenu = _G.MicroMenu
 	if MicroMenu and MicroMenu.UpdateHelpTicketButtonAnchor then
@@ -319,6 +330,18 @@ end
 -- ---------------------------------------------------------------------------
 -- CLEANUP
 -- ---------------------------------------------------------------------------
+
+-- REASON: Counterpart to the Blizzard-bar suppression at the end of CreateMicroMenu.
+-- Called whenever KKUI's own menu bar isn't being shown (disabled setting, ConsolePort
+-- conflict) so the player always has *some* functioning micro menu.
+function Module:RestoreBlizzardMicroMenu()
+	if _G.BagsBar then
+		_G.BagsBar:Show()
+	end
+	if _G.MicroButtonAndBagsBar then
+		_G.MicroButtonAndBagsBar:Show()
+	end
+end
 
 function Module:CleanupMicroMenu()
 	table_wipe(MicroButtons)

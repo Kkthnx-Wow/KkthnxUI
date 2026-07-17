@@ -15,10 +15,13 @@ local select = _G.select
 local tinsert = _G.table.insert
 
 local C_Item_IsCosmeticItem = _G.C_Item.IsCosmeticItem
+local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local InCombatLockdown = _G.InCombatLockdown
+local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
+local issecurevariable = _G.issecurevariable
 
 local CharacterFrame = _G.CharacterFrame
 local CharacterHeadSlot = _G.CharacterHeadSlot
@@ -31,10 +34,19 @@ local CharacterLevelText = _G.CharacterLevelText
 local CharacterFrameInsetRight = _G.CharacterFrameInsetRight
 local PaperDollFrame = _G.PaperDollFrame
 
--- Constants
-local SLOT_SIZE = 36
+-- Constants (NexEnhance CharacterFrames layout math)
+local SLOT_SIZE = 37
 local FONT_SIZE_RANK = 13
-local FONT_SIZE_ILVL = 18
+local FONT_SIZE_ILVL = 20
+local CHAR_PAPERDOLL_WIDTH = 640
+local CHAR_PAPERDOLL_HEIGHT = 431
+local PANEL_DEFAULT_WIDTH = _G.PANEL_DEFAULT_WIDTH or 338
+local PANEL_INSET_RIGHT_OFFSET = _G.PANEL_INSET_RIGHT_OFFSET or -6
+local PANEL_INSET_BOTTOM_OFFSET = _G.PANEL_INSET_BOTTOM_OFFSET or 4
+local CHARACTERFRAME_EXPANDED_WIDTH = _G.CHARACTERFRAME_EXPANDED_WIDTH or 540
+-- Paper-doll inset when widened: Blizzard default width + right inset + expand delta.
+local CHAR_INSET_OFFSET = PANEL_DEFAULT_WIDTH + PANEL_INSET_RIGHT_OFFSET + (CHAR_PAPERDOLL_WIDTH - CHARACTERFRAME_EXPANDED_WIDTH)
+local CHAR_MODEL_ZOOM_SCALE = 1.1
 
 -- Colors
 local WHITE_COLOR = { r = 1, g = 1, b = 1 }
@@ -251,6 +263,166 @@ local function HandleTitleManagerScrollBox(scrollBox)
 	end
 end
 
+-- ---
+-- Layout helpers (NexEnhance CharacterFrames — keep gems above paperdoll FX)
+-- ---
+
+-- Blizzard's enchant glow is a centered 128x128; stretching it with huge negative
+-- offsets bleeds over equipment slots and buries gem/missing-enchant overlays.
+local function FitCharacterEnchantAnimationToInset()
+	local inset = CharacterFrame and CharacterFrame.Inset
+	local enchant = CharacterModelScene and CharacterModelScene.GearEnchantAnimation
+	if not (inset and enchant and enchant.FrameFX and enchant.TopFrame) then
+		return
+	end
+
+	local width = inset:GetWidth()
+	local height = inset:GetHeight()
+	if not (width and height and width > 0 and height > 0) then
+		return
+	end
+
+	enchant:ClearAllPoints()
+	enchant:SetPoint("TOPLEFT", inset, "TOPLEFT", 1, -1)
+	enchant:SetPoint("BOTTOMRIGHT", inset, "BOTTOMRIGHT", -1, 1)
+	enchant.FrameFX:ClearAllPoints()
+	enchant.FrameFX:SetAllPoints(enchant)
+	enchant.TopFrame:ClearAllPoints()
+	enchant.TopFrame:SetAllPoints(enchant)
+
+	local glowTextures = {
+		enchant.FrameFX.PurpleGlow,
+		enchant.FrameFX.BlueGlow,
+		enchant.FrameFX.Sparkles,
+		enchant.FrameFX.Mask,
+		enchant.TopFrame.Frame,
+	}
+	for i = 1, #glowTextures do
+		local tex = glowTextures[i]
+		if tex then
+			tex:ClearAllPoints()
+			tex:SetAllPoints(enchant)
+		end
+	end
+end
+
+local function AdjustCharacterModelZoom()
+	local camera = CharacterModelScene and CharacterModelScene.GetActiveCamera and CharacterModelScene:GetActiveCamera()
+	if not (camera and camera.GetZoomDistance and camera.SetZoomDistance) then
+		return
+	end
+
+	local distance = camera:GetZoomDistance()
+	if not distance then
+		return
+	end
+
+	local target = distance * CHAR_MODEL_ZOOM_SCALE
+	local maxDistance = camera.GetMaxZoomDistance and camera:GetMaxZoomDistance()
+	if maxDistance and maxDistance > 0 and target > maxDistance then
+		target = maxDistance
+	end
+
+	camera:SetZoomDistance(target)
+	if camera.SnapToTargetInterpolationZoom then
+		camera:SnapToTargetInterpolationZoom()
+	end
+end
+
+local function ApplyCharacterPaperdollLayout()
+	if InCombatLockdown() or not CharacterFrame then
+		return
+	end
+
+	local subframe = CharacterFrame.activeSubframe
+	local inset = CharacterFrame.Inset
+	local bg = inset and inset.Bg
+
+	if subframe == "PaperDollFrame" then
+		-- Only widen when the stats sidebar is expanded; collapsed keeps Blizzard width.
+		if CharacterFrame.Expanded then
+			CharacterFrame:SetSize(CHAR_PAPERDOLL_WIDTH, CHAR_PAPERDOLL_HEIGHT)
+			if inset then
+				inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", CHAR_INSET_OFFSET, PANEL_INSET_BOTTOM_OFFSET)
+			end
+		end
+
+		local _, class = UnitClass("player")
+		local texturePath = class and (DRESSING_ROOM_PATH .. class)
+		if texturePath and bg then
+			bg:SetTexture(texturePath)
+			bg:SetTexCoord(CHAR_BG_TEX_L, CHAR_BG_TEX_R, CHAR_BG_TEX_T, CHAR_BG_TEX_B)
+			bg:SetHorizTile(false)
+			bg:SetVertTile(false)
+		end
+
+		if CharacterFrame.Background then
+			CharacterFrame.Background:Hide()
+		end
+
+		FitCharacterEnchantAnimationToInset()
+	elseif CharacterFrame.Background then
+		CharacterFrame.Background:Show()
+	end
+end
+
+-- Pawn sits under PaperDollFrame; CharacterStatsPane is a sibling on top and
+-- blocks clicks. Raising strata (not just level) clears the hit test.
+local pawnHookInstalled = false
+
+local function LiftPawnButton(button, refFrame)
+	if not (button and refFrame) then
+		return
+	end
+	button:EnableMouse(true)
+	button:SetFrameStrata("HIGH")
+	button:SetFrameLevel(refFrame:GetFrameLevel() + 50)
+	button:Raise()
+end
+
+local function FixInventoryPawnButton()
+	local button = _G.PawnUI_InventoryPawnButton
+	if not (button and CharacterFrame) then
+		return
+	end
+	LiftPawnButton(button, CharacterStatsPane or CharacterFrame)
+end
+
+local function FixInspectPawnButton()
+	local button = _G.PawnUI_InspectPawnButton
+	local inspectFrame = _G.InspectFrame
+	if not (button and inspectFrame) then
+		return
+	end
+	LiftPawnButton(button, inspectFrame)
+end
+
+local function FixPawnButtons()
+	FixInventoryPawnButton()
+	FixInspectPawnButton()
+end
+
+local function InstallPawnButtonFix()
+	if pawnHookInstalled or not _G.PawnUI_InventoryPawnButton_Move then
+		return
+	end
+	-- Hooking a tainted global propagates taint into us — skip if Pawn already tainted it.
+	if not issecurevariable("PawnUI_InventoryPawnButton_Move") then
+		return
+	end
+	pawnHookInstalled = true
+	hooksecurefunc("PawnUI_InventoryPawnButton_Move", FixPawnButtons)
+end
+
+local function RefreshPawnButtons()
+	InstallPawnButtonFix()
+	if _G.PawnUI_InventoryPawnButton_Move and issecurevariable("PawnUI_InventoryPawnButton_Move") then
+		_G.PawnUI_InventoryPawnButton_Move()
+	else
+		FixPawnButtons()
+	end
+end
+
 -- Main Theme Registration
 
 -- REASON: Main entry point for Blizzard Character Frame skinning.
@@ -299,137 +471,81 @@ tinsert(C.defaultThemes, function()
 
 	-- Hooks
 	if CharacterFrame and not CharacterFrame.KKUI_Hooks then
-		-- Cosmetic Update Hook
 		hooksecurefunc("PaperDollItemSlotButton_Update", UpdateCosmetic)
 
-		-- Stats Pane ItemLevel Hook
 		if CharacterStatsPane and CharacterStatsPane.ItemLevelFrame then
 			local function UpdateItemLevelFont()
-				-- REASON: Avoid taint by checking combat
 				if InCombatLockdown() then
 					return
 				end
 
 				local ilvlValue = CharacterStatsPane.ItemLevelFrame.Value
 				if ilvlValue then
-					-- FIX: Use cached font path/flags instead of SetFontObject + GetFont on every call.
-					-- SetFontObject was triggering unnecessary allocations on every stat update.
 					local path, flags = GetCachedIlvlFont()
 					ilvlValue:SetFont(path, FONT_SIZE_ILVL, flags)
 				end
 			end
 			hooksecurefunc("PaperDollFrame_UpdateStats", UpdateItemLevelFont)
+			hooksecurefunc("PaperDollFrame_UpdateStats", RefreshPawnButtons)
 		end
 
-		-- Character Frame Size & Background Hook
-		local playerClassTexture = DRESSING_ROOM_PATH .. K.Class
-		-- FIX: Track last subframe so the hook is a no-op when nothing changed.
-		-- Without this, every UpdateSize call (tab hover, resize events, etc.) was
-		-- redundantly calling SetSize, SetPoint, SetTexture, and SetTexCoord.
-		local lastActiveSubframe
-		-- FIX: Reset on both OnShow and OnHide.
-		-- OnHide alone isn't enough: Blizzard calls UpdateSize during addon initialization
-		-- (before the frame is ever shown), which primes the cache to "PaperDollFrame".
-		-- When the user then opens the frame, UpdateSize fires with the same value and
-		-- skips the entire layout. OnShow guarantees a clean slate on every real open.
-		local function ResetCharacterLayoutCache()
-			lastActiveSubframe = nil
-		end
-		CharacterFrame:HookScript("OnShow", ResetCharacterLayoutCache)
-		CharacterFrame:HookScript("OnHide", ResetCharacterLayoutCache)
+		-- Defer layout out of the secure UpdateSize path (SetSize there taints health compares).
+		hooksecurefunc(CharacterFrame, "UpdateSize", function()
+			C_Timer_After(0, function()
+				ApplyCharacterPaperdollLayout()
+				FitCharacterEnchantAnimationToInset()
+			end)
+		end)
 
-		local function UpdateCharacterFrameSize()
-			local currentSubframe = CharacterFrame.activeSubframe
-			if currentSubframe == lastActiveSubframe then
-				return
-			end
-			lastActiveSubframe = currentSubframe
-
-			local inset = CharacterFrame.Inset
-			local bg = inset and inset.Bg
-
-			if currentSubframe == "PaperDollFrame" then
-				CharacterFrame:SetSize(640, 431)
-				if inset then
-					inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
-				end
-
-				if bg then
-					bg:SetTexture(playerClassTexture)
-					-- FIX: Use pre-computed constants instead of per-call division.
-					bg:SetTexCoord(CHAR_BG_TEX_L, CHAR_BG_TEX_R, CHAR_BG_TEX_T, CHAR_BG_TEX_B)
-					bg:SetHorizTile(false)
-					bg:SetVertTile(false)
-				end
-
-				if CharacterFrame.Background then
-					CharacterFrame.Background:Hide()
-				end
-			else
-				if CharacterFrame.Background then
-					CharacterFrame.Background:Show()
-				end
-			end
-		end
-		hooksecurefunc(CharacterFrame, "UpdateSize", UpdateCharacterFrameSize)
-
-		-- Sidebar Tabs Hook
 		hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", UpdateSidebarTabs)
 
-		-- Title Pane ScrollBox Hook (Optimized)
 		if PaperDollFrame.TitleManagerPane and PaperDollFrame.TitleManagerPane.ScrollBox then
 			hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", HandleTitleManagerScrollBox)
+		end
+
+		if _G.PaperDollFrame_SetPlayer then
+			hooksecurefunc("PaperDollFrame_SetPlayer", function()
+				AdjustCharacterModelZoom()
+				FitCharacterEnchantAnimationToInset()
+				RefreshPawnButtons()
+			end)
+		end
+
+		if PaperDollFrame then
+			PaperDollFrame:HookScript("OnShow", RefreshPawnButtons)
 		end
 
 		CharacterFrame.KKUI_Hooks = true
 	end
 
-	-- Adjust Positions (Only if not in combat to be safe, though usually safe during loading)
-	if not InCombatLockdown() then
-		if CharacterFrame.Inset then
-			CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
-			CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
-			CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
-			CharacterSecondaryHandSlot:ClearAllPoints()
-			CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
+	if not InCombatLockdown() and CharacterFrame and CharacterFrame.Inset then
+		CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
+		CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
+		CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
+		CharacterSecondaryHandSlot:ClearAllPoints()
+		CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-			CharacterModelScene:SetSize(300, 360)
-			CharacterModelScene:ClearAllPoints()
-			CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 64, -3)
-
-			-- Adjust Gear Enchant Animation Frames
-			-- PERF: Avoid creating a table and closure for one-time initialization
-			local function SetFXFrame(frame)
-				if frame then
-					frame:ClearAllPoints()
-					frame:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", -244, 102)
-					frame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", 247, -103)
-				end
-			end
-			local gearEnchant = CharacterModelScene.GearEnchantAnimation.FrameFX
-			SetFXFrame(gearEnchant.PurpleGlow)
-			SetFXFrame(gearEnchant.BlueGlow)
-			SetFXFrame(gearEnchant.Sparkles)
-			SetFXFrame(gearEnchant.Mask)
-
-			local topFrame = CharacterModelScene.GearEnchantAnimation.TopFrame.Frame
-			if topFrame then
-				topFrame:ClearAllPoints()
-				topFrame:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 2, -2)
-				topFrame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -2, 2)
-			end
-		end
+		-- Keep model inside the paper-doll inner frame so gem overlays clear the edges.
+		CharacterModelScene:SetSize(0, 0)
+		CharacterModelScene:ClearAllPoints()
+		CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 46, -4)
+		CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, -47, 31)
+		FitCharacterEnchantAnimationToInset()
 
 		if CharacterLevelText then
 			CharacterLevelText:SetFontObject(K.UIFont)
 		end
 
-		if CharacterStatsPane.ClassBackground then
+		if CharacterStatsPane and CharacterStatsPane.ClassBackground and CharacterFrameInsetRight then
 			CharacterStatsPane.ClassBackground:ClearAllPoints()
 			CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
 			CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
 			CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 		end
+
+		ApplyCharacterPaperdollLayout()
+		AdjustCharacterModelZoom()
+		RefreshPawnButtons()
 	end
 
 	if CharacterFrame then

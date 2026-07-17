@@ -20,9 +20,13 @@ local GetTime = _G.GetTime
 local playerClass = _G.UnitClassBase("player")
 local GetAuraDataByAuraInstanceID = _G.C_UnitAuras.GetAuraDataByAuraInstanceID
 local GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
+local GetAuraDuration = _G.C_UnitAuras.GetAuraDuration
 local ForEachAura = _G.AuraUtil.ForEachAura
 local debuffColor = _G.DebuffTypeColor
 local pairs = pairs
+
+-- Raid debuff swipe sits at 0.7 so the icon stays readable under the pie.
+local RAID_DEBUFF_CD_ALPHA = 0.7
 
 -- Timer throttle for text updates (seconds)
 local TIMER_THROTTLE = 0.1
@@ -195,21 +199,43 @@ local function ShowElement(self, unit, auraInstanceID)
 	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	element:Show()
 
-	if NotSecret(duration) and NotSecret(expirationTime) and duration and duration > 0 and expirationTime then
+	-- Prefer DurationObject + engine countdown (secret-safe in instances).
+	-- Lua OnUpdate only when duration fields are plain and GetAuraDuration fails.
+	element:SetScript("OnUpdate", nil)
+	element._accum = 0
+	element._expiresAt = nil
+	element._duration = nil
+	element._auraInstanceID = auraInstanceID
+
+	local durObj = GetAuraDuration and GetAuraDuration(unit, auraInstanceID)
+	if durObj and element.cd and element.cd.SetCooldownFromDurationObject then
+		element.cd:SetCooldownFromDurationObject(durObj)
+		-- IsZero may be secret — only feed SetAlphaFromBoolean (Ellesmere permanent-aura mask).
+		if durObj.IsZero and element.cd.SetAlphaFromBoolean then
+			element.cd:SetAlphaFromBoolean(durObj:IsZero(), 0, RAID_DEBUFF_CD_ALPHA)
+		else
+			element.cd:SetAlpha(RAID_DEBUFF_CD_ALPHA)
+		end
+		element.cd:SetHideCountdownNumbers(false)
+		element.cd:Show()
+		K.StyleAuraCooldownCountdown(element.cd, 12, element, "CENTER", 1, 0)
+		element.timer:Hide()
+		element.timer:SetText("")
+	elseif NotSecret(duration) and NotSecret(expirationTime) and duration and duration > 0 and expirationTime then
 		local start = expirationTime - duration
+		element.cd:SetAlpha(RAID_DEBUFF_CD_ALPHA)
+		element.cd:SetHideCountdownNumbers(true)
 		element.cd:SetCooldown(start, duration)
-		-- Store state for throttled OnUpdate updates
+		element.cd:Show()
 		element._expiresAt = expirationTime
 		element._duration = duration
-		element._auraInstanceID = auraInstanceID
+		element.timer:Show()
 		element:SetScript("OnUpdate", ElementOnUpdate)
 	else
-		element:SetScript("OnUpdate", nil)
-		element._accum = 0
-		element._expiresAt = nil
-		element._duration = nil
-		element._auraInstanceID = nil
+		element.cd:SetHideCountdownNumbers(true)
 		element.cd:SetCooldown(0, 0)
+		element.cd:SetAlpha(RAID_DEBUFF_CD_ALPHA)
+		element.timer:Hide()
 		element.timer:SetText("")
 	end
 
@@ -233,7 +259,10 @@ local function HideElement(self, unit)
 	element._auraInstanceID = nil
 
 	element.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+	element.cd:SetHideCountdownNumbers(true)
 	element.cd:SetCooldown(0, 0)
+	element.cd:SetAlpha(RAID_DEBUFF_CD_ALPHA)
+	element.timer:Hide()
 	element.timer:SetText("")
 	element.count:SetText("")
 

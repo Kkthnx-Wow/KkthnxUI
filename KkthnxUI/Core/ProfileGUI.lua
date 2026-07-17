@@ -5,8 +5,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 --[[
 Advanced ProfileGUI System for KkthnxUI
 
-Inspired by NDui's ProfileGUI system, this provides comprehensive
-profile management including:
+Profile management for KkthnxUI, including:
 - Profile list management with visual interface
 - Create, copy, delete, reset profiles
 - Data validation and error handling
@@ -228,9 +227,17 @@ function ProfileGUI:RefreshProfileList()
 	end
 
 	table.sort(sortedProfiles, function(a, b)
-		-- Current profile should appear first
 		if a.isCurrent ~= b.isCurrent then
 			return a.isCurrent
+		end
+		if a.realm ~= b.realm then
+			if a.realm == K.Realm then
+				return true
+			end
+			if b.realm == K.Realm then
+				return false
+			end
+			return a.realm < b.realm
 		end
 		return a.displayName < b.displayName
 	end)

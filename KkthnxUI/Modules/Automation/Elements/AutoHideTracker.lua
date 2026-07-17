@@ -18,11 +18,15 @@ local InCombatLockdown = InCombatLockdown
 local RegisterStateDriver = RegisterStateDriver
 local ShowUIPanel = ShowUIPanel
 local UnregisterStateDriver = UnregisterStateDriver
+local UnitExists = _G.UnitExists
+local UnitIsEnemy = _G.UnitIsEnemy
 local pcall = pcall
 
 local UIParent = UIParent
+local DIFFICULTY_KEYSTONE = 8
 
 local C_AddOns_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded
+local C_InstanceEncounter = _G.C_InstanceEncounter
 local C_TalkingHead_SetConversationsDeferred = C_TalkingHead and C_TalkingHead.SetConversationsDeferred
 
 -- ---------------------------------------------------------------------------
@@ -94,6 +98,49 @@ function Module:ObjectiveTracker_Expand(frame)
 	trySetParent(frame, UIParent, "expand")
 end
 
+-- REASON: Arena always collapses; boss tokens only when hostile.
+-- Friendly scenario escorts can occupy boss1..5 without being a real encounter.
+local function anyArenaUnit()
+	for i = 1, 5 do
+		if UnitExists("arena" .. i) then
+			return true
+		end
+	end
+	return false
+end
+
+local function anyHostileBossUnit()
+	for i = 1, 5 do
+		local unit = "boss" .. i
+		if UnitExists(unit) then
+			local enemy = UnitIsEnemy("player", unit)
+			if K.NotSecret(enemy) then
+				if enemy then
+					return true
+				end
+			elseif C_InstanceEncounter and C_InstanceEncounter.IsEncounterInProgress and C_InstanceEncounter.IsEncounterInProgress() then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function shouldCollapseTracker()
+	if anyArenaUnit() then
+		return true
+	end
+	return anyHostileBossUnit()
+end
+
+local function shouldCollapseForInstance(cfg)
+	if cfg.AutoHideInKeystone then
+		return true
+	end
+	local _, _, difficultyID = GetInstanceInfo()
+	return difficultyID ~= DIFFICULTY_KEYSTONE
+end
+
 -- ---------------------------------------------------------------------------
 -- Auto-Hide Logic
 -- ---------------------------------------------------------------------------
@@ -103,16 +150,13 @@ function Module:ObjectiveTracker_AutoHideOnHide()
 		return
 	end
 
-	local cfg = getTrackerConfig()
+	if not shouldCollapseTracker() then
+		return
+	end
 
-	-- REASON: Determine if tracker should be collapsed based on config and instance difficulty.
-	if cfg.AutoHideInKeystone then
+	local cfg = getTrackerConfig()
+	if shouldCollapseForInstance(cfg) then
 		Module:ObjectiveTracker_Collapse(tracker)
-	else
-		local _, _, difficultyID = GetInstanceInfo()
-		if difficultyID ~= 8 then -- Ignore hide in keystone runs if configured
-			Module:ObjectiveTracker_Collapse(tracker)
-		end
 	end
 end
 

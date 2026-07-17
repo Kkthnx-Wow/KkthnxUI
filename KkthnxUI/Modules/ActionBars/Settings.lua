@@ -41,9 +41,17 @@ local function OnActionBarSetting(configPath)
 
 	if key:match("^Bar%d+$") then
 		Module:UpdateBarVisibility()
-	elseif key:match("^Bar%d+(Size|PerRow|Num|Font)$") then
-		local barName = key:match("^(Bar%d+)")
-		Module:UpdateActionSize(barName)
+	-- BUGFIX: Lua patterns have no `|` alternation (that's regex syntax) — the previous
+	-- pattern "^Bar%d+(Size|PerRow|Num|Font)$" could only match a key literally containing
+	-- the string "Size|PerRow|Num|Font", so it never matched anything and every Bar1-8
+	-- Size/PerRow/Num/Font slider silently failed to apply live. Match each suffix separately.
+	elseif key:match("^Bar%d+Size$") or key:match("^Bar%d+PerRow$") or key:match("^Bar%d+Num$") or key:match("^Bar%d+Font$") or key:match("^Bar%d+Flyout$") then
+		if key:match("Flyout$") then
+			Module:UpdateBarConfig()
+		else
+			local barName = key:match("^(Bar%d+)")
+			Module:UpdateActionSize(barName)
+		end
 	elseif key:match("^Bar%d+Fade$") then
 		ApplyFaderState()
 	elseif key == "BarPetSize" or key == "BarPetPerRow" or key == "BarPetFont" then
@@ -68,8 +76,15 @@ local function OnActionBarSetting(configPath)
 		if key == "MmssTH" and cooldown and cooldown.RefreshCooldownThresholds then
 			cooldown:RefreshCooldownThresholds()
 		end
+	elseif key == "DesaturateOnCooldown" or key == "CooldownAlpha" then
+		local cooldown = K:GetModule("Cooldown")
+		if cooldown and cooldown.ApplyCooldownDesatSetting then
+			cooldown:ApplyCooldownDesatSetting()
+		end
 	elseif key == "Enable" then
 		Module:SetActionBarEnabled(C["ActionBar"].Enable)
+	elseif key == "MicroMenu" or key == "FadeMicroMenu" then
+		Module:CreateMicroMenu()
 	end
 end
 

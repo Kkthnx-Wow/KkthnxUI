@@ -145,7 +145,7 @@ if _G.WorldMapFrame then
 end
 
 -- ---------------------------------------------------------------------------
--- Core Automation Engine (feature-scoped events; NexEnhance QuickQuest patterns)
+-- Core Automation Engine (feature-scoped events)
 -- ---------------------------------------------------------------------------
 local handlers = {}
 local registeredEvents = {}

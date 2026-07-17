@@ -13,15 +13,12 @@ local Module = K:NewModule("Minimap")
 -- PERF: Localize global functions and environment for faster lookups in high-frequency events.
 local math_floor = _G.math.floor
 local string_find = _G.string.find
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
 
 local _G = _G
 local C_AddOns_IsAddOnLoaded = _G.C_AddOns and _G.C_AddOns.IsAddOnLoaded
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar and _G.C_Calendar.GetNumPendingInvites
 local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime and _G.C_DateAndTime.GetCurrentCalendarTime
 local C_Garrison_HasGarrison = _G.C_Garrison and _G.C_Garrison.HasGarrison
-local C_StorePublic_IsEnabled = _G.C_StorePublic and _G.C_StorePublic.IsEnabled
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
 local GetTime = _G.GetTime
@@ -48,215 +45,6 @@ local unpack = _G.unpack
 -- REASON: Blizzard helpers (may not exist on all clients).
 local Minimap_OnClick = _G.Minimap_OnClick
 local Minimap_OnMouseUp = _G.Minimap_OnMouseUp
-
--- Create the minimap micro menu
--- REASON: Minimap micro menu entries.
-local menuList = {
-	{
-		text = _G.CHARACTER_BUTTON,
-		icon = 236415,
-		func = function()
-			_G.ToggleCharacter("PaperDollFrame")
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.SPELLBOOK,
-		icon = 133741,
-		func = function()
-			if _G.PlayerSpellsUtil then
-				_G.PlayerSpellsUtil.ToggleSpellBookFrame()
-			else
-				_G.ToggleFrame(_G.SpellBookFrame)
-			end
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.TIMEMANAGER_TITLE,
-		icon = 237538,
-		func = function()
-			_G.ToggleFrame(_G.TimeManagerFrame)
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.CHAT_CHANNELS,
-		icon = 2056011,
-		func = function()
-			_G.ToggleChannelFrame()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.SOCIAL_BUTTON,
-		icon = 442272,
-		func = function()
-			_G.ToggleFriendsFrame()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.TALENTS_BUTTON,
-		icon = 3717418,
-		func = function()
-			if _G.PlayerSpellsUtil then
-				_G.PlayerSpellsUtil.ToggleClassTalentFrame()
-			else
-				_G.ToggleTalentFrame()
-			end
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.GUILD,
-		icon = 135026,
-		func = function()
-			_G.ToggleGuildFrame()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.COLLECTIONS,
-		icon = 5321228,
-		func = function()
-			_G.ToggleCollectionsJournal()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.ACHIEVEMENT_BUTTON,
-		icon = 1033987,
-		func = function()
-			_G.ToggleAchievementFrame()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.LFG_TITLE,
-		icon = 134149,
-		func = function()
-			_G.ToggleLFDParentFrame()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = L["Calendar"],
-		icon = 3007435,
-		func = function()
-			if _G.GameTimeFrame then
-				_G.GameTimeFrame:Click()
-			end
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.ENCOUNTER_JOURNAL,
-		icon = 236409,
-		func = function()
-			if not (C_AddOns_IsAddOnLoaded and C_AddOns_IsAddOnLoaded("Blizzard_EncounterJournal")) then
-				_G.UIParentLoadAddOn("Blizzard_EncounterJournal")
-			end
-			_G.ToggleFrame(_G.EncounterJournal)
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.PROFESSIONS_BUTTON,
-		icon = 236574,
-		func = function()
-			_G.ToggleProfessionsBook()
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
-		icon = 1044996,
-		func = function()
-			if _G.ExpansionLandingPageMinimapButton then
-				_G.ExpansionLandingPageMinimapButton:ToggleLandingPage()
-			end
-		end,
-		notCheckable = 1,
-	},
-	{
-		text = _G.QUESTLOG_BUTTON,
-		icon = 236669,
-		func = function()
-			_G.ToggleQuestLog()
-		end,
-		notCheckable = 1,
-	},
-}
-
-if K.Level == 80 then
-	table_insert(menuList, {
-		text = _G.RATED_PVP_WEEKLY_VAULT,
-		icon = "greatVault-whole-normal",
-		notCheckable = 1,
-		func = function()
-			if not _G.WeeklyRewardsFrame and _G.WeeklyRewards_LoadUI then
-				_G.WeeklyRewards_LoadUI()
-			end
-			_G.ToggleFrame(_G.WeeklyRewardsFrame)
-		end,
-	})
-end
-
-if C_StorePublic_IsEnabled and C_StorePublic_IsEnabled() then
-	table_insert(menuList, {
-		text = _G.BLIZZARD_STORE,
-		icon = 939375,
-		notCheckable = 1,
-		func = function()
-			if _G.StoreMicroButton then
-				_G.StoreMicroButton:Click()
-			end
-		end,
-	})
-end
-
--- REASON: Handled in the initial table creation for efficiency.
-
--- REASON: Handled in the initial table creation for efficiency.
-
--- REASON: Sort the menu list alphabetically for easier navigation, keeping specific buttons at the bottom.
-table_sort(menuList, function(a, b)
-	if a and b and a.text and b.text then
-		return a.text < b.text
-	end
-	return false
-end)
-
-table_insert(menuList, {
-	text = _G.MAINMENU_BUTTON,
-	microOffset = "MainMenuMicroButton",
-	func = function()
-		if not _G.GameMenuFrame:IsShown() then
-			_G.CloseMenus()
-			_G.CloseAllWindows()
-			_G.PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
-			_G.ShowUIPanel(_G.GameMenuFrame)
-		else
-			_G.PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
-			_G.HideUIPanel(_G.GameMenuFrame)
-			_G.MainMenuMicroButton:SetButtonState("NORMAL")
-		end
-	end,
-	notCheckable = 1,
-	icon = 134400,
-})
-
-table_insert(menuList, {
-	text = _G.HELP_BUTTON,
-	microOffset = nil,
-	bottom = true,
-	func = function()
-		_G.ToggleHelpFrame()
-	end,
-	notCheckable = 1,
-	icon = 511544,
-})
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -324,6 +112,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
+	Module._mailPulseBorderUpdate = updateMinimapBorderAnimation
 
 	if minimapMailFrame then
 		minimapMailFrame:HookScript("OnHide", function()
@@ -828,9 +617,9 @@ function Module.Minimap_OnMouseUp(_, btn)
 		end
 
 		if anchorPoint and string_find(anchorPoint, "LEFT") then
-			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", 0, 0)
+			K.LibEasyMenu.Create(Module:GetMicroMenuList(), K.EasyMenu, "cursor", 0, 0)
 		else
-			K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", -160, 0)
+			K.LibEasyMenu.Create(Module:GetMicroMenuList(), K.EasyMenu, "cursor", -160, 0)
 		end
 	elseif btn == "RightButton" then
 		local trackingButton = MinimapCluster and MinimapCluster.Tracking and MinimapCluster.Tracking.Button
@@ -1145,6 +934,18 @@ function Module:InitMinimap()
 	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)
 end
 
+function Module:StopMailPulseEvents()
+	local fn = self._mailPulseBorderUpdate
+	if not fn then
+		return
+	end
+
+	K:UnregisterEvent("CALENDAR_UPDATE_PENDING_INVITES", fn)
+	K:UnregisterEvent("PLAYER_REGEN_DISABLED", fn)
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", fn)
+	K:UnregisterEvent("UPDATE_PENDING_MAIL", fn)
+end
+
 function Module:SetMinimapEnabled(enabled)
 	if enabled then
 		self:InitMinimap()
@@ -1153,6 +954,12 @@ function Module:SetMinimapEnabled(enabled)
 			Minimap.mover:Show()
 		end
 		self:ApplyMinimapCustomization()
+		if C["Minimap"].MailPulse and self._mailPulseBorderUpdate then
+			K:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", self._mailPulseBorderUpdate)
+			K:RegisterEvent("PLAYER_REGEN_DISABLED", self._mailPulseBorderUpdate)
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", self._mailPulseBorderUpdate)
+			K:RegisterEvent("UPDATE_PENDING_MAIL", self._mailPulseBorderUpdate)
+		end
 		self:UpdateCalendar()
 		self:UpdateRecycleBin()
 		self:UpdateQueueStatusText()
@@ -1161,6 +968,7 @@ function Module:SetMinimapEnabled(enabled)
 		if Minimap.mover then
 			Minimap.mover:Hide()
 		end
+		self:StopMailPulseEvents()
 		self:RestoreDefaultMinimapLayout()
 	end
 

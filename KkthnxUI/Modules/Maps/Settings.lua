@@ -50,6 +50,8 @@ local function OnWorldMapSetting(configPath)
 		WorldMapModule:UpdateMapSize()
 	elseif key == "MapRevealGlow" then
 		WorldMapModule:UpdateMapReveal()
+	elseif key == "Coordinates" then
+		WorldMapModule:UpdateWorldMapCoordinates()
 	end
 end
 

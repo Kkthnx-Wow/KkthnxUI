@@ -18,7 +18,9 @@ local string_format = string.format
 local C_Spell_GetSpellLink = C_Spell.GetSpellLink
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local IsInGroup = IsInGroup
-local SendChatMessage = SendChatMessage
+-- REASON: SendChatMessage global is a deprecated shim;
+-- C_ChatInfo.SendChatMessage is the live API.
+local SendChatMessage = C_ChatInfo.SendChatMessage
 local UnitName = UnitName
 
 -- NOTE: Pre-populated table for efficient lookup of group unit IDs.

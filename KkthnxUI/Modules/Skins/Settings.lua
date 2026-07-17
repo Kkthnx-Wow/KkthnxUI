@@ -1,5 +1,8 @@
 --[[-----------------------------------------------------------------------------
 -- Live GUI refresh for skin / font tweak settings.
+-- Only keys with a real live path register here — addon/Blizzard skin toggles
+-- require /reload (CreateSwitch ..., requiresReload = true) so HasSettingLiveUpdate
+-- stays honest.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -23,16 +26,13 @@ local function UpdateChatBubbleAlpha()
 	end
 end
 
-local function OnSkinsSetting(configPath)
-	if configPath == "Skins.ChatBubbleAlpha" then
-		UpdateChatBubbleAlpha()
-	elseif configPath == "Skins.QuestFontSize" then
-		Module:UpdateQuestFonts()
-	elseif configPath == "Skins.ObjectiveFontSize" then
-		Module:UpdateObjectiveFonts()
-	elseif configPath == "Skins.BigDebuffs" then
-		Module:SetBigDebuffsEnabled(C["Skins"].BigDebuffs)
-	end
-end
-
-K:RegisterSettingPrefixCallback("Skins.", OnSkinsSetting)
+K:RegisterSettingCallback("Skins.ChatBubbleAlpha", UpdateChatBubbleAlpha)
+K:RegisterSettingCallback("Skins.QuestFontSize", function()
+	Module:UpdateQuestFonts()
+end)
+K:RegisterSettingCallback("Skins.ObjectiveFontSize", function()
+	Module:UpdateObjectiveFonts()
+end)
+K:RegisterSettingCallback("Skins.BigDebuffs", function()
+	Module:SetBigDebuffsEnabled(C["Skins"].BigDebuffs)
+end)

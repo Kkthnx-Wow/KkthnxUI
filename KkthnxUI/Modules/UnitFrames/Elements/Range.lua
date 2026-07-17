@@ -332,6 +332,21 @@ local function FriendlyInRange(realUnit)
 	return UnitInSpellsRange(unit, 2)
 end
 
+-- BUGFIX: previously self:SetAlpha() was called unconditionally on every tick (every
+-- 0.2s, for every visible RangeFader frame) even when the target alpha hadn't changed.
+-- Any hooksecurefunc(frame, "SetAlpha", ...) listener re-fires on every such call —
+-- notably ApplyPortraitAlphaFix's SetModelAlpha() re-application on 3D PlayerModel
+-- portraits (style 5), which visibly pops/flickers the model each time it's invoked.
+-- Cache the last-applied value per element and only call SetAlpha when it changes.
+-- PERF: file-scope, not a closure defined inside Update() — this runs on a 0.2s ticker
+-- for every RangeFader frame, so a fresh closure per call per frame would be wasteful.
+local function ApplyRangeAlpha(self, element, alpha)
+	if element.__lastAppliedAlpha ~= alpha then
+		element.__lastAppliedAlpha = alpha
+		self:SetAlpha(alpha)
+	end
+end
+
 -- REASON: Main update function to determine alpha based on range status.
 local function Update(self, event)
 	local element = self.RangeFader
@@ -340,7 +355,7 @@ local function Update(self, event)
 	-- REASON: Respect globally disabled range setting.
 	if C and C["Unitframe"] and C["Unitframe"].Range == false then
 		element.RangeAlpha = element.MaxAlpha or element.insideAlpha
-		self:SetAlpha(element.RangeAlpha)
+		ApplyRangeAlpha(self, element, element.RangeAlpha)
 		if element.PostUpdate then
 			return element:PostUpdate(self, true)
 		end
@@ -383,7 +398,7 @@ local function Update(self, event)
 		element.RangeAlpha = maxAlpha
 	end
 
-	self:SetAlpha(element.RangeAlpha)
+	ApplyRangeAlpha(self, element, element.RangeAlpha)
 
 	if element.PostUpdate then
 		return element:PostUpdate(self, element.RangeAlpha == maxAlpha)

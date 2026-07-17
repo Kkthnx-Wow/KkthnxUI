@@ -38,9 +38,13 @@
    <Script file="Chat\Settings.lua" />
    <!-- Inventory -->
    <Script file="Inventory\Core.lua" />
+   <Script file="Inventory\Elements\BagWidgets.lua" />
+   <Script file="Inventory\Elements\Recent.lua" />
+   <Script file="Inventory\Elements\BagInit.lua" />
    <Script file="Inventory\Elements\Filters.lua" />
    <Script file="Inventory\Elements\AutoRepair.lua" />
    <Script file="Inventory\Elements\AutoSell.lua" />
+   <Script file="Inventory\Elements\AutoWarbandGold.lua" />
    <Script file="Inventory\Elements\InventoryBar.lua" />
    <Script file="Inventory\Settings.lua" />
    <!-- ActionBars -->
@@ -65,12 +69,15 @@
    <Script file="Auras\Settings.lua" />
    <!-- Maps -->
    <Script file="Maps\MiniMap.lua" />
+   <Script file="Maps\Elements\MinimapButtons.lua" />
+   <Script file="Maps\Elements\MicroMenu.lua" />
    <Script file="Maps\WorldMap.lua" />
    <Script file="Maps\Elements\CollectButtons.lua" />
    <Script file="Maps\Elements\MapReveal.lua" />
    <Script file="Maps\Elements\WowHeadLink.lua" />
    <Script file="Maps\Settings.lua" />
    <!-- Unitframes Plugins -->
+   <Script file="UnitFrames\Plugins\oUF_SecretAuraID.lua" />
    <Script file="UnitFrames\Plugins\oUF_AuraTrack.lua" />
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
    <Script file="UnitFrames\Plugins\oUF_Fader.lua" />
@@ -80,6 +87,10 @@
    <!-- Unitframes -->
    <Script file="UnitFrames\Core.lua" />
    <Script file="UnitFrames\Elements\Castbar.lua" />
+   <Script file="UnitFrames\Elements\Portrait.lua" />
+   <Script file="UnitFrames\Elements\UnitText.lua" />
+   <Script file="UnitFrames\Elements\HealPrediction.lua" />
+   <Script file="UnitFrames\Elements\DispelIndicator.lua" />
    <Script file="UnitFrames\Elements\BarSpark.lua" />
    <Script file="UnitFrames\Elements\Range.lua" />
    <Script file="UnitFrames\Elements\Tags.lua" />
@@ -102,6 +113,7 @@
    <Script file="UnitFrames\Nameplates\QuestIndicator.lua" />
    <Script file="UnitFrames\Nameplates\Widgets.lua" />
    <Script file="UnitFrames\Nameplates\Mouseover.lua" />
+   <Script file="UnitFrames\Nameplates\CastOverlay.lua" />
    <Script file="UnitFrames\Nameplates\Refresh.lua" />
    <Script file="UnitFrames\Nameplates\ResourcePlates.lua" />
    <Script file="UnitFrames\Nameplates\Settings.lua" />
@@ -122,11 +134,13 @@
    <Script file="Tooltip\Elements\Hover.lua" />
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
+   <Script file="Tooltip\Elements\Pawn.lua" />
    <Script file="Tooltip\Elements\MountSource.lua" />
    <Script file="Tooltip\Elements\Pet.lua" />
    <Script file="Tooltip\Elements\SpecLevel.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
    <Script file="Tooltip\Elements\VendorLocation.lua" />
+   <Script file="Tooltip\Elements\ItemReagents.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
@@ -136,6 +150,7 @@
    <Script file="Miscellaneous\Elements\MDGuildBest.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
+   <Script file="Miscellaneous\Elements\PopupQoL.lua" />
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QueueTimer.lua" />
@@ -148,7 +163,6 @@
    <!-- Announcements -->
    <Script file="Announcements\Core.lua" />
    <Script file="Announcements\Elements\Countdown.lua" />
-   <Script file="Announcements\Elements\HealthAlert.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
    <Script file="Announcements\Elements\Keystone.lua" />
    <Script file="Announcements\Elements\QuestNotifier.lua" />
@@ -158,6 +172,8 @@
    <!-- Automation -->
    <Script file="Automation\Core.lua" />
    <Script file="Automation\Elements\AutoDelves.lua" />
+   <Script file="Automation\Elements\AuctionSearch.lua" />
+   <Script file="Automation\Elements\HolidayDungeon.lua" />
    <Script file="Automation\Elements\AutoHideTracker.lua" />
    <Script file="Automation\Elements\AutoKeystone.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
@@ -172,6 +188,7 @@
    <Script file="Automation\Elements\Resurrect.lua" />
    <Script file="Automation\Elements\ScreenShot.lua" />
    <Script file="Automation\Elements\SetRole.lua" />
+   <Script file="Automation\Elements\SmartTracking.lua" />
    <Script file="Automation\Elements\SkipCinematic.lua" />
    <Script file="Automation\Elements\Summon.lua" />
    <Script file="Automation\Elements\WhisperInvite.lua" />
@@ -223,6 +240,4 @@
    <Script file="Skins\Addons\WeakAuras.lua" />
    <Script file="Skins\Addons\Nekometer.lua" />
    <Script file="Skins\Addons\Hekili.lua" />
-   <!-- Disabled/Broken/WIP AddOns -->
-   <!-- <Script file="Skins\Addons\RaiderIO.lua" /> -->
 </Ui>

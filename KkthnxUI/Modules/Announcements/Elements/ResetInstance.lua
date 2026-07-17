@@ -18,6 +18,10 @@ local string_match = string.match
 local string_format = string.format
 local GetTime = GetTime
 local ipairs = ipairs
+-- REASON: SendChatMessage global is a deprecated shim;
+-- C_ChatInfo.SendChatMessage is the live API. This file previously called the
+-- bare global directly with no local alias at all.
+local SendChatMessage = C_ChatInfo.SendChatMessage
 
 -- REASON: Safely fetch localized Blizzard system strings for instance resets.
 local function _Gv(key, fallback)

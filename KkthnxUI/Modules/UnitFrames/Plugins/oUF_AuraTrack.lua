@@ -3,7 +3,7 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Tracking auras for oUF layouts.
--- - Design: Inspired by Tukui AuraTrack.
+-- - Design: Per-unit aura tracking icons for raid/party frames.
 -- - Events: UNIT_AURA.
 -----------------------------------------------------------------------------]]
 
@@ -22,6 +22,22 @@ local math_floor = _G.math.floor
 -- PERF: read aura rows directly; UnitAura/AuraUtil.UnpackAuraData unpacks points and
 -- errors when that table is secret in instances (12.0).
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
+local C_UnitAuras_GetAuraDuration = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDuration
+
+-- Fallback icons when icon field is secret (Ellesmere SECRET_SPELL_ICONS subset).
+local SECRET_SPELL_ICONS = {
+	[102342] = 136097, -- Ironbark
+	[33206] = 135936, -- Pain Suppression
+	[10060] = 135939, -- Power Infusion
+	[47788] = 237542, -- Guardian Spirit
+	[116849] = 636288, -- Life Cocoon
+	[443113] = 615340, -- Strength of the Black Ox
+	[1022] = 135964, -- Blessing of Protection
+	[6940] = 135966, -- Blessing of Sacrifice
+	[1044] = 135968, -- Blessing of Freedom
+	[357170] = 4630500, -- Time Dilation
+	[363534] = 4630498, -- Rewind
+}
 
 local Tracker = {
 	-- PRIEST
@@ -107,19 +123,19 @@ local function ReadTrackedAura(auraData)
 	local expiration = auraData.expirationTime
 	local count = auraData.applications
 	local texture = auraData.icon
+	local auraInstanceID = auraData.auraInstanceID
 
-	if NotSecret(spellID)
-		and NotSecret(caster)
-		and NotSecret(duration)
-		and NotSecret(expiration)
-		and NotSecret(count)
-		and NotSecret(texture)
-	then
-		return spellID, texture, count, duration, expiration, caster
+	-- Only skip spellId as a table key when it's secret; keep the row.
+	if IsSecret(spellID) then
+		spellID = nil
+	end
+
+	if spellID or auraInstanceID then
+		return spellID, texture, count, duration, expiration, caster, auraInstanceID
 	end
 end
 
--- Handle per-tick countdown updates; min/max is set when duration changes
+-- Plain-duration fallback only. Prefer SetCooldownFromDurationObject / SetTimerDuration.
 local function OnUpdate(self)
 	local Time = GetTime()
 	local Timeleft = self.Expiration - Time
@@ -131,7 +147,47 @@ local function OnUpdate(self)
 	end
 end
 
-local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, count)
+local function ApplyIconDuration(button, unit, auraInstanceID, expiration, duration)
+	local cd = button.Cooldown
+	if not cd then
+		return
+	end
+
+	local durObj = auraInstanceID and C_UnitAuras_GetAuraDuration and C_UnitAuras_GetAuraDuration(unit, auraInstanceID)
+	if durObj and cd.SetCooldownFromDurationObject then
+		cd:SetCooldownFromDurationObject(durObj)
+		button:SetScript("OnUpdate", nil)
+		return
+	end
+
+	if NotSecret(expiration) and NotSecret(duration) and expiration and duration and expiration > 0 and duration > 0 then
+		cd:SetCooldown(expiration - duration, duration)
+	else
+		cd:Clear()
+	end
+end
+
+local function ApplyBarDuration(bar, unit, auraInstanceID, expiration, duration)
+	local durObj = auraInstanceID and C_UnitAuras_GetAuraDuration and C_UnitAuras_GetAuraDuration(unit, auraInstanceID)
+	if durObj and bar.SetTimerDuration then
+		bar:SetTimerDuration(durObj)
+		bar:SetScript("OnUpdate", nil)
+		return
+	end
+
+	if NotSecret(expiration) and NotSecret(duration) and expiration and duration and expiration > 0 and duration > 0 then
+		bar.Expiration = expiration
+		bar.Duration = duration
+		bar:SetMinMaxValues(0, duration)
+		bar:SetScript("OnUpdate", OnUpdate)
+	else
+		bar:SetScript("OnUpdate", nil)
+		bar:SetMinMaxValues(0, 1)
+		bar:SetValue(1)
+	end
+end
+
+local function UpdateIcon(self, unit, spellID, texture, id, expiration, duration, count, auraInstanceID)
 	local AuraTrack = self.AuraTrack
 
 	if id > AuraTrack.MaxAuras then
@@ -141,7 +197,7 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 	local iconSize = AuraTrack.IconSize
 	local spacing = AuraTrack.Spacing
 	local PositionX = (id * iconSize) - iconSize + (spacing * id)
-	local color = Tracker[spellID]
+	local color = AuraTrack.Tracker[spellID]
 	local r, g, b = color[1], color[2], color[3]
 
 	if not AuraTrack.Auras[id] then
@@ -167,15 +223,13 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 		AuraTrack.Auras[id].Count:SetPoint("CENTER", 1, 0)
 	end
 
-	AuraTrack.Auras[id].Expiration = expiration
-	AuraTrack.Auras[id].Duration = duration
 	if AuraTrack.Auras[id].Shadow then
 		AuraTrack.Auras[id].Shadow:SetBackdropColor(r * 0.2, g * 0.2, b * 0.2)
 	end
-	AuraTrack.Auras[id].Cooldown:SetCooldown(expiration - duration, duration)
+	ApplyIconDuration(AuraTrack.Auras[id], unit, auraInstanceID, expiration, duration)
 	AuraTrack.Auras[id]:Show()
 
-	if count and count > 1 then
+	if NotSecret(count) and count and count > 1 then
 		AuraTrack.Auras[id].Count:SetText(count)
 	else
 		AuraTrack.Auras[id].Count:SetText("")
@@ -188,7 +242,7 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 	end
 end
 
-local function UpdateBar(self, _, spellID, _, id, expiration, duration)
+local function UpdateBar(self, unit, spellID, _, id, expiration, duration, _, auraInstanceID)
 	local AuraTrack = self.AuraTrack
 	local Orientation = self.Health:GetOrientation()
 	local Size = Orientation == "HORIZONTAL" and AuraTrack:GetHeight() or AuraTrack:GetWidth()
@@ -200,7 +254,7 @@ local function UpdateBar(self, _, spellID, _, id, expiration, duration)
 		return
 	end
 
-	local color = Tracker[spellID]
+	local color = AuraTrack.Tracker[spellID]
 	local r, g, b = color[1], color[2], color[3]
 	local Position = (id * AuraTrack.Thickness) - AuraTrack.Thickness
 	local X = Orientation == "VERTICAL" and -Position or 0
@@ -223,23 +277,13 @@ local function UpdateBar(self, _, spellID, _, id, expiration, duration)
 		end
 	end
 
-	AuraTrack.Auras[id].Expiration = expiration
-	AuraTrack.Auras[id].Duration = duration
 	AuraTrack.Auras[id]:SetStatusBarTexture(AuraTrack.Texture)
 	AuraTrack.Auras[id]:SetStatusBarColor(r, g, b)
 	if AuraTrack.Auras[id].Shadow then
 		AuraTrack.Auras[id].Shadow:SetBackdropColor(r * 0.2, g * 0.2, b * 0.2)
 	end
 
-	if expiration > 0 and duration > 0 then
-		AuraTrack.Auras[id]:SetMinMaxValues(0, duration)
-		AuraTrack.Auras[id]:SetScript("OnUpdate", OnUpdate)
-	else
-		AuraTrack.Auras[id]:SetScript("OnUpdate", nil)
-		AuraTrack.Auras[id]:SetMinMaxValues(0, 1)
-		AuraTrack.Auras[id]:SetValue(1)
-	end
-
+	ApplyBarDuration(AuraTrack.Auras[id], unit, auraInstanceID, expiration, duration)
 	AuraTrack.Auras[id]:Show()
 end
 
@@ -261,19 +305,32 @@ local function Update(self, _, unit)
 
 	if C_UnitAuras_GetAuraDataByIndex then
 		for i = 1, 40 do
-			local spellID, texture, count, duration, expiration, caster = ReadTrackedAura(
+			local spellID, texture, count, duration, expiration, caster, auraInstanceID = ReadTrackedAura(
 				C_UnitAuras_GetAuraDataByIndex(unit, i, "HELPFUL")
 			)
 
-			if spellID then
+			-- When spellId is secret (SecretWhenUnitAuraRestricted), fingerprint like Ellesmere.
+			if not spellID and auraInstanceID and K.IdentifySecretPlayerAura then
+				spellID = K.IdentifySecretPlayerAura(unit, auraInstanceID)
+				if spellID then
+					if IsSecret(texture) or not texture then
+						texture = SECRET_SPELL_ICONS[spellID]
+					end
+					if IsSecret(caster) or not caster then
+						caster = "player"
+					end
+				end
+			end
+
+			if spellID and NotSecret(caster) and (caster == "player" or caster == "pet") then
 				local track = AuraTrack.Tracker[spellID]
-				if track and (caster == "player" or caster == "pet") then
+				if track then
 					ID = ID + 1
 
 					if AuraTrack.Icons then
-						UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
+						UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count, auraInstanceID)
 					else
-						UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
+						UpdateBar(self, unit, spellID, texture, ID, expiration, duration, count, auraInstanceID)
 					end
 				end
 			end
@@ -304,7 +361,7 @@ local function Enable(self)
 
 		AuraTrack.Tracker = AuraTrack.Tracker or Tracker
 		AuraTrack.Thickness = AuraTrack.Thickness or 5
-		AuraTrack.Texture = AuraTrack.Texture or [[Interface\\TargetingFrame\\UI-StatusBar]]
+		AuraTrack.Texture = AuraTrack.Texture or "Interface\\TargetingFrame\\UI-StatusBar"
 		AuraTrack.SpellTextures = AuraTrack.SpellTextures or AuraTrack.Icons == nil and true
 		AuraTrack.Icons = AuraTrack.Icons or AuraTrack.Icons == nil and true
 		AuraTrack.Auras = {}

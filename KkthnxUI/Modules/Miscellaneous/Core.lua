@@ -532,7 +532,8 @@ function Module:CreateTradeTargetInfo()
 		_G.TradeFrameRecipientNameText:SetTextColor(r or 1, g or 1, b or 1)
 
 		local guid = UnitGUID("NPC")
-		if not guid then
+		-- UnitGUID is SecretWhenUnitIdentityRestricted — don't pass opaque GUIDs to friend APIs.
+		if not guid or K.IsSecret(guid) then
 			infoText:SetText("|cffff0000" .. L["Stranger"])
 			return
 		end
@@ -549,60 +550,6 @@ function Module:CreateTradeTargetInfo()
 	updateColor()
 	_G.TradeFrame:HookScript("OnShow", updateColor)
 	hooksecurefunc("TradeFrame_Update", updateColor)
-end
-
--- REASON: Adds Alt+RightClick functionality to buy a full stack from a merchant instantly.
-do
-	local sessionCache = {}
-	local pendingItemLink, pendingItemID
-
-	StaticPopupDialogs["BUY_STACK"] = {
-		text = L["Stack Buying Check"],
-		button1 = YES,
-		button2 = NO,
-		OnAccept = function()
-			if not pendingItemLink then
-				return
-			end
-			_G.BuyMerchantItem(pendingItemID, GetMerchantItemMaxStack(pendingItemID))
-			sessionCache[pendingItemLink] = true
-			pendingItemLink = nil
-		end,
-		hideOnEscape = 1,
-		hasItemFrame = 1,
-	}
-
-	-- REASON: hooksecurefunc is the correct taint-safe approach; avoids clobbering Blizzard's dispatch chain.
-	-- WARNING: The original always runs before this hook; our stack-dialog feature is purely additive and
-	-- does not need to suppress the original modified-click behavior.
-	hooksecurefunc("MerchantItemButton_OnModifiedClick", function(self)
-		if not IsAltKeyDown() then
-			return
-		end
-
-		pendingItemID = self:GetID()
-		pendingItemLink = GetMerchantItemLink(pendingItemID)
-		if not pendingItemLink then
-			return
-		end
-
-		local name, _, quality, _, _, _, _, maxStack, _, texture = C_Item_GetItemInfo(pendingItemLink)
-		if maxStack and maxStack > 1 then
-			if not sessionCache[pendingItemLink] then
-				local r, g, b = C_Item_GetItemQualityColor(quality or 1)
-				StaticPopup_Show("BUY_STACK", " ", " ", {
-					["texture"] = texture,
-					["name"] = name,
-					["color"] = { r, g, b, 1 },
-					["link"] = pendingItemLink,
-					["index"] = pendingItemID,
-					["count"] = maxStack,
-				})
-			else
-				_G.BuyMerchantItem(pendingItemID, GetMerchantItemMaxStack(pendingItemID))
-			end
-		end
-	end)
 end
 
 -- REASON: Plays a distinct sound when receiving a resurrection request.

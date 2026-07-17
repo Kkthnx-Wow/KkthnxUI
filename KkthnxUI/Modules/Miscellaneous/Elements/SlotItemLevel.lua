@@ -7,9 +7,8 @@
 -- - Events: PLAYER_EQUIPMENT_CHANGED, INSPECT_READY, ADDON_LOADED
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
-local TooltipModule = K:GetModule("Tooltip")
 
 -- PERF: Localize global functions and environment for faster lookups.
 local ipairs = _G.ipairs
@@ -25,11 +24,12 @@ local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local type = _G.type
+local format = string.format
 
 local _G = _G
-local C_AzeriteEmpoweredItem_IsPowerSelected = _G.C_AzeriteEmpoweredItem.IsPowerSelected
+local C_Item_GetItemGem = _G.C_Item.GetItemGem
 local C_Item_GetItemInfoInstant = _G.C_Item.GetItemInfoInstant
-local C_Spell_GetSpellInfo = _G.C_Spell.GetSpellInfo
+local C_PaperDollInfo = _G.C_PaperDollInfo
 local CreateFrame = _G.CreateFrame
 local GetCurrentGuildBankTab = _G.GetCurrentGuildBankTab
 local GetGuildBankItemLink = _G.GetGuildBankItemLink
@@ -42,11 +42,38 @@ local GetTradePlayerItemLink = _G.GetTradePlayerItemLink
 local GetTradeTargetItemLink = _G.GetTradeTargetItemLink
 local hooksecurefunc = _G.hooksecurefunc
 local IsSpellKnown = _G.IsSpellKnown
-local ItemLocation = _G.ItemLocation
 local ItemObject = _G.Item
 local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
+local GameTooltip = _G.GameTooltip
+
+-- Icon crop for KKUI borders (Init.lua K.TexCoords). SetTexture can reset this — reapply after every paint.
+local ICON_L, ICON_R, ICON_T, ICON_B = K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4]
+
+local function ApplyOverlayIconTexture(iconTexture, file)
+	iconTexture:SetTexture(file)
+	if file then
+		iconTexture:SetTexCoord(ICON_L, ICON_R, ICON_T, ICON_B)
+	end
+end
+
+local NotSecret = K.NotSecret
+
+-- Midnight enchant slots: Wrist/Back removed; Head/Shoulder back. Indices = inventory slot ids.
+local ENCHANTABLE_SLOTS = {
+	[1] = true, -- Head
+	[3] = true, -- Shoulder
+	[5] = true, -- Chest
+	[7] = true, -- Legs
+	[8] = true, -- Feet
+	[11] = true, -- Finger 1
+	[12] = true, -- Finger 2
+	[16] = true, -- Main Hand
+	[17] = true, -- Off Hand (shields/holdables skipped at scan time)
+}
+
+local MISSING_ENCHANT_ICON = 134400 -- inv_misc_questionmark
 
 -- SG: Constants
 local ITEM_LEVEL_STRING = _G.ITEM_LEVEL
@@ -62,21 +89,6 @@ local INVSLOT_TABARD = _G.INVSLOT_TABARD
 local function getItemInfoCompat(itemIdentifier)
 	if _G.C_Item and _G.C_Item.GetItemInfo then
 		return _G.C_Item.GetItemInfo(itemIdentifier)
-	end
-end
-
--- REASON: Wrapper for retrieving spell info with fallback for older API versions.
-local function getSpellInfoWrapper(spellIdentifier)
-	if not spellIdentifier then
-		return
-	end
-
-	if C_Spell_GetSpellInfo then
-		local spellInfoData = C_Spell_GetSpellInfo(spellIdentifier)
-		if not spellInfoData then
-			return
-		end
-		return spellInfoData.name, spellInfoData.rank, spellInfoData.iconID, spellInfoData.castTime, spellInfoData.minRange, spellInfoData.maxRange, spellInfoData.spellID, spellInfoData.originalIconID
 	end
 end
 
@@ -130,19 +142,52 @@ function Module:getInventorySlotAnchor(slotIndex)
 	end
 end
 
+local function onGemIconEnter(hitFrame)
+	if not hitFrame.gemLink then
+		return
+	end
+	GameTooltip:SetOwner(hitFrame, "ANCHOR_RIGHT")
+	GameTooltip:SetHyperlink(hitFrame.gemLink)
+	GameTooltip:Show()
+end
+
+local function onGemIconLeave()
+	GameTooltip:Hide()
+end
+
 function Module:createSlotIconTexture(parentSlotFrame, anchorPoint, offsetX, offsetY)
-	local iconTexture = parentSlotFrame:CreateTexture(nil, "OVERLAY")
+	-- Icon owns size/crop; border is a sibling wrap (NDui ReskinIcon / pre-hitframe KKUI).
+	-- Hitframe-as-parent + inset made the Blizzard chrome show inside our border.
+	local iconTexture = parentSlotFrame:CreateTexture(nil, "OVERLAY", nil, 7)
 	iconTexture:SetPoint(anchorPoint, offsetX, offsetY)
 	iconTexture:SetSize(14, 14)
-	iconTexture:SetTexCoord(_G.unpack(K.TexCoords))
+	iconTexture:SetTexCoord(ICON_L, ICON_R, ICON_T, ICON_B)
 
+	-- 7th arg "" skips KKUI_Background so the fill never paints over the gem.
 	iconTexture.bg = CreateFrame("Frame", nil, parentSlotFrame)
 	iconTexture.bg:SetAllPoints(iconTexture)
-	iconTexture.bg:SetFrameLevel(101)
-	iconTexture.bg:CreateBorder()
+	iconTexture.bg:SetFrameLevel(parentSlotFrame:GetFrameLevel() + 3)
+	iconTexture.bg:CreateBorder(nil, nil, nil, nil, nil, nil, "")
+	iconTexture.bg:EnableMouse(true)
+	iconTexture.bg:SetScript("OnEnter", onGemIconEnter)
+	iconTexture.bg:SetScript("OnLeave", onGemIconLeave)
 	iconTexture.bg:Hide()
 
 	return iconTexture
+end
+
+local function assertGemOverlayLevel(parentSlotFrame, iconTexture)
+	if not (parentSlotFrame and iconTexture and iconTexture.bg) then
+		return
+	end
+	iconTexture.bg:SetFrameLevel(parentSlotFrame:GetFrameLevel() + 3)
+end
+
+local function assertMissingOverlayLevel(parentSlotFrame, missingIcon)
+	if not (parentSlotFrame and missingIcon and missingIcon.bg) then
+		return
+	end
+	missingIcon.bg:SetFrameLevel(parentSlotFrame:GetFrameLevel() + 4)
 end
 
 local function onItemStringEnter(stringFrame)
@@ -165,20 +210,13 @@ local MISSING_ENCHANT_OFFSETS = {
 }
 
 local function onMissingEnchantIconEnter(hitFrame)
-	_G.GameTooltip:SetOwner(hitFrame, "ANCHOR_RIGHT")
-
-	local slotDisplayName = hitFrame.KKUI_SlotName
-	if slotDisplayName and slotDisplayName ~= "" then
-		_G.GameTooltip:AddLine("Missing Enchant: " .. slotDisplayName, 1, 0.1, 0.1)
-	else
-		_G.GameTooltip:AddLine("Missing Enchant", 1, 0.1, 0.1)
-	end
-
-	_G.GameTooltip:Show()
+	GameTooltip:SetOwner(hitFrame, "ANCHOR_RIGHT")
+	GameTooltip:SetText(format(L["Missing Enchant: %s"], hitFrame.KKUI_SlotName or ""), 1, 0.2, 0.2)
+	GameTooltip:Show()
 end
 
 local function onMissingEnchantIconLeave()
-	_G.GameTooltip:Hide()
+	GameTooltip:Hide()
 end
 
 function Module:getMissingEnchantAnchor(slotIndex, anchorPoint, offsetX, offsetY)
@@ -201,21 +239,21 @@ end
 function Module:ensureMissingEnchantIcon(parentSlotFrame, slotToken, anchorPoint, offsetX, offsetY)
 	local enchantIcon = parentSlotFrame.noEnchantTexture
 	if not enchantIcon then
-		enchantIcon = parentSlotFrame:CreateTexture(nil, "OVERLAY")
+		enchantIcon = parentSlotFrame:CreateTexture(nil, "OVERLAY", nil, 7)
 		enchantIcon:SetSize(MISSING_ENCHANT_ICON_SIZE, MISSING_ENCHANT_ICON_SIZE)
-		enchantIcon:SetTexCoord(_G.unpack(K.TexCoords))
+		ApplyOverlayIconTexture(enchantIcon, MISSING_ENCHANT_ICON)
 		enchantIcon:Hide()
 
-		local hitFrame = CreateFrame("Frame", nil, parentSlotFrame)
-		hitFrame:SetAllPoints(enchantIcon)
-		hitFrame:SetFrameLevel(parentSlotFrame:GetFrameLevel())
-		hitFrame:CreateBorder()
-		hitFrame:EnableMouse(true)
-		hitFrame:SetScript("OnEnter", onMissingEnchantIconEnter)
-		hitFrame:SetScript("OnLeave", onMissingEnchantIconLeave)
-		hitFrame:Hide()
+		local bg = CreateFrame("Frame", nil, parentSlotFrame)
+		bg:SetAllPoints(enchantIcon)
+		bg:SetFrameLevel(parentSlotFrame:GetFrameLevel() + 4)
+		bg:CreateBorder(nil, nil, nil, nil, nil, nil, "")
+		bg:EnableMouse(true)
+		bg:SetScript("OnEnter", onMissingEnchantIconEnter)
+		bg:SetScript("OnLeave", onMissingEnchantIconLeave)
+		bg:Hide()
 
-		enchantIcon.bg = hitFrame
+		enchantIcon.bg = bg
 		parentSlotFrame.noEnchantTexture = enchantIcon
 	end
 
@@ -223,6 +261,7 @@ function Module:ensureMissingEnchantIcon(parentSlotFrame, slotToken, anchorPoint
 	enchantIcon:ClearAllPoints()
 	enchantIcon:SetPoint(anchorPoint, parentSlotFrame, offsetX, offsetY)
 	enchantIcon.bg:SetAllPoints(enchantIcon)
+	assertMissingOverlayLevel(parentSlotFrame, enchantIcon)
 
 	return enchantIcon
 end
@@ -253,10 +292,13 @@ function Module:createSlotItemLevelStrings(parentFrame, prefixName)
 				slotFrame.enchantText:HookScript("OnShow", onItemStringLeave)
 
 				local enchantPoint, enchantOffsetX, enchantOffsetY = Module:getMissingEnchantAnchor(slotIndex, anchorPoint, offsetX, offsetY)
-				Module:ensureMissingEnchantIcon(slotFrame, slotToken, enchantPoint, enchantOffsetX, enchantOffsetY)
+				-- Only enchantable slots get the missing marker (NexEnhance pattern).
+				if ENCHANTABLE_SLOTS[slotIndex] then
+					Module:ensureMissingEnchantIcon(slotFrame, slotToken, enchantPoint, enchantOffsetX, enchantOffsetY)
+				end
 
 				for i = 1, 10 do
-					local horizontalOffset = (i - 1) * 20 + 5
+					local horizontalOffset = (i - 1) * 18 + 5
 					local iconOffsetX = offsetX > 0 and offsetX + horizontalOffset or offsetX - horizontalOffset
 					local iconOffsetY = slotIndex > 15 and 20 or 2
 					slotFrame["textureIcon" .. i] = Module:createSlotIconTexture(slotFrame, anchorPoint, iconOffsetX, iconOffsetY)
@@ -268,105 +310,32 @@ function Module:createSlotItemLevelStrings(parentFrame, prefixName)
 	parentFrame.fontCreated = true
 end
 
--- SG: Azerite Trait Detection Logic
-local AZERITE_SLOTS = {
-	[1] = true,
-	[3] = true,
-	[5] = true,
-}
-
-local slotLocationCache = {}
-local function getInventorySlotItemLocation(slotIndex)
-	if not AZERITE_SLOTS[slotIndex] then
-		return
-	end
-
-	local itemLoc = slotLocationCache[slotIndex]
-	if not itemLoc then
-		itemLoc = ItemLocation:CreateFromEquipmentSlot(slotIndex)
-		slotLocationCache[slotIndex] = itemLoc
-	end
-	return itemLoc
-end
-
--- REASON: Scans Azerite gear for selected powers and displays corresponding spell icons on the gear slot.
-function Module:updateAzeriteTraitIcons(parentSlotFrame, slotIndex, itemLink)
-	if not C["Misc"].AzeriteTraits then
-		return
-	end
-
-	local empoweredItemLocation = getInventorySlotItemLocation(slotIndex)
-	if not empoweredItemLocation then
-		return
-	end
-
-	local tierPowerInfo = TooltipModule:Azerite_UpdateTier(itemLink)
-	if not tierPowerInfo then
-		return
-	end
-
-	for i = 1, 2 do
-		local azeritePowerIDs = tierPowerInfo[i] and tierPowerInfo[i].azeritePowerIDs
-		if not azeritePowerIDs or azeritePowerIDs[1] == 13 then
-			break
-		end
-
-		for _, powerID in pairs(azeritePowerIDs) do
-			if C_AzeriteEmpoweredItem_IsPowerSelected(empoweredItemLocation, powerID) then
-				local azeriteSpellID = TooltipModule:Azerite_PowerToSpell(powerID)
-				local spellNameText, _, spellIconID = getSpellInfoWrapper(azeriteSpellID)
-				local traitIconTexture = parentSlotFrame["textureIcon" .. i]
-				if spellNameText and traitIconTexture then
-					traitIconTexture:SetTexture(spellIconID)
-					traitIconTexture.bg:Show()
-				end
-			end
-		end
-	end
-end
-
--- SG: Enchantable Slot List
-local ENCHANT_TARGET_SLOTS = {
-	INVTYPE_CHEST = true,
-	INVTYPE_ROBE = true,
-	INVTYPE_LEGS = true,
-	INVTYPE_FEET = true,
-	INVTYPE_WRIST = true,
-	INVTYPE_FINGER = true,
-	INVTYPE_CLOAK = true,
-	INVTYPE_WEAPON = true,
-	INVTYPE_2HWEAPON = true,
-	INVTYPE_WEAPONMAINHAND = true,
-	INVTYPE_RANGED = true,
-	INVTYPE_RANGEDRIGHT = true,
-	INVTYPE_WEAPONOFFHAND = true,
-}
-
 local function isOffhandEnchantable(targetUnit, slotIndex)
 	local itemLink = GetInventoryItemLink(targetUnit, slotIndex)
 	if itemLink then
 		local equipLocation = select(4, C_Item_GetItemInfoInstant(itemLink))
+		-- Shields / off-hand frills don't take weapon enchants.
 		return equipLocation ~= "INVTYPE_HOLDABLE" and equipLocation ~= "INVTYPE_SHIELD"
 	end
 	return false
 end
 
 function Module:isSlotEnchantable(targetUnit, slotIndex)
+	if not ENCHANTABLE_SLOTS[slotIndex] then
+		return false
+	end
 	if slotIndex == INVSLOT_OFFHAND then
 		return isOffhandEnchantable(targetUnit, slotIndex)
 	end
+	return GetInventoryItemLink(targetUnit, slotIndex) ~= nil
+end
 
-	local itemLink = GetInventoryItemLink(targetUnit, slotIndex)
-	if itemLink then
-		local equipLocation = select(4, C_Item_GetItemInfoInstant(itemLink))
-		return ENCHANT_TARGET_SLOTS[equipLocation] or false
-	end
-
-	return false
+local function shouldFullScanGemsEnchants()
+	return C["Misc"].GemEnchantInfo or C["Misc"].MissingEnchant
 end
 
 -- REASON: Updates the item level text and iconography (enchantments, gems) for a specific gear slot.
-function Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQuality)
+function Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQuality, itemLink, targetUnit)
 	local infoType = type(gearLevelInfo)
 	local itemLevelValue = (infoType == "table") and gearLevelInfo.iLvl or gearLevelInfo
 
@@ -382,25 +351,34 @@ function Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQ
 		return
 	end
 
+	local showGemsEnchants = C["Misc"].GemEnchantInfo
 	local enchantTextContent = gearLevelInfo.enchantText
-	if enchantTextContent and enchantTextContent ~= "" then
-		parentSlotFrame.enchantText:SetText(enchantTextContent)
+	local hasEnchant = enchantTextContent and enchantTextContent ~= ""
+
+	if showGemsEnchants and hasEnchant then
+		-- Blizzard prefixes some lines "Source - EnchantName"; strip the noise.
+		parentSlotFrame.enchantText:SetText((enchantTextContent:gsub("^.-%s%-%s", "")))
 		parentSlotFrame.enchantText:SetTextColor(0, 1, 0)
-
-		parentSlotFrame.noEnchantTexture:Hide()
-		parentSlotFrame.noEnchantTexture.bg:Hide()
-	elseif Module:isSlotEnchantable("player", parentSlotFrame:GetID()) then
-		parentSlotFrame.enchantText:SetText("")
-
-		parentSlotFrame.noEnchantTexture:SetTexture("Interface\\Icons\\inv_enchant_formulasuperior_01")
-		parentSlotFrame.noEnchantTexture:SetVertexColor(1, 0.1, 0.1, 1)
-		parentSlotFrame.noEnchantTexture:SetDesaturated(true)
-		parentSlotFrame.noEnchantTexture:Show()
-		parentSlotFrame.noEnchantTexture.bg:Show()
 	else
 		parentSlotFrame.enchantText:SetText("")
-		parentSlotFrame.noEnchantTexture:Hide()
-		parentSlotFrame.noEnchantTexture.bg:Hide()
+	end
+
+	local missingIcon = parentSlotFrame.noEnchantTexture
+	if missingIcon then
+		local showMissing = C["Misc"].MissingEnchant
+			and Module:isSlotEnchantable(targetUnit or "player", parentSlotFrame:GetID())
+			and not hasEnchant
+		if showMissing then
+			ApplyOverlayIconTexture(missingIcon, MISSING_ENCHANT_ICON)
+			missingIcon:SetVertexColor(1, 0.2, 0.2, 1)
+			missingIcon:SetDesaturated(false)
+			assertMissingOverlayLevel(parentSlotFrame, missingIcon)
+			missingIcon:Show()
+			missingIcon.bg:Show()
+		else
+			missingIcon:Hide()
+			missingIcon.bg:Hide()
+		end
 	end
 
 	local currentGemIndex, currentEssenceIndex = 1, 1
@@ -408,17 +386,19 @@ function Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQ
 		local slotIconTexture = parentSlotFrame["textureIcon" .. i]
 		local iconBackgroundFrame = slotIconTexture.bg
 
-		local gemTextureID = gearLevelInfo.gems and gearLevelInfo.gems[currentGemIndex]
+		local gemTextureID = showGemsEnchants and gearLevelInfo.gems and gearLevelInfo.gems[currentGemIndex]
 		local gemColorData = gearLevelInfo.gemsColor and gearLevelInfo.gemsColor[currentGemIndex]
-		local essenceData = (not gemTextureID) and (gearLevelInfo.essences and gearLevelInfo.essences[currentEssenceIndex])
+		local essenceData = showGemsEnchants and (not gemTextureID) and (gearLevelInfo.essences and gearLevelInfo.essences[currentEssenceIndex])
 
 		if gemTextureID then
-			slotIconTexture:SetTexture(gemTextureID)
+			ApplyOverlayIconTexture(slotIconTexture, gemTextureID)
+			iconBackgroundFrame.gemLink = itemLink and C_Item_GetItemGem and select(2, C_Item_GetItemGem(itemLink, currentGemIndex)) or nil
 			if gemColorData then
 				iconBackgroundFrame.KKUI_Border:SetVertexColor(gemColorData.r, gemColorData.g, gemColorData.b)
 			else
 				iconBackgroundFrame.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
+			assertGemOverlayLevel(parentSlotFrame, slotIconTexture)
 			iconBackgroundFrame:Show()
 			currentGemIndex = currentGemIndex + 1
 		elseif essenceData and next(essenceData) then
@@ -429,24 +409,31 @@ function Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQ
 				iconBackgroundFrame.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 
-			slotIconTexture:SetTexture(essenceData[1])
+			ApplyOverlayIconTexture(slotIconTexture, essenceData[1])
+			iconBackgroundFrame.gemLink = nil
+			assertGemOverlayLevel(parentSlotFrame, slotIconTexture)
 			iconBackgroundFrame:Show()
 			currentEssenceIndex = currentEssenceIndex + 1
 		else
-			slotIconTexture:SetTexture(nil)
+			ApplyOverlayIconTexture(slotIconTexture, nil)
+			iconBackgroundFrame.gemLink = nil
 			iconBackgroundFrame:Hide()
 		end
 	end
 end
 
-function Module:refreshSlotItemLevelDisplay(itemLink, targetUnit, slotIndex, parentSlotFrame)
+function Module:refreshSlotItemLevelDisplay(itemLink, targetUnit, slotIndex, parentSlotFrame, fullScan)
 	_G.C_Timer.After(0.1, function()
-		local itemQuality = select(3, getItemInfoCompat(itemLink))
-		local gearLevelInfo = K.GetItemLevel(itemLink, targetUnit, slotIndex, C["Misc"].GemEnchantInfo)
-		if gearLevelInfo == "tooSoon" then
+		if not UnitExists(targetUnit) then
 			return
 		end
-		Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQuality)
+		local liveLink = GetInventoryItemLink(targetUnit, slotIndex) or itemLink
+		if not liveLink then
+			return
+		end
+		local itemQuality = select(3, getItemInfoCompat(liveLink))
+		local gearLevelInfo = K.GetItemLevel(liveLink, targetUnit, slotIndex, fullScan)
+		Module:updateSlotItemLevelDisplay(parentSlotFrame, gearLevelInfo, itemQuality, liveLink, targetUnit)
 	end)
 end
 
@@ -456,6 +443,7 @@ function Module:setupGearItemLevelDisplay(parentFrame, prefixName, targetUnit)
 	end
 
 	Module:createSlotItemLevelStrings(parentFrame, prefixName)
+	local fullScan = shouldFullScanGemsEnchants()
 
 	for slotIndex, slotToken in ipairs(INVENTORY_SLOT_NAMES) do
 		if slotIndex ~= 4 then
@@ -464,32 +452,46 @@ function Module:setupGearItemLevelDisplay(parentFrame, prefixName, targetUnit)
 				slotFrame.iLvlText:SetText("")
 				slotFrame.enchantText:SetText("")
 
+				if slotFrame.noEnchantTexture then
+					slotFrame.noEnchantTexture:Hide()
+					slotFrame.noEnchantTexture.bg:Hide()
+				end
+
 				for i = 1, 10 do
 					local iconTexture = slotFrame["textureIcon" .. i]
-					iconTexture:SetTexture(nil)
+					ApplyOverlayIconTexture(iconTexture, nil)
+					iconTexture.bg.gemLink = nil
 					iconTexture.bg:Hide()
 				end
 
 				local itemLink = GetInventoryItemLink(targetUnit, slotIndex)
 				if itemLink then
 					local itemQuality = select(3, getItemInfoCompat(itemLink))
-					local gearLevelInfo = K.GetItemLevel(itemLink, targetUnit, slotIndex, C["Misc"].GemEnchantInfo)
-
-					if gearLevelInfo == "tooSoon" then
-						Module:refreshSlotItemLevelDisplay(itemLink, targetUnit, slotIndex, slotFrame)
+					-- Quality nil = tooltip cache still warming; retry shortly (old "tooSoon" path was dead).
+					if not itemQuality then
+						Module:refreshSlotItemLevelDisplay(itemLink, targetUnit, slotIndex, slotFrame, fullScan)
 					else
-						Module:updateSlotItemLevelDisplay(slotFrame, gearLevelInfo, itemQuality)
+						local gearLevelInfo = K.GetItemLevel(itemLink, targetUnit, slotIndex, fullScan)
+						Module:updateSlotItemLevelDisplay(slotFrame, gearLevelInfo, itemQuality, itemLink, targetUnit)
 					end
-
-					if prefixName == "Character" then
-						Module:updateAzeriteTraitIcons(slotFrame, slotIndex, itemLink)
-					end
-				else
-					slotFrame.noEnchantTexture:Hide()
-					slotFrame.noEnchantTexture.bg:Hide()
 				end
 			end
 		end
+	end
+end
+
+function Module:RefreshGearItemLevelOverlays()
+	if not C["Misc"].ItemLevel then
+		return
+	end
+
+	if _G.CharacterFrame and _G.CharacterFrame:IsShown() then
+		Module:setupGearItemLevelDisplay(_G.CharacterFrame, "Character", "player")
+	end
+
+	local inspectFrame = _G.InspectFrame
+	if inspectFrame and inspectFrame:IsShown() and inspectFrame.unit and UnitExists(inspectFrame.unit) then
+		Module:setupGearItemLevelDisplay(inspectFrame, "Inspect", inspectFrame.unit)
 	end
 end
 
@@ -510,13 +512,23 @@ local function queuePlayerGearItemLevelUpdate()
 end
 
 local gearItemListTable = {}
--- REASON: Manually calculates the average item level of a unit (player or target) for display on the inspection window.
+-- Prefer Blizzard's inspect average when available; fall back to manual scan.
 local function calculateAverageGearLevel(targetUnit, displayFontString)
 	if not displayFontString then
 		return
 	end
 
 	displayFontString:Hide()
+
+	if C_PaperDollInfo and C_PaperDollInfo.GetInspectItemLevel then
+		local equippedItemLevel = C_PaperDollInfo.GetInspectItemLevel(targetUnit)
+		if equippedItemLevel and NotSecret(equippedItemLevel) then
+			displayFontString:SetFormattedText(ITEM_LEVEL_STRING, equippedItemLevel)
+			displayFontString:Show()
+			return
+		end
+	end
+
 	table_wipe(gearItemListTable)
 
 	local mainHandEquipLoc, offHandEquipLoc
@@ -555,11 +567,17 @@ local function calculateAverageGearLevel(targetUnit, displayFontString)
 	end
 
 	local totalGearItemLevel = 0
+	local countedSlots = 0
 	for i = 1, #gearItemListTable do
 		local itemLevelValue = gearItemListTable[i]:GetCurrentItemLevel()
 		if itemLevelValue then
 			totalGearItemLevel = totalGearItemLevel + itemLevelValue
+			countedSlots = countedSlots + 1
 		end
+	end
+
+	if countedSlots == 0 then
+		return
 	end
 
 	displayFontString:SetFormattedText(ITEM_LEVEL_STRING, totalGearItemLevel / totalScannedSlots)
@@ -570,24 +588,32 @@ end
 -- INSPECT_READY passes (event, targetGUID) and the leading event must be ignored.
 function Module.updateInspectFrameGearInfo(_, targetGUID)
 	local inspectFrame = _G.InspectFrame
-	if inspectFrame and inspectFrame.unit and UnitGUID(inspectFrame.unit) == targetGUID then
-		Module:setupGearItemLevelDisplay(inspectFrame, "Inspect", inspectFrame.unit)
+	if not (inspectFrame and inspectFrame.unit) then
+		return
+	end
 
-		if not inspectFrame.AvgItemLevelText then
-			local inspectModelFrame = _G.InspectModelFrame
-			if inspectModelFrame then
-				inspectFrame.AvgItemLevelText = K.CreateFontString(inspectModelFrame, 12, "", "OUTLINE", false, "BOTTOM", 0, 46)
-			end
-		end
+	-- UnitGUID / event guid can be secret in instances; comparing secrets throws.
+	local inspectGUID = UnitGUID(inspectFrame.unit)
+	if not (NotSecret(inspectGUID) and NotSecret(targetGUID) and inspectGUID == targetGUID) then
+		return
+	end
 
-		if inspectFrame.AvgItemLevelText then
-			calculateAverageGearLevel(inspectFrame.unit or "target", inspectFrame.AvgItemLevelText)
-		end
+	Module:setupGearItemLevelDisplay(inspectFrame, "Inspect", inspectFrame.unit)
 
-		local modelControlFrame = _G.InspectModelFrameControlFrame
-		if modelControlFrame then
-			modelControlFrame:HookScript("OnShow", modelControlFrame.Hide)
+	if not inspectFrame.AvgItemLevelText then
+		local inspectModelFrame = _G.InspectModelFrame
+		if inspectModelFrame then
+			inspectFrame.AvgItemLevelText = K.CreateFontString(inspectModelFrame, 12, "", "OUTLINE", false, "BOTTOM", 0, 46)
 		end
+	end
+
+	if inspectFrame.AvgItemLevelText then
+		calculateAverageGearLevel(inspectFrame.unit or "target", inspectFrame.AvgItemLevelText)
+	end
+
+	local modelControlFrame = _G.InspectModelFrameControlFrame
+	if modelControlFrame then
+		modelControlFrame:HookScript("OnShow", modelControlFrame.Hide)
 	end
 end
 
@@ -758,7 +784,7 @@ local function replaceChatLinkWithItemLevel(itemLinkStr, itemNameText)
 	if not modifiedChatLink then
 		local itemLevelValue = K.GetItemLevel(itemLinkStr)
 		if itemLevelValue then
-			modifiedChatLink = _G.gsub(itemLinkStr, "|h%[(.-)%]|h", "|h(" .. itemLevelValue .. ChatModule.IsItemHasGem(itemLinkStr) .. ")" .. itemNameText .. "|h")
+			modifiedChatLink = _G.gsub(itemLinkStr, "|h%[(.-)%]|h", "|h(" .. itemLevelValue .. ChatModule:GetItemGemInfo(itemLinkStr) .. ")" .. itemNameText .. "|h")
 			addItemToGearLevelCache(itemLinkStr, modifiedChatLink)
 		end
 	end
@@ -892,6 +918,13 @@ function Module:createImprovedSlotItemLevelDisplay()
 		return
 	end
 
+	-- Live GUI re-fires this; only install hooks once, then refresh open frames.
+	if Module._gearInfoHooksInstalled then
+		Module:RefreshGearItemLevelOverlays()
+		return
+	end
+	Module._gearInfoHooksInstalled = true
+
 	_G.CharacterFrame:HookScript("OnShow", queuePlayerGearItemLevelUpdate)
 	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", queuePlayerGearItemLevelUpdate)
 
@@ -921,9 +954,10 @@ function Module:createImprovedSlotItemLevelDisplay()
 	K:RegisterEvent("ADDON_LOADED", onGuildBankLoaded)
 
 	K:RegisterEvent("PLAYER_LOGOUT", function()
-		table_wipe(slotLocationCache)
 		table_wipe(gearLevelChatCache)
 	end)
+
+	Module:RefreshGearItemLevelOverlays()
 end
 
 Module:RegisterMisc("GearInfo", Module.createImprovedSlotItemLevelDisplay)

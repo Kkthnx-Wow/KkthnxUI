@@ -21,7 +21,10 @@ local UnitExists = UnitExists
 local VehicleExit = VehicleExit
 local PetDismiss = PetDismiss
 local tinsert = table.insert
+local pairs = pairs
 local RegisterStateDriver = RegisterStateDriver
+local UnregisterStateDriver = UnregisterStateDriver
+local InCombatLockdown = InCombatLockdown
 local ceil = math.ceil
 local min = math.min
 local select = select
@@ -569,6 +572,35 @@ function Module:SetActionBarEnabled(enabled)
 		end
 
 		setActionBarFramesShown(false)
+
+		-- Tear down fader so disabled bars don't keep eating events / parenting.
+		local fadeParent = Module.fadeParent
+		if fadeParent then
+			if not InCombatLockdown() then
+				UnregisterStateDriver(fadeParent, "visibility")
+				for _, name in pairs({
+					"KKUI_ActionBar1",
+					"KKUI_ActionBar2",
+					"KKUI_ActionBar3",
+					"KKUI_ActionBar4",
+					"KKUI_ActionBar5",
+					"KKUI_ActionBar6",
+					"KKUI_ActionBar7",
+					"KKUI_ActionBar8",
+					"KKUI_ActionBarPet",
+					"KKUI_ActionBarStance",
+				}) do
+					local bar = _G[name]
+					if bar then
+						bar:SetParent(UIParent)
+					end
+				end
+			end
+			fadeParent:UnregisterAllEvents()
+			fadeParent:SetScript("OnEvent", nil)
+			fadeParent:SetScript("OnUpdate", nil)
+			fadeParent:Hide()
+		end
 
 		if Module.ShowBlizz then
 			Module:ShowBlizz()

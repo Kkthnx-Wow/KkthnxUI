@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <Script file="Categories\ActionBars.lua"/>
+   <Script file="Categories\Announcements.lua"/>
+   <Script file="Categories\Arena.lua"/>
+   <Script file="Categories\Auras.lua"/>
+   <Script file="Categories\Automation.lua"/>
+   <Script file="Categories\Boss.lua"/>
+   <Script file="Categories\Chat.lua"/>
+   <Script file="Categories\DataText.lua"/>
+   <Script file="Categories\General.lua"/>
+   <Script file="Categories\Inventory.lua"/>
+   <Script file="Categories\Loot.lua"/>
+   <Script file="Categories\Minimap.lua"/>
+   <Script file="Categories\Misc.lua"/>
+   <Script file="Categories\Nameplate.lua"/>
+   <Script file="Categories\Party.lua"/>
+   <Script file="Categories\Raid.lua"/>
+   <Script file="Categories\Skins.lua"/>
+   <Script file="Categories\Tooltip.lua"/>
+   <Script file="Categories\Unitframe.lua"/>
+   <Script file="Categories\WorldMap.lua"/>
+   <Script file="Categories\Credits.lua"/>
+</Ui>

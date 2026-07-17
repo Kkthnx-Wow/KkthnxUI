@@ -12,36 +12,90 @@ local Module = K:GetModule("Automation")
 
 -- PERF: Localize globals and API functions to minimize lookup overhead.
 local _G = _G
-local GetSpecialization = GetSpecialization
-local GetSpecializationRole = GetSpecializationRole
+-- BUGFIX: GetSpecializationRole,
+-- UnitSetRole, and UnitGroupRolesAssigned (the legacy string-role APIs previously
+-- used here) do not appear anywhere in Resources/GlobalAPI.lua — only the Enum-based
+-- forms do. Per this addon's own "if not listed, it's deprecated/removed" rule, this
+-- feature was very likely broken. Switched to the verified Enum-based APIs.
+local GetSpecializationRoleEnum = GetSpecializationRoleEnum
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local IsInGroup = IsInGroup
 local IsPartyLFG = IsPartyLFG
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-local UnitSetRole = UnitSetRole
+local UnitGetAvailableRoles = UnitGetAvailableRoles
+local UnitGroupRolesAssignedEnum = UnitGroupRolesAssignedEnum
+local UnitSetRoleEnum = UnitSetRoleEnum
+local AreClassRolesSoftSuggestions = AreClassRolesSoftSuggestions
+local CanShowSetRoleButton = CanShowSetRoleButton
+local HasLFGRestrictions = HasLFGRestrictions
+local C_SpecializationInfo_GetSpecialization = _G.C_SpecializationInfo and _G.C_SpecializationInfo.GetSpecialization
+local C_Scenario_IsInScenario = _G.C_Scenario and _G.C_Scenario.IsInScenario
+
+local LFGRole = Enum.LFGRole
 
 -- ---------------------------------------------------------------------------
 -- Constants & State
 -- ---------------------------------------------------------------------------
 local ROLE_CHANGE_THRESHOLD = 2
+local MIN_SPEC_LEVEL = 10
 local lastRoleChangeTime = 0
 
 -- ---------------------------------------------------------------------------
 -- Internal Logic
 -- ---------------------------------------------------------------------------
+-- REASON: a role can be soft-suggested-only for the
+-- player's class/spec; check availability via UnitGetAvailableRoles instead of
+-- assuming the spec's default role is always settable.
+local function roleIsAvailable(roleEnum)
+	if not roleEnum then
+		return true
+	end
+	if AreClassRolesSoftSuggestions and AreClassRolesSoftSuggestions() then
+		return true
+	end
+	local canTank, canHeal, canDps = UnitGetAvailableRoles("player")
+	if roleEnum == LFGRole.Tank then
+		return canTank
+	elseif roleEnum == LFGRole.Healer then
+		return canHeal
+	elseif roleEnum == LFGRole.Damage then
+		return canDps
+	end
+	return false
+end
+
 local function changePlayerRole(role)
 	-- REASON: Throttles role changes to prevent spamming the server and ensures role is actually different.
 	local currentTime = GetTime()
-	if (currentTime - lastRoleChangeTime > ROLE_CHANGE_THRESHOLD) and UnitGroupRolesAssigned("player") ~= role then
-		UnitSetRole("player", role)
+	if (currentTime - lastRoleChangeTime > ROLE_CHANGE_THRESHOLD) and UnitGroupRolesAssignedEnum("player") ~= role then
+		UnitSetRoleEnum("player", role)
 		lastRoleChangeTime = currentTime
 	end
 end
 
+-- REASON: mirrors the actual conditions Blizzard uses
+-- before showing its own Set Role UI (CanShowSetRoleButton, HasLFGRestrictions,
+-- scenario check) — the previous check only covered level/combat/group/LFG.
 local function shouldSetupAutoRole()
-	-- REASON: Only automate roles for players above level 10 in non-LFG groups while out of combat.
-	return K.Level >= 10 and not InCombatLockdown() and IsInGroup() and not IsPartyLFG()
+	if InCombatLockdown() or not IsInGroup() then
+		return false
+	end
+	if (K.Level or 0) < MIN_SPEC_LEVEL then
+		return false
+	end
+	if CanShowSetRoleButton and not CanShowSetRoleButton() then
+		return false
+	end
+	if IsPartyLFG and IsPartyLFG() then
+		return false
+	end
+	if HasLFGRestrictions and HasLFGRestrictions() then
+		return false
+	end
+	if C_Scenario_IsInScenario and C_Scenario_IsInScenario() then
+		return false
+	end
+	return true
 end
 
 -- ---------------------------------------------------------------------------
@@ -52,13 +106,15 @@ function Module.SetupAutoRole(event)
 		return
 	end
 
-	local spec = GetSpecialization()
-	if spec then
-		local role = GetSpecializationRole(spec)
-		-- REASON: Automatically set role based on the specialization's intended role (TANK, HEALER, DAMAGER).
-		if role and role ~= "NONE" then
-			changePlayerRole(role)
-		end
+	local spec = C_SpecializationInfo_GetSpecialization and C_SpecializationInfo_GetSpecialization()
+	if not spec then
+		return
+	end
+
+	local role = GetSpecializationRoleEnum(spec)
+	-- REASON: Automatically set role based on the specialization's intended role (Tank/Healer/Damage).
+	if role and roleIsAvailable(role) then
+		changePlayerRole(role)
 	end
 end
 

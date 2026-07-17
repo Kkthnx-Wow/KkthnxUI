@@ -228,8 +228,75 @@ function Module.UpdateMapFade(...)
 	end
 end
 
+function Module:CreateWorldMapCoordinates()
+	if self.coordsFrame then
+		return
+	end
+
+	local worldMapFrame = _G.WorldMapFrame
+	local textColor = { r = 240 / 255, g = 197 / 255, b = 0 }
+
+	local coordsFrame = CreateFrame("Frame", nil, worldMapFrame.ScrollContainer)
+	coordsFrame:SetSize(worldMapFrame:GetWidth(), 17)
+	coordsFrame:SetPoint("BOTTOMLEFT", 17, 0)
+	coordsFrame:SetPoint("BOTTOMRIGHT", 0, 0)
+
+	coordsFrame.texture = coordsFrame:CreateTexture(nil, "BACKGROUND")
+	coordsFrame.texture:SetAllPoints()
+	coordsFrame.texture:SetTexture(C["Media"].Textures.White8x8Texture)
+	coordsFrame.texture:SetVertexColor(0.04, 0.04, 0.04, 0.5)
+
+	cursorCoords = worldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
+	cursorCoords:SetFontObject(K.UIFontOutline)
+	cursorCoords:SetFont(select(1, cursorCoords:GetFont()), 13, select(3, cursorCoords:GetFont()))
+	cursorCoords:SetSize(200, 16)
+	cursorCoords:SetParent(coordsFrame)
+	cursorCoords:ClearAllPoints()
+	cursorCoords:SetPoint("BOTTOMLEFT", 152, 1)
+	cursorCoords:SetTextColor(textColor.r, textColor.g, textColor.b)
+	cursorCoords:SetAlpha(0.9)
+
+	playerCoords = worldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
+	playerCoords:SetFontObject(K.UIFontOutline)
+	playerCoords:SetFont(select(1, playerCoords:GetFont()), 13, select(3, playerCoords:GetFont()))
+	playerCoords:SetSize(200, 16)
+	playerCoords:SetParent(coordsFrame)
+	playerCoords:ClearAllPoints()
+	playerCoords:SetPoint("BOTTOMRIGHT", -132, 1)
+	playerCoords:SetTextColor(textColor.r, textColor.g, textColor.b)
+	playerCoords:SetAlpha(0.9)
+
+	hooksecurefunc(worldMapFrame, "OnFrameSizeChanged", self.UpdateMapID)
+	hooksecurefunc(worldMapFrame, "OnMapChanged", self.UpdateMapID)
+
+	self.CoordsUpdater = CreateFrame("Frame", nil, worldMapFrame.ScrollContainer)
+	self.coordsFrame = coordsFrame
+end
+
+function Module:UpdateWorldMapCoordinates()
+	if C["WorldMap"].Coordinates then
+		self:CreateWorldMapCoordinates()
+	end
+
+	local coordsFrame = self.coordsFrame
+	if not coordsFrame then
+		return
+	end
+
+	local enabled = C["WorldMap"].Coordinates
+	coordsFrame:SetShown(enabled)
+
+	if self.CoordsUpdater then
+		if enabled and _G.WorldMapFrame:IsShown() then
+			self.CoordsUpdater:SetScript("OnUpdate", self.UpdateCoords)
+		else
+			self.CoordsUpdater:SetScript("OnUpdate", nil)
+		end
+	end
+end
+
 function Module:WorldMap_OnShow()
-	if Module.CoordsUpdater then
+	if C["WorldMap"].Coordinates and Module.CoordsUpdater then
 		Module.CoordsUpdater:SetScript("OnUpdate", Module.UpdateCoords)
 	end
 
@@ -262,45 +329,7 @@ end
 
 function Module:OnEnable()
 	local worldMapFrame = _G.WorldMapFrame
-	if C["WorldMap"].Coordinates then
-		local textColor = { r = 240 / 255, g = 197 / 255, b = 0 }
-
-		local coordsFrame = CreateFrame("Frame", nil, worldMapFrame.ScrollContainer)
-		coordsFrame:SetSize(worldMapFrame:GetWidth(), 17)
-		coordsFrame:SetPoint("BOTTOMLEFT", 17, 0)
-		coordsFrame:SetPoint("BOTTOMRIGHT", 0, 0)
-
-		coordsFrame.texture = coordsFrame:CreateTexture(nil, "BACKGROUND")
-		coordsFrame.texture:SetAllPoints()
-		coordsFrame.texture:SetTexture(C["Media"].Textures.White8x8Texture)
-		coordsFrame.texture:SetVertexColor(0.04, 0.04, 0.04, 0.5)
-
-		cursorCoords = worldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
-		cursorCoords:SetFontObject(K.UIFontOutline)
-		cursorCoords:SetFont(select(1, cursorCoords:GetFont()), 13, select(3, cursorCoords:GetFont()))
-		cursorCoords:SetSize(200, 16)
-		cursorCoords:SetParent(coordsFrame)
-		cursorCoords:ClearAllPoints()
-		cursorCoords:SetPoint("BOTTOMLEFT", 152, 1)
-		cursorCoords:SetTextColor(textColor.r, textColor.g, textColor.b)
-		cursorCoords:SetAlpha(0.9)
-
-		playerCoords = worldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
-		playerCoords:SetFontObject(K.UIFontOutline)
-		playerCoords:SetFont(select(1, playerCoords:GetFont()), 13, select(3, playerCoords:GetFont()))
-		playerCoords:SetSize(200, 16)
-		playerCoords:SetParent(coordsFrame)
-		playerCoords:ClearAllPoints()
-		playerCoords:SetPoint("BOTTOMRIGHT", -132, 1)
-		playerCoords:SetTextColor(textColor.r, textColor.g, textColor.b)
-		playerCoords:SetAlpha(0.9)
-
-		hooksecurefunc(worldMapFrame, "OnFrameSizeChanged", self.UpdateMapID)
-		hooksecurefunc(worldMapFrame, "OnMapChanged", self.UpdateMapID)
-
-		self.CoordsUpdater = CreateFrame("Frame", nil, worldMapFrame.ScrollContainer)
-		self.CoordsUpdater:SetScript("OnUpdate", self.UpdateCoords)
-	end
+	Module:UpdateWorldMapCoordinates()
 
 	if C["WorldMap"].SmallWorldMap then
 		smallerMapScale = C["WorldMap"].SmallWorldMapScale or 0.9

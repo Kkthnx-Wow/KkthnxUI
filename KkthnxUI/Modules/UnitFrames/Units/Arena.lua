@@ -10,9 +10,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
--- REASON: Localize C-functions (Snake Case)
-local select = _G.select
-
 -- REASON: Localize Globals
 local CreateFrame = _G.CreateFrame
 local UnitIsUnit = _G.UnitIsUnit
@@ -63,11 +60,11 @@ function Module:CreateArena()
 		self.Health.colorReaction = true
 	end
 
-	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self.Health.Value:SetFontObject(K.UIFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, "[hp]")
+	Module:CreateBarValueTag(self, self.Health, "[hp]", { size = 10 })
+
+	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
+	self.Health.Spark = Module:CreateBarSpark(self.Health)
+	self.Health.PostUpdate = Module.PostUpdateHealthSpark
 
 	-- REASON: Power Bar Setup
 	self.Power = CreateFrame("StatusBar", nil, self)
@@ -80,71 +77,18 @@ function Module:CreateArena()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 
+	-- REASON: Power spark — shows a glow at the current power edge; hidden at full/zero/dead/offline.
+	self.Power.Spark = Module:CreateBarSpark(self.Power)
+	self.Power.PostUpdate = Module.PostUpdatePowerSpark
+
 	if C["Arena"].Smooth then
 		K:SmoothBar(self.Power)
 	end
 
-	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-	self.Name:SetFontObject(K.UIFont)
-	if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
-		if C["Unitframe"].HealthbarColor == 1 then
-			self:Tag(self.Name, "[name] [nplevel]")
-		else
-			self:Tag(self.Name, "[color][name] [nplevel]")
-		end
-	else
-		if C["Unitframe"].HealthbarColor == 1 then
-			self:Tag(self.Name, "[name]")
-		else
-			self:Tag(self.Name, "[color][name]")
-		end
-	end
-
-	-- REASON: Portrait Setup (Supports 2D/3D styles)
-	if arenaPortraitStyle ~= 0 then
-		if arenaPortraitStyle == 4 then
-			self.Portrait = CreateFrame("PlayerModel", nil, self)
-			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
-			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
-			self.Portrait:SetAlpha(0.6)
-		elseif arenaPortraitStyle == 5 then
-			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
-			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-			self.Portrait:CreateBorder()
-			Module:ApplyPortraitAlphaFix(self)
-		elseif arenaPortraitStyle ~= 5 and arenaPortraitStyle ~= 4 then
-			self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
-			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-
-			self.Portrait.Border = CreateFrame("Frame", nil, self)
-			self.Portrait.Border:SetAllPoints(self.Portrait)
-			self.Portrait.Border:CreateBorder()
-
-			if arenaPortraitStyle == 2 or arenaPortraitStyle == 3 then
-				self.Portrait.PostUpdate = Module.UpdateClassPortraits
-			end
-		end
-
-		Module:SecurePortrait(self)
-	end
-
-	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
-		self.Level:Show()
-		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
-		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
-	else
-		self.Level:Hide()
-	end
-	self.Level:SetFontObject(K.UIFont)
-	self:Tag(self.Level, "[nplevel]")
+	Module:CreateUnitNameString(self, { layout = "aboveHealth" })
+	Module:TagUnitName(self, arenaPortraitStyle, { levelTag = "[nplevel]", suffix = "" })
+	Module:CreateUnitPortrait(self, { side = "right", style = arenaPortraitStyle })
+	Module:CreatePortraitLevelTag(self, arenaPortraitStyle, { tag = "[nplevel]", layout = "above" })
 
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -166,6 +110,7 @@ function Module:CreateArena()
 	Module:UpdateAuraContainer(arenaWidth, self.Buffs, self.Buffs.num)
 
 	self.Buffs.showStealableBuffs = true
+	self.Buffs.FilterAura = Module.CustomFilter
 	self.Buffs.PostCreateButton = Module.PostCreateButton
 	self.Buffs.PostUpdateButton = Module.PostUpdateButton
 
@@ -182,79 +127,51 @@ function Module:CreateArena()
 	Module:UpdateAuraContainer(arenaWidth, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+	self.Debuffs.FilterAura = Module.CustomFilter
 	self.Debuffs.PostCreateButton = Module.PostCreateButton
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	-- REASON: Castbar configuration
 	if C["Arena"].Castbars then
-		self.Castbar = CreateFrame("StatusBar", nil, self)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
-
-		self.Castbar:ClearAllPoints()
-		if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
-			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Arena"].CastbarIcon and 24, 6)
-			self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-		else
-			self.Castbar:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 6)
-			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Arena"].CastbarIcon and 24, 6)
-		end
-		self.Castbar:SetHeight(18)
-
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
-
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Time:SetFontObject(K.UIFont)
-		self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 11, select(3, self.Castbar.Time:GetFont()))
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
-
-		self.Castbar.decimal = "%.2f"
-
-		self.Castbar.OnUpdate = Module.OnCastbarUpdate
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Text:SetFontObject(K.UIFont)
-		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
-
-		if C["Arena"].CastbarIcon then
-			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-			self.Castbar.Button:SetSize(16, 16)
-			self.Castbar.Button:CreateBorder()
-
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-			self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
-
-			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-		end
+		local iconOffset = C["Arena"].CastbarIcon and 24 or 0
+		Module:CreateUnitCastbar(self, {
+			texture = UnitframeTexture,
+			clampedToScreen = true,
+			height = 18,
+			textSize = 11,
+			textColor = { 0.84, 0.75, 0.65 },
+			timeX = -3.5,
+			textX = 3.5,
+			textGap = 3.5,
+			timerJustify = "RIGHT",
+			decimal = "%.2f",
+			kickTick = true,
+			icon = C["Arena"].CastbarIcon,
+			iconPoint = "RIGHT",
+			iconRelative = "LEFT",
+			iconX = -6,
+			sparkWidth = 128,
+			sparkInset = 0,
+			sparkAlpha = 1,
+			onSize = function(castbar, unitFrame)
+				castbar:ClearAllPoints()
+				if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
+					castbar:SetPoint("BOTTOMLEFT", unitFrame.Health, "TOPLEFT", iconOffset, 6)
+					castbar:SetPoint("BOTTOMRIGHT", unitFrame.Health, "TOPRIGHT", 0, 6)
+				else
+					castbar:SetPoint("BOTTOMRIGHT", unitFrame.Portrait, "TOPRIGHT", 0, 6)
+					castbar:SetPoint("BOTTOMLEFT", unitFrame.Health, "TOPLEFT", iconOffset, 6)
+				end
+				castbar:SetHeight(18)
+			end,
+		})
 	end
 
 	if C["Arena"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 
-		local relativeTo
-		if arenaPortraitStyle == 0 or arenaPortraitStyle == 4 then
-			relativeTo = self.Health
-		else
-			relativeTo = self.Portrait
-		end
+		local relativeTo = Module.GetPortraitAnchor(self, arenaPortraitStyle)
 
 		self.TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
@@ -274,20 +191,17 @@ function Module:CreateArena()
 
 	-- REASON: Raid Target Indicator
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
-		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
-	else
-		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
-	end
+	self.RaidTargetIndicator:SetPoint("TOP", Module.GetPortraitAnchor(self, arenaPortraitStyle), "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(14, 14)
 
 	-- REASON: Resurrection Indicator
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
-	if arenaPortraitStyle ~= 0 and arenaPortraitStyle ~= 4 then
-		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
-	else
-		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
+	self.ResurrectIndicator:SetPoint("CENTER", Module.GetPortraitAnchor(self, arenaPortraitStyle))
+
+	-- REASON: Debuff Highlight
+	if C["Unitframe"].DebuffHighlight then
+		Module:CreateDebuffHighlight(self)
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

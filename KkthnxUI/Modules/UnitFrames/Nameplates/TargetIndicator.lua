@@ -27,6 +27,12 @@ function Module:UpdateTargetChange()
 	end
 
 	Module.UpdateThreatColor(self, nil, unit)
+
+	-- Class power lives on a fake oUF_TargetPlate — reparent when target changes
+	-- between already-visible plates (ADD alone never fires then).
+	if Module.ScheduleUpdateTargetClassPower then
+		Module:ScheduleUpdateTargetClassPower()
+	end
 end
 
 function Module:UpdateTargetIndicator()

@@ -24,7 +24,7 @@ K.ChangelogData = {
 	{
 		version = "10.6.7 - Patch 11.2.5",
 		date = "2026-06-11",
-		description = "11.2.5 hardening pass: safer hooks, reversible automation toggles, and cherry-picked NexEnhance fixes.",
+		description = "11.2.5 hardening pass: safer hooks, reversible automation toggles, and related fixes.",
 		changes = {
 			["New Features"] = {
 				"Automation: Auto-decline guild invites from strangers (friends, BNet friends, and guildmates still allowed)",
@@ -44,7 +44,7 @@ K.ChangelogData = {
 				"Nameplate: Aura filter editor edits (whitelist/blacklist/custom units/target NPCs/trash units/major spells) now persist across /reload - additions and removals are saved per-character and re-applied at login instead of being lost",
 				"ExtraGUI: Mute Sound IDs add button now reads the input field correctly (CreateTextInput no longer required fragile EditBox child hunting)",
 				"ExtraGUI: Power Unit list live portrait refresh no longer errors on target change (rows now track NpcID/Portrait consistently)",
-				"Tooltip: Unit standing label no longer errors when a reaction has no FACTION_STANDING_LABEL (nil-safe concat, cherry-picked from NexEnhance)",
+				"Tooltip: Unit standing label no longer errors when a reaction has no FACTION_STANDING_LABEL (nil-safe concat)",
 				"Collections: AlreadyKnown pet check no longer errors when the collected-count API returns nil",
 				"DataText: Durability repair cost now scans tooltip data by field instead of a fixed arg index (survives Blizzard arg reordering) and guards divide-by-zero on missing max durability",
 				"DataText: Reputation bar/tooltip no longer mislabels mid-renown major factions (e.g. Renown 4) as 'Paragon'",

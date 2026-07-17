@@ -25,6 +25,7 @@ local math_max, math_min, math_rad = math.max, math.min, math.rad
 local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver = RegisterStateDriver
+local hooksecurefunc = hooksecurefunc
 local UIParent = UIParent
 
 -- ---------------------------------------------------------------------------
@@ -112,8 +113,13 @@ end
 -- ---------------------------------------------------------------------------
 
 -- REASON: Consolidated helper to apply consistent background textures and colors.
+-- Pass false or "" as texture to skip the fill (gem/missing overlays, Install icon frames).
 local function AddBackground(frame, texture, subLevel, layer, point, color)
 	if frame.KKUI_Background then
+		return
+	end
+	-- Explicit no-fill: empty string is truthy in Lua so `texture or default` would still SetTexture("").
+	if texture == false or texture == "" then
 		return
 	end
 
@@ -735,9 +741,25 @@ local function SkinScrollBar(self)
 	K.ReskinArrow(down, "down")
 end
 
+-- Incident (EditMode, Jul 2026): assigning HighlightSystem/ClearHighlight = Noop taints
+-- the frame. RefreshExtraAbilities runs before RefreshEncounterEvents in EditModeFrameSetup;
+-- tainted execution then dies in secureexecuterange on secret values.
+-- Post-hook only: let Blizzard paint, then clear the selection chrome.
 local function KillEditMode(object)
-	object.HighlightSystem = K.Noop
-	object.ClearHighlight = K.Noop
+	if not object or object._kkuiEditModeKilled then
+		return
+	end
+	object._kkuiEditModeKilled = true
+
+	if object.HighlightSystem then
+		hooksecurefunc(object, "HighlightSystem", function(self)
+			if self.ClearHighlight then
+				self:ClearHighlight()
+			elseif self.Selection then
+				self.Selection:Hide()
+			end
+		end)
+	end
 end
 
 -- ---------------------------------------------------------------------------

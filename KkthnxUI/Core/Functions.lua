@@ -35,6 +35,7 @@ local string_gmatch = string.gmatch
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
+local string_sub = string.sub
 
 local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
 local C_Timer_After = C_Timer.After
@@ -60,7 +61,7 @@ local UnitReaction = UnitReaction
 -- REASON: Midnight returns "secret" values from combat/instance APIs that cannot
 -- be compared, used in arithmetic, or used as table keys without erroring.
 -- issecretvalue()/issecrettable() are themselves always safe to call (even on a
--- secret). Centralize the guards here (mirroring oUF/NDui) so every module shares
+-- secret). Centralize the guards here so every module shares
 -- one API instead of redefining a local IsSecret helper in each file. Each module
 -- should alias these at file scope, e.g. `local IsSecret = K.IsSecret`.
 do
@@ -100,10 +101,10 @@ do
 	end
 
 	-- Safe UnitIsUnit: token comparison (ShouldUnitComparisonBeSecret) returns a
-	-- secret boolean in instances, so testing the raw result errors. This mirrors
-	-- oUF's Private.unitIsUnit shim. Fail closed: a secret result becomes false so
-	-- callers (target glows, mouseover checks) simply don't trigger rather than
-	-- crash. Returns a plain boolean that is always safe to test.
+	-- secret boolean in instances, so testing the raw result errors. Fail closed:
+	-- a secret result becomes false so callers (target glows, mouseover checks)
+	-- simply don't trigger rather than crash. Returns a plain boolean that is
+	-- always safe to test.
 	local UnitIsUnit = UnitIsUnit
 	function K.UnitIsUnit(unitA, unitB)
 		local result = UnitIsUnit(unitA, unitB)
@@ -152,6 +153,32 @@ do
 		return curve
 	end
 
+	local dispelIconCurves = {}
+
+	--- Per-type alpha curve for secret-safe dispel icons.
+	--- Only the matching dispel index returns alpha 1; never read secret dispelName.
+	function K.GetDispelIconCurve(targetIdx)
+		local cached = dispelIconCurves[targetIdx]
+		if cached ~= nil then
+			return cached or nil
+		end
+
+		local CurveUtil = C_CurveUtil
+		if not (CurveUtil and CurveUtil.CreateColorCurve and Enum and Enum.LuaCurveType and CreateColor) then
+			dispelIconCurves[targetIdx] = false
+			return nil
+		end
+
+		local curve = CurveUtil.CreateColorCurve()
+		curve:SetType(Enum.LuaCurveType.Step)
+		for _, idx in ipairs({ 0, 1, 2, 3, 4, 9, 11 }) do
+			curve:AddPoint(idx, CreateColor(1, 1, 1, idx == targetIdx and 1 or 0))
+		end
+
+		dispelIconCurves[targetIdx] = curve
+		return curve
+	end
+
 	--- Resolve debuff border RGB via aura instance + dispel curve (no secret dispelName read).
 	function K.GetAuraDispelBorderRGB(unit, auraInstanceID, oUFRef)
 		local curve = K.GetDispelColorCurve(oUFRef)
@@ -175,9 +202,27 @@ do
 		return nil
 	end
 
-	--- NexEnhance alias: true when a value is safe to read/compare/index.
+	--- True when a value is safe to read/compare/index.
 	function K.CanAccessValue(value)
 		return K.NotSecret(value)
+	end
+
+	--- Debounce: however often the returned function is called, `func` runs once
+	--- after `delay` seconds of quiet. Captures up to 4 args in upvalues (no `{...}`
+	--- alloc on suppressed calls).
+	function K.Debounce(delay, func)
+		local scheduled = false
+		return function(...)
+			if scheduled then
+				return
+			end
+			scheduled = true
+			local a1, a2, a3, a4 = ...
+			C_Timer_After(delay, function()
+				scheduled = false
+				func(a1, a2, a3, a4)
+			end)
+		end
 	end
 
 	--- Hide cooldown swipe when a DurationObject reports zero (permanent aura).
@@ -186,6 +231,252 @@ do
 			return
 		end
 		cooldown:SetAlphaFromBoolean(durObj:IsZero(), 0, 1)
+	end
+
+	--- Apply DurationObject cooldown and mask permanent-aura swipe.
+	function K.ArmAuraCooldown(cooldown, durObj, skipSetCooldown)
+		if not (cooldown and durObj and cooldown.SetCooldownFromDurationObject) then
+			return false
+		end
+		if not skipSetCooldown then
+			cooldown:SetCooldownFromDurationObject(durObj)
+		end
+		K.MaskCooldownSwipeFromDurationObject(cooldown, durObj)
+		if cooldown.Show then
+			cooldown:Show()
+		end
+		return true
+	end
+
+	-- ---------------------------------------------------------------------------
+	-- Font / Slug helpers
+	-- Incident (Fonts, Jul 2026): FontString:SetShadowOffset is broken on 12.0.7.
+	-- Fix: CreateFontFamily + SetFontShadow on alphabet Font objects, then
+	-- FontString:SetFontObject.
+	-- ---------------------------------------------------------------------------
+
+	local FontStringScaleAnimationMode = Enum and Enum.FontStringScaleAnimationMode
+	local CreateFontFamily = _G.CreateFontFamily
+
+	--- Retail + no SHADOW/MONOCHROME/THICKOUTLINE (Slug-safe outline check).
+	function K.CanFlagSlug(outline)
+		if not FontStringScaleAnimationMode then
+			return false
+		end
+		if not outline then
+			return true
+		end
+		if string_find(outline, "SLUG", 1, true) then
+			return false
+		end
+		if string_find(outline, "SHADOW", 1, true) or string_find(outline, "MONOCHROME", 1, true) or string_find(outline, "THICKOUTLINE", 1, true) then
+			return false
+		end
+		return true
+	end
+
+	-- CJK alphabets need their own face or glyphs go missing.
+	local alphabetOverrides = {}
+	do
+		local overrideWhich = { "korean", "simplifiedchinese", "traditionalchinese" }
+		for i = 1, #overrideWhich do
+			local which = overrideWhich[i]
+			local gameFont = _G.GameFontNormal
+			if gameFont and gameFont.GetFontObjectForAlphabet then
+				local alphabetFont = gameFont:GetFontObjectForAlphabet(which)
+				if alphabetFont then
+					alphabetOverrides[which] = alphabetFont:GetFont()
+				end
+			end
+		end
+	end
+
+	local alphabetList = { "roman", "russian", "korean", "simplifiedchinese", "traditionalchinese" }
+
+	local fontFamilyCache = {} -- [fontPath][size][flags] = FontFamily
+	local fontFamilySerial = 0
+
+	local function buildFontFamilyMembers(fontPath, size, flags)
+		local members = {}
+		for i = 1, #alphabetList do
+			local which = alphabetList[i]
+			members[i] = {
+				alphabet = which,
+				file = alphabetOverrides[which] or fontPath,
+				height = size,
+				flags = flags or "",
+			}
+		end
+		return members
+	end
+
+	--- Cached CreateFontFamily — one family per font/size/flags combo.
+	function K.GenerateFontObject(fontPath, size, flags)
+		fontPath = fontPath or "Fonts\\FRIZQT__.TTF"
+		size = size or 12
+		flags = flags or ""
+
+		local bySize = fontFamilyCache[fontPath]
+		if not bySize then
+			bySize = {}
+			fontFamilyCache[fontPath] = bySize
+		end
+		local byFlags = bySize[size]
+		if not byFlags then
+			byFlags = {}
+			bySize[size] = byFlags
+		end
+
+		local family = byFlags[flags]
+		if family then
+			return family
+		end
+
+		if not CreateFontFamily then
+			return nil
+		end
+
+		fontFamilySerial = fontFamilySerial + 1
+		family = CreateFontFamily("KkthnxUI_FontFamily" .. fontFamilySerial, buildFontFamilyMembers(fontPath, size, flags))
+		if family and family.SetJustifyH then
+			family:SetJustifyH("LEFT")
+		end
+		byFlags[flags] = family
+		return family
+	end
+
+	--- Apply shadow on each alphabet Font inside a FontFamily.
+	--- FontString:SetShadowOffset alone does nothing useful on 12.0.7.
+	function K.SetFontFamilyShadow(fontFamily, flagsAfterStrip, wantShadow, sR, sG, sB, sA, sX, sY)
+		if not (fontFamily and fontFamily.GetFontObjectForAlphabet) then
+			return
+		end
+
+		local useShadow = wantShadow and true or false
+		local alpha = sA
+		if alpha == nil then
+			alpha = (useShadow and ((flagsAfterStrip == "" and 1) or 0.6)) or 0
+		end
+		local ox = sX
+		local oy = sY
+		if ox == nil then
+			ox = (useShadow and 1) or 0
+		end
+		if oy == nil then
+			oy = (useShadow and -1) or 0
+		end
+
+		for i = 1, #alphabetList do
+			local alphabetFont = fontFamily:GetFontObjectForAlphabet(alphabetList[i])
+			if alphabetFont then
+				alphabetFont:SetShadowColor(sR or 0, sG or 0, sB or 0, alpha)
+				alphabetFont:SetShadowOffset(ox, oy)
+			end
+		end
+	end
+
+	local function isFontString(obj)
+		return obj and obj.GetObjectType and obj:GetObjectType() == "FontString"
+	end
+
+	--- Shared SetFont for Blizzard skins + CreateFontString / CreatePlainFS / aura timers.
+	--- FontStrings use FontFamily+SetFontObject (shadow works). Font objects use SetFont.
+	function K.SetFont(obj, font, size, style, sR, sG, sB, sA, sX, sY, r, g, b, a)
+		if not obj then
+			return
+		end
+
+		if style == "NONE" or not style then
+			style = ""
+		end
+
+		local slug = K.CanFlagSlug(style)
+		if slug then
+			style = style .. "SLUG"
+		end
+
+		-- SHADOW is a virtual outline prefix — strip before real font flags.
+		local shadow = string_sub(style, 1, 6) == "SHADOW"
+		if shadow then
+			style = string_sub(style, 7)
+		end
+
+		if obj.SetScaleAnimationMode and FontStringScaleAnimationMode then
+			obj:SetScaleAnimationMode(slug and FontStringScaleAnimationMode.Vertex or FontStringScaleAnimationMode.FontSize)
+		end
+
+		if isFontString(obj) and CreateFontFamily then
+			-- 12.0.7: shadows must live on the FontFamily members, not the FontString.
+			local family = K.GenerateFontObject(font, size, style)
+			if family then
+				if sX ~= nil and sY ~= nil then
+					K.SetFontFamilyShadow(family, style, true, sR, sG, sB, sA or 1, sX, sY)
+				elseif shadow then
+					K.SetFontFamilyShadow(family, style, true, sR, sG, sB, sA, 1, -1)
+				else
+					K.SetFontFamilyShadow(family, style, false, 0, 0, 0, 0, 0, 0)
+				end
+				obj:SetFontObject(family)
+			else
+				obj:SetFont(font, size, style)
+			end
+		else
+			-- Font / FontFamily (Blizzard skins). FontFamily needs alphabet-level shadow
+			-- on 12.0.7 — SetShadowOffset on the family root is unreliable.
+			if obj.SetFont then
+				obj:SetFont(font, size, style)
+			end
+			if obj.GetFontObjectForAlphabet then
+				if sX ~= nil and sY ~= nil then
+					K.SetFontFamilyShadow(obj, style, true, sR, sG, sB, sA or 1, sX, sY)
+				elseif shadow then
+					K.SetFontFamilyShadow(obj, style, true, sR, sG, sB, sA, 1, -1)
+				else
+					K.SetFontFamilyShadow(obj, style, false, 0, 0, 0, 0, 0, 0)
+				end
+			elseif sX ~= nil and sY ~= nil then
+				obj:SetShadowOffset(sX, sY)
+				obj:SetShadowColor(sR or 0, sG or 0, sB or 0, sA or 1)
+			elseif shadow then
+				obj:SetShadowOffset(1, -1)
+				obj:SetShadowColor(sR or 0, sG or 0, sB or 0, sA or (style == "" and 1 or 0.6))
+			else
+				obj:SetShadowOffset(0, 0)
+				obj:SetShadowColor(0, 0, 0, 0)
+			end
+		end
+
+		if r and g and b then
+			obj:SetTextColor(r, g, b)
+		end
+
+		if a then
+			obj:SetAlpha(a)
+		end
+	end
+
+	--- Style Blizzard's cooldown countdown FontString.
+	--- Engine-driven text stays correct when aura duration is secret; Lua OnUpdate cannot.
+	--- OUTLINE via K.SetFont (FontFamily path on retail).
+	function K.StyleAuraCooldownCountdown(cooldown, fontSize, relativeTo, point, x, y, relativePoint)
+		if not (cooldown and cooldown.GetCountdownFontString) then
+			return nil
+		end
+
+		local fs = cooldown:GetCountdownFontString()
+		if not fs then
+			return nil
+		end
+
+		local fontObj = _G.KkthnxUIFontOutline or _G.KkthnxUIFont
+		local font = fontObj and select(1, fontObj:GetFont()) or "Fonts\\FRIZQT__.TTF"
+		K.SetFont(fs, font, fontSize or 12, "OUTLINE")
+		fs:SetTextColor(1, 1, 1, 1)
+		fs:ClearAllPoints()
+		local pt = point or "CENTER"
+		fs:SetPoint(pt, relativeTo or cooldown, relativePoint or pt, x or 0, y or 0)
+		fs:SetJustifyH("CENTER")
+		return fs
 	end
 
 	local DISPEL_INDEX_TO_NAME = {
@@ -294,6 +585,17 @@ do
 	end
 
 	local function resolveFactionTint(factionIdx)
+		-- Prefer Colors.lua / oUF reaction palette (what we actually ship), not stock FACTION_BAR_COLORS.
+		local custom = K.Colors and K.Colors.reaction and K.Colors.reaction[factionIdx]
+		if custom then
+			local r = custom.r or custom[1]
+			local g = custom.g or custom[2]
+			local b = custom.b or custom[3]
+			if r and g and b then
+				return r, g, b
+			end
+		end
+
 		local color = FACTION_BAR_COLORS and FACTION_BAR_COLORS[factionIdx]
 		if not color then
 			return nil
@@ -395,6 +697,15 @@ do
 
 		return resolveFactionTint(factionIdx)
 	end
+
+	--- Map bright UnitSelectionColor RGB to darker FACTION_BAR_COLORS palette.
+	--- Used when unit-token APIs are unreadable but bar colour is not secret.
+	function K.GetNpcReactionColorFromRGB(r, g, b)
+		if not (K.NotSecret(r) and K.NotSecret(g) and K.NotSecret(b)) then
+			return nil
+		end
+		return resolveFactionTint(factionIndexFromSelectionRGB(r, g, b))
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -475,7 +786,7 @@ do
 	-- REASON: Allows setting nested values via dot-delimited string paths (e.g., "General.FontSize").
 	-- PERF: Uses string_gmatch iteration into the reused keysTable instead of { strsplit(...) } per call.
 	function K.SetValueByPath(tbl, path, value)
-		if not path or not tbl then
+		if type(path) ~= "string" or path == "" or not tbl then
 			return
 		end
 
@@ -493,7 +804,9 @@ do
 		local current = tbl
 		for i = 1, keysTableN - 1 do
 			local key = keysTable[i]
-			if not current[key] or type(current[key]) ~= "table" then
+			-- REASON: `not current[key]` treats boolean false as missing and would
+			-- clobber a false leaf if it ever sat mid-path. Only tables nest.
+			if type(current[key]) ~= "table" then
 				current[key] = {}
 			end
 			current = current[key]
@@ -504,7 +817,7 @@ do
 	end
 
 	function K.GetValueByPath(tbl, path)
-		if not path or not tbl then
+		if type(path) ~= "string" or path == "" or not tbl then
 			return nil
 		end
 
@@ -522,12 +835,50 @@ do
 		local current = tbl
 		for i = 1, keysTableN do
 			local key = keysTable[i]
-			if not current or type(current) ~= "table" or not current[key] then
+			-- Incident (GUI save, Jul 2026): `not current[key]` returned nil for
+			-- boolean false. GetDefaultValue then fell back to live C (already
+			-- written true), shouldPruneToDefault(true, true) wiped Skins.Details
+			-- and every other default-false toggle from SavedVariables.
+			if not current or type(current) ~= "table" or current[key] == nil then
 				return nil
 			end
 			current = current[key]
 		end
 		return current
+	end
+
+	--- Remove a nested value from a table via dot path (for delta pruning).
+	function K.RemoveValueByPath(tbl, path)
+		if type(path) ~= "string" or path == "" or type(tbl) ~= "table" then
+			return
+		end
+
+		for i = 1, keysTableN do
+			keysTable[i] = nil
+		end
+		keysTableN = 0
+
+		for key in string_gmatch(path, "[^%.]+") do
+			keysTableN = keysTableN + 1
+			keysTable[keysTableN] = key
+		end
+
+		if keysTableN == 0 then
+			return
+		end
+
+		local current = tbl
+		for i = 1, keysTableN - 1 do
+			local key = keysTable[i]
+			current = current and current[key]
+			if type(current) ~= "table" then
+				return
+			end
+		end
+
+		if current then
+			current[keysTable[keysTableN]] = nil
+		end
 	end
 end
 
@@ -742,9 +1093,11 @@ do
 			if not fs then
 				return
 			end
-			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "OUTLINE")
-			fs:SetShadowOffset(0, 0)
-			fs:SetText(text)
+			-- textstyle is usually "OUTLINE" — route through SetFont for SLUG + Vertex.
+			K.SetFont(fs, select(1, KkthnxUIFont:GetFont()), size, textstyle)
+			if text then
+				fs:SetText(text)
+			end
 		end
 
 		if not fs then
@@ -771,12 +1124,31 @@ do
 		return fs
 	end
 
-	-- REASON: 12.0.7 slug-shadow workaround — duplicate string with manual offset shadow.
+	-- REASON: Plain = text + drop shadow. Empty/SLUG zeroed the
+	-- offset and looked soft; OUTLINE is a separate call site (auras, etc.).
 	function K.StripColorCodes(text)
 		if not text then
 			return ""
 		end
-		return string_gsub(string_gsub(text, "|c%x%x%x%x%x%x%x", ""), "|r", "")
+		if K.IsSecret(text) then
+			return text
+		end
+		text = string_gsub(text, "|%a%x%x%x%x%x%x%x%x", "")
+		text = string_gsub(text, "|c%x%x%x%x%x%x%x", "")
+		text = string_gsub(text, "|r", "")
+		text = string_gsub(text, "|R", "")
+		return text
+	end
+
+	local function unsnapPortraitTexture(tex)
+		if tex and tex.SetSnapToPixelGrid then
+			tex:SetSnapToPixelGrid(false)
+			tex:SetTexelSnappingBias(0)
+		end
+	end
+
+	function K.UnsnapPortraitTexture(tex)
+		unsnapPortraitTexture(tex)
 	end
 
 	function K.CreatePlainFS(parent, size, text, layer)
@@ -784,31 +1156,61 @@ do
 		local sz = size or 12
 		local font = select(1, KkthnxUIFont:GetFont())
 
-		local shadow = parent:CreateFontString(nil, lyr)
-		shadow:SetFont(font, sz, "")
-		shadow:SetTextColor(0, 0, 0, 0.85)
-
 		local fs = parent:CreateFontString(nil, lyr)
-		fs:SetFont(font, sz, "")
-		fs.kkShadow = shadow
-		shadow:SetPoint("CENTER", fs, "CENTER", 1, -1)
+		-- SHADOW prefix: skip SLUG, SetShadowOffset(1,-1) — Midnight-safe drop shadow.
+		K.SetFont(fs, font, sz, "SHADOW")
 
 		if text then
-			K.SetPlainText(fs, text)
+			fs:SetText(text)
 		end
 		return fs
 	end
 
 	function K.SetPlainText(fs, text)
-		fs:SetText(text or "")
-		local shadow = fs.kkShadow
-		if shadow then
-			shadow:SetText(K.StripColorCodes(text))
+		if not fs then
+			return
 		end
+		fs:SetText(text or "")
 	end
 
 	function K.SetPlainFormattedText(fs, fmt, ...)
-		K.SetPlainText(fs, string_format(fmt, ...))
+		if not fs then
+			return
+		end
+		if fs.SetFormattedText then
+			fs:SetFormattedText(fmt, ...)
+		else
+			K.SetPlainText(fs, string_format(fmt, ...))
+		end
+	end
+
+	function K.HidePlainFS(fs)
+		if fs then
+			fs:Hide()
+		end
+	end
+
+	function K.ShowPlainFS(fs)
+		if fs then
+			fs:Show()
+		end
+	end
+
+	function K.SetPlainFontSize(fs, size)
+		if not fs then
+			return
+		end
+		local font = fs:GetFont()
+		-- Keep plain = SHADOW drop shadow (do not re-slug from leftover flags).
+		K.SetFont(fs, font, size, "SHADOW")
+	end
+
+	function K.ReleasePlainFS(fs)
+		if not fs then
+			return
+		end
+		fs:Hide()
+		fs:SetParent(nil)
 	end
 end
 
@@ -829,8 +1231,8 @@ do
 	-- REASON: Centralized unit coloring logic (Class -> Tap Denied -> Reaction).
 	-- SECRET (12.0): in instances a unit's identity is hidden, so UnitIsPlayer /
 	-- UnitIsTapDenied / UnitReaction return secret booleans/values that can't be
-	-- boolean-tested. Bail to white whenever any read is secret (mirrors NDui's
-	-- safe fallback) so callers like the tooltip never crash on a secret identity.
+	-- boolean-tested. Bail to white whenever any read is secret so callers like
+	-- the tooltip never crash on a secret identity.
 	function K.UnitColor(unit)
 		local r, g, b = 1, 1, 1
 
@@ -865,10 +1267,15 @@ do
 			if tapped then
 				r, g, b = 0.6, 0.6, 0.6
 			else
-				local reaction = UnitReaction(unit, "player")
-				if reaction and K.NotSecret(reaction) then
-					local color = K.Colors.reaction[reaction]
-					r, g, b = color[1], color[2], color[3]
+				local npcR, npcG, npcB = K.GetNpcReactionColor(unit)
+				if npcR then
+					r, g, b = npcR, npcG, npcB
+				else
+					local reaction = UnitReaction(unit, "player")
+					if reaction and K.NotSecret(reaction) then
+						local color = K.Colors.reaction[reaction]
+						r, g, b = color[1], color[2], color[3]
+					end
 				end
 			end
 		end
@@ -1607,7 +2014,7 @@ do
 		return glowFrame
 	end
 
-	-- Tutorial-frame glow ring (NexEnhance-style). opts.outset, opts.blend ("BLEND"|"ADD"), opts.color {r,g,b}.
+	-- Tutorial-frame glow ring. opts.outset, opts.blend ("BLEND"|"ADD"), opts.color {r,g,b}.
 	local GLOW_TEX_H = "Interface/TutorialFrame/UIFrameTutorialGlow"
 	local GLOW_TEX_V = "Interface/TutorialFrame/UIFrameTutorialGlowVertical"
 

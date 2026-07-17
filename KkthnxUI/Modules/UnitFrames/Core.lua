@@ -53,9 +53,41 @@ local UnitThreatSituation = UnitThreatSituation
 local UnitGUID = UnitGUID
 local UnitIsConnected = UnitIsConnected
 local UnitIsVisible = UnitIsVisible
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitPlayerControlled = UnitPlayerControlled
+local UnitInPartyIsAI = UnitInPartyIsAI
+local UnitClass = UnitClass
+local UnitReaction = UnitReaction
+local UnitHealthPercent = UnitHealthPercent
+local UnitPowerPercent = UnitPowerPercent
+local UnitPowerType = UnitPowerType
+local UnitSelectionType = UnitSelectionType
 local SetPortraitTexture = SetPortraitTexture
 local IsSecret = K.IsSecret
 local NotSecret = K.NotSecret
+
+-- oUF nils Private after finalize.lua; mirror private.unitSelectionType locally.
+local function safeUnitSelectionType(unit, considerHostile)
+	if considerHostile then
+		local threat = UnitThreatSituation("player", unit)
+		if IsSecret(threat) then
+			return nil
+		elseif threat then
+			return 0
+		end
+	end
+
+	if not UnitSelectionType then
+		return nil
+	end
+
+	local selection = UnitSelectionType(unit, true)
+	if IsSecret(selection) then
+		return nil
+	end
+
+	return selection
+end
 
 local registeredStyles = Module._oUFRegisteredStyles or {}
 Module._oUFRegisteredStyles = registeredStyles
@@ -385,6 +417,7 @@ local function ShowPortrait2DFallback(element, unit)
 	element:ClearModel()
 	local tex = EnsurePortraitFallback(element)
 	SetPortraitTexture(tex, unit)
+	K.UnsnapPortraitTexture(tex)
 	tex:Show()
 	element.__usingFallback = true
 end
@@ -464,22 +497,36 @@ function Module.PortraitOverride(self, event)
 				end
 			end
 		else
-			local class, _
-			if element.showClass then
-				_, class = UnitClass(unit)
-				if IsSecret(class) then
-					class = nil
-				end
-			end
-
-			if class then
-				element:SetAtlas("classicon-" .. class)
+			if not isAvailable then
+				element:SetTexture([[Interface\Icons\INV_Misc_QuestionMark]])
 			else
-				SetPortraitTexture(element, unit)
+				local class, _
+				if element.showClass then
+					_, class = UnitClass(unit)
+					if IsSecret(class) then
+						class = nil
+					end
+				end
+
+				if class then
+					element:SetAtlas("classicon-" .. class)
+				else
+					SetPortraitTexture(element, unit)
+					K.UnsnapPortraitTexture(element)
+				end
 			end
 		end
 
 		element.state = isAvailable
+	end
+
+	-- Refresh 2D fallback when Blizzard portrait data updates (same unit, new texture).
+	if element.__usingFallback and isAvailable and (
+		event == "UNIT_PORTRAIT_UPDATE"
+		or event == "PORTRAITS_UPDATED"
+		or event == "UNIT_MODEL_CHANGED"
+	) then
+		ShowPortrait2DFallback(element, unit)
 	end
 
 	if element.PostUpdate then
@@ -491,7 +538,298 @@ end
 function Module:SecurePortrait(frame)
 	if frame and frame.Portrait then
 		frame.Portrait.Override = Module.PortraitOverride
+		local portrait = frame.Portrait
+		if portrait.IsObjectType and portrait:IsObjectType("PlayerModel") then
+			local userPostUpdate = portrait.PostUpdate
+			portrait.PostUpdate = function(element, unit, hasStateChanged)
+				-- Ellesmere: SetUnit resets camera distance; re-apply only right after an
+				-- actual model change (hasStateChanged), not on every OnUpdate tick.
+				-- BUGFIX: this previously ran unconditionally on every PostUpdate call.
+				-- PortraitOverride fires on every OnUpdate (every frame), so this was
+				-- forcing the camera back to distance/zoom 1 every single frame even when
+				-- nothing changed — visible as flicker/stutter on 3D PlayerModel portraits
+				-- (style 5), most noticeable on frequently-refreshing frames like Target
+				-- of Target. SetUnit() (the actual cause of the camera reset) is only
+				-- ever called when hasStateChanged is true, so gating on it here exactly
+				-- matches when reapplication is actually needed.
+				if hasStateChanged and element:IsShown() and not element.__usingFallback then
+					if element.SetCamDistanceScale then
+						element:SetCamDistanceScale(1)
+					end
+					if element.SetPortraitZoom and element.state then
+						element:SetPortraitZoom(1)
+					end
+				end
+				if userPostUpdate then
+					return userPostUpdate(element, unit, hasStateChanged)
+				end
+			end
+		end
 	end
+	Module:SecureHealth(frame)
+end
+
+local function isPlayerOrPartyAI(unit)
+	local isPlayer = UnitIsPlayer(unit)
+	if NotSecret(isPlayer) and isPlayer then
+		return true
+	end
+	local isAI = UnitInPartyIsAI(unit)
+	return NotSecret(isAI) and isAI or false
+end
+
+-- Midnight (12.0): stock oUF Health.UpdateColor compares UnitIsPlayer / UnitReaction
+-- directly; secret booleans error in instances. Gate secret unit colors before painting.
+function Module.HealthColorOverride(self, event, unit)
+	if not unit or self.unit ~= unit then
+		return
+	end
+
+	local element = self.Health
+	if not element then
+		return
+	end
+
+	local colors = self.colors
+	local color
+	local connected = UnitIsConnected(unit)
+
+	if element.colorDisconnected and NotSecret(connected) and not connected then
+		color = colors.disconnected
+	else
+		local controlled = UnitPlayerControlled(unit)
+		local tapped = UnitIsTapDenied(unit)
+		if element.colorTapping and NotSecret(controlled) and not controlled and NotSecret(tapped) and tapped then
+			color = colors.tapped
+		else
+			local threat
+			if element.colorThreat and NotSecret(controlled) and not controlled then
+				threat = UnitThreatSituation("player", unit)
+			end
+			if element.colorThreat and NotSecret(controlled) and not controlled and NotSecret(threat) and threat then
+				color = colors.threat[threat]
+			elseif element.colorClass and isPlayerOrPartyAI(unit)
+				or (element.colorClassNPC and not isPlayerOrPartyAI(unit))
+				or (element.colorClassPet and NotSecret(controlled) and controlled and not (NotSecret(UnitIsPlayer(unit)) and UnitIsPlayer(unit)))
+			then
+				local _, class = UnitClass(unit)
+				if NotSecret(class) and class then
+					color = colors.class[class]
+				end
+			elseif element.colorSelection then
+				local selection = safeUnitSelectionType(unit, element.considerSelectionInCombatHostile)
+				if selection then
+					color = colors.selection[selection]
+				end
+			elseif element.colorReaction then
+				if not isPlayerOrPartyAI(unit) then
+					local nr, ng, nb = K.GetNpcReactionColor(unit)
+					if nr then
+						element:SetStatusBarColor(nr, ng, nb)
+						if element.PostUpdateColor then
+							element:PostUpdateColor(unit, nil)
+						end
+						return
+					end
+					local reaction = UnitReaction(unit, "player")
+					if NotSecret(reaction) and reaction then
+						color = colors.reaction[reaction]
+					end
+				end
+			elseif element.colorSmooth and colors.health and colors.health.GetCurve then
+				local curve = colors.health:GetCurve()
+				if curve then
+					if UnitHealthPercent then
+						local smoothColor = UnitHealthPercent(unit, true, curve)
+						if smoothColor and smoothColor.GetRGB then
+							element:SetStatusBarColor(smoothColor:GetRGB())
+							if element.PostUpdateColor then
+								element:PostUpdateColor(unit, smoothColor)
+							end
+							return
+						end
+					elseif element.values then
+						local smoothColor = element.values:EvaluateCurrentHealthPercent(curve)
+						if smoothColor and smoothColor.GetRGB then
+							element:SetStatusBarColor(smoothColor:GetRGB())
+							if element.PostUpdateColor then
+								element:PostUpdateColor(unit, smoothColor)
+							end
+							return
+						end
+					end
+				end
+			elseif element.colorHealth then
+				color = colors.health
+			end
+		end
+	end
+
+	if color and color.GetRGB then
+		element:SetStatusBarColor(color:GetRGB())
+	end
+
+	if element.PostUpdateColor then
+		element:PostUpdateColor(unit, color)
+	end
+end
+
+function Module:SecureHealth(frame)
+	if frame and frame.Health and frame.Health.UpdateColor ~= Module.HealthColorOverride then
+		frame.Health.UpdateColor = Module.HealthColorOverride
+	end
+	Module:SecurePower(frame)
+end
+
+-- Midnight (12.0): stock oUF Power.UpdateColor — same secret pitfalls as health.
+function Module.PowerColorOverride(self, event, unit)
+	if not unit or self.unit ~= unit then
+		return
+	end
+
+	local element = self.Power
+	if not element then
+		return
+	end
+
+	local colors = self.colors
+	local color
+	local atlas
+	local r, g, b
+	local connected = UnitIsConnected(unit)
+
+	if element.colorDisconnected and NotSecret(connected) and not connected then
+		color = colors.disconnected
+	else
+		local controlled = UnitPlayerControlled(unit)
+		local tapped = UnitIsTapDenied(unit)
+		if element.colorTapping and NotSecret(controlled) and not controlled and NotSecret(tapped) and tapped then
+			color = colors.tapped
+		else
+			local threat
+			if element.colorThreat and NotSecret(controlled) and not controlled then
+				threat = UnitThreatSituation("player", unit)
+			end
+			if element.colorThreat and NotSecret(controlled) and not controlled and NotSecret(threat) and threat then
+				color = colors.threat[threat]
+			elseif element.colorPower then
+				if element.displayType then
+					color = colors.power[element.displayType]
+				end
+
+				if not color then
+					local pType, pToken, altR, altG, altB = UnitPowerType(unit)
+					if NotSecret(pToken) and pToken then
+						color = colors.power[pToken]
+					end
+
+					if not color and NotSecret(altR) and altR then
+						r, g, b = altR, altG, altB
+						if r > 1 or g > 1 or b > 1 then
+							r, g, b = r / 255, g / 255, b / 255
+						end
+					elseif NotSecret(pType) and pType then
+						color = colors.power[pType] or colors.power.MANA
+					end
+				end
+
+				if element.colorPowerAtlas and color and color.GetAtlas then
+					atlas = color:GetAtlas()
+				end
+
+				if element.colorPowerSmooth and color and color.GetCurve then
+					local curve = color:GetCurve()
+					if curve and UnitPowerPercent then
+						local smoothColor = UnitPowerPercent(unit, nil, true, curve)
+						if smoothColor and smoothColor.GetRGB then
+							color = smoothColor
+						end
+					end
+				end
+			elseif element.colorClass and isPlayerOrPartyAI(unit)
+				or (element.colorClassNPC and not isPlayerOrPartyAI(unit))
+				or (element.colorClassPet and NotSecret(controlled) and controlled and not (NotSecret(UnitIsPlayer(unit)) and UnitIsPlayer(unit)))
+			then
+				local _, class = UnitClass(unit)
+				if NotSecret(class) and class then
+					color = colors.class[class]
+				end
+			elseif element.colorSelection then
+				local selection = safeUnitSelectionType(unit, element.considerSelectionInCombatHostile)
+				if selection then
+					color = colors.selection[selection]
+				end
+			elseif element.colorReaction then
+				if not isPlayerOrPartyAI(unit) then
+					local nr, ng, nb = K.GetNpcReactionColor(unit)
+					if nr then
+						element:SetStatusBarColor(nr, ng, nb)
+						if element.PostUpdateColor then
+							element:PostUpdateColor(unit, nil, nr, ng, nb)
+						end
+						return
+					end
+					local reaction = UnitReaction(unit, "player")
+					if NotSecret(reaction) and reaction then
+						color = colors.reaction[reaction]
+					end
+				end
+			end
+		end
+	end
+
+	if atlas then
+		element:SetStatusBarTexture(atlas)
+		element:SetStatusBarColor(1, 1, 1)
+	else
+		if element.__texture then
+			element:SetStatusBarTexture(element.__texture)
+		end
+
+		if b then
+			element:SetStatusBarColor(r, g, b)
+		elseif color and color.GetRGB then
+			element:SetStatusBarColor(color:GetRGB())
+		end
+	end
+
+	if element.PostUpdateColor then
+		element:PostUpdateColor(unit, color, r, g, b)
+	end
+end
+
+function Module:SecurePower(frame)
+	if frame and frame.Power and frame.Power.UpdateColor ~= Module.PowerColorOverride then
+		frame.Power.UpdateColor = Module.PowerColorOverride
+	end
+end
+
+-- Midnight (12.0): Blizzard-controlled private aura anchors on player/target.
+function Module:CreatePrivateAuras(frame, opts)
+	if not (C_UnitAuras and C_UnitAuras.AddPrivateAuraAnchor) then
+		return
+	end
+	if C["Unitframe"].PrivateAuras == false then
+		return
+	end
+
+	opts = opts or {}
+	local element = CreateFrame("Frame", nil, frame)
+	element:SetSize(opts.width or 72, opts.height or 24)
+	element:SetPoint(
+		opts.point or "TOPLEFT",
+		opts.relativeTo or frame.Health,
+		opts.relativePoint or "BOTTOMLEFT",
+		opts.x or 0,
+		opts.y or -4
+	)
+	element.size = opts.size or 20
+	element.num = opts.num or 6
+	element.spacing = opts.spacing or 2
+	element.initialAnchor = opts.initialAnchor or "BOTTOMLEFT"
+	element.growthX = opts.growthX or "RIGHT"
+	element.growthY = opts.growthY or "UP"
+	frame.PrivateAuras = element
 end
 
 -- REASON: Updates class-specific portrait textures based on configuration.
@@ -500,25 +838,38 @@ function Module:UpdateClassPortraits(unit)
 		return
 	end
 
-	local _, unitClass = UnitClass(unit)
-	if unitClass then
-		local PortraitValue = C["Unitframe"].PortraitStyle
-		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
-
-		local texturePath
-		if PortraitValue == 2 and UnitIsPlayer(unit) then
-			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES"
-		elseif PortraitValue == 3 and UnitIsPlayer(unit) then
-			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES"
-		end
-
-		self:SetTexture(texturePath or "Interface\\TargetingFrame\\UI-Classes-Circles")
-		if ClassTCoords then
-			self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-		else
-			self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		end
+	local isPlayer = UnitIsPlayer(unit)
+	if IsSecret(isPlayer) or not isPlayer then
+		-- Class atlases on NPCs look like garbage — face portrait instead.
+		SetPortraitTexture(self, unit)
+		K.UnsnapPortraitTexture(self)
+		return
 	end
+
+	local _, unitClass = UnitClass(unit)
+	if IsSecret(unitClass) or not unitClass then
+		SetPortraitTexture(self, unit)
+		K.UnsnapPortraitTexture(self)
+		return
+	end
+
+	local portraitStyle = C["Unitframe"].PortraitStyle
+	local classTCoords = CLASS_ICON_TCOORDS[unitClass]
+
+	local texturePath
+	if portraitStyle == 2 then
+		texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES"
+	elseif portraitStyle == 3 then
+		texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES"
+	end
+
+	self:SetTexture(texturePath or "Interface\\TargetingFrame\\UI-Classes-Circles")
+	if classTCoords then
+		self:SetTexCoord(classTCoords[1], classTCoords[2], classTCoords[3], classTCoords[4])
+	else
+		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+	end
+	K.UnsnapPortraitTexture(self)
 end
 
 -- REASON: Updates PvP status indicators for units.
@@ -649,11 +1000,23 @@ function Module.UNIT_FACTION(event, unit)
 end
 
 local showOverAbsorb = false
-function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allAbsorb)
+function Module:PostUpdatePrediction(unit)
 	if not showOverAbsorb then
-		self.overAbsorbBar:Hide()
+		if self.overAbsorbBar then
+			self.overAbsorbBar:Hide()
+		end
 		return
 	end
+
+	local values = self.values
+	if not values then
+		return
+	end
+
+	local maxHealth = values:GetMaximumHealth()
+	local health = values:GetCurrentHealth()
+	local allIncomingHeal = select(1, values:GetIncomingHeals())
+	local allAbsorb = select(1, values:GetDamageAbsorbs())
 
 	local hasOverAbsorb
 	local overAbsorbAmount = health + allIncomingHeal + allAbsorb - maxHealth
@@ -802,7 +1165,7 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 
 	-- SECRET (12.0): pin the column count so oUF's SetPosition never has to read
 	-- element:GetWidth() -- that value becomes secret on restricted nameplates and
-	-- crashes its width-based arithmetic. Mirrors NDui's maxCols approach.
+	-- crashes its width-based arithmetic. Cap columns so width math stays plain.
 	local sizeX = (size or 0) + spacing
 	if iconsPerRow then
 		element.maxCols = iconsPerRow
@@ -868,9 +1231,11 @@ function Module.PostCreateButton(element, button)
 	button.Count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
 	-- COOLDOWN CONFIG (IF PRESENT)
+	-- Countdown numbers: toggled in PostUpdateButton. Prefer engine FS when
+	-- DurationObject is armed (secret-safe); hide numbers for Lua FormatTime fallback.
 	if button.Cooldown then
 		button.Cooldown.noOCC = true
-		button.Cooldown.noCooldownCount = true
+		button.Cooldown.noCooldownCount = true -- OmniCC off — we use Blizzard or button.timer
 		button.Cooldown:SetReverse(true)
 		button.Cooldown:SetHideCountdownNumbers(true)
 	end
@@ -912,7 +1277,7 @@ function Module.PostCreateButton(element, button)
 		button.Stealable:Hide() -- REASON: Prevent "sticky" display between reused buttons.
 	end
 
-	-- TIMER TEXT (DURATION)
+	-- TIMER TEXT (DURATION) — OUTLINE, no shadow (readable on busy icons).
 	if not button.timer then
 		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 	end
@@ -1034,17 +1399,47 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	-- COOLDOWN/TIMER
-	if not IsSecret(duration) and not IsSecret(expiration) and duration and expiration and duration > 0 then
+	-- COOLDOWN / TIMER
+	-- Prefer DurationObject + GetCountdownFontString for secret-safe aura timers.
+	-- Lua OnUpdate + button.timer only when duration fields are plain and GetAuraDuration fails.
+	button:SetScript("OnUpdate", nil)
+
+	local durObj
+	if button.Cooldown and auraInstanceID and C_UnitAuras and C_UnitAuras.GetAuraDuration then
+		durObj = C_UnitAuras.GetAuraDuration(unit, auraInstanceID)
+	end
+
+	if durObj and button.Cooldown then
+		-- oUF already called SetCooldownFromDurationObject; arm mask + show engine countdown.
+		K.ArmAuraCooldown(button.Cooldown, durObj, true)
+		button.Cooldown:SetHideCountdownNumbers(false)
+		local fontSize = element.fontSize or (size * 0.52)
+		K.StyleAuraCooldownCountdown(button.Cooldown, fontSize, button, "CENTER", 1, 0)
+		if button.timer then
+			button.timer:Hide()
+			button.timer:SetText("")
+		end
+	elseif not IsSecret(duration) and not IsSecret(expiration) and duration and expiration and duration > 0 then
+		if button.Cooldown then
+			button.Cooldown:SetHideCountdownNumbers(true)
+			-- oUF hid the frame when GetAuraDuration was nil — restore classic swipe.
+			if button.Cooldown.SetCooldown then
+				button.Cooldown:SetCooldown(expiration - duration, duration)
+				button.Cooldown:Show()
+			end
+		end
 		button.expiration = expiration
 		button:SetScript("OnUpdate", K.CooldownOnUpdate)
 		if button.timer then
 			button.timer:Show()
 		end
 	else
-		button:SetScript("OnUpdate", nil)
+		if button.Cooldown then
+			button.Cooldown:SetHideCountdownNumbers(true)
+		end
 		if button.timer then
 			button.timer:Hide()
+			button.timer:SetText("")
 		end
 	end
 
@@ -1110,25 +1505,6 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 			end
 		end
 	end
-
-	-- Dot tracking
-	if debuffsChanged then
-		element.hasTheDot = nil
-
-		if C["Nameplate"].ColorByDot and element.allDebuffs then
-			local spellList = C["Nameplate"].DotSpellList and C["Nameplate"].DotSpellList.Spells
-			if spellList then
-				for _, data in next, element.allDebuffs do
-					local spellID = data and data.spellId
-					local isPlayerAura = data and data.isPlayerAura
-					if not IsSecret(spellID) and spellID and not IsSecret(isPlayerAura) and isPlayerAura and spellList[spellID] then
-						element.hasTheDot = true
-						break
-					end
-				end
-			end
-		end
-	end
 end
 
 --========================================================--
@@ -1173,6 +1549,11 @@ function Module.CustomFilter(element, unit, data)
 
 	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
+	-- Shared blacklist for every style that shares the nameplate list.
+	if spellID and C.NameplateBlackList[spellID] then
+		return false
+	end
+
 	-- NAMEPLATES / BOSS / ARENA FILTERING RULES
 	if style == "nameplate" or style == "boss" or style == "arena" then
 		-- PASS ALL BOLSTER
@@ -1185,11 +1566,6 @@ function Module.CustomFilter(element, unit, data)
 		-- REASON: Reduce clutter on name-only plates.
 		if owner and owner.plateType == "NameOnly" then
 			return spellID and C.NameplateWhiteList[spellID] == true
-		end
-
-		-- BLACKLIST ALWAYS BLOCKS
-		if spellID and C.NameplateBlackList[spellID] then
-			return false
 		end
 
 		-- DISPELL/STEAL SHOW
@@ -1215,9 +1591,13 @@ function Module.CustomFilter(element, unit, data)
 		return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isPlayerAura)
 	end
 
-	-- UNITFRAMES: STRICT BOOLEAN RETURNS
-	-- REASON: Don't return strings (truthy) — keep it explicit + predictable.
-	if showDebuffType then
+	-- UNITFRAMES (target/focus/player/…): stealables always win; then player-only
+	-- debuff gate; then any valid slot (secret name still OK via auraInstanceID).
+	if not isHarmful and isStealable then
+		return true
+	end
+
+	if showDebuffType and isHarmful then
 		return isPlayerAura == true
 	end
 
@@ -1227,6 +1607,13 @@ function Module.CustomFilter(element, unit, data)
 
 	-- MIDNIGHT: aura name may be secret while the slot is still valid.
 	return data.auraInstanceID ~= nil
+end
+
+-- REASON: Sync stagger tag text when oUF updates the bar fill/color.
+function Module.PostUpdateStagger(element)
+	if element.Value and element.Value.UpdateTag then
+		element.Value:UpdateTag()
+	end
 end
 
 -- REASON: Updates rune displays for Death Knights.
@@ -1328,6 +1715,24 @@ local function applyBarColor(bar, color)
 	end
 end
 
+-- GetUnitChargedPowerPoints returns an array of point indices (Blizzard RogueComboPointBar /
+-- NDui use tContains). Indexing charged[i] as a boolean was wrong — Echoing Reprimand stars
+-- never lit correctly. Elements can be secret under UnitPowerRestricted — only compare plain.
+local function isChargedPowerPoint(chargedPowerPoints, index)
+	if not chargedPowerPoints or IsSecret(chargedPowerPoints) then
+		return false
+	end
+
+	for j = 1, #chargedPowerPoints do
+		local pointIndex = chargedPowerPoints[j]
+		if NotSecret(pointIndex) and pointIndex == index then
+			return true
+		end
+	end
+
+	return false
+end
+
 -- REASON: Updates class power displays (Combo points, runes, etc.) with special handling for Rogue/Druid combo points.
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
 	local prevColor = element.prevColor
@@ -1340,32 +1745,32 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 			-- REASON: Set individual colors for each active combo point bar.
 			for i = 1, cur do
 				local bar = element[i]
-				local colorIndex = math_min(i, #comboColors)
-				local color = comboColors[colorIndex]
-				if color then
-					applyBarColor(bar, color)
-				else
-					applyBarColor(bar, comboColors[1])
+				if bar then
+					local colorIndex = math_min(i, #comboColors)
+					local color = comboColors[colorIndex]
+					if color then
+						applyBarColor(bar, color)
+					else
+						applyBarColor(bar, comboColors[1])
+					end
 				end
 			end
-			element.prevColor = cur -- REASON: Track current combo points for change detection.
-			return -- REASON: Exit early since we handled combo points.
-		else
-			-- REASON: Fallback to original logic if graduated colors not available.
-			if curReadable and cur > 0 then
-				local thisColor = (maxReadable and cur == max) and 1 or 2
-				if not prevColor or prevColor ~= thisColor then
-					local r, g, b = 1, 0, 0
-					if thisColor == 2 then
-						r, g, b = getClassPowerColorRGB(element, powerType)
-					end
-					SetStatusBarColor(element, r, g, b)
-					element.prevColor = thisColor
+			element.prevColor = cur
+			-- Fall through: still need bar width + Echoing Reprimand charge stars.
+		elseif curReadable and cur > 0 then
+			-- Fallback when graduated colors table missing.
+			local thisColor = (maxReadable and cur == max) and 1 or 2
+			if not prevColor or prevColor ~= thisColor then
+				local r, g, b = 1, 0, 0
+				if thisColor == 2 then
+					r, g, b = getClassPowerColorRGB(element, powerType)
 				end
+				SetStatusBarColor(element, r, g, b)
+				element.prevColor = thisColor
 			end
 		end
 	else
-		-- REASON: Original logic for non-combo point power types.
+		-- Non-combo power types: full = red, otherwise class power color.
 		if curReadable and cur > 0 then
 			local thisColor = (maxReadable and cur == max) and 1 or 2
 			if not prevColor or prevColor ~= thisColor then
@@ -1380,25 +1785,26 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 	end
 
 	if diff and not IsSecret(diff) and maxReadable and max and element.__owner.ClassPowerBar then
-		local barWidth = (element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max
-		for i = 1, max do
-			local bar = element[i]
-			bar:SetWidth(barWidth)
+		local totalWidth = element.__owner.ClassPowerBar:GetWidth()
+		if totalWidth and not IsSecret(totalWidth) and totalWidth > 0 then
+			local barWidth = (totalWidth - (max - 1) * 6) / max
+			for i = 1, max do
+				local bar = element[i]
+				if bar then
+					bar:SetWidth(barWidth)
+				end
+			end
 		end
 	end
 
-	for i = 1, 7 do
+	-- Max can be 10 (Maelstrom Weapon); only iterate existing charge-star bars.
+	for i = 1, #element do
 		local bar = element[i]
 		if not bar.chargeStar then
 			break
 		end
 
-		local showChargeStar = chargedPowerPoints and chargedPowerPoints[i]
-		if IsSecret(showChargeStar) and bar.chargeStar.SetAlphaFromBoolean then
-			bar.chargeStar:SetAlphaFromBoolean(showChargeStar, 1, 0)
-		else
-			bar.chargeStar:SetShown(showChargeStar)
-		end
+		bar.chargeStar:SetShown(isChargedPowerPoint(chargedPowerPoints, i))
 	end
 end
 
@@ -1417,7 +1823,8 @@ function Module:CreateClassPower(self)
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"
-	local maxBar = isDK and 6 or 7
+	-- NDui uses 10: Maelstrom Weapon stacks to 10; combo/chi/essence stay ≤7.
+	local maxBar = isDK and 6 or 10
 	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 
 	bar:SetSize(barWidth, barHeight)
@@ -1560,14 +1967,42 @@ local function SyncUnitMover(frame, moverName)
 	end
 end
 
-function Module:UpdatePlayerSize()
+-- REASON: Shared by UpdatePlayerSize/UpdateTargetSize/UpdateFocusSize — previously each
+-- was a near-identical copy differing only by config-key prefix, frame global, and
+-- mover name. buffsPerRowKey/debuffsPerRowKey are optional (Focus has no per-row aura
+-- config, so it omits them and skips that step entirely, matching prior behavior).
+local function UpdateCoreFrameSize(cfgPrefix, frameGlobal, moverName, buffsPerRowKey, debuffsPerRowKey)
 	local cfg = C["Unitframe"]
-	local width = cfg.PlayerHealthWidth
-	local frame = _G.oUF_Player
+	local width = cfg[cfgPrefix .. "HealthWidth"]
+	local frame = _G[frameGlobal]
 
-	ResizePrimaryFrame(frame, width, cfg.PlayerHealthHeight, cfg.PlayerPowerHeight)
-	RefreshAuraRows(frame, width, "PlayerBuffsPerRow", "PlayerDebuffsPerRow")
-	SyncUnitMover(frame, "PlayerUF")
+	ResizePrimaryFrame(frame, width, cfg[cfgPrefix .. "HealthHeight"], cfg[cfgPrefix .. "PowerHeight"])
+	if buffsPerRowKey or debuffsPerRowKey then
+		RefreshAuraRows(frame, width, buffsPerRowKey, debuffsPerRowKey)
+	end
+	SyncUnitMover(frame, moverName)
+end
+
+-- REASON: Shared by UpdatePlayerBuffs/UpdatePlayerDebuffs/UpdateTargetBuffs/
+-- UpdateTargetDebuffs — previously four near-identical copies differing only by frame
+-- global, aura element name (Buffs/Debuffs), and config keys.
+local function RefreshFrameAuraRow(frameGlobal, auraKey, widthCfgKey, perRowCfgKey)
+	local cfg = C["Unitframe"]
+	local frame = _G[frameGlobal]
+	local element = frame and frame[auraKey]
+	if not element then
+		return
+	end
+
+	element.iconsPerRow = cfg[perRowCfgKey]
+	Module:UpdateAuraContainer(cfg[widthCfgKey], element, element.num)
+	if element.ForceUpdate then
+		element:ForceUpdate()
+	end
+end
+
+function Module:UpdatePlayerSize()
+	UpdateCoreFrameSize("Player", "oUF_Player", "PlayerUF", "PlayerBuffsPerRow", "PlayerDebuffsPerRow")
 end
 
 function Module:UpdatePlayerLevelVisibility()
@@ -1614,78 +2049,29 @@ function Module:UpdateOptionalUnitLevels()
 end
 
 function Module:UpdatePlayerBuffs()
-	local cfg = C["Unitframe"]
-	local frame = _G.oUF_Player
-	if not frame or not frame.Buffs then
-		return
-	end
-
-	frame.Buffs.iconsPerRow = cfg.PlayerBuffsPerRow
-	Module:UpdateAuraContainer(cfg.PlayerHealthWidth, frame.Buffs, frame.Buffs.num)
-	if frame.Buffs.ForceUpdate then
-		frame.Buffs:ForceUpdate()
-	end
+	RefreshFrameAuraRow("oUF_Player", "Buffs", "PlayerHealthWidth", "PlayerBuffsPerRow")
 end
 
 function Module:UpdatePlayerDebuffs()
-	local cfg = C["Unitframe"]
-	local frame = _G.oUF_Player
-	if not frame or not frame.Debuffs then
-		return
-	end
-
-	frame.Debuffs.iconsPerRow = cfg.PlayerDebuffsPerRow
-	Module:UpdateAuraContainer(cfg.PlayerHealthWidth, frame.Debuffs, frame.Debuffs.num)
-	if frame.Debuffs.ForceUpdate then
-		frame.Debuffs:ForceUpdate()
-	end
+	RefreshFrameAuraRow("oUF_Player", "Debuffs", "PlayerHealthWidth", "PlayerDebuffsPerRow")
 end
 
 function Module:UpdateTargetSize()
-	local cfg = C["Unitframe"]
-	local width = cfg.TargetHealthWidth
-	local frame = _G.oUF_Target
-
-	ResizePrimaryFrame(frame, width, cfg.TargetHealthHeight, cfg.TargetPowerHeight)
-	RefreshAuraRows(frame, width, "TargetBuffsPerRow", "TargetDebuffsPerRow")
-	SyncUnitMover(frame, "TargetUF")
+	UpdateCoreFrameSize("Target", "oUF_Target", "TargetUF", "TargetBuffsPerRow", "TargetDebuffsPerRow")
 end
 
 function Module:UpdateTargetBuffs()
-	local cfg = C["Unitframe"]
-	local frame = _G.oUF_Target
-	if not frame or not frame.Buffs then
-		return
-	end
-
-	frame.Buffs.iconsPerRow = cfg.TargetBuffsPerRow
-	Module:UpdateAuraContainer(cfg.TargetHealthWidth, frame.Buffs, frame.Buffs.num)
-	if frame.Buffs.ForceUpdate then
-		frame.Buffs:ForceUpdate()
-	end
+	RefreshFrameAuraRow("oUF_Target", "Buffs", "TargetHealthWidth", "TargetBuffsPerRow")
 end
 
 function Module:UpdateTargetDebuffs()
-	local cfg = C["Unitframe"]
-	local frame = _G.oUF_Target
-	if not frame or not frame.Debuffs then
-		return
-	end
-
-	frame.Debuffs.iconsPerRow = cfg.TargetDebuffsPerRow
-	Module:UpdateAuraContainer(cfg.TargetHealthWidth, frame.Debuffs, frame.Debuffs.num)
-	if frame.Debuffs.ForceUpdate then
-		frame.Debuffs:ForceUpdate()
-	end
+	RefreshFrameAuraRow("oUF_Target", "Debuffs", "TargetHealthWidth", "TargetDebuffsPerRow")
 end
 
 function Module:UpdateFocusSize()
-	local cfg = C["Unitframe"]
-	local width = cfg.FocusHealthWidth
-	local frame = _G.oUF_Focus
-
-	ResizePrimaryFrame(frame, width, cfg.FocusHealthHeight, cfg.FocusPowerHeight)
-	SyncUnitMover(frame, "FocusUF")
+	-- REASON: Focus has no configurable per-row aura settings (nil buffsPerRowKey/
+	-- debuffsPerRowKey), so UpdateCoreFrameSize skips the aura-row refresh step.
+	UpdateCoreFrameSize("Focus", "oUF_Focus", "FocusUF")
 end
 
 function Module:UpdatePartySize()
@@ -1974,8 +2360,17 @@ local function applyTextureToFrame(frame, texture)
 		setBarTexture(prediction.myBar, texture)
 		setBarTexture(prediction.otherBar, texture)
 		setBarTexture(prediction.absorbBar, texture)
+		if prediction.damageAbsorbForward then
+			setBarTexture(prediction.damageAbsorbForward, texture)
+		end
 		setBarTexture(prediction.overAbsorbBar, texture)
 		setBarTexture(prediction.healAbsorbBar, texture)
+		if prediction.absorbStrip then
+			setBarTexture(prediction.absorbStrip, texture)
+		end
+		if prediction.healAbsorbStrip then
+			setBarTexture(prediction.healAbsorbStrip, texture)
+		end
 	end
 
 	local classPower = frame.ClassPower
@@ -2020,8 +2415,17 @@ local function applySmoothToFrame(frame, enabled)
 		applySmoothToBar(prediction.myBar, enabled)
 		applySmoothToBar(prediction.otherBar, enabled)
 		applySmoothToBar(prediction.absorbBar, enabled)
+		if prediction.damageAbsorbForward then
+			applySmoothToBar(prediction.damageAbsorbForward, enabled)
+		end
 		applySmoothToBar(prediction.overAbsorbBar, enabled)
 		applySmoothToBar(prediction.healAbsorbBar, enabled)
+		if prediction.absorbStrip then
+			applySmoothToBar(prediction.absorbStrip, enabled)
+		end
+		if prediction.healAbsorbStrip then
+			applySmoothToBar(prediction.healAbsorbStrip, enabled)
+		end
 	end
 end
 
@@ -2432,6 +2836,10 @@ Module._DeferredRebuildPartyFrames = Module._DeferredRebuildPartyFrames or funct
 	Module:RebuildPartyFrames()
 end
 
+-- Forward-declare: SpawnPartyFrames calls this before the body is assigned below.
+-- Incident (UF Core, Jul 2026): local function after SpawnPartyFrames made the call a nil global.
+local DisableBlizzardRaidFrames
+
 function Module:RebuildPartyFrames()
 	if deferUntilRegen("_pendingPartyRebuild", "_pendingPartyRebuildRegistered", Module._DeferredRebuildPartyFrames) then
 		return
@@ -2452,6 +2860,9 @@ function Module:SpawnPartyFrames()
 	if not C["Party"].Enable then
 		return
 	end
+
+	-- Install forces useCompactPartyFrames; bury the CUF container when we own party.
+	DisableBlizzardRaidFrames()
 
 	local partyMover
 
@@ -2582,22 +2993,54 @@ local function CreateHeaderInit(width, height)
 	)
 end
 
--- Centralized Blizzard raid frame disable
--- REASON: Disables Blizzard's default raid and party frames to avoid overlaps and taints.
-local function DisableBlizzardRaidFrames()
+-- Centralized Blizzard raid/party CUF disable
+-- REASON: CompactRaidFrameContainer still ApplyToFrames on Edit Mode close even after
+-- CompactPartyFrame:UnregisterAllEvents. Under addon taint, CUF health color compares
+-- secret StatusBar RGB and throws. Reparent + OnShow bury to keep Blizzard frames quiet.
+-- Do NOT Dummy EditMode AccountSettings Refresh* — that taints Edit Mode itself (see Movers).
+DisableBlizzardRaidFrames = function()
 	if InCombatLockdown() then
 		return
 	end
 
+	local hider = K.UIFrameHider
+
 	if CompactPartyFrame then
 		CompactPartyFrame:UnregisterAllEvents()
+		if hider then
+			CompactPartyFrame:SetParent(hider)
+		end
+		if not CompactPartyFrame._kkuiSuppressed then
+			CompactPartyFrame._kkuiSuppressed = true
+			CompactPartyFrame:HookScript("OnShow", function(self)
+				self:Hide()
+			end)
+		end
+		CompactPartyFrame:Hide()
+	end
+
+	local container = _G.CompactRaidFrameContainer
+	if container then
+		container:UnregisterAllEvents()
+		if hider then
+			container:SetParent(hider)
+		end
+		if not container._kkuiSuppressed then
+			container._kkuiSuppressed = true
+			container:HookScript("OnShow", function(self)
+				self:Hide()
+			end)
+		end
+		container:Hide()
 	end
 
 	if _G.CompactRaidFrameManager_SetSetting then
 		_G.CompactRaidFrameManager_SetSetting("IsShown", "0")
 		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		_G.CompactRaidFrameManager:UnregisterAllEvents()
-		_G.CompactRaidFrameManager:SetParent(K.UIFrameHider)
+		if hider then
+			_G.CompactRaidFrameManager:SetParent(hider)
+		end
 	end
 end
 

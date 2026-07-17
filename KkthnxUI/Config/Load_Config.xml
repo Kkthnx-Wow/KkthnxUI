@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-   <!-- Load_Config -->
-   <Script file="GUIConfig.lua" />
+   <!-- Load_Config: modular GUI category definitions -->
+   <Script file="GUI\Common.lua" />
+   <Include file="GUI\Categories.xml" />
+   <Script file="GUI\Init.lua" />
 
    <Include file="Elements\FilterLists\FilterLists.xml"/>
 </Ui>

@@ -55,6 +55,11 @@ local function OnTooltipSetting(configPath)
 		RefreshTooltipStatusBar()
 	elseif LIVE_APPEARANCE_KEYS[key] or key == "Icons" or key == "ShowIDs" then
 		RefreshTooltipAppearance()
+		if key == "Icons" or key == "ClassColor" then
+			if Module.RefreshPawnIntegration then
+				Module:RefreshPawnIntegration()
+			end
+		end
 		if GameTooltip and GameTooltip:IsShown() and not GameTooltip:IsForbidden() then
 			GameTooltip:Hide()
 		end

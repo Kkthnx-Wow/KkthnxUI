@@ -3,8 +3,8 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Skins the Blizzard Inspect frame and equipment slots.
--- - Design: Applies custom borders, textures, and class-specific backgrounds for inspection.
--- - Events: N/A
+-- - Design: NexEnhance CharacterFrames layout math — model fills inset, deferred tab resize.
+-- - Events: N/A (Blizzard_InspectUI load-on-demand theme)
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -15,18 +15,21 @@ local pairs = _G.pairs
 local hooksecurefunc = _G.hooksecurefunc
 
 local C_Item_IsCosmeticItem = _G.C_Item.IsCosmeticItem
+local C_Timer_After = _G.C_Timer.After
 local GetInventoryItemLink = _G.GetInventoryItemLink
+local InCombatLockdown = _G.InCombatLockdown
 local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
 local UnitClass = _G.UnitClass
 
 -- NOTE: InspectFrame globals are NOT cached here because Blizzard_InspectUI is load-on-demand.
--- The frames don't exist at file parse time, so caching would result in nil values.
--- Access them directly via _G inside the theme function instead.
 
--- Constants
-local SLOT_SIZE = 36
+-- Constants (match NexEnhance CharacterFrames inspect sizes)
+local SLOT_SIZE = 37
 local FRAME_SIZE_TAB1 = { width = 438, height = 431 }
 local FRAME_SIZE_TAB2 = { width = 338, height = 424 }
+local PANEL_INSET_BOTTOM_OFFSET = _G.PANEL_INSET_BOTTOM_OFFSET or 4
+local INSPECT_INSET_OFFSET_PAPER = 432
+local INSPECT_INSET_OFFSET_OTHER = 332
 
 -- Colors
 local WHITE_COLOR = { r = 1, g = 1, b = 1 }
@@ -65,10 +68,10 @@ for _, classFile in pairs(K.ClassList) do
 	ClassTextures[classFile] = DRESSING_ROOM_PATH .. classFile
 end
 
--- Helper Functions
-
 local function UpdateCosmetic(self)
-	if not self then return end
+	if not self then
+		return
+	end
 	local unit = _G.InspectFrame and _G.InspectFrame.unit
 	if not unit then
 		return
@@ -84,7 +87,6 @@ local function UpdateIconBorderColor(slot, r, g, b)
 		return
 	end
 
-	-- Normalize invalid/grey/white colors to pure white for consistent border styling
 	if not r or r == GREY_QUALITY_R or (r > 0.99 and g > 0.99 and b > 0.99) then
 		border:SetVertexColor(WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b)
 	else
@@ -94,13 +96,10 @@ end
 
 local function ResetIconBorderColor(slot)
 	if slot.KKUI_Border then
-		-- FIX: Use K.SetBorderColor to match CharacterFrame behavior and respect theme color,
-		-- instead of always forcing white which ignored the configured border color.
 		K.SetBorderColor(slot.KKUI_Border)
 	end
 end
 
--- PERF: Use shared handlers for hooks to avoid closure allocations per slot
 local function IconBorder_OnSetVertexColor(self, r, g, b)
 	UpdateIconBorderColor(self:GetParent(), r, g, b)
 end
@@ -115,12 +114,10 @@ local function StyleEquipmentSlot(slotName)
 		return
 	end
 
-	-- Cache slot elements
 	local icon = slot.icon
 	local iconBorder = slot.IconBorder
 	local iconOverlay = slot.IconOverlay
 
-	-- Apply Skin
 	slot:StripTextures()
 	slot:SetSize(SLOT_SIZE, SLOT_SIZE)
 
@@ -139,7 +136,6 @@ local function StyleEquipmentSlot(slotName)
 		iconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 	end
 
-	-- Hook Icon Border
 	if iconBorder then
 		hooksecurefunc(iconBorder, "SetVertexColor", IconBorder_OnSetVertexColor)
 		hooksecurefunc(iconBorder, "Hide", IconBorder_OnHide)
@@ -148,13 +144,14 @@ local function StyleEquipmentSlot(slotName)
 	slot.KKUI_Styled = true
 end
 
--- FIX: Cache last applied tab index and class so ApplyInspectFrameLayout is a no-op
--- when nothing changed. Without this, every InspectSwitchTabs call was re-running
--- UnitClass(), SetSize(), SetTexture(), and SetPoint() unconditionally.
 local lastAppliedTab
 local lastAppliedClass
 
-local function ApplyInspectFrameLayout()
+local function ApplyInspectFrameLayout(tabID)
+	if InCombatLockdown() then
+		return
+	end
+
 	local inspectFrame = _G.InspectFrame
 	if not inspectFrame or not inspectFrame.Inset then
 		return
@@ -163,11 +160,11 @@ local function ApplyInspectFrameLayout()
 	local inset = inspectFrame.Inset
 	local bg = inset.Bg
 
-	local selectedTab = PanelTemplates_GetSelectedTab(inspectFrame)
+	local selectedTab = tabID or PanelTemplates_GetSelectedTab(inspectFrame)
 	local unit = inspectFrame.unit or "target"
+	-- classFilename (2nd return): no ConditionalSecret.
 	local _, targetClass = UnitClass(unit)
 
-	-- Skip if neither tab nor inspected class changed
 	if selectedTab == lastAppliedTab and targetClass == lastAppliedClass then
 		return
 	end
@@ -176,10 +173,9 @@ local function ApplyInspectFrameLayout()
 
 	if selectedTab == 1 then
 		inspectFrame:SetSize(FRAME_SIZE_TAB1.width, FRAME_SIZE_TAB1.height)
-		inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", 432, 4)
+		inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", INSPECT_INSET_OFFSET_PAPER, PANEL_INSET_BOTTOM_OFFSET)
 
 		local texturePath = targetClass and ClassTextures[targetClass]
-
 		if texturePath and bg then
 			bg:SetTexture(texturePath)
 			bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
@@ -188,7 +184,7 @@ local function ApplyInspectFrameLayout()
 		end
 	else
 		inspectFrame:SetSize(FRAME_SIZE_TAB2.width, FRAME_SIZE_TAB2.height)
-		inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", 332, 4)
+		inset:SetPoint("BOTTOMRIGHT", inspectFrame, "BOTTOMLEFT", INSPECT_INSET_OFFSET_OTHER, PANEL_INSET_BOTTOM_OFFSET)
 
 		if bg then
 			bg:SetTexture(MARBLE_TEXTURE, "REPEAT", "REPEAT")
@@ -199,17 +195,14 @@ local function ApplyInspectFrameLayout()
 	end
 end
 
--- Main Theme Registration
-
 -- REASON: Main entry point for Blizzard Inspect UI skinning.
 C.themes["Blizzard_InspectUI"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
 
-	-- REASON: Access via _G because these frames don't exist at file parse time (load-on-demand addon).
 	local InspectFrame = _G.InspectFrame
-	local InspectFrameInset = _G.InspectFrameInset
+	local InspectFrameInset = _G.InspectFrameInset or (InspectFrame and InspectFrame.Inset)
 	local InspectHandsSlot = _G.InspectHandsSlot
 	local InspectHeadSlot = _G.InspectHeadSlot
 	local InspectMainHandSlot = _G.InspectMainHandSlot
@@ -221,14 +214,12 @@ C.themes["Blizzard_InspectUI"] = function()
 		return
 	end
 
-	-- Reposition Talents Frame if it exists
 	if InspectPaperDollItemsFrame and InspectPaperDollItemsFrame.InspectTalents then
 		local talents = InspectPaperDollItemsFrame.InspectTalents
 		talents:ClearAllPoints()
 		talents:SetPoint("TOPRIGHT", InspectFrame, "BOTTOMRIGHT", 0, -1)
 	end
 
-	-- Clean Model Frame
 	if InspectModelFrame then
 		InspectModelFrame:DisableDrawLayer("BACKGROUND")
 		InspectModelFrame:DisableDrawLayer("BORDER")
@@ -236,16 +227,11 @@ C.themes["Blizzard_InspectUI"] = function()
 		InspectModelFrame:StripTextures(true)
 	end
 
-	-- Style Slots
 	for i = 1, #EquipmentSlots do
 		StyleEquipmentSlot(EquipmentSlots[i])
 	end
 
-	-- Hooks & Positioning
 	if InspectFrame and not InspectFrame.KKUI_Hooks then
-		-- FIX: Reset layout cache on show/hide so each fresh inspection always applies
-		-- the layout. Without this, inspecting the same class on the same tab a second
-		-- time would hit the cache and skip SetSize/SetTexture/SetPoint entirely.
 		local function ResetInspectLayoutCache()
 			lastAppliedTab = nil
 			lastAppliedClass = nil
@@ -253,16 +239,17 @@ C.themes["Blizzard_InspectUI"] = function()
 		InspectFrame:HookScript("OnShow", ResetInspectLayoutCache)
 		InspectFrame:HookScript("OnHide", ResetInspectLayoutCache)
 
-		-- Cosmetic Update Hook
 		hooksecurefunc("InspectPaperDollItemSlotButton_Update", UpdateCosmetic)
 
-		-- Layout Hook
-		hooksecurefunc("InspectSwitchTabs", ApplyInspectFrameLayout)
+		-- Defer tab layout like NexEnhance — avoids tainting secure elements mid-switch.
+		hooksecurefunc("InspectSwitchTabs", function(newID)
+			C_Timer_After(0, function()
+				ApplyInspectFrameLayout(newID)
+			end)
+		end)
 
-		-- Initial Layout Application
-		ApplyInspectFrameLayout()
+		ApplyInspectFrameLayout(1)
 
-		-- Manual Element Positioning
 		if InspectFrameInset then
 			if InspectHeadSlot then
 				InspectHeadSlot:ClearAllPoints()
@@ -276,19 +263,37 @@ C.themes["Blizzard_InspectUI"] = function()
 
 			if InspectMainHandSlot then
 				InspectMainHandSlot:ClearAllPoints()
-				InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrameInset, "BOTTOMLEFT", 176, 5)
+				InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrameInset, "BOTTOMLEFT", 175, 5)
 			end
 
 			if InspectSecondaryHandSlot then
 				InspectSecondaryHandSlot:ClearAllPoints()
-				InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrameInset, "BOTTOMRIGHT", -176, 5)
+				InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrameInset, "BOTTOMRIGHT", -175, 5)
 			end
 
 			if InspectModelFrame then
+				-- NexEnhance: stretch model to inset, leave foot room for avg iLvl text.
+				InspectModelFrame:SetSize(0, 0)
 				InspectModelFrame:ClearAllPoints()
-				InspectModelFrame:SetSize(300, 360)
-				InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 64, -3)
+				InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 0, 0)
+				InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrameInset, 0, 30)
+				if InspectModelFrame.SetCamDistanceScale then
+					InspectModelFrame:SetCamDistanceScale(1.1)
+				end
 			end
+		end
+
+		if _G.InspectPaperDollFrame then
+			_G.InspectPaperDollFrame:HookScript("OnShow", function()
+				-- Pawn inspect button lift lives in CharacterFrame skin; nudge if already loaded.
+				local button = _G.PawnUI_InspectPawnButton
+				if button and InspectFrame then
+					button:EnableMouse(true)
+					button:SetFrameStrata("HIGH")
+					button:SetFrameLevel(InspectFrame:GetFrameLevel() + 50)
+					button:Raise()
+				end
+			end)
 		end
 
 		InspectFrame.KKUI_Hooks = true

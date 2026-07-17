@@ -46,9 +46,8 @@ function Module:EnhancedPicker_UpdateColor()
 end
 
 function Module:CreateColorPicker()
-	-- REASON: Entry point for the Color Picker enhancement.
 	-- COMPAT: Check for conflicting addons like ColorPickerPlus.
-	if _G.C_AddOns.IsAddOnLoaded("ColorPickerPlus") or C["Misc"].ColorPicker ~= true then
+	if _G.C_AddOns.IsAddOnLoaded("ColorPickerPlus") then
 		return
 	end
 
@@ -57,15 +56,21 @@ function Module:CreateColorPicker()
 		return
 	end
 
+	-- Already built — live toggle only shows/hides the class bar.
+	if self.colorPickerBar then
+		self.colorPickerBar:SetShown(C["Misc"].ColorPicker)
+		return
+	end
+
+	if C["Misc"].ColorPicker ~= true then
+		return
+	end
+
 	pickerFrame:SetHeight(250)
-	-- REASON: Makes the Color Picker movable by clicking and dragging its header.
 	if pickerFrame.Header then
 		K.CreateMoverFrame(pickerFrame.Header, pickerFrame)
 	end
 
-	-- -----------------------------------------------------------------------
-	-- Class Color Presets
-	-- -----------------------------------------------------------------------
 	local colorBar = CreateFrame("Frame", nil, pickerFrame)
 	colorBar:SetSize(1, 22)
 	colorBar:SetPoint("BOTTOM", 0, 38)
@@ -90,10 +95,8 @@ function Module:CreateColorPicker()
 		end
 	end
 	colorBar:SetWidth(count * 22)
+	self.colorPickerBar = colorBar
 
-	-- -----------------------------------------------------------------------
-	-- Hex Box Skinning
-	-- -----------------------------------------------------------------------
 	local hexBox = pickerFrame.Content and pickerFrame.Content.HexBox
 	if hexBox then
 		if hexBox.SkinEditBox then
@@ -101,5 +104,12 @@ function Module:CreateColorPicker()
 		end
 		hexBox:ClearAllPoints()
 		hexBox:SetPoint("BOTTOMRIGHT", -25, 67)
+	end
+end
+
+function Module:UpdateColorPicker()
+	self:CreateColorPicker()
+	if self.colorPickerBar then
+		self.colorPickerBar:SetShown(C["Misc"].ColorPicker)
 	end
 end

@@ -18,6 +18,7 @@ local ipairs = ipairs
 local pcall = pcall
 local print = print
 local string_format = string.format
+local pcall = pcall
 local table_insert = table.insert
 local table_remove = table.remove
 local table_unpack = unpack
@@ -36,6 +37,38 @@ local chatHistory = {}
 local hasRestored = false
 local isPrinting = false
 local eventsRegistered = false
+local zoneHandlerRegistered = false
+
+local GetCVarBool = _G.GetCVarBool
+local IsInInstance = _G.IsInInstance
+local C_Housing = _G.C_Housing
+local C_ChatInfo = _G.C_ChatInfo
+
+local GetChatLineText = C_ChatInfo and C_ChatInfo.GetChatLineText
+local IsChatLineCensored = C_ChatInfo and C_ChatInfo.IsChatLineCensored
+local NotSecret = K.NotSecret
+
+local function chatRestrictionsForced()
+	return GetCVarBool and GetCVarBool("addonChatRestrictionsForced")
+end
+
+local function inOpenWorld()
+	if C_Housing and C_Housing.IsInsideHouseOrPlot and C_Housing.IsInsideHouseOrPlot() then
+		return true
+	end
+	local inInstance, instanceType = IsInInstance()
+	if not inInstance then
+		return true
+	end
+	return instanceType == "none" or instanceType == ""
+end
+
+local function captureAllowed()
+	if chatRestrictionsForced() then
+		return false
+	end
+	return inOpenWorld()
+end
 
 local EVENTS_TO_LOG = {
 	"CHAT_MSG_INSTANCE_CHAT",
@@ -89,16 +122,33 @@ local function printChatHistory()
 	hasRestored = true
 end
 
+local function resolveChatBody(body, lineID)
+	if lineID and type(lineID) == "number" and GetChatLineText then
+		if IsChatLineCensored and IsChatLineCensored(lineID) then
+			return nil
+		end
+		local ok, text = pcall(GetChatLineText, lineID)
+		if ok and text and NotSecret(text) then
+			return text
+		end
+	end
+	if body and NotSecret(body) then
+		return body
+	end
+end
+
 local function saveChatHistory(event, ...)
-	-- REASON: Captures chat messages and stores them in the persistent history table.
-	if getMaxLogEntries() == 0 or isPrinting then
+	if getMaxLogEntries() == 0 or isPrinting or not captureAllowed() then
 		return
 	end
 
 	local messageData = { ... }
-	if not messageData[1] then
+	local lineID = select(11, ...)
+	local resolved = resolveChatBody(messageData[1], lineID)
+	if not resolved then
 		return
 	end
+	messageData[1] = resolved
 
 	messageData[ENTRY_EVENT] = event
 	messageData[ENTRY_TIME] = time()
@@ -112,6 +162,33 @@ local function saveChatHistory(event, ...)
 	end
 
 	_G.KkthnxUIDB.ChatHistory = chatHistory
+end
+
+local function onZoneOrRestrictionChange()
+	if getMaxLogEntries() == 0 then
+		return
+	end
+	if captureAllowed() then
+		registerChatEvents()
+	else
+		unregisterChatEvents()
+	end
+end
+
+local function registerZoneHandler()
+	if zoneHandlerRegistered then
+		return
+	end
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", onZoneOrRestrictionChange)
+	zoneHandlerRegistered = true
+end
+
+local function unregisterZoneHandler()
+	if not zoneHandlerRegistered then
+		return
+	end
+	K:UnregisterEvent("PLAYER_ENTERING_WORLD", onZoneOrRestrictionChange)
+	zoneHandlerRegistered = false
 end
 
 local function registerChatEvents()
@@ -154,6 +231,7 @@ function Module:onLogMaxChanged(newValue)
 	local maxEntries = tonumber(newValue) or getMaxLogEntries()
 	if maxEntries <= 0 then
 		unregisterChatEvents()
+		unregisterZoneHandler()
 		if table_wipe then
 			table_wipe(chatHistory)
 		else
@@ -163,7 +241,12 @@ function Module:onLogMaxChanged(newValue)
 		return
 	end
 
-	registerChatEvents()
+	registerZoneHandler()
+	if captureAllowed() then
+		registerChatEvents()
+	else
+		unregisterChatEvents()
+	end
 
 	while #chatHistory > maxEntries do
 		table_remove(chatHistory, #chatHistory)
@@ -175,15 +258,20 @@ end
 -- Initialization
 -- ---------------------------------------------------------------------------
 function Module:CreateChatHistory()
-	-- REASON: Registration entry point; loads the saved context and initiates restoration.
 	local maxEntries = getMaxLogEntries()
 
 	if maxEntries ~= 0 then
 		chatHistory = _G.KkthnxUIDB.ChatHistory or {}
-		registerChatEvents()
+		registerZoneHandler()
+		if captureAllowed() then
+			registerChatEvents()
+		else
+			unregisterChatEvents()
+		end
 		printChatHistory()
 	else
 		unregisterChatEvents()
+		unregisterZoneHandler()
 		if table_wipe then
 			table_wipe(chatHistory)
 		else

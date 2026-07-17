@@ -50,13 +50,20 @@ local function UpdateColor(self, event, unit)
 	local element = self.Stagger
 
 	local colors = self.colors.power[BREWMASTER_POWER_BAR_NAME]
-	local perc = (element.cur or 0) / (element.max or 1)
-
+	local cur = element.cur or 0
+	local max = element.max or 1
 	local color
-	if(perc >= STAGGER_RED_TRANSITION) then
-		color = colors and colors[STAGGER_RED_INDEX]
-	elseif(perc > STAGGER_YELLOW_TRANSITION) then
-		color = colors and colors[STAGGER_YELLOW_INDEX]
+	if issecretvalue and (issecretvalue(cur) or issecretvalue(max)) then
+		color = colors and colors[STAGGER_GREEN_INDEX]
+	elseif max > 0 then
+		local perc = cur / max
+		if perc >= STAGGER_RED_TRANSITION then
+			color = colors and colors[STAGGER_RED_INDEX]
+		elseif perc > STAGGER_YELLOW_TRANSITION then
+			color = colors and colors[STAGGER_YELLOW_INDEX]
+		else
+			color = colors and colors[STAGGER_GREEN_INDEX]
+		end
 	else
 		color = colors and colors[STAGGER_GREEN_INDEX]
 	end
@@ -220,7 +227,7 @@ local function Enable(self, unit)
 			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 		end
 
-		if self.mystyle == "player" then -- NDui: only disable MonkStaggerBar for oUF_Player
+		if self.mystyle == "player" or self.mystyle == "PlayerPlate" then -- disable default MonkStaggerBar for KKUI player frames
 			MonkStaggerBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
 			MonkStaggerBar:UnregisterEvent('PLAYER_SPECIALIZATION_CHANGED')
 			MonkStaggerBar:UnregisterEvent('UNIT_DISPLAYPOWER')

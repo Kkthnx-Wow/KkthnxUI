@@ -1,6 +1,6 @@
 --[[-----------------------------------------------------------------------------
 -- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell (Ported from NDui)
+-- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Renames chat channel prefixes, adds custom timestamps, and formats system messages.
 -- - Design: Hooks ChatFrame_AddMessageEventFilter to format messages before they hit AddMessage.

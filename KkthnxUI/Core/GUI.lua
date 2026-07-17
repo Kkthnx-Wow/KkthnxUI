@@ -54,7 +54,7 @@ Reload Management:
 
 -- Module Initialization
 
--- Modern GUI System inspired by NDui, enhanced and redesigned for KkthnxUI
+-- Modern GUI System for KkthnxUI
 -- REASON: Initialize modern GUI framework ("NewGUI") to replace legacy configuration panels.
 local Module = K:NewModule("NewGUI")
 
@@ -80,7 +80,7 @@ local YES, NO, OKAY, CANCEL, _, _ = YES, NO, OKAY, CANCEL, RESET, SETTINGS
 
 -- Constants
 
--- New Tag System (from NDui)
+-- Tag marker for "new" setting badges in the config UI
 local IsNew = "ISNEW"
 
 -- Panel Dimensions: shared metrics come from K.GUILayout (WidgetFactory.lua);
@@ -642,20 +642,6 @@ local function CreateSwitch(parent, configPath, text, tooltip, hookFunction, isN
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
 
-	-- Add cogwheel icon if extra configuration exists
-	local extraPath = configPath
-	if K.ExtraGUI then
-		if type(extraPath) == "string" and not (K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath)) then
-			local stripped = extraPath:gsub("Input$", "")
-			if stripped ~= extraPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
-				extraPath = stripped
-			end
-		end
-		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath) then
-			K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, cleanText)
-		end
-	end
-
 	-- Initialize
 	widget:UpdateValue()
 
@@ -925,20 +911,6 @@ local function CreateSlider(parent, configPath, text, minVal, maxVal, step, tool
 	-- Tooltip support
 	if tooltip then
 		CreateEnhancedTooltip(widget, cleanText, tooltip .. "\n\nTip: Use mouse wheel for fine adjustment!")
-	end
-
-	-- Add cogwheel icon if extra configuration exists
-	local extraPath = configPath
-	if K.ExtraGUI then
-		if type(extraPath) == "string" and not (K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath)) then
-			local stripped = extraPath:gsub("Input$", "")
-			if stripped ~= extraPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
-				extraPath = stripped
-			end
-		end
-		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath) then
-			K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, cleanText)
-		end
 	end
 
 	-- Initialize
@@ -1536,20 +1508,6 @@ local function CreateDropdown(parent, configPath, text, options, tooltip, hookFu
 		CloseMenu()
 	end
 
-	-- Add cogwheel icon if extra configuration exists
-	local extraPath = configPath
-	if K.ExtraGUI then
-		if type(extraPath) == "string" and not (K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath)) then
-			local stripped = extraPath:gsub("Input$", "")
-			if stripped ~= extraPath and K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(stripped) then
-				extraPath = stripped
-			end
-		end
-		if K.ExtraGUI.HasExtraConfig and K.ExtraGUI:HasExtraConfig(extraPath) then
-			K.ExtraGUI:CreateCogwheelIcon(widget, extraPath, cleanText)
-		end
-	end
-
 	-- Initialize
 	widget:UpdateValue()
 
@@ -2114,10 +2072,11 @@ local function CreateTextInput(parent, configPath, text, placeholder, tooltip, h
 end
 
 -- Category and Section Management
-local function CreateCategory(name, icon)
+local function CreateCategory(name, icon, categoryKey)
 	local cleanName, hasNewTag = ProcessNewTag(name)
 	local category = {
 		Name = cleanName,
+		Key = categoryKey or cleanName,
 		Icon = icon,
 		Sections = {},
 		Widgets = {},
@@ -2607,7 +2566,7 @@ local function CreateCategoryButton(category, index)
 
 	-- Add extra spacing before Credits category to separate it visually
 	local extraSpacing = 0
-	if category.Name == "Credits" then
+	if category.Key == "Credits" then
 		extraSpacing = 20 -- Add 20px extra spacing before Credits
 	end
 
@@ -2719,7 +2678,7 @@ function GUI:Initialize()
 
 		-- Add extra space for Credits category spacer
 		for _, category in ipairs(self.Categories) do
-			if category.Name == "Credits" then
+			if category.Key == "Credits" then
 				totalHeight = totalHeight + 20 -- Account for Credits spacer
 				break
 			end
@@ -2737,7 +2696,7 @@ function GUI:Initialize()
 	if #self.Categories > 0 then
 		local target = nil
 		for _, cat in ipairs(self.Categories) do
-			if cat.Name == "General" then
+			if cat.Key == "General" then
 				target = cat
 				break
 			end
@@ -2863,8 +2822,8 @@ function GUI:ShowCategory(category)
 	end
 end
 
-function GUI:AddCategory(name, icon)
-	return CreateCategory(name, icon)
+function GUI:AddCategory(name, icon, categoryKey)
+	return CreateCategory(name, icon, categoryKey)
 end
 
 function GUI:AddSection(category, name)
@@ -2940,6 +2899,14 @@ function GUI:CreateSlider(section, configPath, text, minVal, maxVal, step, toolt
 	local widget = CreateSlider(UIParent, configPath, text, minVal, maxVal, step, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
+
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		local cogwheel = K.ExtraGUI:CreateCogwheelIcon(widget, configPath, text)
+		if cogwheel then
+			widget.Cogwheel = cogwheel
+		end
+	end
+
 	return widget
 end
 
@@ -2947,6 +2914,14 @@ function GUI:CreateDropdown(section, configPath, text, options, tooltip, hookFun
 	local widget = CreateDropdown(UIParent, configPath, text, options, tooltip, hookFunction, isNew, requiresReload)
 	widget:Hide()
 	self:AddWidget(section, widget)
+
+	if K.ExtraGUI and K.ExtraGUI:HasExtraConfig(configPath) then
+		local cogwheel = K.ExtraGUI:CreateCogwheelIcon(widget, configPath, text)
+		if cogwheel then
+			widget.Cogwheel = cogwheel
+		end
+	end
+
 	return widget
 end
 
@@ -3051,13 +3026,30 @@ function GUI:FilterCategories(searchText)
 	for _, category in ipairs(self.Categories) do
 		local shouldShow = false
 
-		if category.Name:lower():find(searchText) then
+		if category.Name:lower():find(searchText) or (category.Key and category.Key:lower():find(searchText)) then
 			shouldShow = true
 		else
 			for _, section in ipairs(category.Sections) do
 				if section.Name:lower():find(searchText) then
 					shouldShow = true
 					break
+				end
+			end
+
+			if not shouldShow then
+				for _, section in ipairs(category.Sections) do
+					for _, widget in ipairs(section.Widgets) do
+						local label = widget.DisplayText
+						local path = widget.ConfigPath
+						if (label and label:lower():find(searchText, 1, true))
+							or (path and path:lower():find(searchText, 1, true)) then
+							shouldShow = true
+							break
+						end
+					end
+					if shouldShow then
+						break
+					end
 				end
 			end
 		end
@@ -3236,23 +3228,52 @@ function GUI:CreateStaticPopups()
 	}
 end
 
--- Placeholder functions for profile management
-function GUI:SwitchProfile(profileName)
-	print("|cff669DFFKkthnxUI:|r Switching to profile '" .. profileName .. "'...")
-	ReloadUI()
+-- Profile management (delegates to ProfileService / ProfileGUI)
+function GUI:SwitchProfile(profileKey)
+	if K.ProfileService and K.ProfileService.SwitchProfile then
+		local ok, err = K.ProfileService:SwitchProfile(profileKey)
+		if ok then
+			ReloadUI()
+		else
+			print("|cffff0000KkthnxUI:|r " .. tostring(err or "Profile switch failed"))
+		end
+		return ok
+	end
+	return false
 end
 
-function GUI:ResetProfile()
-	print("|cff669DFFKkthnxUI:|r Resetting profile to defaults...")
-	ReloadUI()
+function GUI:ResetProfile(profileKey)
+	if K.ProfileService and K.ProfileService.ResetProfile then
+		local ok, err = K.ProfileService:ResetProfile(profileKey)
+		if ok then
+			ReloadUI()
+		else
+			print("|cffff0000KkthnxUI:|r " .. tostring(err or "Profile reset failed"))
+		end
+		return ok
+	end
+	return false
 end
 
 function GUI:ImportSettings(settingsString)
-	print("|cff669DFFKkthnxUI:|r Settings import not yet fully implemented")
+	if K.ProfileService and K.ProfileService.ImportProfile then
+		local ok, err = K.ProfileService:ImportProfile(settingsString, true)
+		if ok then
+			ReloadUI()
+		else
+			print("|cffff0000KkthnxUI:|r " .. tostring(err or "Import failed"))
+		end
+		return ok, err
+	end
+	return false, "ProfileService unavailable"
 end
 
-function GUI:GenerateExportString()
-	return "-- Export string generation not yet implemented"
+function GUI:GenerateExportString(profileKey)
+	if K.ProfileService and K.ProfileService.ExportProfile then
+		local key = profileKey or (K.ProfileService.GetCurrentProfileKey and K.ProfileService:GetCurrentProfileKey())
+		return K.ProfileService:ExportProfile(key)
+	end
+	return nil
 end
 
 -- Module OnEnable Function (required by KkthnxUI)
@@ -3820,7 +3841,7 @@ end
 -- child is enabled only when predicate(newValue) returns true.
 -- By default, predicate checks equality with expectedValue (defaults to true).
 function K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate, friendlyName)
-	if not childWidget or not parentConfigPath then
+	if not childWidget or type(parentConfigPath) ~= "string" or parentConfigPath == "" then
 		return
 	end
 
@@ -3947,8 +3968,8 @@ function K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValu
 end
 
 -- Public method for modules/config to declare dependencies
-function GUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate)
-	return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate)
+function GUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate, friendlyName)
+	return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate, friendlyName)
 end
 
 -- Credits Widget - Supports class icons and class colors

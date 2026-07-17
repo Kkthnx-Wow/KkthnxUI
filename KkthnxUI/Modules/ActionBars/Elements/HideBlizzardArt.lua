@@ -3,8 +3,8 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Suppress Blizzard default action bar art while KKUI bars are active.
--- - Design: Reparents vanilla bar containers to UIFrameHider (reversible via ShowBlizz).
---   Script wiping is limited to chrome-only frames so live disable can restore bars.
+-- - Design: Reparents bar containers + chrome to UIFrameHider (reversible via ShowBlizz).
+--   Do NOT wipe chrome scripts/events — MicroMenu lesson: live disable must restore.
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]
@@ -25,21 +25,7 @@ local blizzSuppressed = false
 local origShowAllGrids
 local buttonEventsHooked
 
--- NOTE: Scripts wiped only on chrome frames — not on bar containers we restore live.
-local scripts = {
-	"OnShow",
-	"OnHide",
-	"OnEvent",
-	"OnEnter",
-	"OnLeave",
-	"OnUpdate",
-	"OnValueChanged",
-	"OnClick",
-	"OnMouseDown",
-	"OnMouseUp",
-}
-
--- REASON: Reparent-only hide keeps Blizzard bar logic intact for ShowBlizz restore.
+-- REASON: Reparent-only hide keeps Blizzard bar + chrome logic intact for ShowBlizz.
 local framesToSuppress = {
 	MainActionBar,
 	MultiBarBottomLeft,
@@ -53,10 +39,8 @@ local framesToSuppress = {
 	PossessActionBar,
 	PetActionBar,
 	StanceBar,
-}
-
--- REASON: Chrome-only — never wipe action bar container scripts (breaks live restore).
-local chromeToDisable = {
+	-- Chrome: reparent instead of DisableAllScripts/UnregisterAllEvents so live
+	-- disable→enable restores vehicle leave, XP bar, micro bag bar, etc.
 	MicroButtonAndBagsBar,
 	StatusTrackingBarManager,
 	MainMenuBarVehicleLeaveButton,
@@ -69,14 +53,6 @@ local chromeToDisable = {
 -- ---------------------------------------------------------------------------
 -- HELPERS
 -- ---------------------------------------------------------------------------
-
-local function DisableAllScripts(frame)
-	for _, script in next, scripts do
-		if frame:HasScript(script) then
-			frame:SetScript(script, nil)
-		end
-	end
-end
 
 local function buttonEventsRegisterFrame(self, added)
 	local frames = self.frames
@@ -160,19 +136,7 @@ function Module:HideBlizz()
 		end
 	end
 
-	for _, frame in next, chromeToDisable do
-		if frame then
-			frame:UnregisterAllEvents()
-			DisableAllScripts(frame)
-			if frame == StatusTrackingBarManager then
-				frame:Hide()
-			end
-		end
-	end
-
 	DisableDefaultBarEvents()
-
-	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
 	SetCVar("showTokenFrame", 1)
 end
 
@@ -194,11 +158,15 @@ function Module:ShowBlizz()
 	RestoreDefaultBarEvents()
 	RefreshBlizzardBars()
 
-	if StatusTrackingBarManager then
-		StatusTrackingBarManager:Show()
-		if _G.StatusTrackingBarManager_OnLoad then
-			pcall(_G.StatusTrackingBarManager_OnLoad, StatusTrackingBarManager)
-		end
+	-- Status tracking + vehicle leave may need a nudge after reparent.
+	if StatusTrackingBarManager and _G.StatusTrackingBarManager_OnLoad then
+		pcall(_G.StatusTrackingBarManager_OnLoad, StatusTrackingBarManager)
+	end
+	if MainMenuBarVehicleLeaveButton then
+		MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
+		MainMenuBarVehicleLeaveButton:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+		MainMenuBarVehicleLeaveButton:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
+		MainMenuBarVehicleLeaveButton:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 	end
 end
 

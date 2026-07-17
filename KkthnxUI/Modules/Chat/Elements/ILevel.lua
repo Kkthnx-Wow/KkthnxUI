@@ -13,10 +13,12 @@ local Module = K:GetModule("Chat")
 -- PERF: Localize globals and API functions to minimize lookup overhead.
 local _G = _G
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local ChatFrame_RemoveMessageEventFilter = _G.ChatFrame_RemoveMessageEventFilter
 local DUNGEON_SCORE_LEADER = _G.DUNGEON_SCORE_LEADER
 local Enum = _G.Enum
 local GetItemInfo = _G.C_Item.GetItemInfo
 local GetItemStats = _G.C_Item.GetItemStats
+local ipairs = ipairs
 local pairs = pairs
 local string_format = string.format
 local string_gsub = string.gsub
@@ -124,28 +126,45 @@ end
 -- ---------------------------------------------------------------------------
 -- Initialization
 -- ---------------------------------------------------------------------------
-function Module:CreateChatItemLevels()
-	-- REASON: Entry point for chat link enhancements; registers filters across all text-heavy chat channels.
-	if C["Chat"].ChatItemLevel then
+local ITEM_LEVEL_EVENTS = {
+	"CHAT_MSG_LOOT",
+	"CHAT_MSG_CHANNEL",
+	"CHAT_MSG_SAY",
+	"CHAT_MSG_YELL",
+	"CHAT_MSG_WHISPER",
+	"CHAT_MSG_WHISPER_INFORM",
+	"CHAT_MSG_BN_WHISPER",
+	"CHAT_MSG_RAID",
+	"CHAT_MSG_RAID_LEADER",
+	"CHAT_MSG_PARTY",
+	"CHAT_MSG_PARTY_LEADER",
+	"CHAT_MSG_GUILD",
+	"CHAT_MSG_BATTLEGROUND",
+	"CHAT_MSG_INSTANCE_CHAT",
+	"CHAT_MSG_INSTANCE_CHAT_LEADER",
+}
+
+local filtersInstalled = false
+
+function Module:UpdateChatItemLevels()
+	local enable = C["Chat"].ChatItemLevel
+	if enable and not filtersInstalled then
 		local tooltipModule = K:GetModule("Tooltip")
 		if tooltipModule then
 			getDungeonScoreInColor = tooltipModule.GetDungeonScore
 		end
-
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateChatItemLevel)
+		for _, event in ipairs(ITEM_LEVEL_EVENTS) do
+			ChatFrame_AddMessageEventFilter(event, Module.UpdateChatItemLevel)
+		end
+		filtersInstalled = true
+	elseif not enable and filtersInstalled then
+		for _, event in ipairs(ITEM_LEVEL_EVENTS) do
+			ChatFrame_RemoveMessageEventFilter(event, Module.UpdateChatItemLevel)
+		end
+		filtersInstalled = false
 	end
+end
+
+function Module:CreateChatItemLevels()
+	Module:UpdateChatItemLevels()
 end

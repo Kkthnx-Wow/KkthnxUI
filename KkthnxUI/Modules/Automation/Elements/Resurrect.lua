@@ -61,6 +61,13 @@ end
 -- Internal Logic
 -- ---------------------------------------------------------------------------
 local function handleAutoResurrect(_, inviterName)
+	-- BUGFIX: Autoresurrect — inviterName can be a secret value in Midnight (12.0)
+	-- instances. Using a secret as a table key (RESURRECT_BLACKLIST[inviterName])
+	-- throws, and passing one to DoEmote is equally unsafe. Gate on K.NotSecret.
+	if K.IsSecret(inviterName) then
+		return
+	end
+
 	-- REASON: Ignore requests from automated pylon/brazier items to allow for strategic resurrection.
 	if inviterName and RESURRECT_BLACKLIST[inviterName] then
 		return
@@ -74,7 +81,10 @@ local function handleAutoResurrect(_, inviterName)
 		-- REASON: Automated social interaction if configured by the user.
 		if C["Automation"].AutoResurrectThank and inviterName then
 			K.Delay(3, function()
-				if not UnitIsDeadOrGhost("player") then
+				-- BUGFIX: also re-check combat state at emote time,
+				-- not just death state — combat can resume during the 3s delay (e.g. a
+				-- battle-rez mid-fight), and emoting mid-combat is contextually wrong.
+				if not UnitIsDeadOrGhost("player") and not UnitAffectingCombat("player") then
 					DoEmote("thank", inviterName)
 				end
 			end)

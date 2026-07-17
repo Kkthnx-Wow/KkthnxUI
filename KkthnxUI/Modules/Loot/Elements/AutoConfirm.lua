@@ -26,10 +26,13 @@ local function setupAutoConfirm()
 end
 
 function Module:CreateAutoConfirm()
-	if C["Loot"].AutoConfirm then
+	local usePopupLoot = C["Misc"].PopupQoL and C["Misc"].PopupAutoConfirmLoot
+	if C["Loot"].AutoConfirm or usePopupLoot then
 		K:RegisterEvent("CONFIRM_DISENCHANT_ROLL", setupAutoConfirm)
 		K:RegisterEvent("CONFIRM_LOOT_ROLL", setupAutoConfirm)
-		K:RegisterEvent("LOOT_BIND_CONFIRM", setupAutoConfirm)
+		if C["Loot"].AutoConfirm and not usePopupLoot then
+			K:RegisterEvent("LOOT_BIND_CONFIRM", setupAutoConfirm)
+		end
 	else
 		K:UnregisterEvent("CONFIRM_DISENCHANT_ROLL", setupAutoConfirm)
 		K:UnregisterEvent("CONFIRM_LOOT_ROLL", setupAutoConfirm)

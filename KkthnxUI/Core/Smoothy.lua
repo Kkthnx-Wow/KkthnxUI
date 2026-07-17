@@ -9,7 +9,7 @@ local K = KkthnxUI[1]
 -- inside the engine (secret-safe). The bundled oUF already forwards
 -- `element.smoothing` to SetValue(value, interpolation) for Health, Power,
 -- AlternativePower and Castbar, so we just flag the bar with an interpolation
--- enum instead of hooking it -- this mirrors NDui's UF:SmoothBar.
+-- enum instead of hooking SetValue ourselves.
 
 local next = next
 local tonumber = _G.tonumber

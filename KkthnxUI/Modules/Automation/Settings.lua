@@ -14,6 +14,8 @@ local REFRESH_BY_KEY = {
 	AutoResurrect = "CreateAutoResurrect",
 	AutoReward = "CreateAutoBestReward",
 	AutoDelves = "CreateAutoDelves",
+	HolidayDungeon = "CreateHolidayDungeon",
+	AuctionSearchFallback = "CreateAuctionSearchFallback",
 	AutoGoodbye = "CreateAutoGoodbye",
 	AutoKeystone = "CreateAutoKeystone",
 	AutoRelease = "CreateAutoRelease",
@@ -22,6 +24,7 @@ local REFRESH_BY_KEY = {
 	ConfirmCinematicSkip = "CreateSkipCinematic",
 	AutoSummon = "CreateAutoAcceptSummon",
 	NoBadBuffs = "CreateAutoBadBuffs",
+	SmartTracking = "CreateSmartTracking",
 }
 
 local AUTO_QUEST_KEYS = {

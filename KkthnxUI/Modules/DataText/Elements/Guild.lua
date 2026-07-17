@@ -534,6 +534,13 @@ end
 
 local function onEvent(_, event, arg1)
 	-- REASON: Manages events related to guild roster changes and triggers UI updates for the DataText and panel.
+	if event == "CHAT_MSG_SYSTEM" then
+		-- SecretInChatMessagingLockdown — skip opaque system text; still invalidate on plain msgs.
+		if K.IsSecret(arg1) then
+			return
+		end
+	end
+
 	if event == "GUILD_ROSTER_UPDATE" and arg1 then
 		C_GuildInfo_GuildRoster()
 	end
@@ -637,7 +644,7 @@ function Module:CreateGuildDataText()
 	guildDataText.Texture:SetSize(16, 16)
 	guildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	local events = { "PLAYER_ENTERING_WORLD", "GUILD_ROSTER_UPDATE", "PLAYER_GUILD_UPDATE" }
+	local events = { "PLAYER_ENTERING_WORLD", "GUILD_ROSTER_UPDATE", "PLAYER_GUILD_UPDATE", "CHAT_MSG_SYSTEM" }
 	for _, eventName in ipairs(events) do
 		guildDataText:RegisterEvent(eventName)
 	end

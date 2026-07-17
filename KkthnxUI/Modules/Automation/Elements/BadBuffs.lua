@@ -24,6 +24,13 @@ local string_format = string.format
 -- ---------------------------------------------------------------------------
 local queuedAfterCombat = false
 local lastPrintAtBySpellId = {}
+local removeBadBuffsNow
+
+-- REASON: UNIT_AURA can fire in bursts — K.Debounce
+-- coalesces to one end-of-frame sweep.
+local scheduleSweep = K.Debounce(0, function()
+	removeBadBuffsNow()
+end)
 
 -- ---------------------------------------------------------------------------
 -- Internal Logic
@@ -65,7 +72,7 @@ local function printRemoved(aura)
 	K.Print(K.SystemColor .. string_format(msgRemoved, link) .. "|r")
 end
 
-local function removeBadBuffsNow(_, unit)
+removeBadBuffsNow = function(_, unit)
 	if unit and unit ~= "player" then
 		return
 	end
@@ -111,9 +118,9 @@ end
 function Module:CreateAutoBadBuffs()
 	-- REASON: Entry point to enable/disable the bad buff removal automation.
 	if C["Automation"].NoBadBuffs then
-		K:RegisterUnitEvent("UNIT_AURA", removeBadBuffsNow, "player")
+		K:RegisterUnitEvent("UNIT_AURA", scheduleSweep, "player")
 	else
-		K:UnregisterEvent("UNIT_AURA", removeBadBuffsNow)
+		K:UnregisterEvent("UNIT_AURA", scheduleSweep)
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED", removeBadBuffsNow)
 		queuedAfterCombat = false
 	end

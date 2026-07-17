@@ -30,7 +30,11 @@ local PARTY_REBUILD = {
 	Castbars = true,
 	CastbarIcon = true,
 	ShowHealPrediction = true,
-	PortraitTimers = true,
+	ShowPlayer = true,
+	ShowPartySolo = true,
+	TargetHighlight = true,
+	DispelIcon = true,
+	DispelIconAll = true,
 }
 
 local PARTY_SIZE = {
@@ -62,6 +66,8 @@ local SIMPLE_PARTY_REBUILD = {
 	TargetHighlight = true,
 	DebuffWatch = true,
 	DebuffWatchDefault = true,
+	DispelIcon = true,
+	DispelIconAll = true,
 }
 
 local SIMPLE_PARTY_AURA = {
@@ -108,9 +114,72 @@ local RAID_REBUILD = {
 	MainTankFrames = true,
 	NumGroups = true,
 	ShowTeamIndex = true,
+	ShowHealPrediction = true,
+	AbsorbStrips = true,
+	DispelIcon = true,
+	PowerBarShow = true,
+	ManabarShow = true,
+	TargetHighlight = true,
+	ShowNotHereTimer = true,
+	AuraTrack = true,
+	-- BUGFIX: DispelIconAll was listed here too, which made the `key == "DispelIconAll"`
+	-- branch below dead code (RAID_REBUILD[key] is checked first in the elseif chain).
+	-- That forced a full RebuildRaidFrames() for a setting that only changes an existing
+	-- icon's filter criteria — RefreshRaidDispelIcons() already exists for exactly this
+	-- and is far cheaper. DispelIcon stays here since toggling it on/off actually needs
+	-- to create/destroy the icon frame, which only a rebuild does.
 }
 
+-- Portrait-only rebuilds (empty for now; PortraitStyle handled explicitly).
 local UNITFRAME_REBUILD = {}
+
+-- Structural toggles that need a full core-unit spawn (castbars, auras, pets, companions).
+local UNITFRAME_SPAWN = {
+	PlayerCastbar = true,
+	PlayerCastbarIcon = true,
+	PlayerCastbarHeight = true,
+	PlayerCastbarWidth = true,
+	PlayerBuffs = true,
+	PlayerDebuffs = true,
+	TargetCastbar = true,
+	TargetCastbarIcon = true,
+	TargetCastbarHeight = true,
+	TargetCastbarWidth = true,
+	TargetBuffs = true,
+	TargetDebuffs = true,
+	FocusCastbar = true,
+	FocusCastbarIcon = true,
+	FocusCastbarHeight = true,
+	FocusCastbarWidth = true,
+	FocusBuffs = true,
+	FocusDebuffs = true,
+	HidePet = true,
+	HidePetName = true,
+	HideTargetofTarget = true,
+	HideTargetOfTargetName = true,
+	HideFocusTarget = true,
+	HideFocusTargetName = true,
+	ClassResources = true,
+	CastClassColor = true,
+	CastReactionColor = true,
+	ShowHealPrediction = true,
+	DebuffHighlight = true,
+	PvPIndicator = true,
+	AdditionalPower = true,
+	ShowPlayerLevel = true,
+	GlobalCooldown = true,
+	Stagger = true,
+	CombatFade = true,
+	PetHealthHeight = true,
+	PetHealthWidth = true,
+	PetPowerHeight = true,
+	TargetTargetHealthHeight = true,
+	TargetTargetHealthWidth = true,
+	TargetTargetPowerHeight = true,
+	FocusTargetHealthHeight = true,
+	FocusTargetHealthWidth = true,
+	FocusTargetPowerHeight = true,
+}
 
 local function OnUnitframeSetting(configPath)
 	local key = configPath:match("^Unitframe%.(.+)$")
@@ -136,6 +205,13 @@ local function OnUnitframeSetting(configPath)
 		Module:RefreshRangeFading()
 	elseif key == "PortraitStyle" or UNITFRAME_REBUILD[key] then
 		Module:RebuildPortraitUnits()
+	elseif key == "PrivateAuras" then
+		-- Private auras sit on player + party/raid — spawn cores and rebuild headers.
+		Module:SpawnCoreUnitFrames()
+		Module:RebuildPartyFrames()
+		Module:RebuildRaidFrames()
+	elseif UNITFRAME_SPAWN[key] then
+		Module:SpawnCoreUnitFrames()
 	elseif key == "HidePetLevel" or key == "HideFocusTargetLevel" or key == "HideTargetOfTargetLevel" then
 		Module:UpdateOptionalUnitLevels()
 	elseif key == "PlayerBuffsPerRow" then
@@ -211,6 +287,8 @@ local function OnRaidSetting(configPath)
 		Module:UpdateRaidBuffAuras()
 	elseif RAID_REBUILD[key] then
 		Module:RebuildRaidFrames()
+	elseif key == "DispelIconAll" then
+		Module:RefreshRaidDispelIcons()
 	elseif key == "HealthbarColor" then
 		Module:UpdateRaidHealthbarColors()
 	elseif key == "Smooth" then

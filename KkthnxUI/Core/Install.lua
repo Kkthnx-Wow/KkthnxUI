@@ -1,8 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Installer")
 
--- NOTE: Sourced from NDui (siweia), modified for KkthnxUI.
-
 -- PERF: Local caching for speed in hot loops and strict typing.
 local _G = _G
 local tinsert = table.insert

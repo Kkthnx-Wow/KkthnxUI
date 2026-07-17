@@ -33,11 +33,30 @@ local SendChatMessage = _G.SendChatMessage
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local math_random = math.random
+local pcall = pcall
 local string_format = string.format
 local string_gsub = string.gsub
 local table_concat = table.concat
 local table_insert = table.insert
 local tostring = tostring
+
+local C_ChatInfo = _G.C_ChatInfo
+local GetCVarBool = _G.GetCVarBool
+local NotSecret = K.NotSecret
+local C_ChallengeMode = _G.C_ChallengeMode
+
+local GetChatLineText = C_ChatInfo and C_ChatInfo.GetChatLineText
+local IsChatLineCensored = C_ChatInfo and C_ChatInfo.IsChatLineCensored
+
+local function chatCopyRestricted()
+	if GetCVarBool and GetCVarBool("addonChatRestrictionsForced") then
+		return true
+	end
+	if C_ChallengeMode and C_ChallengeMode.IsChallengeModeActive and C_ChallengeMode.IsChallengeModeActive() then
+		return true
+	end
+	return false
+end
 
 -- ---------------------------------------------------------------------------
 -- State & Constants
@@ -195,23 +214,65 @@ local function isMessageProtected(msg)
 	return msg and (msg ~= string_gsub(msg, "(:?|?)|K(.-)|k", canChangeMessage))
 end
 
+local function stripCopyEscapes(msg)
+	if not msg then
+		return msg
+	end
+	-- BUGFIX: Emojis.lua encodes the original word as base64 inside an
+	-- "elvmoji:%<base64>" hyperlink (empty visible text) immediately followed by
+	-- a separate |T...|t texture tag. The generic strips below capture whatever
+	-- sits *between* the tag delimiters — empty for the hyperlink, and the raw
+	-- texture file path for the |T tag — so copying a line with an emoji pasted
+	-- a texture path instead of the word. Decode the emoji hyperlink first.
+	msg = string_gsub(msg, "|Helvmoji:%%(.-)|h.-|h", function(encoded)
+		local ok, decoded = pcall(K.LibBase64.Decode, K.LibBase64, encoded)
+		return (ok and decoded) or ""
+	end)
+	msg = string_gsub(msg, "|H.-|h(.-)|h", "%1")
+	msg = string_gsub(msg, "|T(.-):.-|t", "%1")
+	msg = string_gsub(msg, "|A(.-):.-|a", "%1")
+	msg = string_gsub(msg, "|K.-|k", "")
+	msg = string_gsub(msg, "|n", "\n")
+	msg = string_gsub(msg, "||", "|")
+	return msg
+end
+
+local function resolveLineText(msg, lineID)
+	if lineID and type(lineID) == "number" and GetChatLineText then
+		if IsChatLineCensored and IsChatLineCensored(lineID) then
+			return nil
+		end
+		local ok, text = pcall(GetChatLineText, lineID)
+		if ok and text and NotSecret(text) then
+			return text
+		end
+	end
+	if msg and NotSecret(msg) then
+		return msg
+	end
+end
+
 local function replaceMessage(msg, r, g, b)
 	-- REASON: Strips complex formatting (textures, atlases) and applies a hex color code for clean copying.
 	local hexRGB = K.RGBToHex(r, g, b)
-	msg = string_gsub(msg, "|T(.-):.-|t", "%1")
-	msg = string_gsub(msg, "|A(.-):.-|a", "%1")
+	msg = stripCopyEscapes(msg)
 	return string_format("%s%s|r", hexRGB, msg)
 end
 
 function Module:GetChatLines()
-	-- REASON: Iterates through the chat frame's message buffer and prepares it for the copy editbox.
 	local index = 1
 	for i = 1, self:GetNumMessages() do
-		local msg, r, g, b = self:GetMessageInfo(i)
+		local ok, packed = pcall(function()
+			return { self:GetMessageInfo(i) }
+		end)
+		if not ok or not packed then
+			break
+		end
+
+		local msg = resolveLineText(packed[1], packed[11])
 		if msg and not isMessageProtected(msg) then
-			r, g, b = r or 1, g or 1, b or 1
-			msg = replaceMessage(msg, r, g, b)
-			lines[index] = tostring(msg)
+			local r, g, b = packed[2] or 1, packed[3] or 1, packed[4] or 1
+			lines[index] = tostring(replaceMessage(msg, r, g, b))
 			index = index + 1
 		end
 	end
@@ -222,9 +283,13 @@ end
 -- UI Callbacks
 -- ---------------------------------------------------------------------------
 function Module:ChatCopy_OnClick(btn)
-	-- REASON: Main interaction handler for the chat copy button.
 	if btn == "LeftButton" then
 		if not copyFrame:IsShown() then
+			if chatCopyRestricted() then
+				K.Print(K.InfoColor .. "Chat copy is restricted in this context.")
+				return
+			end
+
 			local chatFrame = _G.SELECTED_DOCK_FRAME
 			local _, fontSize = chatFrame:GetFont()
 			-- REASON: Temporarily collapse font size to ensure all messages fit in the line count retrieval.

@@ -1,6 +1,6 @@
 --[[-----------------------------------------------------------------------------
 -- Addon: KkthnxUI
--- Tooltip unit health / status bar (Midnight-safe, NexEnhance/ElvUI patterns).
+-- Tooltip unit health / status bar (Midnight-safe).
 -- Split from Core.lua — no BackdropTemplate on the bar (secret width math).
 -----------------------------------------------------------------------------]]
 
@@ -30,18 +30,16 @@ local IsSecret = K.IsSecret
 local NotSecret = K.NotSecret
 local ShortValue = K.ShortValue
 
-local UNITFRAME_ATLAS = "UI-HUD-UnitFrame-Player-PortraitOff-Bar-Health-Status"
-
 local function IsRestrictedUnit(unit)
 	return IsSecret(unit) or K.IsSecretUnit(unit)
 end
 
+-- Follow General.Texture — do not pin Blizzard's unitframe atlas; that ignored the dropdown.
 local function ApplyBarTexture(bar)
-	if C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(UNITFRAME_ATLAS) then
-		bar:SetStatusBarTexture(UNITFRAME_ATLAS)
-	else
-		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	if not bar or not bar.SetStatusBarTexture then
+		return
 	end
+	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 end
 
 local function EnsureStatusBarText(bar)

@@ -10,9 +10,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Mover")
 
--- NOTE: Sourced: NDui (siweia)
--- NOTE: Edited: KkthnxUI (Kkthnx)
-
 -- PERF: Cache Lua globals for speed and consistency.
 local _G = _G
 local ipairs, pcall, tostring, type, unpack = ipairs, pcall, tostring, type, unpack
@@ -277,26 +274,33 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 -- ---------------------------------------------------------------------------
 
 -- REASON: Creates the on-screen control panel for managing anchors and fine-tuning positions.
+-- Layout mirrors NDui Core/Mover.lua, with extra padding so KKUI CreateBorder seams don't collide.
 local function CreateConsole()
 	if f then
 		return
 	end
 
-	f = CreateFrame("Frame", nil, UIParent)
-	f:SetPoint("CENTER", 0, 150)
-	f:SetSize(218, 90)
-	f:CreateBorder()
+	local PANEL_W = 220
+	local BTN_W, BTN_H, BTN_GAP = 100, 24, 6
+	local BTN_ROW_W = BTN_W * 2 + BTN_GAP -- Lock + Grids
+	local SIDE_PAD = (PANEL_W - BTN_ROW_W) / 2 -- keep both rows flush to the same left edge
 
-	f.text = f:CreateFontString(nil, "OVERLAY")
-	f.text:SetPoint("TOP", 0, -10)
-	f.text:SetFontObject(K.UIFont)
-	f.text:SetText(K.Title .. " Movers Config")
+	f = CreateFrame("Frame", nil, UIParent)
+	f:SetPoint("TOP", 0, -150)
+	f:SetSize(PANEL_W, 96)
+	f:SetFrameStrata("DIALOG")
+	f:SetFrameLevel(200)
+	-- Opaque fill — default ColorBackdrop is 0.9 alpha and HIGH-strata movers bleed through.
+	f:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.06, 0.06, 0.06, 1 })
+
+	f.text = K.CreateFontString(f, 13, K.Title .. " Movers Config", "", "system", "TOP", 0, -10)
 	f.text:SetWordWrap(false)
 
+	-- Row 1: Lock | Grids   Row 2: Reset (same outer width as the pair above)
 	local bu, text = {}, { LOCK, "Grids", RESET }
 	for i = 1, 3 do
 		bu[i] = CreateFrame("Button", nil, f)
-		bu[i]:SetSize(100, 24)
+		bu[i]:SetSize(i == 3 and BTN_ROW_W or BTN_W, BTN_H)
 		bu[i]:SkinButton()
 
 		bu[i].text = bu[i]:CreateFontString(nil, "OVERLAY")
@@ -306,9 +310,11 @@ local function CreateConsole()
 		bu[i].text:SetWordWrap(false)
 
 		if i == 1 then
-			bu[i]:SetPoint("BOTTOMLEFT", 6, 36)
+			bu[i]:SetPoint("BOTTOMLEFT", SIDE_PAD, 34)
+		elseif i == 2 then
+			bu[i]:SetPoint("LEFT", bu[1], "RIGHT", BTN_GAP, 0)
 		else
-			bu[i]:SetPoint("LEFT", bu[i - 1], "RIGHT", 6, 0)
+			bu[i]:SetPoint("TOPLEFT", bu[1], "BOTTOMLEFT", 0, -BTN_GAP)
 		end
 	end
 
@@ -324,18 +330,17 @@ local function CreateConsole()
 
 	-- NOTE: Use the mover frame utility to make the console window itself draggable.
 	local header = CreateFrame("Frame", nil, f)
-	header:SetSize(212, 30)
+	header:SetSize(PANEL_W, 28)
 	header:SetPoint("TOP")
 	K.CreateMoverFrame(header, f)
 
-	-- stylua: ignore
 	local tips = K.InfoColor .. "|nCTRL + " .. L["Right Click"] .. K.SystemColor .. " = Reset Mover" .. K.InfoColor .. "|nSHIFT + " .. L["Right Click"] .. K.SystemColor .. " = Hide Panel"
 	header.title = "Mover Tips"
 	K.AddTooltip(header, "ANCHOR_TOP", tips)
 
 	local tex = header:CreateTexture()
-	tex:SetSize(30, 30)
-	tex:SetPoint("TOPRIGHT", 2, 0)
+	tex:SetSize(24, 24)
+	tex:SetPoint("TOPRIGHT", -2, -2)
 	tex:SetTexture("Interface\\Common\\Help-i")
 
 	-- ---------------------------------------------------------------------------
@@ -343,63 +348,68 @@ local function CreateConsole()
 	-- ---------------------------------------------------------------------------
 
 	local frame = CreateFrame("Frame", nil, f)
-	frame:SetSize(212, 74)
-	frame:SetPoint("TOP", f, "BOTTOM", 0, -6)
-	frame:CreateBorder()
-	f.__trimText = K.CreateFontString(frame, 12, NONE, "", "system", "BOTTOM", 0, 5)
+	frame:SetSize(PANEL_W, 88)
+	frame:SetPoint("TOP", f, "BOTTOM", 0, -4)
+	frame:SetFrameStrata("DIALOG")
+	frame:SetFrameLevel(200)
+	frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.06, 0.06, 0.06, 1 })
+	f.__trimText = K.CreateFontString(frame, 12, NONE, "", "system", "BOTTOM", 0, 8)
 
-	local xBox = CreateFrame("EditBox", nil, frame)
-	xBox:SetSize(60, 18)
-	xBox:SetAutoFocus(false)
-	xBox:SetTextInsets(5, 5, 0, 0)
-	xBox:SetFontObject(K.UIFont)
-	xBox:CreateBorder()
-	xBox:SetScript("OnEscapePressed", frame.ClearFocus)
-	xBox:SetScript("OnEnterPressed", frame.ClearFocus)
-	xBox:SetPoint("TOPRIGHT", frame, "TOP", -12, -5)
-	K.CreateFontString(xBox, 14, "X:", "", "system", "LEFT", -20, 0)
-	xBox:SetJustifyH("CENTER")
-	xBox.__current = 0
+	local function CreateCoordBox(parent, label, anchor, x, y)
+		local box = CreateFrame("EditBox", nil, parent)
+		box:SetSize(60, 20)
+		box:SetAutoFocus(false)
+		box:SetTextInsets(5, 5, 0, 0)
+		box:SetFontObject(K.UIFont)
+		box:CreateBorder()
+		box:SetJustifyH("CENTER")
+		box:SetScript("OnEscapePressed", box.ClearFocus)
+		box:SetScript("OnEnterPressed", box.ClearFocus)
+		box:SetPoint(anchor, parent, "TOPLEFT", x, y)
+
+		-- Sibling on the trim frame, center-aligned to the box — not parented to the EditBox
+		-- (EditBox font metrics sit high and make "X:"/"Y:" look floated).
+		local fs = K.CreateFontString(parent, 13, label, "", "system")
+		fs:ClearAllPoints()
+		fs:SetPoint("RIGHT", box, "LEFT", -6, 0)
+
+		box.__current = 0
+		return box
+	end
+
+	local xBox = CreateCoordBox(frame, "X:", "TOPLEFT", 36, -12)
 	xBox:HookScript("OnEnterPressed", function(self)
-		local text = self:GetText()
-		text = tonumber(text)
-		if text then
-			local diff = text - self.__current
-			self.__current = text
+		local value = tonumber(self:GetText())
+		if value then
+			local diff = value - self.__current
+			self.__current = value
 			Module:DoTrim(diff)
 		end
 	end)
 	f.__x = xBox
 
-	local yBox = CreateFrame("EditBox", nil, frame)
-	yBox:SetSize(60, 18)
-	yBox:SetAutoFocus(false)
-	yBox:SetTextInsets(5, 5, 0, 0)
-	yBox:SetFontObject(K.UIFont)
-	yBox:CreateBorder()
-	yBox:SetScript("OnEscapePressed", frame.ClearFocus)
-	yBox:SetScript("OnEnterPressed", frame.ClearFocus)
-	yBox:SetPoint("TOPRIGHT", frame, "TOP", -12, -29)
-	K.CreateFontString(yBox, 14, "Y:", "", "system", "LEFT", -20, 0)
-	yBox:SetJustifyH("CENTER")
-	yBox.__current = 0
+	local yBox = CreateCoordBox(frame, "Y:", "TOPLEFT", 36, -38)
 	yBox:HookScript("OnEnterPressed", function(self)
-		local text = self:GetText()
-		text = tonumber(text)
-		if text then
-			local diff = text - self.__current
-			self.__current = text
+		local value = tonumber(self:GetText())
+		if value then
+			local diff = value - self.__current
+			self.__current = value
 			Module:DoTrim(nil, diff)
 		end
 	end)
 	f.__y = yBox
 
+	-- D-pad: own pad frame so borders get real gaps (SkinButton edges collide under ~4px).
+	local pad = CreateFrame("Frame", nil, frame)
+	pad:SetSize(76, 60)
+	pad:SetPoint("TOPRIGHT", -10, -8)
+
 	local arrows = {}
-	local arrowIndex = {
-		[1] = { degree = 180, offset = -1, x = 28, y = 9 },
-		[2] = { degree = 0, offset = 1, x = 72, y = 9 },
-		[3] = { degree = 90, offset = 1, x = 50, y = 22 },
-		[4] = { degree = -90, offset = -1, x = 50, y = -4 },
+	local arrowLayout = {
+		[1] = { degree = 180, offset = -1, point = "LEFT", rel = "LEFT", x = 0, y = 0 }, -- left
+		[2] = { degree = 0, offset = 1, point = "RIGHT", rel = "RIGHT", x = 0, y = 0 }, -- right
+		[3] = { degree = 90, offset = 1, point = "TOP", rel = "TOP", x = 0, y = 0 }, -- up
+		[4] = { degree = -90, offset = -1, point = "BOTTOM", rel = "BOTTOM", x = 0, y = 0 }, -- down
 	}
 	local function arrowOnClick(self)
 		local modKey = IsModifierKeyDown()
@@ -412,23 +422,22 @@ local function CreateConsole()
 	end
 
 	for i = 1, 4 do
-		arrows[i] = CreateFrame("Button", nil, frame)
-		arrows[i]:SetSize(16, 16)
+		local layout = arrowLayout[i]
+		arrows[i] = CreateFrame("Button", nil, pad)
+		arrows[i]:SetSize(18, 18)
 		arrows[i]:SkinButton()
+		arrows[i]:SetPoint(layout.point, pad, layout.rel, layout.x, layout.y)
 
 		arrows[i].Icon = arrows[i]:CreateTexture(nil, "ARTWORK")
 		arrows[i].Icon:SetTexture("Interface\\OPTIONSFRAME\\VoiceChat-Play")
-		arrows[i].Icon:SetAllPoints()
+		arrows[i].Icon:SetPoint("TOPLEFT", 2, -2)
+		arrows[i].Icon:SetPoint("BOTTOMRIGHT", -2, 2)
 		arrows[i].Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		arrows[i].Icon:SetRotation(math_rad(layout.degree))
 
-		local arrowData = arrowIndex[i]
 		arrows[i].__index = i
-		arrows[i].__offset = arrowData.offset
+		arrows[i].__offset = layout.offset
 		arrows[i]:SetScript("OnClick", arrowOnClick)
-		arrows[i]:SetPoint("CENTER", arrowData.x, arrowData.y)
-		arrows[i].Icon:SetPoint("TOPLEFT", 3, -3)
-		arrows[i].Icon:SetPoint("BOTTOMRIGHT", -3, 3)
-		arrows[i].Icon:SetRotation(math_rad(arrowData.degree))
 	end
 
 	-- WARNING: Force elements to lock if combat begins to avoid frame movement during protected state.
@@ -502,67 +511,12 @@ end
 -- BLIZZARD EDIT MODE SUPPRESSION
 -- ---------------------------------------------------------------------------
 
--- NOTE: Helper functions to check if specific KkthnxUI modules are overriding Blizzard features.
-
-local function isUnitFrameEnable()
-	return C["Unitframe"].Enable
-end
-
-local function isBuffEnable()
-	return C["Auras"].Enable or C["Auras"].HideBlizBuff
-end
-
-local function isActionbarEnable()
-	return C["ActionBar"].Enable
-end
-
-local function isCastbarEnable()
-	return C["Unitframe"].Enable and C["Unitframe"].Castbars
-end
-
-local function isPartyEnable()
-	return C["Raid"].Enable and C["Party"].Enable
-end
-
-local function isRaidEnable()
-	return C["Raid"].Enable
-end
-
-local function isArenaEnable()
-	return C["Unitframe"].Enable and C["Arena"].Enable
-end
-
--- REASON: Disable Blizzard's internal Edit Mode refresh logic for elements that KkthnxUI handles.
--- This prevents visual conflicts and double-positioning issues.
+-- Incident (EditMode, Jul 2026): writing Dummy/Noop onto EditModeManagerFrame.AccountSettings
+-- taints that mixin. On enter, EditModeFrameSetup then runs RefreshEncounterEvents /
+-- RefreshPartyFrames under KKUI taint → secureexecuterange + secret values explode
+-- (EncounterWarningsViewElements, CompactUnitFrame_UpdateHealthColor, HideSystemSelections).
+-- NDui already commented out DisableBlizzardMover for the same reason.
+-- CUF burial lives in UnitFrames DisableBlizzardRaidFrames (reparent + OnShow hide).
 function Module:DisableBlizzardMover()
-	local editMode = _G.EditModeManagerFrame
-
-	-- WARNING: Patching AccountSettings will cause internal Blizzard taint if Edit Mode is opened.
-	local mixin = editMode.AccountSettings
-	if isCastbarEnable() then
-		mixin.RefreshCastBar = K.Noop
-	end
-	if isBuffEnable() then
-		mixin.RefreshBuffsAndDebuffs = K.Noop
-	end
-	if isRaidEnable() then
-		mixin.RefreshRaidFrames = K.Noop
-	end
-	if isArenaEnable() then
-		mixin.RefreshArenaFrames = K.Noop
-	end
-	if isPartyEnable() then
-		mixin.RefreshPartyFrames = K.Noop
-	end
-	if isUnitFrameEnable() then
-		mixin.RefreshTargetAndFocus = K.Noop
-		mixin.RefreshBossFrames = K.Noop
-	end
-	if isActionbarEnable() then
-		mixin.RefreshPetFrame = K.Noop
-		mixin.RefreshEncounterBar = K.Noop
-		mixin.RefreshActionBarShown = K.Noop
-		mixin.RefreshVehicleLeaveButton = K.Noop
-		mixin.ResetActionBarShown = K.Noop
-	end
+	-- Intentionally empty — do not patch AccountSettings.
 end

@@ -3,7 +3,7 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Central hub for managing and loading announcement sub-modules.
--- - Design: Uses a safe pcall loop to initialize localized features like interrupts and health alerts.
+-- - Design: Uses a safe pcall loop to initialize announcement features (interrupts, rares, etc.).
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]
@@ -17,7 +17,6 @@ function Module:OnEnable()
 	-- NOTE: List of sub-modules to be instantiated.
 	-- Each corresponding function must be registered to the Module object.
 	local loadAnnouncementModules = {
-		"CreateHealthAnnounce",
 		"CreateItemAnnounce",
 		"CreateKeystoneAnnounce",
 		"CreatePullCountdown",

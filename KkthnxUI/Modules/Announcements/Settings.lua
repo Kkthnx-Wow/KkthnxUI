@@ -11,7 +11,6 @@ local REFRESH_BY_KEY = {
 	RareAlert = "CreateRareAnnounce",
 	QuestNotifier = "CreateQuestNotifier",
 	KeystoneAlert = "CreateKeystoneAnnounce",
-	HealthAlert = "CreateHealthAnnounce",
 	PullCountdown = "CreatePullCountdown",
 	AlertInChat = "CreateRareAnnounce",
 	AlertOnlyInWorld = "CreateRareAnnounce",

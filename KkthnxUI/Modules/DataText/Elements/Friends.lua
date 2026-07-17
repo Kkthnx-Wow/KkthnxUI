@@ -800,6 +800,10 @@ end
 local function onEvent(_, event, arg1)
 	if event == "CHAT_MSG_SYSTEM" then
 		local msg = arg1 or ""
+		-- SecretInChatMessagingLockdown — never string.find on opaque chat text.
+		if K.IsSecret(msg) then
+			return
+		end
 		if not string_find(msg, onlineMsgPattern) and not string_find(msg, offlineMsgPattern) then
 			return
 		end

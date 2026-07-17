@@ -24,6 +24,7 @@ local UnitReaction = UnitReaction
 local issecure = issecure
 
 local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
 local platesList = NP.platesList
 local ShowTargetNPCs = NP.ShowTargetNPCs
 
@@ -96,6 +97,7 @@ function Module:UpdateNameplateSize()
 	end
 
 	self.nameText:UpdateTag()
+	Module:RefreshCastOverlay(self)
 end
 
 function Module:RefreshNameplates()
@@ -106,6 +108,7 @@ function Module:RefreshNameplates()
 		Module.UpdateNameplateAuras(nameplate)
 		Module.UpdateTargetIndicator(nameplate)
 		Module.UpdateTargetChange(nameplate)
+		Module:RefreshCastOverlay(nameplate)
 	end
 	Module:UpdateClickableSize()
 end
@@ -144,6 +147,12 @@ function Module:InitNameplates()
 	Module.NameplateDriver = oUF:SpawnNamePlates("oUF_NPs")
 	Module.NameplateDriver:SetAddedCallback(Module.PostUpdatePlates)
 	Module.NameplateDriver:SetRemovedCallback(Module.PostUpdatePlates)
+	-- Target swaps between visible plates never hit ADD — reparent class power here.
+	Module.NameplateDriver:SetTargetCallback(function()
+		if Module.ScheduleUpdateTargetClassPower then
+			Module:ScheduleUpdateTargetClassPower()
+		end
+	end)
 	Module:SetupCVars()
 end
 
@@ -217,8 +226,13 @@ function Module:SetNameplatesEnabled(enabled)
 			driver:UnregisterAllEvents()
 		end
 
+		Module:ClearAllCastOverlays()
+
 		for plate in pairs(platesList) do
 			plate:Hide()
+			if plate.Castbar then
+				plate.Castbar:Hide()
+			end
 		end
 
 		setBlizzardNameplatesVisible(true)
@@ -226,6 +240,7 @@ function Module:SetNameplatesEnabled(enabled)
 
 		K:UnregisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
 		K:UnregisterEvent("PLAYER_SOFT_INTERACT_CHANGED", Module.OnUnitSoftTargetChanged)
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.OnNameplateRegenEnabled)
 	end
 end
 
@@ -270,6 +285,7 @@ function Module:UpdatePlateByType()
 			end
 		end
 
+		-- REASON: Centered to match the centered health-value text on the bar below.
 		name:SetJustifyH("CENTER")
 		name:SetPoint("CENTER", self, "BOTTOM")
 		name:Show()
@@ -300,6 +316,8 @@ function Module:UpdatePlateByType()
 			end
 		end
 
+		-- REASON: Left-aligned (see Style.lua for why) so the classify icon anchored to
+		-- this frame's edge in Widgets.lua stays adjacent to the visible text.
 		name:SetJustifyH("LEFT")
 
 		level:Show()
@@ -341,8 +359,6 @@ function Module:RefreshPlateType(unit)
 		self.plateType = "None"
 	elseif (C["Nameplate"].NameOnly and self.isFriendly) or self.widgetsOnly or self.isSoftTarget then
 		self.plateType = "NameOnly"
-	elseif C["Nameplate"].FriendPlate and self.isFriendly then
-		self.plateType = "FriendPlate"
 	else
 		self.plateType = "None"
 	end
@@ -381,12 +397,32 @@ function Module.OnUnitSoftTargetChanged(event, previousTarget, currentTarget)
 	end
 end
 
+function Module.OnNameplateRegenEnabled()
+	if Module._nameplatesSuspended then
+		return
+	end
+
+	C_Timer_After(0, function()
+		for plate in pairs(platesList) do
+			if plate.unit and plate.Health then
+				if plate.Health.ForceUpdate then
+					plate.Health:ForceUpdate()
+				else
+					Module.UpdateColor(plate, nil, plate.unit)
+				end
+			end
+		end
+	end)
+end
+
 function Module:RefreshPlateOnFactionChanged()
 	K:UnregisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
 	K:UnregisterEvent("PLAYER_SOFT_INTERACT_CHANGED", Module.OnUnitSoftTargetChanged)
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.OnNameplateRegenEnabled)
 
 	K:RegisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
 	K:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", Module.OnUnitSoftTargetChanged)
+	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.OnNameplateRegenEnabled)
 end
 
 function Module:PostUpdatePlates(event, unit)
@@ -403,8 +439,10 @@ function Module:PostUpdatePlates(event, unit)
 		self.unitName = not IsSecret(name) and name or nil
 		local guid = UnitGUID(unit)
 		self.unitGUID = not IsSecret(guid) and guid or nil
-		self.isPlayer = UnitIsPlayer(unit)
-		self.isFriendly = not UnitCanAttack("player", unit)
+		local isPlayer = UnitIsPlayer(unit)
+		self.isPlayer = NotSecret(isPlayer) and isPlayer or false
+		local canAttack = UnitCanAttack("player", unit)
+		self.isFriendly = NotSecret(canAttack) and not canAttack or false
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.isCustomUnit = (self.unitName and NP.customUnits[self.unitName]) or NP.customUnits[self.npcID]
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)

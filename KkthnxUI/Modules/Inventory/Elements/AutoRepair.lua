@@ -16,13 +16,21 @@ local string_format = string.format
 
 local CanGuildBankRepair = CanGuildBankRepair
 local CanMerchantRepair = CanMerchantRepair
+local C_GossipInfo = _G.C_GossipInfo
 local GetGuildBankWithdrawMoney = GetGuildBankWithdrawMoney
+local GetInventoryItemDurability = _G.GetInventoryItemDurability
 local GetMoney = GetMoney
 local GetRepairAllCost = GetRepairAllCost
 local IsInGuild = IsInGuild
 local IsShiftKeyDown = IsShiftKeyDown
 local LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY = LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY
 local RepairAllItems = RepairAllItems
+
+-- Stable-master style repair gossip options.
+local REPAIR_GOSSIP_IDS = {
+	[37005] = true,
+	[44982] = true,
+}
 
 -- REASON: Define upvalues for state management across local functions.
 -- NOTE: 'autoRepair' is forward-declared to handle cyclic dependencies in 'delayFunc'.
@@ -31,6 +39,35 @@ local canRepair
 local isBankEmpty
 local isShown
 local repairAllCost
+
+local function needToRepair()
+	for slot = 1, 19 do
+		local current, maximum = GetInventoryItemDurability(slot)
+		if current and maximum and maximum > 0 and current < maximum then
+			return true
+		end
+	end
+	return false
+end
+
+local function onRepairGossipShow()
+	local mode = C["Inventory"].AutoRepair
+	if IsShiftKeyDown() or mode == 3 or not needToRepair() then
+		return
+	end
+	if not C_GossipInfo or not C_GossipInfo.GetOptions or not C_GossipInfo.SelectOption then
+		return
+	end
+
+	local options = C_GossipInfo.GetOptions()
+	for i = 1, #options do
+		local option = options[i]
+		if option and REPAIR_GOSSIP_IDS[option.gossipOptionID] then
+			C_GossipInfo.SelectOption(option.gossipOptionID)
+			return
+		end
+	end
+end
 
 local function delayFunc()
 	if isBankEmpty then
@@ -114,6 +151,6 @@ local function merchantShow()
 end
 
 function Module:CreateAutoRepair()
-	-- REASON: Initialize the module by registering the 'MERCHANT_SHOW' event.
 	K:RegisterEvent("MERCHANT_SHOW", merchantShow)
+	K:RegisterEvent("GOSSIP_SHOW", onRepairGossipShow)
 end

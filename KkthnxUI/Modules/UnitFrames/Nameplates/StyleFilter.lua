@@ -25,6 +25,8 @@ local StyleFilters = {
 }
 
 local TRASH_UNIT_FILTER = { color = { 0.6, 0.6, 0.6 }, desaturate = true }
+-- Priority NPC whitelist: scale when targeted — do NOT paint TargetColor on Health
+-- (that cyan override fought Colors.lua reaction / unit-frame tint).
 local TARGET_NPC_FILTER = { scale = 1.2 }
 
 function Module:ApplyStyleFilter(unit)
@@ -57,8 +59,7 @@ function Module:ApplyStyleFilter(unit)
 		if not filter then
 			if C.NameplateTrashUnits[npcID] then
 				filter = TRASH_UNIT_FILTER
-			elseif ShowTargetNPCs[npcID] then
-				TARGET_NPC_FILTER.color = C["Nameplate"].TargetColor
+			elseif ShowTargetNPCs[npcID] and isTarget then
 				filter = TARGET_NPC_FILTER
 			end
 		end
@@ -106,10 +107,8 @@ function Module:ApplyStyleFilter(unit)
 		end
 	end
 
-	if C["Nameplate"].ColoredTarget and isTarget and not K.UnitIsUnit(unit, "player") then
-		self.Health:SetStatusBarColor(unpack(C["Nameplate"].TargetColor))
-		self._styleFiltered = true
-	end
-
+	-- ColoredTarget used to paint TargetColor on the health bar, which fought
+	-- Colors.lua reaction tints (cyan plate vs red unit frame). Target highlight
+	-- is arrows/glow via TargetIndicator — leave Health to UpdateColor.
 	return self._styleFiltered
 end

@@ -110,6 +110,7 @@ local function IsUsefulAtlas(info)
 end
 
 local function GetVignetteNpcID(info)
+	-- Resources: VignetteInfo fields are untagged — plain. GetNPCID still guards UnitGUID-style secrets if any leak in.
 	return info and info.objectGUID and K.GetNPCID(info.objectGUID)
 end
 
@@ -299,10 +300,16 @@ local function GetUnitForGUID(guid)
 		return
 	end
 
-	if UnitGUID("target") == guid then
+	-- UnitGUID is SecretWhenUnitIdentityRestricted — only compare when plain.
+	local function matches(token)
+		local u = UnitGUID(token)
+		return u and K.NotSecret(u) and u == guid
+	end
+
+	if matches("target") then
 		return "target"
 	end
-	if UnitGUID("mouseover") == guid then
+	if matches("mouseover") then
 		return "mouseover"
 	end
 
@@ -310,7 +317,7 @@ local function GetUnitForGUID(guid)
 		local plates = C_NamePlate_GetNamePlates()
 		for i = 1, #plates do
 			local token = plates[i].namePlateUnitToken
-			if token and UnitGUID(token) == guid then
+			if token and matches(token) then
 				return token
 			end
 		end
@@ -438,6 +445,7 @@ function Module.RareAlert_Update(_, id)
 
 	local now = GetTime()
 	local cooldown = GetRareCooldown()
+	-- Resources: VignetteInfo.name has no ConditionalSecret — plain string.
 	local vignetteName = info.name or ""
 
 	local mapID = C_Map_GetBestMapForUnit("player")

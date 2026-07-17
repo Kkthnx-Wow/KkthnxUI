@@ -53,22 +53,21 @@ function Module:CreatePlayerPlate()
 
 	Module:CreateClassPower(self)
 
-	if K.Class == "MONK" then
+	if K.Class == "MONK" and C["Unitframe"].Stagger then
 		self.Stagger = CreateFrame("StatusBar", self:GetName() .. "Stagger", self)
 		self.Stagger:SetPoint("TOPLEFT", self.Health, 0, 8)
 		self.Stagger:SetSize(self:GetWidth(), self:GetHeight())
 		self.Stagger:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		self.Stagger:CreateShadow(true)
 
-		self.Stagger.Value = self.Stagger:CreateFontString(nil, "OVERLAY")
-		self.Stagger.Value:SetFontObject(K.UIFont)
-		self.Stagger.Value:SetPoint("CENTER", self.Stagger, "CENTER", 0, 0)
+		self.Stagger.Value = K.CreateFontString(self.Stagger, 12, "", "SHADOW", false, "CENTER", 0, 0)
+		self.Stagger.PostUpdate = Module.PostUpdateStagger
 		self:Tag(self.Stagger.Value, "[monkstagger]")
 	end
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()
-	self.powerText = K.CreateFontString(textFrame, 12, "")
+	self.powerText = K.CreateFontString(textFrame, 12, "", "SHADOW")
 	self:Tag(self.powerText, "[pppower]")
 
 	Module:TogglePlatePower()
@@ -137,6 +136,10 @@ function Module:UpdateTargetClassPower()
 	end
 
 	local bar = plate.ClassPowerBar
+	if not bar then
+		return
+	end
+
 	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
 
 	if nameplate and nameplate.unitFrame then
@@ -144,11 +147,28 @@ function Module:UpdateTargetClassPower()
 		bar:ClearAllPoints()
 		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 24)
 		bar:Show()
+
+		-- Reparent alone does not repaint — ForceUpdate after target swaps between visible plates.
+		if plate.ClassPower and plate:IsElementEnabled("ClassPower") then
+			plate.ClassPower:ForceUpdate()
+		end
+		if plate.Runes and plate:IsElementEnabled("Runes") then
+			plate.Runes:ForceUpdate()
+		end
 	else
 		bar:Hide()
 		bar:SetParent(plate)
 		bar:ClearAllPoints()
 	end
+end
+
+-- End-of-frame coalesce: plate add + target change often fire together.
+local scheduleTargetClassPower = K.Debounce(0, function()
+	Module:UpdateTargetClassPower()
+end)
+
+function Module:ScheduleUpdateTargetClassPower()
+	scheduleTargetClassPower()
 end
 
 function Module:ToggleTargetClassPower()

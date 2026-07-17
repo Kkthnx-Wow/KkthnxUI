@@ -19,6 +19,7 @@ local UnitPlayerControlled = UnitPlayerControlled
 local UnitSelectionType = UnitSelectionType
 
 local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
 local NP = Module.NP
 
 -- ---------------------------------------------------------------------------
@@ -54,62 +55,75 @@ function Module:UpdateColor(_, unit)
 	local r, g, b
 
 	-- REASON: Style filters (custom units, priority NPCs, target coloring) have high priority.
-	-- If a filter applies, we skip standard coloring to avoid overrides.
 	if Module.ApplyStyleFilter(self, unit) then
 		Module.UpdateThreatIndicator(self, status, isCustomUnit)
 	else
-		-- REASON: Priority chain for standard unit coloring, similar to ElvUI's cleaner logic.
-		if not UnitIsConnected(unit) then
-			-- 1. Disconnected status
+		local connected = UnitIsConnected(unit)
+		if NotSecret(connected) and not connected then
 			r, g, b = 0.7, 0.7, 0.7
-		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
-			-- 2. Tapping status (greyed out)
-			r, g, b = 0.6, 0.6, 0.6
-		elseif useExecuteColor then
-			-- 3. Execute phase coloring
-			local executeColor = C["Nameplate"].ExecuteColor
-			r, g, b = executeColor[1], executeColor[2], executeColor[3]
-		elseif self.Auras.hasTheDot then
-			-- 4. Active DoT coloring (if enabled)
-			local dotColor = C["Nameplate"].DotColor
-			r, g, b = dotColor[1], dotColor[2], dotColor[3]
-		elseif isPlayer then
-			-- 5. Player coloring (Friendly vs Hostile settings)
-			if isFriendly then
-				if C["Nameplate"].FriendlyCC then
-					r, g, b = K.UnitColor(unit)
+		else
+			local controlled = UnitPlayerControlled(unit)
+			local tapped = UnitIsTapDenied(unit)
+			if NotSecret(tapped) and tapped and NotSecret(controlled) and not controlled then
+				r, g, b = 0.6, 0.6, 0.6
+			elseif useExecuteColor then
+				local executeColor = C["Nameplate"].ExecuteColor
+				r, g, b = executeColor[1], executeColor[2], executeColor[3]
+			elseif isPlayer then
+				if isFriendly then
+					if C["Nameplate"].FriendlyCC then
+						r, g, b = K.UnitColor(unit)
+					else
+						-- Friendly players without class color → Colors.lua friendly reaction.
+						local fr = K.Colors.reaction and K.Colors.reaction[5]
+						if fr then
+							r, g, b = fr[1] or fr.r, fr[2] or fr.g, fr[3] or fr.b
+						else
+							local manaColor = K.Colors.power["MANA"]
+							r, g, b = manaColor[1], manaColor[2], manaColor[3]
+						end
+					end
 				else
-					-- REASON: Use default mana color for friendly players if class color is disabled.
-					local manaColor = K.Colors.power["MANA"]
-					r, g, b = manaColor[1], manaColor[2], manaColor[3]
+					-- HostileCC: class color; otherwise Colors.lua hostile reaction (not TargetColor).
+					if C["Nameplate"].HostileCC then
+						r, g, b = K.UnitColor(unit)
+					else
+						local hr = K.Colors.reaction and K.Colors.reaction[2]
+						if hr then
+							r, g, b = hr[1] or hr.r, hr[2] or hr.g, hr[3] or hr.b
+						else
+							r, g, b = K.UnitColor(unit)
+						end
+					end
 				end
 			else
-				-- REASON: Hostiles use reaction coloring by default if HostileCC is disabled.
-				r, g, b = K.UnitColor(unit)
-			end
-		else
-			-- 6. Selection Type coloring (Retail primary, provides more granular NPC/Guard colors)
-			local selection = UnitSelectionType and UnitSelectionType(unit, true)
-			if selection then
-				-- REASON: Special handling for friendly NPCs/Guards to match specific selection colors.
-				if selection == 3 then
-					selection = UnitPlayerControlled(unit) and 5 or 3
-				end
+				-- NPCs: prefer Colors.lua reaction (via GetNpcReactionColor) over sparse selection table.
+				local nr, ng, nb = K.GetNpcReactionColor(unit)
+				if nr then
+					r, g, b = nr, ng, nb
+				else
+					local selection = UnitSelectionType and UnitSelectionType(unit, true)
+					if NotSecret(selection) and selection then
+						if selection == 3 then
+							local playerControlled = UnitPlayerControlled(unit)
+							if NotSecret(playerControlled) then
+								selection = playerControlled and 5 or 3
+							end
+						end
 
-				local color = K.Colors.selection[selection]
-				if color then
-					r, g, b = color[1], color[2], color[3]
-				end
-			end
+						local selColor = K.Colors.selection[selection]
+						if selColor then
+							r, g, b = selColor[1], selColor[2], selColor[3]
+						end
+					end
 
-			-- 7. Default NPC reaction coloring fallback
-			if not r then
-				r, g, b = K.UnitColor(unit)
+					if not r then
+						r, g, b = K.UnitColor(unit)
+					end
+				end
 			end
 		end
 
-		-- REASON: Threat coloring overrides base health color for tanks for better visibility.
-		-- We check for either Tank Mode or the player's active Role.
 		if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 			local insecureColor = C["Nameplate"].InsecureColor
 			local offTankColor = C["Nameplate"].OffTankColor
@@ -118,21 +132,16 @@ function Module:UpdateColor(_, unit)
 			local transColor = C["Nameplate"].TransColor
 
 			if status == 3 then
-				-- Aggro Secure
 				if K.Role ~= "Tank" and revertThreat then
 					r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
+				elseif isOffTank then
+					r, g, b = offTankColor[1], offTankColor[2], offTankColor[3]
 				else
-					if isOffTank then
-						r, g, b = offTankColor[1], offTankColor[2], offTankColor[3]
-					else
-						r, g, b = secureColor[1], secureColor[2], secureColor[3]
-					end
+					r, g, b = secureColor[1], secureColor[2], secureColor[3]
 				end
 			elseif status == 2 or status == 1 then
-				-- Threat transition
 				r, g, b = transColor[1], transColor[2], transColor[3]
 			elseif status == 0 then
-				-- No threat / Losing aggro
 				if K.Role ~= "Tank" and revertThreat then
 					r, g, b = secureColor[1], secureColor[2], secureColor[3]
 				else
@@ -151,7 +160,7 @@ function Module:UpdateColor(_, unit)
 	-- REASON: Update name text color for units in execute range for immediate feedback.
 	-- SECRET (12.0): UnitHealthPercent(unit, true, curve) returns a ColorMixin the
 	-- engine evaluates from the (secret) health internally, so execute feedback keeps
-	-- working in combat without us ever comparing health in Lua. Mirrors NDui.
+	-- working in combat without us ever comparing health in Lua.
 	if NP.executedCurve and C["Nameplate"].ExecuteRatio > 0 and not isFriendly then
 		local healthColor = UnitHealthPercent(unit, true, NP.executedCurve)
 		if healthColor then

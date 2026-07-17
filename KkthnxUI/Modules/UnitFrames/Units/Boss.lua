@@ -63,11 +63,7 @@ function Module:CreateBoss()
 		self.Health.colorReaction = true
 	end
 
-	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self.Health.Value:SetFontObject(K.UIFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, "[hp]")
+	Module:CreateBarValueTag(self, self.Health, "[hp]", { size = 10 })
 
 	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
 	self.Health.Spark = Module:CreateBarSpark(self.Health)
@@ -92,76 +88,10 @@ function Module:CreateBoss()
 		K:SmoothBar(self.Power)
 	end
 
-	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-	self.Name:SetFontObject(K.UIFont)
-	self.Name:SetWidth(bossWidth)
-	self.Name:SetWordWrap(false)
-	if bossPortraitStyle == 0 or bossPortraitStyle == 4 then
-		if C["Unitframe"].HealthbarColor == 1 then
-			self:Tag(self.Name, "[name] [nplevel][afkdnd]")
-		else
-			self:Tag(self.Name, "[color][name] [nplevel][afkdnd]")
-		end
-	else
-		if C["Unitframe"].HealthbarColor == 1 then
-			self:Tag(self.Name, "[name][afkdnd]")
-		else
-			self:Tag(self.Name, "[color][name][afkdnd]")
-		end
-	end
-
-	-- REASON: Portrait Setup (2D/3D support)
-	if bossPortraitStyle ~= 0 then
-		local Portrait
-
-		if bossPortraitStyle == 4 then
-			Portrait = CreateFrame("PlayerModel", nil, self)
-			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
-			Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
-			Portrait:SetAlpha(0.6)
-		elseif bossPortraitStyle == 5 then
-			Portrait = CreateFrame("PlayerModel", nil, self.Health)
-			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-			Portrait:CreateBorder()
-		else
-			Portrait = self.Health:CreateTexture(nil, "BACKGROUND", nil, 1)
-			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-
-			Portrait.Border = CreateFrame("Frame", nil, self)
-			Portrait.Border:SetAllPoints(Portrait)
-			Portrait.Border:CreateBorder()
-
-			if bossPortraitStyle == 2 or bossPortraitStyle == 3 then
-				Portrait.PostUpdate = Module.UpdateClassPortraits
-			end
-		end
-
-		self.Portrait = Portrait
-
-		if bossPortraitStyle == 5 then
-			Module:ApplyPortraitAlphaFix(self)
-		end
-
-		Module:SecurePortrait(self)
-	end
-
-	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
-		self.Level:Show()
-		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
-		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
-	else
-		self.Level:Hide()
-	end
-	self.Level:SetFontObject(K.UIFont)
-	self:Tag(self.Level, "[nplevel]")
+	Module:CreateUnitNameString(self, { layout = "aboveHealth", width = bossWidth })
+	Module:TagUnitName(self, bossPortraitStyle, { levelTag = "[nplevel]" })
+	Module:CreateUnitPortrait(self, { side = "right", style = bossPortraitStyle })
+	Module:CreatePortraitLevelTag(self, bossPortraitStyle, { tag = "[nplevel]", layout = "above" })
 
 	--if C["Boss"].ShowBuffs then
 	-- REASON: Aura Buffs
@@ -179,6 +109,7 @@ function Module:CreateBoss()
 	Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
 
 	self.Buffs.showStealableBuffs = true
+	self.Buffs.FilterAura = Module.CustomFilter
 	self.Buffs.PostCreateButton = Module.PostCreateButton
 	self.Buffs.PostUpdateButton = Module.PostUpdateButton
 
@@ -194,77 +125,37 @@ function Module:CreateBoss()
 	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+	self.Debuffs.FilterAura = Module.CustomFilter
 	self.Debuffs.PostCreateButton = Module.PostCreateButton
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	-- REASON: Castbar configuration
 	if C["Boss"].Castbars then
-		local Castbar = CreateFrame("StatusBar", nil, self)
-		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		Castbar:SetFrameLevel(10)
-		Castbar:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-		Castbar:SetSize(C["Boss"].HealthWidth, 18)
-		Castbar:CreateBorder()
-		Castbar.castTicks = {}
-
-		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
-		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
-		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		Castbar.Spark:SetBlendMode("ADD")
-		Castbar.Spark:SetAlpha(0.8)
-
-		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
-		shield:SetAtlas("Soulbinds_Portrait_Lock")
-		shield:SetSize(28, 28)
-		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
-		Castbar.Shield = shield
-
-		local timer = K.CreateFontString(Castbar, 11, "", "", false, "RIGHT", -3, 0)
-		local name = K.CreateFontString(Castbar, 11, "", "", false, "LEFT", 3, 0)
-		name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
-		name:SetJustifyH("LEFT")
-
-		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
-		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
-		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
-		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-		Castbar.Button = CreateFrame("Frame", nil, Castbar)
-		Castbar.Button:CreateBorder()
-		Castbar.Button:SetAllPoints(Castbar.Icon)
-		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
-
-		local stage = K.CreateFontString(Castbar, 16)
-		stage:ClearAllPoints()
-		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
-		Castbar.stageString = stage
-
-		Castbar.decimal = "%.1f"
-
-		Castbar.Time = timer
-		Castbar.Text = name
-		Castbar.OnUpdate = Module.OnCastbarUpdate
-		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastUpdate = Module.PostCastUpdate
-		Castbar.PostCastStop = Module.PostCastStop
-		Castbar.PostCastFail = Module.PostCastFailed
-		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		Castbar.CreatePip = Module.CreatePip
-		Castbar.PostUpdatePips = Module.PostUpdatePips
-
-		self.Castbar = Castbar
+		local iconOffset = 24
+		Module:CreateUnitCastbar(self, {
+			width = C["Boss"].HealthWidth,
+			shield = true,
+			kickTick = true,
+			textSize = 11,
+			decimal = "%.1f",
+			timeX = -3,
+			textX = 3,
+			textGap = 4,
+			timerJustify = "RIGHT",
+			-- Keep bar width = health width; icon hangs left so the timer isn't clipped.
+			onSize = function(castbar, unitFrame)
+				castbar:ClearAllPoints()
+				castbar:SetPoint("BOTTOMLEFT", unitFrame.Health, "TOPLEFT", iconOffset, 6)
+				castbar:SetPoint("BOTTOMRIGHT", unitFrame.Health, "TOPRIGHT", 0, 6)
+				castbar:SetHeight(18)
+			end,
+		})
 	end
-
 	if C["Boss"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 
-		local relativeTo
-		if bossPortraitStyle == 0 or bossPortraitStyle == 4 then
-			relativeTo = self.Health
-		else
-			relativeTo = self.Portrait
-		end
+		local relativeTo = Module.GetPortraitAnchor(self, bossPortraitStyle)
 
 		self.TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
@@ -285,20 +176,17 @@ function Module:CreateBoss()
 
 	-- REASON: Raid Target Indicator
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
-		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
-	else
-		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
-	end
+	self.RaidTargetIndicator:SetPoint("TOP", Module.GetPortraitAnchor(self, bossPortraitStyle), "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(14, 14)
 
 	-- REASON: Resurrection Indicator
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
-	if bossPortraitStyle ~= 0 and bossPortraitStyle ~= 4 then
-		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
-	else
-		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
+	self.ResurrectIndicator:SetPoint("CENTER", Module.GetPortraitAnchor(self, bossPortraitStyle))
+
+	-- REASON: Debuff Highlight
+	if C["Unitframe"].DebuffHighlight then
+		Module:CreateDebuffHighlight(self)
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

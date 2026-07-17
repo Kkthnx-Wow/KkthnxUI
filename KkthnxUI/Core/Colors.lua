@@ -25,6 +25,7 @@ oUF.colors.castbar = {
 	CastingColor = { 1.0, 0.7, 0.0 }, -- Orange (casting)
 	ChannelingColor = { 0.0, 0.8, 0.0 }, -- Bright green (channeling)
 	notInterruptibleColor = { 0.7, 0.7, 0.7 }, -- Gray (not interruptible)
+	InterruptReadyColor = { 0.92, 0.35, 0.20 }, -- Kick off CD tint
 	CompleteColor = { 0.0, 1.0, 0.0 }, -- Bright green (complete)
 	FailColor = { 1.0, 0.0, 0.0 }, -- Bright red (failed)
 }
@@ -73,9 +74,16 @@ oUF.colors.reaction = {
 -- ---------------------------------------------------------------------------
 
 oUF.colors.selection = {
-	[0] = { 0.78, 0.25, 0.25 },
-	[2] = { 0.85, 0.76, 0.36 },
-	[3] = { 0.29, 0.67, 0.30 },
+	[0] = { 0.87, 0.37, 0.37 }, -- Hostile — match reaction[1/2]
+	[1] = { 0.87, 0.37, 0.37 },
+	[2] = { 0.85, 0.77, 0.36 }, -- Neutral — match reaction[4]
+	[3] = { 0.29, 0.67, 0.30 }, -- Friendly — match reaction[5]
+	[4] = { 0.29, 0.67, 0.30 },
+	[5] = { 0.29, 0.67, 0.30 },
+	[6] = { 0.29, 0.67, 0.30 },
+	[7] = { 0.29, 0.67, 0.30 },
+	[8] = { 0.29, 0.67, 0.30 },
+	[9] = { 0.87, 0.37, 0.37 },
 }
 
 -- ---------------------------------------------------------------------------

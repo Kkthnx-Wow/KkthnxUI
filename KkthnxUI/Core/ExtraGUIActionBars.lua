@@ -35,6 +35,16 @@ local function CreateBarPanel(extraGUI, barIndex, barName)
 		fontSlider:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
+		local flyoutOptions = {
+			{ text = L["UP"] or "UP", value = 1 },
+			{ text = L["DOWN"] or "DOWN", value = 2 },
+			{ text = L["LEFT"] or "LEFT", value = 3 },
+			{ text = L["RIGHT"] or "RIGHT", value = 4 },
+		}
+		local flyoutDropdown = extraGUI:CreateDropdown(parent, "ActionBar." .. barName .. "Flyout", L["Flyout Direction"], flyoutOptions, L["ActionBar.Flyout Desc"])
+		flyoutDropdown:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
 		local fadeSwitch = extraGUI:CreateSwitch(parent, "ActionBar." .. barName .. "Fade", L["Enable Fade for Bar " .. barIndex], L["Allows Bar " .. barIndex .. " to fade based on the specified conditions"])
 		fadeSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35

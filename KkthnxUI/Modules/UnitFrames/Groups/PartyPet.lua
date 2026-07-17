@@ -53,17 +53,9 @@ function Module:CreatePartyPet()
 		self.Health.colorReaction = true
 	end
 
-	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
-	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
-	self.Portrait:SetAllPoints()
-	self.Portrait:SetAlpha(0.4)
-	Module:SecurePortrait(self)
+	Module:CreateUnitPortrait(self, { style = 4, overlayAlpha = 0.4 })
 
-	self.Name = self.Overlay:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Overlay, "TOPLEFT", 3, -15)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Overlay, "TOPRIGHT", -3, -15)
-	self.Name:SetFontObject(PartyPetframeFont)
-	self.Name:SetWordWrap(false)
+	Module:CreateUnitNameString(self, { parent = self.Overlay, layout = "aboveOverlay" })
 	self:Tag(self.Name, "[name]")
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
@@ -91,13 +83,7 @@ function Module:CreatePartyPet()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyPetTargetGlow, true)
 	end
 
-	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-	self.DebuffHighlight:SetAllPoints(self.Health)
-	self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-	self.DebuffHighlight:SetBlendMode("ADD")
-	self.DebuffHighlightAlpha = 0.45
-	self.DebuffHighlightFilter = true
+	Module:CreateDebuffHighlight(self)
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
@@ -112,7 +98,14 @@ function Module:CreatePartyPet()
 		Override = Module.UpdateThreat,
 	}
 
-	self.Range = {
-		Override = Module.UpdateRange,
+	-- REASON: Range Fader Settings
+	-- BUGFIX: was `self.Range = { Override = Module.UpdateRange }` — the registered
+	-- oUF element is "RangeFader" (Elements/Range.lua), and Module.UpdateRange was
+	-- never defined anywhere, so party pet frames silently got no range fading at all.
+	self.RangeFader = {
+		insideAlpha = 1,
+		outsideAlpha = 0.55,
+		MaxAlpha = 1,
+		MinAlpha = 0.3,
 	}
 end

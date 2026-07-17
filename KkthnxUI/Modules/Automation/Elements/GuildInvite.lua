@@ -32,6 +32,11 @@ local string_format = _G.string.format
 local string_lower = _G.string.lower
 local table_wipe = _G.table.wipe
 
+local IsSecret = K.IsSecret
+local NotSecret = K.NotSecret
+local UNKNOWN = _G.UNKNOWN
+local date = _G.date
+
 -- ---------------------------------------------------------------------------
 -- State
 -- ---------------------------------------------------------------------------
@@ -42,11 +47,61 @@ local guildCacheDirty = true
 -- Trust Checks
 -- ---------------------------------------------------------------------------
 local function normalizeName(name)
-	if not name then
-		return
+	if not name or IsSecret(name) then
+		return nil
 	end
 
 	return string_lower(Ambiguate(name, "none"))
+end
+
+local function safeName(name)
+	return (name and NotSecret(name)) and name or UNKNOWN
+end
+
+-- ---------------------------------------------------------------------------
+-- Stats (account-wide)
+-- ---------------------------------------------------------------------------
+-- REASON: KkthnxUI has a single account-wide SavedVariables global (KkthnxUIDB,
+-- per KkthnxUI.toc) rather than a separate per-purpose "global vars" helper, so
+-- stats are stored directly on it under their own namespaced key.
+-- BUGFIX: this block was originally placed near the top of the file (right
+-- after the IsSecret/NotSecret locals), before safeName existed yet in the
+-- source — recordBlocked referenced a (duplicate) safeNameForStats function
+-- that Lua would have resolved as an undeclared global at that point, not the
+-- later local. Moved here, after safeName, and reusing it directly instead.
+local function ensureStatsTable()
+	_G.KkthnxUIDB = _G.KkthnxUIDB or {}
+	_G.KkthnxUIDB.GuildInviteStats = _G.KkthnxUIDB.GuildInviteStats or {
+		totalBlocked = 0,
+		totalAllowed = 0,
+		lastBlocked = nil,
+	}
+	return _G.KkthnxUIDB.GuildInviteStats
+end
+
+local function recordAllowed()
+	local stats = ensureStatsTable()
+	stats.totalAllowed = (stats.totalAllowed or 0) + 1
+end
+
+local function recordBlocked(inviter, guildName)
+	local stats = ensureStatsTable()
+	stats.totalBlocked = (stats.totalBlocked or 0) + 1
+	stats.lastBlocked = {
+		player = safeName(inviter),
+		guild = safeName(guildName),
+		time = date("%Y-%m-%d %H:%M:%S"),
+	}
+end
+
+function Module:PrintGuildInviteStats()
+	local stats = ensureStatsTable()
+	K.Print(string_format(L["Guild Invite Stats: Blocked %d, Allowed %d"], stats.totalBlocked or 0, stats.totalAllowed or 0))
+	if stats.lastBlocked then
+		K.Print(string_format(L["Last blocked: %s to <%s> (%s)"], stats.lastBlocked.player, stats.lastBlocked.guild, stats.lastBlocked.time or "?"))
+	else
+		K.Print(L["Last blocked: none yet."])
+	end
 end
 
 local function isCharacterFriend(target)
@@ -111,16 +166,27 @@ local function isCurrentGuildMember(target)
 end
 
 local function isTrustedInviter(target)
-	return isCharacterFriend(target) or isBattleNetFriend(target) or isCurrentGuildMember(target)
+	local cfg = C["Automation"]
+	if cfg.AutoDeclineGuildInvitesFromFriends and (isCharacterFriend(target) or isBattleNetFriend(target)) then
+		return true
+	end
+	if cfg.AutoDeclineGuildInvitesFromGuild and isCurrentGuildMember(target) then
+		return true
+	end
+	return false
 end
 
 -- ---------------------------------------------------------------------------
 -- Popup / Blizzard Option Handling
 -- ---------------------------------------------------------------------------
 local function hideGuildInvitePopup()
-	local guildInviteFrame = _G["GuildInviteFrame"]
+	local guildInviteFrame = _G.GuildInviteFrame
 	if guildInviteFrame and guildInviteFrame:IsShown() then
-		StaticPopupSpecial_Hide(guildInviteFrame)
+		if StaticPopupSpecial_Hide then
+			StaticPopupSpecial_Hide(guildInviteFrame)
+		else
+			guildInviteFrame:Hide()
+		end
 	end
 	StaticPopup_Hide("GUILD_INVITE")
 end
@@ -157,16 +223,27 @@ local function onGuildInvite(event, inviter, guildName)
 	end
 
 	local target = normalizeName(inviter)
-	if not target or isTrustedInviter(target) then
+	if not target then
+		return
+	end
+	if isTrustedInviter(target) then
+		recordAllowed()
 		return
 	end
 
 	DeclineGuild()
 	hideGuildInvitePopup()
 	C_Timer_After(0, hideGuildInvitePopup)
-	PlaySound(_G["SOUNDKIT"].IG_MAINMENU_OPTION_CHECKBOX_ON, "Master")
 
-	K.Print(string_format(L["Declined a guild invite from %s to join <%s>."], inviter or _G["UNKNOWN"], guildName or _G["UNKNOWN"]))
+	local cfg = C["Automation"]
+	if cfg.AutoDeclineGuildInvitesSound then
+		PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "Master")
+	end
+
+	recordBlocked(inviter, guildName)
+	if cfg.AutoDeclineGuildInvitesAnnounce then
+		K.Print(string_format(L["Declined a guild invite from %s to join <%s>."], safeName(inviter), safeName(guildName)))
+	end
 end
 
 local function onGuildRosterChanged()

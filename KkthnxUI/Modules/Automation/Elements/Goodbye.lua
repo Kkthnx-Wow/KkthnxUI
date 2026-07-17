@@ -18,7 +18,10 @@ local GetTime = GetTime
 local IsInGroup = IsInGroup
 local IsInRaid = IsInRaid
 local IsPartyLFG = IsPartyLFG
-local SendChatMessage = SendChatMessage
+-- REASON: SendChatMessage global is a deprecated shim;
+-- C_ChatInfo.SendChatMessage is the live API (per Resources/GlobalAPI.lua, only
+-- the C_ChatInfo form is listed).
+local SendChatMessage = C_ChatInfo.SendChatMessage
 local math_random = math.random
 
 -- ---------------------------------------------------------------------------

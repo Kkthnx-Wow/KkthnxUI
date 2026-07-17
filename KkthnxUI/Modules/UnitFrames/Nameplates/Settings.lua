@@ -17,9 +17,23 @@ local CVAR_SETTINGS = {
 	["Nameplate.CVarShowNPCs"] = true,
 }
 
+local CLICK_SETTINGS = {
+	["Nameplate.HarmWidth"] = true,
+	["Nameplate.HarmHeight"] = true,
+	["Nameplate.HelpWidth"] = true,
+	["Nameplate.HelpHeight"] = true,
+	["Nameplate.EnemyThru"] = true,
+	["Nameplate.FriendlyThru"] = true,
+}
+
 local function OnNameplateSetting(configPath)
 	if CVAR_SETTINGS[configPath] then
 		Module:UpdatePlateCVars()
+	end
+
+	if CLICK_SETTINGS[configPath] then
+		Module:UpdateClickableSize()
+		return
 	end
 
 	if configPath == "Nameplate.ShowPlayerPlate" then
@@ -35,6 +49,9 @@ local function OnNameplateSetting(configPath)
 		Module:ToggleTargetClassPower()
 	elseif configPath == "Nameplate.QuestIndicator" or configPath == "Nameplate.QuestProgressMode" or configPath == "Nameplate.QuestShowPartyQuest" or configPath == "Nameplate.QuestProgressFormat" or configPath == "Nameplate.QuestProgressModifier" then
 		Module:RefreshAllQuestIndicators()
+		return
+	elseif configPath == "Nameplate.CastOverlay" then
+		Module:RefreshAllCastOverlays()
 		return
 	elseif configPath == "Nameplate.CustomUnitColor" then
 		Module:CreateUnitTable()

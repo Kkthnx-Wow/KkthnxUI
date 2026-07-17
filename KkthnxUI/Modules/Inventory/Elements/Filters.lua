@@ -121,6 +121,17 @@ local function isItemJunk(item)
 	return (item.quality == Enum.ItemQuality.Poor or isCustomJunk) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
+-- Bagforge-style Recent: newly looted slots (C_NewItems + GUID tracker after login baseline).
+local function isItemRecent(item)
+	if not CheckFilterSetting("FilterRecent") then
+		return
+	end
+	if not item or not item.bagId or not item.slotId then
+		return
+	end
+	return Module:IsRecentItem(item.bagId, item.slotId)
+end
+
 local function isItemEquipSet(item)
 	if not CheckFilterSetting("FilterEquipSet") then
 		return
@@ -316,6 +327,7 @@ function Module:GetFilters()
 	local filters = {}
 
 	filters.onlyBags = CreateLocationFilter(isItemInBag)
+	filters.bagRecent = CreateLocationFilter(isItemInBag, isItemRecent)
 	filters.bagAzeriteItem = CreateLocationFilter(isItemInBag, isAzeriteArmor)
 	filters.bagEquipment = CreateLocationFilter(isItemInBag, isItemEquipment)
 	filters.bagEquipSet = CreateLocationFilter(isItemInBag, isItemEquipSet)

@@ -8,6 +8,11 @@ local Module = K:GetModule("Loot")
 local REFRESH_BY_KEY = {
 	FastLoot = "CreateFasterLoot",
 	AutoGreed = "CreateAutoGreed",
+	AutoGreedPreferDE = "CreateAutoGreed",
+	AutoGreedIncludeRares = "CreateAutoGreed",
+	AutoGreedSkipBoP = "CreateAutoGreed",
+	AutoGreedMaxLevelOnly = "CreateAutoGreed",
+	AutoGreedAutoConfirm = "CreateAutoGreed",
 	AutoConfirm = "CreateAutoConfirm",
 	GroupLoot = "CreateGroupLoot",
 }

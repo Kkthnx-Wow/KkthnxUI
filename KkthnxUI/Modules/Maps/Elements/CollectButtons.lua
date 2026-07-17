@@ -13,7 +13,6 @@ local Module = K:GetModule("Minimap")
 -- PERF: Localize global functions and environment for faster lookups.
 local ipairs = _G.ipairs
 local pairs = _G.pairs
-local select = _G.select
 local string_find = _G.string.find
 local string_match = _G.string.match
 local string_upper = _G.string.upper
@@ -40,6 +39,7 @@ local AUTO_CLOSE_SECONDS = 6
 
 -- REASON: Buttons/frames we never want to collect to avoid breaking core UI or map functionality.
 local BLACKLIST = {
+	["AddonCompartmentFrame"] = true,
 	["BattlefieldMinimap"] = true,
 	["FeedbackUIButton"] = true,
 	["GameTimeFrame"] = true,
@@ -65,12 +65,6 @@ local IGNORED_BUTTONS = {
 local GOOD_LOOKING_ICON = {
 	["Narci_MinimapButton"] = true,
 	["ZygorGuidesViewerMapIcon"] = true,
-}
-
--- REASON: Textures (fileIDs) we strip from collected buttons to achieve a clean look.
-local REMOVED_TEXTURES = {
-	[136430] = true,
-	[136467] = true,
 }
 
 local function isButtonIgnored(name)
@@ -220,28 +214,11 @@ function Module:CreateRecycleBin()
 	toggleButton:SetScript("OnLeave", startAutoCloseTimer)
 
 	local function reskinMinimapButton(child, name)
-		for i = 1, child:GetNumRegions() do
-			local region = select(i, child:GetRegions())
-			if region and region.IsObjectType and region:IsObjectType("Texture") then
-				local texture = region:GetTexture()
-				if texture and (REMOVED_TEXTURES[texture] or (type(texture) == "string" and (string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap")))) then
-					region:SetTexture(nil)
-					region:Hide()
-				else
-					if not region.__ignored then
-						region:ClearAllPoints()
-						region:SetAllPoints()
-					end
-					if not GOOD_LOOKING_ICON[name] then
-						region:SetTexCoord(unpack(K.TexCoords))
-					end
-				end
-			end
-		end
+		Module:SkinMinimapAddonButton(child, {
+			size = 22,
+			goodLooking = GOOD_LOOKING_ICON[name] or false,
+		})
 
-		child:SetSize(22, 22)
-
-		-- REASON: Defensive check to avoid creating redundant borders during multiple scans.
 		if not child.__kkthnx_recyclebin_border then
 			if child.CreateBorder then
 				child:CreateBorder()

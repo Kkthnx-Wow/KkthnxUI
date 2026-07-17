@@ -928,9 +928,9 @@ end
 -- ---------------------------------------------------------------------------
 
 -- REASON: Allows widgets to be shown/hidden based on the value of another setting.
-function ExtraGUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate)
+function ExtraGUI:DependsOn(childWidget, parentConfigPath, expectedValue, predicate, friendlyName)
 	if K and K.GUIHelpers and K.GUIHelpers.BindDependency then
-		return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate)
+		return K.GUIHelpers.BindDependency(childWidget, parentConfigPath, expectedValue, predicate, friendlyName)
 	end
 	return childWidget
 end
@@ -2207,8 +2207,8 @@ function ExtraGUI:RegisterBuiltinConfigs()
 	-- ---------------------------------------------------------------------------
 
 	self:RegisterExtraConfig("Misc.DBMCount", function(parent)
-		CreateSimpleTextEditor(parent, "Misc.DBMCount", L["DBMCount - Add Info"], L["Enter custom info..."], L["Misc.DBMCount Desc"])
-	end, L["DBMCount - Add Info"])
+		CreateSimpleTextEditor(parent, "Misc.DBMCount", L["Pull Timer Seconds"], L["Enter custom info..."], L["Misc.DBMCount Desc"])
+	end, L["Pull Timer Seconds"])
 
 	-- ---------------------------------------------------------------------------
 	-- Configuration Registration: Miscellaneous (Mute)
@@ -2490,6 +2490,21 @@ function ExtraGUI:RegisterBuiltinConfigs()
 		local debuffWatchDefaultSwitch = self:CreateSwitch(parent, "SimpleParty.DebuffWatchDefault", L["Use Default Debuff List"] or "Use Default Debuff List", L["Use the default debuff list for tracking"] or "Use the default debuff list for tracking")
 		debuffWatchDefaultSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
+
+		yOffset = yOffset - 20 -- Extra spacing before section
+
+		-- Dispel Icon options (parity with Raid frames)
+		CreateSectionHeader(parent, L["Dispel"] or "Dispel", EXTRA_PANEL_WIDTH - 40, yOffset)
+		yOffset = yOffset - 40
+
+		local dispelIconSwitch = self:CreateSwitch(parent, "SimpleParty.DispelIcon", L["Raid Dispel Type Icons"] or "Raid Dispel Type Icons", L["Raid.DispelIcon Desc"] or "Show a dispel-type icon on frames with a dispellable debuff")
+		dispelIconSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		local dispelIconAllSwitch = self:CreateSwitch(parent, "SimpleParty.DispelIconAll", L["Show All Dispellable Debuffs"] or "Show All Dispellable Debuffs", L["Raid.DispelIconAll Desc"] or "Show the icon for any dispellable debuff, not just ones you personally can dispel")
+		dispelIconAllSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+		self:DependsOn(dispelIconAllSwitch, "SimpleParty.DispelIcon", true)
 
 		-- Set parent height based on content
 		parent:SetHeight(math.abs(yOffset) + 20)

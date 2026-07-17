@@ -14,6 +14,8 @@ local STATUS_KEYS = {
 	GatherEmpty = true,
 	iLvlToShow = true,
 	ShowNewItem = true,
+	UpgradeIcon = true,
+	SpecialBagsColor = true,
 }
 
 local BAG_BAR_KEYS = {
@@ -50,6 +52,25 @@ local function OnInventorySetting(configPath)
 		end
 	elseif key == "Enable" then
 		Module:SetInventoryEnabled(C["Inventory"].Enable)
+	elseif key == "DeleteButton" then
+		-- Main backpack container holds the delete widget at index 7.
+		local main = Module.BagFrames and Module.BagFrames.main
+		local widgets = main and main.widgetButtons
+		local delBtn = widgets and widgets[7]
+		if delBtn then
+			delBtn:SetShown(C["Inventory"].DeleteButton)
+			if not C["Inventory"].DeleteButton and delBtn.__turnOff then
+				delBtn.__turnOff()
+			end
+		end
+	elseif key == "AutoSell" then
+		if Module.SetAutoSellEnabled then
+			Module:SetAutoSellEnabled(C["Inventory"].AutoSell)
+		end
+	elseif key == "AutoWarbandGold" or key == "WarbandGoldTarget" or key == "WarbandGoldWithdraw" then
+		if Module.CreateAutoWarbandGold then
+			Module:CreateAutoWarbandGold()
+		end
 	end
 end
 

@@ -29,7 +29,7 @@ function Module:AddDungeonProgress(self)
 		return
 	end
 
-	self.progressText = K.CreateFontString(self, 13, "", "", false, "LEFT", 0, 0)
+	self.progressText = K.CreateFontString(self, 13, "", "SHADOW", false, "LEFT", 0, 0)
 	self.progressText:ClearAllPoints()
 	self.progressText:SetPoint("LEFT", self, "RIGHT", 5, 0)
 end

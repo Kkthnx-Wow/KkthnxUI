@@ -3,6 +3,7 @@
    <!-- Load_Core -->
    <Script file="API.lua"/>
    <Script file="Functions.lua"/>
+   <Script file="Kick.lua"/>
    <Script file="Callbacks.lua"/>
    <Script file="GeneralSettings.lua"/>
    <Script file="WidgetFactory.lua"/>

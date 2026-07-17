@@ -13,13 +13,13 @@ local Module = K:GetModule("Chat")
 -- PERF: Localize globals and API functions to reduce lookup overhead.
 local C_Item_GetItemIconByID = C_Item.GetItemIconByID
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local ChatFrame_RemoveMessageEventFilter = _G.ChatFrame_RemoveMessageEventFilter
 local string_gsub = string.gsub
 
 local string_format = string.format
 
--- ---------------------------------------------------------------------------
--- Loot Icons Logic
--- ---------------------------------------------------------------------------
+local filtersInstalled = false
+
 local function Icon(link)
 	local texture = C_Item_GetItemIconByID(link)
 	if not texture then
@@ -33,14 +33,17 @@ local function AddLootIcons(_, _, message, ...)
 	return false, message, ...
 end
 
--- ---------------------------------------------------------------------------
--- Initialization
--- ---------------------------------------------------------------------------
-function Module:CreateLootIcons()
-	-- REASON: Setup loot icons in chat frame messages if enabled.
-	if not C["Chat"].LootIcons then
-		return
+function Module:UpdateLootIcons()
+	local enable = C["Chat"].LootIcons
+	if enable and not filtersInstalled then
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", AddLootIcons)
+		filtersInstalled = true
+	elseif not enable and filtersInstalled then
+		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_LOOT", AddLootIcons)
+		filtersInstalled = false
 	end
+end
 
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", AddLootIcons)
+function Module:CreateLootIcons()
+	Module:UpdateLootIcons()
 end

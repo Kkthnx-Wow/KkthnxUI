@@ -203,7 +203,7 @@ function Module:UpdateFactionLine(lineData)
 
 	local linetext = lineData.leftText
 	-- SECRET (12.0): the line text can be a secret string on restricted units;
-	-- comparing it below would error, so bail early (mirrors NDui).
+	-- comparing it below would error, so bail early .
 	if IsSecret(linetext) then
 		return
 	end
@@ -474,7 +474,7 @@ function Module:OnTooltipSetUnit()
 
 	if text then
 		-- SECRET (12.0): GetRaidTargetIndex can return a secret number; only read
-		-- it when it's safe to compare (mirrors NDui's NotSecret guard).
+		-- it when it's safe to compare .
 		local ricon = GetRaidTargetIndex(unit)
 		local riconStr = (ricon and K.NotSecret(ricon) and ricon <= 8) and (ICON_LIST[ricon] .. "18|t ") or ""
 		GameTooltipTextLeft1:SetFormattedText("%s%s%s", riconStr, hexColor, text)
@@ -660,7 +660,7 @@ function Module:ReskinTooltip()
 	local data = self.GetTooltipData and self:GetTooltipData()
 	if data then
 		-- SECRET (12.0): data.guid can be secret on restricted items and must not be
-		-- passed to C_Item.GetItemLinkByGUID. Fall back to the hyperlink (mirrors NDui).
+		-- passed to C_Item.GetItemLinkByGUID. Fall back to the hyperlink .
 		local guid = data.guid
 		local link = (guid and K.NotSecret(guid) and C_Item_GetItemLinkByGUID(guid)) or data.hyperlink
 		if link and K.NotSecret(link) then
@@ -807,8 +807,10 @@ function Module:OnEnable()
 		"CreateTooltipID",
 		"CreateMountSource",
 		"CreateVendorLocation",
+		"CreateItemReagents",
 		"CreateAchievementStatus",
 		"CreateInstanceLockCompare",
+		"SetupPawnIntegration",
 	}
 
 	for _, funcName in ipairs(loadTooltipModules) do

@@ -100,11 +100,7 @@ function Module:CreateSimpleParty()
 	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(SimplePartyframeTexture)
 
-	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
-	self.Health.Value:SetFontObject(K.UIFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, "[raidhp]")
+	Module:CreateBarValueTag(self, self.Health, "[raidhp]", { size = 11, y = -9 })
 
 	-- REASON: Health spark — shows a glow at the current HP edge; hidden at full/zero/dead/offline.
 	self.Health.Spark = Module:CreateBarSpark(self.Health)
@@ -160,110 +156,10 @@ function Module:CreateSimpleParty()
 
 	-- REASON: Heal Prediction
 	if C["SimpleParty"].ShowHealPrediction then
-		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints(self.Health)
-		local frameLevel = frame:GetFrameLevel()
-
-		local normalTexture = K.GetTexture(C["General"].Texture)
-
-		-- Position and size
-		local myBar = CreateFrame("StatusBar", nil, frame)
-		myBar:SetPoint("TOP")
-		myBar:SetPoint("BOTTOM")
-		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
-		myBar:SetStatusBarTexture(normalTexture)
-		myBar:SetStatusBarColor(0, 1, 0.5, 0.5)
-		myBar:SetFrameLevel(frameLevel)
-		myBar:Hide()
-
-		local otherBar = CreateFrame("StatusBar", nil, frame)
-		otherBar:SetPoint("TOP")
-		otherBar:SetPoint("BOTTOM")
-		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
-		otherBar:SetStatusBarTexture(normalTexture)
-		otherBar:SetStatusBarColor(0, 1, 0, 0.5)
-		otherBar:SetFrameLevel(frameLevel)
-		otherBar:Hide()
-
-		local absorbBar = CreateFrame("StatusBar", nil, frame)
-		absorbBar:SetPoint("TOP")
-		absorbBar:SetPoint("BOTTOM")
-		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
-		absorbBar:SetStatusBarTexture(normalTexture)
-		absorbBar:SetStatusBarColor(0.66, 1, 1)
-		absorbBar:SetFrameLevel(frameLevel)
-		absorbBar:SetAlpha(0.5)
-		absorbBar:Hide()
-		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
-		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
-		tex:SetHorizTile(true)
-		tex:SetVertTile(true)
-
-		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
-		overAbsorbBar:SetAllPoints()
-		overAbsorbBar:SetStatusBarTexture(normalTexture)
-		overAbsorbBar:SetStatusBarColor(0.66, 1, 1)
-		overAbsorbBar:SetFrameLevel(frameLevel)
-		overAbsorbBar:SetAlpha(0.35)
-		overAbsorbBar:Hide()
-		local tex2 = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex2:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
-		tex2:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
-		tex2:SetHorizTile(true)
-		tex2:SetVertTile(true)
-
-		local healAbsorbBar = CreateFrame("StatusBar", nil, frame)
-		healAbsorbBar:SetPoint("TOP")
-		healAbsorbBar:SetPoint("BOTTOM")
-		healAbsorbBar:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
-		healAbsorbBar:SetReverseFill(true)
-		healAbsorbBar:SetStatusBarTexture(normalTexture)
-		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
-		healAbsorbBar:SetFrameLevel(frameLevel)
-		healAbsorbBar:SetAlpha(0.35)
-		healAbsorbBar:Hide()
-		local tex3 = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-		tex3:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
-		tex3:SetTexture("Interface\\RaidFrame\\Shield-Overlay")
-		tex3:SetHorizTile(true)
-		tex3:SetVertTile(true)
-
-		local overAbsorb = self.Health:CreateTexture(nil, "OVERLAY", nil, 2)
-		overAbsorb:SetWidth(8)
-		overAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
-		overAbsorb:SetBlendMode("ADD")
-		overAbsorb:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 0)
-		overAbsorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -0)
-		overAbsorb:Hide()
-
-		local overHealAbsorb = frame:CreateTexture(nil, "OVERLAY")
-		overHealAbsorb:SetWidth(15)
-		overHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
-		overHealAbsorb:SetBlendMode("ADD")
-		overHealAbsorb:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
-		overHealAbsorb:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
-		overHealAbsorb:Hide()
-
-		self.HealthPrediction = {
-			myBar = myBar,
-			otherBar = otherBar,
-			absorbBar = absorbBar,
-			healAbsorbBar = healAbsorbBar,
-			overAbsorbBar = overAbsorbBar,
-			overAbsorb = overAbsorb,
-			overHealAbsorb = overHealAbsorb,
-			maxOverflow = 1,
-			PostUpdate = Module.PostUpdatePrediction,
-		}
-		self.predicFrame = frame
+		Module:CreateHealPrediction(self)
 	end
 
-	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 3, -15)
-	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
-	self.Name:SetFontObject(K.UIFont)
-	self.Name:SetWordWrap(false)
+	Module:CreateUnitNameString(self, { layout = "aboveFrame" })
 	self:Tag(self.Name, "[lfdrole][name]")
 
 	-- REASON: Overlay frame for borders and indicators.
@@ -411,14 +307,13 @@ function Module:CreateSimpleParty()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateSimplePartyTargetGlow, true)
 	end
 
-	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-	self.DebuffHighlight:SetAllPoints(self.Health)
-	self.DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
-	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-	self.DebuffHighlight:SetBlendMode("ADD")
+	Module:CreateDebuffHighlight(self)
 
-	self.DebuffHighlightAlpha = 0.45
-	self.DebuffHighlightFilter = true
+	-- REASON: Parity with Raid.lua — SimpleParty is otherwise a raid-frame clone and
+	-- healers expect the same at-a-glance dispel icon here that Raid frames have.
+	if C["SimpleParty"].DispelIcon then
+		Module:CreateRaidDispelIcon(self, "SimpleParty")
+	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
@@ -439,4 +334,6 @@ function Module:CreateSimpleParty()
 		MaxAlpha = 1,
 		MinAlpha = 0.3,
 	}
+
+	Module:SecureHealth(self)
 end

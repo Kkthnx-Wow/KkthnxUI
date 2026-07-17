@@ -305,7 +305,7 @@ function Module:AddQuestIcon(self)
 	self.questIcon:SetSize(18, 18)
 	self.questIcon:Hide()
 
-	self.questCount = K.CreateFontString(self, 14, "", nil, "LEFT", 0, 0)
+	self.questCount = K.CreateFontString(self, 14, "", "SHADOW", false, "LEFT", 0, 0)
 	self.questCount:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 
 	questFrames[self] = true

@@ -120,42 +120,49 @@ end
 local function KKUI_LoadCustomSettings()
 	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 	local removeGroups = {}
+	local metaKeys = K.ProfileMetaKeys
 
 	-- REASON: Delta processing keeps the database small by pruning values that match defaults.
 	for group, options in pairs(Settings) do
-		local defaults = C[group]
-		if defaults and type(options) == "table" then
-			local changeCount = 0
-			local removeOptions = {}
+		if metaKeys and metaKeys[group] then
+			-- Profile metadata (LastModified, etc.) — not part of runtime C.
+		elseif type(options) ~= "table" then
+			-- Preserve unknown scalar keys.
+		else
+			local defaults = C[group]
+			if defaults then
+				local changeCount = 0
+				local removeOptions = {}
 
-			for option, value in pairs(options) do
-				local defaultValue = defaults[option]
-				if defaultValue ~= nil then
-					if DeepEqual(defaultValue, value) then
-						removeOptions[#removeOptions + 1] = option
-					else
-						changeCount = changeCount + 1
-						-- Copy table settings so runtime config changes cannot mutate SavedVariables by reference.
-						if type(value) == "table" then
-							defaults[option] = DeepCopy(value)
+				for option, value in pairs(options) do
+					local defaultValue = defaults[option]
+					if defaultValue ~= nil then
+						if DeepEqual(defaultValue, value) then
+							removeOptions[#removeOptions + 1] = option
 						else
-							defaults[option] = value
+							changeCount = changeCount + 1
+							-- Copy table settings so runtime config changes cannot mutate SavedVariables by reference.
+							if type(value) == "table" then
+								defaults[option] = DeepCopy(value)
+							else
+								defaults[option] = value
+							end
 						end
+					else
+						removeOptions[#removeOptions + 1] = option
 					end
-				else
-					removeOptions[#removeOptions + 1] = option
 				end
-			end
 
-			for i = 1, #removeOptions do
-				options[removeOptions[i]] = nil
-			end
+				for i = 1, #removeOptions do
+					options[removeOptions[i]] = nil
+				end
 
-			if changeCount == 0 then
+				if changeCount == 0 then
+					removeGroups[#removeGroups + 1] = group
+				end
+			else
 				removeGroups[#removeGroups + 1] = group
 			end
-		else
-			removeGroups[#removeGroups + 1] = group
 		end
 	end
 
@@ -187,7 +194,7 @@ local function KKUI_VerifyDatabase()
 	charData.SplitCount = charData.SplitCount or 1
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
-	charData.QueueTimer = charData.QueueTimer or { PVEPopTime = 0 }
+	charData.QueueTimer = charData.QueueTimer or {}
 
 	-- 4) Initialize Settings Tables
 	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}

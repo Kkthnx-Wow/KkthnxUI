@@ -34,6 +34,10 @@ local ERR_FAILED_S = ERR_QUEST_FAILED_S
 local ERR_OBJECTIVE_COMPLETE_S = ERR_QUEST_OBJECTIVE_COMPLETE_S
 local QUEST_FREQUENCY_DAILY = Enum.QuestFrequency.Daily
 local QUEST_TAG_TYPE_PROFESSION = Enum.QuestTagType.Profession
+-- REASON: SendChatMessage global is a deprecated shim;
+-- C_ChatInfo.SendChatMessage is the live API. This file previously called the
+-- bare global directly with no local alias at all.
+local SendChatMessage = C_ChatInfo.SendChatMessage
 
 -- NOTE: Sound kit used for local quest completion feedback.
 local questCompleteSoundID = 6199

@@ -27,6 +27,7 @@ local C_Item_GetItemIconByID = C_Item.GetItemIconByID
 local C_Item_IsEquippedItem = C_Item.IsEquippedItem
 local C_PvP_GetZonePVPInfo = C_PvP.GetZonePVPInfo
 local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
+local C_Timer_After = C_Timer.After
 local C_UnitAuras_GetBuffDataByIndex = C_UnitAuras.GetBuffDataByIndex
 local C_UnitAuras_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local C_Spell_GetSpellCooldownDuration = C_Spell.GetSpellCooldownDuration
@@ -61,7 +62,9 @@ local combatSnapshot = {}
 local updatePending
 
 local function Reminder_IconSize()
-	return (C["Auras"].DebuffSize or 34) + 4
+	-- REASON: dedicated ReminderIconSize slider instead of
+	-- piggybacking on the unrelated Auras.DebuffSize setting.
+	return C["Auras"].ReminderIconSize or 38
 end
 
 local function Reminder_FrameStep()
@@ -76,6 +79,20 @@ local function Reminder_AnchorBorderRing(anchor, frame)
 	anchor:ClearAllPoints()
 	anchor:SetPoint("TOPLEFT", frame, "TOPLEFT", -REMINDER_BORDER_OUTSET, REMINDER_BORDER_OUTSET)
 	anchor:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", REMINDER_BORDER_OUTSET, -REMINDER_BORDER_OUTSET)
+end
+
+-- REASON: resizes an already-built icon frame (and its
+-- border/glow rings) in place, so the ReminderIconSize slider can live-resize
+-- icons that already exist instead of only affecting newly created ones.
+local function Reminder_ApplyFrameArt(frame, size)
+	size = size or iconSize
+	frame:SetSize(size, size)
+	if frame.Border then
+		Reminder_AnchorBorderRing(frame.Border, frame)
+	end
+	if frame.ReminderGlow then
+		Reminder_AnchorBorderRing(frame.ReminderGlow, frame)
+	end
 end
 
 local function Reminder_AttachPulseGlow(frame)
@@ -142,7 +159,7 @@ local function Reminder_ApplyItemCooldown(frame, itemID)
 	local durObj = C_DurationUtil_CreateDuration()
 	durObj:SetTimeFromStart(start, dur)
 	cd:SetCooldownFromDurationObject(durObj)
-	K.MaskCooldownSwipeFromDurationObject(cd, durObj)
+	K.ArmAuraCooldown(cd, durObj, true)
 end
 
 local function Reminder_ApplyDependCooldown(frame, spellID)
@@ -152,8 +169,7 @@ local function Reminder_ApplyDependCooldown(frame, spellID)
 	end
 	local durObj = C_Spell_GetSpellCooldownDuration(spellID)
 	if durObj then
-		cd:SetCooldownFromDurationObject(durObj)
-		K.MaskCooldownSwipeFromDurationObject(cd, durObj)
+		K.ArmAuraCooldown(cd, durObj)
 	else
 		cd:Clear()
 	end
@@ -275,9 +291,19 @@ local function Reminder_Update(cfg)
 	if isEligible and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") and not UnitIsDeadOrGhost("player") then
 		if weaponIndex then
 			local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo()
-			local mainActive = K.BooleanIsTrue(hasMainHandEnchant)
-			local offActive = K.BooleanIsTrue(hasOffHandEnchant)
-			if (mainActive and weaponIndex == 1) or (offActive and weaponIndex == 2) then
+			local enchant = (weaponIndex == 1) and hasMainHandEnchant or hasOffHandEnchant
+			local hasEnchant = K.BooleanIsTrue(enchant)
+			-- BUGFIX: the old two-variable version (`mainActive`/
+			-- `offActive`) only ever checked the truthy case. When the enchant status is
+			-- secret, K.BooleanIsTrue returns nil, the early-return never fired, and
+			-- execution fell through to Reminder_ShowFrame — falsely showing "Lack" for
+			-- an enchant we genuinely can't verify. Handle all three states explicitly.
+			if hasEnchant == true then
+				return
+			end
+			if hasEnchant == nil then
+				-- Secret: cannot tell if the enchant is present — avoid a false "Lack".
+				Reminder_HideFrame(frame)
 				return
 			end
 		elseif PlayerHasConfiguredBuff(cfg) then
@@ -535,6 +561,32 @@ function Module:Reminder_ApplyGlow()
 	end
 end
 
+-- REASON: resizes the anchor and every existing icon
+-- (live + sample) to the configured size, then re-lays-out whichever set is
+-- currently shown. Without this, changing ReminderIconSize only affected the
+-- anchor frame and any icons built *after* the change.
+function Module:Reminder_ApplyIconSize()
+	iconSize = Reminder_IconSize()
+	if parentFrame then
+		parentFrame:SetSize(iconSize, iconSize)
+	end
+	for _, frame in ipairs(frames) do
+		Reminder_ApplyFrameArt(frame, iconSize)
+	end
+	for i = 1, #testFrames do
+		Reminder_ApplyFrameArt(testFrames[i], iconSize)
+	end
+
+	if not parentFrame then
+		return
+	end
+	if preview then
+		Reminder_LayoutSamples()
+	else
+		Module:Reminder_UpdateAnchor()
+	end
+end
+
 local function RegisterEvents()
 	if isRegistered then
 		return
@@ -549,6 +601,10 @@ local function RegisterEvents()
 	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.Reminder_OnEvent)
 	K:RegisterEvent("WEAPON_ENCHANT_CHANGED", Module.Reminder_OnEvent)
+	-- REASON: keeps a depend-spell's cooldown swipe live
+	-- and accurate as the cooldown ticks, instead of only refreshing on the other
+	-- (mostly state-change, not time-passing) events above.
+	K:RegisterEvent("SPELL_UPDATE_COOLDOWN", Module.Reminder_OnEvent)
 end
 
 local function UnregisterEvents()
@@ -565,6 +621,7 @@ local function UnregisterEvents()
 	K:UnregisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
 	K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.Reminder_OnEvent)
 	K:UnregisterEvent("WEAPON_ENCHANT_CHANGED", Module.Reminder_OnEvent)
+	K:UnregisterEvent("SPELL_UPDATE_COOLDOWN", Module.Reminder_OnEvent)
 end
 
 function Module:CreateReminder()
@@ -604,3 +661,6 @@ end
 
 K:RegisterSettingCallback("Auras.Reminder", OnReminderSettingChanged)
 K:RegisterSettingCallback("Auras.ReminderGlow", OnReminderSettingChanged)
+K:RegisterSettingCallback("Auras.ReminderIconSize", function()
+	Module:Reminder_ApplyIconSize()
+end)

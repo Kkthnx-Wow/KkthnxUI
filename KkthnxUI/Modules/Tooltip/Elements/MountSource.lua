@@ -60,7 +60,8 @@ local function AddLine(self, source, isCollectedText, type, noadd)
 		local line = _G[self:GetName() .. "TextLeft" .. i]
 		if line then
 			local text = line:GetText()
-			if text == type then
+			-- SECRET: tooltip line text can be opaque — never == / find without NotSecret.
+			if text and K.NotSecret(text) and text == type then
 				return
 			end
 		end

@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-KkthnxUI"
-local MINOR_VERSION = 147
+local MINOR_VERSION = 151
 
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -48,8 +48,6 @@ local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
-local WoWMists = (WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC)
-local Midnight = (select(4, GetBuildInfo())) >= 120000
 
 local UseVanillaOverlayGlow = false -- WoWRetail and ActionButtonSpellAlertManager
 local DisableOverlayGlow = WoWClassic or WoWBCC or WoWWrath
@@ -230,7 +228,7 @@ function lib:CreateButton(id, name, header, config)
 
 	local button = setmetatable(CreateFrame("CheckButton", name, header, "ActionButtonTemplate, SecureActionButtonTemplate"), Generic_MT)
 	button:RegisterForDrag("LeftButton", "RightButton")
-	if WoWRetail or WoWBCC or WoWMists then
+	if not WoWClassic then
 		button:RegisterForClicks("AnyDown", "AnyUp")
 	else
 		button:RegisterForClicks("AnyUp")
@@ -242,6 +240,10 @@ function lib:CreateButton(id, name, header, config)
 	button:SetScript("PreClick", Generic.PreClick)
 	button:SetScript("PostClick", Generic.PostClick)
 	button:SetScript("OnEvent", Generic.OnButtonEvent)
+	button:SetScript("OnAttributeChanged", nil) -- inherited templates bring in a handler here which we don't want, so get rid of it
+
+	-- unwanted mixin functions, which we override through the metatable
+	button.HasAction = nil
 
 	button.id = id
 	button.header = header
@@ -582,6 +584,9 @@ end
 
 function Generic:OnButtonEvent(event, ...)
 	if event == "GLOBAL_MOUSE_UP" then
+		if self:GetButtonState() == "PUSHED" then
+			self:SetButtonState("NORMAL")
+		end
 		self:UnregisterEvent(event)
 
 		UpdateFlyout(self)
@@ -1291,7 +1296,7 @@ function Generic:UpdateConfig(config)
 	UpdateHotkeys(self)
 	UpdateGrid(self)
 	self:UpdateAction(true)
-	if not (WoWRetail or WoWBCC or WoWMists) then
+	if WoWClassic then
 		self:RegisterForClicks(self.config.clickOnDown and "AnyDown" or "AnyUp")
 	end
 end
@@ -1351,7 +1356,7 @@ function InitializeEventHandler()
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_ICON")
 	if not WoWClassic and not WoWBCC then
 		if not WoWWrath then
-			lib.eventFrame.showGlow = true -- NDui
+			lib.eventFrame.showGlow = true -- KkthnxUI
 			lib.eventFrame:RegisterEvent("ARCHAEOLOGY_CLOSED")
 			lib.eventFrame:RegisterEvent("UPDATE_SUMMONPETS_ACTION")
 			lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
@@ -1362,7 +1367,7 @@ function InitializeEventHandler()
 		lib.eventFrame:RegisterEvent("COMPANION_UPDATE")
 	end
 
-	if Midnight or WoWBCC or WoWMists then
+	if not WoWClassic then
 		lib.eventFrame:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE")
 	else
 		lib.eventFrame:RegisterEvent("LEARNED_SPELL_IN_TAB")
@@ -1903,7 +1908,7 @@ function Update(self)
 		self.icon:SetTexture(texture)
 		self.icon:Show()
 		self.rangeTimer = -1
-		if WoWRetail then
+		if not WoWClassic then
 			if not self.MasqueSkinned then
 				self.SlotBackground:Hide()
 				if self.config.hideElements.border then
@@ -1946,7 +1951,7 @@ function Update(self)
 		else
 			self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
 		end
-		if WoWRetail then
+		if not WoWClassic then
 			if not self.MasqueSkinned then
 				self.SlotBackground:Show()
 				if self.config.hideElements.borderIfEmpty then
@@ -2447,7 +2452,7 @@ function UpdateAssistedCombatRotationFrame(self)
 	-- create frame if needed
 	if show and not assistedCombatRotationFrame then
 		assistedCombatRotationFrame = CreateFrame("Frame", nil, self, "ActionBarButtonAssistedCombatRotationTemplate")
-		assistedCombatRotationFrame.UpdateGlow = function() end -- NDui mod: remove glow texture
+		assistedCombatRotationFrame.UpdateGlow = function() end -- KkthnxUI mod: remove glow texture
 		self.AssistedCombatRotationFrame = assistedCombatRotationFrame
 	end
 
@@ -2749,7 +2754,7 @@ end
 local GetActionCount = GetActionCount
 
 -- the remaining uses of GetActionCount can't deal with secrets, so disable on Midnight
-if Midnight then
+if WoWRetail then
 	GetActionCount = function()
 		return 0
 	end

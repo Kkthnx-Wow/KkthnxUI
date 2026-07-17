@@ -107,7 +107,6 @@ function Module:OnEnable()
 
 		"ReskinBartender4",
 		"ReskinNekometer",
-		-- "ReskinBigWigs",
 		"ReskinButtonForge",
 		"ReskinChocolateBar",
 		"ReskinDeadlyBossMods",

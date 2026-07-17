@@ -28,7 +28,6 @@ local function SetupInstance(instance)
 	end
 
 	-- reset texture if using Details default texture
-	-- print(instance.row_info.texture)
 	local needReset = instance.row_info.texture == "You Are the Best!"
 	instance:ChangeSkin("Minimalistic")
 	instance:InstanceWallpaper(false)
@@ -78,15 +77,15 @@ function Module:ResetDetailsAnchor(force)
 		return
 	end
 
-	local height = 126
+	local height = 105
 	local instance1 = Details:GetInstance(1)
 	local instance2 = Details:GetInstance(2)
 	if instance1 and (force or IsDefaultAnchor(instance1)) then
 		if instance2 then
-			height = 112
-			EmbedWindow(instance2, -6, 140, 260, height)
+			height = 105
+			EmbedWindow(instance2, -6, 140, 280, height)
 		end
-		EmbedWindow(instance1, -500, 4, 260, height)
+		EmbedWindow(instance1, -500, 4, 280, height)
 	end
 
 	return instance1

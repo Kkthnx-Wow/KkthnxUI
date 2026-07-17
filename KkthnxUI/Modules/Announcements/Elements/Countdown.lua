@@ -17,7 +17,9 @@ local Module = K:GetModule("Announcements")
 
 -- PERF: Cache frequently used globals for chat announcement performance.
 local UnitName = UnitName
-local SendChatMessage = SendChatMessage
+-- REASON: SendChatMessage global is a deprecated shim;
+-- C_ChatInfo.SendChatMessage is the live API.
+local SendChatMessage = C_ChatInfo.SendChatMessage
 local IsInGroup = IsInGroup
 local IsInRaid = IsInRaid
 local UnitAffectingCombat = UnitAffectingCombat
@@ -63,13 +65,17 @@ function Module:CreatePullCountdown()
 			return
 		end
 
-		local target = UnitName("target") or ""
-		delay = tonumber(timer) or 3
+	local target = UnitName("target")
+	-- SECRET (12.0): never concatenate a secret name into chat.
+	if not target or K.IsSecret(target) then
+		target = ""
+	end
+	delay = tonumber(timer) or 3
 
-		-- REASON: Send the initial "Pulling in X seconds" message immediately, then tick
-		-- every 1.5s. C_Timer.NewTicker replaces the old OnUpdate elapsed accumulator,
-		-- which ran every frame (~60 calls/sec) just to track 1.5-second intervals.
-		SendChatMessage((L["Pulling In"]):format(target, delay), K.CheckChat())
+	-- REASON: Send the initial "Pulling in X seconds" message immediately, then tick
+	-- every 1.5s. C_Timer.NewTicker replaces the old OnUpdate elapsed accumulator,
+	-- which ran every frame (~60 calls/sec) just to track 1.5-second intervals.
+	SendChatMessage((L["Pulling In"]):format(target, delay), K.CheckChat())
 
 		ticker = C_Timer_NewTicker(1.5, function()
 			if delay > 0 then

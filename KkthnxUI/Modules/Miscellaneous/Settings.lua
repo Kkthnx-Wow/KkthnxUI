@@ -17,16 +17,23 @@ local REFRESH_BY_KEY = {
 	QuickJoin = "CreateQuickJoin",
 	MDGuildBest = "CreateGuildBest",
 	QueueTimers = "CreateQueueTimers",
-	QueueTimerAudio = "CreateQueueTimers",
-	QueueTimerWarning = "CreateQueueTimers",
-	QueueTimerHideOtherTimers = "CreateQueueTimers",
+	-- Audio / warning / hide-bars read C live inside QueueTimer; enable owns lifecycle.
 	RaidTool = "UpdateRaidTool",
 	EasyMarking = "UpdateEasyMarking",
 	EasyMarkKey = "UpdateEasyMarking",
 	ItemLevel = "createImprovedSlotItemLevelDisplay",
+	GemEnchantInfo = "RefreshGearItemLevelOverlays",
+	MissingEnchant = "RefreshGearItemLevelOverlays",
 	TradeTabs = "createImprovedTradeTabs",
 	AFKCamera = "CreateAFKCam",
 	ImprovedStats = "createImprovedStatFrames",
+	PopupQoL = "UpdatePopupQoL",
+	PopupClickThroughToasts = "UpdatePopupQoL",
+	PopupAutoConfirmLoot = "UpdatePopupQoL",
+	PopupAutoConfirmTradeableEquip = "UpdatePopupQoL",
+	PopupAutoConfirmTradeableSell = "UpdatePopupQoL",
+	PopupEnterAcceptPurchase = "UpdatePopupQoL",
+	PopupAltStackBuy = "UpdatePopupQoL",
 }
 
 local function OnMiscSetting(configPath)
@@ -37,6 +44,11 @@ local function OnMiscSetting(configPath)
 
 	if key == "YClassColors" then
 		Module:UpdateYClassColors()
+	elseif key == "ColorPicker" then
+		local blizzard = K:GetModule("Blizzard")
+		if blizzard.UpdateColorPicker then
+			blizzard:UpdateColorPicker()
+		end
 	elseif key == "MaxCameraZoom" then
 		Module:UpdateMaxCameraZoom()
 	elseif key == "NoTalkingHead" then

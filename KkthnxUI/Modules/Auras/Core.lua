@@ -261,24 +261,13 @@ end
 
 local function StyleNativeCooldownText(button)
 	local cooldown = button.Cooldown
-	if not cooldown then
+	if not (cooldown and button.timer) then
 		return
 	end
 
-	if not cooldown.Text then
-		cooldown.Text = cooldown:GetRegions()
-	end
-
-	local text = cooldown.Text
-	if text then
-		local font, _, flags = button.timer:GetFont()
-		text:ClearAllPoints()
-		text:SetPoint("TOP", cooldown, "BOTTOM", 1, 5)
-		text:SetFontObject(K.UIFontOutline)
-		text:SetFont(font, select(2, button.timer:GetFont()), flags)
-		--text:SetTextColor(K.r, K.g, K.b)
-		text:SetShadowColor(0, 0, 0, 0)
-	end
+	local fontSize = select(2, button.timer:GetFont()) or 12
+	-- Personal buffs/debuffs: timer sits under the icon (same as button.timer).
+	K.StyleAuraCooldownCountdown(cooldown, fontSize, button, "TOP", 1, 5, "BOTTOM")
 end
 
 function Module:GetSpellStat(arg16, arg17, arg18)
@@ -298,22 +287,28 @@ function Module:UpdateAuras(button, index)
 	local auraDuration = GetNativeAuraDuration(unit, auraInstanceID)
 
 	if auraDuration and button.Cooldown then
-		button.Cooldown:SetCooldownFromDurationObject(auraDuration)
-		button.Cooldown:Show()
+		K.ArmAuraCooldown(button.Cooldown, auraDuration)
+		button.Cooldown:SetHideCountdownNumbers(false)
+		StyleNativeCooldownText(button)
 		button.timeLeft = nil
 		button.timer:SetText("")
+		button.timer:Hide()
 		button:SetScript("OnUpdate", nil)
 	elseif not IsSecret(duration) and not IsSecret(expirationTime) and duration and expirationTime and duration > 0 then
 		if button.Cooldown then
 			button.Cooldown:Clear()
+			button.Cooldown:SetHideCountdownNumbers(true)
 		end
+		button.timer:Show()
 		Module:StartAuraTimer(button, expirationTime - GetTime())
 	else
 		if button.Cooldown then
 			button.Cooldown:Clear()
+			button.Cooldown:SetHideCountdownNumbers(true)
 		end
 		button.timeLeft = nil
 		button.timer:SetText("")
+		button.timer:Hide()
 		button:SetScript("OnUpdate", nil)
 	end
 
@@ -438,12 +433,10 @@ function Module:UpdateHeader(header)
 		end
 
 		child.count:SetFontObject(K.UIFontOutline)
-		local countFont, _, countFlags = child.count:GetFont()
-		child.count:SetFont(countFont, fontSize, countFlags)
+		K.SetFont(child.count, select(1, child.count:GetFont()), fontSize, "OUTLINE")
 
 		child.timer:SetFontObject(K.UIFontOutline)
-		local timerFont, _, timerFlags = child.timer:GetFont()
-		child.timer:SetFont(timerFont, fontSize, timerFlags)
+		K.SetFont(child.timer, select(1, child.timer:GetFont()), fontSize, "OUTLINE")
 		StyleNativeCooldownText(child)
 
 		-- WARNING: Blizzard bug fix: icons aren't being hidden when reducing the maximum number of buttons.
@@ -573,12 +566,12 @@ function Module:CreateAuraIcon(button)
 	button.count = button:CreateFontString(nil, "OVERLAY")
 	button.count:SetPoint("TOPRIGHT", -1, -3)
 	button.count:SetFontObject(K.UIFontOutline)
-	button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
+	K.SetFont(button.count, select(1, button.count:GetFont()), fontSize, "OUTLINE")
 
 	button.timer = button:CreateFontString(nil, "OVERLAY")
 	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 5)
 	button.timer:SetFontObject(K.UIFontOutline)
-	button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
+	K.SetFont(button.timer, select(1, button.timer:GetFont()), fontSize, "OUTLINE")
 
 	button.Cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
 	button.Cooldown:SetAllPoints(button.icon)

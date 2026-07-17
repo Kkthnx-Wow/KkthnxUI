@@ -31,9 +31,28 @@ local UnitClass = _G.UnitClass
 local UnitGUID = _G.UnitGUID
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
 local UnitIsVisible = _G.UnitIsVisible
 local UnitOnTaxi = _G.UnitOnTaxi
+
+local NotSecret = K.NotSecret
+local issecretvalue = rawget(_G, "issecretvalue")
+
+-- SECRET (12.0): UnitGUID can flip opaque on mouseover mid-inspect. Never return a secret
+-- for cache keys / == compares. Explicit early-out (not `NotSecret(g) and g`) so a bad
+-- NotSecret cannot leak a secret into `==`. Guard GUID/text before compare.
+local function checkUnitGUID(unit)
+	if not unit then
+		return nil
+	end
+	local guid = UnitGUID(unit)
+	if not guid then
+		return nil
+	end
+	if issecretvalue and issecretvalue(guid) then
+		return nil
+	end
+	return guid
+end
 
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetInventoryItemLink = _G.GetInventoryItemLink
@@ -51,6 +70,14 @@ local isPending = LFG_LIST_LOADING
 local resetTime, frequency = 900, 0.5
 local cache, weapon, currentUNIT, currentGUID = {}, {}
 
+-- True only when live unit GUID is plain and matches currentGUID (also must be plain).
+local function matchesCurrentGUID(unit)
+	if not (unit and currentGUID and NotSecret(currentGUID)) then
+		return false
+	end
+	local liveGUID = checkUnitGUID(unit)
+	return liveGUID ~= nil and liveGUID == currentGUID
+end
 local Tooltip_TierSets = {
 	-- WARRIOR
 	[237608] = true,
@@ -141,6 +168,8 @@ local formatSets = {
 }
 
 -- REASON: Throttles inspect requests to prevent server spam and Blizzard API limits.
+-- Incident (SpecLevel, Jul 2026): OnUpdate compared UnitGUID(mouseover) == currentGUID while
+-- live GUID had gone secret — "attempt to compare a secret string value". Bail if either side opaque.
 function Module:InspectOnUpdate(elapsed)
 	self.elapsed = (self.elapsed or frequency) + elapsed
 	if self.elapsed > frequency then
@@ -156,7 +185,10 @@ function Module:InspectOnUpdate(elapsed)
 		self:Hide()
 		ClearInspectPlayer()
 
-		if currentUNIT and UnitGUID(currentUNIT) == currentGUID then
+		if not (currentUNIT and currentGUID and NotSecret(currentGUID)) then
+			return
+		end
+		if matchesCurrentGUID(currentUNIT) then
 			K:RegisterEvent("INSPECT_READY", Module.GetInspectInfo)
 			NotifyInspect(currentUNIT)
 		end
@@ -179,7 +211,7 @@ end
 
 local function setInspectInventoryWatch(unit)
 	clearInspectInventoryWatch()
-	if unit and not UnitIsUnit(unit, "player") then
+	if unit and not K.UnitIsUnit(unit, "player") then
 		K:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo, unit)
 		inspectInventoryUnit = unit
 	end
@@ -193,13 +225,14 @@ function Module.GetInspectInfo(event, ...)
 			lastTime = thisTime
 
 			local unit = ...
-			if UnitGUID(unit) == currentGUID then
+			if matchesCurrentGUID(unit) then
 				Module:InspectUnit(unit, true)
 			end
 		end
 	elseif event == "INSPECT_READY" then
 		local guid = ...
-		if guid == currentGUID then
+		-- SECRET: inspect GUID payload can be secret on restricted maps — skip compare when opaque.
+		if NotSecret(guid) and currentGUID and NotSecret(currentGUID) and guid == currentGUID and cache[guid] then
 			local level = Module:GetUnitItemLevel(currentUNIT)
 			cache[guid].level = level
 			cache[guid].getTime = GetTime()
@@ -216,21 +249,25 @@ function Module.GetInspectInfo(event, ...)
 end
 
 -- REASON: Injects or updates the item level line in the GameTooltip.
+-- Incident (SpecLevel, Jul 2026): GameTooltip line GetText() can be a secret string
+-- under chat/identity lockdown. string.find / tostring on it taints-crashes.
+-- NotSecret(text) before strfind.
 function Module:SetupItemLevel(level)
 	local _, unit = GameTooltip:GetUnit()
-	if not unit or UnitGUID(unit) ~= currentGUID then
+	if not matchesCurrentGUID(unit) then
 		return
 	end
 
 	local levelLineFound = false
 	for i = 2, GameTooltip:NumLines() do
 		local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
-		local text = line:GetText()
-
-		if text and string_find(text, levelPrefix) then
-			levelLineFound = true
-			line:SetText(levelPrefix .. (level or isPending))
-			break
+		if line then
+			local text = line:GetText()
+			if text and NotSecret(text) and string_find(text, levelPrefix) then
+				levelLineFound = true
+				line:SetText(levelPrefix .. (level or isPending))
+				break
+			end
 		end
 	end
 
@@ -240,7 +277,7 @@ function Module:SetupItemLevel(level)
 end
 
 function Module:GetUnitItemLevel(unit)
-	if not unit or UnitGUID(unit) ~= currentGUID then
+	if not matchesCurrentGUID(unit) then
 		return
 	end
 
@@ -360,12 +397,12 @@ end
 function Module:InspectUnit(unit, forced)
 	local level
 
-	if UnitIsUnit(unit, "player") then
+	if K.UnitIsUnit(unit, "player") then
 		clearInspectInventoryWatch()
 		level = self:GetUnitItemLevel("player")
 		self:SetupItemLevel(level)
 	else
-		if not unit or UnitGUID(unit) ~= currentGUID then
+		if not matchesCurrentGUID(unit) then
 			clearInspectInventoryWatch()
 			return
 		end
@@ -374,13 +411,16 @@ function Module:InspectUnit(unit, forced)
 		end
 
 		local currentDB = cache[currentGUID]
+		if not currentDB then
+			return
+		end
 		level = currentDB.level
 		self:SetupItemLevel(level)
 
 		if not C["Tooltip"].SpecLevelByShift and IsShiftKeyDown() then
 			forced = true
 		end
-		if level and not forced and (GetTime() - currentDB.getTime < resetTime) then
+		if level and not forced and (GetTime() - (currentDB.getTime or 0) < resetTime) then
 			updater.elapsed = frequency
 			return
 		end
@@ -406,7 +446,11 @@ function Module:InspectUnitItemLevel(unit)
 	if not unit or not CanInspect(unit) then
 		return
 	end
-	currentUNIT, currentGUID = unit, UnitGUID(unit)
+	currentUNIT = unit
+	currentGUID = checkUnitGUID(unit)
+	if not currentGUID then
+		return
+	end
 	if not cache[currentGUID] then
 		cache[currentGUID] = {}
 	end

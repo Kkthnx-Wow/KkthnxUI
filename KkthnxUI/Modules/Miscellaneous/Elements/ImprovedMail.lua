@@ -397,7 +397,16 @@ local function applyOpenAllMailFix()
 		while self.mailIndex <= maxIndex do
 			local _, _, _, _, money, codAmount, _, hasItem, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex)
 			local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex))
-			local isBlacklisted = self:IsItemBlacklisted(itemID)
+			-- BUGFIX (user-reported crash: "attempt to call a nil value" at this line):
+			-- self:IsItemBlacklisted assumed Blizzard's OpenAllMail/OpenAllMailMixin still
+			-- exposes this method (mirroring the original Blizzard AdvanceToNextItem this
+			-- function replaces). Confirmed OpenAllMailMixin still exists in
+			-- Resources/Mixins.lua, but that reference only lists mixin names, not their
+			-- methods, so IsItemBlacklisted's continued existence can't be verified from
+			-- available resources. Guard it instead of guessing either way: use it when
+			-- present (preserves the original skip-blacklisted-items behavior), fall back
+			-- to "not blacklisted" when absent (skips that optimization, doesn't crash).
+			local isBlacklisted = (self.IsItemBlacklisted and self:IsItemBlacklisted(itemID)) or false
 			local hasCOD = codAmount and codAmount > 0
 
 			if not isGM and not hasCOD then

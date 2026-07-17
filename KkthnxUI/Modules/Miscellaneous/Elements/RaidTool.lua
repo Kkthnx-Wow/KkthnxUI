@@ -21,6 +21,8 @@ local string_format = _G.string.format
 local string_split = _G.string.split
 local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
+local tostring = _G.tostring
 
 local _G = _G
 local C_AddOns_IsAddOnLoaded = _G.C_AddOns.IsAddOnLoaded
@@ -533,9 +535,11 @@ function Module:createCountdownButton(parentFrame)
 			end
 		else
 			if IsInGroup() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
+				-- Misc.DBMCount is a string from ExtraGUI; coerce so bad profiles don't break the slash.
+				local pullSeconds = tonumber(C["Misc"].DBMCount) or 10
 				if C_AddOns_IsAddOnLoaded("DBM-Core") then
 					if isCountdownReset then
-						_G.SlashCmdList["DEADLYBOSSMODS"]("pull " .. "5")
+						_G.SlashCmdList["DEADLYBOSSMODS"]("pull " .. pullSeconds)
 					else
 						_G.SlashCmdList["DEADLYBOSSMODS"]("pull 0")
 					end
@@ -545,7 +549,7 @@ function Module:createCountdownButton(parentFrame)
 						C_AddOns_LoadAddOn("BigWigs_Plugins")
 					end
 					if isCountdownReset then
-						_G.SlashCmdList["BIGWIGSPULL"]("5")
+						_G.SlashCmdList["BIGWIGSPULL"](tostring(pullSeconds))
 					else
 						_G.SlashCmdList["BIGWIGSPULL"]("0")
 					end

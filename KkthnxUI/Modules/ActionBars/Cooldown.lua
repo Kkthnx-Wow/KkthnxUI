@@ -3,7 +3,7 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Style Blizzard's native cooldown countdown numbers on action buttons.
--- - Design: ElvUI-style — engine renders text (secret-safe in Midnight); we only
+-- - Design: Engine renders cooldown text (secret-safe in Midnight); we only
 --   set font, color, scale, and thresholds. No Lua arithmetic on cooldown values.
 -----------------------------------------------------------------------------]]
 
@@ -129,7 +129,7 @@ function Module:StyleCooldown()
 		cooldown:SetHideCountdownNumbers(false)
 	end
 
-	-- NOTE: MmssTH repurposed as abbrev threshold (TenthTH is no longer used).
+	-- NOTE: MmssTH is the abbrev threshold for native countdown text.
 	if cooldown.SetCountdownAbbrevThreshold then
 		cooldown:SetCountdownAbbrevThreshold(C["ActionBar"]["MmssTH"])
 	end
@@ -197,6 +197,192 @@ end
 
 local originalCountdownCVar
 
+-- ---------------------------------------------------------------------------
+-- COOLDOWN DESATURATION (DurationObject curves)
+-- ---------------------------------------------------------------------------
+
+local desatCurveAny, desatCurveReal
+local cooldownStateFrame
+
+local function EnsureDesatCurves()
+	if desatCurveAny or not (C_CurveUtil and C_CurveUtil.CreateCurve and Enum and Enum.LuaCurveType) then
+		return
+	end
+	desatCurveAny = C_CurveUtil.CreateCurve()
+	desatCurveAny:SetType(Enum.LuaCurveType.Step)
+	desatCurveAny:AddPoint(0, 0)
+	desatCurveAny:AddPoint(0.001, 1)
+	desatCurveReal = C_CurveUtil.CreateCurve()
+	desatCurveReal:SetType(Enum.LuaCurveType.Step)
+	desatCurveReal:AddPoint(0, 0)
+	desatCurveReal:AddPoint(1.6, 1)
+end
+
+function Module:UpdateButtonCooldownDesat(button, cdInfo, durObj, action)
+	if not C["ActionBar"].DesaturateOnCooldown then
+		if button and button.icon then
+			button.icon:SetDesaturation(0)
+		end
+		return
+	end
+
+	local icon = button and button.icon
+	if not icon or not action or not HasAction(action) then
+		return
+	end
+
+	EnsureDesatCurves()
+	if not desatCurveAny then
+		return
+	end
+
+	local val = 0
+	if cdInfo and cdInfo.isActive and durObj and durObj.EvaluateRemainingDuration then
+		local chargeInfo = C_ActionBar and C_ActionBar.GetActionCharges and C_ActionBar.GetActionCharges(action)
+		local useRealCurve = chargeInfo and chargeInfo.maxCharges and chargeInfo.maxCharges > 1
+		if not useRealCurve and GetActionInfo(action) == "item" then
+			useRealCurve = true
+		end
+		if useRealCurve then
+			if desatCurveReal then
+				val = durObj:EvaluateRemainingDuration(desatCurveReal, 0)
+			end
+		elseif not cdInfo.isOnGCD then
+			val = durObj:EvaluateRemainingDuration(desatCurveAny, 0)
+		end
+	end
+	icon:SetDesaturation(val or 0)
+end
+
+function Module:UpdateButtonCooldownAlpha(button, cdInfo, durObj, action)
+	local cdAlpha = C["ActionBar"].CooldownAlpha or 100
+	local icon = button and button.icon
+	if not icon then
+		return
+	end
+
+	if cdAlpha >= 100 then
+		icon:SetAlpha(1)
+		return
+	end
+
+	if not action or not HasAction(action) then
+		icon:SetAlpha(1)
+		return
+	end
+
+	local alphaOn = cdAlpha / 100
+	if icon.SetAlphaFromBoolean and cdInfo and cdInfo.isActive and durObj and durObj.IsZero then
+		local chargeInfo = C_ActionBar and C_ActionBar.GetActionCharges and C_ActionBar.GetActionCharges(action)
+		local useRealCurve = chargeInfo and chargeInfo.maxCharges and chargeInfo.maxCharges > 1
+		if not useRealCurve and GetActionInfo(action) == "item" then
+			useRealCurve = true
+		end
+		local realCd = useRealCurve or (not cdInfo.isOnGCD)
+		if realCd then
+			icon:SetAlphaFromBoolean(durObj:IsZero(), 1, alphaOn)
+		else
+			icon:SetAlpha(1)
+		end
+	else
+		icon:SetAlpha(1)
+	end
+end
+
+local function RefreshActionButtonCooldownState(button)
+	if not button or not button.icon then
+		return
+	end
+	local action = button.GetAttribute and button:GetAttribute("action")
+	if not action or not HasAction(action) then
+		button.icon:SetDesaturation(0)
+		button.icon:SetAlpha(1)
+		return
+	end
+	if not (C_ActionBar and C_ActionBar.GetActionCooldown and C_ActionBar.GetActionCooldownDuration) then
+		return
+	end
+	local cdInfo = C_ActionBar.GetActionCooldown(action)
+	local durObj
+	if cdInfo and cdInfo.isActive then
+		durObj = C_ActionBar.GetActionCooldownDuration(action)
+	end
+	Module:UpdateButtonCooldownDesat(button, cdInfo, durObj, action)
+	Module:UpdateButtonCooldownAlpha(button, cdInfo, durObj, action)
+end
+
+function Module:OnActionBarUpdateCooldown()
+	local desatOn = C["ActionBar"].DesaturateOnCooldown
+	local alphaOn = (C["ActionBar"].CooldownAlpha or 100) < 100
+	if not desatOn and not alphaOn then
+		return
+	end
+
+	local actionBar = K:GetModule("ActionBar")
+	if actionBar and actionBar.buttons then
+		for i = 1, #actionBar.buttons do
+			RefreshActionButtonCooldownState(actionBar.buttons[i])
+		end
+	end
+
+	if NUM_PET_ACTION_SLOTS then
+		for i = 1, NUM_PET_ACTION_SLOTS do
+			RefreshActionButtonCooldownState(_G["PetActionButton" .. i])
+		end
+	end
+
+	for i = 1, 10 do
+		RefreshActionButtonCooldownState(_G["StanceButton" .. i])
+	end
+end
+
+function Module:InstallCooldownStateHooks()
+	if not cooldownStateFrame then
+		cooldownStateFrame = CreateFrame("Frame")
+		cooldownStateFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
+		cooldownStateFrame:SetScript("OnEvent", function()
+			Module:OnActionBarUpdateCooldown()
+		end)
+	end
+
+	if self._visualHooksInstalled then
+		return
+	end
+
+	local template = _G.ActionButton1Cooldown
+	if not template then
+		return
+	end
+
+	self._visualHooksInstalled = true
+	local cooldownIndex = getmetatable(template).__index
+	if cooldownIndex.SetCooldownFromDurationObject then
+		hooksecurefunc(cooldownIndex, "SetCooldownFromDurationObject", Module.OnActionCooldownSet)
+	end
+end
+
+function Module:ApplyCooldownDesatSetting()
+	local desatOn = C["ActionBar"].DesaturateOnCooldown
+	local alphaOn = (C["ActionBar"].CooldownAlpha or 100) < 100
+	Module:InstallCooldownStateHooks()
+	if desatOn or alphaOn then
+		EnsureDesatCurves()
+		Module:OnActionBarUpdateCooldown()
+	else
+		local actionBar = K:GetModule("ActionBar")
+		if actionBar and actionBar.buttons then
+			for i = 1, #actionBar.buttons do
+				local button = actionBar.buttons[i]
+				local icon = button and button.icon
+				if icon then
+					icon:SetDesaturation(0)
+					icon:SetAlpha(1)
+				end
+			end
+		end
+	end
+end
+
 function Module:InstallCooldownHooks()
 	if self._hooksInstalled then
 		return
@@ -225,6 +411,30 @@ function Module:InstallCooldownHooks()
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
 end
 
+function Module:OnActionCooldownSet()
+	local cooldown = self
+	if not Module:IsActionCooldown(cooldown) then
+		return
+	end
+	local desatOn = C["ActionBar"].DesaturateOnCooldown
+	local alphaOn = (C["ActionBar"].CooldownAlpha or 100) < 100
+	if not desatOn and not alphaOn then
+		return
+	end
+	local parent = cooldown:GetParent()
+	if not parent or not parent.icon then
+		return
+	end
+	local action = parent.GetAttribute and parent:GetAttribute("action")
+	if not action or not (C_ActionBar and C_ActionBar.GetActionCooldown) then
+		return
+	end
+	local cdInfo = C_ActionBar.GetActionCooldown(action)
+	local durObj = cdInfo and cdInfo.isActive and C_ActionBar.GetActionCooldownDuration and C_ActionBar.GetActionCooldownDuration(action)
+	Module:UpdateButtonCooldownDesat(parent, cdInfo, durObj, action)
+	Module:UpdateButtonCooldownAlpha(parent, cdInfo, durObj, action)
+end
+
 function Module:ApplyCooldownSettings()
 	local enabled = C["ActionBar"]["Cooldown"]
 
@@ -246,5 +456,7 @@ end
 -- ---------------------------------------------------------------------------
 
 function Module:OnEnable()
+	Module:InstallCooldownStateHooks()
 	Module:ApplyCooldownSettings()
+	Module:ApplyCooldownDesatSetting()
 end
