@@ -112,43 +112,6 @@ local created
 local ignoreQuestNPC = {}
 
 -- ---------------------------------------------------------------------------
--- Minimap / WorldMap Integration
--- ---------------------------------------------------------------------------
-local function setupCheckButton()
-	-- REASON: Adds a toggle button to the World Map for easy access to AutoQuest settings.
-	if created then
-		return
-	end
-
-	local worldMapFrame = _G.WorldMapFrame
-	if not worldMapFrame then
-		return
-	end
-
-	local mono = CreateFrame("CheckButton", nil, worldMapFrame.BorderFrame.TitleContainer, "OptionsBaseCheckButtonTemplate")
-	mono:SetHitRectInsets(-5, -5, -5, -5)
-	mono:SetPoint("TOPRIGHT", -140, 0)
-	mono:SetSize(24, 24)
-	mono:SetFrameLevel(999)
-	mono.text = K.CreateFontString(mono, 12, "Auto Quest", "", "system", "LEFT", 24, 0)
-	mono:SetChecked(K.GetCharVars() and K.GetCharVars().AutoQuest)
-	mono:SetScript("OnClick", function(self)
-		local charVars = K.GetCharVars()
-		if not charVars then
-			return
-		end
-		charVars.AutoQuest = self:GetChecked()
-		SetEventsActive(self:GetChecked())
-	end)
-	K.AddTooltip(mono, "ANCHOR_BOTTOMLEFT", "Automatically interact with quests.|n|nSingle-option gossip will be selected automatically.|n|nHold SHIFT to temporarily pause automation.|n|nTo block an NPC from auto-interaction, hold ALT and click their name in the Gossip or Quest frame.", "info", true)
-
-	created = true
-end
-if _G.WorldMapFrame then
-	_G.WorldMapFrame:HookScript("OnShow", setupCheckButton)
-end
-
--- ---------------------------------------------------------------------------
 -- Core Automation Engine (feature-scoped events)
 -- ---------------------------------------------------------------------------
 local handlers = {}
@@ -189,6 +152,44 @@ local function SetEventsActive(state)
 			K:UnregisterEvent("PLAYER_REGEN_ENABLED", regenRetryCallback)
 		end
 	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Minimap / WorldMap Integration
+-- ---------------------------------------------------------------------------
+-- After SetEventsActive: Lua 5.1 locals aren't visible above their definition.
+local function setupCheckButton()
+	-- REASON: Adds a toggle button to the World Map for easy access to AutoQuest settings.
+	if created then
+		return
+	end
+
+	local worldMapFrame = _G.WorldMapFrame
+	if not worldMapFrame then
+		return
+	end
+
+	local mono = CreateFrame("CheckButton", nil, worldMapFrame.BorderFrame.TitleContainer, "OptionsBaseCheckButtonTemplate")
+	mono:SetHitRectInsets(-5, -5, -5, -5)
+	mono:SetPoint("TOPRIGHT", -140, 0)
+	mono:SetSize(24, 24)
+	mono:SetFrameLevel(999)
+	mono.text = K.CreateFontString(mono, 12, "Auto Quest", "", "system", "LEFT", 24, 0)
+	mono:SetChecked(K.GetCharVars() and K.GetCharVars().AutoQuest)
+	mono:SetScript("OnClick", function(self)
+		local charVars = K.GetCharVars()
+		if not charVars then
+			return
+		end
+		charVars.AutoQuest = self:GetChecked()
+		SetEventsActive(self:GetChecked())
+	end)
+	K.AddTooltip(mono, "ANCHOR_BOTTOMLEFT", "Automatically interact with quests.|n|nSingle-option gossip will be selected automatically.|n|nHold SHIFT to temporarily pause automation.|n|nTo block an NPC from auto-interaction, hold ALT and click their name in the Gossip or Quest frame.", "info", true)
+
+	created = true
+end
+if _G.WorldMapFrame then
+	_G.WorldMapFrame:HookScript("OnShow", setupCheckButton)
 end
 
 local function QuickQuest_Register(event, func)
