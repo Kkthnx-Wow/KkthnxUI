@@ -3,7 +3,7 @@
 -- Module: Skins — Blizzard Fonts
 -- Notes:
 -- - Replaces Blizzard FontFamily / Font objects with KkthnxUIFont.
--- - Catalog aligned to ElvUI Game/Shared/General/Fonts.lua (retail).
+-- - Catalog of retail FontFamily globals for UI font replace.
 -- - Font flag logic lives in K.SetFont / K.CanFlagSlug (Functions.lua).
 -- - No FontMap GUI / LSM pickers this pass — gated on Skins.BlizzardFrames only.
 -- - Incident (Fonts, Jul 2026): old dump had Outlineoutline typos and missed
@@ -40,7 +40,7 @@ function K:UpdateBlizzardFonts()
 	local NAMEFONT = NORMAL
 	local COMBAT = NORMAL
 
-	-- Outline prefixes from active UI font style (ElvUI thick/outline pairing).
+	-- Outline prefixes from active UI font style (thick/outline pairing).
 	local prefix = strmatch(style, "(SHADOW)") or strmatch(style, "(MONOCHROME)") or ""
 	local thick = prefix .. "THICKOUTLINE"
 	local outline = prefix .. "OUTLINE"
@@ -48,7 +48,7 @@ function K:UpdateBlizzardFonts()
 		thick = "THICKOUTLINE"
 		outline = "OUTLINE"
 	elseif not strmatch(style, "OUTLINE") and not strmatch(style, "THICK") then
-		-- UI font may be plain; still outline world/raid text like ElvUI when replace is on.
+		-- UI font may be plain; still outline world/raid text when replace is on.
 		thick = "THICKOUTLINE"
 		outline = "OUTLINE"
 	end
@@ -81,7 +81,7 @@ function K:UpdateBlizzardFonts()
 	SetFont(_G.SystemFont_LargeNamePlate, NORMAL, 12, style)
 	SetFont(_G.SystemFont_LargeNamePlateFixed, NORMAL, 12, style)
 
-	-- ElvUI FontMap defaults (no per-category GUI — fixed replace sizes).
+	-- FontMap defaults (no per-category GUI — fixed replace sizes).
 	-- Zone/world map FontFamilies are also in the bulk list below (bulk sizes win).
 	SetFont(_G.MailTextFontNormal, NORMAL, big, "NONE")
 	SetFont(_G.SystemFont_Shadow_Large_Outline, NORMAL, big, "SHADOW")
@@ -115,7 +115,7 @@ function K:UpdateBlizzardFonts()
 	lastFont.size = size
 	lastFont.style = style
 
-	-- Raid Warnings / Boss emote (ElvUI note: animated blur if size fights SetTextHeight).
+	-- Raid Warnings / Boss emote (animated blur if size fights SetTextHeight).
 	SetFont(_G.GameFontNormalHuge, NORMAL, 20, outline)
 
 	-- Number fonts
@@ -141,11 +141,11 @@ function K:UpdateBlizzardFonts()
 	SetFont(_G.Number18FontWhite, NUMBER, big, "SHADOW")
 	SetFont(_G.NumberFont_Outline_Huge, NUMBER, enormous, thick)
 
-	-- World map (overrides MapFont sizes above — ElvUI does the same)
+	-- World map (overrides MapFont sizes above)
 	SetFont(_G.SubZoneTextFont, NORMAL, gigantic, outline)
 	SetFont(_G.WorldMapTextFont, NORMAL, massive, outline)
 
-	-- Objective tracker — ElvUI FontMap.objective uses SHADOW for header + lines.
+	-- Objective tracker — SHADOW for header + lines.
 	-- OUTLINE on HeaderFont was wrong (yellow titles looked stroked); bare "" on
 	-- LineFont/Font12-22 became SLUG with zero shadow (flat white objectives).
 	SetFont(_G.ObjectiveTrackerHeaderFont, NORMAL, medium, "SHADOW")
@@ -162,7 +162,7 @@ function K:UpdateBlizzardFonts()
 	SetFont(_G.ObjectiveTrackerFont21, NORMAL, large, "SHADOW")
 	SetFont(_G.ObjectiveTrackerFont22, NORMAL, large, "SHADOW")
 
-	-- Quest shadow variants (ElvUI parchment shadow color)
+	-- Quest shadow variants (parchment shadow color)
 	SetFont(_G.QuestFont_Shadow_Small, NORMAL, medium, "SHADOW", 0.49, 0.35, 0.05, 1)
 	SetFont(_G.QuestFont_Shadow_Huge, NORMAL, large, "SHADOW", 0.49, 0.35, 0.05, 1)
 	SetFont(_G.QuestFont_Shadow_Super_Huge, NORMAL, large, "SHADOW", 0.49, 0.35, 0.05, 1)

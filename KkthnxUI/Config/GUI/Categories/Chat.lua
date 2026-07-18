@@ -25,6 +25,10 @@ function B.CreateChatCategory()
 	-- Appearance
 	local appearanceChatSection = GUI:AddSection(chatCategory, L["Appearance"])
 	GUI:CreateSwitch(appearanceChatSection, "Chat.Emojis", L["Show Emojis In Chat"] .. " |TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t", L["Emojis Desc"])
+	local emojiBubbles = GUI:CreateSwitch(appearanceChatSection, "Chat.EmojiBubbles", L["Emojis In Bubbles"], L["Chat.EmojiBubbles Desc"])
+	local emojiAC = GUI:CreateSwitch(appearanceChatSection, "Chat.EmojiAutocomplete", L["Emoji Autocomplete"], L["Chat.EmojiAutocomplete Desc"])
+	GUI:DependsOn(emojiBubbles, "Chat.Emojis", true)
+	GUI:DependsOn(emojiAC, "Chat.Emojis", true)
 	GUI:CreateSwitch(appearanceChatSection, "Chat.LootIcons", L["Show Loot Icons"], L["Chat.LootIcons Desc"])
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatItemLevel", L["Show ItemLevel on ChatFrames"], L["ChatItemLevel Desc"])
 	GUI:CreateSwitch(appearanceChatSection, "Chat.CopyButton", "Show Copy Chat Button |TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14|t", L["Chat.CopyButton Desc"])
@@ -52,6 +56,15 @@ function B.CreateChatCategory()
 	GUI:CreateSwitch(behaviorChatSection, "Chat.UrlLinks", L["Clickable Chat URLs"], L["Chat.UrlLinks Desc"])
 	local urlPopupSwitch = GUI:CreateSwitch(behaviorChatSection, "Chat.UrlPopup", L["URL Copy Popup"], L["Chat.UrlPopup Desc"])
 	GUI:DependsOn(urlPopupSwitch, "Chat.UrlLinks", true)
+	GUI:CreateSwitch(behaviorChatSection, "Chat.SystemChatFilter", L["System Chat Filter"], L["Chat.SystemChatFilter Desc"])
+
+	-- Spam Filter
+	local filterChatSection = GUI:AddSection(chatCategory, L["Chat Filter"])
+	GUI:CreateSwitch(filterChatSection, "Chat.ChatFilter", enableTextColor .. L["Enable Chat Filter"], L["Chat.ChatFilter Desc"])
+	local filterMatches = GUI:CreateSlider(filterChatSection, "Chat.FilterMatches", L["Filter Matches"], 1, 5, 1, L["Chat.FilterMatches Desc"])
+	local filterList = GUI:CreateTextInput(filterChatSection, "Chat.FilterList", L["Filter List"], L["FilterList Placeholder"], L["Chat.FilterList Desc"])
+	GUI:DependsOn(filterMatches, "Chat.ChatFilter", true)
+	GUI:DependsOn(filterList, "Chat.ChatFilter", true)
 
 	-- Sizes
 	local sizesChatSection = GUI:AddSection(chatCategory, L["Sizes"])

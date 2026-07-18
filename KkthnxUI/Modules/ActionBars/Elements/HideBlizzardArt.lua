@@ -95,8 +95,30 @@ local function DisableDefaultBarEvents()
 end
 
 local function RestoreDefaultBarEvents()
+	-- ActionBarController_OnLoad re-wires controller events after Hide stripped them.
 	if _G.ActionBarController_OnLoad then
 		pcall(_G.ActionBarController_OnLoad, _G.ActionBarController)
+	end
+
+	-- Hide called UnregisterAllEvents on these; OnLoad re-registers the full set
+	-- (spellcast unit events, usable, glow, etc.) without wiping registered frames.
+	local actionEvents = _G.ActionBarActionEventsFrame
+	if actionEvents and actionEvents.OnLoad then
+		local savedFrames = actionEvents.frames
+		pcall(actionEvents.OnLoad, actionEvents)
+		if savedFrames then
+			actionEvents.frames = savedFrames
+		end
+	end
+
+	local buttonEvents = _G.ActionBarButtonEventsFrame
+	if buttonEvents and buttonEvents.OnLoad then
+		local savedFrames = buttonEvents.frames
+		pcall(buttonEvents.OnLoad, buttonEvents)
+		if savedFrames then
+			buttonEvents.frames = savedFrames
+		end
+		-- Hide kept only SLOT_CHANGED + UPDATE_COOLDOWN; OnLoad restores the rest.
 	end
 
 	if origShowAllGrids then

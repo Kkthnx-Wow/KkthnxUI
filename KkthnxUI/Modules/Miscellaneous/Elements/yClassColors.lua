@@ -49,7 +49,7 @@ local function GetButtonState(button)
 	return state
 end
 
--- BNet keyed by id; WoW keyed by id + offset (Ellesmere).
+-- BNet keyed by id; WoW keyed by id + offset.
 local friendCache = {}
 local FC_WOW_OFFSET = 10000
 

@@ -122,6 +122,158 @@ do
 		return nil
 	end
 
+	-- ---------------------------------------------------------------------------
+	-- Pixel perfect helpers (no global texture metatable hooks — call DisablePixelSnap where needed)
+	-- ---------------------------------------------------------------------------
+
+	local math_ceil = math.ceil
+	local GetPhysicalScreenSize = GetPhysicalScreenSize
+	local _pixelSnapDisabled = setmetatable({}, { __mode = "k" })
+
+	--- Refresh C.Mult from physical screen height + current UIScale.
+	function K.UpdatePixelMult()
+		local _, physH = GetPhysicalScreenSize()
+		if physH and physH > 0 then
+			K.ScreenHeight = physH
+		end
+		local perfect = 768 / (K.ScreenHeight or 1080)
+		local scale = C["General"] and C["General"].UIScale
+		if type(scale) ~= "number" or scale == 0 then
+			scale = UIParent and UIParent:GetScale() or 1
+		end
+		C.Mult = perfect / scale
+		return C.Mult
+	end
+
+	--- Snap toward zero onto the physical-pixel grid.
+	function K.Scale(x)
+		if not x or x == 0 then
+			return 0
+		end
+		local m = C.Mult or 1
+		if m == 1 then
+			return x
+		end
+		local pixels = x / m
+		pixels = x > 0 and math_floor(pixels) or math_ceil(pixels)
+		return pixels * m
+	end
+
+	--- Round to nearest physical pixel + scrub float dust.
+	function K.Snap(x)
+		if not x or x == 0 then
+			return 0
+		end
+		local m = C.Mult or 1
+		local result = math_floor(x / m + 0.5) * m
+		local rounded = math_floor(result + 0.5)
+		if math_abs(result - rounded) < 0.001 then
+			result = rounded
+		end
+		return result
+	end
+
+	function K.Size(frame, w, h)
+		if not frame then
+			return
+		end
+		frame:SetSize(K.Scale(w), h and K.Scale(h) or K.Scale(w))
+	end
+
+	function K.Width(frame, w)
+		if frame then
+			frame:SetWidth(K.Scale(w))
+		end
+	end
+
+	function K.Height(frame, h)
+		if frame then
+			frame:SetHeight(K.Scale(h))
+		end
+	end
+
+	function K.Point(obj, anchor, p1, p2, p3, p4)
+		if not obj then
+			return
+		end
+		if not p1 then
+			p1 = obj:GetParent()
+		end
+		if type(p1) == "number" then
+			p1 = K.Scale(p1)
+		end
+		if type(p2) == "number" then
+			p2 = K.Scale(p2)
+		end
+		if type(p3) == "number" then
+			p3 = K.Scale(p3)
+		end
+		if type(p4) == "number" then
+			p4 = K.Scale(p4)
+		end
+		obj:SetPoint(anchor, p1, p2, p3, p4)
+	end
+
+	function K.SetInside(obj, anchor, xOff, yOff)
+		if not obj then
+			return
+		end
+		anchor = anchor or obj:GetParent()
+		local inset = K.Scale(xOff or 1)
+		local insetY = K.Scale(yOff or 1)
+		obj:ClearAllPoints()
+		K.DisablePixelSnap(obj)
+		obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", inset, -insetY)
+		obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -inset, insetY)
+	end
+
+	function K.SetOutside(obj, anchor, xOff, yOff)
+		if not obj then
+			return
+		end
+		anchor = anchor or obj:GetParent()
+		local outset = K.Scale(xOff or 1)
+		local outsetY = K.Scale(yOff or 1)
+		obj:ClearAllPoints()
+		K.DisablePixelSnap(obj)
+		obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", -outset, outsetY)
+		obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", outset, -outsetY)
+	end
+
+	--- Kill engine pixel-snap blur on textures / statusbar fills (secret-safe).
+	function K.DisablePixelSnap(obj)
+		if not obj then
+			return
+		end
+		if issecretvalue and issecretvalue(obj) then
+			return
+		end
+		if issecrettable and issecrettable(obj) then
+			return
+		end
+		if _pixelSnapDisabled[obj] then
+			return
+		end
+		if obj.IsForbidden and obj:IsForbidden() then
+			return
+		end
+
+		local target = obj
+		if not obj.SetSnapToPixelGrid and obj.GetStatusBarTexture then
+			target = obj:GetStatusBarTexture()
+			if type(target) ~= "table" or not target.SetSnapToPixelGrid then
+				_pixelSnapDisabled[obj] = true
+				return
+			end
+		end
+
+		if target.SetSnapToPixelGrid then
+			target:SetSnapToPixelGrid(false)
+			target:SetTexelSnappingBias(0)
+		end
+		_pixelSnapDisabled[obj] = true
+	end
+
 	local dispelColorCurve
 
 	--- Midnight dispel ColorCurve for C_UnitAuras.GetAuraDispelTypeColor (shared by Auras + oUF hooks).
@@ -575,7 +727,24 @@ do
 		return dr * dr + dg * dg + db * db
 	end
 
+	local function readColorRGB(color)
+		if not color then
+			return nil
+		end
+		if color.GetRGB then
+			return color:GetRGB()
+		end
+		if color.r then
+			return color.r, color.g, color.b
+		end
+		if color[1] then
+			return color[1], color[2], color[3]
+		end
+		return nil
+	end
+
 	--- Resolve dispel type name from aura instance when dispelName is secret.
+	--- Returns nil for None / non-typed auras (never guess Magic from "closest" RGB).
 	function K.GetAuraDispelTypeName(unit, auraInstanceID, oUFRef)
 		local oUF = oUFRef or K.oUF
 		local curve = K.GetDispelColorCurve(oUF)
@@ -588,37 +757,39 @@ do
 			return nil
 		end
 
-		local cr, cg, cb
-		if color.GetRGB then
-			cr, cg, cb = color:GetRGB()
-		elseif color.r then
-			cr, cg, cb = color.r, color.g, color.b
-		end
-
+		local cr, cg, cb = readColorRGB(color)
 		if not (cr and K.NotSecret(cr) and K.NotSecret(cg) and K.NotSecret(cb)) then
 			return nil
 		end
 
+		-- Incident (DebuffHighlight, Jul 2026): matching every aura to the nearest
+		-- Magic/Curse/Disease/Poison left frames stuck purple after undispellable
+		-- auras. Prefer None when that is the closest (or equally close) color.
+		local noneIdx = oUF.Enum and oUF.Enum.DispelType and oUF.Enum.DispelType.None or 0
+		local nr, ng, nb = readColorRGB(oUF.colors.dispel[noneIdx])
+		local noneDist
+		if nr and K.NotSecret(nr) then
+			noneDist = colorDistance(cr, cg, cb, nr, ng, nb)
+		end
+
 		local bestName, bestDist
 		for index, name in pairs(DISPEL_INDEX_TO_NAME) do
-			local ref = oUF.colors.dispel[index]
-			if ref then
-				local rr, rg, rb
-				if ref.GetRGB then
-					rr, rg, rb = ref:GetRGB()
-				elseif ref.r then
-					rr, rg, rb = ref.r, ref.g, ref.b
-				elseif ref[1] then
-					rr, rg, rb = ref[1], ref[2], ref[3]
-				end
-				if rr and K.NotSecret(rr) then
-					local d = colorDistance(cr, cg, cb, rr, rg, rb)
-					if not bestDist or d < bestDist then
-						bestDist = d
-						bestName = name
-					end
+			local rr, rg, rb = readColorRGB(oUF.colors.dispel[index])
+			if rr and K.NotSecret(rr) then
+				local d = colorDistance(cr, cg, cb, rr, rg, rb)
+				if not bestDist or d < bestDist then
+					bestDist = d
+					bestName = name
 				end
 			end
+		end
+
+		if not bestName then
+			return nil
+		end
+		-- Must be strictly closer to a typed color than to None.
+		if noneDist and bestDist >= noneDist then
+			return nil
 		end
 
 		return bestName
@@ -1225,10 +1396,7 @@ do
 	end
 
 	local function unsnapPortraitTexture(tex)
-		if tex and tex.SetSnapToPixelGrid then
-			tex:SetSnapToPixelGrid(false)
-			tex:SetTexelSnappingBias(0)
-		end
+		K.DisablePixelSnap(tex)
 	end
 
 	function K.UnsnapPortraitTexture(tex)

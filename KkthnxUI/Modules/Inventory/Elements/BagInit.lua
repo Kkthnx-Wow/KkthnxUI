@@ -44,8 +44,40 @@ local unpack = _G.unpack
 local cargBags = K.cargBags
 local Unfit = K.LibUnfit
 
+local C_Bank = C_Bank
+local ItemLocation = ItemLocation
+local C_Item_DoesItemExist = C_Item and C_Item.DoesItemExist
+
 local ACCOUNT_BANK_TYPE = _G.Enum.BankType.Account or 2
 local CHAR_BANK_TYPE = _G.Enum.BankType.Character or 0
+
+-- True while Blizzard bank is open on the Account (warband) panel.
+function Module:IsWarbankViewActive()
+	local bank = _G.BankFrame
+	local panel = bank and bank.BankPanel
+	if not (bank and bank:IsShown() and panel) then
+		return false
+	end
+	return panel.bankType == ACCOUNT_BANK_TYPE
+end
+
+-- Deposit-eligible for warband bank (same signal Blizzard uses for account tabs).
+local function IsItemAllowedInAccountBank(bagId, slotId)
+	if not (C_Bank and C_Bank.IsItemAllowedInBankType and ItemLocation) then
+		return false
+	end
+	local loc = ItemLocation:CreateFromBagAndSlot(bagId, slotId)
+	if not (loc and C_Item_DoesItemExist and C_Item_DoesItemExist(loc)) then
+		return false
+	end
+	return C_Bank.IsItemAllowedInBankType(ACCOUNT_BANK_TYPE, loc) == true
+end
+
+-- Character bags + character bank only — never dim slots already inside warband tabs.
+local function IsWarbankDimCandidateBag(bagId)
+	return type(bagId) == "number" and bagId >= 0 and bagId <= 11
+end
+
 function Module:InitBags()
 	if Module.initComplete then
 		return
@@ -181,6 +213,21 @@ function Module:InitBags()
 		_G.BankFrame:Show()
 		self:GetContainer("Bank"):Show()
 
+		-- Clear bag search on bank open so dimmed/filtered loot isn't confusing.
+		local main = self:GetContainer("Bag")
+		local search = main and main.Search
+		if search and search.DoSearch then
+			search:DoSearch("")
+			search:ClearFocus()
+			if search:IsShown() and search.target then
+				search:Hide()
+				search.target:Show()
+			end
+		end
+		if C_Container and C_Container.SetItemSearch then
+			C_Container.SetItemSearch("")
+		end
+
 		if not isBagTypeInitialized then
 			Module:UpdateAllBags()
 			Module:UpdateBagSize()
@@ -193,6 +240,8 @@ function Module:InitBags()
 		_G.BankFrame.activeTabIndex = 1
 		self:GetContainer("Bank"):Hide()
 		self:GetContainer("Account"):Hide()
+		-- Clear warbank dim overlays left on open backpack buttons.
+		Module:UpdateAllBags()
 	end
 
 	-- ---------------------------------------------------------------------------
@@ -271,6 +320,16 @@ function Module:InitBags()
 			self.ProfessionQualityOverlay = overlayFrame:CreateTexture(nil, "OVERLAY")
 			self.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2)
 		end
+
+		-- Warbank dim: darken non-depositable bag/bank slots while Account tab is open.
+		local warbankDim = CreateFrame("Frame", nil, self)
+		warbankDim:SetAllPoints()
+		warbankDim:SetFrameLevel(self:GetFrameLevel() + 4)
+		local dimTex = warbankDim:CreateTexture(nil, "OVERLAY")
+		dimTex:SetAllPoints()
+		dimTex:SetColorTexture(0, 0, 0, 0.75)
+		warbankDim:Hide()
+		self.WarbankDim = warbankDim
 	end
 
 	function MyButton:ItemOnEnter()
@@ -386,8 +445,10 @@ function Module:InitBags()
 	end
 
 	function MyButton:OnUpdateButton(item)
+		-- One GetCharVars per button paint — junk + favourite both read it.
+		local charVars = K.GetCharVars()
+
 		if self.JunkIcon then
-			local charVars = K.GetCharVars()
 			if (item.quality == _G.Enum.ItemQuality.Poor or (charVars and charVars.CustomJunkList and charVars.CustomJunkList[item.id])) and item.hasPrice then
 				self.JunkIcon:Show()
 			else
@@ -427,7 +488,6 @@ function Module:InitBags()
 			SetItemCraftingQualityOverlay(self, item.link)
 		end
 
-		local charVars = K.GetCharVars()
 		if charVars and charVars.CustomItems and charVars.CustomItems[item.id] and not C["Inventory"].ItemFilter then
 			self.Favourite:Show()
 		else
@@ -515,6 +575,16 @@ function Module:InitBags()
 
 		updateCanIMogIt(self, item)
 		updateUpgradeArrow(self, item)
+
+		-- Dim backpack/character-bank items that cannot go into the open warband tab.
+		if self.WarbankDim then
+			local showDim = item
+				and item.id
+				and Module:IsWarbankViewActive()
+				and IsWarbankDimCandidateBag(item.bagId)
+				and not IsItemAllowedInAccountBank(item.bagId, item.slotId)
+			self.WarbankDim:SetShown(showDim)
+		end
 	end
 
 	function MyButton:OnUpdateQuest(item)

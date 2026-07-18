@@ -78,7 +78,6 @@ local ipairs = ipairs
 local next = next
 local select = select
 local string_find = string.find
-local string_sub = string.sub
 local string_upper = string.upper
 local table_wipe = table.wipe
 
@@ -95,10 +94,15 @@ local BLINGTRON_5000_NPC_ID = 77789 -- daily lockout protection
 
 local MAX_REQUIRED_ITEMS = _G.MAX_REQUIRED_ITEMS or 8
 local QUEST_LABEL_PREPEND = Enum.GossipOptionRecFlags.QuestLabelPrepend
+local FlagsUtil_IsSet = FlagsUtil and FlagsUtil.IsSet
+local GossipOptionStatus = Enum.GossipOptionStatus
 local QUEST_FREQUENCY_DAILY = Enum.QuestFrequency and Enum.QuestFrequency.Daily
 local QUEST_FREQUENCY_WEEKLY = Enum.QuestFrequency and Enum.QuestFrequency.Weekly
 local QUEST_STRING = "cFF0000FF.-" .. _G.TRANSMOG_SOURCE_2
 local IGNORED_TEXT = _G.IGNORED
+local STEALTH_CLASS_SKIP = { ROGUE = true, DRUID = true }
+local UnitName = UnitName
+local format = string.format
 
 local choiceQueue
 local created
@@ -303,21 +307,130 @@ local function hasCostlyTurnIn()
 	return false
 end
 
-local function shouldSuspendForSkipGossip()
-	local gossipInfoTable = C_GossipInfo_GetOptions()
-	if not gossipInfoTable then
+-- ---------------------------------------------------------------------------
+-- Gossip helpers (Midnight quest/gossip deltas)
+-- ---------------------------------------------------------------------------
+local function IsQuestLabelPrepend(flags)
+	if not flags then
 		return false
 	end
+	if FlagsUtil_IsSet then
+		return FlagsUtil_IsSet(flags, QUEST_LABEL_PREPEND)
+	end
+	return flags == QUEST_LABEL_PREPEND
+end
+
+-- Colour / angle-bracket markup usually means teleports, skip-ahead, or
+-- consequence choices. Lone special options stay player-driven (purple quest
+-- colour FF0008E8 is fine — that is normal quest gossip).
+local function HasUnsafeGossipOption(options)
+	for i = 1, #options do
+		local name = options[i] and options[i].name
+		if name then
+			local upper = string_upper(name)
+			if (string_find(upper, "|C", 1, true) or string_find(upper, "<", 1, true)) and not string_find(upper, "FF0008E8", 1, true) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function IsMiniGameSkipGossip(name)
+	if not name then
+		return false
+	end
+	local upper = string_upper(name)
+	if not string_find(upper, "<", 1, true) or not string_find(upper, "SKIP", 1, true) then
+		return false
+	end
+	if string_find(upper, "MINI GAME", 1, true) or string_find(upper, "MINIGAME", 1, true) then
+		return true
+	end
+	local miniGameLabel = _G["11_0_0_DELVES_MINIGAME_01"]
+	if miniGameLabel then
+		return string_find(upper, string_upper(miniGameLabel), 1, true) ~= nil
+	end
+	return false
+end
+
+local function IsSkipGossip(name)
+	if not name or IsMiniGameSkipGossip(name) then
+		return false
+	end
+	return string_find(string_upper(name), "<SKIP", 1, true) ~= nil
+end
+
+local function IsGossipOptionSelectable(option)
+	if not option or not option.gossipOptionID then
+		return false
+	end
+	local status = option.status
+	if status == nil or not GossipOptionStatus then
+		return true
+	end
+	return status == GossipOptionStatus.Available or status == GossipOptionStatus.AlreadyComplete
+end
+
+local function IsUtilityGossipOption(optionID)
+	local rule = C["AutoQuestData"].UtilityGossipOptions and C["AutoQuestData"].UtilityGossipOptions[optionID]
+	if rule == true then
+		return true
+	end
+	if rule == "HUNTER" and K.Class == "HUNTER" then
+		return true
+	end
+end
+
+local function TrySelectMiniGameSkipGossip(gossipInfoTable)
+	local ignoreOpts = C["AutoQuestData"].IgnoreGossipOptions
+	local skipID, numSkips
 	for i = 1, #gossipInfoTable do
-		local nameText = gossipInfoTable[i].name
-		if nameText then
-			if string_sub(nameText, 1, 11) == "|cFFFF0000<" then
-				return true
-			end
-			local upper = string_upper(nameText)
-			if (string_find(upper, "|C", 1, true) or string_find(upper, "<", 1, true)) and not string_find(nameText, "FF0008E8", 1, true) then
-				return true
-			end
+		local option = gossipInfoTable[i]
+		local name = option and option.name
+		local optionID = option and option.gossipOptionID
+		if name and optionID and IsMiniGameSkipGossip(name) and not (ignoreOpts and ignoreOpts[optionID]) then
+			numSkips = (numSkips or 0) + 1
+			skipID = optionID
+		end
+	end
+	if numSkips ~= 1 or not skipID then
+		return false
+	end
+	pendingSkipConfirm = true
+	C_GossipInfo_SelectOption(skipID)
+	return true
+end
+
+local function TrySelectStealthClassSkipGossip(gossipInfoTable)
+	if not (K.Class and STEALTH_CLASS_SKIP[K.Class]) then
+		return false
+	end
+	local ignoreOpts = C["AutoQuestData"].IgnoreGossipOptions
+	local skipID, numSkips
+	for i = 1, #gossipInfoTable do
+		local option = gossipInfoTable[i]
+		local name = option and option.name
+		local optionID = option and option.gossipOptionID
+		if name and optionID and IsGossipOptionSelectable(option) and string_find(string_upper(name), "STEALTH CLASS", 1, true)
+			and not (ignoreOpts and ignoreOpts[optionID]) then
+			numSkips = (numSkips or 0) + 1
+			skipID = optionID
+		end
+	end
+	if numSkips ~= 1 or not skipID then
+		return false
+	end
+	C_GossipInfo_SelectOption(skipID)
+	return true
+end
+
+local function TrySelectUtilityGossip(gossipInfoTable)
+	for i = 1, #gossipInfoTable do
+		local optionID = gossipInfoTable[i] and gossipInfoTable[i].gossipOptionID
+		if optionID and IsUtilityGossipOption(optionID) then
+			C_GossipInfo_SelectOption(optionID)
+			return true
 		end
 	end
 	return false
@@ -329,38 +442,61 @@ local function ProcessGossipOptions(npcID, available, active)
 		return false
 	end
 
-	if shouldSuspendForSkipGossip() then
-		return false
-	end
-
+	local data = C["AutoQuestData"]
+	local ignoreOpts = data.IgnoreGossipOptions
 	local numOptions = #gossipInfoTable
 	local firstOptionID = gossipInfoTable[1] and gossipInfoTable[1].gossipOptionID
 
 	if firstOptionID then
-		if C["AutoQuestData"].AutoSelectFirstOptionList[npcID] then
+		if data.AutoSelectFirstOptionList[npcID] then
 			C_GossipInfo_SelectOption(firstOptionID)
 			return true
 		end
 
-		if available == 0 and active == 0 and numOptions == 1 then
+		-- One-action walk: only when the lone option is not "special" markup.
+		if available == 0 and active == 0 and numOptions == 1 and not data.IgnoreGossipNPC[npcID]
+			and not HasUnsafeGossipOption(gossipInfoTable) and not (ignoreOpts and ignoreOpts[firstOptionID]) then
 			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
-			if instance ~= "raid" and not C["AutoQuestData"].IgnoreGossipNPC[npcID] and not C["AutoQuestData"].IgnoreInstances[mapID] then
+			if instance ~= "raid" and not data.IgnoreInstances[mapID] then
 				C_GossipInfo_SelectOption(firstOptionID)
 				return true
 			end
 		end
 	end
 
-	local numQuestGossips = 0
-	local questGossipID
+	local numQuestGossips, numSkipGossips = 0, 0
+	local questGossipID, skipGossipID
+	local questOpts = data.QuestGossipOptions
 	for i = 1, numOptions do
 		local option = gossipInfoTable[i]
-		if option.name and (string_find(option.name, QUEST_STRING) or option.flags == QUEST_LABEL_PREPEND) then
-			numQuestGossips = numQuestGossips + 1
-			questGossipID = option.gossipOptionID
+		local name = option.name
+		if name then
+			if IsSkipGossip(name) then
+				numSkipGossips = numSkipGossips + 1
+				skipGossipID = option.gossipOptionID
+			end
+			if (questOpts and questOpts[option.gossipOptionID]) or string_find(name, QUEST_STRING) or IsQuestLabelPrepend(option.flags) then
+				numQuestGossips = numQuestGossips + 1
+				questGossipID = option.gossipOptionID
+			end
 		end
 	end
-	if numQuestGossips == 1 then
+
+	-- Opt-in story skip (campaign / conversation). Arms GOSSIP_CONFIRM follow-up.
+	if C["Automation"].AutoQuestSkipGossip and numSkipGossips == 1 and skipGossipID
+		and not (ignoreOpts and ignoreOpts[skipGossipID]) then
+		pendingSkipConfirm = true
+		local npcName = UnitName("npc")
+		if npcName and NotSecret(npcName) then
+			K.Print(format("%s%s", K.SystemColor, format(L["Skipped story dialogue from %s."], npcName)))
+		else
+			K.Print(format("%s%s", K.SystemColor, L["Skipped story dialogue."]))
+		end
+		C_GossipInfo_SelectOption(skipGossipID)
+		return true
+	end
+
+	if numQuestGossips == 1 and questGossipID then
 		C_GossipInfo_SelectOption(questGossipID)
 		return true
 	end
@@ -489,6 +625,22 @@ QuickQuest_Register("QUEST_GREETING", function()
 end)
 
 QuickQuest_Register("GOSSIP_SHOW", function()
+	-- Drop stale skip-confirm arm from a prior window; re-armed below if we skip.
+	pendingSkipConfirm = nil
+
+	local gossipInfoTable = C_GossipInfo_GetOptions()
+	if gossipInfoTable then
+		if TrySelectMiniGameSkipGossip(gossipInfoTable) then
+			return
+		end
+		if TrySelectStealthClassSkipGossip(gossipInfoTable) then
+			return
+		end
+		if TrySelectUtilityGossip(gossipInfoTable) then
+			return
+		end
+	end
+
 	ProcessGossipQuests()
 end)
 

@@ -369,16 +369,32 @@ function Module:RefreshPlateType(unit)
 	end
 end
 
+-- UNIT_FACTION can fire for every raid member; only nameplate* tokens matter,
+-- and bursts are batched end-of-frame (shared-patterns §9).
+local factionDirty = {}
+local factionPending = false
+
 function Module.OnUnitFactionChanged(event, unit)
 	if not unit or not string_find(unit, "nameplate") then
 		return
 	end
 
-	local nameplate = C_NamePlate_GetNamePlateForUnit(unit, issecure())
-	local unitFrame = nameplate and nameplate.unitFrame
-	if unitFrame and unitFrame.unitName then
-		Module.RefreshPlateType(unitFrame, unit)
+	factionDirty[unit] = true
+	if factionPending then
+		return
 	end
+	factionPending = true
+	C_Timer_After(0, function()
+		factionPending = false
+		for u in pairs(factionDirty) do
+			factionDirty[u] = nil
+			local nameplate = C_NamePlate_GetNamePlateForUnit(u, issecure())
+			local unitFrame = nameplate and nameplate.unitFrame
+			if unitFrame and unitFrame.unitName then
+				Module.RefreshPlateType(unitFrame, u)
+			end
+		end
+	end)
 end
 
 function Module.OnUnitSoftTargetChanged(event, previousTarget, currentTarget)

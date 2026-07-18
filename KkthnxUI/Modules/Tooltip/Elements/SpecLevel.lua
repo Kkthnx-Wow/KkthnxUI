@@ -3,20 +3,25 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Inspects units to display their average item level and tier sets.
--- - Design: Hooks tooltip and uses NotifyInspect with a local cache/throttle.
+-- - Design: Throttled NotifyInspect + GUID cache.
 -- - Events: INSPECT_READY, UNIT_INVENTORY_CHANGED
+-- Incident (SpecLevel, Jul 2026): C_Item.GetItemInfo returns multi-values, not a
+-- table — treating it as `{itemQuality=…}` made every scan `delay` forever.
+-- Clear inspect on OnHide only — OnTooltipCleared fires mid-rebuild and aborted
+-- NotifyInspect before INSPECT_READY.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Tooltip")
 
--- REASON: Localize globals for performance and stack safety.
 local _G = _G
 local math_max = _G.math.max
 local select = _G.select
 local string_find = _G.string.find
 local string_format = _G.string.format
 local string_split = _G.string.split
+local tonumber = _G.tonumber
+local wipe = _G.wipe
 local GetTime = _G.GetTime
 
 local C_Item = _G.C_Item
@@ -35,11 +40,10 @@ local UnitIsVisible = _G.UnitIsVisible
 local UnitOnTaxi = _G.UnitOnTaxi
 
 local NotSecret = K.NotSecret
+local IsSecret = K.IsSecret
 local issecretvalue = rawget(_G, "issecretvalue")
 
--- SECRET (12.0): UnitGUID can flip opaque on mouseover mid-inspect. Never return a secret
--- for cache keys / == compares. Explicit early-out (not `NotSecret(g) and g`) so a bad
--- NotSecret cannot leak a secret into `==`. Guard GUID/text before compare.
+-- SECRET (12.0): UnitGUID can flip opaque on mouseover mid-inspect.
 local function checkUnitGUID(unit)
 	if not unit then
 		return nil
@@ -58,19 +62,27 @@ local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
 local GetItemGem = _G.GetItemGem
-local C_Item_GetItemInfo = C_Item.GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
+local GetItemInfoInstant = C_Item.GetItemInfoInstant
 local HEIRLOOMS = _G.HEIRLOOMS
 local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
 local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
 
-local C_Item_GetItemInfoInstant = C_Item and C_Item.GetItemInfoInstant
-
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
 local isPending = LFG_LIST_LOADING
 local resetTime, frequency = 900, 0.5
-local cache, weapon, currentUNIT, currentGUID = {}, {}
+local cache, weapon = {}, {}
+local relicScratch = {}
+local cacheCount, CACHE_MAX = 0, 200
+local currentUNIT, currentGUID, tipShownGUID
+local lastTime = 0
+local userInspectUntil = 0
 
--- True only when live unit GUID is plain and matches currentGUID (also must be plain).
+-- Don't fight Blizzard's Inspect UI — pause our NotifyInspect briefly after user opens inspect.
+hooksecurefunc("InspectUnit", function()
+	userInspectUntil = GetTime() + 2
+end)
+
 local function matchesCurrentGUID(unit)
 	if not (unit and currentGUID and NotSecret(currentGUID)) then
 		return false
@@ -78,6 +90,7 @@ local function matchesCurrentGUID(unit)
 	local liveGUID = checkUnitGUID(unit)
 	return liveGUID ~= nil and liveGUID == currentGUID
 end
+
 local Tooltip_TierSets = {
 	-- WARRIOR
 	[237608] = true,
@@ -160,146 +173,70 @@ local Tooltip_TierSets = {
 }
 
 local formatSets = {
-	[1] = " |cff14b200(1/4)", -- green
-	[2] = " |cff0091f2(2/4)", -- blue
-	[3] = " |cff0091f2(3/4)", -- blue
-	[4] = " |cffc745f9(4/4)", -- purple
-	[5] = " |cffc745f9(5/5)", -- purple
+	[1] = " |cff14b200(1/4)",
+	[2] = " |cff0091f2(2/4)",
+	[3] = " |cff0091f2(3/4)",
+	[4] = " |cffc745f9(4/4)",
+	[5] = " |cffc745f9(5/5)",
 }
 
--- REASON: Throttles inspect requests to prevent server spam and Blizzard API limits.
--- Incident (SpecLevel, Jul 2026): OnUpdate compared UnitGUID(mouseover) == currentGUID while
--- live GUID had gone secret — "attempt to compare a secret string value". Bail if either side opaque.
-function Module:InspectOnUpdate(elapsed)
-	self.elapsed = (self.elapsed or frequency) + elapsed
-	if self.elapsed > frequency then
-		self.elapsed = 0
-		self.retries = (self.retries or 0) + 1
-
-		if self.retries > 10 then -- safety: stop after ~5s (10 * 0.5)
-			self:Hide()
-			self.retries = 0
-			return
-		end
-
-		self:Hide()
-		ClearInspectPlayer()
-
-		if not (currentUNIT and currentGUID and NotSecret(currentGUID)) then
-			return
-		end
-		if matchesCurrentGUID(currentUNIT) then
-			K:RegisterEvent("INSPECT_READY", Module.GetInspectInfo)
-			NotifyInspect(currentUNIT)
-		end
-	end
-end
-
-local updater = CreateFrame("Frame")
-updater:SetScript("OnUpdate", Module.InspectOnUpdate)
-updater:Hide()
-
-local lastTime = 0
-local inspectInventoryUnit
-
-local function clearInspectInventoryWatch()
-	if inspectInventoryUnit then
-		K:UnregisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
-		inspectInventoryUnit = nil
-	end
-end
-
-local function setInspectInventoryWatch(unit)
-	clearInspectInventoryWatch()
-	if unit and not K.UnitIsUnit(unit, "player") then
-		K:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo, unit)
-		inspectInventoryUnit = unit
-	end
-end
-
--- REASON: Event handler for inspect results and inventory updates.
-function Module.GetInspectInfo(event, ...)
-	if event == "UNIT_INVENTORY_CHANGED" then
-		local thisTime = GetTime()
-		if thisTime - lastTime > 0.1 then
-			lastTime = thisTime
-
-			local unit = ...
-			if matchesCurrentGUID(unit) then
-				Module:InspectUnit(unit, true)
-			end
-		end
-	elseif event == "INSPECT_READY" then
-		local guid = ...
-		-- SECRET: inspect GUID payload can be secret on restricted maps — skip compare when opaque.
-		if NotSecret(guid) and currentGUID and NotSecret(currentGUID) and guid == currentGUID and cache[guid] then
-			local level = Module:GetUnitItemLevel(currentUNIT)
-			cache[guid].level = level
-			cache[guid].getTime = GetTime()
-
-			if level then
-				Module:SetupItemLevel(level)
-			else
-				Module:InspectUnit(currentUNIT, true)
-			end
-		end
-		clearInspectInventoryWatch()
-		K:UnregisterEvent(event, Module.GetInspectInfo)
-	end
-end
-
--- REASON: Injects or updates the item level line in the GameTooltip.
--- Incident (SpecLevel, Jul 2026): GameTooltip line GetText() can be a secret string
--- under chat/identity lockdown. string.find / tostring on it taints-crashes.
--- NotSecret(text) before strfind.
+-- ---------------------------------------------------------------------------
+-- Paint line — keyed by tipShownGUID, not GameTooltip:GetUnit() (can be nil/secret mid-refresh)
+-- ---------------------------------------------------------------------------
 function Module:SetupItemLevel(level)
-	local _, unit = GameTooltip:GetUnit()
-	if not matchesCurrentGUID(unit) then
+	if not GameTooltip:IsShown() then
+		return
+	end
+	if not tipShownGUID or IsSecret(tipShownGUID) or tipShownGUID ~= currentGUID then
+		return
+	end
+	if Module._tipShownGUID ~= tipShownGUID then
 		return
 	end
 
-	local levelLineFound = false
+	local levelLine
 	for i = 2, GameTooltip:NumLines() do
-		local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
-		if line then
-			local text = line:GetText()
-			if text and NotSecret(text) and string_find(text, levelPrefix) then
-				levelLineFound = true
-				line:SetText(levelPrefix .. (level or isPending))
-				break
-			end
+		local line = _G["GameTooltipTextLeft" .. i]
+		local text = line and line:GetText()
+		if text and NotSecret(text) and string_find(text, levelPrefix) then
+			levelLine = line
+			break
 		end
 	end
 
-	if not levelLineFound then
-		GameTooltip:AddLine(levelPrefix .. (level or isPending))
+	local painted = levelPrefix .. (level or isPending)
+	if levelLine then
+		levelLine:SetText(painted)
+	else
+		GameTooltip:AddLine(painted)
+		GameTooltip:Show()
 	end
 end
 
+-- ---------------------------------------------------------------------------
+-- Slot scan
+-- ---------------------------------------------------------------------------
 function Module:GetUnitItemLevel(unit)
-	if not matchesCurrentGUID(unit) then
+	if not unit or checkUnitGUID(unit) ~= currentGUID then
 		return
 	end
 
 	local class = select(2, UnitClass(unit))
-	local ilvl, boa, total, haveWeapon, twohand, sets = nil, 0, 0, 0, 0, 0 -- Change "0" to nil
+	local boa, total, haveWeapon, twohand = 0, 0, 0, 0
+	local ilvl, sets = nil, 0
 	local delay, mainhand, offhand, hasArtifact
 	weapon[1], weapon[2] = 0, 0
 
 	for i = 1, 17 do
 		if i ~= 4 then
 			local itemTexture = GetInventoryItemTexture(unit, i)
-
 			if itemTexture then
 				local itemLink = GetInventoryItemLink(unit, i)
-
 				if not itemLink then
 					delay = true
 				else
-					local itemInfo = C_Item_GetItemInfo(itemLink)
-					local quality = itemInfo and itemInfo.itemQuality
-					local level = itemInfo and itemInfo.itemLevel
-					local slot = itemInfo and itemInfo.itemEquipLoc
+					-- C_Item.GetItemInfo is multi-return, not a table (Resources ItemDocumentation).
+					local _, _, quality, level, _, _, _, _, slot = GetItemInfo(itemLink)
 					if (not quality) or not level then
 						delay = true
 					else
@@ -307,8 +244,8 @@ function Module:GetUnitItemLevel(unit)
 							boa = boa + 1
 						end
 
-						local itemID = C_Item_GetItemInfoInstant and C_Item_GetItemInfoInstant(itemLink)
-						if Tooltip_TierSets[itemID] then
+						local itemID = GetItemInfoInstant and GetItemInfoInstant(itemLink)
+						if itemID and Tooltip_TierSets[itemID] then
 							sets = sets + 1
 						end
 
@@ -317,12 +254,11 @@ function Module:GetUnitItemLevel(unit)
 							if i < 16 then
 								total = total + level
 							elseif i > 15 and quality == Enum.ItemQuality.Artifact then
-								-- Legacy artifact relic scan; skip if API removed
 								if GetItemGem then
-									local relics = { select(4, string_split(":", itemLink)) }
-									for j = 1, 3 do
-										local relicID = relics[j] ~= "" and relics[j]
-										local relicLink = select(2, GetItemGem(itemLink, j))
+									relicScratch[1], relicScratch[2], relicScratch[3] = select(4, string_split(":", itemLink))
+									for r = 1, 3 do
+										local relicID = relicScratch[r] and relicScratch[r] ~= "" and relicScratch[r]
+										local relicLink = select(2, GetItemGem(itemLink, r))
 										if relicID and not relicLink then
 											delay = true
 											break
@@ -335,7 +271,6 @@ function Module:GetUnitItemLevel(unit)
 								if quality == Enum.ItemQuality.Artifact then
 									hasArtifact = true
 								end
-
 								weapon[1] = level
 								haveWeapon = haveWeapon + 1
 								if slot == "INVTYPE_2HWEAPON" or slot == "INVTYPE_RANGED" or (slot == "INVTYPE_RANGEDRIGHT" and class == "HUNTER") then
@@ -357,41 +292,111 @@ function Module:GetUnitItemLevel(unit)
 		end
 	end
 
-	if not delay then
-		if unit == "player" then
-			ilvl = select(2, GetAverageItemLevel())
-		else
-			if hasArtifact or twohand == 2 then
-				local higher = math_max(weapon[1], weapon[2])
-				total = total + higher * 2
-			elseif twohand == 1 and haveWeapon == 1 then
-				total = total + weapon[1] * 2 + weapon[2] * 2
-			elseif twohand == 1 and haveWeapon == 2 then
-				if mainhand and weapon[1] >= weapon[2] then
-					total = total + weapon[1] * 2
-				elseif offhand and weapon[2] >= weapon[1] then
-					total = total + weapon[2] * 2
-				else
-					total = total + weapon[1] + weapon[2]
-				end
+	if delay then
+		return
+	end
+
+	if unit == "player" then
+		ilvl = select(2, GetAverageItemLevel())
+	else
+		if hasArtifact or twohand == 2 then
+			total = total + math_max(weapon[1], weapon[2]) * 2
+		elseif twohand == 1 and haveWeapon == 1 then
+			total = total + weapon[1] * 2 + weapon[2] * 2
+		elseif twohand == 1 and haveWeapon == 2 then
+			if mainhand and weapon[1] >= weapon[2] then
+				total = total + weapon[1] * 2
+			elseif offhand and weapon[2] >= weapon[1] then
+				total = total + weapon[2] * 2
 			else
 				total = total + weapon[1] + weapon[2]
 			end
-			ilvl = total / 16
+		else
+			total = total + weapon[1] + weapon[2]
 		end
+		ilvl = total / 16
+	end
 
-		if ilvl and ilvl > 0 then -- Add a check for nil before comparing
-			ilvl = string_format("%.1f", ilvl)
-		end
-		if boa > 0 then
-			ilvl = ilvl .. " - |cff00ccff" .. boa .. " " .. HEIRLOOMS
-		end
-		if sets > 0 then
-			ilvl = ilvl .. formatSets[sets]
-		end
+	if ilvl and ilvl > 0 then
+		ilvl = string_format("%.1f", ilvl)
+	end
+	if boa > 0 then
+		ilvl = ilvl .. " - |cff00ccff" .. boa .. " " .. HEIRLOOMS
+	end
+	if sets > 0 then
+		ilvl = ilvl .. (formatSets[sets] or "")
 	end
 
 	return ilvl
+end
+
+-- ---------------------------------------------------------------------------
+-- Inspect throttle + events
+-- ---------------------------------------------------------------------------
+local updater = CreateFrame("Frame")
+updater:Hide()
+updater:SetScript("OnUpdate", function(self, elapsed)
+	self.elapsed = (self.elapsed or frequency) + elapsed
+	if self.elapsed > frequency then
+		self.elapsed = 0
+		self:Hide()
+		ClearInspectPlayer()
+		-- Only inspect while this tip is still the shown one.
+		if not currentUNIT or not currentGUID or Module._tipShownGUID ~= tipShownGUID then
+			return
+		end
+		if checkUnitGUID(currentUNIT) == currentGUID then
+			K:RegisterEvent("INSPECT_READY", Module.GetInspectInfo)
+			NotifyInspect(currentUNIT)
+		end
+	end
+end)
+
+local inspectInventoryUnit
+
+local function clearInspectInventoryWatch()
+	if inspectInventoryUnit then
+		K:UnregisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
+		inspectInventoryUnit = nil
+	end
+end
+
+local function setInspectInventoryWatch(unit)
+	clearInspectInventoryWatch()
+	if unit and not K.UnitIsUnit(unit, "player") then
+		K:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo, unit)
+		inspectInventoryUnit = unit
+	end
+end
+
+function Module.GetInspectInfo(event, ...)
+	if event == "UNIT_INVENTORY_CHANGED" then
+		if not currentGUID or Module._tipShownGUID ~= tipShownGUID then
+			return
+		end
+		local thisTime = GetTime()
+		if thisTime - lastTime > 0.1 then
+			lastTime = thisTime
+			local unit = ...
+			if matchesCurrentGUID(unit) then
+				Module:InspectUnit(unit, true)
+			end
+		end
+	elseif event == "INSPECT_READY" then
+		local guid = ...
+		if NotSecret(guid) and guid == currentGUID and guid == tipShownGUID and Module._tipShownGUID == tipShownGUID and cache[guid] then
+			local level = Module:GetUnitItemLevel(currentUNIT)
+			cache[guid].level = level
+			cache[guid].getTime = GetTime()
+			if level then
+				Module:SetupItemLevel(level)
+			else
+				Module:InspectUnit(currentUNIT, true)
+			end
+		end
+		clearInspectInventoryWatch()
+		K:UnregisterEvent("INSPECT_READY", Module.GetInspectInfo)
+	end
 end
 
 function Module:InspectUnit(unit, forced)
@@ -401,44 +406,49 @@ function Module:InspectUnit(unit, forced)
 		clearInspectInventoryWatch()
 		level = self:GetUnitItemLevel("player")
 		self:SetupItemLevel(level)
-	else
-		if not matchesCurrentGUID(unit) then
-			clearInspectInventoryWatch()
-			return
-		end
-		if not UnitIsPlayer(unit) then
-			return
-		end
-
-		local currentDB = cache[currentGUID]
-		if not currentDB then
-			return
-		end
-		level = currentDB.level
-		self:SetupItemLevel(level)
-
-		if not C["Tooltip"].SpecLevelByShift and IsShiftKeyDown() then
-			forced = true
-		end
-		if level and not forced and (GetTime() - (currentDB.getTime or 0) < resetTime) then
-			updater.elapsed = frequency
-			return
-		end
-		if not UnitIsVisible(unit) or UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then
-			return
-		end
-		if InspectFrame and InspectFrame:IsShown() then
-			return
-		end
-
-		self:SetupItemLevel()
-		setInspectInventoryWatch(unit)
-		updater.retries = 0
-		updater:Show()
+		return
 	end
+
+	if not unit or checkUnitGUID(unit) ~= currentGUID then
+		clearInspectInventoryWatch()
+		return
+	end
+	if not UnitIsPlayer(unit) then
+		return
+	end
+
+	local currentDB = cache[currentGUID]
+	if not currentDB then
+		return
+	end
+
+	level = currentDB.level
+	self:SetupItemLevel(level)
+
+	if not C["Tooltip"].SpecLevelByShift and IsShiftKeyDown() then
+		forced = true
+	end
+	if level and not forced and (GetTime() - (currentDB.getTime or 0) < resetTime) then
+		updater.elapsed = frequency
+		return
+	end
+	if not UnitIsVisible(unit) or UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then
+		return
+	end
+	if InspectFrame and InspectFrame:IsShown() then
+		return
+	end
+	if GetTime() < userInspectUntil then
+		return
+	end
+
+	self:SetupItemLevel()
+	setInspectInventoryWatch(unit)
+	updater.retries = 0
+	updater:Show()
 end
 
-function Module:InspectUnitItemLevel(unit)
+function Module:InspectUnitItemLevel(unit, guid)
 	if C["Tooltip"].SpecLevelByShift and not IsShiftKeyDown() then
 		return
 	end
@@ -446,14 +456,35 @@ function Module:InspectUnitItemLevel(unit)
 	if not unit or not CanInspect(unit) then
 		return
 	end
+
 	currentUNIT = unit
-	currentGUID = checkUnitGUID(unit)
+	-- Prefer plain tip data.guid when UnitGUID(unit) is opaque.
+	currentGUID = (guid and NotSecret(guid) and guid) or checkUnitGUID(unit)
+	tipShownGUID = currentGUID
+	Module._tipShownGUID = tipShownGUID
+
 	if not currentGUID then
 		return
 	end
 	if not cache[currentGUID] then
+		if cacheCount >= CACHE_MAX then
+			wipe(cache)
+			cacheCount = 0
+		end
 		cache[currentGUID] = {}
+		cacheCount = cacheCount + 1
 	end
 
 	Module:InspectUnit(unit)
+end
+
+-- Called from GameTooltip OnHide — not OnTooltipCleared (cleared fires mid-rebuild).
+function Module:ClearItemLevelInspectState()
+	currentUNIT, currentGUID, tipShownGUID = nil, nil, nil
+	Module._tipShownGUID = nil
+	clearInspectInventoryWatch()
+	updater.elapsed = frequency
+	updater.retries = 0
+	updater:Hide()
+	K:UnregisterEvent("INSPECT_READY", Module.GetInspectInfo)
 end

@@ -9,10 +9,16 @@ local _G = _G
 
 local FILTER_KEYS = {
 	Emojis = "UpdateEmojis",
+	EmojiBubbles = "UpdateEmojis",
+	EmojiAutocomplete = "UpdateEmojis",
+	ChatFilter = "UpdateChatFilterState",
+	FilterList = "UpdateChatFilterState",
+	FilterMatches = "UpdateChatFilterState",
 	ChatItemLevel = "UpdateChatItemLevels",
 	LootIcons = "UpdateLootIcons",
 	HighlightPlayer = "UpdateChatHighlight",
 	HighlightGuild = "UpdateChatHighlight",
+	SystemChatFilter = "CreateSystemChatFilter",
 }
 
 local function OnChatSetting(configPath)

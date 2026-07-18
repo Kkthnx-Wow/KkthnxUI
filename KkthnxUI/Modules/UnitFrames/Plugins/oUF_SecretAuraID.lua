@@ -3,7 +3,7 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Identify player HELPFUL auras when spellId is secret under aura restrictions.
--- - Design: Ellesmere BM_IdentifySecretAura — plain filter fingerprint → curated spellID.
+-- - Design: plain filter fingerprint → curated spellID for secret auras.
 --   IsAuraFilteredOutByInstanceID returns a normal bool (SecretArguments only).
 -----------------------------------------------------------------------------]]
 
@@ -33,7 +33,7 @@ local SPEC_SECRET_SIGS = {
 	[1473] = { ["0:1:0:0"] = 361022 }, -- Aug — Sense Power
 }
 
--- Ellesmere: plain `not IsAuraFilteredOut…` — return is not SecretReturns.
+-- Plain `not IsAuraFilteredOut…` — return is not SecretReturns.
 local function AuraPassesFilter(unit, instanceID, filter)
 	return not IsAuraFilteredOutByInstanceID(unit, instanceID, filter)
 end

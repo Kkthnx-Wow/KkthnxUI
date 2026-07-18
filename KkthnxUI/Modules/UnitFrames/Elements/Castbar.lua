@@ -915,26 +915,23 @@ function Module:UpdateKickTick(castbar)
 
 	castbar.kickPositioner:Show()
 	castbar.kickMarker:Show()
-	castbar.kickTick:Show()
 
+	-- Tick and mid-cast fill are independent toggles (SetShown).
+	local tickOn = C["Unitframe"].CastbarKickTick ~= false
 	local midOn = C["Unitframe"].CastbarKickReadyFill == true
+	castbar.kickTick:SetShown(tickOn)
+	local readyFill = castbar.kickReadyFill
 	if readyFill then
-		if midOn then
-			readyFill:Show()
-		else
-			readyFill:Hide()
-		end
+		readyFill:SetShown(midOn)
 	end
 
 	if interruptCD.IsZero and C_CurveUtil and C_CurveUtil.EvaluateColorValueFromBoolean then
 		local interruptible = C_CurveUtil.EvaluateColorValueFromBoolean(kickProtected, 0, 1)
 		local kickReady = interruptCD:IsZero()
 		local alpha = C_CurveUtil.EvaluateColorValueFromBoolean(kickReady, 0, interruptible)
-		castbar.kickTick:SetAlpha(alpha)
-		if readyFill and midOn then
-			readyFill:SetAlpha(alpha)
-		elseif readyFill then
-			readyFill:SetAlpha(0)
+		castbar.kickTick:SetAlpha(tickOn and alpha or 0)
+		if readyFill then
+			readyFill:SetAlpha(midOn and alpha or 0)
 		end
 	else
 		castbar.kickTick:SetAlpha(0)
@@ -959,11 +956,11 @@ function Module:UpdateKickTick(castbar)
 		if icd and icd.IsZero and C_CurveUtil and C_CurveUtil.EvaluateColorValueFromBoolean then
 			local interruptible = C_CurveUtil.EvaluateColorValueFromBoolean(castbar._kickProtected, 0, 1)
 			local alpha = C_CurveUtil.EvaluateColorValueFromBoolean(icd:IsZero(), 0, interruptible)
-			castbar.kickTick:SetAlpha(alpha)
-			if castbar.kickReadyFill and C["Unitframe"].CastbarKickReadyFill then
-				castbar.kickReadyFill:SetAlpha(alpha)
-			elseif castbar.kickReadyFill then
-				castbar.kickReadyFill:SetAlpha(0)
+			local tickEnabled = C["Unitframe"].CastbarKickTick ~= false
+			local midEnabled = C["Unitframe"].CastbarKickReadyFill == true
+			castbar.kickTick:SetAlpha(tickEnabled and alpha or 0)
+			if castbar.kickReadyFill then
+				castbar.kickReadyFill:SetAlpha(midEnabled and alpha or 0)
 			end
 		end
 	end)
@@ -1011,9 +1008,11 @@ function Module:RefreshKickTick(castbar)
 	if interruptCD.IsZero and C_CurveUtil and C_CurveUtil.EvaluateColorValueFromBoolean then
 		local interruptible = C_CurveUtil.EvaluateColorValueFromBoolean(castbar._kickProtected, 0, 1)
 		local alpha = C_CurveUtil.EvaluateColorValueFromBoolean(interruptCD:IsZero(), 0, interruptible)
-		castbar.kickTick:SetAlpha(alpha)
+		local tickOn = C["Unitframe"].CastbarKickTick ~= false
+		local midOn = C["Unitframe"].CastbarKickReadyFill == true
+		castbar.kickTick:SetAlpha(tickOn and alpha or 0)
 		if castbar.kickReadyFill then
-			castbar.kickReadyFill:SetAlpha(alpha)
+			castbar.kickReadyFill:SetAlpha(midOn and alpha or 0)
 		end
 	end
 end

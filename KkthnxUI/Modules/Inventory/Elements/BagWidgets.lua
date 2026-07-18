@@ -419,7 +419,7 @@ function Module:CreateSortButton(btnName)
 		elseif btnName == "Account" then
 			C_Container_SortAccountBankBags()
 		else
-			-- Sorting reorganizes the bag — drop Recent membership (Bagforge ClearBackpack).
+			-- Sorting reorganizes the bag — drop Recent membership.
 			if Module.ClearRecentBackpack then
 				Module:ClearRecentBackpack()
 			end
@@ -863,7 +863,7 @@ function Module:ButtonOnClick(btn)
 		return
 	end
 
-	-- Click clears "new" so the slot leaves Recent / loses glow (Bagforge Clear-on-click).
+	-- Click clears "new" so the slot leaves Recent / loses glow.
 	if self.bagId and self.slotId and Module.ClearRecentItem and Module:IsRecentItem(self.bagId, self.slotId) then
 		Module:ClearRecentItem(self.bagId, self.slotId)
 		if Module.Bags then

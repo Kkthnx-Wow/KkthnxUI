@@ -18,6 +18,8 @@ local next, type, sqrt, GetTime, format = next, type, sqrt, GetTime, format
 local RegisterStateDriver, InCombatLockdown = RegisterStateDriver, InCombatLockdown
 local C_Item_IsItemInRange, C_Item_ItemHasRange, HasExtraActionBar = C_Item.IsItemInRange, C_Item.ItemHasRange, HasExtraActionBar
 local C_Item_GetItemCooldown, C_Item_GetItemCount, C_Item_GetItemIconByID, GetItemInfoFromHyperlink = C_Item.GetItemCooldown, C_Item.GetItemCount, C_Item.GetItemIconByID, GetItemInfoFromHyperlink
+local C_DurationUtil_CreateDuration = C_DurationUtil and C_DurationUtil.CreateDuration
+local IsSecret = K.IsSecret
 local GetBindingKey, GetBindingText = GetBindingKey, GetBindingText
 local GetQuestLogSpecialItemInfo, QuestHasPOIInfo = GetQuestLogSpecialItemInfo, QuestHasPOIInfo
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
@@ -95,15 +97,33 @@ ExtraQuestButton:SetScript("OnEvent", function(self, event, ...)
 end)
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
-	if self:IsShown() and self.itemID then
-		local start, duration = C_Item_GetItemCooldown(self.itemID)
-		if duration > 0 then
-			self.Cooldown:SetCooldown(start, duration)
-			self.Cooldown:Show()
-		else
-			self.Cooldown:Hide()
-		end
+	if not (self:IsShown() and self.itemID) then
+		return
 	end
+	local cd = self.Cooldown
+	if not cd then
+		return
+	end
+	local start, duration = C_Item_GetItemCooldown(self.itemID)
+	-- GetItemCooldown can return secret numbers mid-combat; never compare or feed
+	-- them into SetCooldown / DurationObject arithmetic.
+	if IsSecret(start) or IsSecret(duration) then
+		cd:Hide()
+		return
+	end
+	if duration and duration > 0 and start then
+		if C_DurationUtil_CreateDuration then
+			local durObj = C_DurationUtil_CreateDuration()
+			durObj:SetTimeFromStart(start, duration)
+			cd:SetCooldownFromDurationObject(durObj)
+			K.MaskCooldownSwipeFromDurationObject(cd, durObj)
+		else
+			cd:SetCooldown(start, duration)
+		end
+		cd:Show()
+		return
+	end
+	cd:Hide()
 end
 
 function ExtraQuestButton:UpdateCount()

@@ -34,7 +34,7 @@ local CharacterLevelText = _G.CharacterLevelText
 local CharacterFrameInsetRight = _G.CharacterFrameInsetRight
 local PaperDollFrame = _G.PaperDollFrame
 
--- Constants (NexEnhance CharacterFrames layout math)
+-- Constants (CharacterFrames layout math)
 local SLOT_SIZE = 37
 local FONT_SIZE_RANK = 13
 local FONT_SIZE_ILVL = 20
@@ -264,7 +264,7 @@ local function HandleTitleManagerScrollBox(scrollBox)
 end
 
 -- ---
--- Layout helpers (NexEnhance CharacterFrames — keep gems above paperdoll FX)
+-- Layout helpers (keep gems above paperdoll FX)
 -- ---
 
 -- Blizzard's enchant glow is a centered 128x128; stretching it with huge negative

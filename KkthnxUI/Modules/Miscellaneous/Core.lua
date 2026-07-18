@@ -222,6 +222,9 @@ function Module:OnEnable()
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
+		"CreateHeroTalentSwap",
+		"CreateAudioSync",
+		"CreateAchievementBackButton",
 		"UpdateMaxCameraZoom",
 		"UpdateYClassColors",
 	}

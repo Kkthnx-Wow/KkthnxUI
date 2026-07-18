@@ -3,7 +3,7 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Skins the Blizzard Inspect frame and equipment slots.
--- - Design: NexEnhance CharacterFrames layout math — model fills inset, deferred tab resize.
+-- - Design: CharacterFrames layout math — model fills inset, deferred tab resize.
 -- - Events: N/A (Blizzard_InspectUI load-on-demand theme)
 -----------------------------------------------------------------------------]]
 
@@ -23,7 +23,7 @@ local UnitClass = _G.UnitClass
 
 -- NOTE: InspectFrame globals are NOT cached here because Blizzard_InspectUI is load-on-demand.
 
--- Constants (match NexEnhance CharacterFrames inspect sizes)
+-- Constants (inspect sizes)
 local SLOT_SIZE = 37
 local FRAME_SIZE_TAB1 = { width = 438, height = 431 }
 local FRAME_SIZE_TAB2 = { width = 338, height = 424 }
@@ -241,7 +241,7 @@ C.themes["Blizzard_InspectUI"] = function()
 
 		hooksecurefunc("InspectPaperDollItemSlotButton_Update", UpdateCosmetic)
 
-		-- Defer tab layout like NexEnhance — avoids tainting secure elements mid-switch.
+		-- Defer tab layout — avoids tainting secure elements mid-switch.
 		hooksecurefunc("InspectSwitchTabs", function(newID)
 			C_Timer_After(0, function()
 				ApplyInspectFrameLayout(newID)
@@ -272,7 +272,7 @@ C.themes["Blizzard_InspectUI"] = function()
 			end
 
 			if InspectModelFrame then
-				-- NexEnhance: stretch model to inset, leave foot room for avg iLvl text.
+				-- Stretch model to inset, leave foot room for avg iLvl text.
 				InspectModelFrame:SetSize(0, 0)
 				InspectModelFrame:ClearAllPoints()
 				InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 0, 0)

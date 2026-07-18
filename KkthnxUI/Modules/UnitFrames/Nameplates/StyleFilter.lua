@@ -36,6 +36,7 @@ function Module:ApplyStyleFilter(unit)
 
 	if self._styleFiltered then
 		self:SetScale(1)
+		Module:RefreshCastOverlay(self)
 		local element = self.Health:GetStatusBarTexture()
 		if element and element.SetDesaturated then
 			element:SetDesaturated(false)
@@ -67,6 +68,8 @@ function Module:ApplyStyleFilter(unit)
 		if filter then
 			if filter.scale then
 				self:SetScale(filter.scale)
+				-- Cast overlay lives on UIParent; re-apply lift scale after plate SetScale.
+				Module:RefreshCastOverlay(self)
 			end
 
 			if filter.color then

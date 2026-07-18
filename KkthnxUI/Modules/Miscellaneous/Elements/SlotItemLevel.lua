@@ -156,7 +156,7 @@ local function onGemIconLeave()
 end
 
 function Module:createSlotIconTexture(parentSlotFrame, anchorPoint, offsetX, offsetY)
-	-- Icon owns size/crop; border is a sibling wrap (NDui ReskinIcon / pre-hitframe KKUI).
+	-- Icon owns size/crop; border is a sibling wrap (pre-hitframe KKUI).
 	-- Hitframe-as-parent + inset made the Blizzard chrome show inside our border.
 	local iconTexture = parentSlotFrame:CreateTexture(nil, "OVERLAY", nil, 7)
 	iconTexture:SetPoint(anchorPoint, offsetX, offsetY)
@@ -292,7 +292,7 @@ function Module:createSlotItemLevelStrings(parentFrame, prefixName)
 				slotFrame.enchantText:HookScript("OnShow", onItemStringLeave)
 
 				local enchantPoint, enchantOffsetX, enchantOffsetY = Module:getMissingEnchantAnchor(slotIndex, anchorPoint, offsetX, offsetY)
-				-- Only enchantable slots get the missing marker (NexEnhance pattern).
+				-- Only enchantable slots get the missing marker.
 				if ENCHANTABLE_SLOTS[slotIndex] then
 					Module:ensureMissingEnchantIcon(slotFrame, slotToken, enchantPoint, enchantOffsetX, enchantOffsetY)
 				end

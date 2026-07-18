@@ -385,7 +385,7 @@ end
 
 function Module:CreatePing()
 	-- MIDNIGHT (12.0): Blizzard removed the legacy minimap ping info event.
-	-- NDui disables this feature on 12.x for the same reason.
+	-- Disabled on 12.x for the same reason.
 	if K.TocVersion and K.TocVersion >= 120000 then
 		return
 	end
@@ -712,6 +712,11 @@ function Module:SetFullQueueStatus(title, queuedTime, averageWait)
 		return
 	end
 
+	-- SECRET: never compare or store opaque queue titles.
+	if title and not K.NotSecret(title) then
+		return
+	end
+
 	if not statusDisplay.title or statusDisplay.title == title then
 		if queuedTime then
 			statusDisplay.title = title
@@ -727,7 +732,13 @@ end
 
 function Module:SetMinimalQueueStatus(title)
 	local statusDisplay = Module.QueueStatusDisplay
-	if statusDisplay and statusDisplay.title == title then
+	if not statusDisplay then
+		return
+	end
+	if title and not K.NotSecret(title) then
+		return
+	end
+	if statusDisplay.title == title then
 		Module:ClearQueueStatus()
 	end
 end

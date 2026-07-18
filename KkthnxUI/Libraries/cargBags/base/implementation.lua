@@ -97,11 +97,37 @@ end
 	Script handler, inits and updates the Implementation when shown
 	@callback OnOpen
 ]]
+-- Combat create of ContainerFrameItemButtonTemplate taints UseContainerItem.
+-- Defer Init until PLAYER_REGEN_ENABLED if bags open mid-fight.
+local combatInitFrame
+local function EnsureCombatInitWatch(impl)
+	if not combatInitFrame then
+		combatInitFrame = CreateFrame("Frame")
+		combatInitFrame:SetScript("OnEvent", function(self)
+			self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			local pending = self.pending
+			self.pending = nil
+			if pending and pending.notInited and not InCombatLockdown() then
+				pending:Init()
+				if pending:IsShown() then
+					if pending.OnOpen then
+						pending:OnOpen()
+					end
+					pending:OnEvent("BAG_UPDATE")
+				end
+			end
+		end)
+	end
+	combatInitFrame.pending = impl
+	combatInitFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+end
+
 function Implementation:OnShow()
 	if self.notInited then
-		if not (InCombatLockdown()) then -- initialization of bags in combat taints the itembuttons within - Lars Norberg
+		if not InCombatLockdown() then
 			self:Init()
 		else
+			EnsureCombatInitWatch(self)
 			return
 		end
 	end
@@ -465,40 +491,81 @@ end
 	@param slotID <number> [optional]
 	@callback Container:OnBagUpdate(bagID, slotID)
 ]]
-local isUpdating = false
+-- Bag-level BAG_UPDATE storms coalesce to one end-of-frame flush.
+-- Slot-level updates stay immediate (loot/stack feel).
+-- Old isUpdating early-return dropped nested bag updates mid-walk — silent misses.
+local dirtyBags = {}
+local dirtyAll = false
+local flushScheduled = false
+local C_Timer_After = C_Timer and C_Timer.After
+
+local function UpdateBankBags(self)
+	local bankType = BankFrame and BankFrame.BankPanel and BankFrame.BankPanel.bankType
+	if bankType == Enum.BankType.Character then
+		for bagID = 6, 11 do
+			self:UpdateBag(bagID)
+		end
+	elseif bankType == Enum.BankType.Account then
+		for bagID = 12, 16 do
+			self:UpdateBag(bagID)
+		end
+	end
+end
+
+local function FlushDirtyBags(self)
+	flushScheduled = false
+	if self.isSorting then
+		table_wipe(dirtyBags)
+		dirtyAll = false
+		return
+	end
+
+	if dirtyAll then
+		table_wipe(dirtyBags)
+		dirtyAll = false
+		for bagID = 0, 5 do
+			self:UpdateBag(bagID)
+		end
+		UpdateBankBags(self)
+	else
+		for bagID in pairs(dirtyBags) do
+			dirtyBags[bagID] = nil
+			self:UpdateBag(bagID)
+		end
+	end
+end
+
+local function ScheduleBagFlush(self)
+	if not C_Timer_After then
+		FlushDirtyBags(self)
+		return
+	end
+	if flushScheduled then
+		return
+	end
+	flushScheduled = true
+	C_Timer_After(0, function()
+		FlushDirtyBags(self)
+	end)
+end
 
 function Implementation:BAG_UPDATE(_, bagID, slotID)
 	if self.isSorting then
 		return
 	end
-	if isUpdating then
-		return
-	end
-	isUpdating = true
 
+	-- Single slot: paint now. Re-entrancy safe (UpdateSlot doesn't nest bag walks).
 	if bagID and slotID then
 		self:UpdateSlot(bagID, slotID)
-	elseif bagID then
-		self:UpdateBag(bagID)
-	else
-		for bagID = 0, 5 do
-			self:UpdateBag(bagID)
-		end
-
-		local bankType = BankFrame and BankFrame.BankPanel and BankFrame.BankPanel.bankType
-
-		if bankType == Enum.BankType.Character then
-			for bagID = 6, 11 do
-				self:UpdateBag(bagID)
-			end
-		elseif bankType == Enum.BankType.Account then
-			for bagID = 12, 16 do
-				self:UpdateBag(bagID)
-			end
-		end
+		return
 	end
 
-	isUpdating = false
+	if bagID then
+		dirtyBags[bagID] = true
+	else
+		dirtyAll = true
+	end
+	ScheduleBagFlush(self)
 end
 
 --[[!

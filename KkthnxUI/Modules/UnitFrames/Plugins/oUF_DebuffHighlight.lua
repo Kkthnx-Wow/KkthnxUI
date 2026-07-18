@@ -3,23 +3,19 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Highlights unit frames based on dispellable debuffs.
--- - Design: Checks unit auras and highlights the frame if a debuff matches player's class dispel capabilities.
+-- - Design: Prefer Blizzard RAID_PLAYER_DISPELLABLE when filtering; color via
+--   GetAuraDispelTypeColor / name table (DebuffTypeColor is gone in Midnight).
 -- - Events: UNIT_AURA, PLAYER_TALENT_UPDATE.
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
--- PERF: Localize frequently used APIs and globals to minimize lookup overhead on UNIT_AURA.
--- REASON: Dispelling scans execute dozens of times per second in raid groups.
 local _G = _G
 local ipairs = _G.ipairs
 local UnitCanAssist = _G.UnitCanAssist
 local GetSpecialization = _G.GetSpecialization
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras.GetAuraDataByIndex
-
--- Incident (Jul 2026): _G.DebuffTypeColor removed in Midnight. Prefer instance
--- RGB via GetAuraDispelTypeColor; name table is oUF.colors.dispel / DEBUFF_TYPE_*.
 
 local CanDispel = {
 	["DRUID"] = {
@@ -59,31 +55,38 @@ local origColors = {}
 
 local NotSecret = K.NotSecret
 
+-- Clear state matches CreateDebuffHighlight (invisible ADD overlay).
+local CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A = 0, 0, 0, 0
+
 local function GetDebuffType(unitToken, filter)
-	-- Check if the unit is assistable
 	if not UnitCanAssist("player", unitToken) then
 		return nil
 	end
 
+	-- Filtered: Blizzard scopes to what we can dispel (no false Magic from undispellables).
+	local auraFilter = filter and "HARMFUL|RAID_PLAYER_DISPELLABLE" or "HARMFUL"
+
 	local i = 1
 	while true do
-		-- Get aura data
-		local aura = C_UnitAuras_GetAuraDataByIndex(unitToken, i, "HARMFUL")
+		local aura = C_UnitAuras_GetAuraDataByIndex(unitToken, i, auraFilter)
 		if not aura then
 			break
 		end
 
-		-- SECRET (12.0): the "HARMFUL" query already guarantees a debuff, so we drop
-		-- the secret aura.isHarmful read. dispelName feeds dispellist lookups
-		-- (table keys), so it must be non-secret before we touch it.
 		local dispelName = aura.dispelName
-		if NotSecret(dispelName) and (not filter or dispellist[dispelName]) then
-			return dispelName, aura.icon, aura.auraInstanceID
-		end
-
-		local resolved = aura.auraInstanceID and K.GetAuraDispelTypeName(unitToken, aura.auraInstanceID, oUF)
-		if resolved and (not filter or dispellist[resolved]) then
-			return resolved, aura.icon, aura.auraInstanceID
+		if NotSecret(dispelName) and dispelName then
+			-- Unfiltered: only typed auras. Filtered: Blizzard already gated capability.
+			if filter or dispellist[dispelName] then
+				return dispelName, aura.icon, aura.auraInstanceID
+			end
+		elseif aura.auraInstanceID then
+			local resolved = K.GetAuraDispelTypeName(unitToken, aura.auraInstanceID, oUF)
+			if filter then
+				-- Dispellable per Blizzard; type name only needed for color.
+				return resolved or "Magic", aura.icon, aura.auraInstanceID
+			elseif resolved then
+				return resolved, aura.icon, aura.auraInstanceID
+			end
 		end
 
 		i = i + 1
@@ -101,6 +104,19 @@ local function CheckSpec()
 		dispellist.Magic = GetSpecialization() == 3
 	elseif K.Class == "EVOKER" then
 		dispellist.Magic = GetSpecialization() == 2
+	end
+end
+
+local function ClearHighlight(object)
+	if object.DebuffHighlightUseTexture then
+		object.DebuffHighlight:SetTexture(nil)
+		return
+	end
+	local color = origColors[object]
+	if color then
+		object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
+	else
+		object.DebuffHighlight:SetVertexColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A)
 	end
 end
 
@@ -123,34 +139,27 @@ local function Update(object, _, unit)
 			object.DebuffHighlight:SetVertexColor(r, g, b, object.DebuffHighlightAlpha or 0.5)
 		end
 	else
-		if object.DebuffHighlightUseTexture then
-			object.DebuffHighlight:SetTexture(nil)
-		else
-			local color = origColors[object]
-			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
-		end
+		ClearHighlight(object)
 	end
 end
 
 local function Enable(object)
-	-- If we're not highlighting this unit return
 	if not object.DebuffHighlight then
 		return
 	end
 
-	-- If we're filtering highlights and we're not of the dispelling type, return
 	if object.DebuffHighlightFilter and not CanDispel[K.Class] then
 		return
 	end
 
-	-- Make sure aura scanning is active for this object
 	object:RegisterEvent("UNIT_AURA", Update)
 	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec, true)
 	CheckSpec()
 
 	if not object.DebuffHighlightUseTexture then
-		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
-		origColors[object] = { r = r, g = g, b = b, a = a }
+		-- Always store the invisible baseline — never capture a live highlight tint.
+		origColors[object] = { r = CLEAR_R, g = CLEAR_G, b = CLEAR_B, a = CLEAR_A }
+		object.DebuffHighlight:SetVertexColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A)
 	end
 
 	return true
@@ -160,6 +169,7 @@ local function Disable(object)
 	if object.DebuffHighlight then
 		object:UnregisterEvent("UNIT_AURA", Update)
 		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
+		ClearHighlight(object)
 	end
 end
 

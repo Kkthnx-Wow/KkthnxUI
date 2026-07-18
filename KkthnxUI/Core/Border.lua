@@ -79,6 +79,8 @@ function Module:SetOffset(offset)
 		return
 	end
 
+	-- Snap inset so corners land on physical pixels when Mult ~= 1.
+	offset = K.Scale and K.Scale(offset) or offset
 	self.__offset = offset
 
 	local p = self.__parent
@@ -117,6 +119,7 @@ function Module:SetSize(size)
 		error("Border:SetSize() - Size must be a number", 2)
 	end
 
+	size = K.Scale and K.Scale(size) or size
 	self.__size = size
 
 	self.TOPLEFT:SetSize(size, size)
@@ -189,6 +192,9 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	local function CreateEdge(c1, c2, c3, c4)
 		local tex = self:CreateTexture(nil, layer, nil, subLevel)
 		tex:SetTexCoord(c1, c2, c3, c4)
+		if K.DisablePixelSnap then
+			K.DisablePixelSnap(tex)
+		end
 		return tex
 	end
 

@@ -2,7 +2,7 @@
 -- Addon: KkthnxUI
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
--- - Purpose: Shared portrait factory for unit frames (Ellesmere CreatePortrait patterns).
+-- - Purpose: Shared portrait factory for unit frames.
 -- - Design: Keeps KKUI layout (detached left/right, overlay, 3D) in one place.
 -- - Events: N/A — wired via oUF Portrait.Override in Core.lua.
 -----------------------------------------------------------------------------]]

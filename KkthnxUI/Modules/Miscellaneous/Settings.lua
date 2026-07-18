@@ -34,6 +34,9 @@ local REFRESH_BY_KEY = {
 	PopupAutoConfirmTradeableSell = "UpdatePopupQoL",
 	PopupEnterAcceptPurchase = "UpdatePopupQoL",
 	PopupAltStackBuy = "UpdatePopupQoL",
+	HeroTalentSwap = "CreateHeroTalentSwap",
+	AudioSync = "CreateAudioSync",
+	AchievementBackButton = "CreateAchievementBackButton",
 }
 
 local function OnMiscSetting(configPath)

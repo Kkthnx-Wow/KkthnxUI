@@ -22,6 +22,8 @@ local type = type
 
 local max = max
 local min = min
+local math_abs = math.abs
+local math_floor = math.floor
 
 local print = print
 
@@ -345,8 +347,8 @@ end)
 -- MIDNIGHT (12.0): do NOT register COMBAT_LOG_EVENT_UNFILTERED here. Registering it
 -- from the addon-load bootstrap chunk runs during the restricted load phase and gets
 -- blocked (ADDON_ACTION_BLOCKED at Frame:RegisterEvent), which then taints the rest of
--- KkthnxUI's init and floods taint.log. NDui registers CLEU lazily from a real consumer
--- after login instead, so we mirror that: K:RegisterEvent below performs the actual
+-- KkthnxUI's init and floods taint.log. Register CLEU lazily from a real consumer
+-- after login instead: K:RegisterEvent below performs the actual
 -- eventsFrame:RegisterEvent the first time a module subscribes (post-PLAYER_LOGIN).
 
 function K:RegisterEvent(event, func)
@@ -508,27 +510,52 @@ end
 K.HookSecureFunc = hooksecurefunc
 
 -- ---------------------------------------------------------------------------
--- UI Scaling
+-- UI Scaling (exact perfect scale — no 2-decimal rounding)
 -- ---------------------------------------------------------------------------
 
--- PERF: Calculate the most pixel-perfect scale for the current resolution.
+-- Incident (UIScale, Jul 2026): K.Round(scale, 2) turned 768/1440≈0.5333 into 0.53
+-- and soft 1px borders. Keep full precision; Mult = perfect / uiScale.
+local function GetPerfectScale()
+	return max(0.4, min(1.15, 768 / K.ScreenHeight))
+end
+
 local function GetBestScale()
-	local scale = max(0.4, min(1.15, 768 / K.ScreenHeight))
-	return K.Round(scale, 2)
+	return GetPerfectScale()
+end
+
+-- Truncated AutoScale leftovers (0.53, 0.71, …) → exact perfect when AutoScale is on.
+local function MigrateTruncatedAutoScale()
+	if not C["General"].AutoScale then
+		return
+	end
+	local perfect = GetPerfectScale()
+	local stored = C["General"].UIScale
+	if type(stored) ~= "number" then
+		return
+	end
+	-- Old AutoScale wrote Round(perfect, 2); swap back to the exact value.
+	local truncated = math_floor(perfect * 100 + 0.5) / 100
+	if math_abs(stored - truncated) < 0.0001 and math_abs(stored - perfect) > 0.0001 then
+		C["General"].UIScale = perfect
+	end
 end
 
 function K:SetupUIScale(init)
+	MigrateTruncatedAutoScale()
+
 	if C["General"].AutoScale then
 		C["General"].UIScale = GetBestScale()
 	end
 
 	local scale = C["General"].UIScale
 	if init then
-		-- REASON: Pre-calculate the coordinate multiplier for pixel-perfect positioning.
-		-- Stored on C (Config table) to match NDui's C.mult pattern and be accessible to all modules.
-		local pixel = 1
-		local ratio = 768 / K.ScreenHeight
-		C.Mult = (pixel / scale) - ((pixel - ratio) / scale)
+		if K.UpdatePixelMult then
+			K.UpdatePixelMult()
+		else
+			-- Core/Functions may not be loaded yet on very early calls.
+			local perfect = 768 / K.ScreenHeight
+			C.Mult = perfect / (scale ~= 0 and scale or 1)
+		end
 		return
 	end
 
@@ -542,6 +569,9 @@ function K:SetupUIScale(init)
 	end
 
 	UIParent:SetScale(scale)
+	if K.UpdatePixelMult then
+		K.UpdatePixelMult()
+	end
 end
 
 local function UpdatePixelScale(event)
@@ -551,7 +581,7 @@ local function UpdatePixelScale(event)
 
 	-- REASON: Always refresh screen dimensions and recalculate C.Mult immediately, even
 	-- during combat. Only UIParent:SetScale is protected by combat lockdown and must be
-	-- deferred. Matches NDui's pattern where B:SetupUIScale(true) runs unconditionally.
+	-- deferred. Recalc Mult immediately; only SetScale waits for regen.
 	if event == "UI_SCALE_CHANGED" then
 		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 	end

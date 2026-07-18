@@ -425,8 +425,15 @@ function Module:SkinChat()
 	eb:CreateBorder()
 	updateEditboxFont(eb)
 	eb:Hide()
-	installEditHistory(eb)
-	eb:HookScript("OnTextChanged", editBoxOnTextChanged)
+
+	-- Whisper-temp: history/key hooks on temporary frames taint edit box.
+	-- Skin temps visually only; permanent docked frames (1..NUM_CHAT_WINDOWS) get history.
+	local frameIndex = self:GetID()
+	local isPermanent = not self.isTemporary and frameIndex and frameIndex > 0 and frameIndex <= (NUM_CHAT_WINDOWS or 10)
+	if isPermanent then
+		installEditHistory(eb)
+		eb:HookScript("OnTextChanged", editBoxOnTextChanged)
+	end
 
 	local lang = _G[name .. "EditBoxLanguage"]
 	lang:GetRegions():SetAlpha(0)
@@ -810,7 +817,7 @@ function Module:InitChat()
 
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	-- MIDNIGHT (12.0): FloatingChatFrame_OnEvent and ChatFrame_MessageEventHandler
-	-- were removed as globals. Mirror NDui: tab whisper coloring routes through the
+	-- were removed as globals. Tab whisper coloring routes through the
 	-- floating chat frame manager, and whisper detection hooks the message-filter pass.
 	hooksecurefunc("FloatingChatFrameManager_OnEvent", Module.UpdateTabEventColors)
 	hooksecurefunc(_G.ChatFrameUtil, "ProcessMessageEventFilters", Module.PlayWhisperSound)
@@ -836,9 +843,11 @@ function Module:InitChat()
 		"CreateCopyChat",
 		"CreateCopyURL",
 		"CreateEmojis",
+		"CreateChatFilter",
 		"CreateVoiceActivity",
 		"CreateChatHighlight",
 		"CreateLootIcons",
+		"CreateSystemChatFilter",
 	}
 
 	for _, funcName in ipairs(loadChatModulesList) do

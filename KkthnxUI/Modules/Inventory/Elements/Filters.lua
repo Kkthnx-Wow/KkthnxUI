@@ -121,7 +121,7 @@ local function isItemJunk(item)
 	return (item.quality == Enum.ItemQuality.Poor or isCustomJunk) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
--- Bagforge-style Recent: newly looted slots (C_NewItems + GUID tracker after login baseline).
+-- Recent: newly looted slots (C_NewItems + GUID tracker after login baseline).
 local function isItemRecent(item)
 	if not CheckFilterSetting("FilterRecent") then
 		return
@@ -178,7 +178,7 @@ local function isItemDecor(item)
 	end
 
 	-- REASON: Midnight (12.0) housing decor. C_Item.IsDecorItem reports items that
-	-- can be placed in player housing; group them separately like NDui does.
+	-- can be placed in player housing; group them separately.
 	if not C_Item_IsDecorItem then
 		return
 	end

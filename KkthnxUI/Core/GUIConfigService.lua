@@ -40,6 +40,11 @@ function GUIConfigService:EnsureSettingsTable()
 		return nil
 	end
 
+	if K.ProfileService and K.ProfileService.GetActiveSettings then
+		return K.ProfileService:GetActiveSettings()
+	end
+
+	-- Legacy fallback before ProfileService loads.
 	if type(KkthnxUIDB.Settings) ~= "table" then
 		KkthnxUIDB.Settings = {}
 	end

@@ -69,5 +69,15 @@ function B.CreateActionBarsCategory()
 	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeCasting", L["Fade While Casting"], L["BarFadeCasting Desc"])
 	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeHealth", L["Fade on Full Health"], L["BarFadeHealth Desc"])
 	GUI:CreateSwitch(faderSection, "ActionBar.BarFadeVehicle", L["Fade in Vehicle"], L["BarFadeVehicle Desc"])
+
+	-- Cursor Ring
+	local cursorRingSection = GUI:AddSection(actionBarCategory, L["Cursor Ring"])
+	GUI:CreateSwitch(cursorRingSection, "ActionBar.CursorRing", enableTextColor .. L["Enable Cursor Ring"], L["ActionBar.CursorRing Desc"])
+	local cursorCast = GUI:CreateSwitch(cursorRingSection, "ActionBar.CursorRingShowCast", L["Show Cast Ring"], L["ActionBar.CursorRingShowCast Desc"])
+	local cursorCombat = GUI:CreateSwitch(cursorRingSection, "ActionBar.CursorRingCombatOnly", L["Combat Only"], L["ActionBar.CursorRingCombatOnly Desc"])
+	local cursorSize = GUI:CreateSlider(cursorRingSection, "ActionBar.CursorRingSize", L["Cursor Ring Size"], 24, 96, 2, L["ActionBar.CursorRingSize Desc"])
+	GUI:DependsOn(cursorCast, "ActionBar.CursorRing", true)
+	GUI:DependsOn(cursorCombat, "ActionBar.CursorRing", true)
+	GUI:DependsOn(cursorSize, "ActionBar.CursorRing", true)
 end
 

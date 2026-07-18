@@ -22,7 +22,7 @@ local pairs = pairs
 -- DATABASE HANDLING
 -- ---------------------------------------------------------------------------
 
-local CURRENT_SCHEMA_VERSION = 1
+local CURRENT_SCHEMA_VERSION = 2
 
 local function DeepCopy(src)
 	local dest = {}
@@ -67,7 +67,7 @@ end
 
 local schemaMigrations = {
 	[1] = function()
-		for _, realmData in pairs(KkthnxUIDB.Settings) do
+		for _, realmData in pairs(KkthnxUIDB.Settings or {}) do
 			if type(realmData) == "table" then
 				for _, settings in pairs(realmData) do
 					if type(settings) == "table" then
@@ -79,6 +79,12 @@ local schemaMigrations = {
 					end
 				end
 			end
+		end
+	end,
+	-- Named profiles + profileKeys. Preserve Settings via ProfileService migrate.
+	[2] = function()
+		if K.ProfileService and K.ProfileService.MigrateFromCharacterSettings then
+			K.ProfileService:MigrateFromCharacterSettings()
 		end
 	end,
 }
@@ -118,7 +124,16 @@ local function KKUI_CreateDefaults()
 end
 
 local function KKUI_LoadCustomSettings()
-	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
+	local Settings
+	if K.ProfileService and K.ProfileService.GetActiveSettings then
+		Settings = K.ProfileService:GetActiveSettings()
+	elseif KkthnxUIDB.Settings and KkthnxUIDB.Settings[K.Realm] then
+		Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
+	end
+	if type(Settings) ~= "table" then
+		return
+	end
+
 	local removeGroups = {}
 	local metaKeys = K.ProfileMetaKeys
 
@@ -196,10 +211,33 @@ local function KKUI_VerifyDatabase()
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
 	charData.QueueTimer = charData.QueueTimer or {}
 
-	-- 4) Initialize Settings Tables
+	-- 4) Initialize Settings Tables (legacy migration source)
 	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
 	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
 	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
+
+	if K.ProfileService then
+		K.ProfileService:EnsureNamedProfileStorage()
+		if not KkthnxUIDB._settingsMigratedToProfiles then
+			K.ProfileService:MigrateFromCharacterSettings()
+		end
+		local charKey = K.ProfileService:GetCharacterKey()
+		if not KkthnxUIDB.profileKeys[charKey] then
+			local legacy = K.Realm .. "-" .. K.Name
+			if KkthnxUIDB.profiles[legacy] then
+				KkthnxUIDB.profileKeys[charKey] = legacy
+			else
+				local legacySettings = KkthnxUIDB.Settings[K.Realm][K.Name]
+				if type(legacySettings) == "table" and next(legacySettings) then
+					KkthnxUIDB.profiles[legacy] = KkthnxUIDB.profiles[legacy] or legacySettings
+					KkthnxUIDB.profileKeys[charKey] = legacy
+				else
+					KkthnxUIDB.profileKeys[charKey] = "Default"
+					KkthnxUIDB.profiles.Default = KkthnxUIDB.profiles.Default or {}
+				end
+			end
+		end
+	end
 
 	-- 5) Initialize Account-Wide Data
 	KkthnxUIDB.ChatHistory = KkthnxUIDB.ChatHistory or {}
@@ -299,6 +337,10 @@ local function KKUI_OnEvent(self, event, arg1)
 		-- REASON: Enable modules when player is ready.
 		KKUI_EnableModulesOnce()
 		self:UnregisterEvent("PLAYER_LOGIN")
+	elseif event == "PLAYER_LOGOUT" then
+		if K.ProfileService and K.ProfileService.CompactActiveProfile then
+			K.ProfileService:CompactActiveProfile()
+		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		-- REASON: Handle timestamp updates.
 		if K.UpdateProfileTimestamp then
@@ -317,4 +359,5 @@ end
 KKUI_AddonLoader:RegisterEvent("ADDON_LOADED")
 KKUI_AddonLoader:RegisterEvent("PLAYER_LOGIN")
 KKUI_AddonLoader:RegisterEvent("PLAYER_ENTERING_WORLD")
+KKUI_AddonLoader:RegisterEvent("PLAYER_LOGOUT")
 KKUI_AddonLoader:SetScript("OnEvent", KKUI_OnEvent)

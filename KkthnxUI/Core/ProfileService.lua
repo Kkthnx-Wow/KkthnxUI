@@ -1,21 +1,25 @@
-local K = KkthnxUI[1]
-
 --[[-----------------------------------------------------------------------------
 -- ProfileService
+-- Named profiles + profileKeys.
 --
--- Pure profile data/service layer for ProfileGUI.
+-- Layout:
+--   KkthnxUIDB.profiles    = { ["Default"] = { …settings delta… }, ["Raid"] = {…} }
+--   KkthnxUIDB.profileKeys = { ["Realm-Char"] = "Default" }
+--   KkthnxUIDB.Variables[realm][name] — stays character-scoped (movers, junk, …)
 --
--- REASON: ProfileGUI.lua had storage validation, profile CRUD, import/export
--- serialization, metadata pruning, and visual rendering all in one file. That's
--- how UI bugs and DB bugs start sharing a kitchen. Keep the data plumbing here;
--- keep frames/buttons/dialog layout in ProfileGUI.lua.
+-- Incident (Profiles, Jul 2026): old model stored Settings[realm][char] and
+-- "switch" deep-copied onto the current char. Shared profiles were impossible.
 -----------------------------------------------------------------------------]]
+
+local K = KkthnxUI[1]
 
 local ipairs, pairs = ipairs, pairs
 local type = type
 local time = time
 local print = print
 local pcall = pcall
+local next = next
+local wipe = wipe
 
 local UnitClass = UnitClass
 local UnitRace = UnitRace
@@ -25,6 +29,7 @@ local UnitFactionGroup = UnitFactionGroup
 local PROFILE_VERSION = "2.0.0"
 local PROFILE_PREFIX = "KkthnxUI:Profile:"
 local PROFILE_NAME_MAX_LENGTH = 32
+local DEFAULT_PROFILE_NAME = "Default"
 
 local ProfileService = {}
 K.ProfileService = ProfileService
@@ -62,73 +67,139 @@ local function MarkInstallComplete(variables)
 	return variables
 end
 
-function ProfileService:GetCurrentProfileKey()
+-- Character identity key (not the profile name).
+function ProfileService:GetCharacterKey()
 	return K.Realm .. "-" .. K.Name
 end
 
-function ProfileService:GetAllProfiles()
-	local profiles = {}
+-- Active profile name for this character.
+function ProfileService:GetActiveProfileName()
+	self:EnsureNamedProfileStorage()
+	local keys = KkthnxUIDB.profileKeys
+	local name = keys and keys[self:GetCharacterKey()]
+	if name and KkthnxUIDB.profiles[name] then
+		return name
+	end
+	return DEFAULT_PROFILE_NAME
+end
 
-	if not KkthnxUIDB or type(KkthnxUIDB.Settings) ~= "table" then
-		return profiles
+-- GUI / callers historically used GetCurrentProfileKey as "active identity".
+-- Now it returns the active *profile name* so list isCurrent checks stay simple.
+function ProfileService:GetCurrentProfileKey()
+	return self:GetActiveProfileName()
+end
+
+function ProfileService:EnsureNamedProfileStorage()
+	KkthnxUIDB = KkthnxUIDB or {}
+	if type(KkthnxUIDB.profiles) ~= "table" then
+		KkthnxUIDB.profiles = {}
+	end
+	if type(KkthnxUIDB.profileKeys) ~= "table" then
+		KkthnxUIDB.profileKeys = {}
+	end
+	if type(KkthnxUIDB.Variables) ~= "table" then
+		KkthnxUIDB.Variables = {}
+	end
+	if type(KkthnxUIDB.Variables[K.Realm]) ~= "table" then
+		KkthnxUIDB.Variables[K.Realm] = {}
+	end
+	if type(KkthnxUIDB.Variables[K.Realm][K.Name]) ~= "table" then
+		KkthnxUIDB.Variables[K.Realm][K.Name] = {}
+	end
+	if not KkthnxUIDB.profiles[DEFAULT_PROFILE_NAME] then
+		KkthnxUIDB.profiles[DEFAULT_PROFILE_NAME] = {}
+	end
+	return KkthnxUIDB.profiles, KkthnxUIDB.profileKeys
+end
+
+-- Migrate Settings[realm][name] → profiles / profileKeys (schema v2).
+function ProfileService:MigrateFromCharacterSettings()
+	self:EnsureNamedProfileStorage()
+	local settingsRoot = KkthnxUIDB.Settings
+	if type(settingsRoot) ~= "table" then
+		return
 	end
 
-	for realm, realmData in pairs(KkthnxUIDB.Settings) do
+	local profiles = KkthnxUIDB.profiles
+	local profileKeys = KkthnxUIDB.profileKeys
+
+	for realm, realmData in pairs(settingsRoot) do
 		if type(realmData) == "table" then
-			for name, profileData in pairs(realmData) do
-				if type(profileData) == "table" then
-					local profileKey = realm .. "-" .. name
-					profiles[profileKey] = {
-						key = profileKey,
-						name = name,
-						realm = realm,
-						displayName = name .. " (" .. realm .. ")",
-						data = profileData,
-						isCurrent = (profileKey == self:GetCurrentProfileKey()),
-						lastModified = profileData.LastModified or 0,
-					}
+			for name, data in pairs(realmData) do
+				if type(data) == "table" then
+					local charKey = realm .. "-" .. name
+					local profileName = charKey
+					if not profiles[profileName] then
+						profiles[profileName] = data
+					end
+					if not profileKeys[charKey] then
+						profileKeys[charKey] = profileName
+					end
 				end
 			end
 		end
 	end
 
-	return profiles
+	-- Keep Settings as read-only fallback for one version; new writes go to profiles.
+	KkthnxUIDB._settingsMigratedToProfiles = true
 end
 
+function ProfileService:GetActiveSettings()
+	self:EnsureNamedProfileStorage()
+	local name = self:GetActiveProfileName()
+	local profiles = KkthnxUIDB.profiles
+	if type(profiles[name]) ~= "table" then
+		profiles[name] = {}
+	end
+	return profiles[name], name
+end
+
+function ProfileService:GetAllProfiles()
+	local list = {}
+	self:EnsureNamedProfileStorage()
+	local active = self:GetActiveProfileName()
+
+	for name, profileData in pairs(KkthnxUIDB.profiles) do
+		if type(profileData) == "table" then
+			list[name] = {
+				key = name,
+				name = name,
+				realm = K.Realm, -- display fallback; named profiles are account-scoped
+				displayName = name,
+				data = profileData,
+				isCurrent = (name == active),
+				lastModified = profileData.LastModified or 0,
+			}
+		end
+	end
+
+	return list
+end
+
+-- Compatibility: EnsureProfileStorage(realm, name) for Variables only.
 function ProfileService:EnsureProfileStorage(realm, name)
-	KkthnxUIDB = KkthnxUIDB or {}
-	if type(KkthnxUIDB.Settings) ~= "table" then
-		KkthnxUIDB.Settings = {}
-	end
-	if type(KkthnxUIDB.Settings[realm]) ~= "table" then
-		KkthnxUIDB.Settings[realm] = {}
-	end
-	if type(KkthnxUIDB.Variables) ~= "table" then
-		KkthnxUIDB.Variables = {}
-	end
+	self:EnsureNamedProfileStorage()
+	realm = realm or K.Realm
 	if type(KkthnxUIDB.Variables[realm]) ~= "table" then
 		KkthnxUIDB.Variables[realm] = {}
 	end
-
-	if name then
-		if type(KkthnxUIDB.Settings[realm][name]) ~= "table" then
-			KkthnxUIDB.Settings[realm][name] = {}
-		end
-		if type(KkthnxUIDB.Variables[realm][name]) ~= "table" then
-			KkthnxUIDB.Variables[realm][name] = {}
-		end
+	if name and type(KkthnxUIDB.Variables[realm][name]) ~= "table" then
+		KkthnxUIDB.Variables[realm][name] = {}
 	end
-
-	return KkthnxUIDB.Settings[realm], KkthnxUIDB.Variables[realm]
+	-- Return active settings + variables realm for callers that still unpack two values.
+	return self:GetActiveSettings(), KkthnxUIDB.Variables[realm]
 end
 
-function ProfileService:GetProfileSettings(realm, name)
-	local realmData = KkthnxUIDB and KkthnxUIDB.Settings and KkthnxUIDB.Settings[realm]
-	local settings = realmData and realmData[name]
+function ProfileService:GetProfileSettings(_, profileName)
+	self:EnsureNamedProfileStorage()
+	profileName = profileName or self:GetActiveProfileName()
+	local settings = KkthnxUIDB.profiles[profileName]
 	return (type(settings) == "table") and settings or nil
 end
 
 function ProfileService:GetProfileVariables(realm, name)
+	realm = realm or K.Realm
+	name = name or K.Name
 	local realmData = KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[realm]
 	local variables = realmData and realmData[name]
 	return (type(variables) == "table") and variables or nil
@@ -138,6 +209,7 @@ function ProfileService:ValidateProfileName(name)
 	if not name or type(name) ~= "string" then
 		return false, "Profile name must be a string"
 	end
+	name = trim(name)
 	if #name == 0 then
 		return false, "Profile name cannot be empty"
 	end
@@ -147,14 +219,6 @@ function ProfileService:ValidateProfileName(name)
 	if name:match('[%\\/:*?"<>|]') then
 		return false, "Profile name contains invalid characters"
 	end
-
-	local reservedNames = { "Default", "Backup", "Temp", "Cache", "Config", "Settings", "Variables" }
-	for _, reserved in ipairs(reservedNames) do
-		if name:lower() == reserved:lower() then
-			return false, "Profile name '" .. name .. "' is reserved"
-		end
-	end
-
 	return true
 end
 
@@ -165,7 +229,7 @@ function ProfileService:ValidateProfileData(data)
 	if not data.Version then
 		return false, "Profile missing version information"
 	end
-	if not data.Settings and not data.Variables then
+	if not data.Settings then
 		return false, "Profile contains no configuration data"
 	end
 	return true
@@ -202,9 +266,63 @@ function ProfileService:PruneSettingsByDefaults(currentTable, defaultTable)
 	return prune(currentTable, defaultTable, 0)
 end
 
+-- Remount runtime C from active profile (CopyDefaults-style apply).
+-- Used after SetProfile when a live remount is needed; switch UI still ReloadUI.
+function ProfileService:RemountRuntimeConfig()
+	local C = KkthnxUI[2]
+	if not C or not K.Defaults then
+		return
+	end
+
+	-- Reset C to defaults first, then apply profile deltas.
+	for group, options in pairs(K.Defaults) do
+		if type(options) == "table" and type(C[group]) == "table" then
+			for option, value in pairs(options) do
+				if type(value) == "table" then
+					C[group][option] = K.CopyTable(value)
+				else
+					C[group][option] = value
+				end
+			end
+		end
+	end
+
+	local settings = self:GetActiveSettings()
+	local metaKeys = META_KEYS
+	for group, options in pairs(settings) do
+		if not metaKeys[group] and type(options) == "table" and type(C[group]) == "table" then
+			for option, value in pairs(options) do
+				if C[group][option] ~= nil then
+					if type(value) == "table" then
+						C[group][option] = K.CopyTable(value)
+					else
+						C[group][option] = value
+					end
+				end
+			end
+		end
+	end
+end
+
+function ProfileService:SetProfile(profileName)
+	self:EnsureNamedProfileStorage()
+	if type(profileName) ~= "string" or profileName == "" then
+		return false, "Invalid profile name"
+	end
+
+	local profiles, profileKeys = KkthnxUIDB.profiles, KkthnxUIDB.profileKeys
+	profiles[profileName] = profiles[profileName] or {}
+	profileKeys[self:GetCharacterKey()] = profileName
+
+	if K.OnProfileChanged then
+		K:OnProfileChanged(profileName)
+	end
+	return true
+end
+
 function ProfileService:ExportProfile(profileKey)
 	local profiles = self:GetAllProfiles()
-	local profile = profiles[profileKey or self:GetCurrentProfileKey()]
+	local profile = profiles[profileKey or self:GetActiveProfileName()]
 	if not profile then
 		return nil, "Profile not found"
 	end
@@ -212,22 +330,19 @@ function ProfileService:ExportProfile(profileKey)
 		return nil, "Required libraries not available for export"
 	end
 
-	local settingsSnapshot = CopyProfileData(self:GetProfileSettings(profile.realm, profile.name))
+	local settingsSnapshot = CopyProfileData(self:GetProfileSettings(nil, profile.name))
 	if K.Defaults and type(K.Defaults) == "table" then
 		settingsSnapshot = self:PruneSettingsByDefaults(settingsSnapshot, K.Defaults)
 	end
 
+	-- Named profiles export settings only — Variables stay per-character.
 	local exportData = {
 		Version = PROFILE_VERSION,
+		ProfileName = profile.name,
 		ExportedAt = time(),
 		ExportedBy = K.Name .. "@" .. K.Realm,
 		Settings = settingsSnapshot,
-		Variables = CopyProfileData(self:GetProfileVariables(profile.realm, profile.name)),
 	}
-
-	if not exportData.Settings or type(exportData.Settings) ~= "table" then
-		return nil, "Export failed: Invalid settings data"
-	end
 
 	local serialized = K.LibSerialize:Serialize(exportData)
 	if type(serialized) ~= "string" or #serialized == 0 then
@@ -277,16 +392,6 @@ function ProfileService:ImportProfile(profileString, applyToCurrent)
 		return false, "Failed to parse profile data"
 	end
 
-	local currentExport = (function()
-		local ok, out = pcall(function()
-			return self:ExportProfile(self:GetCurrentProfileKey())
-		end)
-		return ok and out or nil
-	end)()
-	if applyToCurrent and type(currentExport) == "string" and trim(profileString) == currentExport then
-		return false, "You are currently using this profile"
-	end
-
 	if not data.Settings or type(data.Settings) ~= "table" then
 		return false, "Invalid profile data - missing or invalid settings"
 	end
@@ -294,167 +399,155 @@ function ProfileService:ImportProfile(profileString, applyToCurrent)
 		print("|cff669DFFKkthnxUI:|r Warning: Profile version mismatch. Some settings may not work correctly.")
 	end
 
+	self:EnsureNamedProfileStorage()
+
 	if applyToCurrent then
-		local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(K.Realm)
-		settingsByRealm[K.Name] = CopyProfileData(data.Settings)
-		variablesByRealm[K.Name] = MarkInstallComplete(CopyProfileData(data.Variables))
-		settingsByRealm[K.Name].ImportedAt = time()
-		settingsByRealm[K.Name].ImportedBy = K.Name
-		settingsByRealm[K.Name].ImportedFrom = data.ProfileName or "Unknown"
-		settingsByRealm[K.Name].LastModified = time()
-		return true, "Profile applied to " .. K.Name .. " successfully"
+		local active = self:GetActiveProfileName()
+		KkthnxUIDB.profiles[active] = CopyProfileData(data.Settings)
+		KkthnxUIDB.profiles[active].ImportedAt = time()
+		KkthnxUIDB.profiles[active].ImportedBy = K.Name
+		KkthnxUIDB.profiles[active].ImportedFrom = data.ProfileName or "Unknown"
+		KkthnxUIDB.profiles[active].LastModified = time()
+		-- Optional legacy Variables in old exports: apply to this character only.
+		if type(data.Variables) == "table" then
+			KkthnxUIDB.Variables[K.Realm][K.Name] = MarkInstallComplete(CopyProfileData(data.Variables))
+		end
+		return true, "Profile applied to '" .. active .. "' successfully"
 	end
 
 	local profileName = data.ProfileName or "Imported Profile"
-	local valid, error = self:ValidateProfileName(profileName)
+	local valid, err = self:ValidateProfileName(profileName)
 	if not valid then
-		return false, error
+		return false, err
 	end
 
-	local profileKey = K.Realm .. "-" .. profileName
-	if self:GetAllProfiles()[profileKey] then
+	if KkthnxUIDB.profiles[profileName] then
 		return false, "Profile '" .. profileName .. "' already exists"
 	end
 
-	local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(K.Realm)
-	settingsByRealm[profileName] = CopyProfileData(data.Settings)
-	variablesByRealm[profileName] = MarkInstallComplete(CopyProfileData(data.Variables))
-	settingsByRealm[profileName].ImportedAt = time()
-	settingsByRealm[profileName].ImportedBy = K.Name
-	settingsByRealm[profileName].ImportedFrom = data.ProfileName or "Unknown"
-	settingsByRealm[profileName].LastModified = time()
+	KkthnxUIDB.profiles[profileName] = CopyProfileData(data.Settings)
+	KkthnxUIDB.profiles[profileName].ImportedAt = time()
+	KkthnxUIDB.profiles[profileName].ImportedBy = K.Name
+	KkthnxUIDB.profiles[profileName].ImportedFrom = data.ProfileName or "Unknown"
+	KkthnxUIDB.profiles[profileName].LastModified = time()
 	return true, "Profile created as '" .. profileName .. "' successfully"
 end
 
 function ProfileService:CreateProfile(profileName, sourceProfile)
-	local valid, error = self:ValidateProfileName(profileName)
+	local valid, err = self:ValidateProfileName(profileName)
 	if not valid then
-		return false, error
+		return false, err
 	end
 
-	local profileKey = K.Realm .. "-" .. profileName
-	if self:GetAllProfiles()[profileKey] then
+	self:EnsureNamedProfileStorage()
+	if KkthnxUIDB.profiles[profileName] then
 		return false, "Profile '" .. profileName .. "' already exists"
 	end
 
-	local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(K.Realm)
-	if sourceProfile then
-		local source = self:GetAllProfiles()[sourceProfile]
-		if not source then
-			return false, "Source profile not found"
-		end
-		settingsByRealm[profileName] = CopyProfileData(self:GetProfileSettings(source.realm, source.name))
-		variablesByRealm[profileName] = CopyProfileData(self:GetProfileVariables(source.realm, source.name))
-	else
-		settingsByRealm[profileName] = CopyProfileData(self:GetProfileSettings(K.Realm, K.Name))
-		variablesByRealm[profileName] = CopyProfileData(self:GetProfileVariables(K.Realm, K.Name))
+	local sourceName = sourceProfile or self:GetActiveProfileName()
+	local source = KkthnxUIDB.profiles[sourceName]
+	if not source then
+		return false, "Source profile not found"
 	end
 
-	settingsByRealm[profileName].CreatedAt = time()
-	settingsByRealm[profileName].CreatedBy = K.Name
-	settingsByRealm[profileName].LastModified = time()
+	KkthnxUIDB.profiles[profileName] = CopyProfileData(source)
+	KkthnxUIDB.profiles[profileName].CreatedAt = time()
+	KkthnxUIDB.profiles[profileName].CreatedBy = K.Name
+	KkthnxUIDB.profiles[profileName].LastModified = time()
 	return true, "Profile created successfully"
 end
 
 function ProfileService:RenameProfile(profileKey, newName)
-	local valid, error = self:ValidateProfileName(newName)
+	local valid, err = self:ValidateProfileName(newName)
 	if not valid then
-		return false, error
+		return false, err
 	end
 
-	local profiles = self:GetAllProfiles()
-	local profile = profiles[profileKey]
-	if not profile then
+	self:EnsureNamedProfileStorage()
+	local oldName = profileKey
+	if not KkthnxUIDB.profiles[oldName] then
 		return false, "Profile not found"
 	end
-	if profile.isCurrent then
+	if oldName == self:GetActiveProfileName() then
 		return false, "Cannot rename the currently active profile"
 	end
-
-	local newProfileKey = profile.realm .. "-" .. newName
-	if profiles[newProfileKey] then
+	if KkthnxUIDB.profiles[newName] then
 		return false, "Profile '" .. newName .. "' already exists"
 	end
 
-	local oldSettings = self:GetProfileSettings(profile.realm, profile.name)
-	local oldVariables = self:GetProfileVariables(profile.realm, profile.name)
-	if not oldSettings then
-		return false, "Profile data not found"
+	KkthnxUIDB.profiles[newName] = CopyProfileData(KkthnxUIDB.profiles[oldName])
+	KkthnxUIDB.profiles[newName].LastModified = time()
+	KkthnxUIDB.profiles[newName].RenamedFrom = oldName
+	KkthnxUIDB.profiles[newName].RenamedAt = time()
+	KkthnxUIDB.profiles[oldName] = nil
+
+	for charKey, used in pairs(KkthnxUIDB.profileKeys) do
+		if used == oldName then
+			KkthnxUIDB.profileKeys[charKey] = newName
+		end
 	end
 
-	local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(profile.realm)
-	settingsByRealm[newName] = CopyProfileData(oldSettings)
-	if oldVariables then
-		variablesByRealm[newName] = CopyProfileData(oldVariables)
-	end
-	settingsByRealm[newName].LastModified = time()
-	settingsByRealm[newName].RenamedFrom = profile.name
-	settingsByRealm[newName].RenamedAt = time()
-	settingsByRealm[profile.name] = nil
-	variablesByRealm[profile.name] = nil
-
-	return true, "Profile renamed successfully", newProfileKey
+	return true, "Profile renamed successfully", newName
 end
 
 function ProfileService:DeleteProfile(profileKey)
-	if profileKey == self:GetCurrentProfileKey() then
+	self:EnsureNamedProfileStorage()
+	if profileKey == self:GetActiveProfileName() then
 		return false, "Cannot delete the currently active profile"
 	end
-
-	local profile = self:GetAllProfiles()[profileKey]
-	if not profile then
+	if not KkthnxUIDB.profiles[profileKey] then
 		return false, "Profile not found"
 	end
+	if profileKey == DEFAULT_PROFILE_NAME then
+		return false, "Cannot delete the Default profile"
+	end
 
-	local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(profile.realm)
-	settingsByRealm[profile.name] = nil
-	variablesByRealm[profile.name] = nil
+	KkthnxUIDB.profiles[profileKey] = nil
+	for charKey, used in pairs(KkthnxUIDB.profileKeys) do
+		if used == profileKey then
+			KkthnxUIDB.profileKeys[charKey] = nil
+		end
+	end
 	return true, "Profile deleted successfully"
 end
 
+-- Pointer switch — does not copy settings onto the character.
 function ProfileService:SwitchProfile(profileKey)
-	if profileKey == self:GetCurrentProfileKey() then
+	self:EnsureNamedProfileStorage()
+	if profileKey == self:GetActiveProfileName() then
 		return false, "Already using this profile"
 	end
-
-	local profile = self:GetAllProfiles()[profileKey]
-	if not profile then
+	if not KkthnxUIDB.profiles[profileKey] then
 		return false, "Profile not found"
 	end
 
-	local sourceSettings = self:GetProfileSettings(profile.realm, profile.name)
-	if not sourceSettings then
-		return false, "Profile data not found"
+	local ok = self:SetProfile(profileKey)
+	if not ok then
+		return false, "Failed to set profile"
 	end
 
-	local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(K.Realm)
-	settingsByRealm[K.Name] = CopyProfileData(sourceSettings)
-	variablesByRealm[K.Name] = MarkInstallComplete(CopyProfileData(self:GetProfileVariables(profile.realm, profile.name)))
-	settingsByRealm[K.Name].LastSwitched = time()
-	settingsByRealm[K.Name].SwitchedFrom = profileKey
-	settingsByRealm[K.Name].LastModified = time()
+	local settings = KkthnxUIDB.profiles[profileKey]
+	settings.LastSwitched = time()
+	settings.SwitchedFrom = self:GetCharacterKey()
+	settings.LastModified = time()
+
+	-- Ensure this character still has Variables (never shared via profile).
+	MarkInstallComplete(KkthnxUIDB.Variables[K.Realm][K.Name])
+
 	return true, "Profile switch initiated"
 end
 
 function ProfileService:ResetProfile(profileKey)
-	local profile = profileKey and self:GetAllProfiles()[profileKey] or nil
-
-	if not profile then
-		local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(K.Realm)
-		settingsByRealm[K.Name] = {}
-		variablesByRealm[K.Name] = MarkInstallComplete({})
-		settingsByRealm[K.Name].ResetAt = time()
-		settingsByRealm[K.Name].ResetBy = K.Name
-		settingsByRealm[K.Name].LastModified = time()
+	self:EnsureNamedProfileStorage()
+	local name = profileKey or self:GetActiveProfileName()
+	if not KkthnxUIDB.profiles[name] then
+		KkthnxUIDB.profiles[name] = {}
 	else
-		local settingsByRealm, variablesByRealm = self:EnsureProfileStorage(profile.realm)
-		settingsByRealm[profile.name] = {}
-		variablesByRealm[profile.name] = MarkInstallComplete({})
-		settingsByRealm[profile.name].ResetAt = time()
-		settingsByRealm[profile.name].ResetBy = K.Name
-		settingsByRealm[profile.name].LastModified = time()
+		wipe(KkthnxUIDB.profiles[name])
 	end
-
+	KkthnxUIDB.profiles[name].ResetAt = time()
+	KkthnxUIDB.profiles[name].ResetBy = K.Name
+	KkthnxUIDB.profiles[name].LastModified = time()
 	return true, "Profile reset successfully"
 end
 
@@ -593,28 +686,41 @@ function ProfileService:GetBooleanStats(profileData)
 end
 
 function ProfileService:EnsureDatabaseIntegrity()
-	return KkthnxUIDB and KkthnxUIDB.Settings and KkthnxUIDB.Variables
+	self:EnsureNamedProfileStorage()
+	return KkthnxUIDB ~= nil and type(KkthnxUIDB.profiles) == "table" and type(KkthnxUIDB.Variables) == "table"
 end
 
 function ProfileService:UpdateCurrentProfileTimestamp()
-	local settings = self:GetProfileSettings(K.Realm, K.Name)
+	local settings = self:GetActiveSettings()
 	if settings then
 		settings.LastModified = time()
 	end
 end
 
 function ProfileService:MigrateProfileTimestamps()
-	if not KkthnxUIDB or type(KkthnxUIDB.Settings) ~= "table" then
-		return
-	end
-
-	for _, realmData in pairs(KkthnxUIDB.Settings) do
-		if type(realmData) == "table" then
-			for _, profileData in pairs(realmData) do
-				if type(profileData) == "table" and not profileData.LastModified then
-					profileData.LastModified = time()
-				end
-			end
+	self:EnsureNamedProfileStorage()
+	for _, profileData in pairs(KkthnxUIDB.profiles) do
+		if type(profileData) == "table" and not profileData.LastModified then
+			profileData.LastModified = time()
 		end
 	end
+end
+
+--- Strip default-equal keys from the active profile before logout.
+function ProfileService:CompactActiveProfile()
+	if not (K.Defaults and type(K.Defaults) == "table") then
+		return
+	end
+	local settings, name = self:GetActiveSettings()
+	if not settings then
+		return
+	end
+	local pruned = self:PruneSettingsByDefaults(settings, K.Defaults)
+	-- Preserve meta keys.
+	for k in pairs(META_KEYS) do
+		if settings[k] ~= nil then
+			pruned[k] = settings[k]
+		end
+	end
+	KkthnxUIDB.profiles[name] = pruned
 end

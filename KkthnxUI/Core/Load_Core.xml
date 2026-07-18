@@ -14,6 +14,8 @@
    <Script file="Smoothy.lua"/>
    <Script file="Install.lua"/>
    <Script file="Movers.lua"/>
+   <!-- ProfileService before Loading: ADDON_LOADED migrates Settings → profiles. -->
+   <Script file="ProfileService.lua"/>
    <Script file="Loading.lua"/>
    <Script file="GUIConfigService.lua"/>
    <Script file="GUIResetButtons.lua"/>
@@ -22,7 +24,6 @@
    <Script file="ExtraGUIActionBars.lua"/>
    <Script file="ExtraGUIInventory.lua"/>
    <Script file="ExtraGUI.lua"/>
-   <Script file="ProfileService.lua"/>
    <Script file="ProfileDialogs.lua"/>
    <Script file="ProfilePortraits.lua"/>
    <Script file="ProfileGUI.lua"/>

@@ -16,6 +16,8 @@ local REFRESH_BY_KEY = {
 	AutoDelves = "CreateAutoDelves",
 	HolidayDungeon = "CreateHolidayDungeon",
 	AuctionSearchFallback = "CreateAuctionSearchFallback",
+	AuctionSearchHistory = "CreateAuctionSearchHistory",
+	AuctionSearchHistoryMax = "CreateAuctionSearchHistory",
 	AutoGoodbye = "CreateAutoGoodbye",
 	AutoKeystone = "CreateAutoKeystone",
 	AutoRelease = "CreateAutoRelease",
@@ -25,6 +27,7 @@ local REFRESH_BY_KEY = {
 	AutoSummon = "CreateAutoAcceptSummon",
 	NoBadBuffs = "CreateAutoBadBuffs",
 	SmartTracking = "CreateSmartTracking",
+	SmartFishing = "CreateSmartFishing",
 }
 
 local AUTO_QUEST_KEYS = {

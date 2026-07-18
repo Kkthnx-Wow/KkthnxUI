@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 -- Addon: KkthnxUI
 -- Notes:
--- - Purpose: Session tracker for newly looted backpack items (Bagforge/Baganator pattern).
+-- - Purpose: Session tracker for newly looted backpack items.
 -- - Design: GUID baseline during 5s login startup, then unseen GUIDs become "recent".
 --   Combined with C_NewItems for category routing + glow. Session-only (no SavedVars).
 -- - Events: BAG_UPDATE_DELAYED owns Scan; BAG_NEW_ITEMS_UPDATED refreshes open bags only.
@@ -196,18 +196,23 @@ function Module:ClearRecentBackpack()
 end
 
 local function RefreshOpenBagsAfterRecent()
-	if Module.Bags and Module.Bags:IsShown() then
-		Module:UpdateAllBags()
+	-- Recent only tracks backpack (+ reagent). Don't dirty-walk bank/warbank.
+	if not (Module.Bags and Module.Bags:IsShown()) then
+		return
+	end
+	for bag = BACKPACK_FIRST, BACKPACK_LAST do
+		Module.Bags:UpdateBag(bag)
 	end
 end
 
-local onBagUpdateDelayed = K.Debounce(0.05, function()
+local onBagUpdateDelayed = K.Debounce(0.1, function()
 	Module:RecentScan()
-	-- Re-paint so GUID-recent slots pick up glow / Recent category after the scan.
+	-- Re-paint backpack so GUID-recent slots pick up glow / Recent category after the scan.
+	-- 0.1s debounce — loot BAG_UPDATE storms coalesce before a backpack re-paint.
 	RefreshOpenBagsAfterRecent()
 end)
 
-local onNewItemsUpdated = K.Debounce(0.05, function()
+local onNewItemsUpdated = K.Debounce(0.1, function()
 	RefreshOpenBagsAfterRecent()
 end)
 

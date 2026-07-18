@@ -18,7 +18,7 @@ function Module:CreatePlates()
 	-- REASON: Initialize base nameplate dimensions.
 	-- MIDNIGHT (12.0): the oUF plate is parented to the Blizzard nameplate and already
 	-- inherits UIParent's effective scale, so an explicit SetScale(UIScale) double-scales
-	-- it (~0.5x) and shrinks all text. Mirror NDui, which leaves the plate at native scale.
+	-- it (~0.5x) and shrinks all text. Leave the plate at native scale.
 	-- MIDNIGHT (12.0): oUF's NAME_PLATE_UNIT_ADDED handler calls unitFrame:SetAllPoints()
 	-- (4 anchors filling the Blizzard base) BEFORE running this style function. We must
 	-- ClearAllPoints() first, otherwise those anchors stay active, SetSize is ignored, and
@@ -56,7 +56,7 @@ function Module:CreatePlates()
 	self.Health.PostUpdate = Module.PostUpdateHealthSpark
 
 	-- Text Elements
-	-- REASON: "SHADOW" (ElvUI virtual style) — not OUTLINE, not bare "". CanFlagSlug
+	-- REASON: "SHADOW" virtual style — not OUTLINE, not bare "". CanFlagSlug
 	-- skips SHADOW so SetShadowOffset(1,-1) actually paints; SLUG alone ate the shadow.
 	self.levelText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "SHADOW", false)
 	self.levelText:SetJustifyH("RIGHT")

@@ -114,10 +114,10 @@ local filteredStyle = {
 	["target"] = true,
 }
 
--- Header registry (NDui-like pattern)
+-- Header registry
 Module.headers = Module.headers or {}
 
--- Visibility helpers (NDui-like, adapted to our config)
+-- Visibility helpers
 -- REASON: Determines visibility state for party frames based on configuration and group status.
 function Module:GetPartyVisibility()
 	if not C["Party"].Enable then
@@ -382,9 +382,8 @@ function Module:ApplyPortraitAlphaFix(frame)
 end
 
 -- SECRET (12.0): oUF's stock portrait element filters events through Private.unitIsUnit,
--- whose result can itself be a secret boolean in instances. ElvUI's current oUF avoids
--- that check and updates self.unit directly, treating secret GUIDs as "changed"; we mirror
--- that pattern here via Portrait.Override so the vendored oUF files stay untouched.
+-- whose result can itself be a secret boolean in instances. Update self.unit directly and
+-- treat secret GUIDs as "changed" via Portrait.Override so the vendored oUF files stay untouched.
 -- Mirrors stock oUF: availability is just connected + visible (no IsVisible/model-ready
 -- gating, which caused the model to stick on the blank/"?" state after the initial spawn
 -- ForceUpdate fired before the element was shown). Secret booleans fail open.
@@ -578,7 +577,7 @@ function Module:SecurePortrait(frame)
 		if portrait.IsObjectType and portrait:IsObjectType("PlayerModel") then
 			local userPostUpdate = portrait.PostUpdate
 			portrait.PostUpdate = function(element, unit, hasStateChanged)
-				-- Ellesmere: SetUnit resets camera distance; re-apply only right after an
+				-- SetUnit resets camera distance; re-apply only right after an
 				-- actual model change (hasStateChanged), not on every OnUpdate tick.
 				-- BUGFIX: this previously ran unconditionally on every PostUpdate call.
 				-- PortraitOverride fires on every OnUpdate (every frame), so this was
@@ -1751,8 +1750,8 @@ local function applyBarColor(bar, color)
 	end
 end
 
--- GetUnitChargedPowerPoints returns an array of point indices (Blizzard RogueComboPointBar /
--- NDui use tContains). Indexing charged[i] as a boolean was wrong — Echoing Reprimand stars
+-- GetUnitChargedPowerPoints returns an array of point indices (use tContains).
+-- Indexing charged[i] as a boolean was wrong — Echoing Reprimand stars
 -- never lit correctly. Elements can be secret under UnitPowerRestricted — only compare plain.
 local function isChargedPowerPoint(chargedPowerPoints, index)
 	if not chargedPowerPoints or IsSecret(chargedPowerPoints) then
@@ -1859,7 +1858,7 @@ function Module:CreateClassPower(self)
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"
-	-- NDui uses 10: Maelstrom Weapon stacks to 10; combo/chi/essence stay ≤7.
+	-- Capacity 10: Maelstrom Weapon stacks to 10; combo/chi/essence stay ≤7.
 	local maxBar = isDK and 6 or 10
 	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 

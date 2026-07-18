@@ -4,7 +4,7 @@
 -- Notes:
 -- - Purpose: Shared incoming heal / absorb bars for unit frames and nameplates.
 -- - Design: oUF HealthPrediction element with canonical widget keys + legacy aliases.
--- - Absorbs: Ellesmere dual-clip (curClip / missClip) for secret-safe shield rendering.
+-- - Absorbs: dual-clip (curClip / missClip) for secret-safe shield rendering.
 -- - Events: UNIT_HEAL_PREDICTION, UNIT_ABSORB_AMOUNT_CHANGED, etc. via oUF.
 -----------------------------------------------------------------------------]]
 
@@ -173,7 +173,7 @@ function Module:CreateHealPrediction(frame, opts)
 	otherBar:SetFrameLevel(frameLevel)
 	otherBar:Hide()
 
-	-- Dual-clip damage absorb (Ellesmere pattern): forward into missing HP, backfill into filled HP.
+	-- Dual-clip damage absorb: forward into missing HP, backfill into filled HP.
 	local curClip = CreateFrame("Frame", nil, health)
 	curClip:SetClipsChildren(true)
 
@@ -218,7 +218,7 @@ function Module:CreateHealPrediction(frame, opts)
 	addShieldOverlay(overAbsorbBar)
 	maskStatusBarTexture(overAbsorbBar, absorbMask)
 
-	-- Heal absorb: own clip frame (Ellesmere) so placement is independent of shield clips.
+	-- Heal absorb: own clip frame so placement is independent of shield clips.
 	local healClip = CreateFrame("Frame", nil, health)
 	healClip:SetClipsChildren(true)
 	updateHealClipAnchors(health, healClip)

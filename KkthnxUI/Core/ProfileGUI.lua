@@ -1907,8 +1907,7 @@ K.ProfileGUI = ProfileGUI
 
 -- Enhanced safety check for database integrity
 function ProfileGUI:EnsureDatabaseIntegrity()
-	ProfileService:EnsureProfileStorage(K.Realm, K.Name)
-	return true
+	return ProfileService:EnsureDatabaseIntegrity()
 end
 
 -- Enhanced Profile Switching Functionality
@@ -1931,16 +1930,11 @@ function ProfileGUI:SwitchToProfile(profileKey)
 		return false
 	end
 
-	-- Simple profile switch - copy data to current character
+	-- Pointer switch — ReloadUI required so all modules remount from the named profile.
 	local success, error = self:SwitchProfile(profileKey)
 	if success then
-		self:ShowStatusMessage("Switched to profile: " .. targetProfile.name, "success")
-		self:RefreshProfileList()
-		self:UpdateInfoPanel()
-		self:UpdateButtonStates()
-
-		-- Ask if user wants to reload UI
-		self:ShowReloadUIDialog("Profile switched successfully. Would you like to reload the UI to ensure all changes take effect?")
+		self:ShowStatusMessage("Switched to profile: " .. targetProfile.name .. " — reloading…", "success")
+		ReloadUI()
 		return true
 	else
 		self:ShowStatusMessage(error or "Failed to switch profile", "error")
@@ -1952,7 +1946,7 @@ function ProfileGUI:ShowReloadUIDialog(message)
 	local dialog = self:CreateConfirmDialog("Reload UI", message, function()
 		ReloadUI()
 	end, function()
-		-- User chose not to reload, that's fine
+		-- Declined — caller may still have applied state that needs a later reload.
 	end)
 	return dialog
 end
@@ -2075,36 +2069,13 @@ end
 
 -- Helper function to update current profile's LastModified timestamp
 function ProfileGUI:UpdateCurrentProfileTimestamp()
-	-- Ensure database integrity
 	if not self:EnsureDatabaseIntegrity() then
 		return
 	end
-
-	-- Update the current character's LastModified timestamp
-	local settingsByRealm = ProfileService:EnsureProfileStorage(K.Realm, K.Name)
-
-	-- Use time() for proper Unix timestamp
-	local currentTime = time()
-	settingsByRealm[K.Name].LastModified = currentTime
+	ProfileService:UpdateCurrentProfileTimestamp()
 end
 
 -- Helper function to migrate existing profiles to have LastModified timestamps
 function ProfileGUI:MigrateProfileTimestamps()
-	if not KkthnxUIDB or not KkthnxUIDB.Settings then
-		return
-	end
-
-	local currentTime = time()
-	local migrated = 0
-
-	for realm, realmData in pairs(KkthnxUIDB.Settings) do
-		if type(realmData) == "table" then
-			for name, profileData in pairs(realmData) do
-				if type(profileData) == "table" and not profileData.LastModified then
-					profileData.LastModified = currentTime
-					migrated = migrated + 1
-				end
-			end
-		end
-	end
+	ProfileService:MigrateProfileTimestamps()
 end

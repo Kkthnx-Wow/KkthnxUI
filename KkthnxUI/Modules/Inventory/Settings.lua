@@ -71,6 +71,10 @@ local function OnInventorySetting(configPath)
 		if Module.CreateAutoWarbandGold then
 			Module:CreateAutoWarbandGold()
 		end
+	elseif key == "DeleteCheapest" or key:find("^DeleteCheapestFilter") then
+		if Module.CreateDeleteCheapest then
+			Module:CreateDeleteCheapest()
+		end
 	end
 end
 

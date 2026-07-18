@@ -1,6 +1,6 @@
 local C = KkthnxUI[2]
 
--- Core raid-buff / consumable reminders (aligned with NexEnhance ReminderBuffs, 12.x).
+-- Core raid-buff / consumable reminders (12.x).
 -- Each entry: spells = { [spellID] = true }, optional depend/depends, spec, combat, instance, pvp, inGroup, itemID, equip, weaponIndex.
 C.SpellReminderBuffs = {
 	ITEMS = {

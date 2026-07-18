@@ -34,6 +34,8 @@ function B.CreateMiscCategory()
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.QuickJoin", L["QuickJoin"], L["QuickJoinTip"])
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.EnhancedMail", L["Enhanced Mail Features"], L["Misc.EnhancedMail Desc"])
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.AutoBubbles", L["Auto Bubbles"], L["Misc.AutoBubbles Desc"])
+	GUI:CreateSwitch(uiEnhanceSection, "Misc.HeroTalentSwap", L["Hero Talent Swap"], L["Misc.HeroTalentSwap Desc"])
+	GUI:CreateSwitch(uiEnhanceSection, "Misc.AchievementBackButton", L["Achievement Back Button"], L["Misc.AchievementBackButton Desc"])
 
 	-- Target Marking
 	local markingSection = GUI:AddSection(miscCategory, L["GUI.Section.TargetMarking"])
@@ -60,6 +62,7 @@ function B.CreateMiscCategory()
 	-- Audio
 	local audioSection = GUI:AddSection(miscCategory, L["GUI.Section.Audio"])
 	GUI:CreateSwitch(audioSection, "Misc.MuteSounds", L["Mute Annoying Sounds"], L["Misc.MuteSounds Desc"])
+	GUI:CreateSwitch(audioSection, "Misc.AudioSync", L["Audio Sync"], L["Misc.AudioSync Desc"])
 	GUI:CreateButtonWidget(audioSection, "Misc.ManageMuteSoundIDs", L["Custom Mute Sound IDs"], L["Open GUI"], L["Misc.ManageMuteSoundIDs Desc"], function()
 		if K.ExtraGUI and K.ExtraGUI.ToggleExtraConfig then
 			K.ExtraGUI:ToggleExtraConfig("Misc.MuteSoundIDs", L["Custom Mute Sound IDs"])

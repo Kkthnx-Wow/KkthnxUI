@@ -138,8 +138,13 @@ local function AddBackground(frame, texture, subLevel, layer, point, color)
 		bg:SetTexCoord(unpack(K.TexCoords))
 	end
 
-	bg:SetPoint("TOPLEFT", frame, "TOPLEFT", bgPoint, -bgPoint)
-	bg:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -bgPoint, bgPoint)
+	local inset = (K.Scale and K.Scale(bgPoint)) or bgPoint
+	bg:SetPoint("TOPLEFT", frame, "TOPLEFT", inset, -inset)
+	bg:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -inset, inset)
+
+	if K.DisablePixelSnap then
+		K.DisablePixelSnap(bg)
+	end
 
 	-- NOTE: Handle both ColorBackdrop (table) and custom color overrides.
 	if type(bgColor) == "table" then
@@ -196,6 +201,7 @@ local function CreateBorder(bFrame, ...)
 
 	-- REASON: Ensure the actual texture object is updated with the correct styling.
 	-- PERF: Use explicit assignments and localized variables.
+	-- Scale size/offset so 1px chrome stays physical-pixel aligned when Mult ~= 1.
 	kkui_border:SetSize(BorderSize)
 	kkui_border:SetTexture(BorderTexture)
 	kkui_border:SetOffset(BorderOffset)
@@ -232,6 +238,12 @@ local function CreateBackdrop(bFrame, ...)
 	local bPointa, bPointb, bPointc, bPointd, bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 
 	local points = { bPointa or 0, bPointb or 0, bPointc or 0, bPointd or 0 }
+	if K.Scale then
+		points[1] = K.Scale(points[1])
+		points[2] = K.Scale(points[2])
+		points[3] = K.Scale(points[3])
+		points[4] = K.Scale(points[4])
+	end
 
 	local backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame)
 	backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", points[1], points[2])

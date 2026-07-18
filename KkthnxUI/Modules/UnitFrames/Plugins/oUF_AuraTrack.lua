@@ -24,7 +24,7 @@ local math_floor = _G.math.floor
 local C_UnitAuras_GetAuraDataByIndex = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDataByIndex
 local C_UnitAuras_GetAuraDuration = _G.C_UnitAuras and _G.C_UnitAuras.GetAuraDuration
 
--- Fallback icons when icon field is secret (Ellesmere SECRET_SPELL_ICONS subset).
+-- Fallback icons when icon field is secret.
 local SECRET_SPELL_ICONS = {
 	[102342] = 136097, -- Ironbark
 	[33206] = 135936, -- Pain Suppression
@@ -309,7 +309,7 @@ local function Update(self, _, unit)
 				C_UnitAuras_GetAuraDataByIndex(unit, i, "HELPFUL")
 			)
 
-			-- When spellId is secret (SecretWhenUnitAuraRestricted), fingerprint like Ellesmere.
+			-- When spellId is secret (SecretWhenUnitAuraRestricted), fingerprint the aura.
 			if not spellID and auraInstanceID and K.IdentifySecretPlayerAura then
 				spellID = K.IdentifySecretPlayerAura(unit, auraInstanceID)
 				if spellID then

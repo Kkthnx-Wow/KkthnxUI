@@ -214,7 +214,7 @@ local function ShowElement(self, unit, auraInstanceID)
 	local durObj = GetAuraDuration and GetAuraDuration(unit, auraInstanceID)
 	if durObj and element.cd and element.cd.SetCooldownFromDurationObject then
 		element.cd:SetCooldownFromDurationObject(durObj)
-		-- IsZero may be secret — only feed SetAlphaFromBoolean (Ellesmere permanent-aura mask).
+		-- IsZero may be secret — only feed SetAlphaFromBoolean (permanent-aura mask).
 		if durObj.IsZero and element.cd.SetAlphaFromBoolean then
 			element.cd:SetAlphaFromBoolean(durObj:IsZero(), 0, RAID_DEBUFF_CD_ALPHA)
 		else

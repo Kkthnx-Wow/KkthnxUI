@@ -52,6 +52,10 @@ local function OnWorldMapSetting(configPath)
 		WorldMapModule:UpdateMapReveal()
 	elseif key == "Coordinates" then
 		WorldMapModule:UpdateWorldMapCoordinates()
+	elseif key:sub(1, 6) == "MapPin" then
+		if WorldMapModule.UpdateWorldMapPins then
+			WorldMapModule:UpdateWorldMapPins()
+		end
 	end
 end
 

@@ -172,6 +172,7 @@ function Module:OnEnable()
 		"CreateAutoRepair",
 		"CreateAutoSell",
 		"CreateAutoWarbandGold",
+		"CreateDeleteCheapest",
 	}
 
 	for _, funcName in ipairs(loadInventoryModules) do

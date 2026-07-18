@@ -2,15 +2,17 @@
 -- Addon: KkthnxUI
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
--- - Purpose: Automatically hides the Objective Tracker during combat or specific encounters (Boss/Arena).
--- - Design: Uses a SecureHandlerStateTemplate state driver to securely toggle visibility during combat lockdown.
--- - Events: PLAYER_REGEN_ENABLED (deferred), OnHide/OnShow (AutoHider)
+-- - Purpose: Hide the Objective Tracker during boss encounters and arena matches.
+-- - Design: SecureHandlerStateTemplate triggers on [@boss#/@arena#,exists]; insecure
+--   OnHide/OnShow reparents the tracker (SetParent is blocked from secure snippets
+--   in combat — WoWUIBugs #469). Collapse only when a boss is hostile; friendly
+--   escort NPCs on boss1..5 must not hide the tracker.
+-- - Events: PLAYER_REGEN_ENABLED (deferred reparent / driver), OnHide/OnShow
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
--- PERF: Localize globals to reduce lookup overhead.
 local _G = _G
 local CreateFrame = CreateFrame
 local GetInstanceInfo = GetInstanceInfo
@@ -25,13 +27,14 @@ local pcall = pcall
 local UIParent = UIParent
 local DIFFICULTY_KEYSTONE = 8
 
+-- Secure trigger only. Friendly scenario escorts can occupy boss1..5
+-- (INSTANCE_ENCOUNTER_ENGAGE_UNIT); Collapse() filters hostility in Lua.
+local STATE_CONDITION = "[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists]"
+	.. "[@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists][@boss5,exists] hide;show"
+
 local C_AddOns_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded
-local C_InstanceEncounter = _G.C_InstanceEncounter
 local C_TalkingHead_SetConversationsDeferred = C_TalkingHead and C_TalkingHead.SetConversationsDeferred
 
--- ---------------------------------------------------------------------------
--- Constants & Configuration
--- ---------------------------------------------------------------------------
 local DEFAULTS = {
 	AutoHide = true,
 	AutoHideInKeystone = false,
@@ -49,39 +52,34 @@ local function isAddOnLoaded(name)
 	return _G.IsAddOnLoaded and _G.IsAddOnLoaded(name)
 end
 
+local function GetTracker()
+	return _G.ObjectiveTrackerFrame
+end
+
 -- ---------------------------------------------------------------------------
--- Deferred Action System
+-- Deferred SetParent (combat-safe)
 -- ---------------------------------------------------------------------------
--- REASON: Parent swapping frames can be blocked in combat; this deferred system ensures actions are applied safely.
 local driverPending
 local pendingAction
+local waitingForCombat
 local splashGuarded
 local trySetParent
 
 local function applyPending()
-	if not pendingAction or InCombatLockdown() then
+	if InCombatLockdown() then
 		return
 	end
 
-	local tracker = _G.ObjectiveTrackerFrame
-	if not tracker then
-		pendingAction = nil
-		return
-	end
-
-	if pendingAction == "collapse" then
-		pcall(tracker.SetParent, tracker, K.UIFrameHider)
-	elseif pendingAction == "expand" then
-		pcall(tracker.SetParent, tracker, UIParent)
+	local tracker = GetTracker()
+	if tracker and pendingAction then
+		pcall(tracker.SetParent, tracker, pendingAction == "collapse" and K.UIFrameHider or UIParent)
 	end
 
 	pendingAction = nil
+	waitingForCombat = nil
 	K:UnregisterEvent("PLAYER_REGEN_ENABLED", applyPending)
 end
 
--- ---------------------------------------------------------------------------
--- Objective Tracker Helpers
--- ---------------------------------------------------------------------------
 function Module:ObjectiveTracker_HasQuestTracker()
 	return isAddOnLoaded("KalielsTracker") or isAddOnLoaded("DugisGuideViewerZ")
 end
@@ -98,8 +96,8 @@ function Module:ObjectiveTracker_Expand(frame)
 	trySetParent(frame, UIParent, "expand")
 end
 
--- REASON: Arena always collapses; boss tokens only when hostile.
--- Friendly scenario escorts can occupy boss1..5 without being a real encounter.
+-- Arena always collapses. Boss tokens only when hostile — never on
+-- IsEncounterInProgress alone (friendly escorts can set that flag too).
 local function anyArenaUnit()
 	for i = 1, 5 do
 		if UnitExists("arena" .. i) then
@@ -112,15 +110,9 @@ end
 local function anyHostileBossUnit()
 	for i = 1, 5 do
 		local unit = "boss" .. i
-		if UnitExists(unit) then
-			local enemy = UnitIsEnemy("player", unit)
-			if K.NotSecret(enemy) then
-				if enemy then
-					return true
-				end
-			elseif C_InstanceEncounter and C_InstanceEncounter.IsEncounterInProgress and C_InstanceEncounter.IsEncounterInProgress() then
-				return true
-			end
+		-- UnitIsEnemy: SecretArguments only (Resources 12.0.7) — returns are plain.
+		if UnitExists(unit) and UnitIsEnemy("player", unit) then
+			return true
 		end
 	end
 	return false
@@ -133,19 +125,11 @@ local function shouldCollapseTracker()
 	return anyHostileBossUnit()
 end
 
-local function shouldCollapseForInstance(cfg)
-	if cfg.AutoHideInKeystone then
-		return true
-	end
-	local _, _, difficultyID = GetInstanceInfo()
-	return difficultyID ~= DIFFICULTY_KEYSTONE
-end
-
 -- ---------------------------------------------------------------------------
--- Auto-Hide Logic
+-- Collapse / Expand
 -- ---------------------------------------------------------------------------
 function Module:ObjectiveTracker_AutoHideOnHide()
-	local tracker = _G.ObjectiveTrackerFrame
+	local tracker = GetTracker()
 	if not tracker or Module:ObjectiveTracker_IsCollapsed(tracker) then
 		return
 	end
@@ -154,23 +138,31 @@ function Module:ObjectiveTracker_AutoHideOnHide()
 		return
 	end
 
+	-- Keep objectives visible in Mythic+ unless the user opts in.
 	local cfg = getTrackerConfig()
-	if shouldCollapseForInstance(cfg) then
-		Module:ObjectiveTracker_Collapse(tracker)
+	if not cfg.AutoHideInKeystone then
+		local _, _, difficultyID = GetInstanceInfo()
+		if difficultyID == DIFFICULTY_KEYSTONE then
+			return
+		end
 	end
+
+	Module:ObjectiveTracker_Collapse(tracker)
 end
 
 function Module:ObjectiveTracker_AutoHideOnShow()
-	local tracker = _G.ObjectiveTrackerFrame
+	local tracker = GetTracker()
 	if tracker and Module:ObjectiveTracker_IsCollapsed(tracker) then
 		Module:ObjectiveTracker_Expand(tracker)
 	end
 end
 
 -- ---------------------------------------------------------------------------
--- SplashFrame Logic
+-- SplashFrame taint guard
 -- ---------------------------------------------------------------------------
--- REASON: Overriding SplashFrame behaviour to prevent tainted updates to the Objective Tracker.
+-- Reparenting taints ObjectiveTrackerFrame. Blizzard's SplashFrame:OnHide calls
+-- ObjectiveTrackerFrame:Update(), which would then run tainted and can poison
+-- secure quest-item buttons. Drop that single Update after we have reparented.
 local function splashFrameOnHide(frame)
 	local fromGameMenu = frame.screenInfo and frame.screenInfo.gameMenuRequest
 	frame.screenInfo = nil
@@ -183,7 +175,7 @@ local function splashFrameOnHide(frame)
 		_G.AlertFrame:SetAlertsEnabled(true, "splashFrame")
 	end
 
-	-- WARNING: _G.ObjectiveTrackerFrame:Update() is intentionally omitted to avoid taint.
+	-- ObjectiveTrackerFrame:Update() intentionally omitted (taint guard).
 
 	if fromGameMenu and not frame.showingQuestDialog and not InCombatLockdown() then
 		ShowUIPanel(_G.GameMenuFrame)
@@ -207,26 +199,29 @@ local function ensureSplashGuard()
 end
 
 trySetParent = function(frame, parent, actionName)
-	-- REASON: Defer SetParent calls if they are blocked by combat lockdown to prevent UI errors/taint.
 	if not frame then
 		return
 	end
 
-	-- Reparenting taints ObjectiveTrackerFrame, so install the SplashFrame guard only when needed.
 	ensureSplashGuard()
 
-	local ok = pcall(frame.SetParent, frame, parent)
-	if not ok then
-		pendingAction = actionName
+	if pcall(frame.SetParent, frame, parent) then
+		return
+	end
+
+	pendingAction = actionName
+	if not waitingForCombat then
+		waitingForCombat = true
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", applyPending)
 	end
 end
 
 -- ---------------------------------------------------------------------------
--- Module Initialization
+-- Driver setup
 -- ---------------------------------------------------------------------------
 do
 	local autoHider
+	local setupDone
 
 	local function reapplyDriverAfterCombat()
 		if InCombatLockdown() then
@@ -239,28 +234,39 @@ do
 	end
 
 	function Module:ObjectiveTracker_AutoHide()
+		-- Boss mods / replacement trackers own this UI — don't fight them.
 		if isAddOnLoaded("BigWigs") or isAddOnLoaded("DBM-Core") or isAddOnLoaded("DBM") then
 			return
 		end
+		if Module:ObjectiveTracker_HasQuestTracker() then
+			return
+		end
 
-		if not _G.ObjectiveTrackerFrame then
+		if not GetTracker() then
 			return
 		end
 
 		if not autoHider then
-			autoHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-			autoHider:SetAttribute("_onstate-objectiveHider", "if newstate == 1 then self:Hide() else self:Show() end")
-
+			autoHider = CreateFrame("Frame", "KkthnxUITrackerAutoHider", UIParent, "SecureHandlerStateTemplate")
+			autoHider:SetAttribute(
+				"_onstate-trackervis",
+				[[
+				if newstate == "hide" then
+					self:Hide()
+				else
+					self:Show()
+				end
+			]]
+			)
 			autoHider:SetScript("OnHide", function()
 				Module:ObjectiveTracker_AutoHideOnHide()
 			end)
-
 			autoHider:SetScript("OnShow", function()
 				Module:ObjectiveTracker_AutoHideOnShow()
 			end)
+			setupDone = true
 		end
 
-		local cfg = getTrackerConfig()
 		if InCombatLockdown() then
 			if not driverPending then
 				driverPending = true
@@ -269,22 +275,45 @@ do
 			return
 		end
 
+		local cfg = getTrackerConfig()
 		if cfg.AutoHide then
-			-- REASON: Registers state driver to hide tracker during boss encounters or arena via secure state.
-			RegisterStateDriver(autoHider, "objectiveHider", "[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists]" .. "[@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists][@boss5,exists] 1;0")
+			RegisterStateDriver(autoHider, "trackervis", STATE_CONDITION)
 		else
-			UnregisterStateDriver(autoHider, "objectiveHider")
+			UnregisterStateDriver(autoHider, "trackervis")
 			Module:ObjectiveTracker_AutoHideOnShow()
 		end
 	end
-end
 
-function Module:ObjectiveTracker_Setup()
-	Module:ObjectiveTracker_AutoHide()
-end
+	function Module:ObjectiveTracker_Setup()
+		Module:ObjectiveTracker_AutoHide()
+	end
 
-function Module:CreateAutoHideTracker()
-	if not Module:ObjectiveTracker_HasQuestTracker() then
-		Module:ObjectiveTracker_Setup()
+	function Module:CreateAutoHideTracker()
+		if Module:ObjectiveTracker_HasQuestTracker() then
+			return
+		end
+
+		-- Blizzard_ObjectiveTracker is LOD; wait if needed.
+		if GetTracker() then
+			Module:ObjectiveTracker_Setup()
+			return
+		end
+
+		if setupDone then
+			return
+		end
+
+		local waiter = CreateFrame("Frame")
+		waiter:RegisterEvent("ADDON_LOADED")
+		waiter:SetScript("OnEvent", function(self, _, name)
+			if name ~= "Blizzard_ObjectiveTracker" then
+				return
+			end
+			self:UnregisterEvent("ADDON_LOADED")
+			self:SetScript("OnEvent", nil)
+			if not Module:ObjectiveTracker_HasQuestTracker() then
+				Module:ObjectiveTracker_Setup()
+			end
+		end)
 	end
 end

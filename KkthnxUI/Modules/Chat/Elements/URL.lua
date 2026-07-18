@@ -3,7 +3,7 @@
 -- Author: Josh "Kkthnx" Russell
 -- Notes:
 -- - Purpose: Detects URLs and IP addresses in chat and converts them into clickable hyperlinks.
--- - Design: Fast-path precheck, secret-safe scan, copy popup on click (Ellesmere pattern).
+-- - Design: Fast-path precheck, secret-safe scan, copy popup on click.
 -- - Events: Hooked into SetItemRef (Midnight; ChatFrame_OnHyperlinkShow was removed in 12.0).
 -----------------------------------------------------------------------------]]
 

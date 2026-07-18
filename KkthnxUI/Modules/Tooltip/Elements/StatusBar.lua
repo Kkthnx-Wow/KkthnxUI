@@ -140,11 +140,22 @@ local function HookBarHealth(bar)
 	bar.kkHealthHooked = true
 	StyleStatusBar(bar)
 
+	-- Wiping OnValueChanged stops Blizzard text flicker, but also drops their
+	-- colour updates — re-paint class/reaction colour on UpdateUnitHealth.
+	local function OnBarHealthUpdated(self)
+		local tip = self:GetParent()
+		if tip and not tip:IsForbidden() then
+			Module.UpdateStatusBarColor(tip)
+		else
+			UpdateHealthText(self)
+		end
+	end
+
 	if bar.UpdateUnitHealth then
 		bar:SetScript("OnValueChanged", nil)
-		hooksecurefunc(bar, "UpdateUnitHealth", UpdateHealthText)
+		hooksecurefunc(bar, "UpdateUnitHealth", OnBarHealthUpdated)
 	else
-		bar:HookScript("OnValueChanged", UpdateHealthText)
+		bar:HookScript("OnValueChanged", OnBarHealthUpdated)
 	end
 end
 
@@ -160,7 +171,12 @@ function Module:UpdateStatusBarColor()
 
 	local unit = Module.GetUnitToken(self)
 	if not unit or IsRestrictedUnit(unit) then
-		bar:SetStatusBarColor(0.6, 0.6, 0.6)
+		-- Restricted identity: keep last paint; only seed green once so we never
+		-- sit on an undyed atlas (dark grey). Prefer not stomping a good reaction.
+		local cr, cg, cb = bar:GetStatusBarColor()
+		if not cr or (cr == 1 and cg == 1 and cb == 1) or (cr == 0 and cg == 0 and cb == 0) or (cr == 0.6 and cg == 0.6 and cb == 0.6) then
+			bar:SetStatusBarColor(0, 1, 0)
+		end
 	else
 		bar:SetStatusBarColor(K.UnitColor(unit))
 	end

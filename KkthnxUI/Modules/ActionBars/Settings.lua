@@ -85,6 +85,10 @@ local function OnActionBarSetting(configPath)
 		Module:SetActionBarEnabled(C["ActionBar"].Enable)
 	elseif key == "MicroMenu" or key == "FadeMicroMenu" then
 		Module:CreateMicroMenu()
+	elseif key == "CursorRing" then
+		Module:CreateCursorRing()
+	elseif key == "CursorRingShowCast" or key == "CursorRingCombatOnly" or key == "CursorRingSize" then
+		Module:UpdateCursorRing()
 	end
 end
 

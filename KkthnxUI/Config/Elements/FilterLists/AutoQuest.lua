@@ -90,16 +90,49 @@ C.AutoQuestData = {
 		[97004] = true, -- "Red" Jack Findle, Rogue Class Hall
 		[96782] = true, -- Lucian Trias, Rogue Class Hall
 		[93188] = true, -- Mongar, Rogue Class Hall
-		[107486] = true, -- Stars' Private Investigator
-		[167839] = true, -- Soul Residue, Tower Climb
+		[107486] = true, -- Stellagosa
+		[167839] = true, -- Soul Remnant, Torghast
+	},
+
+	-- Locale-independent quest/task gossip option IDs (not NPC IDs)
+	QuestGossipOptions = {
+		[109275] = true, -- Soridormi - begin time rift
+		[120619] = true, -- Big Dig task
+		[120620] = true, -- Big Dig task
 		[120555] = true, -- Awakening The Machine
 		[120733] = true, -- Theater Troupe
+		[40563] = true, -- Darkmoon Whack-a-Gnoll
+		[28701] = true, -- Darkmoon Cannon
+		[31202] = true, -- Darkmoon Shooting gallery
+		[39245] = true, -- Darkmoon Tonk
+		[40224] = true, -- Darkmoon Ring toss
+		[43060] = true, -- Darkmoon Firebird
+		[52651] = true, -- Darkmoon Dance
+		[41759] = true, -- Darkmoon Pet battle
+	},
+
+	-- Non-quest utility gossip: auto-select when offered (true = all classes, "HUNTER" = class gate)
+	UtilityGossipOptions = {
+		[123878] = true, -- Nerub-ar Palace speed
+		[122627] = true, -- Vaskarn skip to vendor
+		[125367] = true, -- D.R.I.V.E
+		[36816] = "HUNTER", -- skip to stable UI
+	},
+
+	-- Never auto-select these gossip options (teleports / leave dungeon)
+	IgnoreGossipOptions = {
+		[122442] = true, -- Leave the dungeon in Remix
+		[44733] = true, -- Teleport
+		[125350] = true, -- Siren Isle teleport
+		[125351] = true, -- Siren Isle teleport
+		[131324] = true, -- Winter Veil Hillsbrad teleport
+		[131325] = true, -- Winter Veil Hillsbrad teleport
 	},
 
 	-- Instances where auto gossip select should be disabled
 	IgnoreInstances = {
-		[1571] = true, -- Withered J'im
-		[1626] = true, -- Twisting Corridors
+		[1571] = true, -- Court of Stars
+		[1626] = true, -- Suramar withered training
 	},
 
 	-- NPCs where we auto-confirm gossip prompts

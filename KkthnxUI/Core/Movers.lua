@@ -54,6 +54,22 @@ function K:Mover(text, value, anchor, width, height)
 
 	-- NOTE: Use unique naming to facilitate debugging and avoid potential global table overlaps.
 	local uniqueName = "KKUI_Mover_" .. tostring(value or "Anon")
+
+	-- SpawnCoreUnitFrames / live settings rebuilds call Mover again with the same key
+	-- (PlayerCB, TargetCB, …). Reuse the existing button — CreateFrame with the same
+	-- global name would orphan the old one in MoverList and fight over DB saves.
+	local existing = _G[uniqueName]
+	if existing then
+		if width or height then
+			existing:SetSize(width or existing:GetWidth(), height or existing:GetHeight())
+		end
+		if self.ClearAllPoints and self.SetPoint then
+			self:ClearAllPoints()
+			self:SetPoint("TOPLEFT", existing)
+		end
+		return existing
+	end
+
 	local mover = CreateFrame("Button", uniqueName, UIParent)
 	mover:SetWidth(width or (self.GetWidth and self:GetWidth() or 50))
 	mover:SetHeight(height or (self.GetHeight and self:GetHeight() or 50))
@@ -84,14 +100,6 @@ function K:Mover(text, value, anchor, width, height)
 	mover:SetScript("OnDragStop", Module.Mover_OnDragStop)
 	mover:SetScript("OnMouseUp", Module.Mover_OnClick)
 
-	-- REASON: Detect duplicate value keys early; two movers sharing the same key silently overwrite
-	-- each other's saved position in KkthnxUIDB, so the later-registered frame always loads wrong.
-	for _, existingMover in ipairs(MoverList) do
-		if existingMover.__value == value then
-			K.Print("|cffff4444Mover WARNING:|r Duplicate key '" .. tostring(value) .. "' registered. DB position saving may be overwritten.")
-			break
-		end
-	end
 	table_insert(MoverList, mover)
 
 	-- WARNING: Ensure the target frame supports standard positioning methods to avoid script errors.
@@ -274,7 +282,7 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 -- ---------------------------------------------------------------------------
 
 -- REASON: Creates the on-screen control panel for managing anchors and fine-tuning positions.
--- Layout mirrors NDui Core/Mover.lua, with extra padding so KKUI CreateBorder seams don't collide.
+-- Layout uses extra padding so KKUI CreateBorder seams don't collide.
 local function CreateConsole()
 	if f then
 		return
@@ -515,7 +523,7 @@ end
 -- taints that mixin. On enter, EditModeFrameSetup then runs RefreshEncounterEvents /
 -- RefreshPartyFrames under KKUI taint → secureexecuterange + secret values explode
 -- (EncounterWarningsViewElements, CompactUnitFrame_UpdateHealthColor, HideSystemSelections).
--- NDui already commented out DisableBlizzardMover for the same reason.
+-- Leave DisableBlizzardMover empty for the same reason.
 -- CUF burial lives in UnitFrames DisableBlizzardRaidFrames (reparent + OnShow hide).
 function Module:DisableBlizzardMover()
 	-- Intentionally empty — do not patch AccountSettings.

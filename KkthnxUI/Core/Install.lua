@@ -193,7 +193,13 @@ end
 -- ---------------------------------------------------------------------------
 
 function Module:ResetSettings()
-	KkthnxUIDB.Settings[K.Realm][K.Name] = {}
+	if K.ProfileService and K.ProfileService.ResetProfile then
+		K.ProfileService:ResetProfile()
+		return
+	end
+	if KkthnxUIDB.Settings and KkthnxUIDB.Settings[K.Realm] then
+		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
+	end
 end
 
 function Module:ResetData()

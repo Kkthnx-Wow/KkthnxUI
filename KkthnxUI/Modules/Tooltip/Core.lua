@@ -46,6 +46,7 @@ local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
 local FACTION_HORDE = _G.FACTION_HORDE
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
 local GameTooltip = _G.GameTooltip
+local GameTooltipStatusBar = _G.GameTooltipStatusBar
 local GameTooltipTextLeft1 = _G.GameTooltipTextLeft1
 local GameTooltipTextLeft2 = _G.GameTooltipTextLeft2
 local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
@@ -62,7 +63,10 @@ local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
+local IsInRaid = _G.IsInRaid
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
 local ITEM_QUALITY3_DESC = _G.ITEM_QUALITY3_DESC
 local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
@@ -82,6 +86,7 @@ local UnitClassification = _G.UnitClassification
 local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
+local UnitGUID = _G.UnitGUID
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
@@ -117,7 +122,52 @@ local specPrefix = "|cffFFCC00" .. SPECIALIZATION .. ": " .. K.InfoColor
 
 -- REASON: Resolve the unit token shown on a tooltip (Midnight-safe).
 -- SECRET (12.0): data.guid is secret on restricted units; never pass it to
--- UnitTokenFromGUID when secret. Falls back to mouseover and owner unit.
+-- UnitTokenFromGUID when secret. Falls back to raid/party walk, live candidates,
+-- mouseover, and owner unit (CleanToken / MatchLiveToken).
+local function CleanTokenForGUID(guid)
+	if not guid or IsSecret(guid) then
+		return
+	end
+	local playerGUID = UnitGUID("player")
+	if playerGUID and K.NotSecret(playerGUID) and playerGUID == guid then
+		return "player"
+	end
+	if IsInRaid() then
+		for i = 1, GetNumGroupMembers() do
+			local tk = "raid" .. i
+			local tg = UnitGUID(tk)
+			if tg and K.NotSecret(tg) and tg == guid then
+				return tk
+			end
+		end
+	elseif IsInGroup() then
+		for i = 1, GetNumSubgroupMembers() do
+			local tk = "party" .. i
+			local tg = UnitGUID(tk)
+			if tg and K.NotSecret(tg) and tg == guid then
+				return tk
+			end
+		end
+	end
+end
+
+local function MatchLiveTokenForGUID(guid)
+	if not guid then
+		return
+	end
+	local candidates = { "mouseover", "target", "focus", "targettarget" }
+	for i = 1, #candidates do
+		local cand = candidates[i]
+		local exists = UnitExists(cand)
+		if K.NotSecret(exists) and exists then
+			local cg = UnitGUID(cand)
+			if cg and K.NotSecret(cg) and cg == guid then
+				return cand
+			end
+		end
+	end
+end
+
 function Module:GetDisplayedUnit(tt)
 	tt = tt or self
 	if tt.GetPrimaryTooltipData then
@@ -126,8 +176,24 @@ function Module:GetDisplayedUnit(tt)
 		end
 		local data = tt:GetPrimaryTooltipData()
 		local guid = data and data.guid
-		if guid and K.NotSecret(guid) then
-			return UnitTokenFromGUID(guid)
+		if guid and IsSecret(guid) then
+			guid = nil
+		end
+		if guid then
+			local token = CleanTokenForGUID(guid)
+			if token then
+				return token
+			end
+			if UnitTokenFromGUID then
+				local tu = UnitTokenFromGUID(guid)
+				if tu and K.NotSecret(tu) then
+					local exists = UnitExists(tu)
+					if K.NotSecret(exists) and exists then
+						return tu
+					end
+				end
+			end
+			return MatchLiveTokenForGUID(guid)
 		end
 		return
 	end
@@ -146,6 +212,33 @@ function Module:GetUnitToken(tt)
 	local mouseover = (K.NotSecret(mouseoverExists) and mouseoverExists) and "mouseover" or nil
 
 	local unit = Module.GetDisplayedUnit(tt)
+
+	-- Health-bar watch GUID is authoritative during UpdateUnitHealth ticks
+	-- Resolve tip identity. Prefer it when tip GUID/token is missing
+	-- or stale — that was why NPC tips fell to grey/green in instances.
+	local bar = (tt.StatusBar or GameTooltipStatusBar)
+	if bar and bar.GetAttribute then
+		local bg = bar:GetAttribute("guid")
+		if bg and K.NotSecret(bg) then
+			local ug = unit and UnitGUID(unit)
+			if not unit or not ug or IsSecret(ug) or ug ~= bg then
+				local token = CleanTokenForGUID(bg) or MatchLiveTokenForGUID(bg)
+				if not token and UnitTokenFromGUID then
+					local tu = UnitTokenFromGUID(bg)
+					if tu and K.NotSecret(tu) then
+						local exists = UnitExists(tu)
+						if K.NotSecret(exists) and exists then
+							token = tu
+						end
+					end
+				end
+				if token then
+					unit = token
+				end
+			end
+		end
+	end
+
 	if unit then
 		if K.IsSecretUnit(unit) then
 			return mouseover
@@ -286,6 +379,8 @@ function Module:InsertFactionFrame(faction)
 end
 
 -- REASON: Resets custom tooltip state (faction frames, status bars) on clear.
+-- Do NOT clear item-level inspect here — OnTooltipCleared fires mid-rebuild
+-- while NotifyInspect is in flight (clear inspect state on OnHide only).
 function Module:OnTooltipCleared()
 	if self:IsForbidden() then
 		return
@@ -302,6 +397,16 @@ function Module:OnTooltipCleared()
 
 	if self.StatusBar then
 		self.StatusBar:ClearWatch()
+	end
+end
+
+local function OnGameTooltipHide()
+	if GameTooltip:IsForbidden() then
+		return
+	end
+	Module._tipShownGUID = nil
+	if Module.ClearItemLevelInspectState then
+		Module:ClearItemLevelInspectState()
 	end
 end
 
@@ -504,7 +609,22 @@ function Module:OnTooltipSetUnit()
 			local reaction = UnitReaction(unit, "player")
 			local standingText = not isPlayer and reaction and hexColor .. (_G["FACTION_STANDING_LABEL" .. reaction] or "") .. "|r " or ""
 			local pvpFlag = isPlayer and UnitIsPVP(unit) and string_format(" |cffff0000%s|r", PVP) or ""
-			local unitClass = isPlayer and string_format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
+			-- UnitClass className can be ConditionalSecret; prefer filename. CreatureType is identity-restricted.
+			local unitClass = ""
+			if isPlayer then
+				local race = UnitRace(unit)
+				local _, classFile = UnitClass(unit)
+				if race and IsSecret(race) then
+					race = nil
+				end
+				if classFile and IsSecret(classFile) then
+					classFile = nil
+				end
+				unitClass = string_format("%s %s", race or "", hexColor .. (classFile or "") .. "|r")
+			else
+				local ctype = UnitCreatureType(unit)
+				unitClass = (ctype and not IsSecret(ctype) and ctype) or ""
+			end
 
 			tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, standingText .. unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
 		end
@@ -527,7 +647,7 @@ function Module:OnTooltipSetUnit()
 	end
 
 	if isPlayer then
-		Module.InspectUnitItemLevel(self, unit)
+		Module.InspectUnitItemLevel(self, unit, guid)
 		Module.ShowUnitMythicPlusScore(self, unit)
 	end
 
@@ -790,6 +910,7 @@ end
 -- REASON: Registers hooks and events for tooltip data processing and Blizzard functions.
 function Module:OnEnable()
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
+	GameTooltip:HookScript("OnHide", OnGameTooltipHide)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.OnTooltipSetUnit)
 
 	TooltipDataProcessor.AddLinePreCall(Enum.TooltipDataLineType.None, Module.UpdateFactionLine)

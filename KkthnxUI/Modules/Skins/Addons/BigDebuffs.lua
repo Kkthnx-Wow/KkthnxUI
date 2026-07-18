@@ -4,8 +4,7 @@
 -- Notes:
 -- - Purpose: Registers KkthnxUI's oUF frames with BigDebuffs for full unit-frame support.
 -- - Design: Injects a "KkthnxUI" anchor entry into BigDebuffs.anchors after the addon
---           loads, mirroring the same pattern used by NDui. Uses GUID lookup for party
---           and arena frames (same as NDuiFrames resolver) since they are header children.
+--           loads. Uses GUID lookup for party and arena frames since they are header children.
 -- - Events: N/A (uses Module:RegisterSkin deferred load via ADDON_LOADED)
 -----------------------------------------------------------------------------]]
 
@@ -52,7 +51,7 @@ local function GetKKUIAnchor(anchor)
 
 	-- REASON: Party frames are spawned under a SecureGroupHeader — children are NOT
 	-- individually named by unit, so we resolve by matching the unit's GUID against
-	-- each visible child button, exactly as NDui's GetAnchor.NDuiFrames does it.
+	-- each visible child button.
 	if unit:match("^party") or unit:match("^player") then
 		local unitGUID = UnitGUID(unit)
 		if not unitGUID then
@@ -112,10 +111,10 @@ local function RegisterBigDebuffs()
 	-- REASON: Inject our anchor block. noPortrait = true because oUF frames don't
 	-- use a separate portrait sub-frame — BigDebuffs places the icon directly on the
 	-- health bar region of the returned frame. alignLeft = false (default) so the icon
-	-- anchors to the right side of the frame, matching the NDui layout.
+	-- anchors to the right side of the frame.
 	BigDebuffs.anchors["KkthnxUI"] = {
 		func = GetKKUIAnchor,
-		noPortait = true, -- REASON: Matches NDui's noPortait flag — no separate portrait frame.
+		noPortait = true, -- REASON: no separate portrait frame on oUF units.
 		units = {
 			-- Single-frame units: anchor string IS the global name.
 			player = "oUF_Player",

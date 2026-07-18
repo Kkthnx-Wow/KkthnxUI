@@ -417,7 +417,7 @@ local function Update(self, event, unit, powerType)
 	--]]
 	if(element.PostUpdate) then
 		--return element:PostUpdate(cur, max, hasMaxChanged, powerType, unpack(chargedPoints or {}))
-		return element:PostUpdate(cur, max, hasMaxChanged, powerType, chargedPoints) -- NDui mod
+		return element:PostUpdate(cur, max, hasMaxChanged, powerType, chargedPoints) -- KKUI mod
 	end
 end
 

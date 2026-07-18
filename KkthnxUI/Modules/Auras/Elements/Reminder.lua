@@ -183,6 +183,10 @@ end
 local function Reminder_HideFrame(frame)
 	frame:Hide()
 	Reminder_SetGlowVisible(frame, false)
+	-- Clear DurationObject swipe so a recycled icon never shows a stale CD.
+	if frame.Cooldown then
+		frame.Cooldown:Clear()
+	end
 end
 
 local function Reminder_PlayerEligible(cfg)

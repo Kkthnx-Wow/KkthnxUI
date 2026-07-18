@@ -102,6 +102,12 @@ C["ActionBar"] = {
 	BarFadeCasting = true,
 	BarFadeHealth = true,
 	BarFadeVehicle = true,
+
+	-- Cursor Ring (independent of ActionBar.Enable)
+	CursorRing = false,
+	CursorRingShowCast = true,
+	CursorRingCombatOnly = false,
+	CursorRingSize = 48,
 }
 
 -- Announcements
@@ -129,6 +135,9 @@ C["Automation"] = {
 	AutoDelves = false,
 	HolidayDungeon = false,
 	AuctionSearchFallback = true,
+	AuctionSearchHistory = true,
+	AuctionSearchHistoryMax = 5,
+	SmartFishing = true,
 	AutoKeystone = false,
 
 	AutoDeclineDuels = false,
@@ -147,6 +156,8 @@ C["Automation"] = {
 	AutoQuestAcceptDaily = true,
 	AutoQuestAcceptWeekly = true,
 	AutoQuestProtectTurnIns = true,
+	-- Opt-in: lone red "<Skip ...>" story/campaign gossip (off = never auto-skip dialogue)
+	AutoQuestSkipGossip = false,
 	AutoShareQuest = false,
 	AutoRelease = false,
 	AutoResurrect = false,
@@ -210,6 +221,14 @@ C["Inventory"] = {
 	WarbandGoldTarget = 10000,
 	WarbandGoldWithdraw = false,
 	ColorUnusableItems = true,
+	DeleteCheapest = true,
+	DeleteCheapestFilterConsumable = false,
+	DeleteCheapestFilterContainer = false,
+	DeleteCheapestFilterWeapon = false,
+	DeleteCheapestFilterArmor = false,
+	DeleteCheapestFilterReagent = false,
+	DeleteCheapestFilterTradeskill = false,
+	DeleteCheapestFilterQuest = true,
 }
 
 -- Buffs & Debuffs
@@ -240,6 +259,8 @@ C["Chat"] = {
 	ConfigButton = true,
 	CopyButton = true,
 	Emojis = false,
+	EmojiBubbles = false,
+	EmojiAutocomplete = true,
 	Enable = true,
 	Fading = true,
 	FadingTimeVisible = 100,
@@ -258,6 +279,11 @@ C["Chat"] = {
 	HighlightGuild = true,
 	UrlLinks = true,
 	UrlPopup = true,
+	SystemChatFilter = true,
+	-- Keyword + repeat spam filter (space/comma-separated FilterList via K.SplitList)
+	ChatFilter = false,
+	FilterList = "wts goldonly boosting discord.gg",
+	FilterMatches = 1,
 }
 
 -- Datatext
@@ -370,6 +396,9 @@ C["Misc"] = {
 	YClassColors = true,
 	EasyMarkKey = 1,
 	ShowMarkerBar = 4,
+	HeroTalentSwap = true,
+	AudioSync = false,
+	AchievementBackButton = true,
 }
 
 C["Nameplate"] = {
@@ -691,4 +720,18 @@ C["WorldMap"] = {
 	SmallWorldMap = true,
 	-- Waypoint options
 	AutoOpenWaypoint = true,
+	-- Super-track pin navigation (alpha / distance / ETA)
+	MapPinNavigation = true,
+	MapPinShowEta = true,
+	MapPinRespectNavCVar = true,
+	MapPinUseMeters = false,
+	MapPinShortNumbers = true,
+	MapPinFadeMouseOver = true,
+	MapPinAutoTrack = true,
+	MapPinMinDistance = 0,
+	MapPinMaxDistance = 0,
+	MapPinFadeDistance = 1000,
+	MapPinAlphaShort = 100,
+	MapPinAlphaLong = 60,
+	MapPinAlphaClamped = 100,
 }

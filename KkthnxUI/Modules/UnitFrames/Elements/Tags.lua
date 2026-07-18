@@ -65,8 +65,6 @@ local ROLE_ATLAS = {
 }
 
 -- REASON: Add scantip back, due to issue on ColorMixin.
-local scanTip = K.ScanTooltip
-
 -- REASON: Precomputed static strings for common tags to avoid repeated concatenation.
 local DEAD_STRING = "|cffCFCFCF" .. DEAD .. "|r"
 local GHOST_STRING = "|cffCFCFCF" .. L["Ghost"] .. "|r"
@@ -355,7 +353,7 @@ oUF.Tags.Methods["raidhp"] = function(unit)
 		if per then
 			return GetHealthColor(per)
 		end
-		-- Secret HP: % unavailable — show abbreviated value like Ellesmere / [hp].
+		-- Secret HP: % unavailable — show abbreviated value via [hp].
 		return SafeShortValue(cur)
 	elseif format == 3 then
 		local cur = UnitHealth(unit)
@@ -484,25 +482,30 @@ end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
 -- REASON: NPC title in NameOnly mode; guild on players uses [guildname] separately.
+-- C_TooltipInfo.GetUnit + secret leftText guard (no scanTip:SetUnit).
 oUF.Tags.Methods["npctitle"] = function(unit)
-	-- SECRET (12.0): on restricted nameplates UnitIsPlayer returns a secret boolean
-	-- that cannot be branched on, so bail when the identity is hidden.
 	local isPlayer = UnitIsPlayer(unit)
 	if IsSecret(isPlayer) then
 		return
 	end
 
 	if not isPlayer and C["Nameplate"].NameOnly then
-		scanTip:SetOwner(K.UIFrameHider, "ANCHOR_NONE")
-		scanTip:SetUnit(unit)
-
-		local line2 = _G.KKUI_ScanTooltipTextLeft2
-		local line3 = _G.KKUI_ScanTooltipTextLeft3
-		local textLine = GetCVarBool("colorblindmode") and line3 or line2
-		local title = textLine and textLine:GetText()
-		-- SECRET (12.0): the scanned title string can be secret in instances;
-		-- string_find performs a string conversion that errors on secret strings.
-		if title and K.NotSecret(title) and not string_find(title, "^" .. LEVEL) then
+		local C_TooltipInfo = _G.C_TooltipInfo
+		if not (C_TooltipInfo and C_TooltipInfo.GetUnit) then
+			return
+		end
+		local data = C_TooltipInfo.GetUnit(unit)
+		if not data or not data.lines then
+			return
+		end
+		local cbMode = GetCVarBool("colorblindmode") and 1 or 0
+		local line = data.lines[2 + cbMode]
+		local title = line and line.leftText
+		-- Secret leftText must not reach string_find / == "".
+		if not title or IsSecret(title) or title == "" then
+			return
+		end
+		if not string_find(title, "^" .. LEVEL) then
 			return title
 		end
 	end

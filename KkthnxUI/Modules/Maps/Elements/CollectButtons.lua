@@ -199,8 +199,29 @@ function Module:CreateRecycleBin()
 		end)
 	end
 
-	-- REASON: Expose cleanup to facilitate immediate session-level disabling without reload.
+	-- REASON: Expose cleanup for live disable — restore buttons to Minimap.
 	recycleBinFrame.Cleanup = function()
+		for _, child in ipairs(binButtons) do
+			if child then
+				local saved = child.__kkthnx_minimap_saved
+				local name = child.GetName and child:GetName()
+				-- WIM noop'd SetParent — leave it alone rather than fight.
+				if name ~= "WIM3MinimapButton" and child.SetParent ~= K.Noop then
+					child:SetParent((saved and saved.parent) or Minimap)
+					if saved and saved.strata then
+						child:SetFrameStrata(saved.strata)
+					end
+					if saved and saved.point then
+						child:ClearAllPoints()
+						child:SetPoint(saved.point, saved.relTo or Minimap, saved.relPoint or saved.point, saved.x or 0, saved.y or 0)
+					end
+				end
+				Module:RestoreMinimapButtonJunk(child)
+				child.styled = nil
+				child.isExamed = nil
+				child.__kkthnx_minimap_saved = nil
+			end
+		end
 		table_wipe(binButtons)
 		table_wipe(shownButtons)
 		numMinimapChildren = 0
@@ -214,6 +235,20 @@ function Module:CreateRecycleBin()
 	toggleButton:SetScript("OnLeave", startAutoCloseTimer)
 
 	local function reskinMinimapButton(child, name)
+		-- Save original parent/points once so Cleanup can restore on live disable.
+		if not child.__kkthnx_minimap_saved then
+			local point, relTo, relPoint, x, y = child:GetPoint(1)
+			child.__kkthnx_minimap_saved = {
+				parent = child:GetParent(),
+				strata = child:GetFrameStrata(),
+				point = point,
+				relTo = relTo,
+				relPoint = relPoint,
+				x = x,
+				y = y,
+			}
+		end
+
 		Module:SkinMinimapAddonButton(child, {
 			size = 22,
 			goodLooking = GOOD_LOOKING_ICON[name] or false,

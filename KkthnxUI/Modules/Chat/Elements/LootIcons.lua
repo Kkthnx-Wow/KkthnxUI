@@ -29,6 +29,10 @@ local function Icon(link)
 end
 
 local function AddLootIcons(_, _, message, ...)
+	-- SECRET (12.0): loot text can be opaque under messaging lockdown.
+	if not message or K.IsSecret(message) then
+		return false, message, ...
+	end
 	message = string_gsub(message, "(\124c%x+\124Hitem:.-\124h\124r)", Icon)
 	return false, message, ...
 end

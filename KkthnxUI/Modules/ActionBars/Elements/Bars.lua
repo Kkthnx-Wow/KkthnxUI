@@ -441,6 +441,7 @@ end
 function Module:OnEnable()
 	Module.buttons = {}
 	Module:CreateMicroMenu()
+	Module:CreateCursorRing()
 
 	-- COMPAT: Support ConsolePort without conflicts.
 	if C_AddOns.IsAddOnLoaded("ConsolePort") then
