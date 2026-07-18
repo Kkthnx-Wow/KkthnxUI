@@ -556,11 +556,7 @@ function Module.PortraitOverride(self, event)
 	end
 
 	-- Same unit, new Blizzard portrait art — refresh the 2D overlay only (no ClearModel).
-	if element.__usingFallback and isAvailable and (
-		event == "UNIT_PORTRAIT_UPDATE"
-		or event == "PORTRAITS_UPDATED"
-		or event == "UNIT_MODEL_CHANGED"
-	) then
+	if element.__usingFallback and isAvailable and (event == "UNIT_PORTRAIT_UPDATE" or event == "PORTRAITS_UPDATED" or event == "UNIT_MODEL_CHANGED") then
 		ShowPortrait2DFallback(element, unit, true)
 	end
 
@@ -643,10 +639,7 @@ function Module.HealthColorOverride(self, event, unit)
 			end
 			if element.colorThreat and NotSecret(controlled) and not controlled and NotSecret(threat) and threat then
 				color = colors.threat[threat]
-			elseif element.colorClass and isPlayerOrPartyAI(unit)
-				or (element.colorClassNPC and not isPlayerOrPartyAI(unit))
-				or (element.colorClassPet and NotSecret(controlled) and controlled and not (NotSecret(UnitIsPlayer(unit)) and UnitIsPlayer(unit)))
-			then
+			elseif element.colorClass and isPlayerOrPartyAI(unit) or (element.colorClassNPC and not isPlayerOrPartyAI(unit)) or (element.colorClassPet and NotSecret(controlled) and controlled and not (NotSecret(UnitIsPlayer(unit)) and UnitIsPlayer(unit))) then
 				local _, class = UnitClass(unit)
 				if NotSecret(class) and class then
 					color = colors.class[class]
@@ -781,10 +774,7 @@ function Module.PowerColorOverride(self, event, unit)
 						end
 					end
 				end
-			elseif element.colorClass and isPlayerOrPartyAI(unit)
-				or (element.colorClassNPC and not isPlayerOrPartyAI(unit))
-				or (element.colorClassPet and NotSecret(controlled) and controlled and not (NotSecret(UnitIsPlayer(unit)) and UnitIsPlayer(unit)))
-			then
+			elseif element.colorClass and isPlayerOrPartyAI(unit) or (element.colorClassNPC and not isPlayerOrPartyAI(unit)) or (element.colorClassPet and NotSecret(controlled) and controlled and not (NotSecret(UnitIsPlayer(unit)) and UnitIsPlayer(unit))) then
 				local _, class = UnitClass(unit)
 				if NotSecret(class) and class then
 					color = colors.class[class]
@@ -851,13 +841,7 @@ function Module:CreatePrivateAuras(frame, opts)
 	opts = opts or {}
 	local element = CreateFrame("Frame", nil, frame)
 	element:SetSize(opts.width or 72, opts.height or 24)
-	element:SetPoint(
-		opts.point or "TOPLEFT",
-		opts.relativeTo or frame.Health,
-		opts.relativePoint or "BOTTOMLEFT",
-		opts.x or 0,
-		opts.y or -4
-	)
+	element:SetPoint(opts.point or "TOPLEFT", opts.relativeTo or frame.Health, opts.relativePoint or "BOTTOMLEFT", opts.x or 0, opts.y or -4)
 	element.size = opts.size or 20
 	element.num = opts.num or 6
 	element.spacing = opts.spacing or 2
@@ -3113,42 +3097,7 @@ function Module:SpawnRaidFrames()
 	end
 
 	local function CreateGroup(name, i)
-		return oUF:SpawnHeader(
-			name,
-			nil,
-			"showPlayer",
-			true,
-			"showSolo",
-			true,
-			"showParty",
-			true,
-			"showRaid",
-			true,
-			"xOffset",
-			6,
-			"yOffset",
-			-6,
-			"groupFilter",
-			tostring(i),
-			"groupingOrder",
-			"1,2,3,4,5,6,7,8",
-			"groupBy",
-			"GROUP",
-			"sortMethod",
-			"INDEX",
-			"maxColumns",
-			1,
-			"unitsPerColumn",
-			5,
-			"columnSpacing",
-			5,
-			"point",
-			horizonRaid and "LEFT" or "TOP",
-			"columnAnchorPoint",
-			"LEFT",
-			"oUF-initialConfigFunction",
-			CreateHeaderInit(raidWidth, raidHeight)
-		)
+		return oUF:SpawnHeader(name, nil, "showPlayer", true, "showSolo", true, "showParty", true, "showRaid", true, "xOffset", 6, "yOffset", -6, "groupFilter", tostring(i), "groupingOrder", "1,2,3,4,5,6,7,8", "groupBy", "GROUP", "sortMethod", "INDEX", "maxColumns", 1, "unitsPerColumn", 5, "columnSpacing", 5, "point", horizonRaid and "LEFT" or "TOP", "columnAnchorPoint", "LEFT", "oUF-initialConfigFunction", CreateHeaderInit(raidWidth, raidHeight))
 	end
 
 	local function CreateTeamIndex(header)
@@ -3344,9 +3293,7 @@ function Module:SpawnBossFrames()
 		local bossMoverHeight = cfg.HealthHeight + cfg.PowerHeight + 6
 		local moverKey = "BossFrame" .. i
 		local anchorKey = (i == 1) and "Boss1" or ("Boss" .. i)
-		local defaultAnchor = (i == 1)
-				and { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 }
-			or { "TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -cfg.YOffset }
+		local defaultAnchor = (i == 1) and { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 } or { "TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -cfg.YOffset }
 
 		local mover = _G["KKUI_Mover_" .. moverKey]
 		if mover then
@@ -3382,9 +3329,7 @@ function Module:SpawnArenaFrames()
 		local arenaMoverHeight = cfg.HealthHeight + cfg.PowerHeight + 6
 		local moverKey = "ArenaFrame" .. i
 		local anchorKey = (i == 1) and "Arena1" or ("Arena" .. i)
-		local defaultAnchor = (i == 1)
-				and { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 }
-			or { "TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -cfg.YOffset }
+		local defaultAnchor = (i == 1) and { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 } or { "TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -cfg.YOffset }
 
 		local mover = _G["KKUI_Mover_" .. moverKey]
 		if mover then

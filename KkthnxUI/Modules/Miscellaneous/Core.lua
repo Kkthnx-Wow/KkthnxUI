@@ -181,18 +181,7 @@ function Module:UpdateAutoBubbles()
 	enableAutoBubbles()
 end
 
-function Module:UpdateExpRepBar()
-	local bar = _G.KKUI_ExpRepBar
-	if C["Misc"].ExpRep then
-		if bar then
-			bar:Show()
-		else
-			Module:CreateExpbar()
-		end
-	elseif bar then
-		bar:Hide()
-	end
-end
+-- UpdateExpRepBar lives in Elements/ExpRep.lua (enable, fade, rested refresh).
 
 function Module:UpdateMuteSounds()
 	if Module.updateMutedSounds then

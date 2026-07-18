@@ -30,14 +30,16 @@ local function ResetLabelColor(text, _, _, _, _, force)
 end
 
 local function HideRegion(region)
-	if region then
-		if region.SetTexture then
-			region:SetTexture(nil)
-		end
-		region:ClearAllPoints()
-		region:SetParent(K.UIFrameHider)
-		region:Hide()
+	if not region then
+		return
 	end
+	-- SECRET (12.0): SetTexture(nil) / SetParent(hider) on Blizzard widget-pool
+	-- textures taints the pool. TextWithState tooltip widgets reuse it and then
+	-- crash on secret textHeight math. Empty string + Hide only.
+	if region.SetTexture then
+		region:SetTexture("")
+	end
+	region:Hide()
 end
 
 local function ReskinWidgetStatusBar(bar)
@@ -205,8 +207,9 @@ tinsert(C.defaultThemes, function()
 	hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, "UpdateWidgetLayout", ReskinPowerBarWidget)
 	ReskinPowerBarWidget(_G.UIWidgetPowerBarContainerFrame)
 
-	hooksecurefunc(_G.ObjectiveTrackerUIWidgetContainer, "UpdateWidgetLayout", ReskinPowerBarWidget)
-	ReskinPowerBarWidget(_G.ObjectiveTrackerUIWidgetContainer)
+	-- Do NOT reskin ObjectiveTrackerUIWidgetContainer. It shares Blizzard's widget
+	-- pool with GameTooltip / AreaPOI TextWithState frames — touching those
+	-- textures taints the pool and secret textHeight math throws on map tips.
 
 	-- if font outline enabled in tooltip, fix text shows in two lines on Torghast info || This breaks tooltips in worldmap on world quests.
 	-- hooksecurefunc(_G.UIWidgetTemplateTextWithStateMixin, "Setup", function(self)
@@ -217,6 +220,18 @@ tinsert(C.defaultThemes, function()
 	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
 		if self:IsForbidden() then
 			return
+		end
+		-- Only restyle bars that are not sitting in a GameTooltip widget container —
+		-- those share the pool with TextWithState tips (map POI / events).
+		local container = self:GetParent()
+		while container do
+			if container == _G.GameTooltip or (container.GetObjectType and container:GetObjectType() == "GameTooltip") then
+				return
+			end
+			if container.widgetContainer or container.disableWidgetTooltips then
+				return
+			end
+			container = container.GetParent and container:GetParent()
 		end
 		ReskinWidgetStatusBar(self.Bar)
 		if self.Label then

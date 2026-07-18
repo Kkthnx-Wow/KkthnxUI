@@ -27,6 +27,62 @@ local string_len = _G.string.len
 local string_upper = _G.string.upper
 local type = _G.type
 
+-- ---------------------------------------------------------------------------
+-- SECRET (12.0): Blizzard tooltip widget layout
+-- When our hooks taint the call stack (or shared widget-pool textures were
+-- touched earlier), GameTooltip_AddWidgetSet → TextWithState:Setup does
+-- arithmetic on secret GetStringHeight/GetWidth and throws. Swallow only
+-- secret-value errors; preserve AddWidgetSet's numeric overflow return so
+-- AreaPoiUtil does not math on an error string.
+-- ---------------------------------------------------------------------------
+local string_lower = _G.string.lower
+local function IsSecretValueError(err)
+	if type(err) ~= "string" then
+		return false
+	end
+	local lower = string_lower(err)
+	return string_find(lower, "secret", 1, true) ~= nil
+end
+
+do
+	local raise = _G.error
+	local origAddWidgetSet = _G.GameTooltip_AddWidgetSet
+	if type(origAddWidgetSet) == "function" then
+		_G.GameTooltip_AddWidgetSet = function(tooltip, widgetSetID, verticalPadding)
+			local ok, a, b, c, d = pcall(origAddWidgetSet, tooltip, widgetSetID, verticalPadding)
+			if ok then
+				return a, b, c, d
+			end
+			if IsSecretValueError(a) then
+				return 0
+			end
+			raise(a, 0)
+		end
+	end
+
+	local origClearWidgetSet = _G.GameTooltip_ClearWidgetSet
+	if type(origClearWidgetSet) == "function" then
+		_G.GameTooltip_ClearWidgetSet = function(tooltip)
+			local ok, err = pcall(origClearWidgetSet, tooltip)
+			if ok or IsSecretValueError(err) then
+				return
+			end
+			raise(err, 0)
+		end
+	end
+
+	local origEmbeddedUpdateSize = _G.EmbeddedItemTooltip_UpdateSize
+	if type(origEmbeddedUpdateSize) == "function" then
+		_G.EmbeddedItemTooltip_UpdateSize = function(embedded)
+			local ok, err = pcall(origEmbeddedUpdateSize, embedded)
+			if ok or IsSecretValueError(err) then
+				return
+			end
+			raise(err, 0)
+		end
+	end
+end
+
 local AFK = _G.AFK
 local BOSS = _G.BOSS
 local error = _G.error
@@ -49,10 +105,6 @@ local GameTooltip = _G.GameTooltip
 local GameTooltipStatusBar = _G.GameTooltipStatusBar
 local GameTooltipTextLeft1 = _G.GameTooltipTextLeft1
 local GameTooltipTextLeft2 = _G.GameTooltipTextLeft2
-local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
-local GameTooltip_ClearProgressBars = _G.GameTooltip_ClearProgressBars
-local GameTooltip_ClearStatusBars = _G.GameTooltip_ClearStatusBars
-local GameTooltip_ClearWidgetSet = _G.GameTooltip_ClearWidgetSet
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetGuildInfo = _G.GetGuildInfo
 local GetRaidTargetIndex = _G.GetRaidTargetIndex
@@ -378,9 +430,11 @@ function Module:InsertFactionFrame(faction)
 	self.factionFrame:Show()
 end
 
--- REASON: Resets custom tooltip state (faction frames, status bars) on clear.
--- Do NOT clear item-level inspect here — OnTooltipCleared fires mid-rebuild
--- while NotifyInspect is in flight (clear inspect state on OnHide only).
+-- REASON: Resets custom tooltip chrome only.
+-- SECRET (12.0): Do NOT re-call GameTooltip_ClearWidgetSet / ClearMoney / etc.
+-- OnTooltipCleared already runs Blizzard's cleanup; calling those again from our
+-- HookScript taints the widget pool mid-rebuild. Map POI / world-event tips then
+-- blow up in UIWidgetTemplateTextWithState (secret textHeight arithmetic).
 function Module:OnTooltipCleared()
 	if self:IsForbidden() then
 		return
@@ -388,15 +442,6 @@ function Module:OnTooltipCleared()
 
 	if self.factionFrame and self.factionFrame:IsShown() then
 		self.factionFrame:Hide()
-	end
-
-	GameTooltip_ClearMoney(self)
-	GameTooltip_ClearStatusBars(self)
-	GameTooltip_ClearProgressBars(self)
-	GameTooltip_ClearWidgetSet(self)
-
-	if self.StatusBar then
-		self.StatusBar:ClearWatch()
 	end
 end
 
@@ -407,6 +452,10 @@ local function OnGameTooltipHide()
 	Module._tipShownGUID = nil
 	if Module.ClearItemLevelInspectState then
 		Module:ClearItemLevelInspectState()
+	end
+	-- ClearWatch on hide only — cleared fires mid-rebuild while inspect is in flight.
+	if GameTooltip.StatusBar and GameTooltip.StatusBar.ClearWatch then
+		GameTooltip.StatusBar:ClearWatch()
 	end
 end
 
