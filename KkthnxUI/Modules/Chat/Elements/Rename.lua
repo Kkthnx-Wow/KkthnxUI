@@ -219,7 +219,9 @@ local function ChatMsgFilter(self, event, msg, sender, language, channelString, 
 
 	-- Dedup: skip if this message was already processed for this chat frame
 	if lineID and lineID > 0 then
-		local key = self:GetName() .. "_" .. lineID
+		-- Frames from chat replacements (e.g. Chattynator) can be anonymous.
+		local frameName = self.GetName and self:GetName() or nil
+		local key = (frameName or tostring(self)) .. "_" .. lineID
 		if processedLines[key] then
 			return true
 		end

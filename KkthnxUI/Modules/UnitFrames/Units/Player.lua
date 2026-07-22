@@ -289,7 +289,14 @@ function Module:CreatePlayer()
 			AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
 		end
 		AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
+		-- MIDNIGHT (12.0): oUF colors are ColorMixin objects now, not arrays —
+		-- unpack() returns nothing and aborts frame creation. Read .r/.g/.b directly.
+		local manaColor = K.Colors.power.MANA
+		if manaColor then
+			AdditionalPower:SetStatusBarColor(manaColor.r or 0, manaColor.g or 0.44, manaColor.b or 0.87)
+		else
+			AdditionalPower:SetStatusBarColor(0, 0.44, 0.87)
+		end
 		AdditionalPower:CreateBorder()
 
 		if C["Unitframe"].Smooth then

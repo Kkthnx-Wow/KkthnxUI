@@ -535,15 +535,43 @@ function Module:CreatePip(stage)
 end
 
 -- REASON: Updates pip positions and states based on current cast stage.
--- REASON: numStages is always sourced from self; the parameter has been removed to eliminate the accidental shadow.
-function Module:PostUpdatePips()
+-- MIDNIGHT (12.0): the bundled oUF never sets self.numStages/self.stagePoints; it
+-- passes the stage percentage table (UnitEmpoweredStagePercentages) as an argument.
+-- Derive the stage count and per-stage boundary times from that, and publish
+-- self.numStages for OnCastbarUpdate's stage-counter logic.
+function Module:PostUpdatePips(stages)
 	local pips = self.Pips
-	local numStages = self.numStages
+	local numStages = type(stages) == "table" and not K.IsSecretTable(stages) and #stages or 0
+	self.numStages = numStages
+	self.pipStage = nil
 
+	if numStages == 0 or not pips then
+		return
+	end
+
+	-- Total cast time (seconds) to convert stage fractions into boundary times.
+	local total
+	local durationObject = self.GetTimerDuration and self:GetTimerDuration()
+	if durationObject and not durationObject:HasSecretValues() then
+		total = durationObject:GetTotalDuration()
+	end
+
+	local cumulative = 0
 	for stage = 1, numStages do
 		local pip = pips[stage]
+		if not pip then
+			return
+		end
+
 		pip.tex:SetAlpha(0.3) -- reset pip alpha
-		pip.duration = self.stagePoints[stage]
+
+		local section = stages[stage]
+		if total and type(section) == "number" and not K.IsSecret(section) then
+			cumulative = cumulative + section
+			pip.duration = total * cumulative
+		else
+			pip.duration = nil -- OnCastbarUpdate guards on pip.duration
+		end
 
 		if stage == numStages then
 			local firstPip = pips[1]

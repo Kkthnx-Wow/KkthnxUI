@@ -28,7 +28,11 @@ local string_rep = string.rep
 -- ---------------------------------------------------------------------------
 -- State & Constants
 -- ---------------------------------------------------------------------------
+-- PERF: Cap the link cache — every unique chat item link was cached forever,
+-- growing unbounded over long sessions. Wipe-and-restart like Rename's dedup cache.
 local itemCache = {}
+local itemCacheCount = 0
+local ITEM_CACHE_MAX = 300
 local getDungeonScoreInColor
 
 local SOCKET_WATCH_LIST = {
@@ -100,7 +104,12 @@ local function convertItemLevel(link)
 		-- PERF: Cache keyed by the ORIGINAL link (the lookup key above). Previously the table was
 		-- keyed by the rebuilt link, so it never hit and GetItemInfo/GetItemStats re-ran every message.
 		local newLink = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. Module:GetItemGemInfo(link))
+		if itemCacheCount >= ITEM_CACHE_MAX then
+			table.wipe(itemCache)
+			itemCacheCount = 0
+		end
 		itemCache[link] = newLink
+		itemCacheCount = itemCacheCount + 1
 		return newLink
 	end
 

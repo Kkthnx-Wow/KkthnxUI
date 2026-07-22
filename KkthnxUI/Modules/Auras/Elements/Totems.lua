@@ -89,7 +89,10 @@ function Module:totemBarUpdate()
 		local haveTotem, _, start, dur, icon = GetTotemInfo(button.slot)
 		local totem = totems[activeTotems]
 		if totem then
-			if haveTotem and dur > 0 then
+			-- SECRET (12.0): totem info can be secret; we can't boolean-test it, but
+			-- SetTexture/SetCooldown accept secret values, so pass them straight through.
+			-- The button is in the active pool, so treat a secret result as "has totem".
+			if K.IsSecret(haveTotem) or K.IsSecret(dur) or (haveTotem and dur > 0) then
 				totem.Icon:SetTexture(icon)
 				totem.CD:SetCooldown(start, dur)
 				totem.CD:Show()

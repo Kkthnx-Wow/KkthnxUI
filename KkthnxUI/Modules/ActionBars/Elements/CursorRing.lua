@@ -66,11 +66,33 @@ local function StopTrack()
 end
 
 local function StopPoll()
+	-- NOTE: keep the OnUpdate handler installed (set once in StartPoll);
+	-- a hidden frame receives no OnUpdate, so Hide() alone stops the poll.
 	if pollFrame then
-		pollFrame:SetScript("OnUpdate", nil)
 		pollFrame:Hide()
 	end
 	pollElapsed = 0
+end
+
+-- PERF: One hoisted handler instead of a new closure per SetScript. UpdateVisibility
+-- fires on every GCD/cast start, so inline closures generated constant garbage at high APM.
+local function TrackOnUpdate()
+	if not (root and root:IsShown()) then
+		StopTrack()
+		return
+	end
+	local x, y = GetCursorPosition()
+	local scale = UIParent:GetEffectiveScale()
+	if scale == 0 then
+		return
+	end
+	x, y = x / scale, y / scale
+	if x == lastX and y == lastY and scale == lastScale then
+		return
+	end
+	lastX, lastY, lastScale = x, y, scale
+	root:ClearAllPoints()
+	root:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
 end
 
 local function UpdateVisibility()
@@ -86,24 +108,7 @@ local function UpdateVisibility()
 		if not trackFrame then
 			trackFrame = CreateFrame("Frame")
 		end
-		trackFrame:SetScript("OnUpdate", function()
-			if not (root and root:IsShown()) then
-				StopTrack()
-				return
-			end
-			local x, y = GetCursorPosition()
-			local scale = UIParent:GetEffectiveScale()
-			if scale == 0 then
-				return
-			end
-			x, y = x / scale, y / scale
-			if x == lastX and y == lastY and scale == lastScale then
-				return
-			end
-			lastX, lastY, lastScale = x, y, scale
-			root:ClearAllPoints()
-			root:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
-		end)
+		trackFrame:SetScript("OnUpdate", TrackOnUpdate)
 		trackFrame:Show()
 	else
 		StopTrack()
@@ -132,21 +137,23 @@ local function ClearCast()
 end
 
 local function StartPoll()
+	-- PERF: Build the frame + handler once; StartPoll fires per GCD, so re-creating
+	-- the OnUpdate closure each call churned garbage.
 	if not pollFrame then
 		pollFrame = CreateFrame("Frame")
 		pollFrame:Hide()
+		pollFrame:SetScript("OnUpdate", function(_, elapsed)
+			pollElapsed = pollElapsed + (elapsed or 0)
+			if pollElapsed < POLL_INTERVAL then
+				return
+			end
+			pollElapsed = 0
+			if gcdActive and IsGCDInactive() then
+				ClearGCD()
+			end
+		end)
 	end
 	pollElapsed = 0
-	pollFrame:SetScript("OnUpdate", function(_, elapsed)
-		pollElapsed = pollElapsed + (elapsed or 0)
-		if pollElapsed < POLL_INTERVAL then
-			return
-		end
-		pollElapsed = 0
-		if gcdActive and IsGCDInactive() then
-			ClearGCD()
-		end
-	end)
 	pollFrame:Show()
 end
 
