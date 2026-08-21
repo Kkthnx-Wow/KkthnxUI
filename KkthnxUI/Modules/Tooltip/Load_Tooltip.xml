@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Core.lua" />
+	<Script file="Skin.lua" />
+	<Script file="HealthBar.lua" />
+	<Script file="UnitInfo.lua" />
+	<Script file="Anchor.lua" />
+	<Script file="Inspect.lua" />
+	<Script file="IDs.lua" />
+	<Script file="Icons.lua" />
+	<Script file="MountSource.lua" />
+	<Script file="ItemInfo.lua" />
+</Ui>

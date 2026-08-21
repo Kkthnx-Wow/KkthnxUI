@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-   <!-- Load_Locales -->
-   <Script file="enUS.lua"/>
-   <Script file="frFR.lua"/>
+	<!-- One file per language. Only the active client locale builds entries.
+	     enUS needs no file: missing keys fall back to the key text itself. -->
+	<Script file="deDE.lua" />
+	<Script file="frFR.lua" />
+	<Script file="ruRU.lua" />
+	<Script file="koKR.lua" />
+	<Script file="zhCN.lua" />
+	<Script file="zhTW.lua" />
 </Ui>

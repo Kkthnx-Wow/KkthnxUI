@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Core.lua first: it creates the module the automations attach to. -->
+	<Script file="Core.lua" />
+	<Script file="DeclineDuel.lua" />
+	<Script file="MovieSkip.lua" />
+	<Script file="AutoRepair.lua" />
+	<!-- Hands-off questing: the shared helpers first, then the per-stage handlers. -->
+	<Script file="Quest.lua" />
+	<Script file="Accept.lua" />
+	<Script file="TurnIn.lua" />
+	<Script file="Gossip.lua" />
+</Ui>

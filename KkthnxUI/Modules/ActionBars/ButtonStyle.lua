@@ -1,312 +1,249 @@
 --[[-----------------------------------------------------------------------------
--- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
--- Notes:
--- - Purpose: Universal action button styling and hotkey formatting.
--- - Design: Unified skinning for all action bars, including pet, stance, and extra bars.
+	Addon: KkthnxUI
+	File: Modules/ActionBars/ButtonStyle.lua
+	Purpose:
+		The LibActionButton config and per button styling. hideElements.border
+		tells LAB to stop drawing the Blizzard art (normal texture, icon mask,
+		slot background) on every state update, so only our border shows.
 -----------------------------------------------------------------------------]]
 
-local K = KkthnxUI[1]
-local Module = K:GetModule("ActionBar")
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- ---------------------------------------------------------------------------
--- LOCALIZED GLOBALS
--- ---------------------------------------------------------------------------
+local Module = K:GetModule("ActionBars")
 
--- NOTE: Reference localized strings for keybinds to ensure compatibility across all game clients.
--- Fallback to hardcoded English strings if the global is missing in a specific WoW version.
--- BUGFIX: the fallback must guard the nil case BEFORE calling :gsub() on it — `nil:gsub(...)`
--- errors immediately, which defeats the whole point of the `or` fallback below.
-local L_BUTTON = (_G.KEY_BUTTON3 and _G.KEY_BUTTON3:gsub("3", "")) or "Button"
-local L_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP or "Mouse Wheel Up"
-local L_MOUSEWHEELDN = _G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down"
-local L_NUMPAD = (_G.KEY_NUMPAD0 and _G.KEY_NUMPAD0:gsub("0", "")) or "Num Pad"
-local L_PAGEUP = _G.KEY_PAGEUP or "Page Up"
-local L_PAGEDOWN = _G.KEY_PAGEDOWN or "Page Down"
-local L_SPACE = _G.KEY_SPACE or "Space"
-local L_INSERT = _G.KEY_INSERT or "Insert"
-local L_HOME = _G.KEY_HOME or "Home"
-local L_DELETE = _G.KEY_DELETE or "Delete"
+local _G = _G
 
--- ---------------------------------------------------------------------------
--- HOTKEY REPLACEMENTS
--- ---------------------------------------------------------------------------
+-- Clean up the pushed, hover, and checked textures so a button's interaction
+-- states read the same everywhere: a soft square glow, gold on press, and a
+-- gold outline while checked (active stance, toggled-on pet ability). Shared by
+-- the LAB buttons and the stock buttons we reuse so both look identical.
+function Module:StyleInteractionTextures(button)
+	local pushed = button.GetPushedTexture and button:GetPushedTexture()
+	if pushed then
+		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		pushed:SetDesaturated(true)
+		pushed:SetVertexColor(0.965, 0.769, 0.259)
+		pushed:SetAllPoints(button)
+		pushed:SetBlendMode("ADD")
+	end
+	local highlight = button.GetHighlightTexture and button:GetHighlightTexture()
+	if highlight then
+		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		highlight:SetAllPoints(button)
+		highlight:SetBlendMode("ADD")
+	end
+	local checked = button.GetCheckedTexture and button:GetCheckedTexture()
+	if checked then
+		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		checked:SetAllPoints(button)
+		checked:SetBlendMode("ADD")
+	end
+end
 
--- REASON: Standardize and shorten keybind text to fit within the small hotkey area of action buttons.
--- Order matters: Modifiers first, then specific keys, then generic patterns.
-local replacements = {
-	-- >> Modifiers (Handle various casings and localized formats)
-	{ "(CTRL%-)", "c" },
-	{ "(Ctrl%-)", "c" },
-	{ "(ALT%-)", "a" },
-	{ "(Alt%-)", "a" },
-	{ "(SHIFT%-)", "s" },
-	{ "(Shift%-)", "s" },
-	{ "(META%-)", "m" }, -- NOTE: macOS Command Key
-	{ "(Meta%-)", "m" },
-
-	-- >> Mouse (Localized & English)
-	{ L_MOUSEWHEELUP, "MU" },
-	{ "MOUSEWHEELUP", "MU" },
-	{ L_MOUSEWHEELDN, "MD" },
-	{ "MOUSEWHEELDOWN", "MD" },
-	{ L_BUTTON, "M" }, -- Localized "Button"
-	{ "BUTTON", "M" }, -- English "BUTTON"
-
-	-- >> Navigation & Editing
-	{ L_PAGEUP, "PU" },
-	{ "PAGEUP", "PU" },
-	{ L_PAGEDOWN, "PD" },
-	{ "PAGEDOWN", "PD" },
-	{ L_HOME, "Hm" },
-	{ "HOME", "Hm" },
-	{ "END", "End" },
-	{ L_INSERT, "Ins" },
-	{ "INSERT", "Ins" },
-	{ L_DELETE, "Del" },
-	{ "DELETE", "Del" },
-	{ "BACKSPACE", "BS" },
-	{ "Backspace", "BS" },
-	{ "TAB", "Tab" },
-	{ "ESCAPE", "Esc" },
-
-	-- >> Special Keys
-	{ L_SPACE, "Sp" },
-	{ "SPACE", "Sp" },
-	{ "CAPSLOCK", "CL" },
-	{ "Capslock", "CL" },
-	{ "NUMLOCK", "NL" },
-	{ "Num Lock", "NL" },
-
-	-- >> Numpad Cleanup (Specific operators first, then generic)
-	{ "NUMPADDIVIDE", "N/" },
-	{ "NUMPADMULTIPLY", "N*" },
-	{ "NUMPADPLUS", "N+" },
-	{ "NUMPADMINUS", "N-" },
-	{ L_NUMPAD, "N" }, -- Localized "Num Pad"
-	{ "NUMPAD", "N" }, -- English "NUMPAD"
-}
-
--- REASON: Formats the hotkey display on action buttons using the replacement table defined above.
-function Module:UpdateHotKey()
-	local text = self:GetText()
-	if not text then
+-- Pet autocast ring. Blizzard's overlay is a fixed 28px frame with corner art
+-- that pokes past our border and does not track the button size. Stretch the
+-- ants to the icon and drop the corners so only the spinning ring shows.
+function Module:SkinAutoCast(button)
+	local overlay = button.AutoCastOverlay
+	if not overlay then
 		return
 	end
-
-	-- NOTE: Range indicators (dots) are removed for a cleaner look.
-	if text == RANGE_INDICATOR then
-		text = ""
-	else
-		for _, value in pairs(replacements) do
-			text = gsub(text, value[1], value[2])
-		end
+	overlay:SetAllPoints(button)
+	if overlay.Corners then
+		overlay.Corners:SetAlpha(0)
 	end
-	self:SetFormattedText("%s", text)
+	if overlay.Shine then
+		overlay.Shine:ClearAllPoints()
+		overlay.Shine:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
+		overlay.Shine:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
+	end
 end
 
--- REASON: Dynamically updates the border color based on the button's combat or range state.
-function Module:UpdateBarBorderColor(button)
-	if not button.__bg then
+-- Skin a stock Blizzard button (stance, extra, zone) with our slot + border,
+-- for buttons we reuse rather than build through LibActionButton.
+function Module:StyleAuxButton(button)
+	if not button or button.__auxStyled then
 		return
 	end
+	button.__auxStyled = true
 
-	-- NOTE: Highlight the border when the action is currently active/usable.
-	if button.Border:IsShown() then
-		button.__bg.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
-	else
-		K.SetBorderColor(button.__bg.KKUI_Border)
-	end
-end
+	local name = button:GetName()
+	local icon = button.icon or (name and _G[name .. "Icon"])
+	local normal = button.GetNormalTexture and button:GetNormalTexture()
 
-local function refreshBarButtonBorder(button)
-	if button and button.__bg then
-		Module:UpdateBarBorderColor(button)
-	end
-end
-
-function Module:RefreshActionBarBorders()
-	for barIndex = 1, 8 do
-		for buttonIndex = 1, 12 do
-			refreshBarButtonBorder(_G["KKUI_ActionBar" .. barIndex .. "Button" .. buttonIndex])
-		end
-	end
-
-	local petBar = _G.KKUI_ActionBarPet
-	if petBar and petBar.actionButtons then
-		for i = 1, #petBar.actionButtons do
-			refreshBarButtonBorder(petBar.actionButtons[i])
-		end
-	end
-
-	local stanceBar = _G.KKUI_ActionBarStance
-	if stanceBar and stanceBar.actionButtons then
-		for i = 1, #stanceBar.actionButtons do
-			refreshBarButtonBorder(stanceBar.actionButtons[i])
-		end
-	end
-end
-
--- REASON: Apply unified KkthnxUI skinning to a specific action button.
--- This hides default Blizzard elements and applies custom borders and textures.
-function Module:StyleActionButton(button)
-	if not button or button.__styled then
-		return
-	end
-
-	local buttonName = button:GetName()
-	local icon = button.icon
-	local cooldown = button.cooldown
-	local hotkey = button.HotKey
-	local flash = button.Flash
-	local border = button.Border
-	local normal = button.NormalTexture
-	local normal2 = button:GetNormalTexture()
-	local slotbg = button.SlotBackground
-	local pushed = button.PushedTexture
-	local checked = button.CheckedTexture
-	local highlight = button.HighlightTexture
-	local newActionTexture = button.NewActionTexture
-	local spellHighlight = button.SpellHighlightTexture
-	local iconMask = button.IconMask
-	local petShine = _G[buttonName .. "Shine"]
-	local autoCastable = button.AutoCastable
-
-	-- NOTE: Hide original Blizzard textures to prevent visual overlaps.
 	if normal then
 		normal:SetAlpha(0)
 	end
-
-	if normal2 then
-		normal2:SetAlpha(0)
+	if button.SetNormalTexture then
+		button:SetNormalTexture(0)
+	end
+	local floating = name and _G[name .. "FloatingBG"]
+	if floating then
+		floating:Hide()
+	end
+	if button.Flash then
+		button.Flash:SetTexture(nil)
 	end
 
-	if flash then
-		flash:SetTexture(nil)
+	-- Pet and stance buttons inherit the 12.0 ActionButtonTemplate, so they carry
+	-- the same leftover slot art the main buttons do. Hide it under our slot.
+	if button.SlotArt then
+		button.SlotArt:SetAlpha(0)
+	end
+	if button.SlotBackground then
+		button.SlotBackground:SetAlpha(0)
 	end
 
-	if newActionTexture then
-		newActionTexture:SetTexture(nil)
-	end
-
-	if border then
-		border:SetTexture(nil)
-	end
-
-	if slotbg then
-		slotbg:Hide()
-	end
-
-	if iconMask then
-		iconMask:Hide()
-	end
-
-	if button.style then
-		button.style:SetAlpha(0)
-	end
-
-	-- NOTE: Reposition shine and autocast textures for pet buttons.
-	if petShine then
-		petShine:SetAllPoints()
-	end
-
-	if autoCastable then
-		autoCastable:SetTexCoord(0.217, 0.765, 0.217, 0.765)
-		autoCastable:SetDrawLayer("OVERLAY", 3)
-		autoCastable:SetAllPoints()
-	end
-
-	-- REASON: Setup custom icon and background border.
 	if icon then
-		icon:SetAllPoints()
-		if not icon.__lockdown then
-			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		end
-
-		if not button.__bg then
-			button.__bg = CreateFrame("Frame", nil, button, "BackdropTemplate")
-			button.__bg:SetAllPoints(button)
-			button.__bg:SetFrameLevel(button:GetFrameLevel())
-			button.__bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 1, 1, 1 })
-		end
+		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		icon:ClearAllPoints()
+		icon:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 	end
 
+	local slot = button:CreateTexture(nil, "BACKGROUND", nil, -8)
+	slot:SetPoint("TOPLEFT", button, "TOPLEFT", -2, 2)
+	slot:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 2, -2)
+	slot:SetAtlas("UI-HUD-ActionBar-IconFrame-Slot")
+
+	local cooldown = button.cooldown or (name and _G[name .. "Cooldown"])
 	if cooldown then
+		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 	end
 
-	-- NOTE: Apply custom textures for interaction states (Pushed, Checked, Highlight).
-	if pushed then
-		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		pushed:SetDesaturated(true)
-		pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
-		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
-		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
-		pushed:SetBlendMode("ADD")
-	end
+	self:StyleInteractionTextures(button)
+	self:SkinAutoCast(button)
 
-	if checked then
-		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		checked:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
-		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
-		checked:SetBlendMode("ADD")
-	end
+	K.CreateBorder(button)
 
-	if highlight then
-		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
-		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
-		highlight:SetBlendMode("ADD")
-	end
-
-	if spellHighlight then
-		spellHighlight:SetAllPoints()
-	end
-
-	-- NOTE: Apply hotkey shortening and ensure it persists via hooks.
+	local hotkey = button.HotKey or (name and _G[name .. "HotKey"])
 	if hotkey then
-		Module.UpdateHotKey(hotkey)
-		hooksecurefunc(hotkey, "SetText", Module.UpdateHotKey)
+		self:StyleHotKey({ HotKey = hotkey })
 	end
-
-	button.__styled = true
 end
 
--- REASON: Iterates through all detectable action bars and applies skinning.
-function Module:ReskinBars()
-	-- NOTE: Main action bars (1-8, 12 buttons each).
-	for i = 1, 8 do
-		for j = 1, 12 do
-			Module:StyleActionButton(_G["KKUI_ActionBar" .. i .. "Button" .. j])
+-- Build the LAB button config for a specific bar. Text visibility is per-bar.
+-- The font and grid are global. Rebuilt each call so live edits take effect.
+function Module:GetButtonConfig(key)
+	local db = C.ActionBar
+	local bar = db[key] or db.Bar1
+	local font = K.GetFont(db.Font)
+	local size = db.FontSize
+	local flag = db.FontFlag ~= "NONE" and db.FontFlag or ""
+	return {
+		clickOnDown = true,
+		showGrid = db.ShowGrid,
+		outOfRangeColoring = db.RangeColoring or "button",
+		-- Register with the assisted-combat manager so the one-button rotation
+		-- assistant can glow the next suggested ability on our buttons. The
+		-- highlight only works when actionButtonUI is on, so both are set together.
+		actionButtonUI = true,
+		assistedHighlight = true,
+		hideElements = {
+			border = true,
+			borderIfEmpty = true,
+			macro = not bar.MacroName,
+			hotkey = not bar.HotKey,
+			equipped = false,
+		},
+		text = {
+			hotkey = { font = { font = font, size = size, flags = flag } },
+			count = { font = { font = font, size = size, flags = flag } },
+			macro = { font = { font = font, size = size - 2, flags = flag } },
+		},
+	}
+end
+
+-- Apply our border and anchor the icon and text on a single LAB button.
+function Module:StyleButton(button)
+	if button.__styled then
+		return
+	end
+	button.__styled = true
+
+	local icon = button.icon
+	local count = button.Count
+	local hotkey = button.HotKey
+	local macro = button.Name
+
+	-- Backstop for the leftover slot art from the 12.0 ActionButtonTemplate,
+	-- which LAB does not touch even with hideElements.border.
+	if button.SlotArt then
+		button.SlotArt:SetAlpha(0)
+	end
+	if button.SlotBackground then
+		button.SlotBackground:SetAlpha(0)
+	end
+
+	-- Blizzard slot atlas as the button background. The atlas has transparent
+	-- padding, so we stretch it a couple pixels past every edge to make the
+	-- opaque art reach the button edges (any overshoot tucks under the border).
+	local slot = button:CreateTexture(nil, "BACKGROUND", nil, -8)
+	slot:SetPoint("TOPLEFT", button, "TOPLEFT", -2, 2)
+	slot:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 2, -2)
+	slot:SetAtlas("UI-HUD-ActionBar-IconFrame-Slot")
+	button.KKUI_Slot = slot
+
+	-- Crop the icon inside our border and keep it above the slot art.
+	if icon then
+		icon:SetDrawLayer("ARTWORK")
+		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		icon:ClearAllPoints()
+		icon:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+	end
+
+	-- Cooldown: crop to the icon and make sure the dark radial swipe draws. The
+	-- retail LibActionButton path only calls SetCooldownFromDurationObject and
+	-- never sets the swipe, so a fresh cooldown frame can come up with no swipe.
+	local cooldown = button.cooldown
+	if cooldown then
+		cooldown:ClearAllPoints()
+		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		cooldown:SetDrawSwipe(true)
+		-- The retail default swipe texture does not render, so give it a real blank
+		-- texture with our colour, or no swipe shows at all.
+		cooldown:SetSwipeTexture(C.Media.Textures.White8x8, 0, 0, 0, 0.8)
+		cooldown:SetDrawEdge(false)
+		if cooldown.SetUseCircularEdge then
+			cooldown:SetUseCircularEdge(false)
 		end
 	end
 
-	-- NOTE: Pet bar buttons.
-	for i = 1, NUM_PET_ACTION_SLOTS do
-		Module:StyleActionButton(_G["PetActionButton" .. i])
-	end
-
-	-- NOTE: Stance/Shape-shift bar buttons.
-	for i = 1, 10 do
-		Module:StyleActionButton(_G["StanceButton" .. i])
-	end
-
-	-- NOTE: Miscellaneous and extra buttons.
-	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"])
-	Module:StyleActionButton(ExtraActionButton1)
-
-	-- NOTE: Handle dynamically generated spell flyout buttons via scripts.
-	SpellFlyout.Background:SetAlpha(0)
-	local numFlyouts = 1
-	local function checkForFlyoutButtons()
-		local button = _G["SpellFlyoutPopupButton" .. numFlyouts]
-		while button do
-			Module:StyleActionButton(button)
-			numFlyouts = numFlyouts + 1
-			button = _G["SpellFlyoutPopupButton" .. numFlyouts]
+	-- Loss-of-control cooldown: the red swipe while you are crowd-controlled. Same
+	-- missing-texture problem as the main one, so give it a dark-red blank swipe.
+	local loc = button.lossOfControlCooldown
+	if loc then
+		loc:SetDrawSwipe(true)
+		loc:SetSwipeTexture(C.Media.Textures.White8x8, 0.35, 0, 0, 0.8)
+		loc:SetDrawEdge(false)
+		if loc.SetUseCircularEdge then
+			loc:SetUseCircularEdge(false)
 		end
 	end
-	SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
-	SpellFlyout:HookScript("OnHide", checkForFlyoutButtons)
+
+	-- Clean interaction-state textures: pushed and hover glow, checked outline.
+	self:StyleInteractionTextures(button)
+
+	K.CreateBorder(button)
+
+	-- Shorten the hotkey text and keep it shortened on rebind.
+	Module:StyleHotKey(button)
+
+	-- Text placement. LAB owns the fonts (from GetButtonConfig), we anchor.
+	if count then
+		count:ClearAllPoints()
+		count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
+	end
+	if hotkey then
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPRIGHT", button, "TOPRIGHT", -2, -2)
+	end
+	if macro then
+		macro:ClearAllPoints()
+		macro:SetPoint("BOTTOM", button, "BOTTOM", 0, 2)
+	end
 end

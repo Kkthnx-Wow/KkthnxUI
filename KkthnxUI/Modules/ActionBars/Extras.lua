@@ -1,0 +1,153 @@
+--[[-----------------------------------------------------------------------------
+	Addon: KkthnxUI
+	File: Modules/ActionBars/Extras.lua
+	Purpose:
+		The extra buttons that sit outside the numbered bars: the encounter extra
+		action button, the zone ability button, and the leave-vehicle button. Each
+		is skinned to match and given its own mover. Blizzard (and Edit Mode) keep
+		trying to re-anchor these, so the position is re-asserted from a SetPoint
+		hook, out of combat only, and once more when combat ends. Blizzard still
+		drives their visibility and contents.
+-----------------------------------------------------------------------------]]
+
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+
+local _G = _G
+local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
+
+local Module = K:GetModule("ActionBars")
+
+-- Give a Blizzard-owned frame its own mover and keep it pinned there. The frame
+-- is anchored to an invisible holder we own, and any later re-anchor by Blizzard
+-- is undone on the next safe moment.
+function Module:AttachExtraMover(frame, key, label, point, reparent)
+	if not frame or frame.__kkuiExtra then
+		return
+	end
+	frame.__kkuiExtra = true
+
+	local w = (frame:GetWidth() or 0) > 0 and frame:GetWidth() or C.ActionBar.ExtraBar.Size
+	local h = (frame:GetHeight() or 0) > 0 and frame:GetHeight() or C.ActionBar.ExtraBar.Size
+
+	local holder = CreateFrame("Frame", "KKUI_" .. key .. "Holder", UIParent)
+	holder:SetSize(w, h)
+	K.CreateMover(holder, key, label, point, w, h)
+	frame.__kkuiHolder = holder
+
+	local function Reanchor()
+		if frame.__kkuiPinning or InCombatLockdown() then
+			return
+		end
+		frame.__kkuiPinning = true
+		-- Some of these get reparented by Edit Mode (the vehicle button back onto a
+		-- hidden bar), so re-assert the parent as well when asked.
+		if reparent and frame:GetParent() ~= UIParent then
+			frame:SetParent(UIParent)
+		end
+		frame:ClearAllPoints()
+		frame:SetPoint("CENTER", holder, "CENTER", 0, 0)
+		frame.__kkuiPinning = false
+	end
+
+	Reanchor()
+	hooksecurefunc(frame, "SetPoint", Reanchor)
+	frame.__kkuiReanchor = Reanchor
+end
+
+-- Encounter / quest extra action button.
+function Module:StyleExtraActionButton()
+	local button = _G.ExtraActionButton1
+	if not button then
+		return
+	end
+	if button.style then
+		button.style:SetAlpha(0)
+	end
+	self:StyleAuxButton(button)
+	self:AttachExtraMover(button, "ExtraActionButton", L["Extra Action Button"], { "BOTTOM", UIParent, "BOTTOM", 0, 320 })
+end
+
+-- Zone ability (dragon glyphs, garrison abilities, etc.).
+function Module:StyleZoneAbility()
+	local frame = _G.ZoneAbilityFrame
+	if not frame then
+		return
+	end
+	if frame.Style then
+		frame.Style:SetAlpha(0)
+	end
+	if frame.SpellButton then
+		self:StyleAuxButton(frame.SpellButton)
+	end
+	self:AttachExtraMover(frame, "ZoneAbility", L["Zone Ability"], { "BOTTOM", UIParent, "BOTTOM", 80, 320 })
+end
+
+-- Reuse Blizzard's secure leave-vehicle button, skinned and repositioned. It
+-- manages its own show/hide, so no state driver is needed here.
+function Module:StyleVehicleLeave()
+	local button = _G.MainMenuBarVehicleLeaveButton
+	if not button then
+		return
+	end
+
+	-- It is a child of MainActionBar, which we reparent to a hidden frame to
+	-- disable the stock bars, so it never showed. Pull it back onto UIParent.
+	button:SetParent(UIParent)
+	button:SetSize(C.ActionBar.ExtraBar.Size, C.ActionBar.ExtraBar.Size)
+
+	-- Keep the original exit art: its icon IS the normal texture,
+	-- so instead of stripping it we crop the button-frame padding off and fit it
+	-- inside our border. Nuking it is what left the button blank.
+	local normal = button:GetNormalTexture()
+	if normal then
+		normal:SetTexCoord(0.220625, 0.799375, 0.220625, 0.779375)
+		normal:ClearAllPoints()
+		normal:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		normal:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+	end
+	local pushed = button:GetPushedTexture()
+	if pushed then
+		pushed:SetTexCoord(0.140625, 0.859375, 0.140625, 0.859375)
+		pushed:SetAllPoints(button)
+	end
+	local highlight = button:GetHighlightTexture()
+	if highlight then
+		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		highlight:SetAllPoints(button)
+		highlight:SetBlendMode("ADD")
+	end
+
+	if not button.__kkuiVehicle then
+		button.__kkuiVehicle = true
+		K.CreateBackground(button, 0.06, 0.06, 0.06, 0.9)
+		K.CreateBorder(button)
+		-- These stock scripts taint through EditModeManager so we drop them. The
+		-- mixin still drives visibility through its own events.
+		button:SetScript("OnShow", nil)
+		button:SetScript("OnHide", nil)
+	end
+
+	self:AttachExtraMover(button, "VehicleLeave", L["Leave Vehicle"], { "BOTTOM", UIParent, "BOTTOM", -80, 320 }, true)
+end
+
+-- Re-pin every extra once combat ends, since we skip re-anchoring in combat.
+function Module:PinExtras()
+	for _, key in ipairs({ "ExtraActionButton1", "ZoneAbilityFrame", "MainMenuBarVehicleLeaveButton" }) do
+		local frame = _G[key]
+		if frame and frame.__kkuiReanchor then
+			frame.__kkuiReanchor()
+		end
+	end
+end
+
+function Module:CreateExtras()
+	if not C.ActionBar.ExtraBar.Enable then
+		return
+	end
+	self:StyleExtraActionButton()
+	self:StyleZoneAbility()
+	self:StyleVehicleLeave()
+
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "PinExtras")
+end

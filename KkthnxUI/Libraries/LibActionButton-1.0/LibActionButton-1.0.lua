@@ -29,15 +29,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-KkthnxUI"
-local MINOR_VERSION = 151
+local MINOR_VERSION = 155
 
-if not LibStub then
-	error(MAJOR_VERSION .. " requires LibStub.")
-end
+if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
-if not lib then
-	return
-end
+if not lib then return end
 
 -- Lua functions
 local type, error, tostring, tonumber, assert, select = type, error, tostring, tonumber, assert, select
@@ -57,7 +53,7 @@ local UseCustomFlyout = WoWRetail or (FlyoutButtonMixin and not ActionButton_Upd
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
-local LCG = LibStub("LibCustomGlow-1.0-KkthnxUI", true) -- KkthnxUI: use LCG mod
+local LCG = LibStub("LibCustomGlow-1.0-KkthnxUI", true) -- NDui: use LCG mod
 local Masque = LibStub("Masque", true)
 
 lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
@@ -79,34 +75,34 @@ lib.ACTION_HIGHLIGHT_MARKS = lib.ACTION_HIGHLIGHT_MARKS or setmetatable({}, { __
 lib.callbacks = lib.callbacks or CBH:New(lib)
 
 local Generic = CreateFrame("CheckButton")
-local Generic_MT = { __index = Generic }
+local Generic_MT = {__index = Generic}
 
-local Action = setmetatable({}, { __index = Generic })
-local Action_MT = { __index = Action }
+local Action = setmetatable({}, {__index = Generic})
+local Action_MT = {__index = Action}
 
 --local PetAction = setmetatable({}, {__index = Generic})
 --local PetAction_MT = {__index = PetAction}
 
-local Spell = setmetatable({}, { __index = Generic })
-local Spell_MT = { __index = Spell }
+local Spell = setmetatable({}, {__index = Generic})
+local Spell_MT = {__index = Spell}
 
-local Item = setmetatable({}, { __index = Generic })
-local Item_MT = { __index = Item }
+local Item = setmetatable({}, {__index = Generic})
+local Item_MT = {__index = Item}
 
-local Macro = setmetatable({}, { __index = Generic })
-local Macro_MT = { __index = Macro }
+local Macro = setmetatable({}, {__index = Generic})
+local Macro_MT = {__index = Macro}
 
-local Custom = setmetatable({}, { __index = Generic })
-local Custom_MT = { __index = Custom }
+local Custom = setmetatable({}, {__index = Generic})
+local Custom_MT = {__index = Custom}
 
 local type_meta_map = {
-	empty = Generic_MT,
+	empty  = Generic_MT,
 	action = Action_MT,
 	--pet    = PetAction_MT,
-	spell = Spell_MT,
-	item = Item_MT,
-	macro = Macro_MT,
-	custom = Custom_MT,
+	spell  = Spell_MT,
+	item   = Item_MT,
+	macro  = Macro_MT,
+	custom = Custom_MT
 }
 
 local ButtonRegistry, ActiveButtons, ActionButtons, NonActionButtons, ActionButtonsNonUI = lib.buttonRegistry, lib.activeButtons, lib.actionButtons, lib.nonActionButtons, lib.actionButtonsNonUI
@@ -137,7 +133,7 @@ local DefaultConfig = {
 	showGrid = false,
 	colors = {
 		range = { 0.8, 0.1, 0.1 },
-		mana = { 0.5, 0.5, 1.0 },
+		mana = { 0.5, 0.5, 1.0 }
 	},
 	hideElements = {
 		macro = false,
@@ -148,7 +144,6 @@ local DefaultConfig = {
 	},
 	keyBoundTarget = false,
 	keyBoundClickButton = "LeftButton",
-	clickOnDown = false,
 	cooldownCount = nil, -- nil: use cvar, true/false: enable/disable
 	lossOfControlCooldown = true,
 	flyoutDirection = "UP",
@@ -204,7 +199,8 @@ local DefaultConfig = {
 	},
 }
 
-local ActionButtonCastType = {
+local ActionButtonCastType =
+{
 	Cast = 1,
 	Channel = 2,
 	Empowered = 3,
@@ -228,11 +224,7 @@ function lib:CreateButton(id, name, header, config)
 
 	local button = setmetatable(CreateFrame("CheckButton", name, header, "ActionButtonTemplate, SecureActionButtonTemplate"), Generic_MT)
 	button:RegisterForDrag("LeftButton", "RightButton")
-	if not WoWClassic then
-		button:RegisterForClicks("AnyDown", "AnyUp")
-	else
-		button:RegisterForClicks("AnyUp")
-	end
+	button:RegisterForClicks("AnyDown", "AnyUp")
 
 	-- Frame Scripts
 	button:SetScript("OnEnter", Generic.OnEnter)
@@ -308,9 +300,7 @@ function SetupSecureSnippets(button)
 	button:SetAttribute("_custom", Custom.RunCustom)
 	-- secure UpdateState(self, state)
 	-- update the type and action of the button based on the state
-	button:SetAttribute(
-		"UpdateState",
-		[[
+	button:SetAttribute("UpdateState", [[
 		local state = ...
 		self:SetAttribute("state", state)
 		local type, action = (self:GetAttribute(format("labtype-%s", state)) or "empty"), self:GetAttribute(format("labaction-%s", state))
@@ -354,23 +344,17 @@ function SetupSecureSnippets(button)
 		if onStateChanged then
 			self:Run(onStateChanged, state, type, action)
 		end
-	]]
-	)
+	]])
 
 	-- this function is invoked by the header when the state changes
-	button:SetAttribute(
-		"_childupdate-state",
-		[[
+	button:SetAttribute("_childupdate-state", [[
 		self:RunAttribute("UpdateState", message)
 		self:CallMethod("UpdateAction")
-	]]
-	)
+	]])
 
 	-- secure PickupButton(self, kind, value, ...)
 	-- utility function to place a object on the cursor
-	button:SetAttribute(
-		"PickupButton",
-		[[
+	button:SetAttribute("PickupButton", [[
 		local kind, value = ...
 		if kind == "empty" then
 			return "clear"
@@ -383,12 +367,9 @@ function SetupSecureSnippets(button)
 			print("LibActionButton-1.0: Unknown type: " .. tostring(kind))
 			return false
 		end
-	]]
-	)
+	]])
 
-	button:SetAttribute(
-		"OnDragStart",
-		[[
+	button:SetAttribute("OnDragStart", [[
 		if (self:GetAttribute("buttonlock") and not IsModifiedClick("PICKUPACTION")) or self:GetAttribute("LABdisableDragNDrop") then return false end
 		local state = self:GetAttribute("state")
 		local type = self:GetAttribute("type")
@@ -411,12 +392,9 @@ function SetupSecureSnippets(button)
 		end
 		-- return the button contents for pickup
 		return self:RunAttribute("PickupButton", type, action)
-	]]
-	)
+	]])
 
-	button:SetAttribute(
-		"OnReceiveDrag",
-		[[
+	button:SetAttribute("OnReceiveDrag", [[
 		if self:GetAttribute("LABdisableDragNDrop") then return false end
 		local kind, value, subtype, extra = ...
 		if not kind or not value then return false end
@@ -457,52 +435,33 @@ function SetupSecureSnippets(button)
 			buttonAction = self:GetAttribute("action")
 		end
 		return self:RunAttribute("PickupButton", buttonType, buttonAction)
-	]]
-	)
+	]])
 
 	button:SetScript("OnDragStart", nil)
 	-- Wrapped OnDragStart(self, button, kind, value, ...)
-	button.header:WrapScript(
-		button,
-		"OnDragStart",
-		[[
+	button.header:WrapScript(button, "OnDragStart", [[
 		return self:RunAttribute("OnDragStart")
-	]]
-	)
+	]])
 	-- Wrap twice, because the post-script is not run when the pre-script causes a pickup (doh)
 	-- we also need some phony message, or it won't work =/
-	button.header:WrapScript(
-		button,
-		"OnDragStart",
-		[[
+	button.header:WrapScript(button, "OnDragStart", [[
 		return "message", "update"
-	]],
-		[[
+	]], [[
 		self:RunAttribute("UpdateState", self:GetAttribute("state"))
-	]]
-	)
+	]])
 
 	button:SetScript("OnReceiveDrag", nil)
 	-- Wrapped OnReceiveDrag(self, button, kind, value, ...)
-	button.header:WrapScript(
-		button,
-		"OnReceiveDrag",
-		[[
+	button.header:WrapScript(button, "OnReceiveDrag", [[
 		return self:RunAttribute("OnReceiveDrag", kind, value, ...)
-	]]
-	)
+	]])
 	-- Wrap twice, because the post-script is not run when the pre-script causes a pickup (doh)
 	-- we also need some phony message, or it won't work =/
-	button.header:WrapScript(
-		button,
-		"OnReceiveDrag",
-		[[
+	button.header:WrapScript(button, "OnReceiveDrag", [[
 		return "message", "update"
-	]],
-		[[
+	]], [[
 		self:RunAttribute("UpdateState", self:GetAttribute("state"))
-	]]
-	)
+	]])
 
 	if UseCustomFlyout then
 		button.header:SetFrameRef("flyoutHandler", GetFlyoutHandler())
@@ -515,14 +474,11 @@ function WrapOnClick(button, unwrapheader)
 		local wrapheader
 		repeat
 			wrapheader = unwrapheader:UnwrapScript(button, "OnClick")
-		until not wrapheader or wrapheader == unwrapheader
+		until (not wrapheader or wrapheader == unwrapheader)
 	end
 
 	-- Wrap OnClick, to catch changes to actions that are applied with a click on the button.
-	button.header:WrapScript(
-		button,
-		"OnClick",
-		[[
+	button.header:WrapScript(button, "OnClick", [[
 		if self:GetAttribute("type") == "action" then
 			local type, action = GetActionInfo(self:GetAttribute("action"))
 
@@ -565,8 +521,7 @@ function WrapOnClick(button, unwrapheader)
 		if button == "Keybind" then
 			return "LeftButton"
 		end
-	]],
-		[[
+	]], [[
 		local type, action = GetActionInfo(self:GetAttribute("action"))
 		if message ~= format("%s|%s", tostring(type), tostring(action)) then
 			self:RunAttribute("UpdateState", self:GetAttribute("state"))
@@ -578,8 +533,7 @@ function WrapOnClick(button, unwrapheader)
 			self:SetAttribute("LABToggledOnDown", nil)
 			self:SetAttribute("LABToggledOnDownBackup", nil)
 		end
-	]]
-	)
+	]])
 end
 
 function Generic:OnButtonEvent(event, ...)
@@ -617,6 +571,7 @@ function Generic:NewHeader(header)
 	WrapOnClick(self, oldheader)
 end
 
+
 -----------------------------------------------------------
 --- state management
 
@@ -632,9 +587,7 @@ end
 function Generic:SetStateFromHandlerInsecure(state, kind, action)
 	state = tostring(state)
 	-- we allow a nil kind for setting a empty state
-	if not kind then
-		kind = "empty"
-	end
+	if not kind then kind = "empty" end
 	if not type_meta_map[kind] then
 		error("SetStateAction: unknown action type: " .. tostring(kind), 2)
 	end
@@ -661,9 +614,7 @@ function Generic:SetStateFromHandlerInsecure(state, kind, action)
 end
 
 function Generic:SetState(state, kind, action)
-	if not state then
-		state = self:GetAttribute("state")
-	end
+	if not state then state = self:GetAttribute("state") end
 	state = tostring(state)
 
 	self:SetStateFromHandlerInsecure(state, kind, action)
@@ -671,15 +622,11 @@ function Generic:SetState(state, kind, action)
 end
 
 function Generic:UpdateState(state)
-	if not state then
-		state = self:GetAttribute("state")
-	end
+	if not state then state = self:GetAttribute("state") end
 	state = tostring(state)
 	self:SetAttribute(format("labtype-%s", state), self.state_types[state])
 	self:SetAttribute(format("labaction-%s", state), self.state_actions[state])
-	if state ~= tostring(self:GetAttribute("state")) then
-		return
-	end
+	if state ~= tostring(self:GetAttribute("state")) then return end
 	if self.header then
 		self.header:SetFrameRef("updateButton", self)
 		self.header:Execute([[
@@ -687,15 +634,13 @@ function Generic:UpdateState(state)
 			control:RunFor(frame, frame:GetAttribute("UpdateState"), frame:GetAttribute("state"))
 		]])
 	else
-		-- TODO
+	-- TODO
 	end
 	self:UpdateAction()
 end
 
 function Generic:GetAction(state)
-	if not state then
-		state = self:GetAttribute("state")
-	end
+	if not state then state = self:GetAttribute("state") end
 	state = tostring(state)
 	return self.state_types[state] or "empty", self.state_actions[state]
 end
@@ -744,6 +689,14 @@ end
 function Generic:UpdateAlpha()
 	UpdateCooldown(self)
 end
+
+function Generic:OnActionBarSlotChanged()
+	if self._state_type == "action" then
+		ClearNewActionHighlight(self._state_action, true)
+	end
+	Update(self)
+end
+
 
 -----------------------------------------------------------
 --- flyouts
@@ -990,9 +943,7 @@ if UseCustomFlyout then
 	-- sync flyout information to the restricted environment
 	local InSync = false
 	local function SyncFlyoutInfoToHandler()
-		if InCombatLockdown() or InSync then
-			return
-		end
+		if InCombatLockdown() or InSync then return end
 		InSync = true
 
 		local maxNumSlots = 0
@@ -1111,23 +1062,23 @@ local function PickupAny(kind, target, detail, ...)
 		kind, target, detail = target, detail, ...
 	end
 
-	if kind == "action" then
+	if kind == 'action' then
 		PickupAction(target)
-	elseif kind == "item" then
+	elseif kind == 'item' then
 		C_Item.PickupItem(target)
-	elseif kind == "macro" then
+	elseif kind == 'macro' then
 		PickupMacro(target)
-	elseif kind == "petaction" then
+	elseif kind == 'petaction' then
 		PickupPetAction(target)
-	elseif kind == "spell" then
+	elseif kind == 'spell' then
 		if C_Spell and C_Spell.PickupSpell then
 			C_Spell.PickupSpell(target)
 		else
 			PickupSpell(target)
 		end
-	elseif kind == "companion" then
+	elseif kind == 'companion' then
 		PickupCompanion(target, detail)
-	elseif kind == "equipmentset" then
+	elseif kind == 'equipmentset' then
 		C_EquipmentSet.PickupEquipmentSet(target)
 	end
 end
@@ -1159,23 +1110,21 @@ function Generic:OnLeave()
 		UpdateFlyout(self)
 	end
 
-	if GameTooltip:IsForbidden() then
-		return
-	end
+	if GameTooltip:IsForbidden() then return end
 	GameTooltip:Hide()
 end
 
 -- Insecure drag handler to allow clicking on the button with an action on the cursor
 -- to place it on the button. Like action buttons work.
 function Generic:PreClick()
-	if self._state_type == "action" or self._state_type == "pet" or InCombatLockdown() or self:GetAttribute("LABdisableDragNDrop") then
+	if self._state_type == "action" or self._state_type == "pet"
+	   or InCombatLockdown() or self:GetAttribute("LABdisableDragNDrop")
+	then
 		return
 	end
 	-- check if there is actually something on the cursor
 	local kind, value, _subtype = GetCursorInfo()
-	if not (kind and value) then
-		return
-	end
+	if not (kind and value) then return end
 	self._old_type = self._state_type
 	if self._state_type and self._state_type ~= "empty" then
 		self._old_type = self._state_type
@@ -1204,18 +1153,11 @@ function Generic:PostClick(button, down)
 		local oldType, oldAction = self._state_type, self._state_action
 		local kind, data, subtype, extra = GetCursorInfo()
 		self.header:SetFrameRef("updateButton", self)
-		self.header:Execute(format(
-			[[
+		self.header:Execute(format([[
 			local frame = self:GetFrameRef("updateButton")
 			control:RunFor(frame, frame:GetAttribute("OnReceiveDrag"), %s, %s, %s, %s)
 			control:RunFor(frame, frame:GetAttribute("UpdateState"), %s)
-		]],
-			formatHelper(kind),
-			formatHelper(data),
-			formatHelper(subtype),
-			formatHelper(extra),
-			formatHelper(self:GetAttribute("state"))
-		))
+		]], formatHelper(kind), formatHelper(data), formatHelper(subtype), formatHelper(extra), formatHelper(self:GetAttribute("state"))))
 		PickupAny("clear", oldType, oldAction)
 	end
 	self._receiving_drag = nil
@@ -1233,7 +1175,7 @@ end
 --- configuration
 
 local function merge(target, source, default)
-	for k, v in pairs(default) do
+	for k,v in pairs(default) do
 		if type(v) ~= "table" then
 			if source and source[k] ~= nil then
 				target[k] = source[k]
@@ -1241,11 +1183,7 @@ local function merge(target, source, default)
 				target[k] = v
 			end
 		else
-			if type(target[k]) ~= "table" then
-				target[k] = {}
-			else
-				wipe(target[k])
-			end
+			if type(target[k]) ~= "table" then target[k] = {} else wipe(target[k]) end
 			merge(target[k], type(source) == "table" and source[k], v)
 		end
 	end
@@ -1296,9 +1234,6 @@ function Generic:UpdateConfig(config)
 	UpdateHotkeys(self)
 	UpdateGrid(self)
 	self:UpdateAction(true)
-	if WoWClassic then
-		self:RegisterForClicks(self.config.clickOnDown and "AnyDown" or "AnyUp")
-	end
 end
 
 -----------------------------------------------------------
@@ -1356,7 +1291,7 @@ function InitializeEventHandler()
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_ICON")
 	if not WoWClassic and not WoWBCC then
 		if not WoWWrath then
-			lib.eventFrame.showGlow = true -- KkthnxUI
+			lib.eventFrame.showGlow = true -- NDui
 			lib.eventFrame:RegisterEvent("ARCHAEOLOGY_CLOSED")
 			lib.eventFrame:RegisterEvent("UPDATE_SUMMONPETS_ACTION")
 			lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
@@ -1367,11 +1302,7 @@ function InitializeEventHandler()
 		lib.eventFrame:RegisterEvent("COMPANION_UPDATE")
 	end
 
-	if not WoWClassic then
-		lib.eventFrame:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE")
-	else
-		lib.eventFrame:RegisterEvent("LEARNED_SPELL_IN_TAB")
-	end
+	lib.eventFrame:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE")
 
 	-- With those two, do we still need the ACTIONBAR equivalents of them?
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -1439,7 +1370,7 @@ function OnEvent(frame, event, arg1, ...)
 		if UseCustomFlyout then
 			UpdateFlyoutSpells()
 		end
-	elseif (event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB" then
+	elseif (event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_SKILL_LINE" then
 		local tooltipOwner = GameTooltip_GetOwnerForbidden()
 		if tooltipOwner and ButtonRegistry[tooltipOwner] then
 			tooltipOwner:SetTooltip()
@@ -1447,8 +1378,7 @@ function OnEvent(frame, event, arg1, ...)
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
 		for button in next, ButtonRegistry do
 			if button._state_type == "action" and (arg1 == 0 or arg1 == tonumber(button._state_action)) then
-				ClearNewActionHighlight(button._state_action, true, false)
-				Update(button)
+				button:OnActionBarSlotChanged()
 			end
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" then
@@ -1483,7 +1413,8 @@ function OnEvent(frame, event, arg1, ...)
 		for button in next, ActionButtonsNonUI do
 			UpdateButtonState(button)
 		end
-	elseif ((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or ((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) then
+	elseif ((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
+		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) then
 		ForAllButtons(UpdateButtonState, true)
 	elseif event == "ACTIONBAR_UPDATE_USABLE" then
 		for button in next, ActionButtons do
@@ -1522,7 +1453,7 @@ function OnEvent(frame, event, arg1, ...)
 		for button in next, ActiveButtons do
 			UpdateCooldown(button)
 		end
-	elseif event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE" or event == "ARCHAEOLOGY_CLOSED" then
+	elseif event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" then
 		ForAllButtons(UpdateButtonState, true)
 	elseif event == "PLAYER_ENTER_COMBAT" then
 		for button in next, ActiveButtons do
@@ -1907,35 +1838,28 @@ function Update(self)
 	if texture then
 		self.icon:SetTexture(texture)
 		self.icon:Show()
-		self.rangeTimer = -1
-		if not WoWClassic then
-			if not self.MasqueSkinned then
-				self.SlotBackground:Hide()
-				if self.config.hideElements.border then
-					self.NormalTexture:SetTexture()
-					self.icon:RemoveMaskTexture(self.IconMask)
-					self.HighlightTexture:SetSize(52, 51)
-					self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
-					self.CheckedTexture:SetSize(52, 51)
-					self.CheckedTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
-					self.cooldown:ClearAllPoints()
-					self.cooldown:SetAllPoints()
-				else
-					self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
-					self.icon:AddMaskTexture(self.IconMask)
-					self.HighlightTexture:SetSize(46, 45)
-					self.HighlightTexture:SetPoint("TOPLEFT")
-					self.CheckedTexture:SetSize(46, 45)
-					self.CheckedTexture:SetPoint("TOPLEFT")
-					self.cooldown:ClearAllPoints()
-					self.cooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -2)
-					self.cooldown:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 3)
-				end
-			end
-		else
-			self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2")
-			if not self.LBFSkinned and not self.MasqueSkinned then
-				self.NormalTexture:SetTexCoord(0, 0, 0, 0)
+		self.rangeTimer = - 1
+		if not self.MasqueSkinned then
+			self.SlotBackground:Hide()
+			if self.config.hideElements.border then
+				self.NormalTexture:SetTexture()
+				self.icon:RemoveMaskTexture(self.IconMask)
+				self.HighlightTexture:SetSize(52, 51)
+				self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
+				self.CheckedTexture:SetSize(52, 51)
+				self.CheckedTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
+				self.cooldown:ClearAllPoints()
+				self.cooldown:SetAllPoints()
+			else
+				self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
+				self.icon:AddMaskTexture(self.IconMask)
+				self.HighlightTexture:SetSize(46, 45)
+				self.HighlightTexture:SetPoint("TOPLEFT")
+				self.CheckedTexture:SetSize(46, 45)
+				self.CheckedTexture:SetPoint("TOPLEFT")
+				self.cooldown:ClearAllPoints()
+				self.cooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -2)
+				self.cooldown:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 3)
 			end
 		end
 	else
@@ -1951,19 +1875,12 @@ function Update(self)
 		else
 			self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
 		end
-		if not WoWClassic then
-			if not self.MasqueSkinned then
-				self.SlotBackground:Show()
-				if self.config.hideElements.borderIfEmpty then
-					self.NormalTexture:SetTexture()
-				else
-					self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
-				end
-			end
-		else
-			self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot")
-			if not self.LBFSkinned and not self.MasqueSkinned then
-				self.NormalTexture:SetTexCoord(-0.15, 1.15, -0.15, 1.17)
+		if not self.MasqueSkinned then
+			self.SlotBackground:Show()
+			if self.config.hideElements.borderIfEmpty then
+				self.NormalTexture:SetTexture()
+			else
+				self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
 			end
 		end
 	end
@@ -2003,7 +1920,7 @@ function Update(self)
 end
 
 function Generic:UpdateLocal()
-	-- dummy function the other button types can override for special updating
+-- dummy function the other button types can override for special updating
 end
 
 function UpdateButtonState(self)
@@ -2062,7 +1979,7 @@ end
 
 local function CreateChargeCooldownFrame(parent)
 	lib.NumChargeCooldowns = lib.NumChargeCooldowns + 1
-	local cooldown = CreateFrame("Cooldown", "LAB10ChargeCooldown" .. lib.NumChargeCooldowns, parent, "CooldownFrameTemplate")
+	local cooldown = CreateFrame("Cooldown", "LAB10ChargeCooldown"..lib.NumChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true)
 	cooldown:SetDrawSwipe(false)
 	cooldown:SetPoint("TOPLEFT", parent.icon, "TOPLEFT", 2, -2)
@@ -2104,15 +2021,13 @@ function UpdateCooldownNumberHidden(self)
 	self.cooldown:SetHideCountdownNumbers(shouldBeHidden)
 end
 
-local defaultCooldownInfo = { startTime = 0, duration = 0, isEnabled = false, isActive = false, modRate = 0 }
-local defaultChargeInfo = { currentCharges = 0, maxCharges = 0, cooldownStartTime = 0, cooldownDuration = 0, chargeModRate = 0, isActive = false }
-local defaultLossOfControlInfo = { startTime = 0, duration = 0, modRate = 0, isActive = false, shouldReplaceNormalCooldown = false }
+local defaultCooldownInfo = { startTime = 0; duration = 0; isEnabled = false; isActive = false; modRate = 0 }
+local defaultChargeInfo = { currentCharges = 0; maxCharges = 0; cooldownStartTime = 0; cooldownDuration = 0; chargeModRate = 0; isActive = false }
+local defaultLossOfControlInfo = { startTime = 0; duration = 0; modRate = 0; isActive = false; shouldReplaceNormalCooldown = false; }
 
 if WoWRetail then
 	local function SetOrClearCooldown(cooldown, shouldShow, durationObject)
-		if not cooldown then
-			return
-		end
+		if not cooldown then return end
 		if not shouldShow or not durationObject then
 			cooldown:Clear()
 			return
@@ -2212,13 +2127,11 @@ function UpdateFlash(self)
 end
 
 function UpdateTooltip(self)
-	if GameTooltip:IsForbidden() then
-		return
-	end
-	if GetCVar("UberTooltips") == "1" then
-		GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	if GameTooltip:IsForbidden() then return end
+	if (GetCVar("UberTooltips") == "1") then
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	if self:SetTooltip() then
 		self.UpdateTooltip = UpdateTooltip
@@ -2290,9 +2203,7 @@ function SpellVFX_ClearInterruptDisplay(self)
 end
 
 function SpellVFX_PlaySpellCastAnim(self, actionButtonCastType)
-	if not self.config.spellCastVFX then
-		return
-	end
+	if not self.config.spellCastVFX then return end
 
 	-- __Swipe_Hook is to stop Masque from re-setting it
 	self.cooldown.__Swipe_Hook = true
@@ -2306,9 +2217,7 @@ function SpellVFX_PlaySpellCastAnim(self, actionButtonCastType)
 end
 
 function SpellVFX_PlayTargettingReticleAnim(self)
-	if not self.config.spellCastVFX then
-		return
-	end
+	if not self.config.spellCastVFX then return end
 
 	if self.InterruptDisplay:IsShown() then
 		self.InterruptDisplay:Hide()
@@ -2327,10 +2236,10 @@ end
 function SpellVFX_StopSpellCastAnim(self, forceStop, actionButtonCastType)
 	SpellVFX_StopTargettingReticleAnim(self)
 
-	if self.actionButtonCastType == actionButtonCastType then
-		if forceStop then
+	if (self.actionButtonCastType == actionButtonCastType) then
+		if(forceStop) then
 			self.SpellCastAnimFrame:Hide()
-		elseif self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying() then
+		elseif(self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then
 			self.SpellCastAnimFrame:FinishAnimAndPlayBurst()
 		end
 		self.actionButtonCastType = nil
@@ -2338,9 +2247,7 @@ function SpellVFX_StopSpellCastAnim(self, forceStop, actionButtonCastType)
 end
 
 function SpellVFX_PlaySpellInterruptedAnim(self)
-	if not self.config.spellCastVFX then
-		return
-	end
+	if not self.config.spellCastVFX then return end
 
 	SpellVFX_StopSpellCastAnim(self, true, self.actionButtonCastType)
 	--Hide if it's already showing to clear the anim.
@@ -2444,15 +2351,13 @@ function UpdateSpellHighlight(self)
 end
 
 function UpdateAssistedCombatRotationFrame(self)
-	if not (C_ActionBar and C_ActionBar.IsAssistedCombatAction) then
-		return
-	end
+	if not (C_ActionBar and C_ActionBar.IsAssistedCombatAction) then return end
 	local show = self._state_type == "action" and C_ActionBar.IsAssistedCombatAction(self._state_action)
 	local assistedCombatRotationFrame = self.AssistedCombatRotationFrame
 	-- create frame if needed
 	if show and not assistedCombatRotationFrame then
 		assistedCombatRotationFrame = CreateFrame("Frame", nil, self, "ActionBarButtonAssistedCombatRotationTemplate")
-		assistedCombatRotationFrame.UpdateGlow = function() end -- KkthnxUI mod: remove glow texture
+		assistedCombatRotationFrame.UpdateGlow = function() end -- NDui mod: remove glow texture
 		self.AssistedCombatRotationFrame = assistedCombatRotationFrame
 	end
 
@@ -2462,9 +2367,7 @@ function UpdateAssistedCombatRotationFrame(self)
 end
 
 function UpdatedAssistedHighlightFrame(self)
-	if not AssistedCombatManager then
-		return
-	end
+	if not AssistedCombatManager then return end
 	local spellID = AssistedCombatManager.lastNextCastSpellID
 	local shown = self.config.actionButtonUI and self.config.assistedHighlight and spellID and self:GetSpellId() == spellID
 
@@ -2509,6 +2412,7 @@ if ActionButton_UpdateFlyout then
 			-- based on ActionButton_UpdateFlyout in ActionButton.lua
 			local actionType = GetActionInfo(self._state_action)
 			if actionType == "flyout" then
+
 				local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self
 				local arrowDistance = isFlyoutShown and 1 or 4
 
@@ -2572,7 +2476,7 @@ else
 				local isMouseOverButton = self:IsMouseOver()
 
 				local isButtonDown
-				if isButtonDownOverride ~= nil then
+				if (isButtonDownOverride ~= nil) then
 					isButtonDown = isButtonDownOverride
 				else
 					isButtonDown = self:GetButtonState() == "PUSHED"
@@ -2580,12 +2484,12 @@ else
 
 				local flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowNormal
 
-				if isButtonDown then
+				if (isButtonDown) then
 					flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowPushed
 
 					self.FlyoutArrowContainer.FlyoutArrowNormal:Hide()
 					self.FlyoutArrowContainer.FlyoutArrowHighlight:Hide()
-				elseif isMouseOverButton then
+				elseif (isMouseOverButton) then
 					flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowHighlight
 
 					self.FlyoutArrowContainer.FlyoutArrowNormal:Hide()
@@ -2634,79 +2538,37 @@ end
 -----------------------------------------------------------
 --- WoW API mapping
 --- Generic Button
-Generic.HasAction = function(self)
-	return nil
-end
-Generic.GetActionText = function(self)
-	return ""
-end
-Generic.GetTexture = function(self)
-	return nil
-end
-Generic.GetCount = function(self)
-	return 0
-end
-Generic.GetChargeInfo = function(self)
-	return nil
-end
-Generic.GetChargeDuration = function(self)
-	return nil
-end
-Generic.GetCooldownInfo = function(self)
-	return nil
-end
-Generic.GetCooldownDuration = function(self)
-	return nil
-end
-Generic.GetLoCCooldownInfo = function(self)
-	return nil
-end
-Generic.GetLoCCooldownDuration = function(self)
-	return nil
-end
-Generic.IsAttack = function(self)
-	return nil
-end
-Generic.IsEquipped = function(self)
-	return nil
-end
-Generic.IsCurrentlyActive = function(self)
-	return nil
-end
-Generic.IsAutoRepeat = function(self)
-	return nil
-end
-Generic.IsUsable = function(self)
-	return nil
-end
-Generic.IsConsumableOrStackable = function(self)
-	return nil
-end
-Generic.IsUnitInRange = function(self, unit)
-	return nil
-end
-Generic.IsInRange = function(self)
+Generic.HasAction                = function(self) return nil end
+Generic.GetActionText            = function(self) return "" end
+Generic.GetTexture               = function(self) return nil end
+Generic.GetCount                 = function(self) return 0 end
+Generic.GetChargeInfo            = function(self) return nil end
+Generic.GetChargeDuration        = function(self) return nil end
+Generic.GetCooldownInfo          = function(self) return nil end
+Generic.GetCooldownDuration      = function(self) return nil end
+Generic.GetLoCCooldownInfo       = function(self) return nil end
+Generic.GetLoCCooldownDuration   = function(self) return nil end
+Generic.IsAttack                 = function(self) return nil end
+Generic.IsEquipped               = function(self) return nil end
+Generic.IsCurrentlyActive        = function(self) return nil end
+Generic.IsAutoRepeat             = function(self) return nil end
+Generic.IsUsable                 = function(self) return nil end
+Generic.IsConsumableOrStackable  = function(self) return nil end
+Generic.IsUnitInRange            = function(self, unit) return nil end
+Generic.IsInRange                = function(self)
 	local unit = self:GetAttribute("unit")
 	if unit == "player" then
 		unit = nil
 	end
 	local val = self:IsUnitInRange(unit)
 	-- map 1/0 to true false, since the return values are inconsistent between actions and spells
-	if val == 1 then
-		val = true
-	elseif val == 0 then
-		val = false
-	end
+	if val == 1 then val = true elseif val == 0 then val = false end
 	return val
 end
-Generic.SetTooltip = function(self)
-	return nil
-end
-Generic.GetSpellId = function(self)
-	return nil
-end
+Generic.SetTooltip               = function(self) return nil end
+Generic.GetSpellId               = function(self) return nil end
 
-Generic.GetDisplayCount = function(self)
+Generic.GetDisplayCount          = function(self)
 	if self:IsConsumableOrStackable() then
 		local count = self:GetCount()
 		if count > (self.maxDisplayCount or 9999) then
@@ -2755,9 +2617,7 @@ local GetActionCount = GetActionCount
 
 -- the remaining uses of GetActionCount can't deal with secrets, so disable on Midnight
 if WoWRetail then
-	GetActionCount = function()
-		return 0
-	end
+	GetActionCount = function() return 0 end
 end
 
 local GetActionChargeInfoFallback
@@ -2769,7 +2629,7 @@ if GetActionCharges then
 			maxCharges = maxCharges,
 			cooldownStartTime = cooldownStart,
 			cooldownDuration = cooldownDuration,
-			chargeModRate = chargeModRate,
+			chargeModRate = chargeModRate
 		}
 	end
 else
@@ -2784,7 +2644,7 @@ if GetActionCooldown then
 			startTime = start,
 			duration = duration,
 			isEnabled = enable,
-			modRate = modRate,
+			modRate = modRate
 		}
 	end
 else
@@ -2799,7 +2659,7 @@ if GetActionLossOfControlCooldown then
 			startTime = start,
 			duration = duration,
 			isEnabled = true,
-			modRate = 1.0,
+			modRate = 1.0
 		}
 	end
 else
@@ -2810,85 +2670,49 @@ local GetActionCooldownInfo = C_ActionBar and C_ActionBar.GetActionCooldown or G
 local GetActionChargeInfo = C_ActionBar and C_ActionBar.GetActionCharges or GetActionChargeInfoFallback
 local GetActionLoCCooldownInfo = C_ActionBar and C_ActionBar.GetActionLossOfControlCooldownInfo or GetActionLoCCooldownInfoFallback
 
-Action.HasAction = function(self)
-	return HasAction(self._state_action)
-end
-Action.GetActionText = function(self)
-	return GetActionText(self._state_action)
-end
-Action.GetTexture = function(self)
-	return GetActionTexture(self._state_action)
-end
-Action.GetCount = function(self)
-	return GetActionCount(self._state_action)
-end
-Action.GetChargeInfo = function(self)
-	return GetActionChargeInfo(self._state_action)
-end
-Action.GetCooldownInfo = function(self)
-	return GetActionCooldownInfo(self._state_action)
-end
-Action.GetLoCCooldownInfo = function(self)
-	return GetActionLoCCooldownInfo(self._state_action)
-end
-Action.IsAttack = function(self)
-	return IsAttackAction(self._state_action)
-end
-Action.IsEquipped = function(self)
-	return IsEquippedAction(self._state_action)
-end
-Action.IsCurrentlyActive = function(self)
-	return IsCurrentAction(self._state_action)
-end
-Action.IsAutoRepeat = function(self)
-	return IsAutoRepeatAction(self._state_action)
-end
-Action.IsUsable = function(self)
-	return IsUsableAction(self._state_action)
-end
-Action.IsConsumableOrStackable = function(self)
-	return IsConsumableAction(self._state_action) or IsStackableAction(self._state_action) or (not IsItemAction(self._state_action) and GetActionCount(self._state_action) > 0)
-end
-Action.IsUnitInRange = function(self, unit)
-	return IsActionInRange(self._state_action, unit)
-end
-Action.SetTooltip = function(self)
-	return GameTooltip:SetAction(self._state_action)
-end
-Action.GetSpellId = function(self)
+Action.HasAction                = function(self) return HasAction(self._state_action) end
+Action.GetActionText            = function(self) return GetActionText(self._state_action) end
+Action.GetTexture               = function(self) return GetActionTexture(self._state_action) end
+Action.GetCount                 = function(self) return GetActionCount(self._state_action) end
+Action.GetChargeInfo            = function(self) return GetActionChargeInfo(self._state_action) end
+Action.GetCooldownInfo          = function(self) return GetActionCooldownInfo(self._state_action) end
+Action.GetLoCCooldownInfo       = function(self) return GetActionLoCCooldownInfo(self._state_action) end
+Action.IsAttack                 = function(self) return IsAttackAction(self._state_action) end
+Action.IsEquipped               = function(self) return IsEquippedAction(self._state_action) end
+Action.IsCurrentlyActive        = function(self) return IsCurrentAction(self._state_action) end
+Action.IsAutoRepeat             = function(self) return IsAutoRepeatAction(self._state_action) end
+Action.IsUsable                 = function(self) return IsUsableAction(self._state_action) end
+Action.IsConsumableOrStackable  = function(self) return IsConsumableAction(self._state_action) or IsStackableAction(self._state_action) or (not IsItemAction(self._state_action) and GetActionCount(self._state_action) > 0) end
+Action.IsUnitInRange            = function(self, unit) return IsActionInRange(self._state_action, unit) end
+Action.SetTooltip               = function(self) return GameTooltip:SetAction(self._state_action) end
+Action.GetSpellId               = function(self)
 	local actionType, id, subType = GetActionInfo(self._state_action)
 	if actionType == "spell" then
 		return id
 	elseif actionType == "macro" then
 		if subType == "spell" then
 			return id
+		elseif subType == "item" then
+			return nil -- item macros seems to return bogus values we can't support
 		else
-			return (GetMacroSpell(id))
+			return (GetMacroSpell(id)) -- classic does not use the subType, so keep this as a fallback
 		end
 	end
 end
 
 if C_ActionBar and C_ActionBar.GetActionDisplayCount then
-	Action.GetDisplayCount = function(self)
-		return C_ActionBar.GetActionDisplayCount(self._state_action)
-	end
+	Action.GetDisplayCount      = function(self) return C_ActionBar.GetActionDisplayCount(self._state_action) end
 end
 
 -- Cooldown duration objects from 12.0
 if C_ActionBar and C_ActionBar.GetActionChargeDuration then
-	Action.GetChargeDuration = function(self)
-		return C_ActionBar.GetActionChargeDuration(self._state_action)
-	end
+	Action.GetChargeDuration    = function(self) return C_ActionBar.GetActionChargeDuration(self._state_action) end
 end
 if C_ActionBar and C_ActionBar.GetActionCooldownDuration then
-	Action.GetCooldownDuration = function(self)
-		return C_ActionBar.GetActionCooldownDuration(self._state_action)
-	end
+	Action.GetCooldownDuration  = function(self) return C_ActionBar.GetActionCooldownDuration(self._state_action) end
 end
 if C_ActionBar and C_ActionBar.GetActionLossOfControlCooldownDuration then
-	Action.GetLoCCooldownDuration = function(self)
-		return C_ActionBar.GetActionLossOfControlCooldownDuration(self._state_action)
-	end
+	Action.GetLoCCooldownDuration = function(self) return C_ActionBar.GetActionLossOfControlCooldownDuration(self._state_action) end
 end
 
 -- Classic overrides for item count breakage
@@ -2896,22 +2720,16 @@ if WoWClassic then
 	-- if the library is present, simply use it to override action counts
 	local LibClassicSpellActionCount = LibStub("LibClassicSpellActionCount-1.0", true)
 	if LibClassicSpellActionCount then
-		Action.GetCount = function(self)
-			return LibClassicSpellActionCount:GetActionCount(self._state_action)
-		end
+		Action.GetCount = function(self) return LibClassicSpellActionCount:GetActionCount(self._state_action) end
 	else
 		-- if we don't have the library, only show count for items, like the default UI
-		Action.IsConsumableOrStackable = function(self)
-			return IsItemAction(self._state_action) and (IsConsumableAction(self._state_action) or IsStackableAction(self._state_action))
-		end
+		Action.IsConsumableOrStackable = function(self) return IsItemAction(self._state_action) and (IsConsumableAction(self._state_action) or IsStackableAction(self._state_action)) end
 	end
 end
 
 if not WoWRetail then
 	-- disable loss of control cooldown on classic
-	Action.GetLoCCooldownInfo = function(self)
-		return nil
-	end
+	Action.GetLoCCooldownInfo = function(self) return nil end
 end
 
 local GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
@@ -2932,7 +2750,7 @@ if GetSpellLossOfControlCooldown then
 			startTime = start,
 			duration = duration,
 			isEnabled = true,
-			modRate = 1.0,
+			modRate = 1.0
 		}
 	end
 else
@@ -2943,79 +2761,36 @@ local GetSpellLossOfControlCooldownInfo = C_Spell and C_Spell.GetSpellLossOfCont
 local BOOKTYPE_SPELL = Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or "spell"
 -----------------------------------------------------------
 --- Spell Button
-Spell.HasAction = function(self)
-	return true
-end
-Spell.GetActionText = function(self)
-	return ""
-end
-Spell.GetTexture = function(self)
-	return GetSpellTexture(self._state_action)
-end
-Spell.GetCount = function(self)
-	return GetSpellCastCount(self._state_action)
-end
-Spell.GetChargeInfo = function(self)
-	return C_Spell.GetSpellCharges(self._state_action)
-end
-Spell.GetCooldownInfo = function(self)
-	return C_Spell.GetSpellCooldown(self._state_action)
-end
-Spell.GetLoCCooldownInfo = function(self)
-	return GetSpellLossOfControlCooldownInfo(self._state_action)
-end
-Spell.IsAttack = function(self)
-	local slot = FindSpellBookSlotBySpellID(self._state_action)
-	return slot and IsAttackSpell(slot, BOOKTYPE_SPELL) or nil
-end
-Spell.IsEquipped = function(self)
-	return nil
-end
-Spell.IsCurrentlyActive = function(self)
-	return IsCurrentSpell(self._state_action)
-end
-Spell.IsAutoRepeat = function(self)
-	local slot = FindSpellBookSlotBySpellID(self._state_action)
-	return slot and IsAutoRepeatSpell(slot, BOOKTYPE_SPELL) or nil
-end
-Spell.IsUsable = function(self)
-	return IsSpellUsable(self._state_action)
-end
-Spell.IsConsumableOrStackable = function(self)
-	return IsConsumableSpell(self._state_action)
-end
-Spell.IsUnitInRange = function(self, unit)
-	local slot = FindSpellBookSlotBySpellID(self._state_action)
-	return slot and IsSpellInRange(slot, BOOKTYPE_SPELL, unit) or nil
-end
-Spell.SetTooltip = function(self)
-	return GameTooltip:SetSpellByID(self._state_action)
-end
-Spell.GetSpellId = function(self)
-	return self._state_action
-end
+Spell.HasAction                = function(self) return true end
+Spell.GetActionText            = function(self) return "" end
+Spell.GetTexture               = function(self) return GetSpellTexture(self._state_action) end
+Spell.GetCount                 = function(self) return GetSpellCastCount(self._state_action) end
+Spell.GetChargeInfo            = function(self) return C_Spell.GetSpellCharges(self._state_action) end
+Spell.GetCooldownInfo          = function(self) return C_Spell.GetSpellCooldown(self._state_action) end
+Spell.GetLoCCooldownInfo       = function(self) return GetSpellLossOfControlCooldownInfo(self._state_action) end
+Spell.IsAttack                 = function(self) local slot = FindSpellBookSlotBySpellID(self._state_action) return slot and IsAttackSpell(slot, BOOKTYPE_SPELL) or nil end
+Spell.IsEquipped               = function(self) return nil end
+Spell.IsCurrentlyActive        = function(self) return IsCurrentSpell(self._state_action) end
+Spell.IsAutoRepeat             = function(self) local slot = FindSpellBookSlotBySpellID(self._state_action) return slot and IsAutoRepeatSpell(slot, BOOKTYPE_SPELL) or nil end
+Spell.IsUsable                 = function(self) return IsSpellUsable(self._state_action) end
+Spell.IsConsumableOrStackable  = function(self) return IsConsumableSpell(self._state_action) end
+Spell.IsUnitInRange            = function(self, unit) local slot = FindSpellBookSlotBySpellID(self._state_action) return slot and IsSpellInRange(slot, BOOKTYPE_SPELL, unit) or nil end
+Spell.SetTooltip               = function(self) return GameTooltip:SetSpellByID(self._state_action) end
+Spell.GetSpellId               = function(self) return self._state_action end
 
 if C_Spell and C_Spell.GetSpellDisplayCount then
-	Spell.GetDisplayCount = function(self)
-		return C_Spell.GetSpellDisplayCount(self._state_action)
-	end
+	Spell.GetDisplayCount      = function(self) return C_Spell.GetSpellDisplayCount(self._state_action) end
 end
 
 -- Cooldown duration objects from 12.0
 if C_Spell and C_Spell.GetSpellChargeDuration then
-	Spell.GetChargeDuration = function(self)
-		return C_Spell.GetSpellChargeDuration(self._state_action)
-	end
+	Spell.GetChargeDuration    = function(self) return C_Spell.GetSpellChargeDuration(self._state_action) end
 end
 if C_Spell and C_Spell.GetSpellCooldownDuration then
-	Spell.GetCooldownDuration = function(self)
-		return C_Spell.GetSpellCooldownDuration(self._state_action)
-	end
+	Spell.GetCooldownDuration  = function(self) return C_Spell.GetSpellCooldownDuration(self._state_action) end
 end
 if C_Spell and C_Spell.GetSpellLossOfControlCooldownDuration then
-	Spell.GetLoCCooldownDuration = function(self)
-		return C_Spell.GetSpellLossOfControlCooldownDuration(self._state_action)
-	end
+	Spell.GetLoCCooldownDuration = function(self) return C_Spell.GetSpellLossOfControlCooldownDuration(self._state_action) end
 end
 
 -----------------------------------------------------------
@@ -3024,57 +2799,26 @@ local function getItemId(input)
 	return input:match("^item:(%d+)")
 end
 
-Item.HasAction = function(self)
-	return true
-end
-Item.GetActionText = function(self)
-	return ""
-end
-Item.GetTexture = function(self)
-	return C_Item.GetItemIconByID(self._state_action)
-end
-Item.GetCount = function(self)
-	return C_Item.GetItemCount(self._state_action, nil, true)
-end
-Item.GetChargeInfo = function(self)
-	return nil
-end
-Item.GetCooldownInfo = function(self)
-	local start, duration, enable = C_Container.GetItemCooldown(getItemId(self._state_action))
-	return { startTime = start, duration = duration, isEnabled = enable, modRate = 1.0, isActive = (enable and start and start > 0 and duration and duration > 0) }
-end
-Item.IsAttack = function(self)
-	return nil
-end
-Item.IsEquipped = function(self)
-	return C_Item.IsEquippedItem(self._state_action)
-end
-Item.IsCurrentlyActive = function(self)
-	return C_Item.IsCurrentItem(self._state_action)
-end
-Item.IsAutoRepeat = function(self)
-	return nil
-end
-Item.IsUsable = function(self)
-	return C_Item.IsUsableItem(self._state_action)
-end
-Item.IsConsumableOrStackable = function(self)
-	return C_Item.IsConsumableItem(self._state_action)
-end
+Item.HasAction               = function(self) return true end
+Item.GetActionText           = function(self) return "" end
+Item.GetTexture              = function(self) return C_Item.GetItemIconByID(self._state_action) end
+Item.GetCount                = function(self) return C_Item.GetItemCount(self._state_action, nil, true) end
+Item.GetChargeInfo           = function(self) return nil end
+Item.GetCooldownInfo         = function(self) local start, duration, enable = C_Container.GetItemCooldown(getItemId(self._state_action)) return { startTime = start, duration = duration, isEnabled = enable, modRate = 1.0, isActive = (enable and start and start > 0 and duration and duration > 0) } end
+Item.IsAttack                = function(self) return nil end
+Item.IsEquipped              = function(self) return C_Item.IsEquippedItem(self._state_action) end
+Item.IsCurrentlyActive       = function(self) return C_Item.IsCurrentItem(self._state_action) end
+Item.IsAutoRepeat            = function(self) return nil end
+Item.IsUsable                = function(self) return C_Item.IsUsableItem(self._state_action) end
+Item.IsConsumableOrStackable = function(self) return C_Item.IsConsumableItem(self._state_action) end
 --Item.IsUnitInRange           = function(self, unit) return IsItemInRange(self._state_action, unit) end
-Item.SetTooltip = function(self)
-	return GameTooltip:SetHyperlink(self._state_action)
-end
-Item.GetSpellId = function(self)
-	return nil
-end
+Item.SetTooltip              = function(self) return GameTooltip:SetHyperlink(self._state_action) end
+Item.GetSpellId              = function(self) return nil end
 
 if C_DurationUtil and C_DurationUtil.CreateDuration then
 	Item.GetCooldownDuration = function(self)
 		local duration = C_DurationUtil.CreateDuration()
-		if not duration then
-			return nil
-		end
+		if not duration then return nil end
 
 		local info = self:GetCooldownInfo()
 		if info and info.isActive then
@@ -3088,102 +2832,40 @@ end
 -----------------------------------------------------------
 --- Macro Button
 -- TODO: map results of GetMacroSpell/GetMacroItem to proper results
-Macro.HasAction = function(self)
-	return true
-end
-Macro.GetActionText = function(self)
-	return (GetMacroInfo(self._state_action))
-end
-Macro.GetTexture = function(self)
-	return (select(2, GetMacroInfo(self._state_action)))
-end
-Macro.GetCount = function(self)
-	return 0
-end
-Macro.GetChargeInfo = function(self)
-	return nil
-end
-Macro.GetCooldownInfo = function(self)
-	return nil
-end
-Macro.IsAttack = function(self)
-	return nil
-end
-Macro.IsEquipped = function(self)
-	return nil
-end
-Macro.IsCurrentlyActive = function(self)
-	return nil
-end
-Macro.IsAutoRepeat = function(self)
-	return nil
-end
-Macro.IsUsable = function(self)
-	return nil
-end
-Macro.IsConsumableOrStackable = function(self)
-	return nil
-end
-Macro.IsUnitInRange = function(self, unit)
-	return nil
-end
-Macro.SetTooltip = function(self)
-	return nil
-end
-Macro.GetSpellId = function(self)
-	return nil
-end
+Macro.HasAction               = function(self) return true end
+Macro.GetActionText           = function(self) return (GetMacroInfo(self._state_action)) end
+Macro.GetTexture              = function(self) return (select(2, GetMacroInfo(self._state_action))) end
+Macro.GetCount                = function(self) return 0 end
+Macro.GetChargeInfo           = function(self) return nil end
+Macro.GetCooldownInfo         = function(self) return nil end
+Macro.IsAttack                = function(self) return nil end
+Macro.IsEquipped              = function(self) return nil end
+Macro.IsCurrentlyActive       = function(self) return nil end
+Macro.IsAutoRepeat            = function(self) return nil end
+Macro.IsUsable                = function(self) return nil end
+Macro.IsConsumableOrStackable = function(self) return nil end
+Macro.IsUnitInRange           = function(self, unit) return nil end
+Macro.SetTooltip              = function(self) return nil end
+Macro.GetSpellId              = function(self) return nil end
 
 -----------------------------------------------------------
 --- Custom Button
-Custom.HasAction = function(self)
-	return true
-end
-Custom.GetActionText = function(self)
-	return ""
-end
-Custom.GetTexture = function(self)
-	return self._state_action.texture
-end
-Custom.GetCount = function(self)
-	return 0
-end
-Custom.GetChargeInfo = function(self)
-	return nil
-end
-Custom.GetCooldownInfo = function(self)
-	return nil
-end
-Custom.IsAttack = function(self)
-	return nil
-end
-Custom.IsEquipped = function(self)
-	return nil
-end
-Custom.IsCurrentlyActive = function(self)
-	return nil
-end
-Custom.IsAutoRepeat = function(self)
-	return nil
-end
-Custom.IsUsable = function(self)
-	return true
-end
-Custom.IsConsumableOrStackable = function(self)
-	return nil
-end
-Custom.IsUnitInRange = function(self, unit)
-	return nil
-end
-Custom.SetTooltip = function(self)
-	return GameTooltip:SetText(self._state_action.tooltip)
-end
-Custom.GetSpellId = function(self)
-	return nil
-end
-Custom.RunCustom = function(self, unit, button)
-	return self._state_action.func(self, unit, button)
-end
+Custom.HasAction               = function(self) return true end
+Custom.GetActionText           = function(self) return "" end
+Custom.GetTexture              = function(self) return self._state_action.texture end
+Custom.GetCount                = function(self) return 0 end
+Custom.GetChargeInfo           = function(self) return nil end
+Custom.GetCooldownInfo         = function(self) return nil end
+Custom.IsAttack                = function(self) return nil end
+Custom.IsEquipped              = function(self) return nil end
+Custom.IsCurrentlyActive       = function(self) return nil end
+Custom.IsAutoRepeat            = function(self) return nil end
+Custom.IsUsable                = function(self) return true end
+Custom.IsConsumableOrStackable = function(self) return nil end
+Custom.IsUnitInRange           = function(self, unit) return nil end
+Custom.SetTooltip              = function(self) return GameTooltip:SetText(self._state_action.tooltip) end
+Custom.GetSpellId              = function(self) return nil end
+Custom.RunCustom               = function(self, unit, button) return self._state_action.func(self, unit, button) end
 
 --- WoW Classic overrides
 if DisableOverlayGlow then

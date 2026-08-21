@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	KkthnxUI character sheet, laid out like retail's paper doll but built from
+	Blizzard's own frame chrome so it reads as a native Blizzard window rather than
+	a KkthnxUI skin: ButtonFrameTemplate for the portrait window and its inset,
+	ItemButtonTemplate for the equipment slots (native slot art plus the coloured
+	quality ring). Geometry mirrors retail's PaperDollFrame, anchored to the inset.
+	Behaviour lives in Core.lua and Slots.lua.
+-->
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Frame name="KKUI_CharacterFrame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" frameStrata="HIGH" inherits="ButtonFrameTemplate">
+		<Size x="540" y="424"/>
+		<Anchors>
+			<Anchor point="CENTER" x="-200" y="100"/>
+		</Anchors>
+
+		<Frames>
+			<!-- The player model, centred in the inset. -->
+			<PlayerModel parentKey="Model">
+				<Size x="231" y="320"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="52" y="-10"/>
+				</Anchors>
+			</PlayerModel>
+
+			<!-- Left column, top to bottom, anchored to the inset like retail. -->
+			<ItemButton name="$parentHead" parentKey="Head" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentNeck" parentKey="Neck" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Head" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentShoulder" parentKey="Shoulder" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Neck" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentBack" parentKey="Back" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Shoulder" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentChest" parentKey="Chest" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Back" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentShirt" parentKey="Shirt" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Chest" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentTabard" parentKey="Tabard" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Shirt" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentWrist" parentKey="Wrist" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Tabard" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+
+			<!-- Right column, top to bottom. -->
+			<ItemButton name="$parentHands" parentKey="Hands" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPRIGHT" relativeKey="$parent.Inset" x="-4" y="-2"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentWaist" parentKey="Waist" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Hands" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentLegs" parentKey="Legs" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Waist" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentFeet" parentKey="Feet" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Legs" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentFinger0" parentKey="Finger0" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Feet" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentFinger1" parentKey="Finger1" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Finger0" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentTrinket0" parentKey="Trinket0" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Finger1" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentTrinket1" parentKey="Trinket1" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeKey="$parent.Trinket0" relativePoint="BOTTOMLEFT" x="0" y="-4"/></Anchors>
+			</ItemButton>
+
+			<!-- Weapons across the bottom, centred under the model. -->
+			<ItemButton name="$parentMainHand" parentKey="MainHand" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" x="95" y="14"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentSecondaryHand" parentKey="SecondaryHand" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="LEFT" relativeKey="$parent.MainHand" relativePoint="RIGHT" x="6" y="0"/></Anchors>
+			</ItemButton>
+			<ItemButton name="$parentRanged" parentKey="Ranged" parentArray="Slots" inherits="ItemButtonTemplate">
+				<Anchors><Anchor point="LEFT" relativeKey="$parent.SecondaryHand" relativePoint="RIGHT" x="6" y="0"/></Anchors>
+			</ItemButton>
+		</Frames>
+	</Frame>
+</Ui>

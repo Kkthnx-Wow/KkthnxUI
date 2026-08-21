@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Core.lua first: it creates the module the others attach to. -->
+	<Script file="Core.lua" />
+	<Script file="Categories.lua" />
+	<Script file="Slots.lua" />
+	<Script file="Bank.lua" />
+	<!-- The small backpack + bag-slot bar, complementary to the bag window. -->
+	<Script file="BagBar.lua" />
+</Ui>

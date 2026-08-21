@@ -1,86 +1,75 @@
 --[[-----------------------------------------------------------------------------
-Addon: KkthnxUI
-Author: Josh "Kkthnx" Russell
-Notes:
-- Purpose: Custom 8-section border system for UI objects.
-- Combat: Safe for combat use; uses frame script hooks for resizing.
+	Addon: KkthnxUI
+	File: Core/Border.lua
+	Purpose:
+		The signature KkthnxUI 8 section border. Ported from the original addon
+		and wired into the new engine. A border is stored directly on its parent
+		frame under a private key so there is no global weak table to manage.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = {}
-
--- ---------------------------------------------------------------------------
--- Locals & Global Caching
--- ---------------------------------------------------------------------------
 
 local type = type
 local unpack = unpack
 local error = error
 local IsSecret = K.IsSecret
 
--- ---------------------------------------------------------------------------
--- Internal State & Config
--- ---------------------------------------------------------------------------
+local BORDER_KEY = "KKUI_Border"
 
--- REASON: Border is stored directly on the parent frame to prevent table growth and avoid weak-table pitfalls.
-local BORDER_KEY = "__kkthnx_border"
+local Border = {}
 
-local function GetDefaultBorderSize()
-	local style = C and C["General"] and C["General"].BorderStyle or "KkthnxUI"
-	return (style == "KkthnxUI") and 12 or 10
+local function GetDefaultStyle()
+	return (C.General and C.General.BorderStyle) or "KkthnxUI"
 end
 
-K.BorderSize = GetDefaultBorderSize()
+local function GetDefaultSize()
+	return GetDefaultStyle() == "KkthnxUI" and 12 or 10
+end
+
+K.BorderSize = GetDefaultSize()
+K.BorderRegistry = {}
 
 -- ---------------------------------------------------------------------------
--- Utility Helpers
+-- Tiling math
 -- ---------------------------------------------------------------------------
 
-local function GetTileCount(border, w)
+local function GetTileCount(border, width)
 	local size = border.__size or K.BorderSize
 	if size == 0 then
 		return 1
 	end
-
 	local offset = border.__offset or 0
-	return (w + 2 * offset) / size
+	return (width + 2 * offset) / size
 end
 
-local function UpdateTextureCoords(border, tile)
-	-- REASON: Uses 8-arg SetTexCoord to preserve existing tiling behavior for atlas-based strips.
+local function UpdateTexCoords(border, tile)
 	border.TOP:SetTexCoord(0.25, tile, 0.375, tile, 0.25, 0, 0.375, 0)
 	border.BOTTOM:SetTexCoord(0.375, tile, 0.5, tile, 0.375, 0, 0.5, 0)
 	border.LEFT:SetTexCoord(0, 0.125, 0, tile)
 	border.RIGHT:SetTexCoord(0.125, 0.25, 0, tile)
 end
 
--- NOTE: Resizes tiling edges when the parent frame changes size.
-local function OnBorderResize(self)
-	local border = self and self[BORDER_KEY]
+local function OnResize(frame)
+	local border = frame and frame[BORDER_KEY]
 	if not border then
 		return
 	end
-
-	local w = self:GetWidth()
-	if IsSecret(w) then
+	local width = frame:GetWidth()
+	if IsSecret(width) then
 		return
 	end
-
-	local tile = GetTileCount(border, w)
-	UpdateTextureCoords(border, tile)
+	UpdateTexCoords(border, GetTileCount(border, width))
 end
 
 -- ---------------------------------------------------------------------------
--- Border Framework Methods
+-- Border methods
 -- ---------------------------------------------------------------------------
 
-function Module:SetOffset(offset)
+function Border:SetOffset(offset)
 	if type(offset) ~= "number" then
 		return
 	end
-
-	-- Snap inset so corners land on physical pixels when Mult ~= 1.
-	offset = K.Scale and K.Scale(offset) or offset
+	offset = K.Scale(offset)
 	self.__offset = offset
 
 	local p = self.__parent
@@ -89,24 +78,19 @@ function Module:SetOffset(offset)
 	self.BOTTOMLEFT:SetPoint("TOPRIGHT", p, "BOTTOMLEFT", -offset, -offset)
 	self.BOTTOMRIGHT:SetPoint("TOPLEFT", p, "BOTTOMRIGHT", offset, -offset)
 
-	OnBorderResize(p)
+	OnResize(p)
 end
 
-function Module:SetTexture(texture)
-	-- NOTE: Case 1: Texture is a color table {r, g, b, a}.
+function Border:SetTexture(texture)
 	if type(texture) == "table" then
 		self:SetVertexColor(unpack(texture))
 		return
 	end
-
-	-- NOTE: Case 2: Texture is a file path string.
 	if type(texture) == "string" then
 		self.TOPLEFT:SetTexture(texture)
 		self.TOPRIGHT:SetTexture(texture)
 		self.BOTTOMLEFT:SetTexture(texture)
 		self.BOTTOMRIGHT:SetTexture(texture)
-
-		-- REASON: Straight edges allow wrap behavior for coords outside [0..1] to facilitate tiling.
 		self.TOP:SetTexture(texture, "REPEAT", "REPEAT")
 		self.BOTTOM:SetTexture(texture, "REPEAT", "REPEAT")
 		self.LEFT:SetTexture(texture, "REPEAT", "REPEAT")
@@ -114,28 +98,26 @@ function Module:SetTexture(texture)
 	end
 end
 
-function Module:SetSize(size)
+function Border:SetSize(size)
 	if type(size) ~= "number" then
-		error("Border:SetSize() - Size must be a number", 2)
+		error("Border:SetSize() - size must be a number", 2)
 	end
-
-	size = K.Scale and K.Scale(size) or size
+	size = K.Scale(size)
 	self.__size = size
 
 	self.TOPLEFT:SetSize(size, size)
 	self.TOPRIGHT:SetSize(size, size)
 	self.BOTTOMLEFT:SetSize(size, size)
 	self.BOTTOMRIGHT:SetSize(size, size)
-
 	self.TOP:SetHeight(size)
 	self.BOTTOM:SetHeight(size)
 	self.LEFT:SetWidth(size)
 	self.RIGHT:SetWidth(size)
 
-	OnBorderResize(self.__parent)
+	OnResize(self.__parent)
 end
 
-function Module:SetVertexColor(r, g, b, a)
+function Border:SetVertexColor(r, g, b, a)
 	self.TOPLEFT:SetVertexColor(r, g, b, a)
 	self.TOPRIGHT:SetVertexColor(r, g, b, a)
 	self.BOTTOMLEFT:SetVertexColor(r, g, b, a)
@@ -146,55 +128,49 @@ function Module:SetVertexColor(r, g, b, a)
 	self.RIGHT:SetVertexColor(r, g, b, a)
 end
 
--- REASON: Dynamically maps standard Frame methods to all 8 border segments directly.
-local function CreateProxyMethod(methodName)
-	Module[methodName] = function(self, ...)
-		self.TOPLEFT[methodName](self.TOPLEFT, ...)
-		self.TOPRIGHT[methodName](self.TOPRIGHT, ...)
-		self.BOTTOMLEFT[methodName](self.BOTTOMLEFT, ...)
-		self.BOTTOMRIGHT[methodName](self.BOTTOMRIGHT, ...)
-		self.TOP[methodName](self.TOP, ...)
-		self.BOTTOM[methodName](self.BOTTOM, ...)
-		self.LEFT[methodName](self.LEFT, ...)
-		self.RIGHT[methodName](self.RIGHT, ...)
+-- Proxy simple frame methods across all eight segments.
+local function AddProxy(method)
+	Border[method] = function(self, ...)
+		self.TOPLEFT[method](self.TOPLEFT, ...)
+		self.TOPRIGHT[method](self.TOPRIGHT, ...)
+		self.BOTTOMLEFT[method](self.BOTTOMLEFT, ...)
+		self.BOTTOMRIGHT[method](self.BOTTOMRIGHT, ...)
+		self.TOP[method](self.TOP, ...)
+		self.BOTTOM[method](self.BOTTOM, ...)
+		self.LEFT[method](self.LEFT, ...)
+		self.RIGHT[method](self.RIGHT, ...)
 	end
 end
 
-CreateProxyMethod("Hide")
-CreateProxyMethod("Show")
-CreateProxyMethod("SetShown")
-CreateProxyMethod("SetAlpha")
--- REASON: Consistent with all other proxy methods above; avoids manually repeating the 8-segment pattern.
-CreateProxyMethod("SetIgnoreParentAlpha")
+AddProxy("Hide")
+AddProxy("Show")
+AddProxy("SetShown")
+AddProxy("SetAlpha")
+AddProxy("SetIgnoreParentAlpha")
+AddProxy("SetDrawLayer")
 
-function Module:IsObjectType(t)
+function Border:IsObjectType(t)
 	return t == "Border"
 end
 
 -- ---------------------------------------------------------------------------
--- Border Factory
+-- Factory
 -- ---------------------------------------------------------------------------
 
-function K:CreateBorder(drawLayer, drawSubLevel)
-	-- NOTE: Return existing border for this frame if it already exists to avoid duplication.
-	local existing = self[BORDER_KEY]
+function K.CreateBorder(frame, drawLayer, subLevel)
+	local existing = frame[BORDER_KEY]
 	if existing then
 		return existing
 	end
 
-	local border = setmetatable({}, { __index = Module })
-	border.__parent = self
-
+	local border = setmetatable({ __parent = frame }, { __index = Border })
 	local layer = type(drawLayer) == "string" and drawLayer or "OVERLAY"
-	local subLevel = type(drawSubLevel) == "number" and drawSubLevel or 1
+	local sub = type(subLevel) == "number" and subLevel or 1
 
-	-- REASON: Create all 8 sections (4 corners, 4 edges).
 	local function CreateEdge(c1, c2, c3, c4)
-		local tex = self:CreateTexture(nil, layer, nil, subLevel)
+		local tex = frame:CreateTexture(nil, layer, nil, sub)
 		tex:SetTexCoord(c1, c2, c3, c4)
-		if K.DisablePixelSnap then
-			K.DisablePixelSnap(tex)
-		end
+		K.DisablePixelSnap(tex)
 		return tex
 	end
 
@@ -207,7 +183,6 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	border.LEFT = CreateEdge(0, 0.125, 0, 1)
 	border.RIGHT = CreateEdge(0.125, 0.25, 0, 1)
 
-	-- REASON: Link edges to corners to ensure they scale and move together.
 	border.TOP:SetPoint("TOPLEFT", border.TOPLEFT, "TOPRIGHT", 0, 0)
 	border.TOP:SetPoint("TOPRIGHT", border.TOPRIGHT, "TOPLEFT", 0, 0)
 	border.BOTTOM:SetPoint("BOTTOMLEFT", border.BOTTOMLEFT, "BOTTOMRIGHT", 0, 0)
@@ -217,25 +192,84 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	border.RIGHT:SetPoint("TOPRIGHT", border.TOPRIGHT, "BOTTOMRIGHT", 0, 0)
 	border.RIGHT:SetPoint("BOTTOMRIGHT", border.BOTTOMRIGHT, "TOPRIGHT", 0, 0)
 
-	-- NOTE: Hook resizing logic without clobbering existing OnSizeChanged scripts.
-	if not self:GetScript("OnSizeChanged") then
-		self:SetScript("OnSizeChanged", OnBorderResize)
+	if not frame:GetScript("OnSizeChanged") then
+		frame:SetScript("OnSizeChanged", OnResize)
 	else
-		self:HookScript("OnSizeChanged", OnBorderResize)
+		frame:HookScript("OnSizeChanged", OnResize)
 	end
 
-	-- Store on the frame so it stays reachable and doesn't require a global map.
-	self[BORDER_KEY] = border
+	frame[BORDER_KEY] = border
 
-	-- Apply defaults.
+	local style = GetDefaultStyle()
 	border:SetOffset(-4)
 	border:SetSize(K.BorderSize)
+	border:SetTexture(K.MediaFolder .. "Border\\" .. style .. "\\Border.tga")
 
-	local style = C and C["General"] and C["General"].BorderStyle or "KkthnxUI"
-	border:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. style .. "\\Border.tga")
-
-	K.borderRegistry = K.borderRegistry or {}
-	K.borderRegistry[#K.borderRegistry + 1] = border
-
+	K.BorderRegistry[#K.BorderRegistry + 1] = border
 	return border
+end
+
+-- A soft outer shadow: a backdrop frame sitting a few pixels
+-- outside the target whose only art is a fuzzy edge glow. Used where the hard
+-- eight-section border is too heavy, such as nameplates. The colour can be
+-- changed later with K.SetShadowColor (target highlight, threat).
+local SHADOW_TEXTURE = K.MediaFolder .. "Textures\\GlowShadow.blp"
+
+function K.CreateShadow(frame, size, r, g, b, a)
+	if frame.KKUI_Shadow then
+		return frame.KKUI_Shadow
+	end
+	local anchor = frame
+	if frame:IsObjectType("Texture") then
+		anchor = frame:GetParent()
+	end
+	local offset = size or 4
+	local shadow = CreateFrame("Frame", nil, anchor, "BackdropTemplate")
+	shadow:SetPoint("TOPLEFT", frame, "TOPLEFT", -offset, offset)
+	shadow:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", offset, -offset)
+	shadow:SetFrameLevel(math.max(0, anchor:GetFrameLevel() - 1))
+	shadow:SetBackdrop({ edgeFile = SHADOW_TEXTURE, edgeSize = offset + 1 })
+	shadow:SetBackdropBorderColor(r or 0, g or 0, b or 0, a or 1)
+	frame.KKUI_Shadow = shadow
+	return shadow
+end
+
+-- Recolour an existing shadow (no-op if the frame has none).
+function K.SetShadowColor(frame, r, g, b, a)
+	local shadow = frame and frame.KKUI_Shadow
+	if shadow then
+		shadow:SetBackdropBorderColor(r, g, b, a or 1)
+	end
+end
+
+-- Convenience: give a frame a dark background plus the border in one call.
+function K.CreateBackdrop(frame, colorTable)
+	if frame.KKUI_Background then
+		return frame
+	end
+	local c = colorTable or { 0.06, 0.06, 0.06, 0.9 }
+	K.CreateBackground(frame, c[1], c[2], c[3], c[4])
+	K.CreateBorder(frame)
+	return frame
+end
+
+-- Put one border back to the configured colour. Used when something that
+-- temporarily owned the colour (threat, dispel school) lets go of it.
+function K.ResetBorderColor(border)
+	if not border then
+		return
+	end
+	border.__customColor = nil
+	local color = (C.General and C.General.BorderColor) or { 1, 1, 1, 1 }
+	border:SetVertexColor(color[1], color[2], color[3], color[4] or 1)
+end
+
+-- Recolor every registered border, used by the config GUI on color changes.
+function K.RefreshBorderColors()
+	local color = (C.General and C.General.BorderColor) or { 1, 1, 1 }
+	for _, border in ipairs(K.BorderRegistry) do
+		if not border.__customColor then
+			border:SetVertexColor(color[1], color[2], color[3], color[4] or 1)
+		end
+	end
 end

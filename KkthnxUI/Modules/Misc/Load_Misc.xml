@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="ExpRep.lua" />
+	<Script file="AlertFrames.lua" />
+	<Script file="PullCountdown.lua" />
+	<Script file="AlreadyKnown.lua" />
+	<Script file="MicroMenu.lua" />
+	<Script file="ButtonPreview.lua" />
+</Ui>

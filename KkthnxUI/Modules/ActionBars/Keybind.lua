@@ -1,431 +1,105 @@
 --[[-----------------------------------------------------------------------------
--- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
--- Notes:
--- - Purpose: Quick keybinding system for action buttons, spells, and macros.
--- - Design: Uses a transparent overlay frame to intercept and map input to actions.
+	Addon: KkthnxUI
+	File: Modules/ActionBars/Keybind.lua
+	Purpose:
+		Shorten hotkey text so it fits the small corner of a button. LAB owns the
+		HotKey font string and rewrites it on rebind, so we hook its SetText and
+		re-apply the abbreviations. Localized key names are resolved first with an
+		English fallback so it reads correctly on every client.
 -----------------------------------------------------------------------------]]
 
-local K, L = KkthnxUI[1], KkthnxUI[3]
-local Module = K:GetModule("ActionBar")
+local K = KkthnxUI[1]
 
--- ---------------------------------------------------------------------------
--- LOCALS & CACHING
--- ---------------------------------------------------------------------------
+local Module = K:GetModule("ActionBars")
 
--- PERF: Cache globals and binding APIs to maintain responsiveness in keybind mode.
 local _G = _G
-local C_SpellBook_GetSpellBookItemName = _G.C_SpellBook.GetSpellBookItemName
-local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
-local GetBindingKey = _G.GetBindingKey
-local GetBindingName = _G.GetBindingName
-local GetMacroInfo = _G.GetMacroInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LoadBindings = _G.LoadBindings
-local MAX_ACCOUNT_MACROS = _G.MAX_ACCOUNT_MACROS
-local NOT_BOUND = _G.NOT_BOUND
-local PRESS_KEY_TO_BIND = _G.PRESS_KEY_TO_BIND
-local SaveBindings = _G.SaveBindings
-local SetBinding = _G.SetBinding
-local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
-local UIErrorsFrame = _G.UIErrorsFrame
-local string_format = _G.string.format
-local hooksecurefunc = _G.hooksecurefunc
-local strfind = _G.strfind
-local strupper = _G.strupper
-local tonumber = _G.tonumber
-local Enum = _G.Enum
-local C_AddOns = _G.C_AddOns
+local gsub = string.gsub
 
--- ---------------------------------------------------------------------------
--- BUTTON HOOKS
--- ---------------------------------------------------------------------------
+-- Localized modifier and key names with English fallbacks.
+local L_BUTTON = (_G.KEY_BUTTON3 and _G.KEY_BUTTON3:gsub("3", "")) or "Button"
+local L_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP or "Mouse Wheel Up"
+local L_MOUSEWHEELDN = _G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down"
+local L_NUMPAD = (_G.KEY_NUMPAD0 and _G.KEY_NUMPAD0:gsub("0", "")) or "Num Pad"
+local L_PAGEUP = _G.KEY_PAGEUP or "Page Up"
+local L_PAGEDOWN = _G.KEY_PAGEDOWN or "Page Down"
+local L_SPACE = _G.KEY_SPACE or "Space"
+local L_INSERT = _G.KEY_INSERT or "Insert"
+local L_HOME = _G.KEY_HOME or "Home"
+local L_DELETE = _G.KEY_DELETE or "Delete"
 
--- REASON: Hooks OnEnter script of target buttons to reposition the keybind overlay.
-local function hookActionButton(self)
-	local pet = self.commandName and strfind(self.commandName, "^BONUSACTION") and "PET"
-	local stance = self.commandName and strfind(self.commandName, "^SHAPESHIFT") and "STANCE"
-	Module:Bind_Update(self, pet or stance or nil)
-end
-
-local function hookMacroButton(self)
-	Module:Bind_Update(self, "MACRO")
-end
-
-local function hookSpellButton(self)
-	Module:Bind_Update(self, "SPELL")
-end
-
-function Module:Bind_RegisterButton(button)
-	-- NOTE: Only hook protected buttons (action buttons) as they are the primary targets.
-	if button.IsProtected and button.IsObjectType and button:IsObjectType("CheckButton") and button:IsProtected() then
-		button:HookScript("OnEnter", hookActionButton)
-	end
-end
-
-local macroInit
-function Module:Bind_RegisterMacro()
-	if self ~= "Blizzard_MacroUI" or macroInit then
-		return
-	end
-
-	-- NOTE: Dynamically hook macro selector buttons as they are rendered in the scroll box.
-	hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, "Update", function(self)
-		for i = 1, self.ScrollTarget:GetNumChildren() do
-			-- COMPAT: GetChildren() returns a multi-value tuple; `GetChildren()[i]` would
-			-- truncate to the first child and index it numerically (nil → error). Use select.
-			local button = select(i, self.ScrollTarget:GetChildren())
-			if not button.bindHooked then
-				button:HookScript("OnEnter", hookMacroButton)
-				button.bindHooked = true
-			end
-		end
-	end)
-
-	macroInit = true
-end
-
--- ---------------------------------------------------------------------------
--- OVERLAY FRAME CREATION
--- ---------------------------------------------------------------------------
-
--- REASON: Creates the transparent intersection frame that listens for keyboard/mouse events.
-function Module:Bind_Create()
-	if Module.keybindFrame then
-		return
-	end
-
-	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetFrameStrata("DIALOG")
-	frame:EnableMouse(true)
-	frame:EnableKeyboard(true)
-	frame:EnableMouseWheel(true)
-	frame:CreateBorder()
-	frame:Hide()
-
-	frame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(frame, "ANCHOR_NONE")
-		GameTooltip:SetPoint("BOTTOM", frame, "TOP", 0, 2)
-		GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
-
-		if #frame.bindings == 0 then
-			GameTooltip:AddLine(NOT_BOUND, 1, 0, 0)
-			GameTooltip:AddLine(PRESS_KEY_TO_BIND)
-		else
-			GameTooltip:AddDoubleLine(L["Key Index"], L["Key Binding"], 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
-			for i = 1, #frame.bindings do
-				GameTooltip:AddDoubleLine(i, frame.bindings[i], 1, 1, 1, 0, 1, 0)
-			end
-			GameTooltip:AddLine(L["Press the escape key or right click to unbind this action."] or "Press the escape key or right click to unbind this action.", 1, 0.8, 0, 1)
-		end
-		GameTooltip:Show()
-	end)
-	frame:SetScript("OnLeave", Module.Bind_HideFrame)
-	frame:SetScript("OnKeyUp", function(_, key)
-		Module:Bind_Listener(key)
-	end)
-	frame:SetScript("OnMouseUp", function(_, key)
-		Module:Bind_Listener(key)
-	end)
-	frame:SetScript("OnMouseWheel", function(_, delta)
-		if delta > 0 then
-			Module:Bind_Listener("MOUSEWHEELUP")
-		else
-			Module:Bind_Listener("MOUSEWHEELDOWN")
-		end
-	end)
-
-	-- NOTE: Pre-register all standard KkthnxUI action buttons.
-	for _, button in ipairs(Module.buttons) do
-		Module:Bind_RegisterButton(button)
-	end
-
-	-- NOTE: Hook spellbook buttons for direct ability binding.
-	for i = 1, 12 do
-		local button = _G["SpellButton" .. i]
-		if button then
-			button:HookScript("OnEnter", hookSpellButton)
-		end
-	end
-
-	-- NOTE: Wait for Macro UI to load if it hasn't already.
-	if not C_AddOns.IsAddOnLoaded("Blizzard_MacroUI") then
-		hooksecurefunc(C_AddOns, "LoadAddOn", Module.Bind_RegisterMacro)
-	else
-		Module.Bind_RegisterMacro("Blizzard_MacroUI")
-	end
-
-	Module.keybindFrame = frame
-end
-
--- ---------------------------------------------------------------------------
--- BINDING LOGIC
--- ---------------------------------------------------------------------------
-
--- REASON: Identifies the specific action/spell/macro under the cursor and resolves
--- the required command string for Blizzard's SetBinding API.
-function Module:Bind_Update(button, spellmacro)
-	local frame = Module.keybindFrame
-	if not frame.enabled or InCombatLockdown() then
-		return
-	end
-
-	frame.button = button
-	frame.spellmacro = spellmacro
-	frame:ClearAllPoints()
-	frame:SetAllPoints(button)
-	frame:Show()
-
-	-- NOTE: Logic branches for different action types (Spellbook, Macro, Pet, Stance, Bar).
-	if spellmacro == "SPELL" then
-		frame.id = SpellBook_GetSpellBookSlot(button)
-		frame.name = C_SpellBook_GetSpellBookItemName(frame.id, Enum.SpellBookSpellBank.Player)
-		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
-	elseif spellmacro == "MACRO" then
-		frame.id = button.selectionIndex or button:GetID()
-		if MacroFrame.selectedTab == 2 then
-			frame.id = frame.id + MAX_ACCOUNT_MACROS
-		end
-		frame.name = GetMacroInfo(frame.id)
-		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
-	elseif spellmacro == "STANCE" or spellmacro == "PET" then
-		frame.name = button:GetName()
-		if not frame.name then
-			return
-		end
-		frame.tipName = button.commandName and GetBindingName(button.commandName)
-
-		frame.id = tonumber(button:GetID())
-		if not frame.id or frame.id < 1 or frame.id > (spellmacro == "STANCE" and 10 or 12) then
-			frame.bindstring = "CLICK " .. frame.name .. ":LeftButton"
-		else
-			frame.bindstring = (spellmacro == "STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON") .. frame.id
-		end
-		frame.bindings = { GetBindingKey(frame.bindstring) }
-	else
-		frame.name = button:GetName()
-		if not frame.name then
-			return
-		end
-		frame.tipName = button.commandName and GetBindingName(button.commandName)
-
-		frame.action = tonumber(button.action)
-		if button.keyBoundTarget then
-			frame.bindstring = button.keyBoundTarget
-		elseif not frame.action or frame.action < 1 or frame.action > 180 then
-			frame.bindstring = "CLICK " .. frame.name .. ":LeftButton"
-		else
-			-- NOTE: Map internal bar IDs to standard Blizzard action button identifiers.
-			local modact = 1 + (frame.action - 1) % 12
-			if frame.name == "ExtraActionButton1" then
-				frame.bindstring = "EXTRAACTIONBUTTON1"
-			elseif frame.action < 25 or frame.action > 72 then
-				frame.bindstring = "ACTIONBUTTON" .. modact
-			elseif frame.action < 73 and frame.action > 60 then
-				frame.bindstring = "MULTIACTIONBAR1BUTTON" .. modact
-			elseif frame.action < 61 and frame.action > 48 then
-				frame.bindstring = "MULTIACTIONBAR2BUTTON" .. modact
-			elseif frame.action < 49 and frame.action > 36 then
-				frame.bindstring = "MULTIACTIONBAR4BUTTON" .. modact
-			elseif frame.action < 37 and frame.action > 24 then
-				frame.bindstring = "MULTIACTIONBAR3BUTTON" .. modact
-			end
-		end
-		frame.bindings = { GetBindingKey(frame.bindstring) }
-	end
-
-	-- NOTE: Refresh tooltips to show updated binding info.
-	-- FIX: GetScript returns a function reference; it must be invoked to actually refresh the tooltip.
-	local onEnter = frame:GetScript("OnEnter")
-	if onEnter then
-		onEnter(frame)
-	end
-end
-
-local ignoreKeys = {
-	["LALT"] = true,
-	["RALT"] = true,
-	["LCTRL"] = true,
-	["RCTRL"] = true,
-	["LSHIFT"] = true,
-	["RSHIFT"] = true,
-	["UNKNOWN"] = true,
-	["LeftButton"] = true,
+-- Order matters: modifiers first, then named keys, then generic patterns.
+local REPLACEMENTS = {
+	{ "(CTRL%-)", "c" },
+	{ "(Ctrl%-)", "c" },
+	{ "(ALT%-)", "a" },
+	{ "(Alt%-)", "a" },
+	{ "(SHIFT%-)", "s" },
+	{ "(Shift%-)", "s" },
+	{ "(META%-)", "m" },
+	{ "(Meta%-)", "m" },
+	{ L_MOUSEWHEELUP, "MU" },
+	{ "MOUSEWHEELUP", "MU" },
+	{ L_MOUSEWHEELDN, "MD" },
+	{ "MOUSEWHEELDOWN", "MD" },
+	{ L_BUTTON, "M" },
+	{ "BUTTON", "M" },
+	{ L_PAGEUP, "PU" },
+	{ "PAGEUP", "PU" },
+	{ L_PAGEDOWN, "PD" },
+	{ "PAGEDOWN", "PD" },
+	{ L_HOME, "Hm" },
+	{ "HOME", "Hm" },
+	{ "END", "End" },
+	{ L_INSERT, "Ins" },
+	{ "INSERT", "Ins" },
+	{ L_DELETE, "Del" },
+	{ "DELETE", "Del" },
+	{ "BACKSPACE", "BS" },
+	{ "TAB", "Tab" },
+	{ "ESCAPE", "Esc" },
+	{ L_SPACE, "Sp" },
+	{ "SPACE", "Sp" },
+	{ "CAPSLOCK", "CL" },
+	{ "NUMLOCK", "NL" },
+	{ "NUMPADDIVIDE", "N/" },
+	{ "NUMPADMULTIPLY", "N*" },
+	{ "NUMPADPLUS", "N+" },
+	{ "NUMPADMINUS", "N-" },
+	{ L_NUMPAD, "N" },
+	{ "NUMPAD", "N" },
 }
 
-local mappingKeys = {
-	MiddleButton = "BUTTON3",
-}
+-- Abbreviate the given hotkey font string. Called as a SetText hook, so it
+-- guards against recursion with a flag.
+local function Abbreviate(hotkey)
+	if hotkey.__setting then
+		return
+	end
+	local text = hotkey:GetText()
+	if not text then
+		return
+	end
 
--- REASON: Processes active input to either unbind (ESC/RightClick) or assign a new key.
-function Module:Bind_Listener(key)
-	local frame = Module.keybindFrame
-	-- NOTE: Escape or Right-click clears all existing bindings for this specific action.
-	if key == "ESCAPE" or key == "RightButton" then
-		if frame.bindings then
-			for i = 1, #frame.bindings do
-				SetBinding(frame.bindings[i])
-			end
+	if text == _G.RANGE_INDICATOR then
+		text = ""
+	else
+		for _, pair in ipairs(REPLACEMENTS) do
+			text = gsub(text, pair[1], pair[2])
 		end
-		K.Print(string_format(L["Clear Binds"], frame.tipName or frame.name))
+	end
 
-		Module:Bind_Update(frame.button, frame.spellmacro)
+	hotkey.__setting = true
+	hotkey:SetText(text)
+	hotkey.__setting = false
+end
+
+-- Apply abbreviation to a button's hotkey and keep it applied on rebind.
+function Module:StyleHotKey(button)
+	local hotkey = button.HotKey
+	if not hotkey or hotkey.__abbrevHooked then
 		return
 	end
-
-	local isKeyIgnore = ignoreKeys[key]
-	if isKeyIgnore then
-		return
-	end
-
-	key = mappingKeys[key] or key
-
-	if strfind(key, "Button%d") then
-		key = strupper(key)
-	end
-
-	local alt = IsAltKeyDown() and "ALT-" or ""
-	local ctrl = IsControlKeyDown() and "CTRL-" or ""
-	local shift = IsShiftKeyDown() and "SHIFT-" or ""
-	local meta = IsMetaKeyDown() and "META-" or ""
-
-	-- NOTE: Apply the binding using modifiers + key. Handles direct spell strings for spellbook items.
-	if not frame.spellmacro or frame.spellmacro == "PET" or frame.spellmacro == "STANCE" then
-		SetBinding(alt .. ctrl .. shift .. meta .. key, frame.bindstring)
-	else
-		SetBinding(alt .. ctrl .. shift .. meta .. key, frame.spellmacro .. " " .. frame.name)
-	end
-	K.Print((frame.tipName or frame.name) .. " |cff00ff00" .. L["Key Bound To"] .. "|r " .. alt .. ctrl .. shift .. meta .. key)
-
-	Module:Bind_Update(frame.button, frame.spellmacro)
+	hotkey.__abbrevHooked = true
+	Abbreviate(hotkey)
+	hooksecurefunc(hotkey, "SetText", Abbreviate)
 end
-
--- ---------------------------------------------------------------------------
--- DIALOG UI
--- ---------------------------------------------------------------------------
-
-function Module:Bind_HideFrame()
-	local frame = Module.keybindFrame
-	frame:ClearAllPoints()
-	frame:Hide()
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
-	end
-end
-
-function Module:Bind_Activate()
-	Module.keybindFrame.enabled = true
-	-- WARNING: Force exit keybind mode if combat starts to prevent UI errors/taint.
-	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.Bind_Deactivate)
-end
-
-function Module.Bind_Deactivate(event, save)
-	if save == true then
-		SaveBindings(K.GetCharVars().BindType)
-		K.Print(" |cff00ff00" .. L["Save KeyBinds"] .. "|r")
-	else
-		LoadBindings(K.GetCharVars().BindType)
-		K.Print(" |cffffff00" .. L["Discard KeyBinds"] .. "|r")
-	end
-
-	Module:Bind_HideFrame()
-	Module.keybindFrame.enabled = false
-	K:UnregisterEvent("PLAYER_REGEN_DISABLED", Module.Bind_Deactivate)
-	Module.keybindDialog:Hide()
-end
-
--- REASON: Creates the on-screen dialog to confirm or discard binding changes.
-function Module:Bind_CreateDialog()
-	local dialog = Module.keybindDialog
-	if dialog then
-		dialog:Show()
-		return
-	end
-
-	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(320, 100)
-	frame:SetPoint("TOP", 0, -135)
-	frame:CreateBorder()
-
-	frame.top = CreateFrame("Frame", nil, frame)
-	frame.top:SetSize(320, 20)
-	frame.top:SetPoint("TOP", 0, 26)
-	frame.top:CreateBorder()
-
-	K.CreateFontString(frame.top, 14, K.Title .. " " .. K.SystemColor .. KEY_BINDING, "", false, "CENTER", 0, 0)
-
-	frame.bottom = CreateFrame("Frame", nil, frame)
-	frame.bottom:SetSize(294, 20)
-	frame.bottom:SetPoint("BOTTOMRIGHT", 0, -26)
-	frame.bottom:CreateBorder()
-
-	frame.text = K.CreatePlainFS(frame, 14, K.SystemColor .. L["Keybind Mode"] .. "|r", "OVERLAY")
-	frame.text:SetTextColor(1, 0.8, 0)
-	frame.text:SetWidth(314)
-	frame.text:SetPoint("TOP", 0, -15)
-
-	local button1 = CreateFrame("Button", nil, frame)
-	button1:SetSize(118, 20)
-	button1:SkinButton()
-	button1:SetScript("OnClick", function()
-		Module:Bind_Deactivate(true)
-	end)
-	button1:SetFrameLevel(frame:GetFrameLevel() + 1)
-	button1:SetPoint("BOTTOMLEFT", 25, 10)
-
-	button1.text = K.CreatePlainFS(button1, 12, APPLY, "OVERLAY")
-	button1.text:SetPoint("CENTER", button1)
-
-	local button2 = CreateFrame("Button", nil, frame)
-	button2:SetSize(118, 20)
-	button2:SkinButton()
-	button2:SetScript("OnClick", function()
-		Module:Bind_Deactivate()
-	end)
-	button2:SetFrameLevel(frame:GetFrameLevel() + 1)
-	button2:SetPoint("BOTTOMRIGHT", -25, 10)
-
-	button2.text = K.CreatePlainFS(button2, 12, CANCEL, "OVERLAY")
-	button2.text:SetPoint("CENTER", button2)
-
-	local checkBox = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsBaseCheckButtonTemplate")
-	checkBox:SetSize(20, 20)
-	checkBox:SkinCheckBox()
-	checkBox:SetChecked(K.GetCharVars().BindType == 2)
-	checkBox:SetPoint("RIGHT", frame.bottom, "LEFT", -6, 0)
-	checkBox:SetScript("OnClick", function(self)
-		K.GetCharVars().BindType = self:GetChecked() and 2 or 1
-	end)
-
-	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	checkBox.text:SetPoint("CENTER", 0, 0)
-	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r" or K.GreyColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r")
-	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
-
-	Module.keybindDialog = frame
-end
-
--- ---------------------------------------------------------------------------
--- INITIALIZATION
--- ---------------------------------------------------------------------------
-
-_G.SlashCmdList["KKUI_KEYBIND"] = function()
-	-- NOTE: Disable entering keybind mode while in combat to avoid taint/errors.
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-		return
-	end
-
-	Module:Bind_Create()
-	Module:Bind_Activate()
-	Module:Bind_CreateDialog()
-end
-SLASH_KKUI_KEYBIND1 = "/kb"
-SLASH_KKUI_KEYBIND2 = "/bb"
-SLASH_KKUI_KEYBIND3 = "/bind"
-SLASH_KKUI_KEYBIND4 = "/binds"
-SLASH_KKUI_KEYBIND5 = "/kkb"

@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-   <!--
-      Load order contract:
-      Init.lua creates K/C/L, Settings.lua fills defaults, Core\Loading.lua
-      verifies SavedVariables and merges profile deltas during ADDON_LOADED.
-      Keep Settings before Core, and Core before Config/Modules.
-   -->
-   <!-- Libraries -->
-   <Include file="Libraries\Load_Libraries.xml" />
-   <!-- Engine -->
-   <Script file="Init.lua" />
-   <!-- Settings -->
-   <Script file="Config\Settings.lua" />
-   <!-- Media -->
-   <Script file="Media\Media.lua" />
-   <!-- Locales -->
-   <Include file="Locales\Load_Locales.xml" />
-   <!-- Core -->
-   <Include file="Core\Load_Core.xml" />
-   <!-- Config -->
-   <Include file="Config\Load_Config.xml" />
-   <!-- Modules -->
-   <Include file="Modules\Load_Modules.xml" />
-   <!-- Developer -->
-   <Include file="Developer\Load_Developer.xml" />
+	<!-- Libraries -->
+	<Include file="Libraries\Load_Libraries.xml" />
+
+	<!-- Engine and core services -->
+	<Script file="Core\Engine.lua" />
+	<Script file="Core\Locales.lua" />
+	<Include file="Locales\Load_Locales.xml" />
+	<Script file="Core\API.lua" />
+	<Script file="Config\Defaults.lua" />
+	<Script file="Core\Config.lua" />
+	<Script file="Core\Media.lua" />
+	<Script file="Core\Border.lua" />
+	<Script file="Core\AuraContainer.lua" />
+	<Script file="Core\Skins.lua" />
+	<Script file="Core\Movers.lua" />
+	<Script file="Core\Core.lua" />
+
+	<!-- Config GUI -->
+	<Include file="Config\GUI\Load_GUI.xml" />
+
+	<!-- Modules -->
+	<Include file="Modules\Load_Modules.xml" />
 </Ui>

@@ -29,41 +29,37 @@ local _, ns = ...
 local oUF = ns.oUF
 local Private = oUF.Private
 
+local STATE = {}
+
 local unitIsUnit = Private.unitIsUnit
 
 -- sourced from Blizzard_FrameXMLBase/Constants.lua
 local SPEC_MONK_BREWMASTER = _G.SPEC_MONK_BREWMASTER or 1
 
-local BREWMASTER_POWER_BAR_NAME = 'STAGGER'
+local POWER_TYPE_STAGGER = 'STAGGER'
 
 -- percentages at which bar should change color
-local STAGGER_YELLOW_TRANSITION =  _G.STAGGER_YELLOW_TRANSITION or 0.3
-local STAGGER_RED_TRANSITION = _G.STAGGER_RED_TRANSITION or 0.6
+-- sourced from STAGGER_STATES in Blizzard_UnitFrame/MonkStaggerBar.lua
+local STAGGER_YELLOW_TRANSITION = 0.3
+local STAGGER_RED_TRANSITION = 0.6
 
 -- table indices of bar colors
-local STAGGER_GREEN_INDEX = _G.STAGGER_GREEN_INDEX or 1
-local STAGGER_YELLOW_INDEX = _G.STAGGER_YELLOW_INDEX or 2
-local STAGGER_RED_INDEX = _G.STAGGER_RED_INDEX or 3
+local STAGGER_GREEN_INDEX = 1
+local STAGGER_YELLOW_INDEX = 2
+local STAGGER_RED_INDEX = 3
 
 local function UpdateColor(self, event, unit)
-	if(unit and unit ~= self.unit) then return end
+	if(unit and unit ~= self.__unit) then return end
 	local element = self.Stagger
 
-	local colors = self.colors.power[BREWMASTER_POWER_BAR_NAME]
-	local cur = element.cur or 0
-	local max = element.max or 1
+	local colors = self.colors.power[POWER_TYPE_STAGGER]
+	local perc = STATE[element].cur / (STATE[element].max or 1)
+
 	local color
-	if issecretvalue and (issecretvalue(cur) or issecretvalue(max)) then
-		color = colors and colors[STAGGER_GREEN_INDEX]
-	elseif max > 0 then
-		local perc = cur / max
-		if perc >= STAGGER_RED_TRANSITION then
-			color = colors and colors[STAGGER_RED_INDEX]
-		elseif perc > STAGGER_YELLOW_TRANSITION then
-			color = colors and colors[STAGGER_YELLOW_INDEX]
-		else
-			color = colors and colors[STAGGER_GREEN_INDEX]
-		end
+	if(perc >= STAGGER_RED_TRANSITION) then
+		color = colors and colors[STAGGER_RED_INDEX]
+	elseif(perc > STAGGER_YELLOW_TRANSITION) then
+		color = colors and colors[STAGGER_YELLOW_INDEX]
 	else
 		color = colors and colors[STAGGER_GREEN_INDEX]
 	end
@@ -84,7 +80,7 @@ local function UpdateColor(self, event, unit)
 end
 
 local function Update(self, event, unit)
-	if(unit and unit ~= self.unit) then return end
+	if(unit and unit ~= self.__unit) then return end
 
 	local element = self.Stagger
 
@@ -104,8 +100,8 @@ local function Update(self, event, unit)
 	element:SetMinMaxValues(0, max)
 	element:SetValue(cur, element.smoothing)
 
-	element.cur = cur
-	element.max = max
+	STATE[element].cur = cur
+	STATE[element].max = max
 
 	--[[ Callback: Stagger:PostUpdate(cur, max)
 	Called after the element has been updated.
@@ -184,7 +180,7 @@ local function VisibilityPath(self, ...)
 end
 
 local function ForceUpdate(element)
-	VisibilityPath(element.__owner, 'ForceUpdate', element.__owner.unit)
+	VisibilityPath(element.__owner, 'ForceUpdate', element.__owner.__unit)
 end
 
 local function Disable(self)
@@ -216,6 +212,8 @@ local function Enable(self, unit)
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
+		STATE[element] = {}
+
 		if(not element.smoothing) then
 			element.smoothing = Enum.StatusBarInterpolation.Immediate
 		end
@@ -227,7 +225,7 @@ local function Enable(self, unit)
 			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 		end
 
-		if self.mystyle == "player" or self.mystyle == "PlayerPlate" then -- disable default MonkStaggerBar for KKUI player frames
+		if self.mystyle == "player" then -- only disable the stock stagger bar for the player frame
 			MonkStaggerBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
 			MonkStaggerBar:UnregisterEvent('PLAYER_SPECIALIZATION_CHANGED')
 			MonkStaggerBar:UnregisterEvent('UNIT_DISPLAYPOWER')

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Core.lua first: it creates the module the others attach to. -->
+	<Script file="Core.lua" />
+	<Script file="Keybind.lua" />
+	<Script file="ButtonStyle.lua" />
+	<Script file="Bars.lua" />
+	<Script file="PetBar.lua" />
+	<Script file="StanceBar.lua" />
+	<Script file="PossessBar.lua" />
+	<Script file="ProcGlow.lua" />
+	<Script file="Extras.lua" />
+	<Script file="DisableBlizzard.lua" />
+</Ui>

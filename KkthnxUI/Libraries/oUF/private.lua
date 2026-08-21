@@ -31,18 +31,7 @@ function Private.unitExists(unit)
 end
 
 function Private.unitIsUnit(unit1, unit2)
-	if C_Secrets and C_Secrets.CanCompareUnitTokens then
-		if not C_Secrets.CanCompareUnitTokens(unit1, unit2) then
-			return false
-		end
-	end
-
-	local result = UnitIsUnit(unit1, unit2)
-	if issecretvalue and issecretvalue(result) then
-		return false
-	end
-
-	return result
+	return C_Secrets.CanCompareUnitTokens(unit1, unit2) and UnitIsUnit(unit1, unit2)
 end
 
 local validator = CreateFrame('Frame')
@@ -81,19 +70,9 @@ for _, selectionType in next, oUF.Enum.SelectionType do
 end
 
 function Private.unitSelectionType(unit, considerHostile)
-	if(considerHostile) then
-		local threat = UnitThreatSituation('player', unit)
-		if(issecretvalue(threat)) then
-			return nil
-		elseif(threat) then
-			return 0
-		end
+	if(considerHostile and UnitThreatSituation('player', unit)) then
+		return 0
+	else
+		return validSelectionTypes[UnitSelectionType(unit, true)]
 	end
-
-	local selection = UnitSelectionType(unit, true)
-	if(issecretvalue(selection)) then
-		return nil
-	end
-
-	return validSelectionTypes[selection]
 end

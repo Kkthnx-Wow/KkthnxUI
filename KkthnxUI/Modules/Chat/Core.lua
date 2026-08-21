@@ -1,915 +1,723 @@
 --[[-----------------------------------------------------------------------------
--- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
--- Notes:
--- - Purpose: Main entry point for chat system modifications and enhancements.
--- - Design: Hooks Blizzard's chat frame logic to apply skinning, custom anchoring, and utility features.
--- - Events: PLAYER_ENTERING_WORLD, UI_SCALE_CHANGED, CHAT_MSG_WHISPER, etc.
+	Addon: KkthnxUI
+	File: Modules/Chat/Core.lua
+	Purpose:
+		Skin the chat: a bordered edit box, clean tabs, our font, mouse wheel
+		scrolling, shortened channel prefixes, and a copy button. Applies to every
+		chat window, including ones created after login.
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+
 local Module = K:NewModule("Chat")
 
--- PERF: Localize globals and API functions to minimize lookup overhead.
 local _G = _G
-local Ambiguate = Ambiguate
-local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
-local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
-local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatFrame_SendTell = ChatFrame_SendTell
-local ConsoleExec = ConsoleExec
-local CreateFrame = CreateFrame
-local FCF_SavePositionAndDimensions = FCF_SavePositionAndDimensions
-local GeneralDockManager = _G.GeneralDockManager
-local GetCVar = GetCVar
-local GetCVarBool = _G.GetCVarBool
-local C_ChallengeMode = _G.C_ChallengeMode
-local GetChannelName = GetChannelName
-local GetInstanceInfo = GetInstanceInfo
-local GetTime = GetTime
-local InCombatLockdown = InCombatLockdown
-local IsControlKeyDown = IsControlKeyDown
-local IsInGroup = IsInGroup
-local IsInGuild = IsInGuild
-local IsInRaid = IsInRaid
-local IsPartyLFG = IsPartyLFG
-local IsShiftKeyDown = IsShiftKeyDown
-local PlaySound = PlaySound
-local SetCVar = SetCVar
-local UnitName = UnitName
-local hooksecurefunc = hooksecurefunc
-local IsSecret = K.IsSecret
-local ipairs = ipairs
-local pcall = pcall
-local select = select
-local string_find = string.find
-local string_gmatch = string.gmatch
-local string_gsub = string.gsub
-local string_len = string.len
-local string_sub = string.sub
-local table_remove = table.remove
-local table_unpack = unpack
-local tostring = tostring
-local type = type
+local gsub = string.gsub
+
+local NUM_FRAMES = NUM_CHAT_WINDOWS or 10
 
 -- ---------------------------------------------------------------------------
--- Constants & State
+-- Gradient backdrop
 -- ---------------------------------------------------------------------------
-local CHAT_FRAMES = _G.CHAT_FRAMES
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
-local UIParent = _G.UIParent
+-- A soft horizontal fade behind the chat (dark at the left, transparent to the
+-- right) with a class-coloured accent line along the top and bottom that fades
+-- the same way. Kept on the BACKGROUND layer of a low frame so the messages
+-- always draw over it.
 
-local messageSoundID = _G.SOUNDKIT.TELL_MESSAGE
-local maxLines = 2048
-local charCount = 0
-local repeatedText
-local MIN_REPEAT_CHARACTERS = 5
-local MAX_EDIT_HISTORY = 50
+local CreateColor = CreateColor
 
-Module.MuteCache = {}
+local function CreateGradient(frame)
+	if frame.KKUI_Gradient then
+		return frame.KKUI_Gradient
+	end
+	local color = K.ClassColor or { r = 0.4, g = 0.6, b = 1 }
 
--- PERF: Addon load state cannot change mid-session; compute this once to avoid 4 C_AddOns lookups
--- per scroll event, mouse interaction, and whisper handler that each previously guarded separately.
-local CHAT_ADDON_CONFLICT = C_AddOns_IsAddOnLoaded("Prat-3.0")
-	or C_AddOns_IsAddOnLoaded("Chatter")
-	or C_AddOns_IsAddOnLoaded("BasicChatMods")
-	or C_AddOns_IsAddOnLoaded("Glass")
+	local holder = CreateFrame("Frame", nil, frame)
+	holder:SetFrameLevel(0)
+	holder:SetPoint("TOPLEFT", frame, "TOPLEFT", -4, 8)
+	holder:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 8, -4)
 
-local whisperEvents = {
-	["CHAT_MSG_WHISPER"] = true,
-	["CHAT_MSG_BN_WHISPER"] = true,
+	local bg = holder:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetColorTexture(1, 1, 1)
+	bg:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.6), CreateColor(0, 0, 0, 0))
+
+	local top = holder:CreateTexture(nil, "ARTWORK")
+	top:SetHeight(1)
+	top:SetPoint("TOPLEFT")
+	top:SetPoint("TOPRIGHT")
+	top:SetColorTexture(1, 1, 1)
+	top:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
+
+	local bottom = holder:CreateTexture(nil, "ARTWORK")
+	bottom:SetHeight(1)
+	bottom:SetPoint("BOTTOMLEFT")
+	bottom:SetPoint("BOTTOMRIGHT")
+	bottom:SetColorTexture(1, 1, 1)
+	bottom:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
+
+	frame.KKUI_Gradient = holder
+	return holder
+end
+
+-- ---------------------------------------------------------------------------
+-- Font
+-- ---------------------------------------------------------------------------
+
+local function ApplyFont(frame)
+	local db = C.Chat
+	local font = K.GetFont(db.Font)
+	local flag = db.FontOutline and "OUTLINE" or ""
+	frame:SetFont(font, db.FontSize, flag)
+	frame:SetShadowColor(0, 0, 0, 1)
+	frame:SetShadowOffset(1, -1)
+end
+
+-- ---------------------------------------------------------------------------
+-- Edit box
+-- ---------------------------------------------------------------------------
+
+-- Colour the edit box border to the channel you are typing in (whisper pink,
+-- say white, guild green, and so on), read from Blizzard's own ChatTypeInfo.
+local function ColorEditBox(editBox)
+	if not editBox.KKUI_Border then
+		return
+	end
+	local chatType = editBox:GetAttribute("chatType")
+	local info = chatType and ChatTypeInfo[chatType]
+	if info then
+		editBox.KKUI_Border:SetVertexColor(info.r, info.g, info.b)
+	else
+		K.ResetBorderColor(editBox.KKUI_Border)
+	end
+end
+
+local function SkinEditBox(editBox)
+	if editBox.__skinned then
+		return
+	end
+	editBox.__skinned = true
+
+	local fullName = editBox:GetName()
+
+	-- Kill the stock chrome: the Left/Mid/Right backdrop and, crucially, the
+	-- FocusLeft/Mid/Right glow Blizzard lights up when the box activates. That glow
+	-- is the faded ghost that used to sit over the tabs on a tab switch.
+	for _, suffix in ipairs({ "Left", "Mid", "Right", "FocusLeft", "FocusMid", "FocusRight" }) do
+		local tex = _G[fullName .. suffix]
+		if tex then
+			tex:SetTexture(nil)
+			tex:Hide()
+		end
+	end
+	for _, region in ipairs({ editBox:GetRegions() }) do
+		if region.GetObjectType and region:GetObjectType() == "Texture" then
+			region:SetAlpha(0)
+		end
+	end
+
+	K.CreateBackground(editBox, 0.05, 0.05, 0.05, 0.85)
+	K.CreateBorder(editBox)
+
+	-- Left/right arrows move the cursor instead of cycling chat channels.
+	editBox:SetAltArrowKeyMode(false)
+	editBox:SetClampedToScreen(true)
+
+	-- Sit above the chat frame, clearing the tab strip. Re-applied on every focus
+	-- because a tab switch can re-anchor the box and drift it out of place.
+	local parent = _G[fullName:gsub("EditBox", "")]
+	local function Reposition(self)
+		if not parent then
+			return
+		end
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", parent, "TOPLEFT", 0, 26)
+		self:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, 26)
+		self:SetHeight(22)
+	end
+	Reposition(editBox)
+
+	-- Visibility is driven purely by focus. The tricky part is that Blizzard
+	-- re-activates an already-shown box on a tab click by fading its alpha up, with
+	-- no OnShow or focus event to hook, which is what left it faded over the tabs.
+	-- So we intercept SetAlpha itself: any alpha above zero while the box is not
+	-- focused is forced back to zero. Our own focus-in alpha is allowed because the
+	-- box holds focus by then.
+	editBox:SetAlpha(0)
+	editBox:EnableMouse(false)
+	hooksecurefunc(editBox, "SetAlpha", function(self, alpha)
+		if alpha > 0 and not self:HasFocus() then
+			self:SetAlpha(0)
+		end
+	end)
+	editBox:HookScript("OnEditFocusGained", function(self)
+		Reposition(self)
+		self:EnableMouse(true)
+		self:SetAlpha(1)
+	end)
+	editBox:HookScript("OnEditFocusLost", function(self)
+		self:EnableMouse(false)
+		self:SetAlpha(0)
+	end)
+end
+
+-- ---------------------------------------------------------------------------
+-- Tabs
+-- ---------------------------------------------------------------------------
+
+-- Blizzard re-applies tab textures constantly (FCFTab_UpdateColors, hover), so
+-- rather than chase named regions we blank every texture on the tab and keep it
+-- blanked. Only the label stays.
+local function StripTab(tab)
+	for _, region in ipairs({ tab:GetRegions() }) do
+		if region.GetObjectType and region:GetObjectType() == "Texture" then
+			region:SetTexture(nil)
+			region:SetAtlas(nil)
+		end
+	end
+end
+
+local function SkinTab(tab)
+	if not tab or tab.__skinned then
+		return
+	end
+	tab.__skinned = true
+
+	StripTab(tab)
+	if tab.SetNormalTexture then
+		tab:SetNormalTexture(0)
+		tab:SetHighlightTexture(0)
+		tab:SetPushedTexture(0)
+	end
+
+	local text = tab.Text or _G[tab:GetName() .. "Text"]
+	if text then
+		K.SetFont(text, C.Chat.FontSize, K.FontOutlineStyle())
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Mouse wheel
+-- ---------------------------------------------------------------------------
+
+local function OnMouseWheel(frame, delta)
+	if delta > 0 then
+		if IsShiftKeyDown() then
+			frame:ScrollToTop()
+		else
+			frame:ScrollUp()
+		end
+	else
+		if IsShiftKeyDown() then
+			frame:ScrollToBottom()
+		else
+			frame:ScrollDown()
+		end
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Channel shortening
+-- ---------------------------------------------------------------------------
+-- Matched on the channel LINK token, which is language independent, so this
+-- works on every client without a translation table.
+
+local LINK_SHORT = {
+	GUILD = "G",
+	PARTY = "P",
+	PARTY_LEADER = "PL",
+	RAID = "R",
+	RAID_LEADER = "RL",
+	INSTANCE_CHAT = "I",
+	INSTANCE_CHAT_LEADER = "IL",
+	OFFICER = "O",
 }
 
--- ---------------------------------------------------------------------------
--- Utility Functions
--- ---------------------------------------------------------------------------
-local function getGroupDistribution()
-	-- REASON: Determines the appropriate chat prefix (/bg, /ra, /p, /s) based on group/instance status.
-	local _, instanceType = GetInstanceInfo()
-	if instanceType == "pvp" then
-		return "/bg "
+local function ShortenLine(text)
+	if type(text) ~= "string" then
+		return text
 	end
-
-	if IsInRaid() then
-		return "/ra "
-	end
-
-	if IsInGroup() then
-		return "/p "
-	end
-
-	return "/s "
-end
-
-local function countLinkCharacters(text)
-	-- REASON: Helper for correct character counting when hyperlinks are present in the text.
-	charCount = charCount + (string_len(text) + 4)
-end
-
--- ---------------------------------------------------------------------------
--- EditBox Logic
--- ---------------------------------------------------------------------------
-local function editHistoryRestricted()
-	if GetCVarBool and GetCVarBool("addonChatRestrictionsForced") then
-		return true
-	end
-	if C_ChallengeMode and C_ChallengeMode.IsChallengeModeActive and C_ChallengeMode.IsChallengeModeActive() then
-		return true
-	end
-	return false
-end
-
-local function installEditHistory(editBox)
-	if not editBox or editBox.kkHistoryInstalled then
-		return
-	end
-
-	editBox.kkHistoryInstalled = true
-	editBox.kkHistory = {}
-	editBox.kkHistIdx = 0
-
-	hooksecurefunc(editBox, "AddHistoryLine", function(self, text)
-		if IsSecret(text) then
-			return
-		end
-		local history = self.kkHistory
-		local last = history[#history]
-		if last and IsSecret(last) then
-			history[#history] = nil
-		end
-		if history[#history] ~= text then
-			history[#history + 1] = text
-			if #history > MAX_EDIT_HISTORY then
-				table_remove(history, 1)
-			end
+	-- Numbered custom channels: [5. General] becomes [5].
+	text = gsub(text, "(|Hchannel:channel:%d+|h)%[(%d+)%. [^%]]+%]|h", "%1[%2]|h")
+	-- Built-in channels by link token: [Guild] becomes [G], etc.
+	text = gsub(text, "|Hchannel:(%u[%u_]+)|h%[[^%]]+%]|h", function(token)
+		local short = LINK_SHORT[token]
+		if short then
+			return "|Hchannel:" .. token .. "|h[" .. short .. "]|h"
 		end
 	end)
+	return text
+end
 
-	editBox:HookScript("OnKeyDown", function(self, key)
-		if key ~= "UP" and key ~= "DOWN" then
-			return
-		end
-		if editHistoryRestricted() then
-			return
-		end
+local function HookShortening(frame)
+	if frame.__shortHooked then
+		return
+	end
+	frame.__shortHooked = true
+	local original = frame.AddMessage
+	frame.AddMessage = function(self, text, ...)
+		return original(self, ShortenLine(text), ...)
+	end
+end
 
-		local history = self.kkHistory
-		if #history == 0 then
-			return
-		end
+-- ---------------------------------------------------------------------------
+-- Class colored names
+-- ---------------------------------------------------------------------------
+-- Uses Blizzard's own per-group class colouring so it stays correct and needs
+-- no message parsing.
 
-		if key == "UP" then
-			self.kkHistIdx = self.kkHistIdx + 1
-			if self.kkHistIdx > #history then
-				self.kkHistIdx = #history
-			end
-		else
-			self.kkHistIdx = self.kkHistIdx - 1
-			if self.kkHistIdx < 0 then
-				self.kkHistIdx = 0
-			end
-		end
+local COLOR_GROUPS = {
+	"SAY",
+	"YELL",
+	"GUILD",
+	"OFFICER",
+	"WHISPER",
+	"BN_WHISPER",
+	"PARTY",
+	"PARTY_LEADER",
+	"RAID",
+	"RAID_LEADER",
+	"RAID_WARNING",
+	"INSTANCE_CHAT",
+	"INSTANCE_CHAT_LEADER",
+	"CHANNEL",
+}
 
-		if self.kkHistIdx == 0 then
-			self:SetText("")
-		else
-			local entry = history[#history - self.kkHistIdx + 1]
-			if not entry or IsSecret(entry) then
-				self:SetText("")
-			else
-				self:SetText(entry)
-			end
+local function EnableClassColors()
+	for _, group in ipairs(COLOR_GROUPS) do
+		if ToggleChatColorNamesByClassGroup then
+			ToggleChatColorNamesByClassGroup(true, group)
 		end
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Clickable URLs
+-- ---------------------------------------------------------------------------
+-- Wrap anything that looks like a link in a custom hyperlink, clicking it opens
+-- a small box with the URL selected for copying.
+
+local URL_PATTERNS = {
+	"(%a[%w+.-]+://%S+)", -- scheme://...
+	"(www%.[%w_.%-]+%.%a%a+%S*)", -- www.something.tld
+	"(%d+%.%d+%.%d+%.%d+:?%d*)", -- ip[:port]
+}
+
+local function LinkURLs(text)
+	if type(text) ~= "string" or text:find("|H") then
+		return text
+	end
+	for _, pattern in ipairs(URL_PATTERNS) do
+		text = text:gsub(pattern, "|cff00ccff|Hkkurl:%1|h[%1]|h|r")
+	end
+	return text
+end
+
+local function HookURLs(frame)
+	if frame.__urlHooked then
+		return
+	end
+	frame.__urlHooked = true
+	local original = frame.AddMessage
+	frame.AddMessage = function(self, text, ...)
+		return original(self, LinkURLs(text), ...)
+	end
+end
+
+-- One shared box for copying a clicked URL.
+local urlBox
+local function ShowURL(url)
+	if not urlBox then
+		urlBox = CreateFrame("EditBox", "KKUI_ChatURLBox", UIParent, "InputBoxTemplate")
+		urlBox:SetSize(360, 24)
+		urlBox:SetPoint("CENTER")
+		urlBox:SetFrameStrata("DIALOG")
+		urlBox:SetAutoFocus(true)
+		urlBox:SetScript("OnEscapePressed", urlBox.ClearFocus)
+		urlBox:SetScript("OnEnterPressed", urlBox.ClearFocus)
+		K.SkinEditBox(urlBox)
+	end
+	urlBox:SetText(url)
+	urlBox:HighlightText()
+	urlBox:Show()
+	urlBox:SetFocus()
+end
+
+-- ---------------------------------------------------------------------------
+-- Copy button
+-- ---------------------------------------------------------------------------
+
+function Module:CreateCopyWindow()
+	local frame = CreateFrame("Frame", "KKUI_ChatCopy", UIParent)
+	frame:SetSize(500, 300)
+	frame:SetPoint("CENTER")
+	frame:SetFrameStrata("DIALOG")
+	frame:EnableMouse(true)
+	frame:SetMovable(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:SetScript("OnDragStart", frame.StartMoving)
+	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+	K.CreateBackground(frame, 0.05, 0.05, 0.05, 0.95)
+	K.CreateBorder(frame)
+	frame:Hide()
+
+	local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+	close:SetPoint("TOPRIGHT", -4, -4)
+	K.SkinCloseButton(close)
+
+	local scroll = CreateFrame("ScrollFrame", "KKUI_ChatCopyScroll", frame, "UIPanelScrollFrameTemplate")
+	scroll:SetPoint("TOPLEFT", 10, -10)
+	scroll:SetPoint("BOTTOMRIGHT", -30, 10)
+	K.SkinScrollBar(scroll.ScrollBar)
+
+	local edit = CreateFrame("EditBox", nil, scroll)
+	edit:SetMultiLine(true)
+	edit:SetMaxLetters(0)
+	edit:SetAutoFocus(false)
+	edit:SetFontObject(ChatFontNormal)
+	edit:SetWidth(460)
+	edit:SetScript("OnEscapePressed", function()
+		frame:Hide()
 	end)
+	scroll:SetScrollChild(edit)
 
-	editBox:HookScript("OnEditFocusLost", function(self)
-		self.kkHistIdx = 0
-	end)
-end
-
-local function editBoxOnTextChanged(self)
-	-- REASON: Main handler for chat edit box changes; handles spam prevention, shortcuts, and character counting.
-	local text = self:GetText()
-	local textLen = string_len(text)
-
-	-- WARNING: Protect against repeating character spam by hiding the edit box if a limit is reached.
-	if (not repeatedText or not string_find(text, repeatedText, 1, true)) and InCombatLockdown() then
-		if textLen > MIN_REPEAT_CHARACTERS then
-			local repeatChar = true
-			for i = 1, MIN_REPEAT_CHARACTERS do
-				local charIndex = -1 - i
-				if string_sub(text, -i, -i) ~= string_sub(text, charIndex, charIndex) then
-					repeatChar = false
-					break
-				end
-			end
-
-			if repeatChar then
-				repeatedText = text
-				self:Hide()
-				return
-			end
-		end
-	end
-
-	-- REASON: Custom chat commands (/tt for target whisper, /gr for group distribution).
-	if textLen == 4 then
-		if text == "/tt " then
-			local name, realm = UnitName("target")
-			if name then
-				name = string_gsub(name, "%s", "")
-				if realm and realm ~= "" then
-					name = name .. "-" .. string_gsub(realm, "[%s%-]", "")
-				end
-			end
-
-			if name then
-				ChatFrame_SendTell(name, self.chatFrame)
-			else
-				_G.UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
-			end
-		elseif text == "/gr " then
-			self:SetText(getGroupDistribution() .. string_sub(text, 5))
-			_G.ChatEdit_ParseText(self, 0)
-		end
-	end
-
-	-- REASON: Detailed character count logic that excludes hyperlink overhead.
-	charCount = 0
-	for link in string_gmatch(text, "(|c%x-|H.-|h).-|h|r") do
-		countLinkCharacters(link)
-	end
-	if charCount ~= 0 then
-		textLen = textLen - charCount
-	end
-
-	local remainingCount = 255 - textLen
-	if remainingCount >= 50 then
-		self.characterCount:SetTextColor(0.74, 0.74, 0.74, 0.5)
-	elseif remainingCount >= 20 then
-		self.characterCount:SetTextColor(1, 0.6, 0, 0.5)
-	else
-		self.characterCount:SetTextColor(1, 0, 0, 0.5)
-	end
-
-	self.characterCount:SetText(textLen > 0 and (255 - textLen) or "")
-
-	if repeatedText then
-		repeatedText = nil
-	end
-end
-
--- ---------------------------------------------------------------------------
--- Anchoring and Scaling
--- ---------------------------------------------------------------------------
-function Module:TabSetAlpha(alpha)
-	-- REASON: Ensures chat tabs stay visible if they are glowing or if the user is interacting with them.
-	if self.glow:IsShown() and alpha ~= 1 then
-		self:SetAlpha(1)
-	elseif alpha < 0 then
-		self:SetAlpha(0)
-	end
-end
-
-local function updateChatAnchor(self, _, _, _, x, y)
-	-- REASON: Forces the chat frame to stay at its locked position to prevent drift or accidental movement.
-	if not C["Chat"].Lock then
-		return
-	end
-
-	if not (x == 7 and y == 11) then
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
-		self:SetSize(C["Chat"].Width, C["Chat"].Height)
-	end
-end
-
-local isScaling = false
-
-function Module.UpdateChatSize(event)
-	-- REASON: Resizes the chat frame according to the user's config, ensuring consistent layout across UI scales.
-	if not C["Chat"].Lock then
-		return
-	end
-
-	if isScaling then
-		return
-	end
-	isScaling = true
-
-	local chatFrame1 = _G.ChatFrame1
-	if chatFrame1:IsMovable() then
-		chatFrame1:SetUserPlaced(true)
-	end
-
-	if chatFrame1.FontStringContainer then
-		chatFrame1.FontStringContainer:SetPoint("TOPLEFT", chatFrame1, "TOPLEFT", -2, 2)
-		chatFrame1.FontStringContainer:SetPoint("BOTTOMRIGHT", chatFrame1, "BOTTOMRIGHT", 2, -6)
-	end
-
-	chatFrame1:ClearAllPoints()
-	chatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
-	chatFrame1:SetWidth(C["Chat"].Width)
-	chatFrame1:SetHeight(C["Chat"].Height)
-
-	isScaling = false
-end
-
-function Module:UpdateChatFading()
-	if not C["Chat"].Enable then
-		return
-	end
-
-	local fading = C["Chat"].Fading
-	local timeVisible = C["Chat"].FadingTimeVisible
-
-	for i = 1, _G.NUM_CHAT_WINDOWS do
-		local frame = _G["ChatFrame" .. i]
-		if frame and frame.styled then
-			frame:SetFading(fading)
-			frame:SetTimeVisible(timeVisible)
-		end
-	end
-end
-
-function Module:UpdateChatLock()
-	if not C["Chat"].Enable then
-		return
-	end
-
-	if C["Chat"].Lock then
-		if not self.lockHooksInstalled then
-			K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
-			local chatFrame1 = _G.ChatFrame1
-			if chatFrame1 then
-				hooksecurefunc(chatFrame1, "SetPoint", updateChatAnchor)
-				hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
-				if _G.FCF_SavePositionAndDimensions then
-					_G.FCF_SavePositionAndDimensions(chatFrame1)
-				end
-			end
-			self.lockHooksInstalled = true
-			self.lockScaleRegistered = true
-		end
-		Module:UpdateChatSize()
-	elseif self.lockScaleRegistered then
-		K:UnregisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
-		self.lockScaleRegistered = false
-	end
-end
-
-function Module:UpdateChatFreedom()
-	if not _G.BNFeaturesEnabledAndConnected() then
-		return
-	end
-
-	if C["Chat"].Freedom then
-		if _G.GetCVar("portal") == "CN" then
-			_G.ConsoleExec("portal TW")
-		end
-		_G.SetCVar("profanityFilter", 0)
-	else
-		_G.SetCVar("profanityFilter", 1)
-	end
-end
-
--- ---------------------------------------------------------------------------
--- Skinning Logic
--- ---------------------------------------------------------------------------
-local function createBackground(self)
-	-- REASON: Creates the border and optional background for each chat frame.
-	local frame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-	frame:SetPoint("TOPLEFT", self.Background, "TOPLEFT", -1, 1)
-	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 10, -1)
-	frame:SetFrameLevel(self:GetFrameLevel())
-	frame:CreateBorder()
-	frame:SetShown(C["Chat"].Background)
-
+	self.copyFrame = frame
+	self.copyEdit = edit
 	return frame
 end
 
-local function updateEditboxFont(editbox)
-	editbox:SetFontObject(K.UIFont)
-	editbox.header:SetFontObject(K.UIFont)
-end
-
-function Module:SkinChat()
-	-- REASON: Entry point for chat frame skinning; cleans up Blizzard's default assets and applies KkthnxUI styles.
-	if not self or self.styled then
-		return
+function Module:CopyChat(chatFrame)
+	if not self.copyFrame then
+		self:CreateCopyWindow()
 	end
-
-	local name = self:GetName()
-	local font, fontSize, fontStyle = self:GetFont()
-
-	self:SetFont(font, fontSize, fontStyle)
-	self:SetClampRectInsets(0, 0, 0, 0)
-	self:SetClampedToScreen(false)
-	self:SetFading(C["Chat"].Fading)
-	self:SetTimeVisible(C["Chat"].FadingTimeVisible)
-
-	if self:GetMaxLines() < maxLines then
-		self:SetMaxLines(maxLines)
-	end
-
-	self.__background = createBackground(self)
-
-	local eb = _G[name .. "EditBox"]
-	eb:SetAltArrowKeyMode(false)
-	eb:SetClampedToScreen(true)
-	eb:ClearAllPoints()
-	eb:SetPoint("BOTTOMLEFT", self.__background, "TOPLEFT", 0, 20)
-	eb:SetPoint("TOPRIGHT", self.__background, "TOPRIGHT", 0, 46)
-	eb:StripTextures(2)
-	eb:CreateBorder()
-	updateEditboxFont(eb)
-	eb:Hide()
-
-	-- Whisper-temp: history/key hooks on temporary frames taint edit box.
-	-- Skin temps visually only; permanent docked frames (1..NUM_CHAT_WINDOWS) get history.
-	local frameIndex = self:GetID()
-	local isPermanent = not self.isTemporary and frameIndex and frameIndex > 0 and frameIndex <= (NUM_CHAT_WINDOWS or 10)
-	if isPermanent then
-		installEditHistory(eb)
-		eb:HookScript("OnTextChanged", editBoxOnTextChanged)
-	end
-
-	local lang = _G[name .. "EditBoxLanguage"]
-	lang:GetRegions():SetAlpha(0)
-	lang:SetPoint("TOPLEFT", eb, "TOPRIGHT", 5, 0)
-	lang:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 29, 0)
-	lang:CreateBorder()
-
-	local tab = _G[name .. "Tab"]
-	tab:SetAlpha(1)
-	tab.Text:SetFont(font, select(2, _G.KkthnxUIFont:GetFont()) + 1, fontStyle)
-	tab:StripTextures(7)
-	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
-
-	local characterText = eb:CreateFontString(nil, "ARTWORK")
-	characterText:SetFontObject(K.UIFont)
-	characterText:SetPoint("TOPRIGHT", eb, "TOPRIGHT", 4, 0)
-	characterText:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 4, 0)
-	characterText:SetJustifyH("CENTER")
-	characterText:SetWidth(40)
-	eb.characterCount = characterText
-
-	self.buttonFrame:Kill()
-	self.ScrollBar:Kill()
-	self.ScrollToBottomButton:Kill()
-	Module:ToggleChatFrameTextures(self)
-
-	self.oldAlpha = self.oldAlpha or 0 -- REASON: Suppress occasional Blizzard UI scaling errors.
-
-	self:HookScript("OnMouseWheel", Module.QuickMouseScroll)
-
-	self.styled = true
-end
-
-function Module:ToggleChatFrameTextures(frame)
-	if C["Chat"].Background then
-		frame:DisableDrawLayer("BORDER")
-		frame:DisableDrawLayer("BACKGROUND")
-	else
-		frame:EnableDrawLayer("BORDER")
-		frame:EnableDrawLayer("BACKGROUND")
-	end
-end
-
-function Module:ToggleChatBackground()
-	for _, chatFrameName in ipairs(CHAT_FRAMES) do
-		local frame = _G[chatFrameName]
-		if frame.__background then
-			frame.__background:SetShown(C["Chat"].Background)
+	local lines = {}
+	for i = 1, chatFrame:GetNumMessages() do
+		local text = chatFrame:GetMessageInfo(i)
+		if text then
+			-- Strip textures and hyperlinks' color codes for clean copying.
+			text = gsub(text, "|T.-|t", "")
+			lines[#lines + 1] = text
 		end
-		Module:ToggleChatFrameTextures(frame)
 	end
+	self.copyEdit:SetText(table.concat(lines, "\n"))
+	self.copyFrame:Show()
+end
+
+local function AddCopyButton(chatFrame)
+	local button = CreateFrame("Button", nil, chatFrame)
+	button:SetSize(20, 20)
+	button:SetPoint("TOPRIGHT", chatFrame, "TOPRIGHT", -2, 20)
+	button:SetAlpha(0)
+	K.CreateBackground(button, 0.1, 0.1, 0.1, 0.8)
+	K.CreateBorder(button)
+	local icon = button:CreateTexture(nil, "ARTWORK")
+	icon:SetAllPoints()
+	icon:SetTexture(C.Media.Textures.Copy or "Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up")
+	button:SetScript("OnEnter", function(self)
+		self:SetAlpha(1)
+	end)
+	button:SetScript("OnLeave", function(self)
+		self:SetAlpha(0)
+	end)
+	button:SetScript("OnClick", function()
+		Module:CopyChat(chatFrame)
+	end)
+	return button
 end
 
 -- ---------------------------------------------------------------------------
--- Channel Rotation
+-- Enable
 -- ---------------------------------------------------------------------------
-local cycles = {
-	{
-		chatType = "SAY",
-		IsActive = function()
-			return true
-		end,
-	},
-	{
-		chatType = "PARTY",
-		IsActive = function()
-			return IsInGroup()
-		end,
-	},
-	{
-		chatType = "RAID",
-		IsActive = function()
-			return IsInRaid()
-		end,
-	},
-	{
-		chatType = "INSTANCE_CHAT",
-		IsActive = function()
-			return IsPartyLFG()
-		end,
-	},
-	{
-		chatType = "GUILD",
-		IsActive = function()
-			return IsInGuild()
-		end,
-	},
-	{
-		chatType = "OFFICER",
-		IsActive = function()
-			return C_GuildInfo_IsGuildOfficer()
-		end,
-	},
-	{
-		chatType = "CHANNEL",
-		IsActive = function(_, editbox)
-			if Module.InWorldChannel and Module.WorldChannelID then
-				editbox:SetAttribute("channelTarget", Module.WorldChannelID)
-				return true
-			end
-		end,
-	},
-	{
-		chatType = "SAY",
-		IsActive = function()
-			return true
-		end,
-	},
-}
 
-function Module:UpdateEditBoxColor()
-	-- REASON: Dynamically updates the editbox border color to match the current chat type (e.g., green for guild).
-	if not C["Chat"].Enable then
+function Module:StyleFrame(index)
+	local frame = _G["ChatFrame" .. index]
+	if not frame then
 		return
 	end
+	local db = C.Chat
 
-	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
-	if CHAT_ADDON_CONFLICT then
-		return
+	ApplyFont(frame)
+
+	-- The default backdrop and border are drawn on the chat frame's own
+	-- BACKGROUND / BORDER layers, disabling those layers removes them entirely.
+	frame:DisableDrawLayer("BACKGROUND")
+	frame:DisableDrawLayer("BORDER")
+	frame:SetClampRectInsets(0, 0, 0, 0)
+
+	SkinTab(_G["ChatFrame" .. index .. "Tab"])
+	SkinEditBox(_G["ChatFrame" .. index .. "EditBox"])
+
+	if db.MouseWheelScroll then
+		frame:SetScript("OnMouseWheel", OnMouseWheel)
+		frame:EnableMouseWheel(true)
 	end
 
-	local editBox = ChatEdit_ChooseBoxForSend()
-	local chatType = editBox:GetAttribute("chatType")
-	local editBoxBorder = editBox.KKUI_Border
-
-	if not chatType then
-		return
+	-- Fade idle windows using the built-in fade timers.
+	frame:SetFading(db.Fade)
+	if db.Fade then
+		frame:SetTimeVisible(db.FadeTime)
 	end
 
-	local insetLeft, insetRight, insetTop, insetBottom = editBox:GetTextInsets()
-	editBox:SetTextInsets(insetLeft, insetRight + 18, insetTop, insetBottom)
+	if db.CopyButton and not frame.KKUI_Copy then
+		frame.KKUI_Copy = AddCopyButton(frame)
+	end
 
-	if editBoxBorder then
-		if chatType == "CHANNEL" then
-			local channelID = GetChannelName(editBox:GetAttribute("channelTarget"))
+	if db.ShortenChannels then
+		HookShortening(frame)
+	end
 
-			if channelID == 0 then
-				local r, g, b
-				if C["General"].ColorTextures then
-					r, g, b = table_unpack(C["General"].TexturesColor)
-				else
-					r, g, b = 1, 1, 1
-				end
-				editBoxBorder:SetVertexColor(r, g, b)
-			else
-				local color = _G.ChatTypeInfo[chatType .. channelID]
-				if color then
-					editBoxBorder:SetVertexColor(color.r, color.g, color.b)
-				end
-			end
-		else
-			local color = _G.ChatTypeInfo[chatType]
-			if color then
-				editBoxBorder:SetVertexColor(color.r, color.g, color.b)
-			end
+	if db.URLLinks then
+		HookURLs(frame)
+	end
+
+	if db.GradientBackdrop then
+		CreateGradient(frame)
+	end
+end
+
+-- One-click chat layout: reset to a single window,
+-- then dock General, Combat Log, Whispers, Trade, and Loot tabs with sensible
+-- message groups, and set a few chat CVars. Run from the installer or /kk.
+function Module:InstallChat()
+	FCF_ResetChatWindows()
+	FCF_SetLocked(_G.ChatFrame1, true)
+	FCF_SetWindowName(_G.ChatFrame1, GENERAL or "General")
+	_G.ChatFrame1:Show()
+
+	-- General: everything but trade and the recruitment channels.
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
+	for _, channel in ipairs({ TRADE, GENERAL, "LocalDefense", "LookingForGroup", "GuildRecruitment", "Services" }) do
+		if channel then
+			ChatFrame_RemoveChannel(_G.ChatFrame1, channel)
 		end
 	end
+	local general = {
+		"SAY", "EMOTE", "YELL", "GUILD", "OFFICER", "GUILD_ACHIEVEMENT",
+		"MONSTER_SAY", "MONSTER_EMOTE", "MONSTER_YELL", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER",
+		"PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER",
+		"BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "SYSTEM", "ERRORS", "AFK", "DND", "IGNORED", "ACHIEVEMENT",
+	}
+	for _, group in ipairs(general) do
+		ChatFrame_AddMessageGroup(_G.ChatFrame1, group)
+	end
+
+	-- Combat log stays docked as the second tab.
+	FCF_DockFrame(_G.ChatFrame2)
+	FCF_SetLocked(_G.ChatFrame2, true)
+	FCF_SetWindowName(_G.ChatFrame2, COMBAT_LOG or "Combat Log")
+	_G.ChatFrame2:Show()
+
+	-- Whispers.
+	local whispers = FCF_OpenNewWindow(L["Whispers"])
+	FCF_SetLocked(whispers, true)
+	FCF_DockFrame(whispers)
+	ChatFrame_RemoveAllMessageGroups(whispers)
+	for _, group in ipairs({ "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }) do
+		ChatFrame_AddMessageGroup(whispers, group)
+	end
+
+	-- Trade and the general channels.
+	local trade = FCF_OpenNewWindow(L["Trade"])
+	FCF_SetLocked(trade, true)
+	FCF_DockFrame(trade)
+	ChatFrame_RemoveAllMessageGroups(trade)
+	-- ChatFrame_AddChannel is gone in 12.0, the frame carries the method now.
+	if TRADE then
+		trade:AddChannel(TRADE)
+	end
+	if GENERAL then
+		trade:AddChannel(GENERAL)
+	end
+
+	-- Loot, money, and gains.
+	local loot = FCF_OpenNewWindow(L["Loot"])
+	FCF_SetLocked(loot, true)
+	FCF_DockFrame(loot)
+	ChatFrame_RemoveAllMessageGroups(loot)
+	for _, group in ipairs({ "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "CURRENCY", "MONEY", "SKILL" }) do
+		ChatFrame_AddMessageGroup(loot, group)
+	end
+
+	-- Chat behaviour CVars.
+	SetCVar("chatMouseScroll", 1)
+	SetCVar("chatStyle", "im")
+	SetCVar("whisperMode", "inline")
+	SetCVar("removeChatDelay", 1)
+	SetCVar("colorChatNamesByClass", 1)
+
+	_G.ChatFrame1:SetUserPlaced(true)
+	K.Print(L["Chat layout applied."])
 end
-hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
-
-function Module:SwitchToChannel(chatType)
-	self:SetAttribute("chatType", chatType)
-	_G.ChatEdit_UpdateHeader(self)
-end
-
-function Module:UpdateTabChannelSwitch()
-	-- REASON: Allows rotating through active chat channels by pressing Tab while the edit box is active.
-	if not C["Chat"].Enable then
-		return
-	end
-
-	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
-	if CHAT_ADDON_CONFLICT then
-		return
-	end
-
-	if string_sub(self:GetText(), 1, 1) == "/" then
-		return
-	end
-
-	local isShift = IsShiftKeyDown()
-	local currentType = self:GetAttribute("chatType")
-	if isShift and (currentType == "WHISPER" or currentType == "BN_WHISPER") then
-		Module.SwitchToChannel(self, "SAY")
-		return
-	end
-
-	local numCycles = #cycles
-	for i = 1, numCycles do
-		local cycle = cycles[i]
-		if currentType == cycle.chatType then
-			local from, to, step = i + 1, numCycles, 1
-			if isShift then
-				from, to, step = i - 1, 1, -1
-			end
-
-			for j = from, to, step do
-				local nextCycle = cycles[j]
-				if nextCycle:IsActive(nil, self) then
-					Module.SwitchToChannel(self, nextCycle.chatType)
-					return
-				end
-			end
-		end
-	end
-end
-hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
-
--- ---------------------------------------------------------------------------
--- Mouse Interaction
--- ---------------------------------------------------------------------------
-function Module:QuickMouseScroll(dir)
-	-- REASON: Accelerates chat scrolling when holding Shift (top/bottom) or Control (faster scroll).
-	if not C["Chat"].Enable then
-		return
-	end
-
-	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
-	if CHAT_ADDON_CONFLICT then
-		return
-	end
-
-	if dir > 0 then
-		if IsShiftKeyDown() then
-			self:ScrollToTop()
-		elseif IsControlKeyDown() then
-			self:ScrollUp()
-			self:ScrollUp()
-		end
-	else
-		if IsShiftKeyDown() then
-			self:ScrollToBottom()
-		elseif IsControlKeyDown() then
-			self:ScrollDown()
-			self:ScrollDown()
-		end
-	end
-end
-
--- ---------------------------------------------------------------------------
--- Tab Interaction & Sound
--- ---------------------------------------------------------------------------
-function Module:ChatWhisperSticky()
-	-- REASON: Configures whether or not whispers stay active in the editbox after sending.
-	local stickyValue = C["Chat"].Sticky and 1 or 0
-	_G.ChatTypeInfo["WHISPER"].sticky = stickyValue
-	_G.ChatTypeInfo["BN_WHISPER"].sticky = stickyValue
-end
-
-function Module:UpdateTabColors(selected)
-	-- REASON: Skins the chat tabs with custom colors for selection and active whispers.
-	if selected then
-		self.Text:SetTextColor(1, 0.8, 0)
-		self.whisperIndex = 0
-	else
-		self.Text:SetTextColor(0.5, 0.5, 0.5)
-	end
-
-	if self.whisperIndex == 1 then
-		self.glow:SetVertexColor(1, 0.5, 1)
-	elseif self.whisperIndex == 2 then
-		self.glow:SetVertexColor(0, 1, 0.96)
-	else
-		self.glow:SetVertexColor(1, 0.8, 0)
-	end
-end
-
-function Module:UpdateTabEventColors(event)
-	local tab = _G[self:GetName() .. "Tab"]
-	local selected = GeneralDockManager.selected:GetID() == tab:GetID()
-
-	if event == "CHAT_MSG_WHISPER" then
-		tab.whisperIndex = 1
-		Module.UpdateTabColors(tab, selected)
-	elseif event == "CHAT_MSG_BN_WHISPER" then
-		tab.whisperIndex = 2
-		Module.UpdateTabColors(tab, selected)
-	end
-end
-
-function Module:PlayWhisperSound(event, _, author)
-	-- REASON: Plays a notification sound for whispers, respecting a cooldown to avoid spam.
-	-- SECRET (12.0): whisper author can be a secret value inside instances; never touch it then.
-	if IsSecret(author) then
-		return
-	end
-	if whisperEvents[event] then
-		local name = Ambiguate(author, "none")
-		local currentTime = GetTime()
-
-		if Module.MuteCache[name] == currentTime then
-			return
-		end
-
-		if not self.soundTimer or currentTime > self.soundTimer then
-			PlaySound(messageSoundID, "master")
-		end
-
-		self.soundTimer = currentTime + 5
-	end
-end
-
--- ---------------------------------------------------------------------------
--- Initialization
--- ---------------------------------------------------------------------------
-local savedChatStyle
-local savedChatMouseScroll
-
-function Module:RestoreDefaultChatChrome()
-	if CHAT_ADDON_CONFLICT then
-		return
-	end
-
-	if savedChatStyle then
-		SetCVar("chatStyle", savedChatStyle)
-	end
-	if savedChatMouseScroll then
-		SetCVar("chatMouseScroll", savedChatMouseScroll)
-	end
-
-	for _, chatFrameName in ipairs(CHAT_FRAMES) do
-		local frame = _G[chatFrameName]
-		if frame then
-			frame:EnableDrawLayer("BORDER")
-			frame:EnableDrawLayer("BACKGROUND")
-			if frame.__background then
-				frame.__background:Hide()
-			end
-		end
-	end
+K.InstallChat = function()
+	Module:InstallChat()
 end
 
 function Module:OnEnable()
-	if C["Chat"].Enable then
-		Module:InitChat()
-	end
-end
-
-function Module:InitChat()
-	if Module.chatInitialized then
+	if not C.Chat.Enable then
 		return
 	end
 
-	if not C["Chat"].Enable then
-		return
+	-- Timestamps through the built-in CVar (24h HH:MM).
+	if C.Chat.Timestamps then
+		SetCVar("showTimestamps", "%H:%M ")
 	end
 
-	-- REASON: Centralized initialization for the Chat module; applies skins, mounts elements, and sets CVars.
-	-- REASON: Hide the default Quick Join button if the Friends DataText is active to prevent redundancy.
-	local quickJoinToastButton = _G.QuickJoinToastButton
-	if C["DataText"].Friends and quickJoinToastButton then
-		quickJoinToastButton:SetAlpha(0)
-		quickJoinToastButton:EnableMouse(false)
-		quickJoinToastButton:UnregisterAllEvents()
-		Module._quickJoinModified = true
+	if C.Chat.ClassColorNames then
+		EnableClassColors()
 	end
 
-	-- COMPAT: Skip custom skinning if total-replacement chat addons are loaded.
-	-- REASON: Defer to the user's chosen chat addon; KkthnxUI chat features are suppressed when conflicts exist.
-	if CHAT_ADDON_CONFLICT then
-		return
-	end
-
-	if not savedChatStyle then
-		savedChatStyle = GetCVar("chatStyle")
-		savedChatMouseScroll = GetCVar("chatMouseScroll")
-	end
-
-	for i = 1, NUM_CHAT_WINDOWS do
-		Module.SkinChat(_G["ChatFrame" .. i])
-	end
-
-	hooksecurefunc("FCF_OpenTemporaryWindow", function()
-		for _, chatFrameName in ipairs(CHAT_FRAMES) do
-			local frame = _G[chatFrameName]
-			if frame.isTemporary then
-				Module.SkinChat(frame)
+	-- A soft sound on an incoming whisper, throttled so a burst is one chime.
+	if C.Chat.WhisperSound then
+		local lastPlay = 0
+		local function OnWhisper()
+			local now = GetTime()
+			if now - lastPlay > 3 then
+				lastPlay = now
+				PlaySound(SOUNDKIT.TELL_MESSAGE, "Master")
 			end
+		end
+		self:RegisterEvent("CHAT_MSG_WHISPER", OnWhisper)
+		self:RegisterEvent("CHAT_MSG_BN_WHISPER", OnWhisper)
+	end
+
+	-- Remove the stock chat clutter around the frames.
+	for _, name in ipairs({
+		"ChatFrameMenuButton",
+		"QuickJoinToastButton",
+		"ChatFrameChannelButton",
+		"ChatFrameToggleVoiceDeafenButton",
+		"ChatFrameToggleVoiceMuteButton",
+	}) do
+		local frame = _G[name]
+		if frame then
+			frame:Hide()
+			frame:HookScript("OnShow", frame.Hide)
+		end
+	end
+
+	-- Pin the chat to the bottom-left corner. Edit Mode keeps trying to place it,
+	-- so we hook SetPoint and re-apply, guarded against re-entry. The y offset
+	-- leaves room for the quick-bar that sits just below the frame.
+	local anchoring
+	local function AnchorChat()
+		if anchoring then
+			return
+		end
+		anchoring = true
+		-- 6px from the left edge, 6px from the bottom, or higher to clear the
+		-- quick-bar when it is enabled.
+		local bottom = C.Chat.ChatBar and 34 or 6
+		_G.ChatFrame1:ClearAllPoints()
+		_G.ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, bottom)
+		anchoring = false
+	end
+	AnchorChat()
+	hooksecurefunc(_G.ChatFrame1, "SetPoint", AnchorChat)
+
+	-- Lift the tab dock off the chat frame's top edge so the tabs are not
+	-- crammed against the messages. Guarded against the hook re-entering.
+	local dock = _G.GeneralDockManager
+	if dock then
+		local fixing
+		local function LiftDock()
+			if fixing then
+				return
+			end
+			fixing = true
+			dock:ClearAllPoints()
+			dock:SetPoint("BOTTOMLEFT", _G.ChatFrame1, "TOPLEFT", 0, 6)
+			dock:SetPoint("BOTTOMRIGHT", _G.ChatFrame1, "TOPRIGHT", 0, 6)
+			fixing = false
+		end
+		LiftDock()
+		hooksecurefunc(dock, "SetPoint", LiftDock)
+	end
+
+	-- Colour the edit box border to the active channel.
+	hooksecurefunc("ChatEdit_UpdateHeader", ColorEditBox)
+
+	-- Blizzard re-textures tabs on colour/hover updates, keep them blanked.
+	if _G.FCFTab_UpdateColors then
+		hooksecurefunc("FCFTab_UpdateColors", StripTab)
+	end
+
+	-- Kill the per-frame scroll button clutter and combat-log quick button art.
+	for i = 1, NUM_FRAMES do
+		local buttonFrame = _G["ChatFrame" .. i .. "ButtonFrame"]
+		if buttonFrame then
+			buttonFrame:Hide()
+			buttonFrame:HookScript("OnShow", buttonFrame.Hide)
+		end
+	end
+	-- The Combat Log tab drags in a quick-filter bar ("My actions", ...) whose
+	-- tiled parchment background bleeds across the chat area when that tab is
+	-- selected. Blizzard re-applies that art every time the bar is shown, so a
+	-- one-off strip is not enough: blank it now and again on every show.
+	local quickButtons = _G.CombatLogQuickButtonFrame_Custom
+	if quickButtons then
+		local function StripQuickButtons()
+			for _, region in ipairs({ quickButtons:GetRegions() }) do
+				if region.GetObjectType and region:GetObjectType() == "Texture" then
+					region:SetTexture(nil)
+					region:SetAtlas(nil)
+				end
+			end
+			if _G.CombatLogQuickButtonFrame_CustomTexture then
+				_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
+			end
+		end
+		StripQuickButtons()
+		quickButtons:HookScript("OnShow", StripQuickButtons)
+		-- The parchment is re-set through this named texture even without a show, so
+		-- keep it blank whenever the client tries to paint it back in.
+		if _G.CombatLogQuickButtonFrame_CustomTexture then
+			hooksecurefunc(_G.CombatLogQuickButtonFrame_CustomTexture, "SetTexture", function(self, tex)
+				if tex then
+					self:SetTexture(nil)
+				end
+			end)
+		end
+	end
+
+	for i = 1, NUM_FRAMES do
+		self:StyleFrame(i)
+	end
+
+	-- Style temporary / whisper windows created after login.
+	hooksecurefunc("FCF_OpenTemporaryWindow", function()
+		local frame = _G.FCF_GetCurrentChatFrame and _G.FCF_GetCurrentChatFrame()
+		if frame then
+			Module:StyleFrame(frame:GetID())
 		end
 	end)
 
-	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
-	-- MIDNIGHT (12.0): FloatingChatFrame_OnEvent and ChatFrame_MessageEventHandler
-	-- were removed as globals. Tab whisper coloring routes through the
-	-- floating chat frame manager, and whisper detection hooks the message-filter pass.
-	hooksecurefunc("FloatingChatFrameManager_OnEvent", Module.UpdateTabEventColors)
-	hooksecurefunc(_G.ChatFrameUtil, "ProcessMessageEventFilters", Module.PlayWhisperSound)
-
-	if _G.CHAT_OPTIONS then
-		_G.CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
-	end
-	SetCVar("chatStyle", "classic")
-	SetCVar("chatMouseScroll", 1)
-	if _G.CombatLogQuickButtonFrame_CustomTexture then
-		_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
+	-- Open a copy box when one of our URL links is clicked.
+	if C.Chat.URLLinks then
+		hooksecurefunc("SetItemRef", function(link)
+			local url = link:match("^kkurl:(.+)")
+			if url then
+				ShowURL(url)
+			end
+		end)
 	end
 
-	-- -----------------------------------------------------------------------
-	-- Load Sub-Modules
-	-- -----------------------------------------------------------------------
-	local loadChatModulesList = {
-		"ChatWhisperSticky",
-		"CreateChatHistory",
-		"CreateChatItemLevels",
-		"CreateChatRename",
-		"CreateChatRoleIcon",
-		"CreateCopyChat",
-		"CreateCopyURL",
-		"CreateEmojis",
-		"CreateChatFilter",
-		"CreateVoiceActivity",
-		"CreateChatHighlight",
-		"CreateLootIcons",
-		"CreateSystemChatFilter",
-	}
-
-	for _, funcName in ipairs(loadChatModulesList) do
-		local func = self[funcName]
-		if type(func) == "function" then
-			local success, err = pcall(func, self)
-			if not success then
-				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
-			end
-		end
+	if C.Chat.HyperlinkTooltip then
+		self:EnableHyperlinkTooltips()
+	end
+	if C.Chat.ChatBar then
+		self:CreateChatBar()
+	end
+	if C.Chat.SpamFilter then
+		self:EnableFilter()
+	end
+	if C.Chat.SkinBubbles then
+		self:SetupBubbles()
 	end
 
-	-- -----------------------------------------------------------------------
-	-- Chat Locking
-	-- -----------------------------------------------------------------------
-	Module:UpdateChatLock()
-
-	-- -----------------------------------------------------------------------
-	-- Language Filter
-	-- -----------------------------------------------------------------------
-	Module:UpdateChatFreedom()
-	Module.chatInitialized = true
-end
-
-function Module:SetChatEnabled(enabled)
-	if enabled then
-		Module:InitChat()
-		if Module.chatInitialized then
-			if Module.UpdateChatButtons then
-				Module:UpdateChatButtons()
-			end
-			Module:UpdateChatFading()
-			Module:UpdateChatLock()
-		end
-	else
-		local chatFrames = {
-			"KKUI_ChatCopyButton",
-			"KKUI_ChatConfigButton",
-			"KKUI_ChatRollButton",
-			"KKUI_CopyChat",
-			"KKUI_ChatMenu",
-		}
-		for i = 1, #chatFrames do
-			local frame = _G[chatFrames[i]]
-			if frame then
-				frame:Hide()
-			end
-		end
-
-		if Module.RestoreDefaultChatChrome then
-			Module:RestoreDefaultChatChrome()
-		end
-
-		if Module._quickJoinModified then
-			local quickJoinToastButton = _G.QuickJoinToastButton
-			if quickJoinToastButton then
-				quickJoinToastButton:SetAlpha(1)
-				quickJoinToastButton:EnableMouse(true)
-				if _G.QuickJoinToastButton_OnLoad then
-					pcall(_G.QuickJoinToastButton_OnLoad, quickJoinToastButton)
-				end
-			end
-		end
+	-- Sticky whispers: keep the edit box on WHISPER after you reply, so a back and
+	-- forth does not need re-selecting the channel each line.
+	if C.Chat.StickyWhisper and _G.ChatTypeInfo then
+		_G.ChatTypeInfo.WHISPER.sticky = 1
+		_G.ChatTypeInfo.BN_WHISPER.sticky = 1
 	end
 end

@@ -1,160 +1,91 @@
 --[[-----------------------------------------------------------------------------
--- Addon: KkthnxUI
--- Author: Josh "Kkthnx" Russell
--- Notes:
--- - Purpose: Shared portrait factory for unit frames.
--- - Design: Keeps KKUI layout (detached left/right, overlay, 3D) in one place.
--- - Events: N/A — wired via oUF Portrait.Override in Core.lua.
+	Addon: KkthnxUI
+	File: Modules/UnitFrames/Elements/Portrait.lua
+	Purpose:
+		The detached portrait box. It sits beside the unit and spans the whole
+		frame height (health, gap, power), squared by the spawn pass.
+
+		Three styles: a 3D model, the flat 2D face texture, or a class icon.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = K:GetModule("Unitframes")
 
-local CreateFrame = _G.CreateFrame
+local Module = K:GetModule("UnitFrames")
+local Build = Module.Build
 
-function Module.GetPortraitStyle()
-	return C["Unitframe"].PortraitStyle
-end
+local CreateFrame = CreateFrame
 
-function Module.IsPortraitEnabled(style)
-	return (style or C["Unitframe"].PortraitStyle) ~= 0
-end
-
-function Module.IsDetachedPortrait(style)
-	local portraitStyle = style or C["Unitframe"].PortraitStyle
-	return portraitStyle ~= 0 and portraitStyle ~= 4
-end
-
-function Module.IsOverlayPortrait(style)
-	return (style or C["Unitframe"].PortraitStyle) == 4
-end
-
-function Module.IsClassPortraitStyle(style)
-	local portraitStyle = style or C["Unitframe"].PortraitStyle
-	return portraitStyle == 2 or portraitStyle == 3
-end
-
--- REASON: Indicator anchoring (raid target, resurrect, target glow) uses portrait or health.
-function Module.GetPortraitAnchor(frame, style)
-	if Module.IsDetachedPortrait(style) and frame.Portrait then
-		return frame.Portrait
+-- SetPortraitTexture resets texcoords on every update, so the crop that trims
+-- the transparent frame baked into the face art has to be reapplied afterwards.
+-- Class atlases are already tight, so those are left alone.
+local function CropPortrait(element)
+	if element:GetAtlas() then
+		return
 	end
-	return frame.Health
+	element:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 end
 
-local function getPortraitSize(health, power, extra)
-	local powerHeight = power and power:GetHeight() or 0
-	return health:GetHeight() + powerHeight + (extra or 6)
-end
-
--- REASON: Central portrait builder — side "left" (player/party/pet) or "right" (target/etc).
-function Module:CreateUnitPortrait(frame, opts)
-	opts = opts or {}
-	local portraitStyle = opts.style or C["Unitframe"].PortraitStyle
-
-	-- SECRET (12.0): SecureHealth/SecurePower installs the secret-safe UpdateColor
-	-- override (HealthColorOverride/PowerColorOverride in Core.lua). Every unit style
-	-- except Raid/SimpleParty/MainTank (which build no portrait and call SecureHealth
-	-- directly) relies on this function to install it via the SecurePortrait chain
-	-- below. That chain never ran when portraits were disabled (PortraitStyle == 0),
-	-- silently leaving Player/Target/Focus/Pet/FocusTarget/TargetOfTarget/Boss/Arena
-	-- frames on oUF's stock UpdateColor, which compares UnitIsPlayer/UnitReaction
-	-- directly and can error on secret values in combat/instances. Call it
-	-- unconditionally, before the early returns, so it always runs.
-	Module:SecureHealth(frame)
-
-	if portraitStyle == 0 then
-		return nil
+-- side is "left" or "right", relative to the unit frame. Standalone units get
+-- their square width set later from the real frame height, header children (party)
+-- have no such pass, so they pass an explicit width here.
+function Build.Portrait(self, side, width)
+	if not C.Unitframe.Portrait then
+		return
 	end
 
-	local health = frame.Health
-	if not health then
-		return nil
-	end
-
-	local power = frame.Power
-	local side = opts.side or "right"
-	local size = getPortraitSize(health, power, opts.sizeExtra)
-	local anchorSelf, anchorFrame, anchorPoint, xOff, yOff
-
-	if side == "left" then
-		anchorSelf, anchorFrame, anchorPoint, xOff, yOff = "TOPRIGHT", frame, "TOPLEFT", -6, 0
+	local holder = CreateFrame("Frame", nil, self)
+	holder:SetPoint("TOP", self, "TOP", 0, 0)
+	holder:SetPoint("BOTTOM", self, "BOTTOM", 0, 0)
+	if side == "right" then
+		holder:SetPoint("LEFT", self, "RIGHT", Module.GAP, 0)
 	else
-		anchorSelf, anchorFrame, anchorPoint, xOff, yOff = "TOPLEFT", frame, "TOPRIGHT", 6, 0
+		holder:SetPoint("RIGHT", self, "LEFT", -Module.GAP, 0)
 	end
+	if width then
+		holder:SetWidth(width)
+	end
+	K.CreateBackground(holder, 0.05, 0.05, 0.05, 0.9)
 
-	if portraitStyle == 4 then
-		frame.Portrait = CreateFrame("PlayerModel", opts.modelName, frame)
-		frame.Portrait:SetFrameStrata(frame:GetFrameStrata())
-		frame.Portrait:SetPoint("TOPLEFT", health, "TOPLEFT", 1, -1)
-		frame.Portrait:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", -1, 1)
-		frame.Portrait:SetAlpha(opts.overlayAlpha or 0.6)
-	elseif portraitStyle == 5 then
-		frame.Portrait = CreateFrame("PlayerModel", opts.modelName, health)
-		frame.Portrait:SetFrameStrata(frame:GetFrameStrata())
-		frame.Portrait:SetSize(size, size)
-		frame.Portrait:SetPoint(anchorSelf, anchorFrame, anchorPoint, xOff, yOff)
-		frame.Portrait:CreateBorder()
-		Module:ApplyPortraitAlphaFix(frame)
+	local style = C.Unitframe.PortraitStyle
+	local portrait
+
+	if style == "3D" then
+		portrait = CreateFrame("PlayerModel", nil, holder)
+		portrait:SetPoint("TOPLEFT", holder, "TOPLEFT", 1, -1)
+		portrait:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -1, 1)
+
+		-- A 3D model draws over textures on the same frame, so the border has to
+		-- live on an overlay frame stacked above the model.
+		local overlay = CreateFrame("Frame", nil, holder)
+		overlay:SetAllPoints()
+		overlay:SetFrameLevel(portrait:GetFrameLevel() + 2)
+		K.CreateBorder(overlay)
+		holder.Overlay = overlay
 	else
-		frame.Portrait = health:CreateTexture(nil, "BACKGROUND", nil, 1)
-		frame.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		frame.Portrait:SetSize(size, size)
-		frame.Portrait:SetPoint(anchorSelf, anchorFrame, anchorPoint, xOff, yOff)
-
-		frame.Portrait.Border = CreateFrame("Frame", nil, frame)
-		frame.Portrait.Border:SetAllPoints(frame.Portrait)
-		frame.Portrait.Border:CreateBorder()
-
-		if Module.IsClassPortraitStyle(portraitStyle) then
-			frame.Portrait.PostUpdate = Module.UpdateClassPortraits
-		end
+		portrait = holder:CreateTexture(nil, "ARTWORK")
+		portrait:SetPoint("TOPLEFT", holder, "TOPLEFT", 1, -1)
+		portrait:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -1, 1)
+		portrait.showClass = style == "Class"
+		portrait.PostUpdate = CropPortrait
+		K.CreateBorder(holder)
 	end
 
-	Module:SecurePortrait(frame)
-	return frame.Portrait
+	self.Portrait = portrait
+	self.PortraitHolder = holder
+	return holder
 end
 
--- REASON: Name tag format differs when level sits on detached portrait vs on the bar.
-function Module:TagUnitName(frame, style, opts)
-	opts = opts or {}
-	style = style or C["Unitframe"].PortraitStyle
-	local prefix = opts.prefix or ""
-	local useClassColor = opts.classColor ~= false and C["Unitframe"].HealthbarColor ~= 1
-	local nameTag = useClassColor and "[color][name]" or "[name]"
-	local levelTag = opts.levelTag or "[fulllevel]"
-	local suffix = opts.suffix
-	if suffix == nil then
-		suffix = "[afkdnd]"
+-- Level text on the portrait, so the name above the health bar stays clean.
+function Build.PortraitLevel(self)
+	local holder = self.PortraitHolder
+	if not holder then
+		return
 	end
 
-	if style == 0 or style == 4 then
-		local tag = prefix .. nameTag
-		if levelTag and levelTag ~= "" then
-			tag = tag .. " " .. levelTag
-		end
-		if suffix and suffix ~= "" then
-			tag = tag .. suffix
-		end
-		frame:Tag(frame.Name, tag)
-	else
-		frame:Tag(frame.Name, prefix .. nameTag .. (suffix or ""))
-	end
-end
-
--- REASON: Boss/arena/party show level above detached portrait; pet/ToT below.
-function Module:CreatePortraitLevelTag(frame, style, opts)
-	opts = opts or {}
-	style = style or C["Unitframe"].PortraitStyle
-	local show = Module.IsDetachedPortrait(style)
-	if opts.show ~= nil then
-		show = opts.show
-	end
-
-	local anchor = Module.GetPortraitAnchor(frame, style)
-	return Module:CreateLevelTagString(frame, anchor, {
-		tag = opts.tag or "[nplevel]",
-		layout = opts.layout or "above",
-		show = show,
-	})
+	-- Centered level on the gradient strip above the portrait, using the exact
+	-- same helper as the name over the health bar so they match.
+	local level = Module.GradientLabel(self, holder, 12)
+	self:Tag(level, "[difficulty][kkui:level]")
+	self.LevelText = level
+	return level
 end

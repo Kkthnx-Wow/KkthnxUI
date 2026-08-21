@@ -1,0 +1,182 @@
+--[[-----------------------------------------------------------------------------
+	Addon: KkthnxUI
+	File: Modules/Minimap/Core.lua
+	Purpose:
+		A square, bordered minimap. Owns the frame setup (mover, border, square
+		mask), the Blizzard clutter cleanup, and mouse wheel zoom, then hands off
+		to the sibling files for the datatexts, right-click menu, and button
+		collector. Written flavor aware so it degrades gracefully where some frames
+		do not exist.
+-----------------------------------------------------------------------------]]
+
+local K, C = KkthnxUI[1], KkthnxUI[2]
+
+local Module = K:NewModule("Minimap")
+
+local _G = _G
+local C_AddOns = C_AddOns
+
+local Minimap = _G.Minimap
+
+-- Reparent a frame offscreen only if it exists on this client. A hidden parent
+-- keeps it gone even when Blizzard tries to re-show it.
+local hiddenParent
+local function Banish(frame)
+	if not frame then
+		return
+	end
+	if not hiddenParent then
+		hiddenParent = _G.KKUI_HiddenParent
+		if not hiddenParent then
+			hiddenParent = CreateFrame("Frame", "KKUI_HiddenParent", UIParent)
+			hiddenParent:Hide()
+		end
+	end
+	frame:SetParent(hiddenParent)
+	if frame.UnregisterAllEvents then
+		frame:UnregisterAllEvents()
+	end
+end
+
+-- Pin down every leftover Blizzard piece, we render our own location and time.
+local function HideBlizzardBits()
+	Banish(_G.GameTimeFrame) -- calendar button
+	Banish(_G.TimeManagerClockButton) -- clock
+	Banish(_G.MinimapZoomIn)
+	Banish(_G.MinimapZoomOut)
+	Banish(_G.MinimapNorthTag)
+	Banish(_G.MinimapCompassTexture)
+	Banish(_G.AddonCompartmentFrame)
+
+	local cluster = _G.MinimapCluster
+	if cluster then
+		Banish(cluster.BorderTop)
+		Banish(cluster.ZoneTextButton)
+		cluster:EnableMouse(false)
+		-- Keep the tracking button around for its menu logic but take it off the
+		-- map. We drive tracking from our own right-click menu instead.
+		if cluster.Tracking then
+			cluster.Tracking:SetAlpha(0)
+			cluster.Tracking:EnableMouse(false)
+		end
+	end
+	if _G.MinimapCompassTexture then
+		_G.MinimapCompassTexture:SetAlpha(0)
+	end
+
+	-- Kill the archaeology and quest "blob" rings Blizzard paints over the map.
+	if Minimap.SetArchBlobRingScalar then
+		Minimap:SetArchBlobRingScalar(0)
+	end
+	if Minimap.SetQuestBlobRingScalar then
+		Minimap:SetQuestBlobRingScalar(0)
+	end
+	if Minimap.SetQuestBlobRingAlpha then
+		Minimap:SetQuestBlobRingAlpha(0)
+	end
+	if Minimap.SetArchBlobRingAlpha then
+		Minimap:SetArchBlobRingAlpha(0)
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Zoom via mouse wheel
+-- ---------------------------------------------------------------------------
+
+local function OnMouseWheel(_, delta)
+	local zoom = Minimap:GetZoom()
+	if delta > 0 then
+		if zoom < Minimap:GetZoomLevels() - 1 then
+			Minimap:SetZoom(zoom + 1)
+		end
+	elseif zoom > 0 then
+		Minimap:SetZoom(zoom - 1)
+	end
+end
+
+-- The hybrid minimap (archaeology digsites and the like) draws over the minimap
+-- with its own circular canvas, so out of the box it ignores our wheel zoom and
+-- keeps a round shape that clashes with our square map. Match it to ours: wheel
+-- zoom on the canvas and a square mask. Loaded on demand, so this runs once its
+-- addon is present.
+function Module:SetupHybridMinimap()
+	local hybrid = _G.HybridMinimap
+	if not hybrid then
+		return
+	end
+	if hybrid.MapCanvas then
+		hybrid.MapCanvas:EnableMouseWheel(true)
+		hybrid.MapCanvas:SetScript("OnMouseWheel", OnMouseWheel)
+	end
+	if C.Minimap.Square and hybrid.CircleMask and hybrid.CircleMask.SetTexture then
+		hybrid.CircleMask:SetTexture(C.Media.Textures.White8x8)
+	end
+end
+
+-- ---------------------------------------------------------------------------
+-- Enable
+-- ---------------------------------------------------------------------------
+
+function Module:OnEnable()
+	if not C.Minimap.Enable then
+		return
+	end
+
+	local db = C.Minimap
+	local size = db.Size
+
+	-- Square mask for a clean bordered look.
+	if db.Square and Minimap.SetMaskTexture then
+		Minimap:SetMaskTexture(C.Media.Textures.White8x8)
+	end
+
+	Minimap:SetSize(size, size)
+
+	-- Position through a mover so it lands where the user put it, defaulting to
+	-- the top right corner like the original layout.
+	local mover = K.CreateMover(Minimap, "Minimap", "Minimap", { "TOPRIGHT", UIParent, "TOPRIGHT", -4, -4 }, size, size)
+	Minimap:ClearAllPoints()
+	Minimap:SetPoint("TOPRIGHT", mover)
+	self.mover = mover
+
+	-- Border in the KkthnxUI style.
+	K.CreateBorder(Minimap)
+
+	-- Mouse wheel zoom, the right-click menu is wired up in Tracking.lua.
+	Minimap:EnableMouseWheel(true)
+	Minimap:SetScript("OnMouseWheel", OnMouseWheel)
+	if self.SetupClickMenu then
+		self:SetupClickMenu()
+	end
+
+	-- Strip the leftover Blizzard clutter (calendar, clock, zone text, compass).
+	HideBlizzardBits()
+
+	-- Datatexts, built in Location.lua and Time.lua.
+	if self.CreateLocation then
+		self:CreateLocation()
+	end
+	if self.CreateClock then
+		self:CreateClock()
+	end
+
+	-- Corral stray addon minimap buttons into a tidy hover panel.
+	if db.CollectButtons and self.CollectButtons then
+		self:CollectButtons()
+	end
+
+	-- Match the hybrid (digsite) minimap to ours. It is load-on-demand, so style it
+	-- now if present, otherwise wait for its addon.
+	if C_AddOns and C_AddOns.IsAddOnLoaded("Blizzard_HybridMinimap") then
+		self:SetupHybridMinimap()
+	else
+		self:RegisterEvent("ADDON_LOADED")
+	end
+end
+
+function Module:ADDON_LOADED(_, addon)
+	if addon == "Blizzard_HybridMinimap" then
+		self:SetupHybridMinimap()
+		self:UnregisterEvent("ADDON_LOADED")
+	end
+end

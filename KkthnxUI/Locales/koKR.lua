@@ -1,7 +1,8 @@
-local _, _ = KkthnxUI[1], KkthnxUI[3]
+-- KkthnxUI locale: koKR
+-- Add translated entries below. Keys are the English source strings.
+-- Anything left out falls back to English automatically.
+local K = KkthnxUI[1]
 
-local GetLocale = GetLocale
-
-if GetLocale() ~= "koKR" then
-	return
-end
+K:RegisterLocale("koKR", {
+	-- ["English source string"] = "Translation",
+})

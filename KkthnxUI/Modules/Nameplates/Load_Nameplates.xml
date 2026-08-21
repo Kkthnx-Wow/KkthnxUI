@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Core.lua first: it creates the module the style attaches to. -->
+	<Script file="Core.lua" />
+	<Script file="Style.lua" />
+	<Script file="TargetPower.lua" />
+</Ui>
