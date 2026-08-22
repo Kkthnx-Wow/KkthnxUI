@@ -165,10 +165,14 @@ local function UnitBorderColor(frame, unit)
 	local colors = frame.colors
 
 	if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
-		-- Second return only. The class token can be a secret on some units (delve
-		-- mobs), and a secret can never be used as a table key, so bail on it.
+		-- Second return only. The class token can be a secret on restricted units
+		-- (target of target, some delve mobs), and a secret can never be a table
+		-- key. When it is secret, ask the client for the colour instead, which
+		-- accepts a secret token and hands back values safe to feed a setter.
 		local _, class = UnitClass(unit)
-		if class and not IsSecret(class) then
+		if IsSecret(class) then
+			return C_ClassColor and C_ClassColor.GetClassColor(class)
+		elseif class then
 			return colors.class[class]
 		end
 		return nil
