@@ -1,31 +1,35 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
+about: Report something that is not working right in KkthnxUI
+title: '[Bug] '
 labels: 'bug'
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**What happened**
+A clear description of the problem.
 
-**To Reproduce**
-Steps to reproduce the behavior:
+**Steps to reproduce**
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+2. Click '...'
+3. See the problem
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**What you expected**
+What should have happened instead.
+
+**Error text**
+If you got a Lua error, paste the full text here. Turn error display on first with
+`/console scriptErrors 1`, then reproduce the bug.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+Add a screenshot if it helps show the problem.
 
-**World of Warcraft Details:**
- - Game Version: [e.g., Retail or Classic]
- - Patch Version: [e.g., 9.1.5]
+**Your setup**
+- Game version: [Retail, Classic Era, Cataclysm Classic, and so on]
+- Patch: [e.g. 11.0.5]
+- KkthnxUI version: [shown in the AddOns list]
+- Still happens with only KkthnxUI enabled? [yes / no / not tested]
 
-**Additional context**
-Add any other context about the problem here.
+**Anything else**
+Any other detail that might help track it down.
