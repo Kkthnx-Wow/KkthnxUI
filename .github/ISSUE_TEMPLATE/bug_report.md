@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+<!-- New to bug reports? See a filled-in example here:
+https://github.com/Kkthnx-Wow/KkthnxUI/blob/master/.github/BUG_REPORT_EXAMPLE.md -->
+
 **What happened**
 A clear description of the problem.
 
