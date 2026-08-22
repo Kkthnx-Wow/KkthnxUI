@@ -86,14 +86,18 @@ end
 local function UnitColor(unit)
 	if UnitIsPlayer(unit) then
 		local _, class = UnitClass(unit)
-		-- Prefer our custom class palette so the tooltip matches the frames.
-		local color = class and K.oUF and K.oUF.colors.class[class]
-		if color then
-			return color:GetRGB()
-		end
-		color = class and classColors[class]
-		if color then
-			return color.r, color.g, color.b
+		-- The class token can be a secret on some units, and a secret can never be
+		-- used as a table key, so skip the palette lookup when it is.
+		if class and not IsSecret(class) then
+			-- Prefer our custom class palette so the tooltip matches the frames.
+			local color = K.oUF and K.oUF.colors.class[class]
+			if color then
+				return color:GetRGB()
+			end
+			color = classColors[class]
+			if color then
+				return color.r, color.g, color.b
+			end
 		end
 	else
 		local reaction = UnitReaction(unit, "player")

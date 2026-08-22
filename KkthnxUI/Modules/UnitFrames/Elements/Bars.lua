@@ -165,13 +165,20 @@ local function UnitBorderColor(frame, unit)
 	local colors = frame.colors
 
 	if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
-		-- Second return only. The localised class name is a conditional secret.
+		-- Second return only. The class token can be a secret on some units (delve
+		-- mobs), and a secret can never be used as a table key, so bail on it.
 		local _, class = UnitClass(unit)
-		return class and colors.class[class]
+		if class and not IsSecret(class) then
+			return colors.class[class]
+		end
+		return nil
 	end
 
 	local reaction = UnitReaction(unit, "player")
-	return reaction and colors.reaction[reaction]
+	if reaction and not IsSecret(reaction) then
+		return colors.reaction[reaction]
+	end
+	return nil
 end
 
 function Module.RefreshHealthBorder(self)
