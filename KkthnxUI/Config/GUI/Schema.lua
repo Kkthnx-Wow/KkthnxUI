@@ -246,6 +246,9 @@ local function UnitControls(key, opts)
 	if opts.showSolo then
 		Add({ kind = "check", label = L["Show While Solo"], path = { "Unitframe", key, "ShowSolo" }, reload = true, dependsOn = dep })
 	end
+	if opts.showPlayer then
+		Add({ kind = "check", label = L["Show Player"], path = { "Unitframe", key, "ShowPlayer" }, reload = true, dependsOn = dep, tooltip = L["Include your own frame in the party. Turn off if your player frame is enough."] })
+	end
 	if opts.dispelHighlight then
 		Add({ kind = "check", label = L["Dispel Highlight"], path = { "Unitframe", key, "DispelHighlight" }, reload = true, dependsOn = dep, tooltip = L["Colour the border of any member with a debuff you can dispel."] })
 	end
@@ -369,6 +372,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Smooth Bar Animation"], path = { "Unitframe", "Smooth" }, reload = true },
 			{ kind = "check", label = L["Class Colored Health"], path = { "Unitframe", "ClassHealth" }, reload = true },
 			{ kind = "check", label = L["Class Colored Border"], path = { "Unitframe", "ClassColorBorder" }, apply = RefreshHealthBorders, tooltip = L["Threat still takes the border over while you have aggro."] },
+			{ kind = "check", label = L["Threat Health Color"], path = { "Unitframe", "ThreatHealthColor" }, reload = true, tooltip = L["Colour enemy health bars by your threat, role-aware, instead of by reaction."] },
 			{ kind = "check", label = L["Colored Bar Backdrop"], path = { "Unitframe", "BarBackdrop" }, reload = true, tooltip = L["Tints the empty part of a bar with a dark version of its colour, so a nearly dead unit still reads at a glance."] },
 			{ kind = "check", label = L["Heal Prediction"], path = { "Unitframe", "HealthPrediction" }, reload = true, tooltip = L["Shows incoming heals and absorb shields on the health bar."] },
 			{ kind = "check", label = L["Range Fade"], path = { "Unitframe", "RangeFade" }, reload = true, tooltip = L["Dim units that are out of range."] },
@@ -401,7 +405,7 @@ GUI.schema = {
 			ExtraButton(L["Target of Target"], "UF_ToT", UnitControls("TargetOfTarget", { power = true })),
 			ExtraButton(L["Focus Target"], "UF_FocusTarget", UnitControls("FocusTarget", { power = true })),
 			ExtraButton(L["Pet"], "UF_Pet", UnitControls("Pet", { power = true, debuffs = true })),
-			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, dispelHighlight = true })),
+			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true })),
 			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true })),
 			{ kind = "button", label = L["Toggle Test Frames"], onClick = function()
 				local uf = K:GetModule("UnitFrames", true)
@@ -521,6 +525,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Clickable URLs"], path = { "Chat", "URLLinks" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Hyperlink Hover Tooltips"], path = { "Chat", "HyperlinkTooltip" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Channel Quick Bar"], path = { "Chat", "ChatBar" }, reload = true, dependsOn = { "Chat", "Enable" } },
+			{ kind = "check", label = L["Side Button Strip"], path = { "Chat", "SideButtons" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["A fading column of icon buttons on the left of the chat for channels, copy, scroll, and config."] },
 			{ kind = "check", label = L["Repeat Spam Filter"], path = { "Chat", "SpamFilter" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Drop identical messages repeated in public channels within 30 seconds."] },
 			{ kind = "check", label = L["Gradient Backdrop"], path = { "Chat", "GradientBackdrop" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["A soft class-colored fade behind the chat that fades out to the right."] },
 			{ kind = "check", label = L["Copy Button"], path = { "Chat", "CopyButton" }, reload = true, dependsOn = { "Chat", "Enable" } },
@@ -554,7 +559,8 @@ GUI.schema = {
 			{ kind = "check", label = L["Elite / Rare / Boss Icon"], path = { "Nameplate", "ShowClassification" }, reload = true, dependsOn = { "Nameplate", "Enable" } },
 			{ kind = "check", label = L["Friendly Name Only"], path = { "Nameplate", "FriendlyNameOnly" }, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Hide the health bar on friendly units, showing just the name."] },
 			{ kind = "check", label = L["Guild Name (name-only)"], path = { "Nameplate", "ShowGuildName" }, reload = true, dependsOn = { "Nameplate", "FriendlyNameOnly" }, tooltip = L["Show a player's guild under their name in name-only mode."] },
-			{ kind = "check", label = L["Threat Coloring"], path = { "Nameplate", "ThreatColor" }, reload = true, dependsOn = { "Nameplate", "Enable" } },
+			{ kind = "check", label = L["Threat Coloring"], path = { "Nameplate", "ThreatColor" }, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Tint the plate shadow by your threat: holding, losing, or pulling aggro."] },
+			{ kind = "check", label = L["Threat Health Color"], path = { "Nameplate", "ThreatHealthColor" }, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Colour the enemy health bar itself by your threat, role-aware, instead of by reaction."] },
 			{ kind = "check", label = L["Target Highlight"], path = { "Nameplate", "TargetHighlight" }, reload = true, dependsOn = { "Nameplate", "Enable" } },
 			{ kind = "check", label = L["Target Class Resource"], path = { "Nameplate", "TargetPower" }, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Show your combo points / class resource on the target's nameplate."] },
 			{ kind = "check", label = L["Show Castbar"], path = { "Nameplate", "ShowCastbar" }, reload = true, dependsOn = { "Nameplate", "Enable" } },

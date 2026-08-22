@@ -226,6 +226,47 @@ K.IsSecret = _G.issecretvalue or function()
 	return false
 end
 
+-- Threat colouring shared by nameplates and unit frames, so both read the same
+-- way. The colour flips by role: a tank wants aggro (green while holding it), while
+-- everyone else wants none (red the moment they pull it). A nil result means the
+-- safe case, so the caller keeps the normal reaction colour.
+do
+	local THREAT_HOLD = { 0.2, 0.8, 0.2 }
+	local THREAT_WARN = { 0.9, 0.7, 0.2 }
+	local THREAT_AGGRO = { 0.9, 0.2, 0.2 }
+
+	-- Are we tanking right now? Assigned group role first, then the spec's role so
+	-- it still reads correctly while solo.
+	function K.PlayerIsTank()
+		local role = _G.UnitGroupRolesAssigned and _G.UnitGroupRolesAssigned("player")
+		if role == "TANK" then
+			return true
+		end
+		local spec = _G.GetSpecialization and _G.GetSpecialization()
+		if spec and _G.GetSpecializationRole then
+			return _G.GetSpecializationRole(spec) == "TANK"
+		end
+		return false
+	end
+
+	function K.ThreatFillColor(status, isTank)
+		if isTank then
+			if status == 3 then
+				return THREAT_HOLD
+			elseif status == 2 or status == 1 then
+				return THREAT_WARN
+			end
+			return THREAT_AGGRO -- someone else is tanking
+		else
+			if status == 3 then
+				return THREAT_AGGRO -- you pulled aggro
+			elseif status == 2 or status == 1 then
+				return THREAT_WARN
+			end
+		end
+	end
+end
+
 -- Disable pixel snapping on a texture or line so our own snap wins.
 function K.DisablePixelSnap(object)
 	if object.SetSnapToPixelGrid then

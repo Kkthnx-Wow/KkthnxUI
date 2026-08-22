@@ -73,6 +73,7 @@ local function GetCorner(element, corner)
 	cd:SetAllPoints()
 	cd:SetReverse(true)
 	cd:SetHideCountdownNumbers(true)
+	K.StyleCooldownSwipe(cd)
 	cd:Hide()
 	button.Cooldown = cd
 

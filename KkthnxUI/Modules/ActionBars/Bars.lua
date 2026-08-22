@@ -170,6 +170,9 @@ end
 -- ---------------------------------------------------------------------------
 
 -- Apply a static alpha, or a mouseover fader that shows the bar on hover.
+-- How fast the bar glides between hidden and shown, in alpha per second.
+local FADE_SPEED = 5
+
 function Module:SetupFade(bar, cfg)
 	if not cfg.Mouseover then
 		bar:SetScript("OnUpdate", nil)
@@ -177,15 +180,29 @@ function Module:SetupFade(bar, cfg)
 		return
 	end
 
+	local target = cfg.Alpha
+	local current = 0
 	bar:SetAlpha(0)
-	local elapsed = 0
 	bar:SetScript("OnUpdate", function(self, delta)
-		elapsed = elapsed + delta
-		if elapsed < 0.1 then
+		-- Show at full while hovered, and always in combat so the bar never hides
+		-- while you are fighting. Glide toward that instead of snapping.
+		local want = (self:IsMouseOver() or InCombatLockdown()) and target or 0
+		if current == want then
 			return
 		end
-		elapsed = 0
-		self:SetAlpha(self:IsMouseOver() and cfg.Alpha or 0)
+		local step = FADE_SPEED * delta
+		if want > current then
+			current = current + step
+			if current > want then
+				current = want
+			end
+		else
+			current = current - step
+			if current < want then
+				current = want
+			end
+		end
+		self:SetAlpha(current)
 	end)
 end
 

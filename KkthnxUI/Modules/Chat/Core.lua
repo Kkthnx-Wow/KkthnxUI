@@ -707,6 +707,9 @@ function Module:OnEnable()
 	if C.Chat.ChatBar then
 		self:CreateChatBar()
 	end
+	if C.Chat.SideButtons then
+		self:CreateSideButtons()
+	end
 	if C.Chat.SpamFilter then
 		self:EnableFilter()
 	end

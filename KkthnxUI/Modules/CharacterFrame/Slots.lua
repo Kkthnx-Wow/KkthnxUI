@@ -42,6 +42,7 @@ function Module:StyleSlot(button, base)
 	button.slotID = id
 	button.emptyTexture = emptyTexture
 	button.Cooldown = button.Cooldown or _G[(button:GetName() or "") .. "Cooldown"]
+	K.StyleCooldownSwipe(button.Cooldown)
 
 	button:RegisterForDrag("LeftButton")
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")

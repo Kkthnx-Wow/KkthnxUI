@@ -7,11 +7,13 @@
 		own frame chrome so it reads as a native window rather than a KkthnxUI skin.
 		Retail keeps its own frame, so this only builds elsewhere.
 
-		The layout lives in KKUI_CharacterFrame.xml (ButtonFrameTemplate window,
-		ItemButtonTemplate slots). This file wires the portrait, title, close, and
-		model, and routes the character key to it. Slot behaviour is in Slots.lua.
-		The stats pane and inspect window are hooked here (BuildStats/UpdateStats)
-		but their files are not written yet, so those calls stay guarded.
+		The frame is built here in Lua (a ButtonFrameTemplate window with
+		ItemButtonTemplate slots), inside the retail guard, so those classic-only
+		templates never load on retail. This file also wires the portrait, title,
+		close, and model, and routes the character key to it. Slot behaviour is in
+		Slots.lua. The stats pane and inspect window are hooked here
+		(BuildStats/UpdateStats) but their files are not written yet, so those calls
+		stay guarded.
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]
@@ -27,18 +29,89 @@ local Module = K:NewModule("CharacterFrame")
 local _G = _G
 local ipairs = ipairs
 local tinsert = table.insert
+local CreateFrame = CreateFrame
 local UnitName = UnitName
 local SetPortraitTexture = SetPortraitTexture
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
 
--- The slots in layout order. Each name gains "Slot" for GetInventorySlotInfo and
--- matches a parentKey on the XML frame.
+-- The slots in layout order. Each name gains "Slot" for GetInventorySlotInfo and is
+-- created as frame[base] in BuildFrame.
 Module.SlotNames = {
 	"Head", "Neck", "Shoulder", "Back", "Chest", "Shirt", "Tabard", "Wrist",
 	"Hands", "Waist", "Legs", "Feet", "Finger0", "Finger1", "Trinket0", "Trinket1",
 	"MainHand", "SecondaryHand", "Ranged",
 }
+
+-- Column layout: left down one edge of the inset, right down the other, weapons in
+-- a row across the bottom, mirroring the paper doll.
+local LEFT_COLUMN = { "Head", "Neck", "Shoulder", "Back", "Chest", "Shirt", "Tabard", "Wrist" }
+local RIGHT_COLUMN = { "Hands", "Waist", "Legs", "Feet", "Finger0", "Finger1", "Trinket0", "Trinket1" }
+
+-- ---------------------------------------------------------------------------
+-- Frame construction
+-- ---------------------------------------------------------------------------
+
+local function CreateSlot(frame, base)
+	local button = CreateFrame("ItemButton", "KKUI_CharacterFrame" .. base, frame, "ItemButtonTemplate")
+	frame[base] = button
+	return button
+end
+
+-- Build the whole sheet in Lua. Only ever runs on the flavours past the retail
+-- guard above, so the classic-only ButtonFrameTemplate / ItemButtonTemplate never
+-- touch retail (where they would warn about a missing inherited node).
+function Module:BuildFrame()
+	local frame = CreateFrame("Frame", "KKUI_CharacterFrame", UIParent, "ButtonFrameTemplate")
+	frame:SetSize(540, 424)
+	frame:SetPoint("CENTER", UIParent, "CENTER", -200, 100)
+	frame:SetFrameStrata("HIGH")
+	frame:SetMovable(true)
+	frame:EnableMouse(true)
+	frame:SetToplevel(true)
+	frame:Hide()
+
+	local inset = frame.Inset or frame
+
+	local model = CreateFrame("PlayerModel", nil, frame)
+	model:SetSize(231, 320)
+	model:SetPoint("TOPLEFT", inset, "TOPLEFT", 52, -10)
+	frame.Model = model
+
+	-- Left column: first slot to the inset corner, the rest chained below it.
+	local prev
+	for i, base in ipairs(LEFT_COLUMN) do
+		local button = CreateSlot(frame, base)
+		if i == 1 then
+			button:SetPoint("TOPLEFT", inset, "TOPLEFT", 4, -2)
+		else
+			button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -4)
+		end
+		prev = button
+	end
+
+	-- Right column, chained the same way from the other inset corner.
+	prev = nil
+	for i, base in ipairs(RIGHT_COLUMN) do
+		local button = CreateSlot(frame, base)
+		if i == 1 then
+			button:SetPoint("TOPRIGHT", inset, "TOPRIGHT", -4, -2)
+		else
+			button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -4)
+		end
+		prev = button
+	end
+
+	-- Weapons across the bottom, centred under the model.
+	local main = CreateSlot(frame, "MainHand")
+	main:SetPoint("BOTTOMLEFT", inset, "BOTTOMLEFT", 95, 14)
+	local off = CreateSlot(frame, "SecondaryHand")
+	off:SetPoint("LEFT", main, "RIGHT", 6, 0)
+	local ranged = CreateSlot(frame, "Ranged")
+	ranged:SetPoint("LEFT", off, "RIGHT", 6, 0)
+
+	return frame
+end
 
 -- ---------------------------------------------------------------------------
 -- Window chrome
@@ -139,7 +212,7 @@ function Module:OnShow()
 end
 
 function Module:OnEnable()
-	local frame = _G.KKUI_CharacterFrame
+	local frame = self:BuildFrame()
 	if not frame then
 		return
 	end

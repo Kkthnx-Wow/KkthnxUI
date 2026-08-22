@@ -57,6 +57,7 @@ K.ConfigDefaults = {
 		Texture = "KkthnxUI",
 		ClassHealth = false,
 		ClassColorBorder = false,
+		ThreatHealthColor = false, -- colour enemy health bars by your threat instead of reaction
 		BarBackdrop = true,
 		Portrait = true,
 		PortraitStyle = "3D", -- 3D, 2D, Class
@@ -112,7 +113,7 @@ K.ConfigDefaults = {
 		Pet = { Enable = true, Width = 100, Height = 18, PowerHeight = 10, ShowPower = true, Debuffs = false },
 		Focus = { Enable = true, Width = 200, Height = 34, PowerHeight = 14, ShowPower = true, Debuffs = true },
 		FocusTarget = { Enable = true, Width = 100, Height = 18, PowerHeight = 10, ShowPower = true },
-		Party = { Enable = true, Width = 150, Height = 26, PowerHeight = 10, ShowPower = true, ShowSolo = false, Debuffs = true, DispelHighlight = true, Portrait = true },
+		Party = { Enable = true, Width = 150, Height = 26, PowerHeight = 10, ShowPower = true, ShowSolo = false, ShowPlayer = true, Debuffs = true, DispelHighlight = true, Portrait = true },
 		-- Height is the health bar, the power bar (PowerHeight) sits below it with a
 		-- PowerGap so the two read as separate bars. PowerMode: All, Mana, or None.
 		Raid = { Enable = true, Width = 80, Height = 30, PowerHeight = 6, PowerGap = 6, PowerMode = "All", GroupsPerRow = 5, GroupBy = "GROUP", RaidWide = false, SortDirection = "ASC", Orientation = "DOWN_RIGHT", DispelHighlight = true, ShowGroupNumber = true },
@@ -193,6 +194,7 @@ K.ConfigDefaults = {
 		TargetHighlight = true,
 		TargetPower = true, -- your class resource on the target's nameplate
 		ThreatColor = true,
+		ThreatHealthColor = false, -- colour enemy health bars by your threat instead of reaction
 		MaxDistance = 60,
 		MaxAuras = 6,
 		AuraSize = 24,
@@ -333,6 +335,7 @@ K.ConfigDefaults = {
 		URLLinks = true,
 		HyperlinkTooltip = true,
 		ChatBar = true,
+		SideButtons = true, -- vertical icon strip on the left of the chat
 		SpamFilter = false,
 		CopyButton = true,
 		Timestamps = true,

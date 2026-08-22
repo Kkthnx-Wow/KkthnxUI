@@ -190,18 +190,28 @@ function GUI.CreateSlider(parent, control)
 	K.CreateBackground(track, 0.08, 0.08, 0.08, 0.95)
 	K.CreateBorder(track)
 
-	-- A soft rounded thumb: Indicator-Gray is greyscale, so a vertex tint gives a
-	-- cohesive blue pill instead of the stark rectangle a colour texture makes.
+	-- A crisp square handle to match our square, bordered UI rather than a soft dot:
+	-- a bright fill sitting on a dark backing square that reads as a thin border, and
+	-- an accent line down its middle so it looks like a grabbable knob. The backing
+	-- is anchored to the thumb so it slides along with it.
+	local THUMB = { 0.6, 0.78, 1.0 }
+	local THUMB_HOVER = { 0.82, 0.9, 1.0 }
+
 	local thumb = slider:CreateTexture(nil, "OVERLAY")
-	thumb:SetTexture("Interface\\COMMON\\Indicator-Gray")
-	thumb:SetVertexColor(ACCENT[1], ACCENT[2], ACCENT[3], 1)
-	thumb:SetSize(16, 16)
+	thumb:SetColorTexture(THUMB[1], THUMB[2], THUMB[3], 1)
+	thumb:SetSize(10, 18)
 	slider:SetThumbTexture(thumb)
+
+	local border = slider:CreateTexture(nil, "ARTWORK")
+	border:SetColorTexture(0.04, 0.04, 0.04, 1)
+	border:SetSize(14, 22)
+	border:SetPoint("CENTER", thumb, "CENTER", 0, 0)
+
 	slider:HookScript("OnEnter", function()
-		thumb:SetVertexColor(ACCENT[1] + 0.15, ACCENT[2] + 0.1, ACCENT[3], 1)
+		thumb:SetColorTexture(THUMB_HOVER[1], THUMB_HOVER[2], THUMB_HOVER[3], 1)
 	end)
 	slider:HookScript("OnLeave", function()
-		thumb:SetVertexColor(ACCENT[1], ACCENT[2], ACCENT[3], 1)
+		thumb:SetColorTexture(THUMB[1], THUMB[2], THUMB[3], 1)
 	end)
 
 	local low = holder:CreateFontString(nil, "OVERLAY")

@@ -226,7 +226,7 @@ function Module:SpawnParty()
 	-- has room to breathe.
 	local partySpacing = 24
 	local header = oUF:SpawnHeader("KKUI_Party", nil,
-		"showPlayer", true,
+		"showPlayer", cfg.ShowPlayer ~= false,
 		"showSolo", cfg.ShowSolo,
 		"showParty", true,
 		"showRaid", true,
@@ -243,7 +243,18 @@ function Module:SpawnParty()
 		"oUF-initialConfigFunction", InitialConfig(cfg.Width, height))
 
 	header:SetSize(cfg.Width, height * 5 + partySpacing * 4)
-	K.CreateMover(header, "PartyFrames", "Party", { "TOPLEFT", UIParent, "TOPLEFT", 50, -300 }, header:GetWidth(), header:GetHeight())
+
+	-- The portrait hangs off the left of each frame, so the visible block reaches
+	-- further left than the header does. Make the mover cover that extra width and
+	-- sit the header inside it, so the mover edge matches the real left edge. That
+	-- way the default and any drag place the whole block, portrait included, the
+	-- right distance from the screen edge instead of pushing the portrait off it.
+	local portraitExtent = cfg.Portrait and (Module.GAP + Module.TotalHeight(cfg)) or 0
+	K.CreateMover(header, "PartyFrames", "Party", { "TOPLEFT", UIParent, "TOPLEFT", 4, -300 }, cfg.Width + portraitExtent, header:GetHeight())
+	if portraitExtent > 0 then
+		header:ClearAllPoints()
+		header:SetPoint("TOPLEFT", header.KKUI_Mover, "TOPLEFT", portraitExtent, 0)
+	end
 
 	-- Show in a party but stand down inside a raid, where the raid header takes
 	-- over. Optionally stay up while solo for positioning.

@@ -422,13 +422,49 @@ local function GetNPCID(unit)
 	return tonumber((select(6, strsplit("-", guid))))
 end
 
--- Health colour override: if the unit's npcID is on the list, paint the fill in
--- its colour so priority targets stand out. Runs after oUF's own colouring.
+-- Health colour override, run after oUF's own colouring:
+--   1. an npcID on the custom list always wins,
+--   2. players keep the class / reaction colour oUF gave them,
+--   3. enemies get a threat colour when that option is on, otherwise their
+--      reaction colour, and a solid hostile colour when the reaction is secret,
+--      so a mob we are fighting never falls back to the plain green health fill.
 local function CustomHealthColor(health, unit)
 	local npcID = GetNPCID(unit)
-	local color = npcID and K.NameplateCustomColors[npcID]
-	if color then
-		health:SetStatusBarColor(color[1], color[2], color[3])
+	local custom = npcID and K.NameplateCustomColors[npcID]
+	if custom then
+		health:SetStatusBarColor(custom[1], custom[2], custom[3])
+		return
+	end
+
+	local isPlayer = UnitIsPlayer(unit)
+	if IsSecret(isPlayer) or isPlayer then
+		return
+	end
+
+	if C.Nameplate.ThreatHealthColor then
+		local status = UnitThreatSituation("player", unit)
+		if status and not IsSecret(status) then
+			local color = K.ThreatFillColor(status, K.PlayerIsTank())
+			if color then
+				health:SetStatusBarColor(color[1], color[2], color[3])
+				return
+			end
+		end
+	end
+
+	local reaction = UnitReaction(unit, "player")
+	if reaction and not IsSecret(reaction) then
+		local c = oUF.colors.reaction[reaction]
+		if c then
+			health:SetStatusBarColor(c:GetRGB())
+			return
+		end
+	end
+
+	-- Reaction unknown (secret): fall back to the hostile colour, not stock green.
+	local hostile = oUF.colors and oUF.colors.reaction and oUF.colors.reaction[2]
+	if hostile then
+		health:SetStatusBarColor(hostile:GetRGB())
 	end
 end
 

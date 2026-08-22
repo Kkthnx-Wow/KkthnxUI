@@ -21,6 +21,9 @@ local UnitClass = UnitClass
 local UnitIsPlayer = UnitIsPlayer
 local UnitInPartyIsAI = UnitInPartyIsAI
 local UnitReaction = UnitReaction
+local UnitCanAttack = UnitCanAttack
+local UnitThreatSituation = UnitThreatSituation
+local oUF = K.oUF
 
 -- ExponentialEaseOut is the only interpolation the client offers besides
 -- Immediate, so "smooth bars" maps onto it directly.
@@ -193,6 +196,44 @@ function Module.RefreshHealthBorder(self)
 	end
 end
 
+-- Enemy fill override, run after oUF's own colouring. Players and friendly units
+-- keep the colour oUF gave them. Enemies get a threat colour when that option is
+-- on, and a solid hostile colour when their reaction is secret, so a mob we are
+-- fighting never falls back to the plain green health fill.
+local function ColorEnemyFill(element, unit)
+	local isPlayer = UnitIsPlayer(unit)
+	if IsSecret(isPlayer) or isPlayer then
+		return
+	end
+
+	local canAttack = UnitCanAttack("player", unit)
+	if IsSecret(canAttack) or not canAttack then
+		return -- friendly npc: leave oUF's reaction colour
+	end
+
+	if C.Unitframe.ThreatHealthColor then
+		local status = UnitThreatSituation("player", unit)
+		if status and not IsSecret(status) then
+			local color = K.ThreatFillColor(status, K.PlayerIsTank())
+			if color then
+				element:SetStatusBarColor(color[1], color[2], color[3])
+				return
+			end
+		end
+	end
+
+	-- If the reaction is readable oUF already coloured it right, so only step in
+	-- when it is secret: use the hostile colour instead of the stock green.
+	local reaction = UnitReaction(unit, "player")
+	if reaction and not IsSecret(reaction) then
+		return
+	end
+	local hostile = oUF and oUF.colors and oUF.colors.reaction and oUF.colors.reaction[2]
+	if hostile then
+		element:SetStatusBarColor(hostile:GetRGB())
+	end
+end
+
 local function OnHealthColor(element, unit)
 	local frame = element.__owner
 	frame.__unitColor = UnitBorderColor(frame, unit)
@@ -201,6 +242,8 @@ local function OnHealthColor(element, unit)
 	if element.__shaded then
 		ShadeBar(element)
 	end
+
+	ColorEnemyFill(element, unit)
 end
 
 function Build.Health(self, height)

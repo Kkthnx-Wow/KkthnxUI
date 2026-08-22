@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Include file="KKUI_CharacterFrame.xml" />
 	<Script file="Core.lua" />
 	<Script file="Slots.lua" />
 </Ui>

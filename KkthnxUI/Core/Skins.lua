@@ -40,6 +40,25 @@ local function GradientBG(frame, r1, g1, b1, a1, r2, g2, b2, a2)
 end
 K.GradientBG = GradientBG
 
+-- Cooldown swipe. On Midnight the default radial swipe texture does not render, so
+-- every cooldown frame we skin needs a real blank texture with our tint or it shows
+-- no wipe at all, just the number. Colour defaults to a dark 80% swipe. Pass a
+-- red-ish tint for loss-of-control cooldowns. Idempotent and safe to call once per
+-- frame. Numbers stay Blizzard's native ones (the only ones that can read a secret
+-- cooldown duration on Midnight), so this never touches SetHideCountdownNumbers.
+local COOLDOWN_SWIPE_TEX = "Interface\\BUTTONS\\WHITE8X8"
+function K.StyleCooldownSwipe(cooldown, r, g, b, a)
+	if not (cooldown and cooldown.SetSwipeTexture) then
+		return
+	end
+	cooldown:SetDrawSwipe(true)
+	cooldown:SetSwipeTexture(COOLDOWN_SWIPE_TEX, r or 0, g or 0, b or 0, a or 0.8)
+	cooldown:SetDrawEdge(false)
+	if cooldown.SetUseCircularEdge then
+		cooldown:SetUseCircularEdge(false)
+	end
+end
+
 -- Panel backdrop: a subtle top-lit vertical gradient with a faint accent line at
 -- the top edge, so large frames read with depth instead of a flat black slab.
 -- Pair with K.CreateBorder. Returns the background texture.

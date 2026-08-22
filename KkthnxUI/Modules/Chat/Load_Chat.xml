@@ -3,6 +3,7 @@
 	<Script file="Core.lua" />
 	<Script file="Hyperlink.lua" />
 	<Script file="Chatbar.lua" />
+	<Script file="Buttons.lua" />
 	<Script file="Filter.lua" />
 	<Script file="Bubbles.lua" />
 </Ui>

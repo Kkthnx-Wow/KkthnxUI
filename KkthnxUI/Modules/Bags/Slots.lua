@@ -116,6 +116,7 @@ local function Skin(button)
 		button.Cooldown:ClearAllPoints()
 		button.Cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 		button.Cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		K.StyleCooldownSwipe(button.Cooldown)
 	end
 
 	-- Item level, top-left, for equippable gear.

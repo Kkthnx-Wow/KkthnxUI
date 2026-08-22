@@ -58,9 +58,12 @@ Module.Styles.Party = function(self)
 
 	Build.Health(self, cfg.Height)
 	Build.Power(self, Module.PowerHeight(cfg))
-	-- Square portrait hanging off the left, sized to the child's full height.
+	-- Square portrait hanging off the left, sized to the child's full height, with
+	-- the member's level on the gradient strip above it, the way the target frame
+	-- shows it.
 	if cfg.Portrait then
 		Build.Portrait(self, "left", Module.TotalHeight(cfg))
+		Build.PortraitLevel(self)
 	end
 	-- Name on the gradient strip above health, value centred on the bar.
 	Build.Name(self, 11)

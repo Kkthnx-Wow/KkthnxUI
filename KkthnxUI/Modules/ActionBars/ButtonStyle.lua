@@ -111,6 +111,7 @@ function Module:StyleAuxButton(button)
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		K.StyleCooldownSwipe(cooldown)
 	end
 
 	self:StyleInteractionTextures(button)
@@ -203,27 +204,12 @@ function Module:StyleButton(button)
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
-		cooldown:SetDrawSwipe(true)
-		-- The retail default swipe texture does not render, so give it a real blank
-		-- texture with our colour, or no swipe shows at all.
-		cooldown:SetSwipeTexture(C.Media.Textures.White8x8, 0, 0, 0, 0.8)
-		cooldown:SetDrawEdge(false)
-		if cooldown.SetUseCircularEdge then
-			cooldown:SetUseCircularEdge(false)
-		end
+		K.StyleCooldownSwipe(cooldown)
 	end
 
-	-- Loss-of-control cooldown: the red swipe while you are crowd-controlled. Same
-	-- missing-texture problem as the main one, so give it a dark-red blank swipe.
-	local loc = button.lossOfControlCooldown
-	if loc then
-		loc:SetDrawSwipe(true)
-		loc:SetSwipeTexture(C.Media.Textures.White8x8, 0.35, 0, 0, 0.8)
-		loc:SetDrawEdge(false)
-		if loc.SetUseCircularEdge then
-			loc:SetUseCircularEdge(false)
-		end
-	end
+	-- Loss-of-control cooldown gets the same swipe in a dark red, for the wipe while
+	-- you are crowd controlled.
+	K.StyleCooldownSwipe(button.lossOfControlCooldown, 0.35, 0, 0)
 
 	-- Clean interaction-state textures: pushed and hover glow, checked outline.
 	self:StyleInteractionTextures(button)

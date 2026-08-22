@@ -92,6 +92,7 @@ local function MakeInitializer(opts)
 		local cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
 		cooldown:SetAllPoints(icon)
 		cooldown:SetHideCountdownNumbers(true)
+		K.StyleCooldownSwipe(cooldown)
 
 		-- Text rides a frame above the cooldown, or the swipe draws over it.
 		local textParent = CreateFrame("Frame", nil, button)
