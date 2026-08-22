@@ -26,8 +26,10 @@ local GetInventoryItemQuality = GetInventoryItemQuality
 local GetInventoryItemLink = GetInventoryItemLink
 local C_Container = C_Container
 
+-- The border draws a few px outside each button, so the gap has to clear it or
+-- the slots read as one stuck-together block.
 local SLOT = 24
-local GAP = 4
+local GAP = 8
 local PAD = 6
 -- The default pack icon, used for the backpack and any empty slot.
 local DEFAULT_ICON = "Interface\\Buttons\\Button-Backpack-Up"
