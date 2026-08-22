@@ -9,7 +9,7 @@
 		of the secure action path.
 -----------------------------------------------------------------------------]]
 
-local K, _, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local Module = K:GetModule("Bags")
 if not Module then
@@ -26,10 +26,7 @@ local GetInventoryItemQuality = GetInventoryItemQuality
 local GetInventoryItemLink = GetInventoryItemLink
 local C_Container = C_Container
 
--- The border draws a few px outside each button, so the gap has to clear it or
--- the slots read as one stuck-together block.
 local SLOT = 24
-local GAP = 8
 local PAD = 6
 -- The default pack icon, used for the backpack and any empty slot.
 local DEFAULT_ICON = "Interface\\Buttons\\Button-Backpack-Up"
@@ -100,6 +97,8 @@ function Module:CreateBagStrip(f)
 	strip:SetPoint("TOPRIGHT", f, "TOPRIGHT", -12, -34)
 	strip:Hide()
 
+	-- Match the item grid's own spacing so the strip reads as part of the window.
+	local gap = C.Bags.Spacing
 	strip.buttons = {}
 	local x = 0
 	for _, bag in ipairs(StripBags()) do
@@ -128,7 +127,7 @@ function Module:CreateBagStrip(f)
 		button:HookScript("OnClick", SwapBag)
 
 		strip.buttons[#strip.buttons + 1] = button
-		x = x + SLOT + GAP
+		x = x + SLOT + gap
 	end
 
 	f.BagStrip = strip
