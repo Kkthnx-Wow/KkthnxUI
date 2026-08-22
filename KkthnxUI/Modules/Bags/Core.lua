@@ -397,12 +397,6 @@ function Module:CreateContainer(name, title, bags, perRow)
 	K.CreateGradientBackground(f, 0.95)
 	K.CreateBorder(f)
 
-	local titleFS = f:CreateFontString(nil, "OVERLAY")
-	K.SetFont(titleFS, 15, K.FontOutlineStyle())
-	titleFS:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, -12)
-	titleFS:SetTextColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3])
-	titleFS:SetText(title)
-
 	local close = CreateFrame("Button", name .. "Close", f, "UIPanelCloseButton")
 	close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -4)
 	close:SetScript("OnClick", function()
@@ -410,10 +404,53 @@ function Module:CreateContainer(name, title, bags, perRow)
 	end)
 	K.SkinCloseButton(close)
 
-	-- Search box, top band, left of the sort button.
+	-- A square icon button sized to match the close button, for the top band.
+	local function IconButton(suffix, atlas, texture, tip, onClick)
+		local button = CreateFrame("Button", name .. suffix, f)
+		button:SetSize(22, 22)
+		K.SkinButton(button)
+		local icon = button:CreateTexture(nil, "ARTWORK")
+		icon:SetPoint("TOPLEFT", 3, -3)
+		icon:SetPoint("BOTTOMRIGHT", -3, 3)
+		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		if atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas) then
+			icon:SetAtlas(atlas)
+		else
+			icon:SetTexture(texture)
+		end
+		button.icon = icon
+		button:SetScript("OnClick", onClick)
+		button:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(tip, 1, 1, 1)
+			GameTooltip:Show()
+		end)
+		button:SetScript("OnLeave", GameTooltip_Hide or function() GameTooltip:Hide() end)
+		return button
+	end
+
+	-- Sort, top band, right before the close button. A broom for cleanup.
+	local sort = IconButton("Sort", "bags-button-autosort-up", "Interface\\ICONS\\INV_Misc_Broom_01", L["Sort"], function()
+		Module:SortContainer(f)
+	end)
+	sort:SetPoint("RIGHT", close, "LEFT", -6, 0)
+	f.Sort = sort
+
+	-- Bag bar toggle, showing or hiding the bag slot strip.
+	local bagToggle = IconButton("BagToggle", "bag-main", "Interface\\Buttons\\Button-Backpack-Up", L["Toggle Bag Bar"], function()
+		local strip = _G.KKUI_BagBar
+		if strip then
+			C.Bags.ShowBagBar = not strip:IsShown()
+			strip:SetShown(C.Bags.ShowBagBar)
+		end
+	end)
+	bagToggle:SetPoint("RIGHT", sort, "LEFT", -6, 0)
+	f.BagToggle = bagToggle
+
+	-- Search box, top band, pinned to the top-left where the title used to sit.
 	local search = CreateFrame("EditBox", name .. "Search", f)
-	search:SetSize(120, 18)
-	search:SetPoint("TOPRIGHT", close, "TOPLEFT", -70, -2)
+	search:SetSize(140, 20)
+	search:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, -10)
 	search:SetAutoFocus(false)
 	K.SetFont(search, 12, "")
 	search:SetTextInsets(4, 4, 0, 0)
@@ -435,25 +472,11 @@ function Module:CreateContainer(name, title, bags, perRow)
 	search.Placeholder = placeholder
 	f.Search = search
 
-	-- Sort button, top band, right before the close button.
-	local sort = CreateFrame("Button", name .. "Sort", f)
-	sort:SetSize(52, 18)
-	sort:SetPoint("RIGHT", close, "LEFT", -6, 0)
-	sort.Text = sort:CreateFontString(nil, "OVERLAY")
-	K.SetFont(sort.Text, 12, K.FontOutlineStyle())
-	sort.Text:SetPoint("CENTER")
-	sort.Text:SetText(L["Sort"])
-	sort:SetScript("OnClick", function()
-		Module:SortContainer(f)
-	end)
-	K.SkinButton(sort)
-	f.Sort = sort
-
-	-- Sell-junk button, shown only while a merchant is open, left of the search
+	-- Sell-junk button, shown only while a merchant is open, right of the search
 	-- box. Its label carries the running junk value so you know what you get.
 	local sell = CreateFrame("Button", name .. "Sell", f)
-	sell:SetSize(110, 18)
-	sell:SetPoint("RIGHT", search, "LEFT", -8, 0)
+	sell:SetSize(110, 20)
+	sell:SetPoint("LEFT", search, "RIGHT", 8, 0)
 	sell.Text = sell:CreateFontString(nil, "OVERLAY")
 	K.SetFont(sell.Text, 12, K.FontOutlineStyle())
 	sell.Text:SetPoint("CENTER")

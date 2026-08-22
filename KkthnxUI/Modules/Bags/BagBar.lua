@@ -220,6 +220,11 @@ function Module:Setup()
 	local point = micro and { "BOTTOMRIGHT", micro, "TOPRIGHT", 0, 6 } or { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 34 }
 	K.CreateMover(bar, "BagBar", L["Bag Bar"], point, bar:GetWidth(), bar:GetHeight())
 
+	-- Honour the saved show state, which the bag window toggle also drives.
+	if C.Bags and C.Bags.ShowBagBar == false then
+		bar:Hide()
+	end
+
 	self:RegisterEvent("BAG_UPDATE_DELAYED", ReapplyIcons)
 	-- Reparenting is blocked in combat, so re-assert the layout once it ends.
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", function()

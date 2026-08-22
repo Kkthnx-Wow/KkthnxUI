@@ -253,6 +253,7 @@ K.ConfigDefaults = {
 		PawnArrows = true, -- Pawn upgrade arrows on gear (only if Pawn is installed)
 		QuestColor = true, -- quest-yellow border on quest items, ! bang on starters
 		ReagentBagSection = true, -- group the reagent pouch into its own section
+		ShowBagBar = true, -- show the bag slot strip, toggled from the bag window
 		ShowItemBind = true, -- BoE / BoA marker on bind-on-equip gear
 		ShowNewItems = true, -- glow freshly looted items
 		ShowCurrencies = true, -- tracked currency row along the bottom
