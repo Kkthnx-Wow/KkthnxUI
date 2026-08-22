@@ -18,6 +18,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("UnitFrames")
 local Build = Module.Build
 
+local IsSecret = K.IsSecret
 local AbbreviateNumbers = AbbreviateNumbers
 local UnitHealthPercent = UnitHealthPercent
 local UnitPowerPercent = UnitPowerPercent
@@ -120,9 +121,20 @@ local function UpdateHealthText(element, unit, cur)
 	if mode == "Current" then
 		text:SetText(AbbreviateNumbers(cur))
 	elseif mode == "Percent" then
-		text:SetFormattedText("%d%%", UnitHealthPercent(unit, true, SCALE_TO_100))
+		local perc = UnitHealthPercent(unit, true, SCALE_TO_100)
+		-- Full health reads as just the value, no redundant 100%.
+		if not IsSecret(perc) and perc >= 100 then
+			text:SetText(AbbreviateNumbers(cur))
+		else
+			text:SetFormattedText("%d%%", perc)
+		end
 	else
-		text:SetFormattedText("%s  %d%%", AbbreviateNumbers(cur), UnitHealthPercent(unit, true, SCALE_TO_100))
+		local perc = UnitHealthPercent(unit, true, SCALE_TO_100)
+		if not IsSecret(perc) and perc >= 100 then
+			text:SetText(AbbreviateNumbers(cur))
+		else
+			text:SetFormattedText("%s - %d%%", AbbreviateNumbers(cur), perc)
+		end
 	end
 end
 
