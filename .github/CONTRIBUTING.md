@@ -1,25 +1,35 @@
-## How to Contribute to This Project
+# Contributing to KkthnxUI
 
-#### **Did You Find a Bug?**
+Thanks for taking the time to help out. Here is how to get changes in front of the
+right eyes.
 
-  * **Ensure the bug was not already reported** by searching on GitHub under [Issues](issues).
-  * If you're unable to find an open issue addressing the problem, [open a new one](new-issue). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+## Found a bug?
 
-#### **Did You Write a Patch That Fixes a Bug?**
+- Search the [issues](https://github.com/Kkthnx-Wow/KkthnxUI/issues) first, so we
+  do not track the same thing twice.
+- If nothing matches, [open a new one](https://github.com/Kkthnx-Wow/KkthnxUI/issues/new/choose)
+  using the Bug report template. A filled-in example lives at
+  [.github/BUG_REPORT_EXAMPLE.md](BUG_REPORT_EXAMPLE.md).
 
-  * Open a new GitHub pull request with the patch.
-    1. Fork this project
-    1. Create your feature branch: `git checkout -b my-new-feature`
-    1. Commit your changes: `git commit -am 'Add some feature'`
-    1. Push to the branch: `git push origin my-new-feature`
-    1. Submit a pull request :tada:
-  * Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
+## Want to suggest a feature?
 
-#### **Do You Intend to Add a New Feature or Change an Existing One?**
+- Open an issue with the Feature request template and describe the idea before you
+  start writing code, so we can talk it through first.
 
-  * Suggest your change as a new [issue](new-issue) using the label `enhancement` **BEFORE** you start writing code.
+## Writing a patch?
 
-Thanks for contributing! :heart:
+1. Fork the project and make a branch: `git checkout -b my-change`
+2. Make your change and test it in game
+3. Commit with a clear message
+4. Push your branch and open a pull request
 
-[issues]:github.com/Kkthnx-WoW/KkthnxUI/issues
-[new-issue]: github.com/Kkthnx-WoW/KkthnxUI/issues/new
+Please keep the pull request focused on one thing, follow the style of the code
+around it, and make sure it throws no Lua errors. Keep code and comments free of
+any mention of other addons or interfaces.
+
+## License
+
+KkthnxUI is fully copyrighted. See [LICENSE.md](../LICENSE.md). Submitting a change
+means you are fine with it being part of the project under those terms.
+
+Thanks for contributing.
