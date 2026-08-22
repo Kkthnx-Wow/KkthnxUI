@@ -695,7 +695,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Junk Coin Icon"], path = { "Bags", "JunkIcon" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "check", label = L["Quest Item Colour"], path = { "Bags", "QuestColor" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Give quest items a quest-yellow border and a bang on items that start a quest."] },
 			{ kind = "check", label = L["Reagent Bag Section"], path = { "Bags", "ReagentBagSection" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Group everything in the reagent pouch into its own section."] },
-			{ kind = "check", label = L["Show Bag Bar"], path = { "Bags", "ShowBagBar" }, apply = function() if _G.KKUI_BagBar then _G.KKUI_BagBar:SetShown(C.Bags.ShowBagBar) end end, tooltip = L["Show the bag slot strip. Also toggled by the button in the bag window."] },
+			{ kind = "check", label = L["Show Bag Bar"], path = { "Bags", "ShowBagBar" }, apply = function() if B and B.ToggleBagStrip and B.BagFrame then B:ToggleBagStrip(B.BagFrame, C.Bags.ShowBagBar) end end, dependsOn = { "Bags", "Enable" }, tooltip = L["Show the bag slot strip on the bag window. Also toggled by the button in the window."] },
 			{ kind = "check", label = L["Track Currencies"], path = { "Bags", "ShowCurrencies" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Show your pinned currencies along the bottom of the window."] },
 
 			{ kind = "header", label = L["Behaviour"] },

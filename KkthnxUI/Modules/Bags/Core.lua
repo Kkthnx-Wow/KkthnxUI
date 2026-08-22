@@ -135,6 +135,14 @@ function Module:LayoutContainer(f)
 	self:ReleaseSlots(f)
 	ReleaseHeaders(f)
 
+	-- The bag slot strip, when folded out, reserves room above the item grid.
+	if f.BagStrip and f.BagStrip:IsShown() then
+		f.extraTop = Module.BagStripHeight
+		self:UpdateBagStrip(f)
+	else
+		f.extraTop = 0
+	end
+
 	-- Sort every occupied slot into buckets, and pool the empties. When the reagent
 	-- shelf is its own section, its empties pool apart so the free reagent slots can
 	-- show under that shelf instead of vanishing into the general free-slot count.
@@ -436,12 +444,11 @@ function Module:CreateContainer(name, title, bags, perRow)
 	sort:SetPoint("RIGHT", close, "LEFT", -6, 0)
 	f.Sort = sort
 
-	-- Bag bar toggle, showing or hiding the bag slot strip.
+	-- Bag bar toggle, folding the bag slot strip in and out of this window.
 	local bagToggle = IconButton("BagToggle", "bag-main", "Interface\\Buttons\\Button-Backpack-Up", L["Toggle Bag Bar"], function()
-		local strip = _G.KKUI_BagBar
-		if strip then
-			C.Bags.ShowBagBar = not strip:IsShown()
-			strip:SetShown(C.Bags.ShowBagBar)
+		if f.BagStrip then
+			C.Bags.ShowBagBar = not f.BagStrip:IsShown()
+			Module:ToggleBagStrip(f, C.Bags.ShowBagBar)
 		end
 	end)
 	bagToggle:SetPoint("RIGHT", sort, "LEFT", -6, 0)
@@ -673,6 +680,12 @@ function Module:OnEnable()
 	self.BagFrame = self:CreateContainer("KKUI_BagFrame", L["Inventory"], self.BagIDs, C.Bags.BagsPerRow)
 	K.CreateMover(self.BagFrame, "Bags", L["Inventory"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -60, 60 }, self.BagFrame:GetWidth(), self.BagFrame:GetHeight())
 	K.EnableFrameDrag(self.BagFrame)
+
+	-- The bag slot strip lives on the bag window and starts at its saved state.
+	if self.CreateBagStrip then
+		self:CreateBagStrip(self.BagFrame)
+		self.BagFrame.BagStrip:SetShown(C.Bags.ShowBagBar)
+	end
 
 	if self.SetupBank then
 		self:SetupBank()
