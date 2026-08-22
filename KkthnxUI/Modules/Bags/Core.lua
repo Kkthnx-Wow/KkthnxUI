@@ -55,6 +55,9 @@ local BOTTOM_BAND = 44 -- money / free slots on one line, currencies above them
 local HEADER_H = 16
 local GROUP_GAP = 8
 
+-- The dedicated reagent pouch, so its free slots can sit under its own shelf.
+local REAGENT_BAG = Enum.BagIndex and Enum.BagIndex.ReagentBag or 5
+
 -- Within a section: higher quality first, then group identical item ids. The
 -- keys are captured secret-safe when the bucket is built (see LayoutContainer),
 -- so this comparison never touches a tainted value.
@@ -132,8 +135,11 @@ function Module:LayoutContainer(f)
 	self:ReleaseSlots(f)
 	ReleaseHeaders(f)
 
-	-- Sort every occupied slot into buckets, and pool the empties.
-	local buckets, empties = {}, {}
+	-- Sort every occupied slot into buckets, and pool the empties. When the reagent
+	-- shelf is its own section, its empties pool apart so the free reagent slots can
+	-- show under that shelf instead of vanishing into the general free-slot count.
+	local splitReagent = cfg.Categories and cfg.ReagentBagSection
+	local buckets, empties, reagentEmpties = {}, {}, {}
 	for _, bag in ipairs(f.bags) do
 		local numSlots = C_Container.GetContainerNumSlots(bag) or 0
 		for slot = 1, numSlots do
@@ -152,6 +158,8 @@ function Module:LayoutContainer(f)
 					(quality and not IsSecret(quality)) and quality or -1,
 					(itemID and not IsSecret(itemID)) and itemID or 0,
 				})
+			elseif splitReagent and bag == REAGENT_BAG then
+				tinsert(reagentEmpties, { bag, slot })
 			else
 				tinsert(empties, { bag, slot })
 			end
@@ -161,8 +169,12 @@ function Module:LayoutContainer(f)
 	local topBand = TOP_BAND + (f.extraTop or 0)
 	local y = -topBand
 
-	local function placeGroup(list, label, key)
-		if not list or #list == 0 then
+	-- free (optional): a list of empty slots for this group. They collapse to one
+	-- trailing button, in the grid flow after the items, showing how many are free.
+	local function placeGroup(list, label, key, free)
+		list = list or {}
+		local freeCount = free and #free or 0
+		if #list == 0 and freeCount == 0 then
 			return
 		end
 		local collapsed = key and cfg.Collapsed[key]
@@ -193,7 +205,18 @@ function Module:LayoutContainer(f)
 			button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
 			self:UpdateSlot(button, entry[1], entry[2])
 		end
-		local rows = ceil(#list / perRow)
+		local total = #list
+		if freeCount > 0 then
+			total = total + 1
+			local col = #list % perRow
+			local row = floor(#list / perRow)
+			local button = self:AcquireSlot(f)
+			button:ClearAllPoints()
+			button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
+			self:UpdateSlot(button, free[1][1], free[1][2])
+			SetItemButtonCount(button, freeCount)
+		end
+		local rows = ceil(total / perRow)
 		y = y - rows * step - GROUP_GAP
 	end
 
@@ -205,7 +228,7 @@ function Module:LayoutContainer(f)
 
 	if cfg.Categories then
 		for _, cat in ipairs(self.Categories) do
-			placeGroup(buckets[cat.key], cat.name, cat.key)
+			placeGroup(buckets[cat.key], cat.name, cat.key, cat.key == "ReagentBag" and reagentEmpties or nil)
 		end
 	else
 		placeGroup(buckets["All"], nil, nil)
