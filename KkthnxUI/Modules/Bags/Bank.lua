@@ -120,6 +120,13 @@ function Module:SetupBank()
 	K.CreateMover(f, "Bank", L["Bank"], { "TOPLEFT", UIParent, "TOPLEFT", 60, -60 }, f:GetWidth(), f:GetHeight())
 	K.EnableFrameDrag(f)
 
+	-- Account gold tooltip on the money text, and the Warband deposit and withdraw
+	-- control along the bottom.
+	if self.AttachGoldTooltip then
+		self:AttachGoldTooltip(f)
+		self:AttachGoldControls(f)
+	end
+
 	-- Move the stock bank UI out of the way. The bank stays open server side, so
 	-- deposits and withdrawals still work through our own item buttons.
 	local hidden = _G.KKUI_HiddenParent
@@ -132,6 +139,9 @@ function Module:SetupBank()
 	end
 
 	self:RegisterEvent("BANKFRAME_OPENED", function()
+		if self.CaptureGold then
+			self:CaptureGold()
+		end
 		self:OpenBank()
 	end)
 	self:RegisterEvent("BANKFRAME_CLOSED", function()

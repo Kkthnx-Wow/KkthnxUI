@@ -712,6 +712,13 @@ function Module:OnEnable()
 		self.BagFrame.BagStrip:SetShown(C.Bags.ShowBagBar)
 	end
 
+	-- Gold tracking: record this character now and hang the account total tooltip
+	-- off the money text.
+	if self.CaptureGold then
+		self:CaptureGold()
+		self:AttachGoldTooltip(self.BagFrame)
+	end
+
 	if self.SetupBank then
 		self:SetupBank()
 	end
@@ -725,6 +732,9 @@ function Module:OnEnable()
 	self:RegisterEvent("QUEST_ACCEPTED", "MarkDirty")
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", "MarkDirty")
 	self:RegisterEvent("PLAYER_MONEY", function()
+		if self.CaptureGold then
+			self:CaptureGold()
+		end
 		self:UpdateAll()
 	end)
 	self:RegisterEvent("MERCHANT_SHOW", function()
