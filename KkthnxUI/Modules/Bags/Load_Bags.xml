@@ -5,6 +5,7 @@
 	<Script file="Categories.lua" />
 	<Script file="Slots.lua" />
 	<Script file="Strip.lua" />
+	<Script file="Groups.lua" />
 	<Script file="Gold.lua" />
 	<Script file="Bank.lua" />
 	<!-- The small backpack + bag-slot bar, complementary to the bag window. -->

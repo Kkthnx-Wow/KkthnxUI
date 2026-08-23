@@ -264,6 +264,8 @@ K.ConfigDefaults = {
 		AutoDepositReagents = false, -- push reagents to the bank on opening it
 		Collapsed = {}, -- section key -> true when the player folded it away
 		Favorites = {}, -- itemID -> true, pinned to their own section on top
+		Groups = {}, -- group name -> order, categories folded under one header
+		CategoryGroup = {}, -- category key -> group name it belongs to
 	},
 
 	-- Movable experience / reputation / honor / azerite / house progress bar.

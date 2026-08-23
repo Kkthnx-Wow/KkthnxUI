@@ -87,8 +87,15 @@ local function AcquireHeader(container)
 		K.SetFont(header.Text, 13, K.FontOutlineStyle())
 		header.Text:SetPoint("LEFT", header.Toggle, "RIGHT", 4, 0)
 		header.Text:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
-		header:SetScript("OnClick", function(self)
-			Module:ToggleCategory(self.catKey)
+		header:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+		header:SetScript("OnClick", function(self, button)
+			if button == "RightButton" then
+				if Module.ShowGroupMenu then
+					Module:ShowGroupMenu(self)
+				end
+			else
+				Module:ToggleCategory(self.catKey)
+			end
 		end)
 		container.headers[container.headerUsed] = header
 	end
@@ -146,7 +153,9 @@ function Module:LayoutContainer(f)
 	-- Sort every occupied slot into buckets, and pool the empties. When the reagent
 	-- shelf is its own section, its empties pool apart so the free reagent slots can
 	-- show under that shelf instead of vanishing into the general free-slot count.
-	local splitReagent = cfg.Categories and cfg.ReagentBagSection
+	-- Reagent empties only get their own trailing button when the reagent shelf is
+	-- shown as its own ungrouped section. Folded into a group, they join the pool.
+	local splitReagent = cfg.Categories and cfg.ReagentBagSection and not (cfg.CategoryGroup and cfg.CategoryGroup.ReagentBag)
 	local buckets, empties, reagentEmpties = {}, {}, {}
 	for _, bag in ipairs(f.bags) do
 		local numSlots = C_Container.GetContainerNumSlots(bag) or 0
@@ -179,7 +188,8 @@ function Module:LayoutContainer(f)
 
 	-- free (optional): a list of empty slots for this group. They collapse to one
 	-- trailing button, in the grid flow after the items, showing how many are free.
-	local function placeGroup(list, label, key, free)
+	-- groupName (optional): set on the header so its menu offers group actions.
+	local function placeGroup(list, label, key, free, groupName)
 		list = list or {}
 		local freeCount = free and #free or 0
 		if #list == 0 and freeCount == 0 then
@@ -189,6 +199,7 @@ function Module:LayoutContainer(f)
 		if label then
 			local header = AcquireHeader(f)
 			header.catKey = key
+			header.groupName = groupName
 			header:ClearAllPoints()
 			header:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, y)
 			header:SetWidth(rowWidth)
@@ -242,8 +253,30 @@ function Module:LayoutContainer(f)
 	end
 
 	if cfg.Categories then
+		local groupMap = cfg.CategoryGroup or {}
+		local groups = cfg.Groups or {}
+		local rendered = {}
 		for _, cat in ipairs(self.Categories) do
-			placeGroup(buckets[cat.key], cat.name, cat.key, cat.key == "ReagentBag" and reagentEmpties or nil)
+			local group = groupMap[cat.key]
+			if group and groups[group] then
+				-- Render each group once, at its first member. Combine every member
+				-- category's items into one section under the group name.
+				if not rendered[group] then
+					rendered[group] = true
+					local combined = {}
+					for _, member in ipairs(self.Categories) do
+						if groupMap[member.key] == group and buckets[member.key] then
+							for _, entry in ipairs(buckets[member.key]) do
+								combined[#combined + 1] = entry
+							end
+						end
+					end
+					tsort(combined, SortEntry)
+					placeGroup(combined, group, "group:" .. group, nil, group)
+				end
+			else
+				placeGroup(buckets[cat.key], cat.name, cat.key, cat.key == "ReagentBag" and reagentEmpties or nil)
+			end
 		end
 	else
 		placeGroup(buckets["All"], nil, nil)
