@@ -258,6 +258,7 @@ K.ConfigDefaults = {
 		ShowNewItems = true, -- glow freshly looted items
 		ShowCurrencies = true, -- tracked currency row along the bottom
 		JunkIcon = true, -- coin marker on grey items
+		DesaturateJunk = false, -- grey out the icon of vendor trash
 		ReverseSort = false, -- newest items to the top-left instead
 		AutoSellJunk = false, -- sell grey items on visiting a merchant
 		AutoDepositReagents = false, -- push reagents to the bank on opening it

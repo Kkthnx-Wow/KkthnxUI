@@ -352,9 +352,13 @@ function Module:UpdateSlot(button, bag, slot)
 
 	SetItemButtonTexture(button, info.iconFileID)
 	SetItemButtonCount(button, info.stackCount)
-	SetItemButtonDesaturated(button, info.isLocked)
 
 	local quality = info.quality
+	-- Grey out the icon while locked, and optionally for junk so the vendor trash
+	-- fades back and the good items lead the eye.
+	local isJunk = not IsSecret(quality) and quality == POOR and not info.hasNoValue
+	SetItemButtonDesaturated(button, info.isLocked or (C.Bags.DesaturateJunk and isJunk) or false)
+
 	SetBorder(button, QualityColor(quality))
 
 	-- Favourite star.
@@ -364,8 +368,7 @@ function Module:UpdateSlot(button, bag, slot)
 
 	-- Junk coin on grey items.
 	if button.JunkIcon then
-		local isJunk = C.Bags.JunkIcon and not IsSecret(quality) and quality == POOR and not info.hasNoValue
-		button.JunkIcon:SetShown(isJunk)
+		button.JunkIcon:SetShown(C.Bags.JunkIcon and isJunk or false)
 	end
 
 	-- Quest items: a quest-coloured border, plus our own ! bang on items that

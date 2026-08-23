@@ -693,6 +693,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Show Bind Type"], path = { "Bags", "ShowItemBind" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Mark bind-on-equip and bind-on-use gear that has not bound yet."] },
 			{ kind = "check", label = L["Glow New Items"], path = { "Bags", "ShowNewItems" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "check", label = L["Junk Coin Icon"], path = { "Bags", "JunkIcon" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
+			{ kind = "check", label = L["Fade Junk Items"], path = { "Bags", "DesaturateJunk" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Grey out the icon of vendor trash so it fades behind the rest."] },
 			{ kind = "check", label = L["Quest Item Colour"], path = { "Bags", "QuestColor" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Give quest items a quest-yellow border and a bang on items that start a quest."] },
 			{ kind = "check", label = L["Reagent Bag Section"], path = { "Bags", "ReagentBagSection" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Group everything in the reagent pouch into its own section."] },
 			{ kind = "check", label = L["Show Bag Bar"], path = { "Bags", "ShowBagBar" }, apply = function() if B and B.ToggleBagStrip and B.BagFrame then B:ToggleBagStrip(B.BagFrame, C.Bags.ShowBagBar) end end, dependsOn = { "Bags", "Enable" }, tooltip = L["Show the bag slot strip on the bag window. Also toggled by the button in the window."] },
