@@ -681,6 +681,7 @@ GUI.schema = {
 			{ kind = "header", label = L["Bags"] },
 			{ kind = "check", label = L["Enable Bags"], path = { "Bags", "Enable" }, reload = true, tooltip = L["An all-in-one, auto categorised bag and bank window that replaces the default bags."] },
 			{ kind = "check", label = L["Categorise Items"], path = { "Bags", "Categories" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Group items into New, Equipment, Consumables, and the like."] },
+			{ kind = "check", label = L["Merge Duplicate Stacks"], path = { "Bags", "MergeStacks" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Show one button per stackable item with the combined count."] },
 			{ kind = "slider", label = L["Button Size"], path = { "Bags", "ButtonSize" }, min = 24, max = 48, step = 1, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "slider", label = L["Button Spacing"], path = { "Bags", "Spacing" }, min = 0, max = 10, step = 1, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "slider", label = L["Bags Per Row"], path = { "Bags", "BagsPerRow" }, min = 6, max = 20, step = 1, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },

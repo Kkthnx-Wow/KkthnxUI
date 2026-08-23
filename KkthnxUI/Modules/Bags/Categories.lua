@@ -43,6 +43,37 @@ Module.Categories = {
 	{ key = "Junk", name = L["Junk"] },
 }
 
+local next = next
+local ipairs = ipairs
+local pairs = pairs
+local tsort = table.sort
+
+-- The render order including any custom categories the player made, dropped in
+-- just ahead of the Miscellaneous catch-all so their assigned items lead it.
+function Module:OrderedCategories()
+	local custom = C.Bags.CustomCategories
+	if not custom or not next(custom) then
+		return self.Categories
+	end
+	local keys = {}
+	for key in pairs(custom) do
+		keys[#keys + 1] = key
+	end
+	tsort(keys, function(a, b)
+		return custom[a] < custom[b]
+	end)
+	local out = {}
+	for _, cat in ipairs(self.Categories) do
+		if cat.key == "Miscellaneous" then
+			for _, key in ipairs(keys) do
+				out[#out + 1] = { key = key, name = custom[key] }
+			end
+		end
+		out[#out + 1] = cat
+	end
+	return out
+end
+
 -- Miscellaneous subclasses that are really collectibles (mounts and pets).
 local MiscSub = Enum.ItemMiscellaneousSubclass
 local COLLECTIBLE_MISC = {
@@ -86,10 +117,17 @@ function Module:GetCategory(bag, slot, info)
 		return "Miscellaneous"
 	end
 
-	-- Player-pinned favourites sit above everything else.
 	local itemID = info.itemID
-	if itemID and not IsSecret(itemID) and C.Bags.Favorites[itemID] then
-		return "Favourites"
+	if itemID and not IsSecret(itemID) then
+		-- An explicit per-item assignment wins over the automatic sorting.
+		local assigned = C.Bags.ItemAssignments and C.Bags.ItemAssignments[itemID]
+		if assigned then
+			return assigned
+		end
+		-- Player-pinned favourites sit above everything else.
+		if C.Bags.Favorites[itemID] then
+			return "Favourites"
+		end
 	end
 
 	-- Anything sitting in the dedicated reagent bag groups together, so crafters

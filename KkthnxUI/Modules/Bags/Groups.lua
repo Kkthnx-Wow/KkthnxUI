@@ -164,6 +164,13 @@ function Module:ShowGroupMenu(header)
 			return
 		end
 		root:CreateTitle(header.Text and header.Text:GetText() or L["Category"])
+
+		-- A custom category the player made can be removed outright.
+		if C.Bags.CustomCategories and C.Bags.CustomCategories[catKey] and Module.DeleteCustomCategory then
+			root:CreateButton(L["Delete Category"], function()
+				Module:DeleteCustomCategory(catKey)
+			end)
+		end
 		root:CreateButton(L["New Group"], function()
 			PromptName(L["New Group"], "", function(text)
 				Module:CreateGroup(text)

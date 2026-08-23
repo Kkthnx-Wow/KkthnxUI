@@ -39,6 +39,8 @@ local InCombatLockdown = InCombatLockdown
 local GetMoney = GetMoney
 local GetCoinTextureString = GetCoinTextureString
 local C_Container = C_Container
+local C_Item = C_Item
+local SetItemButtonCount = SetItemButtonCount
 local C_Timer = C_Timer
 local C_MerchantFrame = C_MerchantFrame
 local C_CurrencyInfo = C_CurrencyInfo
@@ -66,6 +68,46 @@ local function SortEntry(a, b)
 		return a[3] > b[3]
 	end
 	return a[4] < b[4]
+end
+
+-- Whether an item id stacks, cached so a relayout does not re-query the client.
+local mergeableCache = {}
+local function Mergeable(itemID)
+	if itemID == 0 then
+		return false
+	end
+	local cached = mergeableCache[itemID]
+	if cached == nil then
+		local maxStack = select(8, C_Item.GetItemInfo(itemID))
+		-- nil while the item is still loading. Treat as not mergeable for now, the
+		-- next relayout re-checks once the data is in.
+		cached = (maxStack and maxStack > 1) or false
+		if maxStack then
+			mergeableCache[itemID] = cached
+		end
+	end
+	return cached
+end
+
+-- Fold entries for the same stackable item into one, summing their counts. The
+-- kept entry gains a mergeCount so its button shows the combined total. Gear and
+-- other unstackable items are left as separate buttons.
+local function MergeList(list)
+	local out, seen = {}, {}
+	for _, entry in ipairs(list) do
+		local id = entry[4]
+		local mergeKey = (id ~= 0 and Mergeable(id)) and id or nil
+		if mergeKey and seen[mergeKey] then
+			local rep = seen[mergeKey]
+			rep.mergeCount = (rep.mergeCount or rep[5] or 1) + (entry[5] or 1)
+		else
+			out[#out + 1] = entry
+			if mergeKey then
+				seen[mergeKey] = entry
+			end
+		end
+	end
+	return out
 end
 
 -- ---------------------------------------------------------------------------
@@ -169,11 +211,13 @@ function Module:LayoutContainer(f)
 				-- they never enter a tainted comparison.
 				local quality = info.quality
 				local itemID = info.itemID
+				local stack = info.stackCount
 				tinsert(buckets[key], {
 					bag,
 					slot,
 					(quality and not IsSecret(quality)) and quality or -1,
 					(itemID and not IsSecret(itemID)) and itemID or 0,
+					(stack and not IsSecret(stack)) and stack or 1,
 				})
 			elseif splitReagent and bag == REAGENT_BAG then
 				tinsert(reagentEmpties, { bag, slot })
@@ -191,6 +235,9 @@ function Module:LayoutContainer(f)
 	-- groupName (optional): set on the header so its menu offers group actions.
 	local function placeGroup(list, label, key, free, groupName)
 		list = list or {}
+		if cfg.MergeStacks then
+			list = MergeList(list)
+		end
 		local freeCount = free and #free or 0
 		if #list == 0 and freeCount == 0 then
 			return
@@ -226,6 +273,10 @@ function Module:LayoutContainer(f)
 				holder:ClearAllPoints()
 				holder:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
 				self:UpdateSlot(button, entry[1], entry[2])
+				-- Merged stacks show the combined total, not the one slot's count.
+				if entry.mergeCount then
+					SetItemButtonCount(button, entry.mergeCount)
+				end
 			end
 		end
 		local total = #list
@@ -256,7 +307,8 @@ function Module:LayoutContainer(f)
 		local groupMap = cfg.CategoryGroup or {}
 		local groups = cfg.Groups or {}
 		local rendered = {}
-		for _, cat in ipairs(self.Categories) do
+		local ordered = self.OrderedCategories and self:OrderedCategories() or self.Categories
+		for _, cat in ipairs(ordered) do
 			local group = groupMap[cat.key]
 			if group and groups[group] then
 				-- Render each group once, at its first member. Combine every member
@@ -264,7 +316,7 @@ function Module:LayoutContainer(f)
 				if not rendered[group] then
 					rendered[group] = true
 					local combined = {}
-					for _, member in ipairs(self.Categories) do
+					for _, member in ipairs(ordered) do
 						if groupMap[member.key] == group and buckets[member.key] then
 							for _, entry in ipairs(buckets[member.key]) do
 								combined[#combined + 1] = entry

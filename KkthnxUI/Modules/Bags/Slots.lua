@@ -180,6 +180,13 @@ local function Skin(button)
 				Module:ToggleFavorite(self)
 			end
 		end)
+		-- Middle-click opens the assign menu. Hooked, never a script write on the
+		-- secure button, so the item use path stays clean.
+		button:HookScript("OnMouseUp", function(self, mouseButton)
+			if mouseButton == "MiddleButton" and Module.ShowAssignMenu then
+				Module:ShowAssignMenu(self)
+			end
+		end)
 	end
 end
 

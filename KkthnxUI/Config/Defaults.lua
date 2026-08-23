@@ -248,6 +248,7 @@ K.ConfigDefaults = {
 		BagsPerRow = 12,
 		BankPerRow = 14,
 		Categories = true, -- group items into New/Junk/Equipment/etc.
+		MergeStacks = false, -- fold duplicate stackable items into one button
 		ShowItemLevel = true, -- item level on equippable gear
 		ShowUpgradeTrack = true, -- upgrade track progress (cur/max) on gear
 		PawnArrows = true, -- Pawn upgrade arrows on gear (only if Pawn is installed)
@@ -266,6 +267,8 @@ K.ConfigDefaults = {
 		Favorites = {}, -- itemID -> true, pinned to their own section on top
 		Groups = {}, -- group name -> order, categories folded under one header
 		CategoryGroup = {}, -- category key -> group name it belongs to
+		CustomCategories = {}, -- custom category key -> display name
+		ItemAssignments = {}, -- itemID -> category key the player pinned it to
 	},
 
 	-- Movable experience / reputation / honor / azerite / house progress bar.
