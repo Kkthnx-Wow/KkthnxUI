@@ -108,7 +108,7 @@ local function MakeInitializer(opts)
 		-- Centred on the icon, not below it.
 		duration:SetPoint("CENTER", button, "CENTER", 0, 0)
 
-		-- Nameplate auras wear our soft shadow to match the plate; everything else
+		-- Nameplate auras wear our soft shadow to match the plate. Everything else
 		-- gets the hard border.
 		if opts.shadow and K.CreateShadow then
 			K.CreateShadow(button, 3)
@@ -142,21 +142,40 @@ local function MakeInitializer(opts)
 					end
 				end
 			else
-				-- Shadow buttons (nameplates) keep their normal shadow; we only add a
-				-- soft coloured glow the engine tints on top, and only for debuffs the
-				-- player can dispel, so untyped debuffs are untouched.
-				local glow = button:CreateTexture(nil, "OVERLAY")
-				glow:SetTexture(C.Media and C.Media.Textures and C.Media.Textures.Glow)
-				glow:SetPoint("TOPLEFT", button, "TOPLEFT", -4, 4)
-				glow:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 4, -4)
-				pcall(button.AddDispelTypeTexture, button, glow, {
+				-- Shadow buttons (nameplates) keep their soft shadow, so the dispel
+				-- cue is a thin coloured edge on all four sides rather than a border.
+				-- A stretched glow texture rendered as ragged vertical bars, so these
+				-- are plain solid slivers the engine tints per dispel school. Untyped
+				-- debuffs map "None" to transparent, so only real schools light up.
+				local dispelOpts = {
 					style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
 					showWhenHarmful = true,
-					-- Some debuffs report an empty dispel type that maps to the red
-					-- "None" colour. Make that transparent so only the real dispel
-					-- schools (Magic/Curse/Poison/Disease) light the glow.
 					customDispelColorMap = { None = CreateColor(0, 0, 0, 0) },
-				})
+				}
+				local function Edge()
+					local edge = button:CreateTexture(nil, "OVERLAY")
+					edge:SetTexture("Interface\\BUTTONS\\WHITE8X8")
+					return edge
+				end
+				local top = Edge()
+				top:SetPoint("TOPLEFT", button, "TOPLEFT", -1, 1)
+				top:SetPoint("TOPRIGHT", button, "TOPRIGHT", 1, 1)
+				top:SetHeight(2)
+				local bottom = Edge()
+				bottom:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", -1, -1)
+				bottom:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, -1)
+				bottom:SetHeight(2)
+				local left = Edge()
+				left:SetPoint("TOPLEFT", button, "TOPLEFT", -1, 1)
+				left:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", -1, -1)
+				left:SetWidth(2)
+				local right = Edge()
+				right:SetPoint("TOPRIGHT", button, "TOPRIGHT", 1, 1)
+				right:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, -1)
+				right:SetWidth(2)
+				for _, edge in ipairs({ top, bottom, left, right }) do
+					pcall(button.AddDispelTypeTexture, button, edge, dispelOpts)
+				end
 			end
 		end
 

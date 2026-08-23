@@ -55,6 +55,7 @@ local UIFrameFadeIn = UIFrameFadeIn
 local UIFrameFadeOut = UIFrameFadeOut
 local UIFrameFadeRemoveFrame = UIFrameFadeRemoveFrame
 local hooksecurefunc = hooksecurefunc
+local IsSecret = K.IsSecret
 
 local C_Reputation_GetWatchedFactionData = C_Reputation and C_Reputation.GetWatchedFactionData
 local C_Reputation_IsFactionParagon = C_Reputation and C_Reputation.IsFactionParagon
@@ -162,6 +163,14 @@ local function IsMaxLevel()
 end
 
 local function SetBarValues(statusbar, minValue, maxValue, value)
+	-- Midnight can hand back secret reputation numbers, which cannot be compared or
+	-- adjusted in Lua. The status bar C setters accept them, so pass them straight
+	-- through and let the bar fill without any arithmetic here.
+	if IsSecret and (IsSecret(minValue) or IsSecret(maxValue) or IsSecret(value)) then
+		statusbar:SetMinMaxValues(minValue, maxValue)
+		statusbar:SetValue(value)
+		return
+	end
 	if maxValue <= minValue then
 		maxValue = minValue + 1
 	end
@@ -407,6 +416,19 @@ local function BuildReputationState(data)
 	repState.available = true
 	repState.name, repState.label = name, label
 	repState.reaction, repState.rewardPending = reaction, rewardPending
+
+	-- When the standing or thresholds are secret, no Lua comparison or arithmetic
+	-- is allowed on them, so hand the raw numbers to the bar (its C setters take
+	-- them) and drop the percent from the text rather than erroring the whole
+	-- update, which left the bar blank.
+	repState.secret = IsSecret and (IsSecret(standing) or IsSecret(curThreshold) or IsSecret(nextThreshold)) or nil
+	if repState.secret then
+		repState.minValue, repState.maxValue, repState.value = curThreshold, nextThreshold, standing
+		repState.cur, repState.max, repState.percent, repState.remaining, repState.capped = 0, 1, 0, 0, false
+		repState.display = format("%s [%s]", name, label)
+		return true
+	end
+
 	repState.minValue = (nextThreshold == math_huge or curThreshold == nextThreshold) and 0 or curThreshold
 	repState.maxValue = (nextThreshold == math_huge) and 1 or nextThreshold
 	repState.value = standing
