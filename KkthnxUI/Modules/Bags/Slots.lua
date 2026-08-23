@@ -258,7 +258,11 @@ end
 
 -- Bind a button to a bag slot and refresh all of its visuals from the client.
 function Module:UpdateSlot(button, bag, slot)
-	button:SetBagID(bag)
+	-- Do not call SetBagID here. It writes the secure "bagid" attribute, and when we
+	-- do that from our own code it taints every item interaction, so the client
+	-- forbids the protected UseContainerItem and right-click use dies. The template
+	-- reads GetBagID as "self.bagID or parent id", so the plain field below is
+	-- enough to point the button at the right bag with no taint.
 	button:SetID(slot)
 	button.bagID = bag
 
