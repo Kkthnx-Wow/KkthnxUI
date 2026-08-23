@@ -20,7 +20,9 @@ local Module = K:GetModule("Bags")
 
 local _G = _G
 local select = select
+local ipairs = ipairs
 local IsAltKeyDown = IsAltKeyDown
+local InCombatLockdown = InCombatLockdown
 local CreateFrame = CreateFrame
 local IsSecret = K.IsSecret
 local ItemLocation = ItemLocation
@@ -236,6 +238,14 @@ function Module:AcquireSlot(container)
 	local index = container.poolUsed
 	local button = container.pool[index]
 	if not button then
+		-- A secure item button created in combat is tainted for good, and the client
+		-- then forbids the protected UseContainerItem on it, so right-click use dies
+		-- in delves and M+. Never build one in combat. The pool is pre-warmed out of
+		-- combat, and the combat-end refresh fills anything that was skipped.
+		if InCombatLockdown() then
+			container.poolUsed = container.poolUsed - 1
+			return nil
+		end
 		button = CreateFrame("ItemButton", container.slotPrefix .. index, container, "ContainerFrameItemButtonTemplate")
 		container.pool[index] = button
 	end
@@ -243,6 +253,26 @@ function Module:AcquireSlot(container)
 	button:SetParent(container)
 	button:Show()
 	return button
+end
+
+-- Build every item button a container could need while out of combat, so opening
+-- the bags mid-fight only reuses clean buttons and never has to create a tainted
+-- one. Tops the pool up to the container's current total slot count.
+function Module:PrewarmSlots(container)
+	if InCombatLockdown() or not container or not container.bags then
+		return
+	end
+	local total = 0
+	for _, bag in ipairs(container.bags) do
+		total = total + (C_Container.GetContainerNumSlots(bag) or 0)
+	end
+	container.pool = container.pool or {}
+	for index = #container.pool + 1, total do
+		local button = CreateFrame("ItemButton", container.slotPrefix .. index, container, "ContainerFrameItemButtonTemplate")
+		Skin(button)
+		button:Hide()
+		container.pool[index] = button
+	end
 end
 
 -- Hide every pooled button on a container and reset its cursor for the next

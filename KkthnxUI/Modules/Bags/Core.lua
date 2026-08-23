@@ -208,10 +208,13 @@ function Module:LayoutContainer(f)
 		for i, entry in ipairs(list) do
 			local col = (i - 1) % perRow
 			local row = floor((i - 1) / perRow)
+			-- Nil while in combat when the pool is exhausted, the regen refresh fills it.
 			local button = self:AcquireSlot(f)
-			button:ClearAllPoints()
-			button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
-			self:UpdateSlot(button, entry[1], entry[2])
+			if button then
+				button:ClearAllPoints()
+				button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
+				self:UpdateSlot(button, entry[1], entry[2])
+			end
 		end
 		local total = #list
 		if freeCount > 0 then
@@ -219,10 +222,12 @@ function Module:LayoutContainer(f)
 			local col = #list % perRow
 			local row = floor(#list / perRow)
 			local button = self:AcquireSlot(f)
-			button:ClearAllPoints()
-			button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
-			self:UpdateSlot(button, free[1][1], free[1][2])
-			SetItemButtonCount(button, freeCount)
+			if button then
+				button:ClearAllPoints()
+				button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
+				self:UpdateSlot(button, free[1][1], free[1][2])
+				SetItemButtonCount(button, freeCount)
+			end
 		end
 		local rows = ceil(total / perRow)
 		y = y - rows * step - GROUP_GAP
@@ -248,11 +253,13 @@ function Module:LayoutContainer(f)
 	if #empties > 0 then
 		local first = empties[1]
 		local button = self:AcquireSlot(f)
-		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, y)
-		self:UpdateSlot(button, first[1], first[2])
-		SetItemButtonCount(button, #empties)
-		y = y - step - GROUP_GAP
+		if button then
+			button:ClearAllPoints()
+			button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, y)
+			self:UpdateSlot(button, first[1], first[2])
+			SetItemButtonCount(button, #empties)
+			y = y - step - GROUP_GAP
+		end
 	end
 
 	-- Size the window to the content, with a sane minimum width.
@@ -559,7 +566,22 @@ function Module:MarkDirty()
 	end)
 end
 
+-- Top up both windows' button pools while out of combat so nothing has to be
+-- created mid-fight, where it would be tainted and lose item use.
+function Module:PrewarmAll()
+	if not self.PrewarmSlots then
+		return
+	end
+	if self.BagFrame then
+		self:PrewarmSlots(self.BagFrame)
+	end
+	if self.BankFrame then
+		self:PrewarmSlots(self.BankFrame)
+	end
+end
+
 function Module:UpdateAll()
+	self:PrewarmAll()
 	if self.BagFrame and self.BagFrame:IsShown() then
 		self:LayoutContainer(self.BagFrame)
 	end
@@ -711,11 +733,16 @@ function Module:OnEnable()
 	self:RegisterEvent("MERCHANT_CLOSED", function()
 		self:UpdateSellButton(self.BagFrame)
 	end)
-	-- Reapply a layout that was blocked during combat.
+	-- Combat is over, so top the pools back up and reapply anything that was held
+	-- off or skipped while locked down.
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+		self:PrewarmAll()
 		if self.combatPending then
 			self.combatPending = false
-			self:UpdateAll()
 		end
+		self:UpdateAll()
 	end)
+
+	-- Build the pools up front while safely out of combat.
+	self:PrewarmAll()
 end
