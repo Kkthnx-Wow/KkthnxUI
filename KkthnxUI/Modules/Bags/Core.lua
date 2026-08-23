@@ -211,8 +211,9 @@ function Module:LayoutContainer(f)
 			-- Nil while in combat when the pool is exhausted, the regen refresh fills it.
 			local button = self:AcquireSlot(f)
 			if button then
-				button:ClearAllPoints()
-				button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
+				local holder = button:GetParent()
+				holder:ClearAllPoints()
+				holder:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
 				self:UpdateSlot(button, entry[1], entry[2])
 			end
 		end
@@ -223,8 +224,9 @@ function Module:LayoutContainer(f)
 			local row = floor(#list / perRow)
 			local button = self:AcquireSlot(f)
 			if button then
-				button:ClearAllPoints()
-				button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
+				local holder = button:GetParent()
+				holder:ClearAllPoints()
+				holder:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN + col * step, y - row * step)
 				self:UpdateSlot(button, free[1][1], free[1][2])
 				SetItemButtonCount(button, freeCount)
 			end
@@ -254,8 +256,9 @@ function Module:LayoutContainer(f)
 		local first = empties[1]
 		local button = self:AcquireSlot(f)
 		if button then
-			button:ClearAllPoints()
-			button:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, y)
+			local holder = button:GetParent()
+			holder:ClearAllPoints()
+			holder:SetPoint("TOPLEFT", f, "TOPLEFT", MARGIN, y)
 			self:UpdateSlot(button, first[1], first[2])
 			SetItemButtonCount(button, #empties)
 			y = y - step - GROUP_GAP

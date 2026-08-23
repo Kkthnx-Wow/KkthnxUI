@@ -232,6 +232,19 @@ end
 -- time it is needed. Each container keeps its own pool so the bag and bank grids
 -- do not fight over the same buttons while both are open. Buttons keep a stable
 -- name so their template sub-frames resolve.
+-- Each item button lives inside its own plain holder frame. The holder carries the
+-- bag id through SetID, so the secure template reads the bag as GetParent():GetID()
+-- and we never write a field on the button itself. Writing the bag onto the button
+-- taints the secure click and the client then forbids the protected UseContainerItem.
+local function BuildSlot(container, index)
+	local holder = CreateFrame("Frame", nil, container)
+	local button = CreateFrame("ItemButton", container.slotPrefix .. index, holder, "ContainerFrameItemButtonTemplate")
+	button:SetAllPoints(holder)
+	Skin(button)
+	container.pool[index] = button
+	return button
+end
+
 function Module:AcquireSlot(container)
 	container.pool = container.pool or {}
 	container.poolUsed = (container.poolUsed or 0) + 1
@@ -246,11 +259,10 @@ function Module:AcquireSlot(container)
 			container.poolUsed = container.poolUsed - 1
 			return nil
 		end
-		button = CreateFrame("ItemButton", container.slotPrefix .. index, container, "ContainerFrameItemButtonTemplate")
-		container.pool[index] = button
+		button = BuildSlot(container, index)
 	end
-	Skin(button)
-	button:SetParent(container)
+	local holder = button:GetParent()
+	holder:Show()
 	button:Show()
 	return button
 end
@@ -268,19 +280,15 @@ function Module:PrewarmSlots(container)
 	end
 	container.pool = container.pool or {}
 	for index = #container.pool + 1, total do
-		local button = CreateFrame("ItemButton", container.slotPrefix .. index, container, "ContainerFrameItemButtonTemplate")
-		Skin(button)
-		button:Hide()
-		container.pool[index] = button
+		BuildSlot(container, index):GetParent():Hide()
 	end
 end
 
--- Hide every pooled button on a container and reset its cursor for the next
--- layout pass.
+-- Hide every pooled slot on a container and reset its cursor for the next layout.
 function Module:ReleaseSlots(container)
 	if container.pool then
 		for i = 1, #container.pool do
-			container.pool[i]:Hide()
+			container.pool[i]:GetParent():Hide()
 		end
 	end
 	container.poolUsed = 0
@@ -288,17 +296,18 @@ end
 
 -- Bind a button to a bag slot and refresh all of its visuals from the client.
 function Module:UpdateSlot(button, bag, slot)
-	-- Do not call SetBagID here. It writes the secure "bagid" attribute, and when we
-	-- do that from our own code it taints every item interaction, so the client
-	-- forbids the protected UseContainerItem and right-click use dies. The template
-	-- reads GetBagID as "self.bagID or parent id", so the plain field below is
-	-- enough to point the button at the right bag with no taint.
+	-- The bag rides on the holder frame (GetParent), never on the button. Writing a
+	-- bag field or the secure bagid attribute onto the button taints the click, and
+	-- the client then forbids the protected UseContainerItem, killing right-click
+	-- use. The template reads the bag through GetParent():GetID(), so the holder id
+	-- is all that is needed and none of it touches the secure button.
+	local holder = button:GetParent()
+	holder:SetID(bag)
 	button:SetID(slot)
-	button.bagID = bag
 
 	local info = C_Container.GetContainerItemInfo(bag, slot)
 	local size = C.Bags.ButtonSize
-	button:SetSize(size, size)
+	holder:SetSize(size, size)
 
 	if not info then
 		-- Empty slot: clear everything, keep it as a drop target.
