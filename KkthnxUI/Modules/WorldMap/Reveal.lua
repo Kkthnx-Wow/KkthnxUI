@@ -42,7 +42,7 @@ local TexturePool_HideAndClearAnchors = _G.TexturePool_HideAndClearAnchors
 -- holds the overlays we drew this pass (so the toggle can show/hide them live).
 local shown, exploredKeys, fileIDs, active = {}, {}, {}, {}
 
--- The overlay data keys a region as "W<w>H<h>X<x>Y<y>"; these turn a live explored
+-- The overlay data keys a region as "W<w>H<h>X<x>Y<y>". These turn a live explored
 -- texture into that key, and a key back into its numbers.
 local function KeyFromInfo(info)
 	return format("W%dH%dX%dY%d", info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
@@ -81,6 +81,13 @@ local function RefreshOverlays(pin, fullUpdate)
 		tex:SetVertexColor(1, 1, 1)
 	end
 	wipe(active)
+
+	-- With reveal off, do no further work in this hook. Running the overlay draw
+	-- here taints the map's refresh, which then breaks Blizzard's own secret sized
+	-- widget tooltips on area points of interest. Off means untouched.
+	if not C.WorldMap.Reveal then
+		return
+	end
 
 	local mapID = WorldMapFrame:GetMapID()
 	if not mapID then
@@ -171,7 +178,9 @@ end
 -- the first show. Runs once successfully.
 local hooked
 local function HookPins()
-	if hooked or not WorldMapFrame.EnumeratePinsByTemplate then
+	-- Only take the hook while reveal is on. A secure hook here spreads taint into
+	-- the map refresh, so an off setting must leave the map completely alone.
+	if not C.WorldMap.Reveal or hooked or not WorldMapFrame.EnumeratePinsByTemplate then
 		return
 	end
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
@@ -217,9 +226,23 @@ function Module:SetupReveal()
 	-- Quick toggle: flip the saved setting and show or hide what is already drawn,
 	-- so it applies instantly without waiting for the next map redraw.
 	check:SetScript("OnClick", function(self)
-		C.WorldMap.Reveal = self:GetChecked() and true or false
-		for i = 1, #shown do
-			shown[i]:SetShown(C.WorldMap.Reveal)
+		local on = self:GetChecked() and true or false
+		C.WorldMap.Reveal = on
+		if on then
+			-- Take the hook now if this is the first time on, then draw for the pins
+			-- already on the map so it applies without waiting for a redraw.
+			HookPins()
+			if WorldMapFrame.EnumeratePinsByTemplate then
+				for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+					if pin.RefreshOverlays then
+						pin:RefreshOverlays(true)
+					end
+				end
+			end
+		else
+			for i = 1, #shown do
+				shown[i]:SetShown(false)
+			end
 		end
 	end)
 
