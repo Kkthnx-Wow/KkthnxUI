@@ -167,18 +167,18 @@ local function Skin(button)
 	star:Hide()
 	button.KKUI_Fav = star
 
-	-- Alt-click pins or unpins the item. Anything else runs the normal handler
-	-- so use, pickup, and split keep working.
-	local orig = button:GetScript("OnClick")
-	button:SetScript("OnClick", function(self, mouseButton, down)
-		if IsAltKeyDown() then
-			Module:ToggleFavorite(self)
-			return
-		end
-		if orig then
-			orig(self, mouseButton, down)
-		end
-	end)
+	-- Alt-click pins or unpins the item. This hooks alongside the template's own
+	-- click handler rather than replacing it, so use, pickup, and split keep
+	-- working through Blizzard's secure path. Alt-click has no default bag action,
+	-- so nothing needs suppressing.
+	if not button.__kkuiFavHook then
+		button.__kkuiFavHook = true
+		button:HookScript("OnClick", function(self)
+			if IsAltKeyDown() then
+				Module:ToggleFavorite(self)
+			end
+		end)
+	end
 end
 
 -- Pawn's own verdict on whether an item is an upgrade. Blizzard has no equivalent
