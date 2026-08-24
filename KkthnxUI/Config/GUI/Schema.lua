@@ -682,6 +682,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Enable Bags"], path = { "Bags", "Enable" }, reload = true, tooltip = L["An all-in-one, auto categorised bag and bank window that replaces the default bags."] },
 			{ kind = "check", label = L["Categorise Items"], path = { "Bags", "Categories" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Group items into New, Equipment, Consumables, and the like."] },
 			{ kind = "check", label = L["Merge Duplicate Stacks"], path = { "Bags", "MergeStacks" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Show one button per stackable item with the combined count."] },
+			{ kind = "check", label = L["Group Gear By Slot"], path = { "Bags", "GroupGearBySlot" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Split equippable gear into its own shelf for each equipment slot."] },
 			{ kind = "slider", label = L["Button Size"], path = { "Bags", "ButtonSize" }, min = 24, max = 48, step = 1, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "slider", label = L["Button Spacing"], path = { "Bags", "Spacing" }, min = 0, max = 10, step = 1, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "slider", label = L["Bags Per Row"], path = { "Bags", "BagsPerRow" }, min = 6, max = 20, step = 1, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
@@ -695,8 +696,10 @@ GUI.schema = {
 			{ kind = "check", label = L["Glow New Items"], path = { "Bags", "ShowNewItems" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "check", label = L["Junk Coin Icon"], path = { "Bags", "JunkIcon" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" } },
 			{ kind = "check", label = L["Fade Junk Items"], path = { "Bags", "DesaturateJunk" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Grey out the icon of vendor trash so it fades behind the rest."] },
+			{ kind = "check", label = L["Delete Junk Button"], path = { "Bags", "DeleteButton" }, reload = true, dependsOn = { "Bags", "Enable" }, tooltip = L["Show a button that deletes your lowest value junk item to free a slot."] },
 			{ kind = "check", label = L["Quest Item Colour"], path = { "Bags", "QuestColor" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Give quest items a quest-yellow border and a bang on items that start a quest."] },
 			{ kind = "check", label = L["Reagent Bag Section"], path = { "Bags", "ReagentBagSection" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Group everything in the reagent pouch into its own section."] },
+			{ kind = "check", label = L["Detach Reagent Bag"], path = { "Bags", "DetachReagentBag" }, reload = true, dependsOn = { "Bags", "Enable" }, tooltip = L["Give the reagent pouch its own window instead of a section in the bags."] },
 			{ kind = "check", label = L["Show Bag Bar"], path = { "Bags", "ShowBagBar" }, apply = function() if B and B.ToggleBagStrip and B.BagFrame then B:ToggleBagStrip(B.BagFrame, C.Bags.ShowBagBar) end end, dependsOn = { "Bags", "Enable" }, tooltip = L["Show the bag slot strip on the bag window. Also toggled by the button in the window."] },
 			{ kind = "check", label = L["Track Currencies"], path = { "Bags", "ShowCurrencies" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Show your pinned currencies along the bottom of the window."] },
 

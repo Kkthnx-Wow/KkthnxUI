@@ -26,12 +26,12 @@ local GetInventoryItemQuality = GetInventoryItemQuality
 local GetInventoryItemLink = GetInventoryItemLink
 local C_Container = C_Container
 
-local SLOT = 24
+local SLOT = 28
 local PAD = 6
 -- The default pack icon, used for the backpack and any empty slot.
-local DEFAULT_ICON = "Interface\\Buttons\\Button-Backpack-Up"
+local DEFAULT_ICON = 133633
 
--- Height the strip adds above the item grid when it is shown.
+-- Outer height of the attached strip panel.
 Module.BagStripHeight = SLOT + PAD * 2
 
 -- Backpack, then the four carried bags, and the reagent pouch on retail only.
@@ -91,16 +91,17 @@ function Module:CreateBagStrip(f)
 	if f.BagStrip then
 		return f.BagStrip
 	end
+	-- Its own panel below the frame, wearing the same gradient and border so it
+	-- reads as one piece flush against the bottom of the bags.
 	local strip = CreateFrame("Frame", nil, f)
 	strip:SetHeight(Module.BagStripHeight)
-	strip:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -34)
-	strip:SetPoint("TOPRIGHT", f, "TOPRIGHT", -12, -34)
+	K.CreateGradientBackground(strip, 0.95)
+	K.CreateBorder(strip)
 	strip:Hide()
 
-	-- Match the item grid's own spacing so the strip reads as part of the window.
 	local gap = C.Bags.Spacing
 	strip.buttons = {}
-	local x = 0
+	local x = PAD
 	for _, bag in ipairs(StripBags()) do
 		local button = CreateFrame("Button", nil, strip)
 		button:SetSize(SLOT, SLOT)
@@ -129,6 +130,11 @@ function Module:CreateBagStrip(f)
 		strip.buttons[#strip.buttons + 1] = button
 		x = x + SLOT + gap
 	end
+
+	-- Panel wide enough for the buttons plus padding, right-aligned under the frame
+	-- and hanging just below its bottom edge.
+	strip:SetWidth(x - gap + PAD)
+	strip:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -6)
 
 	f.BagStrip = strip
 	return strip

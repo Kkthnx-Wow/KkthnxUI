@@ -152,10 +152,6 @@ end
 -- Warband deposit and withdraw
 -- ---------------------------------------------------------------------------
 
-local function TransferSupported()
-	return C_Bank and C_Bank.DoesBankTypeSupportMoneyTransfer and C_Bank.DoesBankTypeSupportMoneyTransfer(ACCOUNT)
-end
-
 -- Read the whole-gold amount typed into the box and hand back copper.
 local function BoxCopper(box)
 	local gold = tonumber(box:GetText())
@@ -166,13 +162,22 @@ local function BoxCopper(box)
 end
 
 function Module:AttachGoldControls(f)
-	if not f or f.GoldControls or not TransferSupported() then
+	-- DoesBankTypeSupportMoneyTransfer can read false at login before the account
+	-- bank loads, so build the controls once and let the deposit and withdraw guards
+	-- decide at click time. They sit in the top band, clear of the money line.
+	if not f or f.GoldControls then
 		return
 	end
 
 	local bar = CreateFrame("Frame", nil, f)
-	bar:SetSize(200, 22)
-	bar:SetPoint("BOTTOM", f, "BOTTOM", 0, 8)
+	bar:SetSize(200, 20)
+	-- Sit on the top row, just left of the deposit-all button and clear of the tab
+	-- strip on the left, so it never lands on the money line.
+	if f.Deposit then
+		bar:SetPoint("RIGHT", f.Deposit, "LEFT", -8, 0)
+	else
+		bar:SetPoint("TOP", f, "TOP", 0, -33)
+	end
 	f.GoldControls = bar
 
 	local box = CreateFrame("EditBox", nil, bar)

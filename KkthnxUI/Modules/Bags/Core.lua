@@ -54,6 +54,7 @@ Module.BagIDs = { 0, 1, 2, 3, 4, 5 }
 local MARGIN = 12
 local TOP_BAND = 40
 local BOTTOM_BAND = 44 -- money / free slots on one line, currencies above them
+Module.BOTTOM_BAND = BOTTOM_BAND -- exposed so the bag strip can sit above it
 local HEADER_H = 16
 local GROUP_GAP = 8
 
@@ -141,6 +142,10 @@ local function AcquireHeader(container)
 		end)
 		container.headers[container.headerUsed] = header
 	end
+	-- Clear any identity a previous layout left on this pooled header, so a stale
+	-- group name can never drive the right-click menu onto the wrong action.
+	header.catKey = nil
+	header.groupName = nil
 	header:Show()
 	return header
 end
@@ -184,12 +189,10 @@ function Module:LayoutContainer(f)
 	self:ReleaseSlots(f)
 	ReleaseHeaders(f)
 
-	-- The bag slot strip, when folded out, reserves room above the item grid.
+	-- The bag slot strip is its own panel attached below the frame, so it needs no
+	-- room reserved inside. Just keep its icons current while it is shown.
 	if f.BagStrip and f.BagStrip:IsShown() then
-		f.extraTop = Module.BagStripHeight
 		self:UpdateBagStrip(f)
-	else
-		f.extraTop = 0
 	end
 
 	-- Sort every occupied slot into buckets, and pool the empties. When the reagent
@@ -197,14 +200,17 @@ function Module:LayoutContainer(f)
 	-- show under that shelf instead of vanishing into the general free-slot count.
 	-- Reagent empties only get their own trailing button when the reagent shelf is
 	-- shown as its own ungrouped section. Folded into a group, they join the pool.
-	local splitReagent = cfg.Categories and cfg.ReagentBagSection and not (cfg.CategoryGroup and cfg.CategoryGroup.ReagentBag)
+	-- A single-pouch window (detached reagent bag) renders flat, so it opts out of
+	-- categories for both the bucketing and the render below.
+	local useCategories = cfg.Categories and not f.noCategories
+	local splitReagent = useCategories and cfg.ReagentBagSection and not (cfg.CategoryGroup and cfg.CategoryGroup.ReagentBag)
 	local buckets, empties, reagentEmpties = {}, {}, {}
 	for _, bag in ipairs(f.bags) do
 		local numSlots = C_Container.GetContainerNumSlots(bag) or 0
 		for slot = 1, numSlots do
 			local info = C_Container.GetContainerItemInfo(bag, slot)
 			if info then
-				local key = cfg.Categories and self:GetCategory(bag, slot, info) or "All"
+				local key = useCategories and self:GetCategory(bag, slot, info) or "All"
 				buckets[key] = buckets[key] or {}
 				-- Capture secret-safe sort keys now: rarer first, then by item id so
 				-- identical items sit together. Secret fields drop to a low value so
@@ -303,7 +309,7 @@ function Module:LayoutContainer(f)
 		tsort(bucket, SortEntry)
 	end
 
-	if cfg.Categories then
+	if useCategories then
 		local groupMap = cfg.CategoryGroup or {}
 		local groups = cfg.Groups or {}
 		local rendered = {}
@@ -513,13 +519,15 @@ function Module:CreateContainer(name, title, bags, perRow)
 		button:SetSize(22, 22)
 		K.SkinButton(button)
 		local icon = button:CreateTexture(nil, "ARTWORK")
-		icon:SetPoint("TOPLEFT", 3, -3)
-		icon:SetPoint("BOTTOMRIGHT", -3, 3)
-		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		-- Fill the button, leaving 1px for the border. An atlas carries its own
+		-- coords, so only trim the transparent edge off a plain texture.
+		icon:SetPoint("TOPLEFT", 1, -1)
+		icon:SetPoint("BOTTOMRIGHT", -1, 1)
 		if atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas) then
 			icon:SetAtlas(atlas)
 		else
 			icon:SetTexture(texture)
+			icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 		end
 		button.icon = icon
 		button:SetScript("OnClick", onClick)
@@ -533,21 +541,42 @@ function Module:CreateContainer(name, title, bags, perRow)
 	end
 
 	-- Sort, top band, right before the close button. A broom for cleanup.
-	local sort = IconButton("Sort", "bags-button-autosort-up", "Interface\\ICONS\\INV_Misc_Broom_01", L["Sort"], function()
+	local sort = IconButton("Sort", nil, 655994, L["Sort"], function()
 		Module:SortContainer(f)
 	end)
 	sort:SetPoint("RIGHT", close, "LEFT", -6, 0)
 	f.Sort = sort
 
 	-- Bag bar toggle, folding the bag slot strip in and out of this window.
-	local bagToggle = IconButton("BagToggle", "bag-main", "Interface\\Buttons\\Button-Backpack-Up", L["Toggle Bag Bar"], function()
+	local bagToggle = IconButton("BagToggle", nil, 133633, L["Toggle Bag Bar"], function()
 		if f.BagStrip then
-			C.Bags.ShowBagBar = not f.BagStrip:IsShown()
+			K:SetConfig({ "Bags", "ShowBagBar" }, not f.BagStrip:IsShown())
 			Module:ToggleBagStrip(f, C.Bags.ShowBagBar)
 		end
 	end)
 	bagToggle:SetPoint("RIGHT", sort, "LEFT", -6, 0)
 	f.BagToggle = bagToggle
+
+	-- Category group manager and delete-cheapest, main bag window only.
+	if name == "KKUI_BagFrame" then
+		local manager = IconButton("Manager", nil, "Interface\\ICONS\\INV_Misc_Book_09", L["Category Groups"], function()
+			if Module.ToggleManager then
+				Module:ToggleManager()
+			end
+		end)
+		manager:SetPoint("RIGHT", bagToggle, "LEFT", -6, 0)
+		f.ManagerButton = manager
+
+		if C.Bags.DeleteButton then
+			local delete = IconButton("Delete", nil, "Interface\\ICONS\\INV_Misc_Head_Goblin_01", L["Delete Cheapest Junk"], function()
+				if Module.DeleteCheapestJunk then
+					Module:DeleteCheapestJunk()
+				end
+			end)
+			delete:SetPoint("RIGHT", manager, "LEFT", -6, 0)
+			f.DeleteButton = delete
+		end
+	end
 
 	-- Search box, top band, pinned to the top-left where the title used to sit.
 	local search = CreateFrame("EditBox", name .. "Search", f)
@@ -663,6 +692,9 @@ function Module:PrewarmAll()
 	if self.BagFrame then
 		self:PrewarmSlots(self.BagFrame)
 	end
+	if self.ReagentFrame then
+		self:PrewarmSlots(self.ReagentFrame)
+	end
 	if self.BankFrame then
 		self:PrewarmSlots(self.BankFrame)
 	end
@@ -672,6 +704,9 @@ function Module:UpdateAll()
 	self:PrewarmAll()
 	if self.BagFrame and self.BagFrame:IsShown() then
 		self:LayoutContainer(self.BagFrame)
+	end
+	if self.ReagentFrame and self.ReagentFrame:IsShown() then
+		self:LayoutContainer(self.ReagentFrame)
 	end
 	if self.BankFrame and self.BankFrame:IsShown() then
 		self:LayoutContainer(self.BankFrame)
@@ -683,21 +718,47 @@ end
 -- Merchant helpers
 -- ---------------------------------------------------------------------------
 
+-- Is this an item we should vendor: grey, or one the player flagged as junk.
+local function IsSellable(info)
+	if not info or not info.hyperlink or info.hasNoValue then
+		return false
+	end
+	local poor = Enum.ItemQuality and Enum.ItemQuality.Poor or 0
+	if not IsSecret(info.quality) and info.quality == poor then
+		return true
+	end
+	return info.itemID and not IsSecret(info.itemID) and C.Bags.JunkList and C.Bags.JunkList[info.itemID] and true or false
+end
+
 function Module:SellJunk()
+	-- Grey items go through Blizzard's own bulk sell, then any player-flagged items
+	-- are sold one by one, both only while a merchant is open.
 	if C_MerchantFrame and C_MerchantFrame.SellAllJunkItems then
 		C_MerchantFrame.SellAllJunkItems()
 	end
+	if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) or InCombatLockdown() then
+		return
+	end
+	for _, bag in ipairs(self.BagIDs) do
+		local numSlots = C_Container.GetContainerNumSlots(bag) or 0
+		for slot = 1, numSlots do
+			local info = C_Container.GetContainerItemInfo(bag, slot)
+			local flagged = info and info.itemID and not IsSecret(info.itemID) and C.Bags.JunkList and C.Bags.JunkList[info.itemID]
+			if flagged and not info.hasNoValue then
+				C_Container.UseContainerItem(bag, slot)
+			end
+		end
+	end
 end
 
--- Total vendor value of the grey items sitting in the bags.
+-- Total vendor value of the sellable items sitting in the bags.
 function Module:GetJunkValue()
 	local total = 0
 	for _, bag in ipairs(self.BagIDs) do
 		local numSlots = C_Container.GetContainerNumSlots(bag) or 0
 		for slot = 1, numSlots do
 			local info = C_Container.GetContainerItemInfo(bag, slot)
-			local poor = Enum.ItemQuality and Enum.ItemQuality.Poor or 0
-			if info and info.hyperlink and not info.hasNoValue and not IsSecret(info.quality) and info.quality == poor then
+			if IsSellable(info) then
 				local price = select(11, C_Item.GetItemInfo(info.hyperlink))
 				if price and price > 0 then
 					total = total + price * (info.stackCount or 1)
@@ -735,11 +796,18 @@ function Module:OpenBags()
 	end
 	self.BagFrame:Show()
 	self:LayoutContainer(self.BagFrame)
+	if self.ReagentFrame then
+		self.ReagentFrame:Show()
+		self:LayoutContainer(self.ReagentFrame)
+	end
 end
 
 function Module:CloseBags()
 	if self.BagFrame then
 		self.BagFrame:Hide()
+	end
+	if self.ReagentFrame then
+		self.ReagentFrame:Hide()
 	end
 end
 
@@ -787,9 +855,24 @@ function Module:OnEnable()
 		return
 	end
 
-	self.BagFrame = self:CreateContainer("KKUI_BagFrame", L["Inventory"], self.BagIDs, C.Bags.BagsPerRow)
+	-- The reagent pouch can live in its own window. When detached, the main bag
+	-- window drops the reagent bag and a small reagent window takes it, flat and
+	-- uncategorised since it is a single pouch. Retail only, where a reagent bag
+	-- exists at all.
+	local detach = C.Bags.DetachReagentBag and K.Client and K.Client.IsRetail
+	local mainBags = detach and { 0, 1, 2, 3, 4 } or self.BagIDs
+
+	self.BagFrame = self:CreateContainer("KKUI_BagFrame", L["Inventory"], mainBags, C.Bags.BagsPerRow)
 	K.CreateMover(self.BagFrame, "Bags", L["Inventory"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -60, 60 }, self.BagFrame:GetWidth(), self.BagFrame:GetHeight())
 	K.EnableFrameDrag(self.BagFrame)
+
+	if detach then
+		local reagent = self:CreateContainer("KKUI_ReagentFrame", L["Reagent Bag"], { REAGENT_BAG }, C.Bags.BagsPerRow)
+		reagent.noCategories = true
+		self.ReagentFrame = reagent
+		K.CreateMover(reagent, "ReagentBags", L["Reagent Bag"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -60, 320 }, reagent:GetWidth(), reagent:GetHeight())
+		K.EnableFrameDrag(reagent)
+	end
 
 	-- The bag slot strip lives on the bag window and starts at its saved state.
 	if self.CreateBagStrip then

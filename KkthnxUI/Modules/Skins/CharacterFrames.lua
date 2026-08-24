@@ -388,16 +388,26 @@ function Module:StyleCharacterFrame()
 	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, -47, 31)
 	FitCharacterEnchantAnimationToInset()
 
-	if not self.charUpdateHooked then
-		self.charUpdateHooked = true
-		hooksecurefunc(CharacterFrame, "UpdateSize", function()
-			-- Defer to the next tick. Calling SetSize inside the secure update path
-			-- taints it and breaks Blizzard's status bar secret value comparisons.
-			C_Timer.After(0, function()
+	if not self.charWatcher then
+		-- Re-apply our layout from a decoupled ticker instead of a secure hook on
+		-- UpdateSize. Any of our code running inside the panel show path taints it,
+		-- and Blizzard's numeric health status bar then errors comparing its secret
+		-- value. The watcher runs in its own execution, so the show stays clean.
+		local watcher = CreateFrame("Frame")
+		local lastWidth
+		watcher:SetScript("OnUpdate", function()
+			if not CharacterFrame:IsShown() then
+				lastWidth = nil
+				return
+			end
+			local width = CharacterFrame:GetWidth()
+			if width ~= lastWidth then
+				lastWidth = width
 				Module:ApplyCharacterLayout()
 				FitCharacterEnchantAnimationToInset()
-			end)
+			end
 		end)
+		self.charWatcher = watcher
 	end
 
 	local itemLevelValue = CharacterStatsPane.ItemLevelFrame.Value

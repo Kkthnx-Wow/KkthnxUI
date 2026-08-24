@@ -559,8 +559,8 @@ local NOINTERRUPT_CLR = CreateColor(0.6, 0.6, 0.65) -- cannot interrupt (silver)
 
 -- notInterruptible arrives as a PostCastStart argument in the current oUF. It can
 -- be a Midnight secret boolean (enemy casts), a plain boolean, or nil. Only the
--- secret path may use SetVertexColorFromBoolean; a plain value would error there,
--- so branch on it.
+-- secret path may use SetVertexColorFromBoolean, and a plain value would error
+-- there, so branch on it.
 -- Cast in progress: gold while interruptible, silver while not. Shared by the
 -- start callback and the mid-cast interruptibility change so a spell that flips (a
 -- kick immunity dropping, say) recolours instead of staying its start colour. A

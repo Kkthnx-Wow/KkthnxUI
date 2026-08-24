@@ -37,6 +37,7 @@ local UnitXP = UnitXP
 local UnitXPMax = UnitXPMax
 local GetXPExhaustion = GetXPExhaustion
 local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
+local GetMaxLevelForPlayerExpansion = GetMaxLevelForPlayerExpansion
 local IsXPUserDisabled = IsXPUserDisabled
 local IsRestrictedAccount = IsRestrictedAccount
 local IsTrialAccount = IsTrialAccount
@@ -150,6 +151,16 @@ end
 -- ---------------------------------------------------------------------------
 local function IsMaxLevel()
 	local level = UnitLevel("player")
+	-- Modern retail dropped IsLevelAtEffectiveMaxLevel for GameRulesUtil. Without
+	-- this the max-level check silently failed and the XP bar kept showing a stale
+	-- 0 / 100m at the cap.
+	local rules = _G.GameRulesUtil
+	if rules and rules.IsPlayerAtEffectiveMaxLevel and rules.IsPlayerAtEffectiveMaxLevel() then
+		return true
+	end
+	if GetMaxLevelForPlayerExpansion and level >= GetMaxLevelForPlayerExpansion() then
+		return true
+	end
 	if IsLevelAtEffectiveMaxLevel and IsLevelAtEffectiveMaxLevel(level) then
 		return true
 	end

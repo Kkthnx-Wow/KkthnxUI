@@ -48,28 +48,46 @@ local ipairs = ipairs
 local pairs = pairs
 local tsort = table.sort
 
--- The render order including any custom categories the player made, dropped in
--- just ahead of the Miscellaneous catch-all so their assigned items lead it.
+-- Render order of the gear slots when the group-by-slot layout is on.
+local GEAR_ORDER = {
+	"Head", "Neck", "Shoulder", "Back", "Chest", "Wrist", "Hands", "Waist",
+	"Legs", "Feet", "Ring", "Trinket", "Weapon", "Off Hand", "Ranged", "Shirt", "Tabard",
+}
+
+-- The render order, expanding Equipment into per-slot shelves when that layout is
+-- on, and dropping any custom categories in just ahead of the Miscellaneous
+-- catch-all so their assigned items lead it. Empty shelves render nothing.
 function Module:OrderedCategories()
 	local custom = C.Bags.CustomCategories
-	if not custom or not next(custom) then
+	local bySlot = C.Bags.GroupGearBySlot
+	if (not custom or not next(custom)) and not bySlot then
 		return self.Categories
 	end
+
 	local keys = {}
-	for key in pairs(custom) do
-		keys[#keys + 1] = key
+	if custom then
+		for key in pairs(custom) do
+			keys[#keys + 1] = key
+		end
+		tsort(keys, function(a, b)
+			return custom[a] < custom[b]
+		end)
 	end
-	tsort(keys, function(a, b)
-		return custom[a] < custom[b]
-	end)
+
 	local out = {}
 	for _, cat in ipairs(self.Categories) do
-		if cat.key == "Miscellaneous" then
+		if cat.key == "Equipment" and bySlot then
+			for _, slot in ipairs(GEAR_ORDER) do
+				out[#out + 1] = { key = "Equipment:" .. slot, name = slot }
+			end
+		elseif cat.key == "Miscellaneous" then
 			for _, key in ipairs(keys) do
 				out[#out + 1] = { key = key, name = custom[key] }
 			end
+			out[#out + 1] = cat
+		else
+			out[#out + 1] = cat
 		end
-		out[#out + 1] = cat
 	end
 	return out
 end
@@ -86,6 +104,33 @@ local COLLECTIBLE_MISC = {
 local EQUIP_CLASS = {
 	[ItemClass.Weapon] = true,
 	[ItemClass.Armor] = true,
+}
+
+-- Equip location to a slot name, for the optional group-gear-by-slot layout.
+local EQUIP_SLOT = {
+	INVTYPE_HEAD = "Head",
+	INVTYPE_NECK = "Neck",
+	INVTYPE_SHOULDER = "Shoulder",
+	INVTYPE_CLOAK = "Back",
+	INVTYPE_CHEST = "Chest",
+	INVTYPE_ROBE = "Chest",
+	INVTYPE_BODY = "Shirt",
+	INVTYPE_TABARD = "Tabard",
+	INVTYPE_WRIST = "Wrist",
+	INVTYPE_HAND = "Hands",
+	INVTYPE_WAIST = "Waist",
+	INVTYPE_LEGS = "Legs",
+	INVTYPE_FEET = "Feet",
+	INVTYPE_FINGER = "Ring",
+	INVTYPE_TRINKET = "Trinket",
+	INVTYPE_WEAPON = "Weapon",
+	INVTYPE_2HWEAPON = "Weapon",
+	INVTYPE_WEAPONMAINHAND = "Weapon",
+	INVTYPE_WEAPONOFFHAND = "Weapon",
+	INVTYPE_HOLDABLE = "Off Hand",
+	INVTYPE_SHIELD = "Off Hand",
+	INVTYPE_RANGED = "Ranged",
+	INVTYPE_RANGEDRIGHT = "Ranged",
 }
 
 -- Raw crafting and gathering stock.
@@ -128,6 +173,10 @@ function Module:GetCategory(bag, slot, info)
 		if C.Bags.Favorites[itemID] then
 			return "Favourites"
 		end
+		-- Items the player flagged as junk sort with the rest of the trash.
+		if C.Bags.JunkList and C.Bags.JunkList[itemID] then
+			return "Junk"
+		end
 	end
 
 	-- Anything sitting in the dedicated reagent bag groups together, so crafters
@@ -154,7 +203,7 @@ function Module:GetCategory(bag, slot, info)
 	end
 
 	if itemID and not IsSecret(itemID) then
-		local _, _, _, _, _, classID, subclassID = GetItemInfoInstant(itemID)
+		local _, _, _, equipLoc, _, classID, subclassID = GetItemInfoInstant(itemID)
 		if classID == ItemClass.Questitem then
 			return "Quest"
 		elseif classID == ItemClass.Battlepet then
@@ -166,6 +215,13 @@ function Module:GetCategory(bag, slot, info)
 		elseif classID == ItemClass.Housing then
 			return "Housing"
 		elseif EQUIP_CLASS[classID] then
+			-- Optionally split gear into its own per-slot shelves.
+			if C.Bags.GroupGearBySlot then
+				local gearSlot = EQUIP_SLOT[equipLoc]
+				if gearSlot then
+					return "Equipment:" .. gearSlot
+				end
+			end
 			return "Equipment"
 		elseif classID == ItemClass.Consumable then
 			return "Consumable"

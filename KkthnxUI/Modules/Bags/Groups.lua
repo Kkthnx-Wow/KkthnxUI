@@ -108,13 +108,17 @@ _G.StaticPopupDialogs["KKUI_BAGS_GROUPNAME"] = {
 	button2 = _G.CANCEL,
 	hasEditBox = true,
 	OnShow = function(self, data)
-		self.editBox:SetText(data and data.default or "")
-		self.editBox:SetFocus()
-		self.editBox:HighlightText()
+		local editBox = self.EditBox or self.editBox
+		if editBox then
+			editBox:SetText(data and data.default or "")
+			editBox:SetFocus()
+			editBox:HighlightText()
+		end
 	end,
 	OnAccept = function(self, data)
-		if data and data.callback then
-			data.callback(self.editBox:GetText())
+		local editBox = self.EditBox or self.editBox
+		if data and data.callback and editBox then
+			data.callback(editBox:GetText())
 		end
 	end,
 	EditBoxOnEnterPressed = function(self, data)
@@ -171,10 +175,15 @@ function Module:ShowGroupMenu(header)
 				Module:DeleteCustomCategory(catKey)
 			end)
 		end
+		-- Make an empty group. It stays invisible until categories are added to it
+		-- through Add to Group, so a new group never looks like a rename of this one.
 		root:CreateButton(L["New Group"], function()
 			PromptName(L["New Group"], "", function(text)
-				Module:CreateGroup(text)
-				Module:AssignCategoryGroup(catKey, strtrim(text or ""))
+				local groupName = strtrim(text or "")
+				if groupName == "" then
+					return
+				end
+				Module:CreateGroup(groupName)
 			end)
 		end)
 

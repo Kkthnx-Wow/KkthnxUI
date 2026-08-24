@@ -54,6 +54,33 @@ function Module:UnassignItem(itemID)
 	self:UpdateAll()
 end
 
+-- Flag or unflag an item as junk. Flagged items sort into Junk, fade like grey
+-- trash, and sell with the rest at a merchant.
+function Module:ToggleJunk(itemID)
+	local flagged = C.Bags.JunkList and C.Bags.JunkList[itemID]
+	K:SetConfig({ "Bags", "JunkList", itemID }, not flagged or nil)
+	self:UpdateAll()
+end
+
+-- Send every item filed under a category back to automatic sorting.
+function Module:ClearCategoryItems(catKey)
+	if C.Bags.ItemAssignments then
+		for itemID, key in pairs(C.Bags.ItemAssignments) do
+			if key == catKey then
+				K:SetConfig({ "Bags", "ItemAssignments", itemID }, nil)
+			end
+		end
+	end
+	self:UpdateAll()
+end
+
+-- Wipe every custom item assignment and junk flag back to defaults.
+function Module:ResetItemAssignments()
+	K:SetConfig({ "Bags", "ItemAssignments" }, {})
+	K:SetConfig({ "Bags", "JunkList" }, {})
+	self:UpdateAll()
+end
+
 -- Middle-click assign menu, driven off whatever item is under the button.
 function Module:ShowAssignMenu(button)
 	if not (MenuUtil and MenuUtil.CreateContextMenu) then
@@ -91,5 +118,10 @@ function Module:ShowAssignMenu(button)
 				Module:UnassignItem(itemID)
 			end)
 		end
+		root:CreateDivider()
+		local flagged = C.Bags.JunkList and C.Bags.JunkList[itemID]
+		root:CreateButton(flagged and L["Unmark Junk"] or L["Mark As Junk"], function()
+			Module:ToggleJunk(itemID)
+		end)
 	end)
 end

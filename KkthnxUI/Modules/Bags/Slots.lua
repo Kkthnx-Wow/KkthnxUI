@@ -37,7 +37,7 @@ local Enum = Enum
 local C_NewItems = C_NewItems
 local POOR = Enum.ItemQuality and Enum.ItemQuality.Poor or 0
 
--- Quest border colour (classic quest yellow); the bang itself is our own "!"
+-- Quest border colour (classic quest yellow). The bang itself is our own "!"
 -- fontstring so it lines up on our button size.
 local QUEST_COLOR = { 1, 0.82, 0 }
 
@@ -362,8 +362,9 @@ function Module:UpdateSlot(button, bag, slot)
 
 	local quality = info.quality
 	-- Grey out the icon while locked, and optionally for junk so the vendor trash
-	-- fades back and the good items lead the eye.
-	local isJunk = not IsSecret(quality) and quality == POOR and not info.hasNoValue
+	-- fades back and the good items lead the eye. Player-flagged items count too.
+	local flaggedJunk = info.itemID and not IsSecret(info.itemID) and C.Bags.JunkList and C.Bags.JunkList[info.itemID]
+	local isJunk = (not IsSecret(quality) and quality == POOR or flaggedJunk) and not info.hasNoValue
 	SetItemButtonDesaturated(button, info.isLocked or (C.Bags.DesaturateJunk and isJunk) or false)
 
 	SetBorder(button, QualityColor(quality))
