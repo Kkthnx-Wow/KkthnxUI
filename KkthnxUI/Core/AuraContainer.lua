@@ -197,7 +197,7 @@ local function MakeInitializer(opts)
 			-- update: the engine runs UpdateAuraDisplay right after this callback and on
 			-- each aura change, which resets the button's click state and wipes a
 			-- one-time setup. Re-assert both the mouse enable and the cancel tokens
-			-- there, the way ElvUI does in its per-update button pass.
+			-- there so it sticks through every aura update.
 			local function ApplyCancel(self)
 				pcall(self.SetMouseClickEnabled, self, true)
 				-- Cancel on the DOWN edge. The intrinsic denies addon buttons the input
