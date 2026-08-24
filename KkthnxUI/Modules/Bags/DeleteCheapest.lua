@@ -64,7 +64,7 @@ function Module:DeleteCheapestJunk()
 	StaticPopup_Show("KKUI_BAGS_DELETE_JUNK", item.link, GetCoinTextureString(price or 0), item)
 end
 
-_G.StaticPopupDialogs = _G.StaticPopupDialogs or {}
+-- Register our own dialog entry only, never reassign Blizzard's table.
 _G.StaticPopupDialogs["KKUI_BAGS_DELETE_JUNK"] = {
 	text = L["Delete %s\nworth %s?"],
 	button1 = _G.YES,

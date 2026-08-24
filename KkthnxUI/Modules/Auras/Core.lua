@@ -63,6 +63,9 @@ local function BuildBlock(key, label, filter, size, point, cancel)
 		growthV = "Down",
 		unit = "player",
 		dispelBorder = filter == "HARMFUL",
+		-- The initializer reads cancel at the top level, so it must live here and not
+		-- only on the slot, or right-click cancel is never wired onto the buttons.
+		cancel = cancel,
 		slots = {
 			{ key = filter == "HELPFUL" and "buffs" or "debuffs", filter = filter, max = 40, cancel = cancel },
 		},

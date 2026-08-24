@@ -124,8 +124,10 @@ function Module:SetupMountSource()
 			if tt:IsForbidden() then
 				return
 			end
-			local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-			if not data or IsSecret(data) then
+			-- Guarded like K.GetAuraData: this throws on a secret aura while tainted,
+			-- so never call it bare.
+			local ok, data = pcall(C_UnitAuras.GetAuraDataByAuraInstanceID, unit, auraInstanceID)
+			if not ok or not data or IsSecret(data) then
 				return
 			end
 			HandleAura(tt, unit, data.spellId)

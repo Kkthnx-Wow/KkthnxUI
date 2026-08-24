@@ -9,8 +9,9 @@
 
 		The tracker lives in the load-on-demand Blizzard_ObjectiveTracker, so we
 		style on enable if it is already loaded, otherwise wait for its ADDON_LOADED.
-		Everything is a cosmetic hooksecurefunc, so no taint on the secure tracker.
-		Retail only: older flavours use a different quest watch frame.
+		All styling runs from a throttled watcher rather than a secure hook, because
+		the tracker reads secret Maw buff auras inside its own update and a hook there
+		taints that read. Retail only: older flavours use a different quest watch frame.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -22,7 +23,6 @@ end
 local Module = K:NewModule("ObjectiveTracker")
 
 local _G = _G
-local hooksecurefunc = hooksecurefunc
 local C_AddOns = C_AddOns
 
 -- Fallback tint when the class-colour option is off.
@@ -78,17 +78,41 @@ local function SetCollapsed(header, collapsed)
 end
 
 -- ---------------------------------------------------------------------------
--- Per-tracker progress / timer bars (created on demand by Blizzard)
+-- Decoupled refresh
 -- ---------------------------------------------------------------------------
+-- The tracker reads secret auras (Maw buffs) inside its own LayoutContents, so a
+-- secure hook there taints that read and errors. Instead the styling is redone
+-- from a light throttled watcher that runs in its own execution, never inside the
+-- tracker's update, so it stays clean while still catching new bars and collapses.
 
-local function HandleProgressBar(tracker, key)
-	local progressBar = tracker.usedProgressBars and tracker.usedProgressBars[key]
-	ReskinBar(progressBar and progressBar.Bar)
-end
+local pairs = pairs
 
-local function HandleTimerBar(tracker, key)
-	local timerBar = tracker.usedTimerBars and tracker.usedTimerBars[key]
-	ReskinBar(timerBar and timerBar.Bar)
+-- Recolour every progress and timer bar the sub-trackers currently hold, keep the
+-- sub-tracker header art hidden, and match the minimise chevron to the state.
+local function Refresh()
+	for i = 1, #Module.trackers do
+		local tracker = Module.trackers[i]
+		if tracker then
+			HideHeaderBackground(tracker.Header)
+			if tracker.usedProgressBars then
+				for _, pb in pairs(tracker.usedProgressBars) do
+					ReskinBar(pb and pb.Bar)
+				end
+			end
+			if tracker.usedTimerBars then
+				for _, tb in pairs(tracker.usedTimerBars) do
+					ReskinBar(tb and tb.Bar)
+				end
+			end
+		end
+	end
+
+	local trackerFrame = _G.ObjectiveTrackerFrame
+	local header = trackerFrame and trackerFrame.Header
+	if header then
+		HideHeaderBackground(header)
+		SetCollapsed(header, trackerFrame.isCollapsed)
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -106,22 +130,16 @@ function Module:Style()
 	self.styled = true
 
 	local header = trackerFrame.Header
-	if header then
-		HideHeaderBackground(header)
-
+	if header and header.MinimizeButton then
 		local minimize = header.MinimizeButton
-		if minimize then
-			minimize:SetSize(16, 16)
-			if minimize.SetHighlightAtlas then
-				minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
-			end
-			SetCollapsed(header, trackerFrame.isCollapsed)
-			hooksecurefunc(header, "SetCollapsed", SetCollapsed)
+		minimize:SetSize(16, 16)
+		if minimize.SetHighlightAtlas then
+			minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
 		end
 	end
 
 	-- Every sub-tracker that owns a header and progress/timer bar pools.
-	local trackers = {
+	self.trackers = {
 		_G.ScenarioObjectiveTracker,
 		_G.UIWidgetObjectiveTracker,
 		_G.CampaignQuestObjectiveTracker,
@@ -134,18 +152,21 @@ function Module:Style()
 		_G.WorldQuestObjectiveTracker,
 	}
 
-	for i = 1, #trackers do
-		local tracker = trackers[i]
-		if tracker then
-			HideHeaderBackground(tracker.Header)
-			if tracker.GetProgressBar then
-				hooksecurefunc(tracker, "GetProgressBar", HandleProgressBar)
-			end
-			if tracker.GetTimerBar then
-				hooksecurefunc(tracker, "GetTimerBar", HandleTimerBar)
-			end
+	-- Throttled watcher, only while the tracker is on screen.
+	local watcher = CreateFrame("Frame")
+	local elapsed = 0
+	watcher:SetScript("OnUpdate", function(_, delta)
+		elapsed = elapsed + delta
+		if elapsed < 0.2 then
+			return
 		end
-	end
+		elapsed = 0
+		if trackerFrame:IsShown() then
+			Refresh()
+		end
+	end)
+	self.watcher = watcher
+	Refresh()
 end
 
 -- ---------------------------------------------------------------------------

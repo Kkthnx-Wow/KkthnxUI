@@ -101,7 +101,8 @@ end
 -- Name prompt
 -- ---------------------------------------------------------------------------
 
-_G.StaticPopupDialogs = _G.StaticPopupDialogs or {}
+-- Register our own dialog entry. Never reassign the StaticPopupDialogs table
+-- itself, doing that from addon code taints Blizzard's popup system.
 _G.StaticPopupDialogs["KKUI_BAGS_GROUPNAME"] = {
 	text = "%s",
 	button1 = _G.ACCEPT,

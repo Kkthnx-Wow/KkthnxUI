@@ -31,6 +31,7 @@ local CreateColor = CreateColor
 local pcall = pcall
 local ipairs = ipairs
 local unpack = unpack
+local hooksecurefunc = hooksecurefunc
 
 -- Feature probe: the intrinsic and its enums only exist on the Midnight client.
 local function Available()
@@ -78,11 +79,11 @@ end
 local function MakeInitializer(opts)
 	local size = opts.size or 26
 	return function(button)
-		-- Turn clicks off unless this slot wants cancel-on-click (player buffs),
-		-- so aura icons never eat target-switch clicks on nameplates.
-		if not opts.cancel then
-			pcall(button.SetMouseClickEnabled, button, false)
-		end
+		-- Cancel-on-click slots (player buffs) need clicks explicitly enabled or the
+		-- button stays click-through and right-click never reaches the cancel path.
+		-- Everything else turns clicks off so aura icons do not eat target-switch
+		-- clicks on nameplates.
+		pcall(button.SetMouseClickEnabled, button, opts.cancel and true or false)
 
 		local icon = button:CreateTexture(nil, "ARTWORK")
 		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
@@ -191,7 +192,24 @@ local function MakeInitializer(opts)
 		pcall(button.SetDurationText, button, duration, fmt and { textFormatter = fmt } or {})
 
 		if opts.cancel then
-			pcall(button.SetCancelAuraButtons, button, true)
+			-- Right-click cancel. The intrinsic wants a string of click tokens (matched
+			-- to the key-down cvar), and it must be re-applied after every display
+			-- update: the engine runs UpdateAuraDisplay right after this callback and on
+			-- each aura change, which resets the button's click state and wipes a
+			-- one-time setup. Re-assert both the mouse enable and the cancel tokens
+			-- there, the way ElvUI does in its per-update button pass.
+			local function ApplyCancel(self)
+				pcall(self.SetMouseClickEnabled, self, true)
+				-- Cancel on the DOWN edge. The intrinsic denies addon buttons the input
+				-- aspects that let Blizzard's legacy icons swallow the right-button press,
+				-- so an Up token loses the release to WorldFrame mouselook and the buff
+				-- survives. Firing on press cancels before mouselook can grab the mouse.
+				pcall(self.SetCancelAuraButtons, self, "RightButtonDown")
+			end
+			ApplyCancel(button)
+			if button.UpdateAuraDisplay then
+				hooksecurefunc(button, "UpdateAuraDisplay", ApplyCancel)
+			end
 		end
 	end
 end
