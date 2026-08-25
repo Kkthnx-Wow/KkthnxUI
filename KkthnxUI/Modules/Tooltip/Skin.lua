@@ -111,6 +111,11 @@ function Module:SetupSkins()
 	-- Keep Blizzard from re-adding its backdrop on shared tooltips.
 	if _G.SharedTooltip_SetBackdropStyle then
 		hooksecurefunc("SharedTooltip_SetBackdropStyle", function(tt)
+			-- Widget tooltips (EmbeddedItemTooltip) can be forbidden objects that we
+			-- may not touch from tainted code, so skip them.
+			if not tt or (tt.IsForbidden and tt:IsForbidden()) then
+				return
+			end
 			if tt.NineSlice then
 				tt.NineSlice:SetAlpha(0)
 			end

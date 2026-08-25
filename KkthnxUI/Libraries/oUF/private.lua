@@ -31,7 +31,18 @@ function Private.unitExists(unit)
 end
 
 function Private.unitIsUnit(unit1, unit2)
-	return C_Secrets.CanCompareUnitTokens(unit1, unit2) and UnitIsUnit(unit1, unit2)
+	-- UnitIsUnit can hand back a secret boolean even when the tokens are comparable
+	-- (a restricted player), and callers here run boolean tests on the result, which
+	-- errors on a secret. Never return a secret: fall back to plain token equality,
+	-- which is what the element checks (self.__unit vs the event unit) really need.
+	if not C_Secrets.CanCompareUnitTokens(unit1, unit2) then
+		return unit1 == unit2
+	end
+	local same = UnitIsUnit(unit1, unit2)
+	if issecretvalue(same) then
+		return unit1 == unit2
+	end
+	return same
 end
 
 local validator = CreateFrame('Frame')

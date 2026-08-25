@@ -13,6 +13,7 @@ local Module = K:NewModule("Chat")
 
 local _G = _G
 local gsub = string.gsub
+local IsSecret = K.IsSecret
 
 local NUM_FRAMES = NUM_CHAT_WINDOWS or 10
 
@@ -234,7 +235,9 @@ local LINK_SHORT = {
 }
 
 local function ShortenLine(text)
-	if type(text) ~= "string" then
+	-- Midnight can hand the message filter a secret string, which cannot be indexed
+	-- or run through gsub, so leave it untouched.
+	if type(text) ~= "string" or IsSecret(text) then
 		return text
 	end
 	-- Numbered custom channels: [5. General] becomes [5].
@@ -304,7 +307,8 @@ local URL_PATTERNS = {
 }
 
 local function LinkURLs(text)
-	if type(text) ~= "string" or text:find("|H") then
+	-- A secret chat string cannot be indexed or searched, so pass it through as is.
+	if type(text) ~= "string" or IsSecret(text) or text:find("|H") then
 		return text
 	end
 	for _, pattern in ipairs(URL_PATTERNS) do

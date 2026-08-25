@@ -38,14 +38,16 @@ the unit.
 
 local _, ns = ...
 local oUF = ns.oUF
-local Private = oUF.Private
 
 local STATE = {}
 
-local unitIsUnit = Private.unitIsUnit
-
-local function Update(self, event, unit)
-	if(not unit or not unitIsUnit(self.__unit, unit)) then return end
+local function Update(self, event)
+	-- Use the frame's own unit rather than unitIsUnit against the event unit. On
+	-- Midnight UnitIsUnit can return a secret boolean for a restricted unit, and the
+	-- boolean test on it errors. The event always fires for this frame's unit, so
+	-- the token itself is all we need.
+	local unit = self.__unit
+	if(not unit) then return end
 
 	local element = self.Portrait
 
@@ -65,7 +67,7 @@ local function Update(self, event, unit)
 		hasStateChanged = true
 	elseif(STATE[element].available ~= isAvailable) then
 		hasStateChanged = true
-	elseif(not issecretvalue(guid) and not issecretvalue(STATE[element].guid)) then
+	elseif(oUF:NotSecretValue(guid) and oUF:NotSecretValue(STATE[element].guid)) then
 		hasStateChanged = STATE[element].guid ~= guid
 	end
 

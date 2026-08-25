@@ -54,6 +54,11 @@ local function OnResize(frame)
 	if not border then
 		return
 	end
+	-- A widget tooltip can become a forbidden object we may not read from tainted
+	-- code, and GetWidth on it throws, so bail before touching it.
+	if frame.IsForbidden and frame:IsForbidden() then
+		return
+	end
 	local width = frame:GetWidth()
 	if IsSecret(width) then
 		return
