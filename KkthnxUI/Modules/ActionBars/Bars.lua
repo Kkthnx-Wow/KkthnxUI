@@ -3,7 +3,7 @@
 	File: Modules/ActionBars/Bars.lua
 	Purpose:
 		Bar creation, grid layout, paging, and mouseover fade. Each bar always
-		spawns 12 LAB buttons once; UpdateBar then lays out and shows only the
+		spawns 12 LAB buttons once. UpdateBar then lays out and shows only the
 		configured count, applies size/spacing/opacity, and refreshes button
 		config live. This keeps count and size changes working out of combat
 		without recreating secure frames.
@@ -174,19 +174,24 @@ end
 local FADE_SPEED = 5
 
 function Module:SetupFade(bar, cfg)
-	if not cfg.Mouseover then
+	-- No fader: a plain static alpha.
+	if not (cfg.Mouseover or cfg.FadeCombat) then
 		bar:SetScript("OnUpdate", nil)
 		bar:SetAlpha(cfg.Alpha)
 		return
 	end
 
 	local target = cfg.Alpha
-	local current = 0
-	bar:SetAlpha(0)
+	-- Alpha the bar rests at while faded. Zero for a pure mouseover bar, or the
+	-- configured value for a combat fade that leaves the bar dimly visible.
+	local faded = cfg.FadeAlpha or 0
+	local current = target
+	bar:SetAlpha(target)
 	bar:SetScript("OnUpdate", function(self, delta)
-		-- Show at full while hovered, and always in combat so the bar never hides
-		-- while you are fighting. Glide toward that instead of snapping.
-		local want = (self:IsMouseOver() or InCombatLockdown()) and target or 0
+		-- Full while fighting, and (for mouseover bars) while hovered. Otherwise the
+		-- bar rests at the faded alpha. A combat-fade bar therefore hides out of
+		-- combat and snaps up the moment a fight starts. Glide instead of snapping.
+		local want = (InCombatLockdown() or (cfg.Mouseover and self:IsMouseOver())) and target or faded
 		if current == want then
 			return
 		end

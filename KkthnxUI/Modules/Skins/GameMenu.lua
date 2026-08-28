@@ -25,10 +25,12 @@ local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
 local HideUIPanel = HideUIPanel
 
--- Gap above our inserted button (a tight intra-group gap so it reads as part of
--- the Options group), a fallback gap, and the padding under the last button.
-local INSERT_GAP = 4
-local FALLBACK_GAP = 4
+-- Gap above our inserted button (kept to the base gap so it reads as part of the
+-- Options group), a fallback gap, the minimum gap every button gets so the tight
+-- Blizzard spacing opens up, and the padding under the last button.
+local INSERT_GAP = 6
+local FALLBACK_GAP = 6
+local MIN_GAP = 6
 local BOTTOM_PAD = 16
 local floor = math.floor
 
@@ -163,6 +165,21 @@ local function OnLayout(frame)
 	button:SetSize(width or 200, height or 34)
 	gapAbove[button] = INSERT_GAP
 
+	-- Match the pool buttons' font so our label sits at the same size as the rest.
+	-- A Button swaps to its highlight font on mouseover, so all three states have to
+	-- be set or the label shrinks back to the template default when hovered.
+	local ref = order[1]
+	if ref.GetNormalFontObject then
+		local normal = ref:GetNormalFontObject()
+		local highlight = ref:GetHighlightFontObject()
+		local disabled = ref:GetDisabledFontObject()
+		if normal then
+			button:SetNormalFontObject(normal)
+			button:SetHighlightFontObject(highlight or normal)
+			button:SetDisabledFontObject(disabled or normal)
+		end
+	end
+
 	-- Rebuild the order with our button right after Options (fall back to the end).
 	local optionsText = _G.GAMEMENU_OPTIONS or "Options"
 	local flow, inserted = {}, false
@@ -183,7 +200,12 @@ local function OnLayout(frame)
 	local topOffset = (frame:GetTop() or 0) - (flow[1]:GetTop() or 0)
 	local totalGap = 0
 	for i = 2, #flow do
+		-- Open the tight rows up to at least MIN_GAP while keeping the larger breaks
+		-- Blizzard leaves between the button groups.
 		local gap = gapAbove[flow[i]] or FALLBACK_GAP
+		if gap < MIN_GAP then
+			gap = MIN_GAP
+		end
 		flow[i]:ClearAllPoints()
 		flow[i]:SetPoint("TOP", flow[i - 1], "BOTTOM", 0, -gap)
 		totalGap = totalGap + gap

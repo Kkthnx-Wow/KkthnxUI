@@ -79,6 +79,57 @@ local function HideBlizzardBits()
 	end
 end
 
+-- The expansion / garrison landing page button floats wherever Blizzard drops it,
+-- which reads as clutter on the square map. Tuck it into the top-right corner and
+-- hold it there, since the client re-anchors it on show.
+local function TidyLandingButton()
+	local button = _G.ExpansionLandingPageMinimapButton or _G.GarrisonLandingPageMinimapButton
+	if not button then
+		return
+	end
+	local function reanchor()
+		if button.__kkuiAnchoring then
+			return
+		end
+		button.__kkuiAnchoring = true
+		button:ClearAllPoints()
+		button:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 2, 2)
+		button:SetScale(0.85)
+		button.__kkuiAnchoring = false
+	end
+	reanchor()
+	hooksecurefunc(button, "SetPoint", reanchor)
+end
+
+-- The LFG/queue eye floats at a stock spot off the minimap. Pin it to the
+-- bottom-left corner and hold it there (the client re-anchors it as queues come
+-- and go), and point its status popup off the button so it opens cleanly.
+local function TidyQueueStatus()
+	local button = _G.QueueStatusButton
+	if not button then
+		return
+	end
+	button:SetParent(Minimap)
+	local function reanchor()
+		if button.__kkuiAnchoring then
+			return
+		end
+		button.__kkuiAnchoring = true
+		button:ClearAllPoints()
+		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+		button:SetScale(0.55)
+		button.__kkuiAnchoring = false
+	end
+	reanchor()
+	hooksecurefunc(button, "SetPoint", reanchor)
+
+	local popup = _G.QueueStatusFrame
+	if popup then
+		popup:ClearAllPoints()
+		popup:SetPoint("BOTTOMLEFT", button, "TOPLEFT", 0, 4)
+	end
+end
+
 -- ---------------------------------------------------------------------------
 -- Zoom via mouse wheel
 -- ---------------------------------------------------------------------------
@@ -151,6 +202,8 @@ function Module:OnEnable()
 
 	-- Strip the leftover Blizzard clutter (calendar, clock, zone text, compass).
 	HideBlizzardBits()
+	TidyLandingButton()
+	TidyQueueStatus()
 
 	-- Datatexts, built in Location.lua and Time.lua.
 	if self.CreateLocation then

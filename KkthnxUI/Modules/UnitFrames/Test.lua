@@ -28,6 +28,44 @@ local NAMES = { "Kkthnx", "Aldric", "Mireva", "Torvald", "Sylara", "Bront", "Yve
 -- A generic debuff icon for the fake aura row.
 local FAKE_ICONS = { 136207, 135813, 136118, 132298, 135936 }
 
+-- Dispel schools paired with their border colour and the raid-frame badge, so the
+-- fake debuffs show the same two cues the real ones do.
+local DISPEL = {
+	{ col = { 0.20, 0.60, 1.00 }, atlas = "RaidFrame-Icon-DebuffMagic" },
+	{ col = { 0.60, 0.00, 1.00 }, atlas = "RaidFrame-Icon-DebuffCurse" },
+	{ col = { 0.60, 0.40, 0.00 }, atlas = "RaidFrame-Icon-DebuffDisease" },
+	{ col = { 0.00, 0.60, 0.00 }, atlas = "RaidFrame-Icon-DebuffPoison" },
+}
+
+-- One fake debuff icon: border tinted to a dispel school, the matching raid-frame
+-- badge in the corner, and a duration number.
+local function FakeDebuff(parent, size, slot)
+	local icon = CreateFrame("Frame", nil, parent)
+	icon:SetSize(size, size)
+	local tex = icon:CreateTexture(nil, "ARTWORK")
+	tex:SetAllPoints()
+	tex:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	tex:SetTexture(FAKE_ICONS[(slot - 1) % #FAKE_ICONS + 1])
+	K.CreateBorder(icon)
+
+	local school = DISPEL[(slot - 1) % #DISPEL + 1]
+	if icon.KKUI_Border then
+		icon.KKUI_Border.__customColor = true
+		icon.KKUI_Border:SetVertexColor(school.col[1], school.col[2], school.col[3])
+	end
+
+	local badge = icon:CreateTexture(nil, "OVERLAY", nil, 3)
+	badge:SetSize(size * 0.45, size * 0.45)
+	badge:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", 1, -1)
+	badge:SetAtlas(school.atlas)
+
+	local dur = icon:CreateFontString(nil, "OVERLAY")
+	K.SetFont(dur, 11, K.FontOutlineStyle())
+	dur:SetPoint("CENTER")
+	dur:SetText(random(3, 40))
+	return icon
+end
+
 local function ClassColor(index)
 	local class = CLASSES[(index - 1) % #CLASSES + 1]
 	local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
@@ -96,11 +134,9 @@ local function BuildMock(parent, index, width, height, powerHeight, withAuras, w
 	end
 
 	if withAuras then
-		local dispel = { { 0.9, 0, 0 }, { 0, 0.6, 1 }, { 0.6, 0, 1 }, { 0.6, 0.4, 0 } }
 		local prev
 		for i = 1, 3 do
-			local icon = CreateFrame("Frame", nil, f)
-			icon:SetSize(20, 20)
+			local icon = FakeDebuff(f, 20, i)
 			-- Sit to the right of the frame so a downward stack never overlaps.
 			if prev then
 				icon:SetPoint("LEFT", prev, "RIGHT", 4, 0)
@@ -108,25 +144,45 @@ local function BuildMock(parent, index, width, height, powerHeight, withAuras, w
 				icon:SetPoint("LEFT", f, "RIGHT", 6, 0)
 			end
 			prev = icon
-			local tex = icon:CreateTexture(nil, "ARTWORK")
-			tex:SetAllPoints()
-			tex:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-			tex:SetTexture(FAKE_ICONS[(i - 1) % #FAKE_ICONS + 1])
-			K.CreateBorder(icon)
-			local col = dispel[(i - 1) % #dispel + 1]
-			if icon.KKUI_Border then
-				icon.KKUI_Border.__customColor = true
-				icon.KKUI_Border:SetVertexColor(col[1], col[2], col[3])
-			end
-			-- Fake duration text so the timer placement is visible.
-			local dur = icon:CreateFontString(nil, "OVERLAY")
-			K.SetFont(dur, 11, K.FontOutlineStyle())
-			dur:SetPoint("CENTER")
-			dur:SetText(random(3, 40))
 		end
 	end
 
 	return f
+end
+
+-- A single mock target frame with a full debuff row sitting above it, growing
+-- right then up, matching where the real target debuffs live. This is the one to
+-- eyeball the dispel border and corner badge on target-sized icons.
+local function BuildTargetMock(self)
+	if self.testFrames.Target then
+		return self.testFrames.Target
+	end
+	local cfg = C.Unitframe.Target
+	local db = C.Unitframe.Auras
+	local mover = K.GetMover and K.GetMover("TargetFrame")
+
+	local holder = CreateFrame("Frame", nil, UIParent)
+	holder:SetFrameStrata("MEDIUM")
+	holder:SetSize(cfg.Width, cfg.Height)
+	holder:SetPoint("TOPLEFT", mover or UIParent, mover and "TOPLEFT" or "CENTER", 0, 0)
+
+	local frame = BuildMock(holder, 1, cfg.Width, cfg.Height, cfg.PowerHeight or 0, false, false)
+	frame:SetPoint("TOPLEFT", holder, "TOPLEFT", 0, 0)
+
+	-- Debuff row above the frame, sized and wrapped from the aura config.
+	local perRow = math.max(1, db.PerRow)
+	local spacing = db.Spacing
+	local size = math.max(8, floor((cfg.Width - (perRow - 1) * spacing) / perRow))
+	local count = floor(perRow * 1.5)
+	for i = 1, count do
+		local col = (i - 1) % perRow
+		local row = floor((i - 1) / perRow)
+		local icon = FakeDebuff(frame, size, i)
+		icon:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", col * (size + spacing), spacing + row * (size + spacing))
+	end
+
+	self.testFrames.Target = holder
+	return holder
 end
 
 -- Lay a pool of mock frames out in a grid anchored to a mover.
@@ -166,6 +222,7 @@ function Module:ShowTestFrames(show)
 		pcall(BuildGroup, self, "Boss", "BossFrames", 5, 0, uf.Boss.Width, uf.Boss.Height, uf.Boss.PowerHeight, uf.Boss.Spacing or 34, true, false)
 		pcall(BuildGroup, self, "Party", "PartyFrames", 5, 0, uf.Party.Width, uf.Party.Height, uf.Party.PowerHeight, 24, true, uf.Party.Portrait)
 		pcall(BuildGroup, self, "Raid", "RaidFrames", 40, 5, uf.Raid.Width, uf.Raid.Height, uf.Raid.PowerMode ~= "None" and uf.Raid.PowerHeight or 0, 6, false, false)
+		pcall(BuildTargetMock, self)
 	end
 
 	for _, holder in pairs(self.testFrames) do

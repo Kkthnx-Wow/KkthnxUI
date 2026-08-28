@@ -100,6 +100,8 @@ function Build.Auras(self, cfg)
 			growthH = "Right",
 			growthV = "Up",
 			dispelBorder = true,
+			-- The raid-frame dispel badge in the corner, same as the player debuffs.
+			dispelIcon = true,
 			slots = { { key = "debuffs", filter = filter, max = db.NumDebuffs } },
 		})
 		self.KKUI_Debuffs = container

@@ -134,9 +134,15 @@ function Module:GetButtonConfig(key)
 	local size = db.FontSize
 	local flag = db.FontFlag ~= "NONE" and db.FontFlag or ""
 	return {
-		clickOnDown = true,
+		-- Cast on key down when enabled, otherwise on release.
+		clickOnDown = db.KeyDown ~= false,
 		showGrid = db.ShowGrid,
 		outOfRangeColoring = db.RangeColoring or "button",
+		-- Out-of-range and out-of-mana tints, tunable from the options.
+		colors = {
+			range = db.RangeColor or { 0.8, 0.1, 0.1 },
+			mana = db.ManaColor or { 0.5, 0.5, 1.0 },
+		},
 		-- Register with the assisted-combat manager so the one-button rotation
 		-- assistant can glow the next suggested ability on our buttons. The
 		-- highlight only works when actionButtonUI is on, so both are set together.

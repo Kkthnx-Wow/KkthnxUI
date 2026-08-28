@@ -180,6 +180,22 @@ local function MakeInitializer(opts)
 			end
 		end
 
+		-- A dispel-school badge in the bottom-right corner, the same art the raid
+		-- frames use (RaidFrame-Icon-DebuffMagic and friends). The engine sets the
+		-- right atlas per school through the Icon style and leaves it blank for a
+		-- debuff with no school, so this needs no tainted dispel-type read.
+		if opts.dispelIcon and button.AddDispelTypeTexture and Enum and Enum.CustomAuraButtonDispelTypeTextureStyle then
+			local corner = button:CreateTexture(nil, "OVERLAY", nil, 3)
+			local badge = (size or 30) * 0.45
+			corner:SetSize(badge, badge)
+			corner:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, -1)
+			pcall(button.AddDispelTypeTexture, button, corner, {
+				style = Enum.CustomAuraButtonDispelTypeTextureStyle.Icon,
+				showWhenHarmful = true,
+				showWithoutDispelType = false,
+			})
+		end
+
 		-- Size before registering so the flow layout has a rect. Guarded because
 		-- writes to the button are denied while auras are secret (combat).
 		pcall(button.SetSize, button, size, size)

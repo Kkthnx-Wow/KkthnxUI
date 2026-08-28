@@ -63,6 +63,8 @@ local function BuildBlock(key, label, filter, size, point, cancel)
 		growthV = "Down",
 		unit = "player",
 		dispelBorder = filter == "HARMFUL",
+		-- Debuffs also get the raid-frame dispel-school badge in the corner.
+		dispelIcon = filter == "HARMFUL",
 		-- The initializer reads cancel at the top level, so it must live here and not
 		-- only on the slot, or right-click cancel is never wired onto the buttons.
 		cancel = cancel,
@@ -80,13 +82,22 @@ function Module:OnEnable()
 	local db = C.Auras
 	local minimap = _G.Minimap or UIParent
 
-	-- Buffs to the left of the minimap, debuffs below it, both movable.
+	-- Buffs to the left of the minimap, debuffs stacked directly below the buff
+	-- block (right edges aligned), both movable.
 	self.Buffs = BuildBlock("PlayerBuffs", "Player Buffs", "HELPFUL", db.BuffSize, { "TOPRIGHT", minimap, "TOPLEFT", -6, 0 }, true)
-	self.Debuffs = BuildBlock("PlayerDebuffs", "Player Debuffs", "HARMFUL", db.DebuffSize, { "TOPRIGHT", minimap, "BOTTOMRIGHT", 0, -6 }, false)
+
+	local buffs = _G.KKUI_PlayerBuffsAnchor
+	local debuffPoint = buffs and { "TOPRIGHT", buffs, "BOTTOMRIGHT", 0, -(db.Spacing + 42) } or { "TOPRIGHT", minimap, "BOTTOMRIGHT", 0, -6 }
+	self.Debuffs = BuildBlock("PlayerDebuffs", "Player Debuffs", "HARMFUL", db.DebuffSize, debuffPoint, false)
 
 	-- Only take over Blizzard's own aura frames when ours actually built, so a
 	-- client without the intrinsic still shows buffs the default way.
 	if self.Buffs and self.Debuffs then
 		self:HideBlizzard()
+	end
+
+	-- Temporary weapon enchants live in their own small row (WeaponEnchant.lua).
+	if self.SetupWeaponEnchants then
+		self:SetupWeaponEnchants()
 	end
 end

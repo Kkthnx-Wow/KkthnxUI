@@ -50,8 +50,10 @@ function Module:CreatePetBar()
 
 	K.CreateMover(bar, "PetBar", "Pet Bar", { "BOTTOM", UIParent, "BOTTOM", 0, 210 }, bar:GetWidth(), bar:GetHeight())
 
-	-- Only visible with a controllable pet, and never in a pet battle.
-	RegisterStateDriver(bar, "visibility", "[petbattle] hide; [pet] show; hide")
+	-- Only visible with a controllable pet, and never in a pet battle or while an
+	-- override, vehicle, possess, or shapeshift bar has taken over (some quests put
+	-- a bonus bar on the pet state, which otherwise showed this bar spuriously).
+	RegisterStateDriver(bar, "visibility", "[petbattle][overridebar][vehicleui][possessbar][shapeshift] hide; [pet] show; hide")
 	self:SetupFade(bar, cfg)
 
 	self.bars.PetBar = bar

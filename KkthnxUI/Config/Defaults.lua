@@ -26,6 +26,9 @@ K.ConfigDefaults = {
 		ShowGrid = true,
 		Cooldowns = true,
 		RangeColoring = "button", -- how out-of-range shows: button, hotkey, or none
+		RangeColor = { 0.8, 0.1, 0.1 }, -- out-of-range tint
+		ManaColor = { 0.5, 0.5, 1.0 }, -- out-of-mana tint
+		KeyDown = true, -- cast on key press instead of release
 		ProcGlow = "Pixel", -- spell-activation glow style: Pixel, Autocast, or Default
 		Font = "Normal",
 		FontSize = 12,
@@ -199,6 +202,8 @@ K.ConfigDefaults = {
 		MaxAuras = 6,
 		AuraSize = 24,
 		AuraSpacing = 6,
+		PrivateAuras = true, -- Blizzard private auras (boss mechanics) on the plate
+		PrivateAuraSize = 28,
 		-- Custom health colours for priority mobs, keyed by npcID -> { r, g, b }.
 		CustomColors = {},
 	},
@@ -206,9 +211,10 @@ K.ConfigDefaults = {
 	Auras = {
 		Enable = true,
 		BuffSize = 30,
-		DebuffSize = 32,
-		PerRow = 8,
+		DebuffSize = 38, -- kept two steps larger than the buffs so debuffs stand out
+		PerRow = 14,
 		Spacing = 6,
+		WeaponEnchant = true,
 	},
 
 	Cooldown = {

@@ -8,7 +8,7 @@
 
 		They carry a portrait and a name on the bar. No numbers at this size, the
 		bar itself reads them. The pet reads left-to-right like the player it
-		belongs to, so its portrait sits on the left; the others sit on the right.
+		belongs to, so its portrait sits on the left, the others sit on the right.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]

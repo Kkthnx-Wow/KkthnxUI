@@ -116,6 +116,7 @@ local function BarControls(key)
 		{ kind = "slider", label = L["Button Spacing"], path = { "ActionBar", key, "Space" }, min = 0, max = 12, step = 1, apply = apply, dependsOn = dep },
 		{ kind = "slider", label = L["Bar Opacity"], path = { "ActionBar", key, "Alpha" }, min = 0, max = 1, step = 0.05, apply = apply, dependsOn = dep },
 		{ kind = "check", label = L["Mouseover Only"], path = { "ActionBar", key, "Mouseover" }, apply = apply, dependsOn = dep },
+		{ kind = "check", label = L["Fade Out Of Combat"], path = { "ActionBar", key, "FadeCombat" }, apply = apply, dependsOn = dep, tooltip = L["Fade the bar while out of combat and show it the moment a fight starts."] },
 		{ kind = "check", label = L["Show Hotkey"], path = { "ActionBar", key, "HotKey" }, apply = apply, dependsOn = dep },
 		{ kind = "check", label = L["Show Macro Name"], path = { "ActionBar", key, "MacroName" }, apply = apply, dependsOn = dep },
 		{ kind = "check", label = L["Show Count"], path = { "ActionBar", key, "Count" }, apply = apply, dependsOn = dep },
@@ -327,6 +328,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Enable Action Bars"], path = { "ActionBar", "Enable" }, reload = true },
 			{ kind = "check", label = L["Show Empty Button Grid"], path = { "ActionBar", "ShowGrid" }, reload = true },
 			{ kind = "check", label = L["Cooldown Count"], path = { "ActionBar", "Cooldowns" }, reload = true },
+			{ kind = "check", label = L["Cast On Key Down"], path = { "ActionBar", "KeyDown" }, reload = true, tooltip = L["Fire actions on key press instead of on release."] },
 			{ kind = "dropdown", label = L["Out of Range"], path = { "ActionBar", "RangeColoring" }, options = {
 				{ text = L["Whole Button"], value = "button" },
 				{ text = L["Hotkey Only"], value = "hotkey" },
@@ -494,6 +496,7 @@ GUI.schema = {
 			{ kind = "slider", label = L["Debuff Size"], path = { "Auras", "DebuffSize" }, min = 20, max = 44, step = 1, reload = true, dependsOn = { "Auras", "Enable" } },
 			{ kind = "slider", label = L["Per Row"], path = { "Auras", "PerRow" }, min = 4, max = 16, step = 1, reload = true, dependsOn = { "Auras", "Enable" } },
 			{ kind = "slider", label = L["Spacing"], path = { "Auras", "Spacing" }, min = 0, max = 12, step = 1, reload = true, dependsOn = { "Auras", "Enable" } },
+				{ kind = "check", label = L["Show Weapon Enchants"], path = { "Auras", "WeaponEnchant" }, reload = true, dependsOn = { "Auras", "Enable" } },
 		},
 	},
 
@@ -570,6 +573,8 @@ GUI.schema = {
 			{ kind = "slider", label = L["Debuff Size"], path = { "Nameplate", "AuraSize" }, min = 16, max = 40, step = 1, reload = true, dependsOn = { "Nameplate", "ShowDebuffs" } },
 			{ kind = "slider", label = L["Debuff Spacing"], path = { "Nameplate", "AuraSpacing" }, min = 0, max = 12, step = 1, reload = true, dependsOn = { "Nameplate", "ShowDebuffs" } },
 			{ kind = "slider", label = L["Max Debuffs"], path = { "Nameplate", "MaxAuras" }, min = 1, max = 10, step = 1, reload = true, dependsOn = { "Nameplate", "ShowDebuffs" } },
+				{ kind = "check", label = L["Show Private Auras"], path = { "Nameplate", "PrivateAuras" }, reload = true, dependsOn = { "Nameplate", "Enable" } },
+				{ kind = "slider", label = L["Private Aura Size"], path = { "Nameplate", "PrivateAuraSize" }, min = 16, max = 44, step = 1, reload = true, dependsOn = { "Nameplate", "PrivateAuras" } },
 
 			{ kind = "header", label = L["Custom Unit Colors"] },
 			{ kind = "extra", label = L["Custom Unit Colors"], name = "NP_CustomColors", title = L["Custom Unit Colors"], build = function(child)

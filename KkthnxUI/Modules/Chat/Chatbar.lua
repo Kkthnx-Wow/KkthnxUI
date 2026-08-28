@@ -4,7 +4,7 @@
 	Purpose:
 		A compact row of channel buttons below the chat that open the edit box on
 		the right channel with one click. Each button is coloured to its channel.
-		Whisper replies to the last whisper; emote and roll fire directly.
+		Whisper replies to the last whisper. Emote and roll fire directly.
 -----------------------------------------------------------------------------]]
 
 local K = KkthnxUI[1]

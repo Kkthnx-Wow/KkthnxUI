@@ -77,6 +77,12 @@ SlashCmdList.KKTHNXUI = function(msg)
 			uf:ToggleTest()
 		end
 		return
+	elseif msg == "auras" then
+		local auras = K:GetModule("Auras", true)
+		if auras and auras.ToggleTest then
+			auras:ToggleTest()
+		end
+		return
 	end
 
 	if K.ToggleConfigGUI then

@@ -125,9 +125,10 @@ function K.SkinButton(button, emphasize)
 		fs:SetTextColor(restColor[1], restColor[2], restColor[3])
 	end
 
-	-- Hover: warm the fill and light the border, so every control reacts the same.
+	-- Hover: lift the fill toward the accent and light the border, so every control
+	-- reacts the same and the hover reads at a glance.
 	button:HookScript("OnEnter", function(self)
-		bg:SetGradient("VERTICAL", CreateColor(0.16, 0.24, 0.36, 0.95), CreateColor(0.10, 0.15, 0.24, 0.95))
+		bg:SetGradient("VERTICAL", CreateColor(0.22, 0.34, 0.52, 1), CreateColor(0.13, 0.20, 0.32, 1))
 		if self.KKUI_Border then
 			self.KKUI_Border:SetVertexColor(hoverBorder[1], hoverBorder[2], hoverBorder[3], 1)
 		end

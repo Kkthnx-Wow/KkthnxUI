@@ -685,6 +685,37 @@ local function BuildDebuffs(self)
 	end
 end
 
+-- Private auras: boss and encounter auras Blizzard only reveals to the affected
+-- player. The oUF element hands the anchor frames to the client, which draws and
+-- times them, so this only sizes and positions the row. Sits above the debuffs
+-- (or the health bar when debuffs are off) and grows right from a centred row.
+local function BuildPrivateAuras(self)
+	if not C.Nameplate.PrivateAuras then
+		return
+	end
+	local db = C.Nameplate
+	local size = db.PrivateAuraSize or db.AuraSize
+	local num = 3
+
+	local base = db.NameSize + 32
+	if db.ShowDebuffs then
+		base = base + db.AuraSize + db.AuraSpacing
+	end
+
+	local frame = CreateFrame("Frame", nil, self)
+	frame:SetSize(num * size + (num - 1) * db.AuraSpacing, size)
+	frame:SetPoint("BOTTOM", self.Health, "TOP", 0, base)
+	frame.size = size
+	frame.num = num
+	frame.spacing = db.AuraSpacing
+	frame.growthX = "RIGHT"
+	frame.growthY = "UP"
+	frame.initialAnchor = "BOTTOMLEFT"
+	frame.maxCols = num
+	frame.showDispelIcon = true
+	self.PrivateAuras = frame
+end
+
 -- Target highlight overlay, classification, and quest markers. Their visibility
 -- is driven from PostUpdateHealth, here we only create them.
 local function BuildIndicators(self)
@@ -737,6 +768,7 @@ function Module.Style(self, unit)
 	BuildName(self)
 	BuildCastbar(self)
 	BuildDebuffs(self)
+	BuildPrivateAuras(self)
 	BuildIndicators(self)
 
 	-- Raid target marker above the health bar.

@@ -32,6 +32,9 @@ local SetItemButtonTexture = SetItemButtonTexture
 local SetItemButtonCount = SetItemButtonCount
 local SetItemButtonDesaturated = SetItemButtonDesaturated
 local CooldownFrame_Set = CooldownFrame_Set
+local SetItemCraftingQualityOverlay = SetItemCraftingQualityOverlay
+local ClearItemCraftingQualityOverlay = ClearItemCraftingQualityOverlay
+local pcall = pcall
 
 local Enum = Enum
 local C_NewItems = C_NewItems
@@ -349,6 +352,9 @@ function Module:UpdateSlot(button, bag, slot)
 		if button.KKUI_Fav then
 			button.KKUI_Fav:Hide()
 		end
+		if ClearItemCraftingQualityOverlay and button.ProfessionQualityOverlay then
+			ClearItemCraftingQualityOverlay(button)
+		end
 		local c = C.General.BorderColor
 		SetBorder(button, c[1], c[2], c[3], false)
 		if button.Cooldown then
@@ -368,6 +374,17 @@ function Module:UpdateSlot(button, bag, slot)
 	SetItemButtonDesaturated(button, info.isLocked or (C.Bags.DesaturateJunk and isJunk) or false)
 
 	SetBorder(button, QualityColor(quality))
+
+	-- Crafting quality pip (the little reagent/gear tier diamond). The client builds
+	-- and manages button.ProfessionQualityOverlay off the item link. alwaysShow makes
+	-- crafted gear show its tier in the bag too, not only while the professions window
+	-- is open. Guarded: a secret link cannot be read from our tainted code.
+	if SetItemCraftingQualityOverlay and info.hyperlink and not IsSecret(info.hyperlink) then
+		button.alwaysShowProfessionsQuality = true
+		pcall(SetItemCraftingQualityOverlay, button, info.hyperlink)
+	elseif ClearItemCraftingQualityOverlay and button.ProfessionQualityOverlay then
+		ClearItemCraftingQualityOverlay(button)
+	end
 
 	-- Favourite star.
 	if button.KKUI_Fav then

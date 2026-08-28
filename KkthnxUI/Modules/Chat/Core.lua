@@ -430,6 +430,37 @@ local function AddCopyButton(chatFrame)
 end
 
 -- ---------------------------------------------------------------------------
+-- Social (quick-join) button
+-- ---------------------------------------------------------------------------
+
+-- Reskin and reposition the quick-join toast button above the chat. It is kept
+-- rather than hidden because hiding it also hides the toasts other features fire.
+function Module:SkinSocialButton()
+	local button = _G.QuickJoinToastButton
+	if not button or button.KKUI_Skinned then
+		return
+	end
+	button.KKUI_Skinned = true
+
+	button:ClearAllPoints()
+	button:SetPoint("BOTTOMLEFT", _G.ChatFrame1, "TOPLEFT", 0, 24)
+	button:SetSize(22, 22)
+	K.CreateGradientBackground(button, 0.85)
+	K.CreateBorder(button)
+
+	-- Trim the default plate art so our border reads cleanly, and crop the friend
+	-- glyph to sit inside the button.
+	for _, region in ipairs({ button:GetRegions() }) do
+		if region.GetObjectType and region:GetObjectType() == "Texture" and region ~= button.FriendsButton and region ~= button.QueueButton then
+			region:SetAlpha(0)
+		end
+	end
+	if button.FriendsButton then
+		button.FriendsButton:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	end
+end
+
+-- ---------------------------------------------------------------------------
 -- Enable
 -- ---------------------------------------------------------------------------
 
@@ -584,10 +615,11 @@ function Module:OnEnable()
 		self:RegisterEvent("CHAT_MSG_BN_WHISPER", OnWhisper)
 	end
 
-	-- Remove the stock chat clutter around the frames.
+	-- Remove the stock chat clutter around the frames. The quick-join social button
+	-- is kept and skinned instead, since hiding it also hides the toasts other
+	-- features rely on.
 	for _, name in ipairs({
 		"ChatFrameMenuButton",
-		"QuickJoinToastButton",
 		"ChatFrameChannelButton",
 		"ChatFrameToggleVoiceDeafenButton",
 		"ChatFrameToggleVoiceMuteButton",
@@ -598,6 +630,8 @@ function Module:OnEnable()
 			frame:HookScript("OnShow", frame.Hide)
 		end
 	end
+
+	self:SkinSocialButton()
 
 	-- Pin the chat to the bottom-left corner. Edit Mode keeps trying to place it,
 	-- so we hook SetPoint and re-apply, guarded against re-entry. The y offset

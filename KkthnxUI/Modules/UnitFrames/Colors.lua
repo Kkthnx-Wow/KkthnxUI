@@ -5,7 +5,7 @@
 		Our own power and reaction palette, applied over the oUF colour tables so
 		every health bar coloured by reaction and every power bar (unit frames and
 		nameplates) uses them. Values live in the config so they can be tuned from
-		the GUI; K.ApplyUnitColors re-reads them.
+		the GUI. K.ApplyUnitColors re-reads them.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]

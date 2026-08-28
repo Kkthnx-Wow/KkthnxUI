@@ -34,6 +34,15 @@ function Module:SetupCVars()
 	SetCVar("nameplateMinScale", 1)
 	SetCVar("nameplateMaxScale", 1)
 	SetCVar("nameplateSelectedScale", 1.1)
+	-- Hold the plates at a flat alpha so they do not dim with distance or fade
+	-- everything but the target, which keeps every bar readable at a glance.
+	SetCVar("nameplateMinAlpha", 1)
+	SetCVar("nameplateMaxAlpha", 1)
+	SetCVar("nameplateSelectedAlpha", 1)
+	SetCVar("nameplateNotSelectedAlpha", 1)
+	SetCVar("nameplateOccludedAlphaMult", 0.4)
+	-- Stacking mode so plates slide apart instead of piling on top of each other.
+	SetCVar("nameplateMotion", 1)
 	SetCVar("nameplateMaxDistance", db.MaxDistance)
 	SetCVar("nameplateOverlapH", 0.8)
 	SetCVar("nameplateOverlapV", 1.1)

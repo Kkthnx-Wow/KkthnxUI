@@ -4,7 +4,7 @@
 	Purpose:
 		A quick throwaway preview of the custom button art in Media/Buttons, each
 		framed with our border so the look can be checked at a glance. Toggle it with
-		/kk buttons. The slice coordinates are estimates from the source art; adjust
+		/kk buttons. The slice coordinates are estimates from the source art, adjust
 		BAR_ROWS / ICON_GRID if a cell is off.
 -----------------------------------------------------------------------------]]
 

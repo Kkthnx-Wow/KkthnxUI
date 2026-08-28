@@ -42,7 +42,7 @@ local NOINTERRUPT_CLR = CreateColor(NOINTERRUPT_COLOR[1], NOINTERRUPT_COLOR[2], 
 -- SetVertexColorFromBoolean which handles the secret natively instead of an if.
 local function OnCastStart(self, _, _, notInterruptible)
 	local tex = self:GetStatusBarTexture()
-	-- Secret boolean (enemy casts) -> the secret-safe setter; plain boolean or nil
+	-- Secret boolean (enemy casts) -> the secret-safe setter. A plain boolean or nil
 	-- -> a normal branch, since the setter rejects non-secret values.
 	if IsSecret(notInterruptible) then
 		if tex and tex.SetVertexColorFromBoolean then
@@ -150,7 +150,7 @@ local function CreateBar(self, opts)
 	-- it only shows on non-interruptible casts. Replaces the stock shield art.
 	local shield = cast:CreateTexture(nil, "OVERLAY")
 	shield:SetAtlas("UI-CharacterCreate-PadLock", false)
-	local lock = opts.height * 0.9
+	local lock = opts.height * 1.1
 	shield:SetSize(lock * (63 / 76), lock) -- keep the atlas aspect ratio
 	shield:SetPoint("CENTER", cast, "CENTER", 0, 0)
 	shield:SetAlpha(0)
@@ -192,7 +192,7 @@ local function CreateBar(self, opts)
 
 	if opts.latency and db.ShowLatency then
 		local safe = cast:CreateTexture(nil, "OVERLAY")
-		safe:SetColorTexture(0.69, 0.31, 0.31, 0.6)
+		safe:SetColorTexture(FAIL_COLOR[1], FAIL_COLOR[2], FAIL_COLOR[3], 0.6)
 		cast.SafeZone = safe
 	end
 

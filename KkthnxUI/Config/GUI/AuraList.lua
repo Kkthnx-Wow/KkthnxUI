@@ -3,7 +3,7 @@
 	File: Config/GUI/AuraList.lua
 	Purpose:
 		The aura filter editor. Add spell ids to a whitelist (always show) or a
-		blacklist (always hide); both drive K.FilterAura on the unit frame and
+		blacklist (always hide). Both drive K.FilterAura on the unit frame and
 		nameplate aura panels. Rows show the spell icon and name so a bare id is
 		still recognisable, with a remove button each.
 -----------------------------------------------------------------------------]]

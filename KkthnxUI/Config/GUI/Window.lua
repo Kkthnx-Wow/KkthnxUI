@@ -4,7 +4,7 @@
 	Purpose:
 		The options window: a movable panel with a category list on the left and
 		a scrollable content area on the right. Standard categories are laid out
-		from the schema; a category may instead point to a custom panel builder
+		from the schema. A category may instead point to a custom panel builder
 		(used by Profiles).
 -----------------------------------------------------------------------------]]
 
