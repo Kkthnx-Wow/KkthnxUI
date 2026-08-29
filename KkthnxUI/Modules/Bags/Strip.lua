@@ -174,14 +174,22 @@ function Module:UpdateBagStrip(f)
 	end
 end
 
--- Fold the strip in or out and relayout so the grid makes room for it.
+-- Fold the strip in or out and relayout so the grid makes room for it. Handles the
+-- carried-bag strip on the bags and the tab bar on the bank, whichever this window
+-- carries.
 function Module:ToggleBagStrip(f, show)
-	if not f or not f.BagStrip then
+	local strip = f and (f.BagStrip or f.BankBar)
+	if not strip then
 		return
 	end
-	f.BagStrip:SetShown(show)
+	strip:SetShown(show)
 	if show then
-		self:UpdateBagStrip(f)
+		if f.BagStrip then
+			self:UpdateBagStrip(f)
+		end
+		if f.BankBar and self.UpdateBankBar then
+			self:UpdateBankBar(f)
+		end
 	end
 	self:LayoutContainer(f)
 end

@@ -11,6 +11,7 @@
 	<Script file="DeleteCheapest.lua" />
 	<Script file="Gold.lua" />
 	<Script file="Bank.lua" />
+	<Script file="BankBar.lua" />
 	<!-- The small backpack + bag-slot bar, complementary to the bag window. -->
 	<Script file="BagBar.lua" />
 </Ui>

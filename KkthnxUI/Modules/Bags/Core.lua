@@ -373,6 +373,9 @@ function Module:UpdateInfoText(f)
 	if f.Money then
 		f.Money:SetText(GetCoinTextureString(GetMoney()))
 	end
+	if f.WarbandMoney and self.UpdateWarbandMoney then
+		self:UpdateWarbandMoney(f)
+	end
 	if f.FreeSlots then
 		local free, total = 0, 0
 		for _, bag in ipairs(f.bags) do
@@ -547,10 +550,12 @@ function Module:CreateContainer(name, title, bags, perRow)
 	sort:SetPoint("RIGHT", close, "LEFT", -6, 0)
 	f.Sort = sort
 
-	-- Bag bar toggle, folding the bag slot strip in and out of this window.
+	-- Bag bar toggle, folding the bag slot strip (bags) or the tab bar (bank) in and
+	-- out of this window.
 	local bagToggle = IconButton("BagToggle", nil, 133633, L["Toggle Bag Bar"], function()
-		if f.BagStrip then
-			K:SetConfig({ "Bags", "ShowBagBar" }, not f.BagStrip:IsShown())
+		local strip = f.BagStrip or f.BankBar
+		if strip then
+			K:SetConfig({ "Bags", "ShowBagBar" }, not strip:IsShown())
 			Module:ToggleBagStrip(f, C.Bags.ShowBagBar)
 		end
 	end)
@@ -622,13 +627,13 @@ function Module:CreateContainer(name, title, bags, perRow)
 	-- Bottom bar: free slots on the left, money on the right.
 	local freeSlots = f:CreateFontString(nil, "OVERLAY")
 	K.SetFont(freeSlots, 12, K.FontOutlineStyle())
-	freeSlots:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", MARGIN, 8)
+	freeSlots:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", MARGIN, 6)
 	freeSlots:SetTextColor(K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3])
 	f.FreeSlots = freeSlots
 
 	local money = f:CreateFontString(nil, "OVERLAY")
 	K.SetFont(money, 12, K.FontOutlineStyle())
-	money:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -MARGIN, 8)
+	money:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -16, 6)
 	f.Money = money
 
 	-- Thin rule between the item grid and the info bar.

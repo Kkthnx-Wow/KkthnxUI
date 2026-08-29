@@ -67,6 +67,14 @@ function Module:UpdateBankTabs()
 		local active = tab.bankType == self.bankType
 		tab.Text:SetTextColor(active and K.Colors.gold[1] or K.Colors.silver[1], active and K.Colors.gold[2] or K.Colors.silver[2], active and K.Colors.gold[3] or K.Colors.silver[3])
 	end
+	-- Show the Warband balance and its deposit/withdraw only on the Warband tab.
+	if self.UpdateWarbandMoney then
+		self:UpdateWarbandMoney(self.BankFrame)
+	end
+	-- Rebuild the tab icons and buy button for the active bank type.
+	if self.UpdateBankBar then
+		self:UpdateBankBar(self.BankFrame)
+	end
 end
 
 local function AddTab(frame, label, bankType, index)
@@ -120,11 +128,16 @@ function Module:SetupBank()
 	K.CreateMover(f, "Bank", L["Bank"], { "TOPLEFT", UIParent, "TOPLEFT", 60, -60 }, f:GetWidth(), f:GetHeight())
 	K.EnableFrameDrag(f)
 
-	-- Account gold tooltip on the money text, and the Warband deposit and withdraw
-	-- control along the bottom.
+	-- Per-character gold breakdown on hover of the money text, plus the clickable
+	-- Warband balance in the bottom bar (shown only on the Warband tab).
 	if self.AttachGoldTooltip then
 		self:AttachGoldTooltip(f)
-		self:AttachGoldControls(f)
+		self:CreateWarbandMoney(f)
+	end
+
+	-- The tab bar: purchased tabs and a buy button, below the bank window.
+	if self.CreateBankBar then
+		self:CreateBankBar(f)
 	end
 
 	-- Move the stock bank UI out of the way. The bank stays open server side, so

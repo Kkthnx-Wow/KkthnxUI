@@ -40,7 +40,8 @@ Module.Styles.Target = function(self)
 
 	BuildMirrored(self, cfg, 12, "target")
 
-	Build.DetachedCastbar(self, "TargetCastbar", "Target Castbar", castbar.TargetWidth, castbar.TargetHeight, { "BOTTOM", UIParent, "BOTTOM", 0, 420 }, "right")
+	-- Centred between the player and target frames, at their health-bar height.
+	Build.DetachedCastbar(self, "TargetCastbar", "Target Castbar", castbar.TargetWidth, castbar.TargetHeight, { "BOTTOM", UIParent, "BOTTOM", 0, 350 }, "right")
 end
 
 Module.Styles.Focus = function(self)

@@ -19,8 +19,6 @@ local _G = _G
 local ipairs = ipairs
 local pairs = pairs
 local tsort = table.sort
-local floor = math.floor
-local tonumber = tonumber
 local format = string.format
 local time = time
 
@@ -149,89 +147,65 @@ function Module:AttachGoldTooltip(f)
 end
 
 -- ---------------------------------------------------------------------------
--- Warband deposit and withdraw
+-- Warband money display (deposit and withdraw)
 -- ---------------------------------------------------------------------------
 
--- Read the whole-gold amount typed into the box and hand back copper.
-local function BoxCopper(box)
-	local gold = tonumber(box:GetText())
-	if not gold or gold <= 0 then
-		return 0
-	end
-	return floor(gold) * 10000
+-- A clickable Warband balance shown on the bank window while the Warband tab is
+-- active. Left-click deposits, right-click withdraws, both through Blizzard's own
+-- amount-entry popups (the same ones the stock bank uses), so nothing here does
+-- protected money moves itself. It sits in the bottom bar to the left of the
+-- character money, which stays a plain readout of your own gold.
+local function ShowWarbandHint(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOP")
+	GameTooltip:AddLine(L["Warband Bank"], 1, 1, 1)
+	GameTooltip:AddLine(L["Left-click to deposit"], 0.7, 0.85, 1)
+	GameTooltip:AddLine(L["Right-click to withdraw"], 0.7, 0.85, 1)
+	GameTooltip:Show()
 end
 
-function Module:AttachGoldControls(f)
-	-- DoesBankTypeSupportMoneyTransfer can read false at login before the account
-	-- bank loads, so build the controls once and let the deposit and withdraw guards
-	-- decide at click time. They sit in the top band, clear of the money line.
-	if not f or f.GoldControls then
+function Module:CreateWarbandMoney(f)
+	if not f or f.WarbandMoney or not (C_Bank and C_Bank.FetchDepositedMoney) then
 		return
 	end
 
-	local bar = CreateFrame("Frame", nil, f)
-	bar:SetSize(200, 20)
-	-- Sit on the top row, just left of the deposit-all button and clear of the tab
-	-- strip on the left, so it never lands on the money line.
-	if f.Deposit then
-		bar:SetPoint("RIGHT", f.Deposit, "LEFT", -8, 0)
-	else
-		bar:SetPoint("TOP", f, "TOP", 0, -33)
+	local button = CreateFrame("Button", nil, f)
+	button:SetSize(160, 16)
+	button:SetPoint("BOTTOMRIGHT", f.Money, "BOTTOMLEFT", -16, 0)
+
+	local text = button:CreateFontString(nil, "OVERLAY")
+	K.SetFont(text, 12, K.FontOutlineStyle())
+	text:SetPoint("RIGHT", button, "RIGHT", 0, 0)
+	text:SetJustifyH("RIGHT")
+	button.Text = text
+
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	button:SetScript("OnClick", function(_, btn)
+		if btn == "RightButton" then
+			StaticPopup_Hide("BANK_MONEY_DEPOSIT")
+			StaticPopup_Show("BANK_MONEY_WITHDRAW", nil, nil, { bankType = ACCOUNT })
+		else
+			StaticPopup_Hide("BANK_MONEY_WITHDRAW")
+			StaticPopup_Show("BANK_MONEY_DEPOSIT", nil, nil, { bankType = ACCOUNT })
+		end
+	end)
+	button:SetScript("OnEnter", ShowWarbandHint)
+	button:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+	button:Hide()
+	f.WarbandMoney = button
+end
+
+-- Refresh the Warband balance and only show it while the Warband tab is open.
+function Module:UpdateWarbandMoney(f)
+	if not f or not f.WarbandMoney then
+		return
 	end
-	f.GoldControls = bar
-
-	local box = CreateFrame("EditBox", nil, bar)
-	box:SetSize(70, 20)
-	box:SetPoint("LEFT", bar, "LEFT", 0, 0)
-	box:SetAutoFocus(false)
-	box:SetNumeric(true)
-	box:SetMaxLetters(10)
-	K.SetFont(box, 12, "")
-	box:SetTextInsets(4, 4, 0, 0)
-	box:SetScript("OnEscapePressed", box.ClearFocus)
-	box:SetScript("OnEnterPressed", box.ClearFocus)
-	K.SkinEditBox(box)
-
-	local hint = box:CreateFontString(nil, "OVERLAY")
-	K.SetFont(hint, 12, "")
-	hint:SetPoint("RIGHT", box, "RIGHT", -4, 0)
-	hint:SetTextColor(0.7, 0.6, 0.3)
-	hint:SetText(L["Gold"])
-	box:SetScript("OnTextChanged", function(self)
-		hint:SetShown(self:GetText() == "")
-	end)
-
-	local deposit = CreateFrame("Button", nil, bar)
-	deposit:SetSize(58, 20)
-	deposit:SetPoint("LEFT", box, "RIGHT", 6, 0)
-	deposit.Text = deposit:CreateFontString(nil, "OVERLAY")
-	K.SetFont(deposit.Text, 12, K.FontOutlineStyle())
-	deposit.Text:SetPoint("CENTER")
-	deposit.Text:SetText(L["Deposit"])
-	K.SkinButton(deposit)
-	deposit:SetScript("OnClick", function()
-		local copper = BoxCopper(box)
-		if copper > 0 and C_Bank.DepositMoney and (not C_Bank.CanDepositMoney or C_Bank.CanDepositMoney(ACCOUNT)) then
-			C_Bank.DepositMoney(ACCOUNT, copper)
-			box:SetText("")
-			box:ClearFocus()
-		end
-	end)
-
-	local withdraw = CreateFrame("Button", nil, bar)
-	withdraw:SetSize(58, 20)
-	withdraw:SetPoint("LEFT", deposit, "RIGHT", 6, 0)
-	withdraw.Text = withdraw:CreateFontString(nil, "OVERLAY")
-	K.SetFont(withdraw.Text, 12, K.FontOutlineStyle())
-	withdraw.Text:SetPoint("CENTER")
-	withdraw.Text:SetText(L["Withdraw"])
-	K.SkinButton(withdraw)
-	withdraw:SetScript("OnClick", function()
-		local copper = BoxCopper(box)
-		if copper > 0 and C_Bank.WithdrawMoney and (not C_Bank.CanWithdrawMoney or C_Bank.CanWithdrawMoney(ACCOUNT)) then
-			C_Bank.WithdrawMoney(ACCOUNT, copper)
-			box:SetText("")
-			box:ClearFocus()
-		end
-	end)
+	if self.bankType == ACCOUNT and C_Bank and C_Bank.FetchDepositedMoney then
+		local amount = C_Bank.FetchDepositedMoney(ACCOUNT) or 0
+		f.WarbandMoney.Text:SetText("|cffffcc80" .. L["Warband"] .. ":|r " .. GetCoinTextureString(amount))
+		f.WarbandMoney:Show()
+	else
+		f.WarbandMoney:Hide()
+	end
 end

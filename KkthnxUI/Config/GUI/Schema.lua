@@ -707,8 +707,13 @@ GUI.schema = {
 			{ kind = "check", label = L["Detach Reagent Bag"], path = { "Bags", "DetachReagentBag" }, reload = true, dependsOn = { "Bags", "Enable" }, tooltip = L["Give the reagent pouch its own window instead of a section in the bags."] },
 			{ kind = "check", label = L["Show Bag Bar"], path = { "Bags", "ShowBagBar" }, apply = function()
 				local B = K:GetModule("Bags", true)
-				if B and B.ToggleBagStrip and B.BagFrame then
-					B:ToggleBagStrip(B.BagFrame, C.Bags.ShowBagBar)
+				if B and B.ToggleBagStrip then
+					if B.BagFrame then
+						B:ToggleBagStrip(B.BagFrame, C.Bags.ShowBagBar)
+					end
+					if B.BankFrame then
+						B:ToggleBagStrip(B.BankFrame, C.Bags.ShowBagBar)
+					end
 				end
 			end, dependsOn = { "Bags", "Enable" }, tooltip = L["Show the bag slot strip on the bag window. Also toggled by the button in the window."] },
 			{ kind = "check", label = L["Track Currencies"], path = { "Bags", "ShowCurrencies" }, apply = ApplyBags, dependsOn = { "Bags", "Enable" }, tooltip = L["Show your pinned currencies along the bottom of the window."] },

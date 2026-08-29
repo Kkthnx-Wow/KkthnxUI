@@ -139,8 +139,13 @@ function Module:Style()
 	end
 
 	-- Every sub-tracker that owns a header and progress/timer bar pools.
+	-- ScenarioObjectiveTracker is deliberately left out: its LayoutContents runs
+	-- ShouldShowMawBuffs, which reads a restricted MAW aura through
+	-- GetAuraDataByIndex. On 12.1 that read errors when the aura is secret and our
+	-- code has touched the tracker (the curse surge on the Coiled Isle hits exactly
+	-- this, GitHub #134), so we never touch the scenario tracker and leave its bars
+	-- in Blizzard's own colours.
 	self.trackers = {
-		_G.ScenarioObjectiveTracker,
 		_G.UIWidgetObjectiveTracker,
 		_G.CampaignQuestObjectiveTracker,
 		_G.QuestObjectiveTracker,

@@ -443,20 +443,39 @@ function Module:SkinSocialButton()
 	button.KKUI_Skinned = true
 
 	button:ClearAllPoints()
-	button:SetPoint("BOTTOMLEFT", _G.ChatFrame1, "TOPLEFT", 0, 24)
-	button:SetSize(22, 22)
-	K.CreateGradientBackground(button, 0.85)
-	K.CreateBorder(button)
+	button:SetPoint("BOTTOMLEFT", _G.ChatFrame1, "TOPLEFT", 0, 60)
+	button:SetSize(24, 24)
 
-	-- Trim the default plate art so our border reads cleanly, and crop the friend
-	-- glyph to sit inside the button.
-	for _, region in ipairs({ button:GetRegions() }) do
-		if region.GetObjectType and region:GetObjectType() == "Texture" and region ~= button.FriendsButton and region ~= button.QueueButton then
-			region:SetAlpha(0)
+	-- The stock friends and queue art fill the whole button, and a friend-online
+	-- toast animates the queue art and a fly-out panel to full alpha over it. Rather
+	-- than fight those animations, our skin lives on an overlay frame a few levels
+	-- above everything on the button, so it always sits on top. The button keeps its
+	-- mouse and click behaviour underneath (the overlay takes no mouse input).
+	if not button.KKUI_Skin then
+		local skin = CreateFrame("Frame", nil, button)
+		skin:SetAllPoints(button)
+		skin:SetFrameLevel(button:GetFrameLevel() + 5)
+		K.CreateGradientBackground(skin, 0.85)
+		K.CreateBorder(skin)
+
+		local icon = skin:CreateTexture(nil, "ARTWORK")
+		icon:SetPoint("CENTER", skin, "CENTER", 0, 0)
+		icon:SetSize(20, 20)
+		local preferred = "housefinder_neighborhood-list-friend-icon"
+		if C_Texture and C_Texture.GetAtlasInfo and not C_Texture.GetAtlasInfo(preferred) then
+			preferred = "friends-icon-friendsAvailable"
 		end
-	end
-	if button.FriendsButton then
-		button.FriendsButton:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		icon:SetAtlas(preferred)
+
+		button.KKUI_Skin = skin
+		button.KKUI_Icon = icon
+
+		-- Move the online friend count onto the overlay so it reads over our skin.
+		if button.FriendCount then
+			button.FriendCount:SetParent(skin)
+			button.FriendCount:ClearAllPoints()
+			button.FriendCount:SetPoint("BOTTOMRIGHT", skin, "BOTTOMRIGHT", 1, -1)
+		end
 	end
 end
 
@@ -601,7 +620,8 @@ function Module:OnEnable()
 		EnableClassColors()
 	end
 
-	-- A soft sound on an incoming whisper, throttled so a burst is one chime.
+	-- A soft sound on an incoming whisper, throttled so a burst is one chime, and a
+	-- taskbar flash so a whisper still lands while the game is in the background.
 	if C.Chat.WhisperSound then
 		local lastPlay = 0
 		local function OnWhisper()
@@ -609,6 +629,9 @@ function Module:OnEnable()
 			if now - lastPlay > 3 then
 				lastPlay = now
 				PlaySound(SOUNDKIT.TELL_MESSAGE, "Master")
+			end
+			if FlashClientIcon then
+				FlashClientIcon()
 			end
 		end
 		self:RegisterEvent("CHAT_MSG_WHISPER", OnWhisper)

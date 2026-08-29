@@ -41,6 +41,9 @@ local NOINTERRUPT_CLR = CreateColor(NOINTERRUPT_COLOR[1], NOINTERRUPT_COLOR[2], 
 -- element), and it is a Midnight secret boolean, so we drive the colour through
 -- SetVertexColorFromBoolean which handles the secret natively instead of an if.
 local function OnCastStart(self, _, _, notInterruptible)
+	-- Clear the interrupted state a previous cast may have left behind, so the timer
+	-- text is allowed to update again.
+	self.__failed = nil
 	local tex = self:GetStatusBarTexture()
 	-- Secret boolean (enemy casts) -> the secret-safe setter. A plain boolean or nil
 	-- -> a normal branch, since the setter rejects non-secret values.
@@ -57,6 +60,10 @@ end
 
 local function OnCastFail(self)
 	self:SetStatusBarColor(FAIL_COLOR[1], FAIL_COLOR[2], FAIL_COLOR[3])
+	-- Freeze the timer for the failed hold. oUF keeps the bar up for timeToHold and
+	-- re-runs the time text during it, so a flag blocks those updates and the number
+	-- stops instead of ticking on.
+	self.__failed = true
 	if self.Time then
 		self.Time:SetText("")
 	end
@@ -65,14 +72,14 @@ end
 -- oUF passes a DurationObject, never a raw number, so this stays safe when the
 -- remaining time is a secret value.
 local function CustomTimeText(self, duration)
-	if not self.Time then
+	if not self.Time or self.__failed then
 		return
 	end
 	self.Time:SetFormattedText("%.1f", duration:GetRemainingDuration())
 end
 
 local function CustomDelayText(self, duration)
-	if not self.Time then
+	if not self.Time or self.__failed then
 		return
 	end
 	self.Time:SetFormattedText("%.1f|cffff5555%s%.1f|r", duration:GetRemainingDuration(), self.channeling and "-" or "+", self.delay)
