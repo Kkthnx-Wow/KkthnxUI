@@ -180,11 +180,11 @@ function Module:ShowGroupMenu(header)
 		-- through Add to Group, so a new group never looks like a rename of this one.
 		root:CreateButton(L["New Group"], function()
 			PromptName(L["New Group"], "", function(text)
-				local groupName = strtrim(text or "")
-				if groupName == "" then
+				local newName = strtrim(text or "")
+				if newName == "" then
 					return
 				end
-				Module:CreateGroup(groupName)
+				Module:CreateGroup(newName)
 			end)
 		end)
 

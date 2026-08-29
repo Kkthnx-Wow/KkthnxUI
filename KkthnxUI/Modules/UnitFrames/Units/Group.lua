@@ -77,6 +77,10 @@ Module.Styles.Party = function(self)
 		-- Right side so they clear the left-hand portrait.
 		Build.GroupDebuffs(self, 3, cfg.Height, "right")
 	end
+	if cfg.Castbar then
+		-- A bar above the frame spanning the portrait and health width.
+		Build.TopCastbar(self, 16)
+	end
 	if cfg.DispelHighlight then
 		Build.DispelHighlight(self)
 	end

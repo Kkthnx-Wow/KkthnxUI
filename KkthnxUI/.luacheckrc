@@ -79,6 +79,10 @@ stds.wow = {
 		"CancelDuel", "StaticPopup_Hide", "C_PetBattles", "CinematicFrame_CancelCinematic", "MovieFrame",
 		"GetInventoryItemLink", "GetInventoryItemTexture", "GetWeaponEnchantInfo",
 		"SetItemCraftingQualityOverlay", "ClearItemCraftingQualityOverlay",
+		"strtrim", "StaticPopup_Show", "MenuUtil", "GetCursorInfo", "CursorHasItem",
+		"ClearCursor", "PickupInventoryItem", "GetInventorySlotInfo", "SetItemButtonQuality",
+		"ChatFrame_OpenChat", "GetMaxLevelForPlayerExpansion", "C_MapExplorationInfo",
+		"SetPortraitTexture", "time", "GetInventoryItemCooldown",
 		"AlertFrame", "GroupLootContainer", "SetItemButtonTextureVertexColor", "GetMerchantNumItems",
 		"GetMerchantItemLink", "GetNumBuybackItems", "GetBuybackItemInfo", "GetBuybackItemLink",
 		"GetCurrentGuildBankTab", "GetGuildBankItemInfo", "GetGuildBankItemLink", "C_PetJournal",
@@ -117,6 +121,7 @@ ignore = {
 	"432", -- shadowing an upvalue argument
 	"143/string", -- the embedded UTF8 library adds utf8len/utf8sub to string
 	"122/SlashCmdList", -- registering a slash handler is exactly this write
+	"122/GroupLootContainer", -- opting the loot container out of the position manager
 }
 
 exclude_files = {

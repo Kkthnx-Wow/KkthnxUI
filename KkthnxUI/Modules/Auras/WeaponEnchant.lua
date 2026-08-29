@@ -16,6 +16,7 @@ end
 
 local Module = K:GetModule("Auras")
 
+local _G = _G
 local CreateFrame = CreateFrame
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local GetInventoryItemTexture = GetInventoryItemTexture
@@ -162,8 +163,8 @@ function Module:SetupWeaponEnchants()
 
 	self.WeaponEnchant = holder
 	self.EnchantButtons = {}
-	for i in ipairs(SLOTS) do
-		local button = CreateButton(holder, size, SLOTS[i])
+	for i, slot in ipairs(SLOTS) do
+		local button = CreateButton(holder, size, slot)
 		if i == 1 then
 			button:SetPoint("TOPRIGHT", holder, "TOPRIGHT", 0, 0)
 		else

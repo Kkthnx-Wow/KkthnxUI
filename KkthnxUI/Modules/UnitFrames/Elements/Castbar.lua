@@ -247,3 +247,76 @@ function Build.Castbar(self, height, iconSide)
 	Module.StackDown(self, cast, height)
 	return cast
 end
+
+-- A castbar that sits above the frame, spanning the full width (portrait included)
+-- so a compact party frame keeps its own bar without a hanging icon. Its own
+-- background and border, a square spell icon inside on the left, name and timer.
+function Build.TopCastbar(self, height)
+	local db = C.Unitframe.Castbar
+	if not db.Enable then
+		return
+	end
+	local health = self.Health
+	if not health then
+		return
+	end
+	height = height or 16
+
+	local cast = CreateFrame("StatusBar", nil, self)
+	cast:SetStatusBarTexture(Module.Texture())
+	cast:SetStatusBarColor(CAST_COLOR[1], CAST_COLOR[2], CAST_COLOR[3])
+	cast:SetHeight(height)
+	-- Span from the portrait's left edge (when there is one) to the health's right,
+	-- sitting a small gap above the top of the frame.
+	local leftAnchor = self.PortraitHolder or self
+	cast:SetPoint("BOTTOMLEFT", leftAnchor, "TOPLEFT", 0, Module.GAP)
+	cast:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, Module.GAP)
+	K.CreateGradientBackground(cast, 0.9)
+	K.CreateBorder(cast)
+
+	cast.PostCastStart = OnCastStart
+	cast.PostCastInterruptible = OnCastStart
+	cast.PostCastFail = OnCastFail
+	cast.PostCastInterrupted = OnCastFail
+
+	-- A square spell icon on the left, bordered, sitting inside the bar.
+	local holder = CreateFrame("Frame", nil, cast)
+	holder:SetSize(height - 2, height - 2)
+	holder:SetPoint("LEFT", cast, "LEFT", 1, 0)
+	K.CreateBorder(holder)
+	local icon = holder:CreateTexture(nil, "ARTWORK")
+	icon:SetPoint("TOPLEFT", holder, "TOPLEFT", 1, -1)
+	icon:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -1, 1)
+	icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	cast.Icon = icon
+	cast.IconHolder = holder
+
+	if db.ShowSpark then
+		local spark = cast:CreateTexture(nil, "OVERLAY")
+		spark:SetTexture(C.Media.Textures.Spark)
+		spark:SetBlendMode("ADD")
+		spark:SetSize(4, height)
+		spark:SetPoint("CENTER", cast:GetStatusBarTexture(), "RIGHT", 0, 0)
+		cast.Spark = spark
+	end
+
+	local name = Module.NewText(cast, 10)
+	name:SetPoint("LEFT", holder, "RIGHT", 4, 0)
+	name:SetJustifyH("LEFT")
+	cast.Text = name
+
+	if db.ShowTimer then
+		local time = Module.NewText(cast, 10)
+		time:SetPoint("RIGHT", cast, "RIGHT", -4, 0)
+		time:SetJustifyH("RIGHT")
+		cast.Time = time
+		cast.CustomTimeText = CustomTimeText
+		cast.CustomDelayText = CustomDelayText
+		name:SetPoint("RIGHT", time, "LEFT", -4, 0)
+	else
+		name:SetPoint("RIGHT", cast, "RIGHT", -4, 0)
+	end
+
+	self.Castbar = cast
+	return cast
+end

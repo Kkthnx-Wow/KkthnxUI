@@ -338,10 +338,10 @@ function Build.GroupIndicators(self)
 	self.GroupRoleIndicator = Icon(health, 12, "BOTTOMLEFT", health, "BOTTOMLEFT", 1, 1)
 	self.GroupRoleIndicator.PostUpdate = function(element, role)
 		if role == "TANK" then
-			element:SetAtlas("icons_64x64_tank")
+			element:SetAtlas("UI-LFG-RoleIcon-Tank")
 			element:Show()
 		elseif role == "HEALER" then
-			element:SetAtlas("icons_64x64_heal")
+			element:SetAtlas("UI-LFG-RoleIcon-Healer")
 			element:Show()
 		else
 			element:Hide()
