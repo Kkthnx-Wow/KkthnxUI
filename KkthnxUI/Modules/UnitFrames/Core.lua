@@ -213,9 +213,24 @@ function Module:SpawnParty()
 		return
 	end
 
-	oUF:SetActiveStyle("KkthnxUI_Party")
+	-- Two party looks to pick from: the standard party style, or the raid frames used
+	-- as a party (five compact healing frames). The raid look routes the party header
+	-- through the raid style and borrows the raid sizes, so it matches the real raid.
+	local useRaid = cfg.RaidStyle
+	oUF:SetActiveStyle(useRaid and "KkthnxUI_Raid" or "KkthnxUI_Party")
 
-	local height = Module.TotalHeight(cfg)
+	local width, height
+	if useRaid then
+		local rc = C.Unitframe.Raid
+		local rmode = rc.PowerMode or "All"
+		local rpower = (rmode ~= "None") and (rc.PowerHeight or 0) or 0
+		local rgap = rpower > 0 and (rc.PowerGap or 6) or 0
+		width = rc.Width
+		height = rc.Height + rgap + rpower
+	else
+		width = cfg.Width
+		height = Module.TotalHeight(cfg)
+	end
 	-- SpawnHeader is (name, template, ...attributes). The full column recipe
 	-- (maxColumns / unitsPerColumn / groupBy / sortMethod) is what a secure group
 	-- header needs to actually lay out and show its children.
@@ -224,7 +239,10 @@ function Module:SpawnParty()
 	-- addons. That keeps party and raid from ever fighting over the same members.
 	-- Party frames sit further apart than the raid so the debuff row beside each
 	-- has room to breathe.
-	local partySpacing = 24
+	-- Raid-as-party sits tight like the raid. The standard party spreads out so the
+	-- debuff row beside each frame has room, and further still when the castbar is on
+	-- so the bar above one frame never reaches the frame above it.
+	local partySpacing = useRaid and Module.GAP or (cfg.Castbar and 36 or 24)
 	local header = oUF:SpawnHeader("KKUI_Party", nil,
 		"showPlayer", cfg.ShowPlayer ~= false,
 		"showSolo", cfg.ShowSolo,
@@ -240,17 +258,17 @@ function Module:SpawnParty()
 		"unitsPerColumn", 5,
 		"columnSpacing", partySpacing,
 		"columnAnchorPoint", "LEFT",
-		"oUF-initialConfigFunction", InitialConfig(cfg.Width, height))
+		"oUF-initialConfigFunction", InitialConfig(width, height))
 
-	header:SetSize(cfg.Width, height * 5 + partySpacing * 4)
+	header:SetSize(width, height * 5 + partySpacing * 4)
 
 	-- The portrait hangs off the left of each frame, so the visible block reaches
 	-- further left than the header does. Make the mover cover that extra width and
 	-- sit the header inside it, so the mover edge matches the real left edge. That
 	-- way the default and any drag place the whole block, portrait included, the
 	-- right distance from the screen edge instead of pushing the portrait off it.
-	local portraitExtent = cfg.Portrait and (Module.GAP + Module.TotalHeight(cfg)) or 0
-	K.CreateMover(header, "PartyFrames", "Party", { "TOPLEFT", UIParent, "TOPLEFT", 4, -300 }, cfg.Width + portraitExtent, header:GetHeight())
+	local portraitExtent = (not useRaid) and cfg.Portrait and (Module.GAP + Module.TotalHeight(cfg)) or 0
+	K.CreateMover(header, "PartyFrames", "Party", { "TOPLEFT", UIParent, "TOPLEFT", 4, -300 }, width + portraitExtent, header:GetHeight())
 	if portraitExtent > 0 then
 		header:ClearAllPoints()
 		header:SetPoint("TOPLEFT", header.KKUI_Mover, "TOPLEFT", portraitExtent, 0)
@@ -264,6 +282,8 @@ function Module:SpawnParty()
 	end
 	RegisterStateDriver(header, "visibility", visibility)
 
+	-- Config mode shows five phantom frames from this starting index (player + four).
+	header.__testStart = -4
 	self.Party = header
 end
 
@@ -347,6 +367,8 @@ function Module:SpawnRaid()
 	-- Only up inside a raid, the party header covers 5-man groups.
 	RegisterStateDriver(header, "visibility", "[group:raid] show; hide")
 
+	-- Config mode shows the full configured grid as phantom frames.
+	header.__testStart = -(min(40, maxColumns * perColumn) + 1)
 	self.Raid = header
 
 	-- Column labels only make sense keyed by group. Under class or role grouping a
@@ -490,39 +512,13 @@ function Module:ToggleTest()
 	self.testMode = not self.testMode
 	local on = self.testMode
 
-	-- Hide the real (secure) headers while previewing, so the mock frames are the
-	-- only thing shown and nothing overlaps. Restore the normal drivers on off.
-	if self.Party then
-		if on then
-			RegisterStateDriver(self.Party, "visibility", "hide")
-		else
-			self.Party:SetAttribute("showSolo", C.Unitframe.Party.ShowSolo or false)
-			local visibility = "[group:party,nogroup:raid] show; hide"
-			if C.Unitframe.Party.ShowSolo then
-				visibility = "[nogroup] show; " .. visibility
-			end
-			RegisterStateDriver(self.Party, "visibility", visibility)
-		end
-	end
-
-	if self.Raid then
-		if on then
-			RegisterStateDriver(self.Raid, "visibility", "hide")
-		else
-			self.Raid:SetAttribute("showSolo", false)
-			RegisterStateDriver(self.Raid, "visibility", "[group:raid] show; hide")
-		end
-	end
-
-	-- Mock boss / party / raid frames (with fake auras) so the whole group layout
-	-- can be previewed and positioned while solo.
-	if self.ShowTestFrames then
-		self:ShowTestFrames(on)
-	end
-
+	-- Force the real frames to show with the player's data (ConfigMode.lua), so what
+	-- you position and judge is the actual frame and styling, not a mock.
 	if on then
-		K.Print("Unit frame test mode ON. Boss, party, and raid previews are showing so you can position them.")
+		self:EnterConfigMode()
+		K.Print("Unit frame test mode ON. Every frame is forced on with your data so you can position them.")
 	else
+		self:ExitConfigMode()
 		K.Print("Unit frame test mode OFF.")
 	end
 end

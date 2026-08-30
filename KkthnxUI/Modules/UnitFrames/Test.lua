@@ -2,230 +2,172 @@
 	Addon: KkthnxUI
 	File: Modules/UnitFrames/Test.lua
 	Purpose:
-		A preview mode for the group and boss frames. Secure group headers can only
-		show real units, so to lay out and judge the look while solo we spawn plain
-		mock frames that mimic ours (bordered health bar, name, power, a few fake
-		debuffs). They anchor to the same movers the real frames use, so what you
-		position here is what you get. Purely visual, never interactive.
+		Config mode. Instead of drawing throwaway mock frames, this forces the real
+		frames to show with the player's own data, the way ElvUI previews its unit
+		frames. Individual frames (player, target, boss, and the rest) are pointed at
+		the player and their unit watch is forced on. Group headers (party and raid)
+		get a negative starting index so the secure header spawns its full set of
+		phantom frames while solo, and each child is forced on the same way. Toggling
+		off restores every frame, and nothing here runs in combat.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local Module = K:GetModule("UnitFrames")
 
-local CreateFrame = CreateFrame
-local pairs = pairs
-local floor = math.floor
-local random = math.random
-local format = string.format
+local ipairs = ipairs
+local InCombatLockdown = InCombatLockdown
+local RegisterStateDriver = RegisterStateDriver
+local RegisterUnitWatch = RegisterUnitWatch
+local UnregisterUnitWatch = UnregisterUnitWatch
 
-local pcall = pcall
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+-- The standalone frames, by module key. Boss frames live in a numbered list and
+-- are handled alongside these.
+local INDIVIDUAL = { "Player", "Target", "TargetOfTarget", "Pet", "Focus", "FocusTarget" }
 
-local CLASSES = { "WARRIOR", "MAGE", "ROGUE", "PRIEST", "DRUID", "HUNTER", "PALADIN", "SHAMAN", "WARLOCK", "MONK", "DEATHKNIGHT", "DEMONHUNTER", "EVOKER" }
-local NAMES = { "Kkthnx", "Aldric", "Mireva", "Torvald", "Sylara", "Bront", "Yvenne", "Dragan", "Lunara", "Kaelis", "Vorin", "Ysolde", "Grimm", "Nyssa", "Rhogar", "Elowen", "Dorne", "Fenwick", "Isolde", "Marek" }
+-- Header show gates cleared during config mode so the header renders phantom frames
+-- while solo, then restored on the way out.
+local GATES = { "showRaid", "showParty", "showSolo" }
 
--- A generic debuff icon for the fake aura row.
-local FAKE_ICONS = { 136207, 135813, 136118, 132298, 135936 }
+-- ---------------------------------------------------------------------------
+-- Force a single frame
+-- ---------------------------------------------------------------------------
 
--- Dispel schools paired with their border colour and the raid-frame badge, so the
--- fake debuffs show the same two cues the real ones do.
-local DISPEL = {
-	{ col = { 0.20, 0.60, 1.00 }, atlas = "RaidFrame-Icon-DebuffMagic" },
-	{ col = { 0.60, 0.00, 1.00 }, atlas = "RaidFrame-Icon-DebuffCurse" },
-	{ col = { 0.60, 0.40, 0.00 }, atlas = "RaidFrame-Icon-DebuffDisease" },
-	{ col = { 0.00, 0.60, 0.00 }, atlas = "RaidFrame-Icon-DebuffPoison" },
-}
-
--- One fake debuff icon: border tinted to a dispel school, the matching raid-frame
--- badge in the corner, and a duration number.
-local function FakeDebuff(parent, size, slot)
-	local icon = CreateFrame("Frame", nil, parent)
-	icon:SetSize(size, size)
-	local tex = icon:CreateTexture(nil, "ARTWORK")
-	tex:SetAllPoints()
-	tex:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-	tex:SetTexture(FAKE_ICONS[(slot - 1) % #FAKE_ICONS + 1])
-	K.CreateBorder(icon)
-
-	local school = DISPEL[(slot - 1) % #DISPEL + 1]
-	if icon.KKUI_Border then
-		icon.KKUI_Border.__customColor = true
-		icon.KKUI_Border:SetVertexColor(school.col[1], school.col[2], school.col[3])
+-- Point a frame at the player, keep it shown through a forced unit watch, and
+-- refresh its elements so it fills with live data.
+local function ForceFrame(frame)
+	if not frame or frame.__kkuiForced then
+		return
 	end
-
-	local badge = icon:CreateTexture(nil, "OVERLAY", nil, 3)
-	badge:SetSize(size * 0.45, size * 0.45)
-	badge:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", 1, -1)
-	badge:SetAtlas(school.atlas)
-
-	local dur = icon:CreateFontString(nil, "OVERLAY")
-	K.SetFont(dur, 11, K.FontOutlineStyle())
-	dur:SetPoint("CENTER")
-	dur:SetText(random(3, 40))
-	return icon
+	frame.__kkuiForced = true
+	frame.__realUnit = frame.unit
+	frame.unit = "player"
+	frame.__unit = "player"
+	frame:EnableMouse(false)
+	UnregisterUnitWatch(frame)
+	RegisterUnitWatch(frame, true)
+	frame:Show()
+	if frame.UpdateAllElements then
+		frame:UpdateAllElements("KKUI_ConfigMode")
+	end
 end
 
-local function ClassColor(index)
-	local class = CLASSES[(index - 1) % #CLASSES + 1]
-	local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
-	if c then
-		return c.r, c.g, c.b
+local function UnforceFrame(frame)
+	if not frame or not frame.__kkuiForced then
+		return
 	end
-	return 0.4, 0.6, 0.9
+	frame.__kkuiForced = nil
+	frame.unit = frame.__realUnit
+	frame.__unit = frame.__realUnit
+	frame.__realUnit = nil
+	frame:EnableMouse(true)
+	UnregisterUnitWatch(frame)
+	RegisterUnitWatch(frame)
+	if frame.UpdateAllElements then
+		frame:UpdateAllElements("KKUI_ConfigMode")
+	end
 end
 
--- One mock frame: a bordered health bar with name and percent, an optional power
--- bar below, and an optional fake debuff row.
--- Gap between the health and power bars, matching our border spacing.
-local POWER_GAP = 6
+-- ---------------------------------------------------------------------------
+-- Group headers
+-- ---------------------------------------------------------------------------
 
-local function BuildMock(parent, index, width, height, powerHeight, withAuras, withPortrait)
-	local f = CreateFrame("Frame", nil, parent)
-	local total = height + (powerHeight > 0 and (powerHeight + POWER_GAP) or 0)
-	f:SetSize(width, total)
-
-	-- Square portrait hanging off the left, like the real party frame.
-	if withPortrait then
-		local portrait = CreateFrame("Frame", nil, f)
-		portrait:SetSize(total, total)
-		portrait:SetPoint("TOPRIGHT", f, "TOPLEFT", -POWER_GAP, 0)
-		local pr, pg, pb = ClassColor(index)
-		local fill = portrait:CreateTexture(nil, "ARTWORK")
-		fill:SetAllPoints()
-		fill:SetColorTexture(pr * 0.4, pg * 0.4, pb * 0.4, 1)
-		K.CreateBackground(portrait, 0.1, 0.1, 0.1, 0.9)
-		K.CreateBorder(portrait)
+-- The secure header stores its children as child1..childN attributes, which is the
+-- reliable way to walk them (GetChildren would also catch non-frames and miss any
+-- that spawn on the same frame).
+local function ForEachChild(header, func)
+	local i = 1
+	local child = header:GetAttribute("child" .. i)
+	while child do
+		func(child)
+		i = i + 1
+		child = header:GetAttribute("child" .. i)
 	end
+end
 
-	local health = CreateFrame("StatusBar", nil, f)
-	health:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-	health:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
-	health:SetHeight(height)
-	health:SetStatusBarTexture(K.GetTexture(C.Unitframe and C.Unitframe.Texture or "KkthnxUI"))
-	local r, g, b = ClassColor(index)
-	health:SetStatusBarColor(r, g, b)
-	health:SetMinMaxValues(0, 100)
-	health:SetValue(random(35, 100))
-	K.CreateBackground(health, 0.1, 0.1, 0.1, 0.9)
-	K.CreateBorder(health)
-
-	local name = health:CreateFontString(nil, "OVERLAY")
-	K.SetFont(name, height > 22 and 12 or 10, K.FontOutlineStyle())
-	name:SetPoint("LEFT", health, "LEFT", 3, 0)
-	name:SetText(NAMES[(index - 1) % #NAMES + 1])
-
-	local hp = health:CreateFontString(nil, "OVERLAY")
-	K.SetFont(hp, height > 22 and 12 or 10, K.FontOutlineStyle())
-	hp:SetPoint("RIGHT", health, "RIGHT", -3, 0)
-	hp:SetText(format("%d%%", health:GetValue()))
-
-	if powerHeight > 0 then
-		local power = CreateFrame("StatusBar", nil, f)
-		power:SetPoint("TOPLEFT", health, "BOTTOMLEFT", 0, -POWER_GAP)
-		power:SetPoint("TOPRIGHT", health, "BOTTOMRIGHT", 0, -POWER_GAP)
-		power:SetHeight(powerHeight)
-		power:SetStatusBarTexture(K.GetTexture(C.Unitframe and C.Unitframe.Texture or "KkthnxUI"))
-		power:SetStatusBarColor(0.36, 0.55, 0.81)
-		power:SetMinMaxValues(0, 100)
-		power:SetValue(random(20, 100))
-		K.CreateBackground(power, 0.1, 0.1, 0.1, 0.9)
-		K.CreateBorder(power)
+local function ForceHeader(header)
+	if not header then
+		return
 	end
+	header.__cfgSaved = {}
+	for _, key in ipairs(GATES) do
+		header.__cfgSaved[key] = header:GetAttribute(key)
+		header:SetAttribute(key, nil)
+	end
+	header.__cfgStart = header:GetAttribute("startingIndex")
 
-	if withAuras then
-		local prev
-		for i = 1, 3 do
-			local icon = FakeDebuff(f, 20, i)
-			-- Sit to the right of the frame so a downward stack never overlaps.
-			if prev then
-				icon:SetPoint("LEFT", prev, "RIGHT", 4, 0)
-			else
-				icon:SetPoint("LEFT", f, "RIGHT", 6, 0)
-			end
-			prev = icon
+	RegisterStateDriver(header, "visibility", "show")
+	header:Show()
+	-- Negative index -> the header lays out its full phantom set.
+	header:SetAttribute("startingIndex", header.__testStart or -4)
+	ForEachChild(header, ForceFrame)
+	-- The secure header can finish spawning its children on the next frame, so sweep
+	-- once more then. ForceFrame is idempotent, so already-forced children are left
+	-- alone, and the guard means a sweep after exit does nothing.
+	C_Timer.After(0, function()
+		if header.__cfgSaved then
+			ForEachChild(header, ForceFrame)
+		end
+	end)
+end
+
+local function UnforceHeader(header, visibility)
+	if not header then
+		return
+	end
+	ForEachChild(header, UnforceFrame)
+	if header.__cfgSaved then
+		for _, key in ipairs(GATES) do
+			header:SetAttribute(key, header.__cfgSaved[key])
+		end
+		header.__cfgSaved = nil
+	end
+	header:SetAttribute("startingIndex", header.__cfgStart or 1)
+	header.__cfgStart = nil
+	RegisterStateDriver(header, "visibility", visibility)
+end
+
+-- The real visibility drivers, rebuilt so the headers go back to normal on exit.
+local function PartyVisibility()
+	local visibility = "[group:party,nogroup:raid] show; hide"
+	if C.Unitframe.Party.ShowSolo then
+		visibility = "[nogroup] show; " .. visibility
+	end
+	return visibility
+end
+
+-- ---------------------------------------------------------------------------
+-- Enter / exit
+-- ---------------------------------------------------------------------------
+
+function Module:EnterConfigMode()
+	if InCombatLockdown() then
+		return
+	end
+	for _, key in ipairs(INDIVIDUAL) do
+		ForceFrame(self[key])
+	end
+	if self.Boss then
+		for _, frame in ipairs(self.Boss) do
+			ForceFrame(frame)
 		end
 	end
-
-	return f
+	ForceHeader(self.Party)
+	ForceHeader(self.Raid)
 end
 
--- A single mock target frame with a full debuff row sitting above it, growing
--- right then up, matching where the real target debuffs live. This is the one to
--- eyeball the dispel border and corner badge on target-sized icons.
-local function BuildTargetMock(self)
-	if self.testFrames.Target then
-		return self.testFrames.Target
+function Module:ExitConfigMode()
+	if InCombatLockdown() then
+		return
 	end
-	local cfg = C.Unitframe.Target
-	local db = C.Unitframe.Auras
-	local mover = K.GetMover and K.GetMover("TargetFrame")
-
-	local holder = CreateFrame("Frame", nil, UIParent)
-	holder:SetFrameStrata("MEDIUM")
-	holder:SetSize(cfg.Width, cfg.Height)
-	holder:SetPoint("TOPLEFT", mover or UIParent, mover and "TOPLEFT" or "CENTER", 0, 0)
-
-	local frame = BuildMock(holder, 1, cfg.Width, cfg.Height, cfg.PowerHeight or 0, false, false)
-	frame:SetPoint("TOPLEFT", holder, "TOPLEFT", 0, 0)
-
-	-- Debuff row above the frame, sized and wrapped from the aura config.
-	local perRow = math.max(1, db.PerRow)
-	local spacing = db.Spacing
-	local size = math.max(8, floor((cfg.Width - (perRow - 1) * spacing) / perRow))
-	local count = floor(perRow * 1.5)
-	for i = 1, count do
-		local col = (i - 1) % perRow
-		local row = floor((i - 1) / perRow)
-		local icon = FakeDebuff(frame, size, i)
-		icon:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", col * (size + spacing), spacing + row * (size + spacing))
+	for _, key in ipairs(INDIVIDUAL) do
+		UnforceFrame(self[key])
 	end
-
-	self.testFrames.Target = holder
-	return holder
-end
-
--- Lay a pool of mock frames out in a grid anchored to a mover.
-local function BuildGroup(self, key, moverKey, count, perColumn, width, height, powerHeight, spacing, withAuras, withPortrait)
-	if self.testFrames[key] then
-		return self.testFrames[key]
+	if self.Boss then
+		for _, frame in ipairs(self.Boss) do
+			UnforceFrame(frame)
+		end
 	end
-	local mover = K.GetMover and K.GetMover(moverKey)
-	local holder = CreateFrame("Frame", nil, UIParent)
-	holder:SetFrameStrata("MEDIUM")
-	holder:SetSize(width, height)
-	holder:SetPoint("TOPLEFT", mover or UIParent, mover and "TOPLEFT" or "CENTER", 0, 0)
-
-	local step = height + (powerHeight > 0 and (powerHeight + POWER_GAP) or 0) + spacing
-	local frames = {}
-	for i = 1, count do
-		local col = perColumn > 0 and floor((i - 1) / perColumn) or 0
-		local row = perColumn > 0 and ((i - 1) % perColumn) or (i - 1)
-		local f = BuildMock(holder, i, width, height, powerHeight, withAuras, withPortrait)
-		f:SetPoint("TOPLEFT", holder, "TOPLEFT", col * (width + spacing), -row * step)
-		frames[i] = f
-	end
-	holder.frames = frames
-	self.testFrames[key] = holder
-	return holder
-end
-
--- Build (once) and show or hide every mock group.
-function Module:ShowTestFrames(show)
-	self.testFrames = self.testFrames or {}
-
-	if show then
-		local uf = C.Unitframe
-		-- Spacing matches the real frames: boss uses its own Spacing, party is set
-		-- 24px apart, raid uses the standard 6px. Each build is guarded so a problem
-		-- with one never blocks the others.
-		pcall(BuildGroup, self, "Boss", "BossFrames", 5, 0, uf.Boss.Width, uf.Boss.Height, uf.Boss.PowerHeight, uf.Boss.Spacing or 34, true, false)
-		pcall(BuildGroup, self, "Party", "PartyFrames", 5, 0, uf.Party.Width, uf.Party.Height, uf.Party.PowerHeight, 24, true, uf.Party.Portrait)
-		pcall(BuildGroup, self, "Raid", "RaidFrames", 40, 5, uf.Raid.Width, uf.Raid.Height, uf.Raid.PowerMode ~= "None" and uf.Raid.PowerHeight or 0, 6, false, false)
-		pcall(BuildTargetMock, self)
-	end
-
-	for _, holder in pairs(self.testFrames) do
-		holder:SetShown(show)
-	end
+	UnforceHeader(self.Party, PartyVisibility())
+	UnforceHeader(self.Raid, "[group:raid] show; hide")
 end

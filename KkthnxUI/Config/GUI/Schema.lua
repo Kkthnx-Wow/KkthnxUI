@@ -237,6 +237,9 @@ local function UnitControls(key, opts)
 	if opts.portrait then
 		Add({ kind = "check", label = L["Show Portrait"], path = { "Unitframe", key, "Portrait" }, reload = true, dependsOn = dep })
 	end
+	if opts.raidStyle then
+		Add({ kind = "check", label = L["Raid-Style Frames"], path = { "Unitframe", key, "RaidStyle" }, reload = true, dependsOn = dep, tooltip = L["Use compact raid frames for the party: five healing frames that match the raid look and use the raid settings."] })
+	end
 	if opts.name then
 		Add({ kind = "check", label = L["Show Name"], path = { "Unitframe", key, "ShowName" }, reload = true, dependsOn = dep })
 	end
@@ -407,7 +410,7 @@ GUI.schema = {
 			ExtraButton(L["Target of Target"], "UF_ToT", UnitControls("TargetOfTarget", { power = true })),
 			ExtraButton(L["Focus Target"], "UF_FocusTarget", UnitControls("FocusTarget", { power = true })),
 			ExtraButton(L["Pet"], "UF_Pet", UnitControls("Pet", { power = true, debuffs = true })),
-			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true })),
+			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true, raidStyle = true })),
 			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true })),
 			{ kind = "button", label = L["Toggle Test Frames"], onClick = function()
 				local uf = K:GetModule("UnitFrames", true)
@@ -415,7 +418,7 @@ GUI.schema = {
 					uf:ToggleTest()
 				end
 			end },
-			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true })),
+			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true, portrait = true })),
 
 			{ kind = "header", label = L["Elements"] },
 			ExtraButton(L["Auras"], "UF_Auras", {
@@ -658,6 +661,17 @@ GUI.schema = {
 			{ kind = "header", label = L["Pull Countdown"] },
 			{ kind = "check", label = L["Enable Pull Countdown"], path = { "PullCountdown", "Enable" }, tooltip = L["Announce a pull timer in party/raid chat with /pull [seconds] (alias /pc). A second /pull cancels. Needs a group and no combat."] },
 			{ kind = "slider", label = L["Default Seconds"], path = { "PullCountdown", "Seconds" }, min = 3, max = 30, step = 1, dependsOn = { "PullCountdown", "Enable" }, tooltip = L["Seconds used when you type /pull with no number."] },
+		},
+	},
+
+	{
+		name = "GroupTools",
+		icon = "Interface/ICONS/Ability_Warrior_BattleShout",
+		title = L["Group Tools"],
+		controls = {
+			{ kind = "header", label = L["Group Tools"] },
+			{ kind = "check", label = L["Enable Group Tools"], path = { "GroupTools", "Enable" }, reload = true, tooltip = L["A movable panel shown only in a group: ready check, role check, pull timer, world markers, target icons, and a role count."] },
+			{ kind = "slider", label = L["Pull Timer Seconds"], path = { "GroupTools", "PullTime" }, min = 3, max = 30, step = 1, reload = true, dependsOn = { "GroupTools", "Enable" }, tooltip = L["Seconds counted down by the pull timer button."] },
 		},
 	},
 

@@ -369,7 +369,11 @@ local function initObject(unit, style, styleFunc, header, ...)
 	local num = select('#', ...)
 	for i = 1, num do
 		local object = select(i, ...)
-		local objectUnit = object:GetAttribute('oUF-guessUnit') or unit
+		-- Fall back to 'player' when the header cannot guess a unit. That only happens
+		-- when the show* gates are cleared (our config mode does this to force phantom
+		-- frames), and config mode points every such frame at the player anyway. In
+		-- normal use a header always sets oUF-guessUnit, so this default is never hit.
+		local objectUnit = object:GetAttribute('oUF-guessUnit') or unit or 'player'
 		local suffix = object:GetAttribute('unitsuffix')
 
 		-- Handle the case where someone has modified the unitsuffix attribute in

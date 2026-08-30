@@ -256,9 +256,11 @@ function Build.Castbar(self, height, iconSide)
 end
 
 -- A castbar that sits above the frame, spanning the full width (portrait included)
--- so a compact party frame keeps its own bar without a hanging icon. Its own
--- background and border, a square spell icon inside on the left, name and timer.
-function Build.TopCastbar(self, height)
+-- so a compact frame keeps its own bar without a hanging icon. Its own background
+-- and border, a square spell icon in its own slot beside the bar, name and timer.
+-- side is the portrait side ("right" puts the icon slot on the right, matching a
+-- right-hand portrait), defaulting to a left-hand slot.
+function Build.TopCastbar(self, height, side)
 	local db = C.Unitframe.Castbar
 	if not db.Enable then
 		return
@@ -268,16 +270,22 @@ function Build.TopCastbar(self, height)
 		return
 	end
 	height = height or 16
+	local rightSide = side == "right"
 
 	local cast = CreateFrame("StatusBar", nil, self)
 	cast:SetStatusBarTexture(Module.Texture())
 	cast:SetStatusBarColor(CAST_COLOR[1], CAST_COLOR[2], CAST_COLOR[3])
 	cast:SetHeight(height)
-	-- Span from the portrait's left edge (when there is one) to the health's right,
-	-- sitting a small gap above the top of the frame.
-	local leftAnchor = self.PortraitHolder or self
-	cast:SetPoint("BOTTOMLEFT", leftAnchor, "TOPLEFT", 0, Module.GAP)
-	cast:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, Module.GAP)
+	-- The bar leaves a square-plus-gap for the icon on the portrait side and spans to
+	-- the other edge of the frame, a small gap above the top.
+	local outer = self.PortraitHolder or self
+	if rightSide then
+		cast:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, Module.GAP)
+		cast:SetPoint("BOTTOMRIGHT", outer, "TOPRIGHT", -(height + Module.GAP), Module.GAP)
+	else
+		cast:SetPoint("BOTTOMLEFT", outer, "TOPLEFT", height + Module.GAP, Module.GAP)
+		cast:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, Module.GAP)
+	end
 	K.CreateGradientBackground(cast, 0.9)
 	K.CreateBorder(cast)
 
@@ -286,10 +294,16 @@ function Build.TopCastbar(self, height)
 	cast.PostCastFail = OnCastFail
 	cast.PostCastInterrupted = OnCastFail
 
-	-- A square spell icon on the left, bordered, sitting inside the bar.
+	-- Square spell icon in its own slot beside the bar. Parented to the bar so it
+	-- hides with it when no cast is running.
 	local holder = CreateFrame("Frame", nil, cast)
-	holder:SetSize(height - 2, height - 2)
-	holder:SetPoint("LEFT", cast, "LEFT", 1, 0)
+	holder:SetSize(height, height)
+	if rightSide then
+		holder:SetPoint("LEFT", cast, "RIGHT", Module.GAP, 0)
+	else
+		holder:SetPoint("RIGHT", cast, "LEFT", -Module.GAP, 0)
+	end
+	K.CreateGradientBackground(holder, 0.9)
 	K.CreateBorder(holder)
 	local icon = holder:CreateTexture(nil, "ARTWORK")
 	icon:SetPoint("TOPLEFT", holder, "TOPLEFT", 1, -1)
@@ -308,7 +322,7 @@ function Build.TopCastbar(self, height)
 	end
 
 	local name = Module.NewText(cast, 10)
-	name:SetPoint("LEFT", holder, "RIGHT", 4, 0)
+	name:SetPoint("LEFT", cast, "LEFT", 4, 0)
 	name:SetJustifyH("LEFT")
 	cast.Text = name
 

@@ -20,9 +20,17 @@ Module.Styles.Boss = function(self)
 	Build.Health(self, cfg.Height)
 	Build.Power(self, Module.PowerHeight(cfg))
 
-	-- Name on the gradient strip above health, numbers on the power bar. Five of
-	-- these stacked up is already busy, so nothing shares a bar with anything else.
+	-- Portrait hangs off the right, clear of the debuffs that fan out to the left.
+	if cfg.Portrait then
+		Build.Portrait(self, "right", Module.TotalHeight(cfg))
+		Build.PortraitLevel(self)
+	end
+
+	-- Name on the gradient strip above health, health value on the health bar, and
+	-- numbers on the power bar. Five of these stacked up is already busy, so nothing
+	-- shares a bar with anything else.
 	Build.Name(self, 11)
+	Build.HealthText(self, 11)
 	Build.PowerText(self, 9)
 
 	Build.AlternativePower(self)
@@ -33,7 +41,8 @@ Module.Styles.Boss = function(self)
 		Build.GroupDebuffs(self, 4, cfg.Height - 2)
 	end
 
+	-- The same top castbar the party uses, with its icon slot on the portrait side.
 	if cfg.Castbar then
-		Build.Castbar(self, 14, "right")
+		Build.TopCastbar(self, 14, "right")
 	end
 end

@@ -116,13 +116,13 @@ K.ConfigDefaults = {
 		Pet = { Enable = true, Width = 100, Height = 18, PowerHeight = 10, ShowPower = true, Debuffs = false },
 		Focus = { Enable = true, Width = 200, Height = 34, PowerHeight = 14, ShowPower = true, Debuffs = true },
 		FocusTarget = { Enable = true, Width = 100, Height = 18, PowerHeight = 10, ShowPower = true },
-		Party = { Enable = true, Width = 150, Height = 26, PowerHeight = 10, ShowPower = true, ShowSolo = false, ShowPlayer = true, Debuffs = true, DispelHighlight = true, Portrait = true, Castbar = true },
+		Party = { Enable = true, Width = 150, Height = 26, PowerHeight = 10, ShowPower = true, ShowSolo = false, ShowPlayer = true, Debuffs = true, DispelHighlight = true, Portrait = true, Castbar = true, RaidStyle = false },
 		-- Height is the health bar, the power bar (PowerHeight) sits below it with a
 		-- PowerGap so the two read as separate bars. PowerMode: All, Mana, or None.
 		Raid = { Enable = true, Width = 80, Height = 30, PowerHeight = 6, PowerGap = 6, PowerMode = "All", GroupsPerRow = 5, GroupBy = "GROUP", RaidWide = false, SortDirection = "ASC", Orientation = "DOWN_RIGHT", DispelHighlight = true, ShowGroupNumber = true },
 		-- Spacing has to clear the frame plus its attached castbar, otherwise the
 		-- bar for boss1 lands on top of boss2's name.
-		Boss = { Enable = true, Width = 150, Height = 24, PowerHeight = 10, ShowPower = true, Spacing = 34, Debuffs = true, Castbar = true },
+		Boss = { Enable = true, Width = 150, Height = 24, PowerHeight = 10, ShowPower = true, Spacing = 34, Debuffs = true, Castbar = true, Portrait = true },
 
 		Auras = {
 			BuffSize = 24,
@@ -307,6 +307,13 @@ K.ConfigDefaults = {
 	PullCountdown = {
 		Enable = true,
 		Seconds = 10, -- used when /pull is typed with no number
+	},
+
+	-- The group tools panel: ready check, role check, pull timer, world markers, and
+	-- target icons, shown only while in a group. Retail only.
+	GroupTools = {
+		Enable = true,
+		PullTime = 8, -- default pull-timer countdown in seconds
 	},
 
 	-- Tint already-known collectibles green at vendors, AH, and guild bank. Retail only.

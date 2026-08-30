@@ -3,6 +3,7 @@
 	<Script file="ExpRep.lua" />
 	<Script file="AlertFrames.lua" />
 	<Script file="PullCountdown.lua" />
+	<Script file="GroupTools.lua" />
 	<Script file="AlreadyKnown.lua" />
 	<Script file="MicroMenu.lua" />
 	<Script file="ButtonPreview.lua" />
