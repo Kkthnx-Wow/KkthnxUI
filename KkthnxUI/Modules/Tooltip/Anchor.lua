@@ -39,5 +39,11 @@ function Module:SetupAnchor()
 			tt:ClearAllPoints()
 			tt:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 0, 0)
 		end
+		-- Fresh border for each default-anchored tooltip so a previous unit or item
+		-- colour does not carry over. Safe from here (a hooksecurefunc, not an insecure
+		-- script hook), and map POIs do not use this anchor, so nothing taints them.
+		if C.Tooltip.BorderColor and tt.KKUI_Border then
+			K.ResetBorderColor(tt.KKUI_Border)
+		end
 	end)
 end

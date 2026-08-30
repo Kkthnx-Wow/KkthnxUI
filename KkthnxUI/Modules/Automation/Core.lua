@@ -32,6 +32,9 @@ function Module:OnEnable()
 		if self.SetupAutoRepair then
 			self:SetupAutoRepair()
 		end
+		if self.SetupSellJunk then
+			self:SetupSellJunk()
+		end
 	end
 
 	-- Hands-off questing (Quest.lua) has its own C.AutoQuest toggle, so it runs

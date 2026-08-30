@@ -910,10 +910,9 @@ function Module:OnEnable()
 		end
 		self:UpdateAll()
 	end)
+	-- Auto-sell on merchant open lives in Automation now (SellJunk.lua) so it works
+	-- with the bags disabled. This only updates the manual Sell Junk button.
 	self:RegisterEvent("MERCHANT_SHOW", function()
-		if C.Bags.AutoSellJunk then
-			self:SellJunk()
-		end
 		self:UpdateSellButton(self.BagFrame)
 	end)
 	self:RegisterEvent("MERCHANT_CLOSED", function()

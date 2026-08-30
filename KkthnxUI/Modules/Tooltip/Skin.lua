@@ -138,10 +138,11 @@ function Module:SetupSkins()
 		end)
 	end
 
-	-- Late-created tooltips (some Blizzard addons) get skinned on first show.
-	_G.GameTooltip:HookScript("OnShow", function(tt)
-		SkinTooltip(tt)
-	end)
+	-- GameTooltip is already skinned above through SKIN_LIST, and its backdrop stays
+	-- suppressed by the SharedTooltip_SetBackdropStyle hook. We deliberately do not
+	-- hook its OnShow: an insecure script hook runs inside the same execution that
+	-- built the tooltip, so on a map POI (which then adds a widget set doing secret
+	-- arithmetic) it would taint that path and error. GitHub #138 and #134.
 
 	-- The client's TooltipComparisonManager:AnchorShoppingTooltips lays the compare
 	-- tooltips flush against the main tooltip and each other. Our border sits a few

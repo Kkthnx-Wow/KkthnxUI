@@ -734,7 +734,6 @@ GUI.schema = {
 
 			{ kind = "header", label = L["Behaviour"] },
 			{ kind = "check", label = L["Reverse Sort"], path = { "Bags", "ReverseSort" }, dependsOn = { "Bags", "Enable" }, tooltip = L["Fill new items from the top-left instead of the bottom-right."] },
-			{ kind = "check", label = L["Auto Sell Junk"], path = { "Bags", "AutoSellJunk" }, dependsOn = { "Bags", "Enable" }, tooltip = L["Sell all grey items automatically when you open a merchant."] },
 			{ kind = "check", label = L["Auto Deposit Reagents"], path = { "Bags", "AutoDepositReagents" }, dependsOn = { "Bags", "Enable" }, tooltip = L["Push reagents into the bank when you open it."] },
 
 			{ kind = "header", label = L["Vendors"] },
@@ -754,6 +753,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Skip Cinematics"], path = { "Automation", "SkipCinematics" }, dependsOn = { "Automation", "Enable" }, tooltip = L["Skip cinematics and movies. Leave off on a first playthrough."] },
 			{ kind = "check", label = L["Auto Repair"], path = { "Automation", "AutoRepair" }, dependsOn = { "Automation", "Enable" }, tooltip = L["Repair all gear when a repair-capable merchant opens."] },
 			{ kind = "check", label = L["Repair With Guild Funds"], path = { "Automation", "RepairGuildFunds" }, dependsOn = { "Automation", "Enable" }, tooltip = L["Spend guild bank money first when you have repair permission, then fall back to your own."] },
+			{ kind = "check", label = L["Auto Sell Junk"], path = { "Automation", "SellJunk" }, dependsOn = { "Automation", "Enable" }, tooltip = L["Sell all grey items automatically when you open a merchant. Works even with the KkthnxUI bags disabled."] },
 
 				{ kind = "header", label = L["Auto Quest"] },
 				{ kind = "check", label = L["Enable Auto Quest"], path = { "AutoQuest", "Enable" }, reload = true, tooltip = L["Accept and turn in quests automatically. Hold the pause key to do it by hand."] },

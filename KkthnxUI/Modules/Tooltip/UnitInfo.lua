@@ -391,11 +391,8 @@ function Module:SetupUnitInfo()
 		end
 	end)
 
-	-- Reset the unit border colour whenever the tooltip is cleared, so an item or
-	-- spell tooltip after a unit does not keep the unit's colour.
-	_G.GameTooltip:HookScript("OnTooltipCleared", function(tt)
-		if C.Tooltip.BorderColor and tt.KKUI_Border then
-			K.ResetBorderColor(tt.KKUI_Border)
-		end
-	end)
+	-- The unit border colour is reset for the next tooltip from the anchor hook
+	-- (Anchor.lua), a hooksecurefunc that stays taint free. An insecure OnTooltipCleared
+	-- script hook runs inside the execution that built the tooltip, so on a map POI it
+	-- would taint the widget set that follows and error (GitHub #138).
 end

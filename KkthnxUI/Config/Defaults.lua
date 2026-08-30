@@ -329,6 +329,7 @@ K.ConfigDefaults = {
 		SkipCinematics = false, -- skip cinematics and movies (off so story is not lost)
 		AutoRepair = true, -- repair all gear at a repair-capable merchant
 		RepairGuildFunds = false, -- spend guild bank money first when allowed
+		SellJunk = false, -- sell grey items when a merchant opens, independent of the bags
 	},
 
 	-- Hands-off questing: accept, turn in, and reward selection. Retail only.

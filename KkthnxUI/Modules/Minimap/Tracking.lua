@@ -23,8 +23,15 @@ local function IsTracking(index)
 	local info = C_Minimap and C_Minimap.GetTrackingInfo(index)
 	return info and info.active
 end
+-- Toggle through MinimapUtil, the way Blizzard's own tracking menu does. Some
+-- filters (a handful of gathering and quest trackings) are backed by a saved
+-- setting, so a plain C_Minimap.SetTracking is re-asserted from that setting and
+-- the toggle appears to revert (GitHub #135). MinimapUtil syncs the setting too.
 local function SetTracking(index)
-	if C_Minimap and C_Minimap.SetTracking then
+	local util = _G.MinimapUtil
+	if util and util.SetTrackingFilterByFilterIndex then
+		util.SetTrackingFilterByFilterIndex(index, not IsTracking(index))
+	elseif C_Minimap and C_Minimap.SetTracking then
 		C_Minimap.SetTracking(index, not IsTracking(index))
 	end
 end
