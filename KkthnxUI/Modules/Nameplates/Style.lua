@@ -19,6 +19,7 @@ local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitLevel = UnitLevel
 local UnitReaction = UnitReaction
+local UnitPowerType = UnitPowerType
 local UnitThreatSituation = UnitThreatSituation
 local GetThreatStatusColor = GetThreatStatusColor
 local UnitIsPlayer = UnitIsPlayer
@@ -428,6 +429,14 @@ end
 --   3. enemies get a threat colour when that option is on, otherwise their
 --      reaction colour, and a solid hostile colour when the reaction is secret,
 --      so a mob we are fighting never falls back to the plain green health fill.
+-- A hostile unit is treated as a caster when it runs on mana, the one signal the
+-- API gives for a nameplate unit. Read live each colour update so a recycled plate
+-- never keeps a stale role, and guarded for a secret power type.
+local function PlateIsCaster(unit)
+	local power = UnitPowerType and UnitPowerType(unit)
+	return power ~= nil and not IsSecret(power) and power == 0
+end
+
 local function CustomHealthColor(health, unit)
 	local npcID = GetNPCID(unit)
 	local custom = npcID and K.NameplateCustomColors[npcID]
@@ -439,6 +448,20 @@ local function CustomHealthColor(health, unit)
 	local isPlayer = UnitIsPlayer(unit)
 	if IsSecret(isPlayer) or isPlayer then
 		return
+	end
+
+	-- Role colours: hostile plates read as caster or melee so casters stand out.
+	-- Sits above reaction colour so the split is visible, below the custom and threat
+	-- colours which the player set on purpose.
+	if C.Nameplate.RoleColors and not (C.Nameplate.ThreatHealthColor and UnitThreatSituation("player", unit)) then
+		local reaction = UnitReaction(unit, "player")
+		if reaction and not IsSecret(reaction) and reaction <= 4 then
+			local c = PlateIsCaster(unit) and C.Nameplate.CasterColor or C.Nameplate.MeleeColor
+			if c then
+				health:SetStatusBarColor(c[1], c[2], c[3])
+				return
+			end
+		end
 	end
 
 	if C.Nameplate.ThreatHealthColor then
