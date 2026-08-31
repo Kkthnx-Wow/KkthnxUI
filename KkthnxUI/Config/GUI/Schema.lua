@@ -305,6 +305,14 @@ GUI.schema = {
 			{ kind = "dropdown", label = L["Font"], path = { "General", "Font" }, options = MediaOptions(C.Media.Fonts), reload = true },
 			{ kind = "check", label = L["Font Outline"], path = { "General", "FontOutline" }, reload = true },
 			{ kind = "check", label = L["Welcome Message"], path = { "General", "WelcomeMessage" } },
+			{ kind = "button", label = L["Report a Bug"], onClick = function()
+				if K.GUI and K.GUI.Hide then
+					K.GUI.Hide()
+				end
+				if K.ToggleBugReport then
+					K.ToggleBugReport()
+				end
+			end },
 			{ kind = "header", label = L["Placement"] },
 			{ kind = "description", label = L["Unlock the UI to drag frames around. Hover a frame and use the arrow keys to nudge it one pixel at a time."] },
 			{ kind = "button", label = L["Move UI"], onClick = function()
@@ -463,7 +471,13 @@ GUI.schema = {
 			{ kind = "check", label = L["Enable Minimap"], path = { "Minimap", "Enable" }, reload = true },
 			{ kind = "slider", label = L["Size"], path = { "Minimap", "Size" }, min = 120, max = 300, step = 2, reload = true, dependsOn = { "Minimap", "Enable" } },
 			{ kind = "check", label = L["Square Shape"], path = { "Minimap", "Square" }, reload = true, dependsOn = { "Minimap", "Enable" } },
+			{ kind = "check", label = L["Show Border"], path = { "Minimap", "ShowBorder" }, reload = true, dependsOn = { "Minimap", "Enable" } },
+			{ kind = "check", label = L["Fade Until Hover"], path = { "Minimap", "MouseoverFade" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Fade the minimap out while you are not hovering it."] },
+			{ kind = "slider", label = L["Faded Alpha"], path = { "Minimap", "FadeAlpha" }, min = 0, max = 0.9, step = 0.05, reload = true, dependsOn = { "Minimap", "MouseoverFade" } },
+			{ kind = "check", label = L["Show Zone Text"], path = { "Minimap", "ShowLocation" }, reload = true, dependsOn = { "Minimap", "Enable" } },
+			{ kind = "slider", label = L["Zone Text Size"], path = { "Minimap", "LocationFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowLocation" } },
 			{ kind = "check", label = L["Show Clock"], path = { "Minimap", "ShowClock" }, reload = true, dependsOn = { "Minimap", "Enable" } },
+			{ kind = "slider", label = L["Clock Text Size"], path = { "Minimap", "ClockFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowClock" } },
 			{ kind = "check", label = L["Collect Minimap Buttons"], path = { "Minimap", "CollectButtons" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 				{ kind = "dropdown", label = L["Button Collector Corner"], path = { "Minimap", "ButtonCorner" }, options = {
 					{ text = L["Bottom Left"], value = "BOTTOMLEFT" },
@@ -536,6 +550,16 @@ GUI.schema = {
 			{ kind = "check", label = L["Gradient Backdrop"], path = { "Chat", "GradientBackdrop" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["A soft class-colored fade behind the chat that fades out to the right."] },
 			{ kind = "check", label = L["Copy Button"], path = { "Chat", "CopyButton" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Timestamps"], path = { "Chat", "Timestamps" }, reload = true, dependsOn = { "Chat", "Enable" } },
+			{ kind = "check", label = L["Highlight Keywords"], path = { "Chat", "KeywordHighlight" }, dependsOn = { "Chat", "Enable" }, tooltip = L["Colour your name and any keywords you set wherever they appear in chat."] },
+			{ kind = "editbox", label = L["Extra Keywords"], path = { "Chat", "KeywordList" }, dependsOn = { "Chat", "KeywordHighlight" }, tooltip = L["Comma separated words to watch for. Your name is always watched."], apply = function()
+				local m = K:GetModule("Chat")
+				if m and m.RefreshKeywords then
+					m:RefreshKeywords()
+				end
+			end },
+			{ kind = "color", label = L["Keyword Color"], path = { "Chat", "KeywordColor" }, dependsOn = { "Chat", "KeywordHighlight" } },
+			{ kind = "check", label = L["Keyword Sound"], path = { "Chat", "KeywordSound" }, dependsOn = { "Chat", "KeywordHighlight" }, tooltip = L["Play a short sound when a keyword is mentioned."] },
+			{ kind = "check", label = L["Keyword Count Badge"], path = { "Chat", "KeywordCount" }, reload = true, dependsOn = { "Chat", "KeywordHighlight" }, tooltip = L["Show a badge counting unread keyword mentions in the corner of the chat."] },
 			{ kind = "check", label = L["Fade Inactive Chat"], path = { "Chat", "Fade" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "slider", label = L["Fade Time"], path = { "Chat", "FadeTime" }, min = 5, max = 60, step = 5, reload = true, dependsOn = { "Chat", "Fade" } },
 		},
@@ -675,6 +699,19 @@ GUI.schema = {
 			{ kind = "header", label = L["Group Tools"] },
 			{ kind = "check", label = L["Enable Group Tools"], path = { "GroupTools", "Enable" }, reload = true, tooltip = L["A movable panel shown only in a group: ready check, role check, pull timer, world markers, target icons, and a role count."] },
 			{ kind = "slider", label = L["Pull Timer Seconds"], path = { "GroupTools", "PullTime" }, min = 3, max = 30, step = 1, reload = true, dependsOn = { "GroupTools", "Enable" }, tooltip = L["Seconds counted down by the pull timer button."] },
+		},
+	},
+
+	{
+		name = "Loot",
+		icon = "Interface/ICONS/INV_Misc_Bag_10",
+		title = L["Loot Frame"],
+		controls = {
+			{ kind = "header", label = L["Loot Frame"] },
+			{ kind = "check", label = L["Enable Loot Window"], path = { "Loot", "Enable" }, reload = true, tooltip = L["Replace the stock pick-up list with our own compact loot window."] },
+			{ kind = "slider", label = L["Row Height"], path = { "Loot", "IconSize" }, min = 24, max = 44, step = 2, reload = true, dependsOn = { "Loot", "Enable" } },
+			{ kind = "slider", label = L["Minimum Width"], path = { "Loot", "Width" }, min = 180, max = 360, step = 4, reload = true, dependsOn = { "Loot", "Enable" } },
+			{ kind = "check", label = L["Open At Cursor"], path = { "Loot", "UnderMouse" }, dependsOn = { "Loot", "Enable" }, tooltip = L["Open the loot window at the mouse instead of the saved spot."] },
 		},
 	},
 

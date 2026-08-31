@@ -3,8 +3,8 @@
 	File: Modules/UnitFrames/Test.lua
 	Purpose:
 		Config mode. Instead of drawing throwaway mock frames, this forces the real
-		frames to show with the player's own data, the way ElvUI previews its unit
-		frames. Individual frames (player, target, boss, and the rest) are pointed at
+		frames to show with the player's own data, which is the sturdiest way to
+		preview them. Individual frames (player, target, boss, and the rest) are pointed at
 		the player and their unit watch is forced on. Group headers (party and raid)
 		get a negative starting index so the secure header spawns its full set of
 		phantom frames while solo, and each child is forced on the same way. Toggling

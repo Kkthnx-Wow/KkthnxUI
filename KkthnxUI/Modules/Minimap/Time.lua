@@ -106,7 +106,7 @@ function Module:CreateClock()
 	clock:RegisterForClicks("AnyUp")
 
 	local text = clock:CreateFontString(nil, "OVERLAY")
-	K.SetFont(text, 12, K.FontOutlineStyle())
+	K.SetFont(text, C.Minimap.ClockFontSize or 12, K.FontOutlineStyle())
 	text:SetAllPoints()
 	clock.Text = text
 	self.clock = clock

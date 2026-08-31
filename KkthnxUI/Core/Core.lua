@@ -31,7 +31,7 @@ function Module:OnEnable()
 	end)
 
 	if C.General.WelcomeMessage then
-		K.Print(L["Version %s loaded. Type %s for options."], K.Version, "|cff5C8BCF/kk|r")
+		K.Print(L["Version %s (build %s) loaded. Type %s for options."], K.Version, K.Build, "|cff5C8BCF/kk|r")
 	end
 end
 

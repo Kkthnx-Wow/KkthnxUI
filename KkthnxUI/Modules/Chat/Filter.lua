@@ -13,6 +13,9 @@ local K = KkthnxUI[1]
 local Module = K:GetModule("Chat")
 
 local GetTime = GetTime
+local UnitName = UnitName
+local Ambiguate = Ambiguate
+local IsSecret = K.IsSecret
 
 local FILTER_EVENTS = {
 	"CHAT_MSG_CHANNEL",
@@ -20,16 +23,37 @@ local FILTER_EVENTS = {
 	"CHAT_MSG_YELL",
 }
 
+local WINDOW = 30 -- seconds a message counts as a repeat
+
 function Module:EnableFilter()
 	local seen = {}
+	local lastSweep = 0
+	local player = UnitName("player")
 
 	local function RepeatFilter(_, _, msg, author)
-		if not msg or not author then
+		-- Never touch a secret string (cannot be keyed or compared) or your own
+		-- messages, so what you send is always shown even if you repeat it.
+		if not msg or not author or IsSecret(msg) or IsSecret(author) then
 			return false
 		end
-		local key = author .. "\001" .. msg
+		if player and (author == player or Ambiguate(author, "short") == player) then
+			return false
+		end
+
 		local now = GetTime()
-		if seen[key] and (now - seen[key]) < 30 then
+
+		-- Sweep expired keys now and then so the table does not grow all session.
+		if now - lastSweep > WINDOW then
+			lastSweep = now
+			for key, stamp in pairs(seen) do
+				if now - stamp >= WINDOW then
+					seen[key] = nil
+				end
+			end
+		end
+
+		local key = author .. "\001" .. msg
+		if seen[key] and (now - seen[key]) < WINDOW then
 			return true
 		end
 		seen[key] = now

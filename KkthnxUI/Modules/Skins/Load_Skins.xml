@@ -4,7 +4,6 @@
 	<Script file="GearInfo.lua" />
 	<Script file="SocialColors.lua" />
 	<Script file="Battlenet.lua" />
-	<Script file="Loot.lua" />
 	<Script file="GameMenu.lua" />
 	<Script file="ObjectiveTracker.lua" />
 </Ui>

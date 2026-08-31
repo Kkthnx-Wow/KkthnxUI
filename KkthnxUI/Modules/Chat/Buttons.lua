@@ -13,6 +13,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Chat")
 
 local _G = _G
+local CreateColor = CreateColor
 
 local SIZE = 22
 local GAP = 6
@@ -20,15 +21,12 @@ local FADE_IN = 1
 local FADE_OUT = 0
 
 -- Return the chat frame the user is currently looking at, so copy and scroll act
--- on the selected tab rather than always the first window.
+-- on the selected tab rather than always the first window. SELECTED_DOCK_FRAME is
+-- the tab actually on screen. FCF_GetCurrentChatFrame is avoided here because it
+-- only tracks the frame inside an FCF config action and is otherwise stale or
+-- empty, which is what made the copy button open a blank window.
 local function CurrentFrame()
-	if _G.FCF_GetCurrentChatFrame then
-		local frame = _G.FCF_GetCurrentChatFrame()
-		if frame then
-			return frame
-		end
-	end
-	return _G.SELECTED_CHAT_FRAME or _G.ChatFrame1
+	return _G.SELECTED_DOCK_FRAME or _G.SELECTED_CHAT_FRAME or _G.ChatFrame1
 end
 
 -- opts (optional): atlas = atlas name used instead of texture (with a texture
@@ -38,8 +36,24 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 	local button = CreateFrame("Button", nil, parent)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetSize(SIZE, SIZE)
-	K.CreateGradientBackground(button, 0.85)
-	K.CreateBorder(button)
+
+	-- Same gradient skin as the chat, bar, and edit box: a horizontal fade with a
+	-- class-coloured hairline top and bottom, no border. Hover brightens the lines.
+	local color = K.ClassColor or { r = 0.4, g = 0.6, b = 1 }
+	local grad = button:CreateTexture(nil, "BACKGROUND")
+	grad:SetAllPoints()
+	grad:SetColorTexture(1, 1, 1)
+	grad:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.45), CreateColor(0, 0, 0, 0))
+	button.KKUI_Lines = {}
+	for _, edge in ipairs({ "TOP", "BOTTOM" }) do
+		local line = button:CreateTexture(nil, "ARTWORK")
+		line:SetHeight(1)
+		line:SetPoint(edge .. "LEFT")
+		line:SetPoint(edge .. "RIGHT")
+		line:SetColorTexture(1, 1, 1)
+		line:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.6), CreateColor(color.r, color.g, color.b, 0))
+		button.KKUI_Lines[#button.KKUI_Lines + 1] = line
+	end
 
 	-- Desaturate every glyph and tint it a uniform soft grey so the mismatched
 	-- Blizzard icon art reads as one cohesive monochrome set. Hover lifts both the
@@ -62,9 +76,11 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 	button.icon = icon
 
 	button:SetScript("OnEnter", function(self)
-		local color = K.ClassColor
-		self.KKUI_Border:SetVertexColor(color.r, color.g, color.b, 1)
-		self.icon:SetVertexColor(color.r, color.g, color.b)
+		local c = K.ClassColor
+		self.icon:SetVertexColor(c.r, c.g, c.b)
+		for _, line in ipairs(self.KKUI_Lines) do
+			line:SetGradient("HORIZONTAL", CreateColor(c.r, c.g, c.b, 1), CreateColor(c.r, c.g, c.b, 0.2))
+		end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(tooltip, 1, 1, 1)
 		if opts.subtext then
@@ -73,8 +89,11 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 		GameTooltip:Show()
 	end)
 	button:SetScript("OnLeave", function(self)
-		K.ResetBorderColor(self.KKUI_Border)
+		local c = K.ClassColor
 		self.icon:SetVertexColor(IDLE, IDLE, IDLE)
+		for _, line in ipairs(self.KKUI_Lines) do
+			line:SetGradient("HORIZONTAL", CreateColor(c.r, c.g, c.b, 0.6), CreateColor(c.r, c.g, c.b, 0))
+		end
 		GameTooltip:Hide()
 	end)
 	button:SetScript("OnClick", onClick)
@@ -90,7 +109,9 @@ function Module:CreateSideButtons()
 	-- The chat sits against the screen's left edge, so the strip goes on the right
 	-- side of the window where there is room for it.
 	local bar = CreateFrame("Frame", "KKUI_ChatButtons", UIParent)
-	bar:SetPoint("TOPLEFT", anchor, "TOPRIGHT", GAP, 0)
+	-- Lifted so the top button lines up with the tab strip rather than the frame's
+	-- message top.
+	bar:SetPoint("TOPLEFT", anchor, "TOPRIGHT", GAP, 6)
 	bar:SetWidth(SIZE)
 	bar:SetAlpha(FADE_OUT)
 
@@ -143,32 +164,36 @@ function Module:CreateSideButtons()
 	self.sideButtons = bar
 	self.sideButtonList = buttons
 
-	-- Fade the strip in on hover of the chat, the tabs, or the strip itself.
-	local function FadeIn()
-		UIFrameFadeIn(bar, 0.2, bar:GetAlpha(), FADE_IN)
-	end
-	local function FadeOut()
-		if bar:IsMouseOver() or anchor:IsMouseOver() then
-			return
-		end
-		UIFrameFadeOut(bar, 0.6, bar:GetAlpha(), FADE_OUT)
-	end
-	bar:SetScript("OnEnter", FadeIn)
-	bar:SetScript("OnLeave", FadeOut)
-	anchor:HookScript("OnEnter", FadeIn)
-	anchor:HookScript("OnLeave", FadeOut)
-
-	-- Only show the jump-to-newest button while the window is scrolled up, checked
-	-- on a light throttle so it tracks manual scrolling and new incoming lines.
+	-- Drive the fade from a single throttled loop rather than OnEnter/OnLeave
+	-- events. Event-based fading could strand the strip fully visible when a fade
+	-- was interrupted or a leave never fired (opening the config panel over it, a
+	-- fast mouse move). Here the target alpha is recomputed every tick from the
+	-- live mouse-over state, so the strip can never get stuck. The tab dock counts
+	-- as hovering the chat so the strip stays up while picking a tab.
+	local dock = _G.GeneralDockManager
 	local elapsed = 0
+	local FADE_STEP = 4 -- alpha per second, so a full fade takes about a quarter second
 	bar:SetScript("OnUpdate", function(_, delta)
-		elapsed = elapsed + delta
-		if elapsed < 0.2 then
-			return
+		local over = bar:IsMouseOver() or anchor:IsMouseOver() or (dock and dock:IsMouseOver())
+		local target = over and FADE_IN or FADE_OUT
+		local current = bar:GetAlpha()
+		if current ~= target then
+			local step = FADE_STEP * delta
+			if current < target then
+				bar:SetAlpha(math.min(target, current + step))
+			else
+				bar:SetAlpha(math.max(target, current - step))
+			end
 		end
-		elapsed = 0
-		local frame = CurrentFrame()
-		scroll:SetShown(frame and not frame:AtBottom())
+
+		-- Only show the jump-to-newest button while the window is scrolled up,
+		-- checked on a light throttle so it tracks scrolling and new lines.
+		elapsed = elapsed + delta
+		if elapsed >= 0.2 then
+			elapsed = 0
+			local frame = CurrentFrame()
+			scroll:SetShown(frame and not frame:AtBottom())
+		end
 	end)
 
 	return bar

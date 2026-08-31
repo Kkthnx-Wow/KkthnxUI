@@ -13,6 +13,7 @@ local Module = K:NewModule("Chat")
 
 local _G = _G
 local gsub = string.gsub
+local format = string.format
 local IsSecret = K.IsSecret
 
 local NUM_FRAMES = NUM_CHAT_WINDOWS or 10
@@ -33,10 +34,17 @@ local function CreateGradient(frame)
 	end
 	local color = K.ClassColor or { r = 0.4, g = 0.6, b = 1 }
 
+	-- Anchor to the frame's own background region, not the frame. On the Combat Log
+	-- the frame's top is pushed down by the quick-filter bar, but Blizzard sizes the
+	-- background region to still cover that bar (its top point carries the quick
+	-- button height). Tracking that region keeps our gradient covering the full chat
+	-- on every tab, so the Combat Log no longer shows a light gap up top. Falls back
+	-- to the frame on any window without a background region.
+	local region = frame.Background or _G[frame:GetName() .. "Background"] or frame
 	local holder = CreateFrame("Frame", nil, frame)
 	holder:SetFrameLevel(0)
-	holder:SetPoint("TOPLEFT", frame, "TOPLEFT", -4, 8)
-	holder:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 8, -4)
+	holder:SetPoint("TOPLEFT", region, "TOPLEFT", -2, 3)
+	holder:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", 2, -3)
 
 	local bg = holder:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
@@ -78,18 +86,31 @@ end
 -- Edit box
 -- ---------------------------------------------------------------------------
 
--- Colour the edit box border to the channel you are typing in (whisper pink,
--- say white, guild green, and so on), read from Blizzard's own ChatTypeInfo.
+-- Tint the edit box hairlines to the channel you are typing in (whisper pink, say
+-- white, guild green, and so on), read from Blizzard's own ChatTypeInfo, the same
+-- way the chat frame carries a class-coloured line. In 12.x the header refreshes
+-- through the edit box mixin method UpdateHeader, not the old global, so we read
+-- the type and channel off the box the same way it does: GetChatType and, for a
+-- numbered channel, its per-channel colour. Falls back to the class colour.
 local function ColorEditBox(editBox)
-	if not editBox.KKUI_Border then
+	local lines = editBox.KKUI_Lines
+	if not lines then
 		return
 	end
-	local chatType = editBox:GetAttribute("chatType")
+
+	local chatType = editBox.GetChatType and editBox:GetChatType() or editBox:GetAttribute("chatType")
 	local info = chatType and ChatTypeInfo[chatType]
-	if info then
-		editBox.KKUI_Border:SetVertexColor(info.r, info.g, info.b)
-	else
-		K.ResetBorderColor(editBox.KKUI_Border)
+	if chatType == "CHANNEL" then
+		local target = editBox.GetChannelTarget and editBox:GetChannelTarget()
+		local localID = target and GetChannelName(target)
+		if localID and localID > 0 then
+			info = ChatTypeInfo["CHANNEL" .. localID] or info
+		end
+	end
+
+	local color = info or K.ClassColor
+	for _, line in ipairs(lines) do
+		line:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
 	end
 end
 
@@ -117,8 +138,21 @@ local function SkinEditBox(editBox)
 		end
 	end
 
-	K.CreateBackground(editBox, 0.05, 0.05, 0.05, 0.85)
-	K.CreateBorder(editBox)
+	-- Same horizontal gradient the chat and channel bar wear, with a hairline along
+	-- the top and bottom that ColorEditBox tints to the channel you are typing in.
+	local grad = editBox:CreateTexture(nil, "BACKGROUND")
+	grad:SetAllPoints()
+	grad:SetColorTexture(1, 1, 1)
+	grad:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.6), CreateColor(0, 0, 0, 0))
+	editBox.KKUI_Lines = {}
+	for _, edge in ipairs({ "TOP", "BOTTOM" }) do
+		local line = editBox:CreateTexture(nil, "ARTWORK")
+		line:SetHeight(1)
+		line:SetPoint(edge .. "LEFT")
+		line:SetPoint(edge .. "RIGHT")
+		line:SetColorTexture(1, 1, 1)
+		editBox.KKUI_Lines[#editBox.KKUI_Lines + 1] = line
+	end
 
 	-- Left/right arrows move the cursor instead of cycling chat channels.
 	editBox:SetAltArrowKeyMode(false)
@@ -132,7 +166,9 @@ local function SkinEditBox(editBox)
 			return
 		end
 		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", parent, "TOPLEFT", 0, 26)
+		-- Nudged 4px left so the box gradient lines up with the chat and bar
+		-- gradients, which reach the same amount past the frame edge.
+		self:SetPoint("BOTTOMLEFT", parent, "TOPLEFT", -4, 26)
 		self:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, 26)
 		self:SetHeight(22)
 	end
@@ -151,10 +187,19 @@ local function SkinEditBox(editBox)
 			self:SetAlpha(0)
 		end
 	end)
+	-- Recolour the border to the active channel whenever the box refreshes its
+	-- header (channel switch, tab change, reply cycle). Hooked on the instance
+	-- method because the old global ChatEdit_UpdateHeader is gone in 12.x.
+	if editBox.UpdateHeader then
+		hooksecurefunc(editBox, "UpdateHeader", ColorEditBox)
+	end
+	ColorEditBox(editBox)
+
 	editBox:HookScript("OnEditFocusGained", function(self)
 		Reposition(self)
 		self:EnableMouse(true)
 		self:SetAlpha(1)
+		ColorEditBox(self)
 	end)
 	editBox:HookScript("OnEditFocusLost", function(self)
 		self:EnableMouse(false)
@@ -194,6 +239,49 @@ local function SkinTab(tab)
 	local text = tab.Text or _G[tab:GetName() .. "Text"]
 	if text then
 		K.SetFont(text, C.Chat.FontSize, K.FontOutlineStyle())
+	end
+end
+
+-- Colour the selected tab in the class colour and dim the rest, so the active
+-- tab reads at a glance. Blizzard passes the selected flag to FCFTab_UpdateColors,
+-- so we recolour from the same call that repaints the tab.
+local function ColorTab(tab, selected)
+	local text = tab and (tab.Text or (tab.GetName and _G[tab:GetName() .. "Text"]))
+	if not text then
+		return
+	end
+	-- Remember the state so the flash hooks can restore the right colour, and so a
+	-- tab still flagged as alerting is not overwritten back to grey.
+	tab.KKUI_Selected = selected
+	if tab.KKUI_Alerting and not selected then
+		text:SetTextColor(1, 0.6, 0.1)
+		return
+	end
+	if selected then
+		local color = K.ClassColor
+		text:SetTextColor(color.r, color.g, color.b)
+	else
+		text:SetTextColor(0.55, 0.55, 0.55)
+	end
+end
+
+-- We blank every tab texture, which also blanks the glow the client flashes when
+-- an inactive tab gets a new message. Put that unread cue back by lighting the
+-- tab label a warm orange while it is alerting, cleared once the tab is read.
+local function TabAlertStart(chatFrame)
+	local tab = _G[chatFrame:GetName() .. "Tab"]
+	local text = tab and (tab.Text or _G[tab:GetName() .. "Text"])
+	if text and not tab.KKUI_Selected then
+		tab.KKUI_Alerting = true
+		text:SetTextColor(1, 0.6, 0.1)
+	end
+end
+
+local function TabAlertStop(chatFrame)
+	local tab = _G[chatFrame:GetName() .. "Tab"]
+	if tab then
+		tab.KKUI_Alerting = nil
+		ColorTab(tab, tab.KKUI_Selected)
 	end
 end
 
@@ -353,7 +441,7 @@ end
 
 function Module:CreateCopyWindow()
 	local frame = CreateFrame("Frame", "KKUI_ChatCopy", UIParent)
-	frame:SetSize(500, 300)
+	frame:SetSize(700, 400)
 	frame:SetPoint("CENTER")
 	frame:SetFrameStrata("DIALOG")
 	frame:EnableMouse(true)
@@ -370,41 +458,74 @@ function Module:CreateCopyWindow()
 	K.SkinCloseButton(close)
 
 	local scroll = CreateFrame("ScrollFrame", "KKUI_ChatCopyScroll", frame, "UIPanelScrollFrameTemplate")
-	scroll:SetPoint("TOPLEFT", 10, -10)
-	scroll:SetPoint("BOTTOMRIGHT", -30, 10)
+	scroll:SetPoint("TOPLEFT", 10, -30)
+	scroll:SetPoint("BOTTOMRIGHT", -28, 10)
 	K.SkinScrollBar(scroll.ScrollBar)
 
-	local edit = CreateFrame("EditBox", nil, scroll)
+	-- The edit box is a fixed size that fills the scroll viewport (its own name so
+	-- the mouse wheel and scroll bar drive it). Multi-line text is laid out inside
+	-- it and the visible slice is controlled by the hit-rect insets on scroll, the
+	-- way the reference UIs do it, so the whole log shows and scrolls cleanly.
+	local edit = CreateFrame("EditBox", nil, frame)
 	edit:SetMultiLine(true)
 	edit:SetMaxLetters(0)
 	edit:SetAutoFocus(false)
+	edit:EnableMouse(true)
 	edit:SetFontObject(ChatFontNormal)
-	edit:SetWidth(460)
+	edit:SetTextColor(1, 1, 1)
+	-- Explicit size, not scroll:GetWidth(). The window is built on first click and
+	-- is not laid out yet, so GetWidth would be 0 and the text would have nowhere to
+	-- draw (which is why the copy box looked empty). 700 wide frame minus the insets.
+	edit:SetWidth(662)
+	edit:SetHeight(360)
 	edit:SetScript("OnEscapePressed", function()
 		frame:Hide()
 	end)
+	-- Jump to the top when fresh text is set (userInput is nil then).
+	edit:SetScript("OnTextChanged", function(_, userInput)
+		if userInput then
+			return
+		end
+		local _, maxVal = scroll.ScrollBar:GetMinMaxValues()
+		for _ = 1, maxVal do
+			_G.ScrollFrameTemplate_OnMouseWheel(scroll, -1)
+		end
+	end)
 	scroll:SetScrollChild(edit)
+	scroll:HookScript("OnVerticalScroll", function(self, offset)
+		edit:SetHitRectInsets(0, 0, offset, (edit:GetHeight() - offset - self:GetHeight()))
+	end)
 
 	self.copyFrame = frame
 	self.copyEdit = edit
+	self.copyScroll = scroll
 	return frame
+end
+
+-- Drop textures and atlases so the copied text is clean, keeping the colour.
+local function CleanMessage(msg, r, g, b)
+	msg = gsub(msg, "|T(.-):.-|t", "")
+	msg = gsub(msg, "|A(.-):.-|a", "")
+	return format("|cff%02x%02x%02x%s|r", (r or 1) * 255, (g or 1) * 255, (b or 1) * 255, msg)
 end
 
 function Module:CopyChat(chatFrame)
 	if not self.copyFrame then
 		self:CreateCopyWindow()
 	end
+	chatFrame = chatFrame or _G.SELECTED_DOCK_FRAME or _G.SELECTED_CHAT_FRAME or _G.ChatFrame1
+
 	local lines = {}
 	for i = 1, chatFrame:GetNumMessages() do
-		local text = chatFrame:GetMessageInfo(i)
-		if text then
-			-- Strip textures and hyperlinks' color codes for clean copying.
-			text = gsub(text, "|T.-|t", "")
-			lines[#lines + 1] = text
+		local msg, r, g, b = chatFrame:GetMessageInfo(i)
+		if msg and not IsSecret(msg) then
+			lines[#lines + 1] = CleanMessage(msg, r, g, b)
 		end
 	end
-	self.copyEdit:SetText(table.concat(lines, "\n"))
+
 	self.copyFrame:Show()
+	self.copyEdit:SetText(table.concat(lines, "\n"))
+	self.copyEdit:HighlightText()
 end
 
 local function AddCopyButton(chatFrame)
@@ -480,8 +601,96 @@ function Module:SkinSocialButton()
 end
 
 -- ---------------------------------------------------------------------------
+-- Combat log (load-on-demand)
+-- ---------------------------------------------------------------------------
+
+-- Skin the Combat Log once its addon is present: strip and reskin the quick
+-- filter bar, and re-hide the combat-log frame's own background, which the addon
+-- re-shows when it loads (this is what washed our gradient out on that tab).
+function Module:StyleCombatLog()
+	local quickButtons = _G.CombatLogQuickButtonFrame_Custom
+	if not quickButtons or quickButtons.KKUI_Skinned then
+		return
+	end
+	quickButtons.KKUI_Skinned = true
+
+	local function StripQuickButtons()
+		for _, region in ipairs({ quickButtons:GetRegions() }) do
+			if region.GetObjectType and region:GetObjectType() == "Texture" then
+				region:SetTexture(nil)
+				region:SetAtlas(nil)
+			end
+		end
+		if _G.CombatLogQuickButtonFrame_CustomTexture then
+			_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
+			_G.CombatLogQuickButtonFrame_CustomTexture:Hide()
+		end
+	end
+	StripQuickButtons()
+	quickButtons:HookScript("OnShow", StripQuickButtons)
+	if _G.CombatLogQuickButtonFrame_CustomTexture then
+		hooksecurefunc(_G.CombatLogQuickButtonFrame_CustomTexture, "SetTexture", function(self, tex)
+			if tex then
+				self:SetTexture(nil)
+			end
+		end)
+	end
+
+	K.CreateBackground(quickButtons, 0.05, 0.05, 0.05, 0.85)
+	K.CreateBorder(quickButtons)
+	local progress = _G.CombatLogQuickButtonFrame_CustomProgressBar
+	if progress then
+		progress:SetStatusBarTexture(0)
+		progress:SetAlpha(0)
+	end
+
+	local filterButton = _G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton
+	if filterButton then
+		StripTab(filterButton)
+	end
+
+	-- Loading the addon calls FCF_SetWindowAlpha on the combat-log frame, which
+	-- re-shows the stock backdrop and border behind our gradient. Re-run the skin,
+	-- which kills those textures again and keeps them killed through its show hook.
+	self:StyleFrame(2)
+end
+
+-- Run the combat-log skin now if its addon is already up, otherwise wait for it.
+function Module:SetupCombatLog()
+	local loaded = C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("Blizzard_CombatLog")
+	if loaded then
+		self:StyleCombatLog()
+		return
+	end
+
+	local watcher = CreateFrame("Frame")
+	watcher:RegisterEvent("ADDON_LOADED")
+	watcher:SetScript("OnEvent", function(self2, _, addon)
+		if addon == "Blizzard_CombatLog" then
+			Module:StyleCombatLog()
+			self2:UnregisterEvent("ADDON_LOADED")
+		end
+	end)
+end
+
+-- ---------------------------------------------------------------------------
 -- Enable
 -- ---------------------------------------------------------------------------
+
+-- Blank the frame's own stock backdrop and border textures. DisableDrawLayer does
+-- most of it, but hide the textures directly too so nothing lingers if the Combat
+-- Log re-shows them on load.
+local function KillFrameTextures(frame)
+	for _, region in ipairs({ frame:GetRegions() }) do
+		if region.GetObjectType and region:GetObjectType() == "Texture" then
+			local layer = region:GetDrawLayer()
+			if layer == "BACKGROUND" or layer == "BORDER" then
+				region:SetAlpha(0)
+				region:Hide()
+			end
+		end
+	end
+end
 
 function Module:StyleFrame(index)
 	local frame = _G["ChatFrame" .. index]
@@ -492,11 +701,41 @@ function Module:StyleFrame(index)
 
 	ApplyFont(frame)
 
-	-- The default backdrop and border are drawn on the chat frame's own
-	-- BACKGROUND / BORDER layers, disabling those layers removes them entirely.
+	-- Blizzard's fade helpers read frame.oldAlpha, which is only ever set by
+	-- FCF_SetWindowAlpha. A frame that has not had its alpha set yet leaves it nil
+	-- and the fade errors, so seed it the way the reference UIs do.
+	frame.oldAlpha = frame.oldAlpha or 0
+
+	-- Blank the stock backdrop and border. The Combat Log re-shows its frame
+	-- textures when its addon loads, so re-apply this on every show as well.
 	frame:DisableDrawLayer("BACKGROUND")
 	frame:DisableDrawLayer("BORDER")
 	frame:SetClampRectInsets(0, 0, 0, 0)
+	KillFrameTextures(frame)
+
+	if not frame.KKUI_BackdropGuard then
+		frame.KKUI_BackdropGuard = true
+		frame:HookScript("OnShow", function(self)
+			self:DisableDrawLayer("BACKGROUND")
+			self:DisableDrawLayer("BORDER")
+			KillFrameTextures(self)
+		end)
+	end
+
+	-- Hide the minimal scroll bar and the jump-to-bottom button. Scrolling is on
+	-- the mouse wheel and the side strip has its own jump-to-newest button, so
+	-- both are just clutter down the right edge of the messages.
+	if frame.ScrollBar then
+		frame.ScrollBar:SetAlpha(0)
+		frame.ScrollBar:EnableMouse(false)
+		frame.ScrollBar:HookScript("OnShow", function(self)
+			self:SetAlpha(0)
+		end)
+	end
+	if frame.ScrollToBottomButton then
+		frame.ScrollToBottomButton:Hide()
+		frame.ScrollToBottomButton:HookScript("OnShow", frame.ScrollToBottomButton.Hide)
+	end
 
 	SkinTab(_G["ChatFrame" .. index .. "Tab"])
 	SkinEditBox(_G["ChatFrame" .. index .. "EditBox"])
@@ -546,10 +785,34 @@ function Module:InstallChat()
 		end
 	end
 	local general = {
-		"SAY", "EMOTE", "YELL", "GUILD", "OFFICER", "GUILD_ACHIEVEMENT",
-		"MONSTER_SAY", "MONSTER_EMOTE", "MONSTER_YELL", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER",
-		"PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER",
-		"BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "SYSTEM", "ERRORS", "AFK", "DND", "IGNORED", "ACHIEVEMENT",
+		"SAY",
+		"EMOTE",
+		"YELL",
+		"GUILD",
+		"OFFICER",
+		"GUILD_ACHIEVEMENT",
+		"MONSTER_SAY",
+		"MONSTER_EMOTE",
+		"MONSTER_YELL",
+		"MONSTER_WHISPER",
+		"MONSTER_BOSS_EMOTE",
+		"MONSTER_BOSS_WHISPER",
+		"PARTY",
+		"PARTY_LEADER",
+		"RAID",
+		"RAID_LEADER",
+		"RAID_WARNING",
+		"INSTANCE_CHAT",
+		"INSTANCE_CHAT_LEADER",
+		"BG_HORDE",
+		"BG_ALLIANCE",
+		"BG_NEUTRAL",
+		"SYSTEM",
+		"ERRORS",
+		"AFK",
+		"DND",
+		"IGNORED",
+		"ACHIEVEMENT",
 	}
 	for _, group in ipairs(general) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, group)
@@ -666,14 +929,19 @@ function Module:OnEnable()
 		end
 		anchoring = true
 		-- 6px from the left edge, 6px from the bottom, or higher to clear the
-		-- quick-bar when it is enabled.
+		-- quick-bar when it is enabled. SetUserPlaced stops Edit Mode's managed
+		-- layout from dragging the window back off the corner after a reload.
 		local bottom = C.Chat.ChatBar and 34 or 6
+		_G.ChatFrame1:SetUserPlaced(true)
 		_G.ChatFrame1:ClearAllPoints()
 		_G.ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, bottom)
 		anchoring = false
 	end
 	AnchorChat()
 	hooksecurefunc(_G.ChatFrame1, "SetPoint", AnchorChat)
+	-- Edit Mode re-applies its saved layout on world enter, after our first pin, so
+	-- re-assert the corner then.
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChat)
 
 	-- Lift the tab dock off the chat frame's top edge so the tabs are not
 	-- crammed against the messages. Guarded against the hook re-entering.
@@ -694,13 +962,23 @@ function Module:OnEnable()
 		hooksecurefunc(dock, "SetPoint", LiftDock)
 	end
 
-	-- Colour the edit box border to the active channel.
-	hooksecurefunc("ChatEdit_UpdateHeader", ColorEditBox)
-
-	-- Blizzard re-textures tabs on colour/hover updates, keep them blanked.
+	-- Blizzard re-textures tabs on colour/hover updates, keep them blanked and
+	-- recolour the label so the selected tab stands out.
 	if _G.FCFTab_UpdateColors then
-		hooksecurefunc("FCFTab_UpdateColors", StripTab)
+		hooksecurefunc("FCFTab_UpdateColors", function(tab, selected)
+			StripTab(tab)
+			ColorTab(tab, selected)
+		end)
 	end
+
+	-- Restore the unread cue the stripped glow used to give.
+	if _G.FCF_StartAlertFlash then
+		hooksecurefunc("FCF_StartAlertFlash", TabAlertStart)
+	end
+	if _G.FCF_StopAlertFlash then
+		hooksecurefunc("FCF_StopAlertFlash", TabAlertStop)
+	end
+
 
 	-- Kill the per-frame scroll button clutter and combat-log quick button art.
 	for i = 1, NUM_FRAMES do
@@ -710,35 +988,11 @@ function Module:OnEnable()
 			buttonFrame:HookScript("OnShow", buttonFrame.Hide)
 		end
 	end
-	-- The Combat Log tab drags in a quick-filter bar ("My actions", ...) whose
-	-- tiled parchment background bleeds across the chat area when that tab is
-	-- selected. Blizzard re-applies that art every time the bar is shown, so a
-	-- one-off strip is not enough: blank it now and again on every show.
-	local quickButtons = _G.CombatLogQuickButtonFrame_Custom
-	if quickButtons then
-		local function StripQuickButtons()
-			for _, region in ipairs({ quickButtons:GetRegions() }) do
-				if region.GetObjectType and region:GetObjectType() == "Texture" then
-					region:SetTexture(nil)
-					region:SetAtlas(nil)
-				end
-			end
-			if _G.CombatLogQuickButtonFrame_CustomTexture then
-				_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
-			end
-		end
-		StripQuickButtons()
-		quickButtons:HookScript("OnShow", StripQuickButtons)
-		-- The parchment is re-set through this named texture even without a show, so
-		-- keep it blank whenever the client tries to paint it back in.
-		if _G.CombatLogQuickButtonFrame_CustomTexture then
-			hooksecurefunc(_G.CombatLogQuickButtonFrame_CustomTexture, "SetTexture", function(self, tex)
-				if tex then
-					self:SetTexture(nil)
-				end
-			end)
-		end
-	end
+	-- The Combat Log lives in a load-on-demand addon (Blizzard_CombatLog) that only
+	-- loads the first time its tab is opened, well after we skin the chat. So its
+	-- quick-filter bar and the combat-log frame's own washed background do not exist
+	-- yet here. Defer that work until the addon loads.
+	self:SetupCombatLog()
 
 	for i = 1, NUM_FRAMES do
 		self:StyleFrame(i)
@@ -751,6 +1005,17 @@ function Module:OnEnable()
 			Module:StyleFrame(frame:GetID())
 		end
 	end)
+
+	-- Style permanent windows the user opens themselves, so a new tab is skinned
+	-- at once instead of only after the next reload.
+	if _G.FCF_OpenNewWindow then
+		hooksecurefunc("FCF_OpenNewWindow", function()
+			local frame = _G.FCF_GetCurrentChatFrame and _G.FCF_GetCurrentChatFrame()
+			if frame then
+				Module:StyleFrame(frame:GetID())
+			end
+		end)
+	end
 
 	-- Open a copy box when one of our URL links is clicked.
 	if C.Chat.URLLinks then
@@ -776,6 +1041,9 @@ function Module:OnEnable()
 	end
 	if C.Chat.SkinBubbles then
 		self:SetupBubbles()
+	end
+	if self.SetupKeywords then
+		self:SetupKeywords()
 	end
 
 	-- Sticky whispers: keep the edit box on WHISPER after you reply, so a back and

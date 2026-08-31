@@ -190,14 +190,32 @@ function Module:OnEnable()
 	Minimap:SetPoint("TOPRIGHT", mover)
 	self.mover = mover
 
-	-- Border in the KkthnxUI style.
-	K.CreateBorder(Minimap)
+	-- Border in the KkthnxUI style, optional.
+	if db.ShowBorder ~= false then
+		K.CreateBorder(Minimap)
+	end
 
 	-- Mouse wheel zoom, the right-click menu is wired up in Tracking.lua.
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", OnMouseWheel)
 	if self.SetupClickMenu then
 		self:SetupClickMenu()
+	end
+
+	-- Fade the map out until you hover it, so it sits quietly when you are not
+	-- reading it. A throttled hover check covers the map and its children.
+	if db.MouseoverFade then
+		local faded = db.FadeAlpha or 0.25
+		Minimap:SetAlpha(faded)
+		local elapsed = 0
+		Minimap:HookScript("OnUpdate", function(self, delta)
+			elapsed = elapsed + delta
+			if elapsed < 0.1 then
+				return
+			end
+			elapsed = 0
+			self:SetAlpha(self:IsMouseOver() and 1 or faded)
+		end)
 	end
 
 	-- Strip the leftover Blizzard clutter (calendar, clock, zone text, compass).

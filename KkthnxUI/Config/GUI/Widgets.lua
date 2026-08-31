@@ -445,6 +445,50 @@ function GUI.CreateButton(parent, control)
 	return button
 end
 
+-- ---------------------------------------------------------------------------
+-- Text entry (free-form string, e.g. a comma separated keyword list)
+-- ---------------------------------------------------------------------------
+
+function GUI.CreateEditBox(parent, control)
+	local holder = CreateFrame("Frame", nil, parent)
+	holder:SetSize(260, 44)
+
+	local label = holder:CreateFontString(nil, "OVERLAY")
+	K.SetFont(label, 12)
+	label:SetPoint("TOPLEFT")
+	label:SetText(control.label)
+
+	local edit = CreateFrame("EditBox", nil, holder)
+	edit:SetSize(control.width or 220, 22)
+	edit:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -4)
+	edit:SetAutoFocus(false)
+	edit:SetFontObject("ChatFontNormal")
+	edit:SetTextInsets(6, 6, 0, 0)
+	K.SkinEditBox(edit)
+	edit:SetText(GUI.GetValue(control.path) or "")
+
+	local function Commit()
+		GUI.ApplyChange(control, edit:GetText() or "")
+		edit:ClearFocus()
+	end
+	edit:SetScript("OnEnterPressed", Commit)
+	edit:SetScript("OnEditFocusLost", Commit)
+	edit:SetScript("OnEscapePressed", function()
+		edit:SetText(GUI.GetValue(control.path) or "")
+		edit:ClearFocus()
+	end)
+
+	holder.KKUI_SetEnabled = function(enabled)
+		edit:EnableMouse(enabled)
+		edit:SetAlpha(enabled and 1 or 0.4)
+		label:SetAlpha(enabled and 1 or 0.4)
+	end
+	GUI.RegisterDependent(holder, control)
+
+	holder.height = 48
+	return holder
+end
+
 -- Dispatch table used by the window when laying out a panel.
 GUI.Builders = {
 	header = GUI.CreateHeader,
@@ -454,6 +498,7 @@ GUI.Builders = {
 	dropdown = GUI.CreateDropdown,
 	color = GUI.CreateColor,
 	button = GUI.CreateButton,
+	editbox = GUI.CreateEditBox,
 }
 
 -- Placeholder so ApplyChange can call it before the window defines it.

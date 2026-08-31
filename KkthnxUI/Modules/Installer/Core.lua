@@ -107,7 +107,7 @@ local STEPS = {
 
 			local title = Header(panel, 18, "KkthnxUI", accent)
 			title:SetPoint("LEFT", logo, "RIGHT", 10, 8)
-			local ver = Header(panel, 11, K.Version, silver)
+			local ver = Header(panel, 11, K.Version .. " (" .. K.Build .. ")", silver)
 			ver:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
 
 			local body = Body(panel, L["Welcome, adventurer! KkthnxUI streamlines your interface with clean unit frames, action bars, bags, nameplates, and more. This short setup applies the layout and a few tweaks. Nothing changes until you click an apply button, so take your time."])

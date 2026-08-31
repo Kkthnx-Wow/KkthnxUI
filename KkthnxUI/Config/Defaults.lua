@@ -159,8 +159,13 @@ K.ConfigDefaults = {
 		Enable = true,
 		Size = 200,
 		Square = true,
+		ShowBorder = true, -- our border around the map
 		ShowLocation = true, -- zone name, top of the map
+		LocationFontSize = 12,
 		ShowClock = true, -- time datatext, bottom of the map
+		ClockFontSize = 12,
+		MouseoverFade = false, -- fade the map out until you hover it
+		FadeAlpha = 0.25, -- alpha while faded
 		CollectButtons = true,
 		ButtonCorner = "BOTTOMLEFT", -- corner the button-collector dot sits in
 	},
@@ -319,6 +324,14 @@ K.ConfigDefaults = {
 		PullTime = 8, -- default pull-timer countdown in seconds
 	},
 
+	-- Our own compact loot window, replacing the stock pick-up list. Retail only.
+	Loot = {
+		Enable = true,
+		IconSize = 32, -- height of each loot row and its icon
+		Width = 232, -- minimum window width, grown to fit the longest item name
+		UnderMouse = false, -- open the window at the cursor instead of the saved spot
+	},
+
 	-- Tint already-known collectibles green at vendors, AH, and guild bank. Retail only.
 	AlreadyKnown = {
 		Enable = true,
@@ -357,6 +370,11 @@ K.ConfigDefaults = {
 		MouseWheelScroll = true,
 		StickyWhisper = true,
 		WhisperSound = true, -- play a sound on an incoming whisper
+		KeywordHighlight = true, -- highlight your name and custom keywords in chat
+		KeywordList = "", -- extra keywords, comma separated (your name is always watched)
+		KeywordColor = { 1, 0.82, 0 }, -- colour applied to a matched keyword
+		KeywordSound = true, -- play a sound when a keyword is mentioned
+		KeywordCount = true, -- show a badge counting unread keyword mentions
 		SkinBubbles = true, -- give in-world chat bubbles our border and background
 		ShortenChannels = true,
 		ClassColorNames = true,

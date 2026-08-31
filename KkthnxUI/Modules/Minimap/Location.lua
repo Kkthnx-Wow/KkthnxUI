@@ -43,7 +43,7 @@ function Module:CreateLocation()
 	end
 
 	local loc = Minimap:CreateFontString(nil, "OVERLAY")
-	K.SetFont(loc, 12, K.FontOutlineStyle())
+	K.SetFont(loc, C.Minimap.LocationFontSize or 12, K.FontOutlineStyle())
 	loc:SetPoint("TOP", Minimap, "TOP", 0, -4)
 	loc:SetWidth(Minimap:GetWidth() - 8)
 	loc:SetWordWrap(false)
