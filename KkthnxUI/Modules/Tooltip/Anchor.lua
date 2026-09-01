@@ -27,6 +27,20 @@ function Module:SetupAnchor()
 		K.CreateMover(anchor, "GameTooltip", L["Tooltip"], point, 130, 34)
 	end)
 
+	-- Reset the border on every tooltip show so a previous item's quality colour
+	-- cannot stick to the next tooltip. The reference UIs reset on OnTooltipCleared
+	-- through a secure script hook, but a raw HookScript there taints the map POI
+	-- widget build (GitHub #138). SetOwner is a plain function, so hooksecurefunc on
+	-- it is taint free, and it runs at the start of every show before any widget or
+	-- item data is added, so the item and unit colouring that follows still wins.
+	if _G.GameTooltip and _G.GameTooltip.SetOwner then
+		hooksecurefunc(_G.GameTooltip, "SetOwner", function(tt)
+			if C.Tooltip.BorderColor and tt.KKUI_Border then
+				K.ResetBorderColor(tt.KKUI_Border)
+			end
+		end)
+	end
+
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", function(tt, parent)
 		if C.Tooltip.HideInCombat and InCombatLockdown() then
 			tt:Hide()

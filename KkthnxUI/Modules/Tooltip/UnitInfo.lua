@@ -138,6 +138,13 @@ function Module:OnUnitTooltip(tt)
 		local r, g, b = UnitColor(unit)
 		line:SetTextColor(r, g, b)
 	end
+
+	-- Colour the border to match the unit (class for players, reaction otherwise),
+	-- so it reads the same as the frames. Runs after the SetOwner reset, so it wins.
+	if db.BorderColor and tt.KKUI_Border then
+		local r, g, b = UnitColor(unit)
+		tt.KKUI_Border:SetVertexColor(r, g, b)
+	end
 	if isPlayer and line then
 		local name = line:GetText()
 		if name and not IsSecret(name) then
