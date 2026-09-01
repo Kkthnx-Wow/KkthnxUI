@@ -131,12 +131,15 @@ function Module:Style()
 		end
 	end
 
-	-- The sub-trackers. ScenarioObjectiveTracker is deliberately left out: its
-	-- LayoutContents runs ShouldShowMawBuffs, which reads a restricted Maw aura
-	-- through GetAuraDataByIndex, so we never touch it and leave its bars in
-	-- Blizzard's own colours (GitHub #134).
+	-- The sub-trackers. ScenarioObjectiveTracker AND UIWidgetObjectiveTracker are
+	-- deliberately left out: both render their blocks through Blizzard's shared
+	-- UI-widget pool, the same pool AreaPOI tooltips and the scenario Maw buff aura
+	-- read draw from. Any method call on their blocks or bars taints that pool, and
+	-- the taint surfaces later as a secret-value error in a widget layout or in
+	-- ScenarioObjectiveTracker:LayoutContents -> ShouldShowMawBuffs -> GetAuraDataByIndex
+	-- (GitHub #134, #138, #139, #141). So we never touch them and leave their bars
+	-- in Blizzard's own colours.
 	local trackers = {
-		_G.UIWidgetObjectiveTracker,
 		_G.CampaignQuestObjectiveTracker,
 		_G.QuestObjectiveTracker,
 		_G.AdventureObjectiveTracker,
