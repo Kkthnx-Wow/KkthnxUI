@@ -478,7 +478,7 @@ GUI.schema = {
 			{ kind = "slider", label = L["Zone Text Size"], path = { "Minimap", "LocationFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowLocation" } },
 			{ kind = "check", label = L["Show Clock"], path = { "Minimap", "ShowClock" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 			{ kind = "slider", label = L["Clock Text Size"], path = { "Minimap", "ClockFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowClock" } },
-			{ kind = "check", label = L["Show Coordinates"], path = { "Minimap", "ShowCoords" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Show your position in the bottom-left of the minimap, hidden where the map has no player position."] },
+			{ kind = "check", label = L["Show Coordinates"], path = { "Minimap", "ShowCoords" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Show your position just below the minimap, hidden where the map has no player position."] },
 			{ kind = "slider", label = L["Auto Zoom Reset"], path = { "Minimap", "ZoomResetDelay" }, min = 0, max = 30, step = 1, dependsOn = { "Minimap", "Enable" }, tooltip = L["Seconds of no scrolling before the minimap zooms back out. 0 turns it off."] },
 			{ kind = "check", label = L["Collect Minimap Buttons"], path = { "Minimap", "CollectButtons" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 				{ kind = "dropdown", label = L["Button Collector Corner"], path = { "Minimap", "ButtonCorner" }, options = {

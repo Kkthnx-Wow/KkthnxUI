@@ -2,7 +2,7 @@
 	Addon: KkthnxUI
 	File: Modules/Minimap/Coords.lua
 	Purpose:
-		A small player-coordinate readout in the bottom-left of the minimap, updated
+		A small player-coordinate readout centered just below the minimap, updated
 		on a light throttle. Hidden wherever the map has no player position (most
 		instances), so it never shows a stale or zeroed reading.
 -----------------------------------------------------------------------------]]
@@ -44,7 +44,7 @@ function Module:CreateCoords()
 
 	local coords = Minimap:CreateFontString(nil, "OVERLAY")
 	K.SetFont(coords, C.Minimap.LocationFontSize or 12, K.FontOutlineStyle())
-	coords:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+	coords:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	coords:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
 	coords:SetDrawLayer("OVERLAY", 7)
 	self.coords = coords
