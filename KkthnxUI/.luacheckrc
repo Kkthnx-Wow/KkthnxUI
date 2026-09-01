@@ -116,7 +116,7 @@ stds.wow = {
 			"CloseLoot", "GetNumLootItems", "GetLootSlotInfo", "GetLootSlotLink", "LootSlot",
 			"IsFishingLoot", "IsModifiedClick", "HandleModifiedItemClick", "UnitIsDead", "UnitIsFriend",
 			"CursorUpdate", "CursorOnUpdate", "ResetCursor", "C_CVar", "TEXTURE_ITEM_QUEST_BANG", "LOOT", "tinsert",
-			"GetChannelName", "Ambiguate", "UICheckButtonTemplate",
+			"GetChannelName", "Ambiguate", "GetServerTime", "GetRealmName", "UICheckButtonTemplate",
 			"FCF_SetChatWindowFontSize", "ScrollFrameTemplate_OnMouseWheel", "SELECTED_DOCK_FRAME",
 	},
 	globals = {

@@ -745,8 +745,9 @@ function Module:StyleFrame(index)
 		frame:EnableMouseWheel(true)
 	end
 
-	-- Fade idle windows using the built-in fade timers.
-	frame:SetFading(db.Fade)
+	-- Fade idle windows using the built-in fade timers. Skipped when our own idle
+	-- fade is on, since that dims the whole frame instead of dropping old lines.
+	frame:SetFading(db.Fade and not db.IdleFade)
 	if db.Fade then
 		frame:SetTimeVisible(db.FadeTime)
 	end
@@ -1044,6 +1045,52 @@ function Module:OnEnable()
 	end
 	if self.SetupKeywords then
 		self:SetupKeywords()
+	end
+	if self.SetupHistory then
+		self:SetupHistory()
+	end
+
+	-- Idle fade: dim the whole chat to a resting alpha when the mouse is away and
+	-- lift it back on hover or while the edit box is focused. Only our own frames
+	-- are faded (the message frame and the channel bar) - the tab dock is left to
+	-- Blizzard, since writing tab alpha taints the dock update on 12.1.
+	if C.Chat.IdleFade then
+		local rest = C.Chat.IdleFadeAlpha or 0.25
+		local group = { _G.ChatFrame1 }
+		if C.Chat.ChatBar and _G.KKUI_ChatBar then
+			group[#group + 1] = _G.KKUI_ChatBar
+		end
+		local editBox = _G.ChatFrame1EditBox
+		local fadeFrame = CreateFrame("Frame")
+		local elapsed = 0
+		local STEP = 3 -- alpha per second
+		fadeFrame:SetScript("OnUpdate", function(_, delta)
+			elapsed = elapsed + delta
+			if elapsed < 0.1 then
+				return
+			end
+			elapsed = 0
+			local over = (editBox and editBox:HasFocus()) or false
+			if not over then
+				for _, f in ipairs(group) do
+					if f and f:IsMouseOver() then
+						over = true
+						break
+					end
+				end
+			end
+			local target = over and 1 or rest
+			local current = _G.ChatFrame1:GetAlpha()
+			if current ~= target then
+				local move = STEP * 0.1
+				local a = current < target and math.min(target, current + move) or math.max(target, current - move)
+				for _, f in ipairs(group) do
+					if f then
+						f:SetAlpha(a)
+					end
+				end
+			end
+		end)
 	end
 
 	-- Sticky whispers: keep the edit box on WHISPER after you reply, so a back and
