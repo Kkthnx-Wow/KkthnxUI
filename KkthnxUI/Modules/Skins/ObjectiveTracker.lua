@@ -3,15 +3,21 @@
 	File: Modules/Skins/ObjectiveTracker.lua
 	Purpose:
 		Tidy the Blizzard quest / objective tracker so it sits quietly in the
-		corner: hide the busy header backgrounds on the frame and every sub-tracker,
-		shrink and clean the minimise button, and recolour quest progress and timer
-		bars to a single calm colour (class colour, or our accent).
+		corner: hide the busy header backgrounds, shrink and clean the minimise
+		button, and recolour quest progress and timer bars to a single calm colour
+		(class colour, or our accent).
 
 		The tracker lives in the load-on-demand Blizzard_ObjectiveTracker, so we
 		style on enable if it is already loaded, otherwise wait for its ADDON_LOADED.
-		All styling runs from a throttled watcher rather than a secure hook, because
-		the tracker reads secret Maw buff auras inside its own update and a hook there
-		taints that read. Retail only: older flavours use a different quest watch frame.
+
+		Taint note: the styling is driven purely by hooksecurefunc reactions (on
+		SetCollapsed, GetProgressBar, GetTimerBar) plus a one-time header pass. It
+		does NOT run from a repeating OnUpdate. An OnUpdate that rewrites the shared
+		tracker frames every tick keeps them tainted, so Blizzard's own secure
+		container update then runs tainted and the scenario module's Maw buff aura
+		read (GetAuraDataByIndex, a secret value on 12.1) errors on events like the
+		Coiled Isle curse surge (GitHub #134, #138, #141). Reacting through secure
+		hooks stays in an isolated taint context and avoids that. Retail only.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -23,14 +29,12 @@ end
 local Module = K:NewModule("ObjectiveTracker")
 
 local _G = _G
+local pairs = pairs
+local hooksecurefunc = hooksecurefunc
 local C_AddOns = C_AddOns
 
 -- Fallback tint when the class-colour option is off.
 local ACCENT = { 0.36, 0.55, 0.81 }
-
--- ---------------------------------------------------------------------------
--- Colour
--- ---------------------------------------------------------------------------
 
 local function GetBarColor()
 	if C.Skins.ObjectiveTrackerClassColor then
@@ -46,10 +50,6 @@ local function ReskinBar(bar)
 	end
 end
 
--- ---------------------------------------------------------------------------
--- Header + minimise button
--- ---------------------------------------------------------------------------
-
 local function HideHeaderBackground(header)
 	if header and header.Background then
 		header.Background:Hide()
@@ -57,7 +57,7 @@ local function HideHeaderBackground(header)
 end
 
 -- Swap the minimise button art for the smaller secondary set so it reads as a
--- quiet chevron rather than the loud stock button.
+-- quiet chevron. Hooked on SetCollapsed so it tracks the state without us polling.
 local function SetCollapsed(header, collapsed)
 	local minimize = header and header.MinimizeButton
 	if not minimize then
@@ -77,47 +77,34 @@ local function SetCollapsed(header, collapsed)
 	end
 end
 
--- ---------------------------------------------------------------------------
--- Decoupled refresh
--- ---------------------------------------------------------------------------
--- The tracker reads secret auras (Maw buffs) inside its own LayoutContents, so a
--- secure hook there taints that read and errors. Instead the styling is redone
--- from a light throttled watcher that runs in its own execution, never inside the
--- tracker's update, so it stays clean while still catching new bars and collapses.
-
-local pairs = pairs
-
--- Recolour every progress and timer bar the sub-trackers currently hold, keep the
--- sub-tracker header art hidden, and match the minimise chevron to the state.
-local function Refresh()
-	for i = 1, #Module.trackers do
-		local tracker = Module.trackers[i]
-		if tracker then
-			HideHeaderBackground(tracker.Header)
-			if tracker.usedProgressBars then
-				for _, pb in pairs(tracker.usedProgressBars) do
-					ReskinBar(pb and pb.Bar)
-				end
-			end
-			if tracker.usedTimerBars then
-				for _, tb in pairs(tracker.usedTimerBars) do
-					ReskinBar(tb and tb.Bar)
-				end
-			end
-		end
-	end
-
-	local trackerFrame = _G.ObjectiveTrackerFrame
-	local header = trackerFrame and trackerFrame.Header
-	if header then
-		HideHeaderBackground(header)
-		SetCollapsed(header, trackerFrame.isCollapsed)
-	end
+-- Bar recolour reactions. Blizzard hands back the bar it just built or reused, so
+-- we re-read it from the tracker's pools (the return value is not passed to a
+-- secure hook) and tint it.
+local function HandleProgressBar(tracker, key)
+	local pb = tracker.usedProgressBars and tracker.usedProgressBars[key]
+	ReskinBar(pb and pb.Bar)
 end
 
--- ---------------------------------------------------------------------------
--- Styling
--- ---------------------------------------------------------------------------
+local function HandleTimerBar(tracker, key)
+	local tb = tracker.usedTimerBars and tracker.usedTimerBars[key]
+	ReskinBar(tb and tb.Bar)
+end
+
+local function SkinHeader(header)
+	if not header then
+		return
+	end
+	HideHeaderBackground(header)
+	local minimize = header.MinimizeButton
+	if minimize then
+		minimize:SetSize(16, 16)
+		if minimize.SetHighlightAtlas then
+			minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
+		end
+		SetCollapsed(header, header.isCollapsed)
+		hooksecurefunc(header, "SetCollapsed", SetCollapsed)
+	end
+end
 
 function Module:Style()
 	if self.styled then
@@ -129,23 +116,26 @@ function Module:Style()
 	end
 	self.styled = true
 
-	local header = trackerFrame.Header
-	if header and header.MinimizeButton then
-		local minimize = header.MinimizeButton
-		minimize:SetSize(16, 16)
-		if minimize.SetHighlightAtlas then
-			minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
+	-- The top header, once.
+	local topHeader = trackerFrame.Header
+	if topHeader then
+		HideHeaderBackground(topHeader)
+		local minimize = topHeader.MinimizeButton
+		if minimize then
+			minimize:SetSize(16, 16)
+			if minimize.SetHighlightAtlas then
+				minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
+			end
+			SetCollapsed(topHeader, trackerFrame.isCollapsed)
+			hooksecurefunc(topHeader, "SetCollapsed", SetCollapsed)
 		end
 	end
 
-	-- Every sub-tracker that owns a header and progress/timer bar pools.
-	-- ScenarioObjectiveTracker is deliberately left out: its LayoutContents runs
-	-- ShouldShowMawBuffs, which reads a restricted MAW aura through
-	-- GetAuraDataByIndex. On 12.1 that read errors when the aura is secret and our
-	-- code has touched the tracker (the curse surge on the Coiled Isle hits exactly
-	-- this, GitHub #134), so we never touch the scenario tracker and leave its bars
-	-- in Blizzard's own colours.
-	self.trackers = {
+	-- The sub-trackers. ScenarioObjectiveTracker is deliberately left out: its
+	-- LayoutContents runs ShouldShowMawBuffs, which reads a restricted Maw aura
+	-- through GetAuraDataByIndex, so we never touch it and leave its bars in
+	-- Blizzard's own colours (GitHub #134).
+	local trackers = {
 		_G.UIWidgetObjectiveTracker,
 		_G.CampaignQuestObjectiveTracker,
 		_G.QuestObjectiveTracker,
@@ -157,26 +147,31 @@ function Module:Style()
 		_G.WorldQuestObjectiveTracker,
 	}
 
-	-- Throttled watcher, only while the tracker is on screen.
-	local watcher = CreateFrame("Frame")
-	local elapsed = 0
-	watcher:SetScript("OnUpdate", function(_, delta)
-		elapsed = elapsed + delta
-		if elapsed < 0.2 then
-			return
-		end
-		elapsed = 0
-		if trackerFrame:IsShown() then
-			Refresh()
-		end
-	end)
-	self.watcher = watcher
-	Refresh()
-end
+	for i = 1, #trackers do
+		local tracker = trackers[i]
+		if tracker then
+			SkinHeader(tracker.Header)
 
--- ---------------------------------------------------------------------------
--- Lifecycle
--- ---------------------------------------------------------------------------
+			-- Colour any bars already built, then react to future ones.
+			if tracker.usedProgressBars then
+				for _, pb in pairs(tracker.usedProgressBars) do
+					ReskinBar(pb and pb.Bar)
+				end
+			end
+			if tracker.usedTimerBars then
+				for _, tb in pairs(tracker.usedTimerBars) do
+					ReskinBar(tb and tb.Bar)
+				end
+			end
+			if tracker.GetProgressBar then
+				hooksecurefunc(tracker, "GetProgressBar", HandleProgressBar)
+			end
+			if tracker.GetTimerBar then
+				hooksecurefunc(tracker, "GetTimerBar", HandleTimerBar)
+			end
+		end
+	end
+end
 
 function Module:ADDON_LOADED(_, addon)
 	if addon == "Blizzard_ObjectiveTracker" then
