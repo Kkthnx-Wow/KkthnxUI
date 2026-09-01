@@ -277,6 +277,7 @@ K.ConfigDefaults = {
 		ShowNewItems = true, -- glow freshly looted items
 		ShowCurrencies = true, -- tracked currency row along the bottom
 		JunkIcon = true, -- coin marker on grey items
+		ScrapIcon = true, -- marker on gear the Scrapping Machine will accept
 		DesaturateJunk = false, -- grey out the icon of vendor trash
 		DeleteButton = true, -- show the delete-cheapest-junk button
 		JunkList = {}, -- itemID -> true, items the player flagged as junk
