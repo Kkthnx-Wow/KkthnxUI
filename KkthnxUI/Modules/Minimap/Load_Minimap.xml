@@ -3,6 +3,7 @@
 	<Script file="Core.lua" />
 	<Script file="Location.lua" />
 	<Script file="Time.lua" />
+	<Script file="Coords.lua" />
 	<Script file="Tracking.lua" />
 	<Script file="Buttons.lua" />
 </Ui>

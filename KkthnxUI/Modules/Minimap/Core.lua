@@ -134,6 +134,10 @@ end
 -- Zoom via mouse wheel
 -- ---------------------------------------------------------------------------
 
+-- Shared timer that snaps the zoom back out after a spell of no wheel input, so
+-- the map does not sit zoomed in forever. Disabled when the delay is 0.
+local zoomResetTimer
+
 local function OnMouseWheel(_, delta)
 	local zoom = Minimap:GetZoom()
 	if delta > 0 then
@@ -142,6 +146,18 @@ local function OnMouseWheel(_, delta)
 		end
 	elseif zoom > 0 then
 		Minimap:SetZoom(zoom - 1)
+	end
+
+	local delay = C.Minimap.ZoomResetDelay or 0
+	if delay > 0 then
+		if zoomResetTimer then
+			zoomResetTimer:Cancel()
+		end
+		zoomResetTimer = C_Timer.NewTimer(delay, function()
+			if Minimap:GetZoom() > 0 then
+				Minimap:SetZoom(0)
+			end
+		end)
 	end
 end
 
@@ -229,6 +245,9 @@ function Module:OnEnable()
 	end
 	if self.CreateClock then
 		self:CreateClock()
+	end
+	if self.CreateCoords then
+		self:CreateCoords()
 	end
 
 	-- Corral stray addon minimap buttons into a tidy hover panel.

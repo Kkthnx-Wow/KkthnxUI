@@ -164,6 +164,8 @@ K.ConfigDefaults = {
 		LocationFontSize = 12,
 		ShowClock = true, -- time datatext, bottom of the map
 		ClockFontSize = 12,
+		ShowCoords = true, -- player coordinates, bottom-left of the map
+		ZoomResetDelay = 0, -- seconds of no wheel input before zoom snaps back out, 0 = off
 		MouseoverFade = false, -- fade the map out until you hover it
 		FadeAlpha = 0.25, -- alpha while faded
 		CollectButtons = true,
