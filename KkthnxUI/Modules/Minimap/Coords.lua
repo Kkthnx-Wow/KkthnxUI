@@ -46,11 +46,15 @@ function Module:CreateCoords()
 	K.SetFont(coords, C.Minimap.LocationFontSize or 12, K.FontOutlineStyle())
 	coords:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
 	coords:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
+	coords:SetDrawLayer("OVERLAY", 7)
 	self.coords = coords
 
-	-- Self-throttled updater, cheaper than a coordinate event and always current.
+	-- A FontString cannot take an OnUpdate, so a small driver frame runs the
+	-- throttled poll and writes the text. Cheaper than a coordinate event and
+	-- always current.
+	local driver = CreateFrame("Frame", nil, Minimap)
 	local elapsed = 0.5
-	coords:SetScript("OnUpdate", function(self2, delta)
+	driver:SetScript("OnUpdate", function(_, delta)
 		elapsed = elapsed + delta
 		if elapsed < 0.5 then
 			return
@@ -58,12 +62,11 @@ function Module:CreateCoords()
 		elapsed = 0
 		local x, y = PlayerXY()
 		if x then
-			self2:SetFormattedText("%.1f, %.1f", x, y)
-			self2:Show()
+			coords:SetFormattedText("%.1f, %.1f", x, y)
+			coords:Show()
 		else
-			self2:SetText("")
+			coords:SetText("")
 		end
 	end)
-
-	coords:SetDrawLayer("OVERLAY", 7)
+	self.coordsDriver = driver
 end
