@@ -26,7 +26,6 @@ local NUM_FRAMES = NUM_CHAT_WINDOWS or 10
 -- the same way. Kept on the BACKGROUND layer of a low frame so the messages
 -- always draw over it.
 
-local CreateColor = CreateColor
 
 local function CreateGradient(frame)
 	if frame.KKUI_Gradient then
@@ -49,21 +48,21 @@ local function CreateGradient(frame)
 	local bg = holder:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
 	bg:SetColorTexture(1, 1, 1)
-	bg:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.6), CreateColor(0, 0, 0, 0))
+	K.ShadeGradient(bg)
 
 	local top = holder:CreateTexture(nil, "ARTWORK")
 	top:SetHeight(1)
 	top:SetPoint("TOPLEFT")
 	top:SetPoint("TOPRIGHT")
 	top:SetColorTexture(1, 1, 1)
-	top:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
+	K.FadeGradient(top, color.r, color.g, color.b, K.GradientAlpha.line)
 
 	local bottom = holder:CreateTexture(nil, "ARTWORK")
 	bottom:SetHeight(1)
 	bottom:SetPoint("BOTTOMLEFT")
 	bottom:SetPoint("BOTTOMRIGHT")
 	bottom:SetColorTexture(1, 1, 1)
-	bottom:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
+	K.FadeGradient(bottom, color.r, color.g, color.b, K.GradientAlpha.line)
 
 	frame.KKUI_Gradient = holder
 	return holder
@@ -110,7 +109,7 @@ local function ColorEditBox(editBox)
 
 	local color = info or K.ClassColor
 	for _, line in ipairs(lines) do
-		line:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
+		K.FadeGradient(line, color.r, color.g, color.b, K.GradientAlpha.line)
 	end
 end
 
@@ -143,7 +142,7 @@ local function SkinEditBox(editBox)
 	local grad = editBox:CreateTexture(nil, "BACKGROUND")
 	grad:SetAllPoints()
 	grad:SetColorTexture(1, 1, 1)
-	grad:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.6), CreateColor(0, 0, 0, 0))
+	K.ShadeGradient(grad)
 	editBox.KKUI_Lines = {}
 	for _, edge in ipairs({ "TOP", "BOTTOM" }) do
 		local line = editBox:CreateTexture(nil, "ARTWORK")

@@ -28,14 +28,68 @@ K.Colors = {
 	ember = { 0.902, 0.502, 0.235 }, -- #E6803C caution, the step between gold and crimson
 }
 
+-- ---------------------------------------------------------------------------
+-- Shared gradient recipes
+-- ---------------------------------------------------------------------------
+-- Every gradient in the UI is drawn by tinting a plain texture, so there is no
+-- gradient art to ship. The recipes live here rather than as loose numbers at
+-- each call site, so retuning the theme is one edit and no two surfaces drift
+-- apart. Each entry is { orientation, r1, g1, b1, r2, g2, b2, alpha }, with the
+-- same alpha on both stops.
+K.Gradients = {
+	panel = { "VERTICAL", 0.050, 0.062, 0.080, 0.090, 0.114, 0.149, 0.95 },
+	buttonRest = { "VERTICAL", 0.090, 0.114, 0.149, 0.050, 0.065, 0.085, 0.9 },
+	buttonHover = { "VERTICAL", 0.220, 0.340, 0.520, 0.130, 0.200, 0.320, 1 },
+	close = { "VERTICAL", 0.420, 0.120, 0.120, 0.680, 0.220, 0.220, 0.95 },
+	closeHover = { "VERTICAL", 0.600, 0.200, 0.200, 0.898, 0.325, 0.325, 1 },
+}
+
+-- Alpha steps the horizontal fades use, named so the chat washes and hairlines
+-- stay in step with each other.
+K.GradientAlpha = {
+	wash = 0.6, -- the dark wash behind chat and its bars
+	washSoft = 0.45, -- the lighter wash on the side buttons
+	line = 0.7, -- a hairline at rest
+	lineSoft = 0.6, -- a quieter hairline
+	lineActive = 1, -- the lit hairline on the selected tab
+}
+
+-- Paint a texture with one of the named recipes. Pass an alpha to override the
+-- recipe's own.
+function K.ApplyGradient(texture, name, alpha)
+	local g = K.Gradients[name]
+	if not (texture and g) then
+		return
+	end
+	local a = alpha or g[8]
+	texture:SetGradient(g[1], CreateColor(g[2], g[3], g[4], a), CreateColor(g[5], g[6], g[7], a))
+end
+
+-- A horizontal fade from a colour out to nothing, which is what every chat wash
+-- and hairline is. endAlpha lets a fade stop short of fully transparent.
+function K.FadeGradient(texture, r, g, b, alpha, endAlpha)
+	if not texture then
+		return
+	end
+	texture:SetGradient("HORIZONTAL", CreateColor(r, g, b, alpha or 1), CreateColor(r, g, b, endAlpha or 0))
+end
+
+-- The dark wash, the most common fade of all.
+function K.ShadeGradient(texture, alpha)
+	K.FadeGradient(texture, 0, 0, 0, alpha or K.GradientAlpha.wash)
+end
+
 -- Shared vertical gradient background, inset one pixel so our border stays clean.
--- Returns the texture so the caller can shift it on hover.
+-- Returns the texture so the caller can shift it on hover. Called without colours
+-- it leaves the fill untinted, for a caller that follows up with K.ApplyGradient.
 local function GradientBG(frame, r1, g1, b1, a1, r2, g2, b2, a2)
 	local bg = frame:CreateTexture(nil, "BACKGROUND")
 	bg:SetPoint("TOPLEFT", 1, -1)
 	bg:SetPoint("BOTTOMRIGHT", -1, 1)
 	bg:SetColorTexture(1, 1, 1)
-	bg:SetGradient("VERTICAL", CreateColor(r1, g1, b1, a1), CreateColor(r2, g2, b2, a2))
+	if r1 then
+		bg:SetGradient("VERTICAL", CreateColor(r1, g1, b1, a1), CreateColor(r2, g2, b2, a2))
+	end
 	frame.KKUI_Background = bg
 	return bg
 end
@@ -68,7 +122,7 @@ function K.CreateGradientBackground(frame, alpha)
 	local bg = frame:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
 	bg:SetColorTexture(1, 1, 1)
-	bg:SetGradient("VERTICAL", CreateColor(0.05, 0.062, 0.08, a), CreateColor(0.09, 0.114, 0.149, a))
+	K.ApplyGradient(bg, "panel", a)
 	frame.KKUI_Background = bg
 
 	local top = frame:CreateTexture(nil, "BORDER")
@@ -114,7 +168,8 @@ function K.SkinButton(button, emphasize)
 
 	StripTextures(button)
 
-	local bg = GradientBG(button, 0.09, 0.114, 0.149, 0.9, 0.05, 0.065, 0.085, 0.9)
+	local bg = GradientBG(button)
+	K.ApplyGradient(bg, "buttonRest")
 	K.CreateBorder(button)
 
 	local restColor = emphasize and gold or { 1, 1, 1 }
@@ -129,7 +184,7 @@ function K.SkinButton(button, emphasize)
 	-- Hover: lift the fill toward the accent and light the border, so every control
 	-- reacts the same and the hover reads at a glance.
 	button:HookScript("OnEnter", function(self)
-		bg:SetGradient("VERTICAL", CreateColor(0.22, 0.34, 0.52, 1), CreateColor(0.13, 0.20, 0.32, 1))
+		K.ApplyGradient(bg, "buttonHover")
 		if self.KKUI_Border then
 			self.KKUI_Border:SetVertexColor(hoverBorder[1], hoverBorder[2], hoverBorder[3], 1)
 		end
@@ -138,7 +193,7 @@ function K.SkinButton(button, emphasize)
 		end
 	end)
 	button:HookScript("OnLeave", function(self)
-		bg:SetGradient("VERTICAL", CreateColor(0.09, 0.114, 0.149, 0.9), CreateColor(0.05, 0.065, 0.085, 0.9))
+		K.ApplyGradient(bg, "buttonRest")
 		if self.KKUI_Border then
 			K.ResetBorderColor(self.KKUI_Border)
 		end
@@ -219,7 +274,7 @@ function K.SkinCloseButton(button)
 	bg:SetPoint("TOPLEFT", 1, -1)
 	bg:SetPoint("BOTTOMRIGHT", -1, 1)
 	bg:SetColorTexture(1, 1, 1)
-	bg:SetGradient("VERTICAL", CreateColor(0.42, 0.12, 0.12, 0.95), CreateColor(0.68, 0.22, 0.22, 0.95))
+	K.ApplyGradient(bg, "close")
 	button.KKUI_Background = bg
 	K.CreateBorder(button)
 
@@ -236,12 +291,12 @@ function K.SkinCloseButton(button)
 	local b = XBar(-0.7854)
 
 	button:HookScript("OnEnter", function()
-		bg:SetGradient("VERTICAL", CreateColor(0.60, 0.20, 0.20, 1), CreateColor(0.898, 0.325, 0.325, 1))
+		K.ApplyGradient(bg, "closeHover")
 		a:SetColorTexture(1, 0.86, 0.4)
 		b:SetColorTexture(1, 0.86, 0.4)
 	end)
 	button:HookScript("OnLeave", function()
-		bg:SetGradient("VERTICAL", CreateColor(0.42, 0.12, 0.12, 0.95), CreateColor(0.68, 0.22, 0.22, 0.95))
+		K.ApplyGradient(bg, "close")
 		a:SetColorTexture(0.953, 0.69, 0.263)
 		b:SetColorTexture(0.953, 0.69, 0.263)
 	end)

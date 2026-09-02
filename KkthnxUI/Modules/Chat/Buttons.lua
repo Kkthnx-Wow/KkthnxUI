@@ -13,7 +13,6 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Chat")
 
 local _G = _G
-local CreateColor = CreateColor
 
 local SIZE = 22
 local GAP = 6
@@ -43,7 +42,7 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 	local grad = button:CreateTexture(nil, "BACKGROUND")
 	grad:SetAllPoints()
 	grad:SetColorTexture(1, 1, 1)
-	grad:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.45), CreateColor(0, 0, 0, 0))
+	K.ShadeGradient(grad, K.GradientAlpha.washSoft)
 	button.KKUI_Lines = {}
 	for _, edge in ipairs({ "TOP", "BOTTOM" }) do
 		local line = button:CreateTexture(nil, "ARTWORK")
@@ -51,7 +50,7 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 		line:SetPoint(edge .. "LEFT")
 		line:SetPoint(edge .. "RIGHT")
 		line:SetColorTexture(1, 1, 1)
-		line:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.6), CreateColor(color.r, color.g, color.b, 0))
+		K.FadeGradient(line, color.r, color.g, color.b, K.GradientAlpha.lineSoft)
 		button.KKUI_Lines[#button.KKUI_Lines + 1] = line
 	end
 
@@ -79,7 +78,7 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 		local c = K.ClassColor
 		self.icon:SetVertexColor(c.r, c.g, c.b)
 		for _, line in ipairs(self.KKUI_Lines) do
-			line:SetGradient("HORIZONTAL", CreateColor(c.r, c.g, c.b, 1), CreateColor(c.r, c.g, c.b, 0.2))
+			K.FadeGradient(line, c.r, c.g, c.b, K.GradientAlpha.lineActive, 0.2)
 		end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(tooltip, 1, 1, 1)
@@ -92,7 +91,7 @@ local function MakeButton(parent, texture, tooltip, onClick, texCoord, opts)
 		local c = K.ClassColor
 		self.icon:SetVertexColor(IDLE, IDLE, IDLE)
 		for _, line in ipairs(self.KKUI_Lines) do
-			line:SetGradient("HORIZONTAL", CreateColor(c.r, c.g, c.b, 0.6), CreateColor(c.r, c.g, c.b, 0))
+			K.FadeGradient(line, c.r, c.g, c.b, K.GradientAlpha.lineSoft)
 		end
 		GameTooltip:Hide()
 	end)

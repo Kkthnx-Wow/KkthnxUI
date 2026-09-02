@@ -12,7 +12,6 @@ local K = KkthnxUI[1]
 local Module = K:GetModule("Chat")
 
 local _G = _G
-local CreateColor = CreateColor
 
 -- Open the main edit box on a given chat type.
 local function OpenChat(chatType)
@@ -76,14 +75,14 @@ function Module:CreateChatBar()
 	grad:SetPoint("TOPLEFT", bar, "TOPLEFT", -4, 0)
 	grad:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
 	grad:SetColorTexture(1, 1, 1)
-	grad:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.6), CreateColor(0, 0, 0, 0))
+	K.ShadeGradient(grad)
 	for _, edge in ipairs({ "TOP", "BOTTOM" }) do
 		local line = bar:CreateTexture(nil, "ARTWORK")
 		line:SetHeight(1)
 		line:SetPoint(edge .. "LEFT", bar, edge .. "LEFT", -4, 0)
 		line:SetPoint(edge .. "RIGHT")
 		line:SetColorTexture(1, 1, 1)
-		line:SetGradient("HORIZONTAL", CreateColor(color.r, color.g, color.b, 0.7), CreateColor(color.r, color.g, color.b, 0))
+		K.FadeGradient(line, color.r, color.g, color.b, K.GradientAlpha.line)
 	end
 
 	-- Borderless labels sitting on the bar gradient, so the row matches the chat
