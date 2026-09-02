@@ -336,9 +336,10 @@ end
 
 local GUI_ICON_ATLAS = "Interface/AddOns/KkthnxUI/Media/Textures/GUI/CategoryIcons"
 local GUI_ICON_COLS, GUI_ICON_ROWS = 8, 4
--- Crop a little off each cell edge so the dark gap and rounded corner between the
--- tiles never bleeds into the drawn icon. A fraction of one cell, per side.
-local GUI_ICON_INSET = 0.08
+-- The sheet is a clean uniform grid: every tile is centred in its 128px cell with
+-- its own padding baked in, so we crop the cell exactly with no extra inset. A
+-- nonzero inset here would clip the tile art.
+local GUI_ICON_INSET = 0
 
 function K.SetGUIIcon(texture, index)
 	if not texture or type(index) ~= "number" then

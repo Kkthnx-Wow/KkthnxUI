@@ -452,8 +452,15 @@ local function CustomHealthColor(health, unit)
 
 	-- Role colours: hostile plates read as caster or melee so casters stand out.
 	-- Sits above reaction colour so the split is visible, below the custom and threat
-	-- colours which the player set on purpose.
-	if C.Nameplate.RoleColors and not (C.Nameplate.ThreatHealthColor and UnitThreatSituation("player", unit)) then
+	-- colours which the player set on purpose. When threat colouring is on we let a
+	-- live threat situation win, but the threat read can be a secret for an enemy in
+	-- Midnight, so guard it the same way the threat fill below does.
+	local threatWins = false
+	if C.Nameplate.RoleColors and C.Nameplate.ThreatHealthColor then
+		local status = UnitThreatSituation("player", unit)
+		threatWins = status and not IsSecret(status) and true or false
+	end
+	if C.Nameplate.RoleColors and not threatWins then
 		local reaction = UnitReaction(unit, "player")
 		if reaction and not IsSecret(reaction) and reaction <= 4 then
 			local c = PlateIsCaster(unit) and C.Nameplate.CasterColor or C.Nameplate.MeleeColor
