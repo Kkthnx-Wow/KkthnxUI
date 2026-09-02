@@ -116,20 +116,13 @@ function Module:Style()
 	end
 	self.styled = true
 
-	-- The top header, once.
-	local topHeader = trackerFrame.Header
-	if topHeader then
-		HideHeaderBackground(topHeader)
-		local minimize = topHeader.MinimizeButton
-		if minimize then
-			minimize:SetSize(16, 16)
-			if minimize.SetHighlightAtlas then
-				minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
-			end
-			SetCollapsed(topHeader, trackerFrame.isCollapsed)
-			hooksecurefunc(topHeader, "SetCollapsed", SetCollapsed)
-		end
-	end
+	-- ObjectiveTrackerFrame.Header is deliberately left alone. It belongs to the
+	-- shared container, not to one sub-tracker, and the container is what drives
+	-- every module's update. Styling it (and hooking its SetCollapsed, which then
+	-- rewrote its textures from our taint context on every collapse) tainted the
+	-- container, so Blizzard's own ObjectiveTrackerContainer update ran tainted and
+	-- the scenario module's Maw buff aura read failed downstream (GitHub #143, after
+	-- #134, #138, #141). Only per-module sub-trackers are touched below.
 
 	-- The sub-trackers. ScenarioObjectiveTracker AND UIWidgetObjectiveTracker are
 	-- deliberately left out: both render their blocks through Blizzard's shared

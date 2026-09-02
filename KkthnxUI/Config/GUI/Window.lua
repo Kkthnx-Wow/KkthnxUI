@@ -16,30 +16,30 @@ local tinsert = table.insert
 local ACCENT = K.Colors.accent
 local PANEL = K.Colors.panel
 
--- Category name to cell index in the shared icon atlas (Media/Textures/GUI). The
--- sheet also carries Aura Filters (3) and Custom Unit Colors (9), which are
--- subpages rather than top-level categories, so those cells are simply skipped.
+-- Category name to a game icon. These come from the client's own icon library so
+-- there is no art of ours to ship or keep current. A category with no entry here
+-- simply draws no icon.
 local CATEGORY_ICON = {
-	General = 0,
-	ActionBar = 1,
-	Unitframe = 2,
-	Minimap = 4,
-	Auras = 5,
-	Cooldown = 6,
-	Chat = 7,
-	Nameplate = 8,
-	Tooltip = 10,
-	ExperienceBar = 11,
-	AlertFrames = 12,
-	PullCountdown = 13,
-	GroupTools = 14,
-	Loot = 15,
-	MicroMenu = 16,
-	Bags = 17,
-	Automation = 18,
-	Skins = 19,
-	Movers = 20,
-	Profiles = 21,
+	General = "INV_Misc_Gear_01",
+	ActionBar = "INV_Misc_EngGizmos_30",
+	Unitframe = "Achievement_Character_Human_Male",
+	Minimap = "INV_Misc_Map_01",
+	Auras = "Spell_Holy_PowerWordShield",
+	Cooldown = "Spell_Nature_TimeStop",
+	Chat = "INV_Letter_15",
+	Nameplate = "Ability_Hunter_MarkedForDeath",
+	Tooltip = "INV_Misc_Note_01",
+	ExperienceBar = "Achievement_Level_10",
+	AlertFrames = "INV_Misc_Bell_01",
+	PullCountdown = "INV_Misc_PocketWatch_01",
+	GroupTools = "INV_Misc_GroupLooking",
+	Loot = "INV_Box_01",
+	MicroMenu = "INV_Misc_Book_09",
+	Bags = "INV_Misc_Bag_08",
+	Automation = "Trade_Engineering",
+	Skins = "Trade_Engraving",
+	Movers = "Ability_Hunter_Pathfinding",
+	Profiles = "INV_Misc_ScrollUnrolled01",
 }
 
 local GUI = K.GUI
@@ -341,16 +341,26 @@ local function BuildWindow()
 		acc:Hide()
 		btn.Accent = acc
 
-		local atlasIndex = CATEGORY_ICON[category.name]
-		local hasIcon = atlasIndex ~= nil or category.icon
+		local iconName = CATEGORY_ICON[category.name]
+		local hasIcon = iconName ~= nil or category.icon
 		if hasIcon then
-			local icon = btn:CreateTexture(nil, "ARTWORK")
-			icon:SetSize(24, 24)
-			icon:SetPoint("LEFT", 6, 0)
-			-- Prefer our icon atlas (one sheet, cropped per category), falling back
-			-- to a plain texture path for anything without an atlas slot.
-			if atlasIndex ~= nil and K.SetGUIIcon then
-				K.SetGUIIcon(icon, atlasIndex)
+			-- Each icon sits in its own small chip: a gradient face with our border
+			-- around it, the same framed treatment the close button uses, so the row
+			-- reads as a set of buttons rather than loose artwork.
+			local chip = CreateFrame("Frame", nil, btn)
+			chip:SetSize(24, 24)
+			chip:SetPoint("LEFT", 6, 0)
+			K.GradientBG(chip, 0.16, 0.17, 0.19, 0.9, 0.10, 0.10, 0.12, 0.9)
+			K.CreateBorder(chip)
+
+			local icon = chip:CreateTexture(nil, "ARTWORK")
+			-- Fill the chip, leaving the 1px border visible.
+			icon:SetPoint("TOPLEFT", 1, -1)
+			icon:SetPoint("BOTTOMRIGHT", -1, 1)
+			-- A game icon for the category, falling back to whatever texture the
+			-- category itself supplied.
+			if iconName and K.SetGUIIcon then
+				K.SetGUIIcon(icon, iconName)
 			else
 				icon:SetTexture(category.icon)
 				icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)

@@ -328,29 +328,23 @@ function K.CreateBackground(frame, r, g, b, a)
 end
 
 -- ---------------------------------------------------------------------------
--- GUI icon atlas
+-- GUI icons
 -- ---------------------------------------------------------------------------
--- One texture sheet holds every config and bag toolbar icon on an 8x4 grid of
--- 128px cells (see Media/Textures/GUI/CategoryIcons). SetGUIIcon points a texture
--- at the sheet and crops it to one cell by its row-major index (0 based).
+-- Config and bag toolbar icons come straight from the game's own icon library, so
+-- there is no art of ours to keep in step with the client. SetGUIIcon points a
+-- texture at an icon path and trims the baked border the same way an item button
+-- does, which is what makes the art sit flush inside our frames.
 
-local GUI_ICON_ATLAS = "Interface/AddOns/KkthnxUI/Media/Textures/GUI/CategoryIcons"
-local GUI_ICON_COLS, GUI_ICON_ROWS = 8, 4
--- The sheet is a clean uniform grid: every tile is centred in its 128px cell with
--- its own padding baked in, so we crop the cell exactly with no extra inset. A
--- nonzero inset here would clip the tile art.
-local GUI_ICON_INSET = 0
+local GUI_ICON_PATH = "Interface\\ICONS\\"
 
-function K.SetGUIIcon(texture, index)
-	if not texture or type(index) ~= "number" then
+function K.SetGUIIcon(texture, icon)
+	if not texture or type(icon) ~= "string" then
 		return
 	end
-	local col = index % GUI_ICON_COLS
-	local row = math.floor(index / GUI_ICON_COLS)
-	local left = (col + GUI_ICON_INSET) / GUI_ICON_COLS
-	local right = (col + 1 - GUI_ICON_INSET) / GUI_ICON_COLS
-	local top = (row + GUI_ICON_INSET) / GUI_ICON_ROWS
-	local bottom = (row + 1 - GUI_ICON_INSET) / GUI_ICON_ROWS
-	texture:SetTexture(GUI_ICON_ATLAS)
-	texture:SetTexCoord(left, right, top, bottom)
+	-- Accept a bare icon name or a full path, so a caller can pass either.
+	if not icon:find("\\") then
+		icon = GUI_ICON_PATH .. icon
+	end
+	texture:SetTexture(icon)
+	texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 end

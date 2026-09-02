@@ -27,7 +27,7 @@ K.Version = C_AddOns.GetAddOnMetadata(AddOnName, "Version") or "dev"
 -- Build tag for tracking day to day changes while the public Version stays put.
 -- Bump this every time you push a change so a bug report can be pinned to an exact
 -- build. Format is YYYY.MM.DD.N, N being the build number for that day.
-K.Build = "2026.09.02.1"
+K.Build = "2026.09.02.2"
 
 -- oUF embeds itself onto our shared addon namespace, so it is reachable here
 -- because every file in the addon receives the same private table.
@@ -43,6 +43,7 @@ local pairs = pairs
 local type = type
 local next = next
 local tinsert = table.insert
+local tremove = table.remove
 local xpcall = xpcall
 local geterrorhandler = geterrorhandler
 local CreateFrame = CreateFrame
@@ -94,33 +95,51 @@ local moduleMixin = {}    -- shared methods mixed into every module
 -- Shared event dispatch frame. One frame, one OnEvent, keyed by event then
 -- module so registration and dispatch stay O(1) per handler.
 local dispatch = CreateFrame("Frame")
-local eventMap = {}       -- event -> { [module] = handler }
+-- event -> { [module] = { handler, ... } }
+-- A module keeps a LIST of handlers per event, not a single one. Several files
+-- share one module (Automation owns both AutoRepair and SellJunk, and both want
+-- MERCHANT_SHOW), so storing one handler per module let whichever registered last
+-- silently replace the other.
+local eventMap = {}
+
+local function CallHandler(module, handler, event, ...)
+	if handler == true then
+		-- No explicit handler: call self[event](self, event, ...)
+		local fn = module[event]
+		if fn then
+			fn(module, event, ...)
+		end
+	elseif type(handler) == "string" then
+		local fn = module[handler]
+		if fn then
+			fn(module, event, ...)
+		end
+	else
+		handler(module, event, ...)
+	end
+end
 
 dispatch:SetScript("OnEvent", function(_, event, ...)
 	local handlers = eventMap[event]
 	if not handlers then
 		return
 	end
-	for module, handler in pairs(handlers) do
-		if handler == true then
-			-- No explicit handler: call self[event](self, event, ...)
-			local fn = module[event]
-			if fn then
-				fn(module, event, ...)
+	for module, list in pairs(handlers) do
+		-- Walk a snapshot length so a handler that unregisters during dispatch
+		-- cannot make us skip or re-run one of its siblings.
+		for i = 1, #list do
+			local handler = list[i]
+			if handler ~= nil then
+				CallHandler(module, handler, event, ...)
 			end
-		elseif type(handler) == "string" then
-			local fn = module[handler]
-			if fn then
-				fn(module, event, ...)
-			end
-		else
-			handler(module, event, ...)
 		end
 	end
 end)
 
 -- module:RegisterEvent("EVENT", handler)
 --   handler may be a function, a method name string, or nil (uses self.EVENT).
+--   Registering twice with the same handler is a no-op, so a re-run of a setup
+--   function cannot stack duplicates.
 function moduleMixin:RegisterEvent(event, handler)
 	local handlers = eventMap[event]
 	if not handlers then
@@ -128,13 +147,40 @@ function moduleMixin:RegisterEvent(event, handler)
 		eventMap[event] = handlers
 		dispatch:RegisterEvent(event)
 	end
-	handlers[self] = handler or true
+	handler = handler or true
+	local list = handlers[self]
+	if not list then
+		list = {}
+		handlers[self] = list
+	end
+	for i = 1, #list do
+		if list[i] == handler then
+			return
+		end
+	end
+	list[#list + 1] = handler
 end
 
-function moduleMixin:UnregisterEvent(event)
+-- Drop this module's handlers for an event. Pass the handler to remove just that
+-- one and leave the module's other handlers for the same event in place.
+function moduleMixin:UnregisterEvent(event, handler)
 	local handlers = eventMap[event]
 	if not handlers then
 		return
+	end
+	local list = handlers[self]
+	if not list then
+		return
+	end
+	if handler ~= nil then
+		for i = #list, 1, -1 do
+			if list[i] == handler then
+				tremove(list, i)
+			end
+		end
+		if #list > 0 then
+			return
+		end
 	end
 	handlers[self] = nil
 	if not next(handlers) then
@@ -157,8 +203,11 @@ end
 
 -- Register a one-shot event that unregisters itself after the first fire.
 function moduleMixin:RegisterEventOnce(event, handler)
-	self:RegisterEvent(event, function(mod, evt, ...)
-		mod:UnregisterEvent(evt)
+	local once
+	once = function(mod, evt, ...)
+		-- Remove only this wrapper, so a sibling handler the same module registered
+		-- for the event keeps running.
+		mod:UnregisterEvent(evt, once)
 		if type(handler) == "string" then
 			local fn = mod[handler]
 			if fn then
@@ -172,7 +221,8 @@ function moduleMixin:RegisterEventOnce(event, handler)
 				fn(mod, evt, ...)
 			end
 		end
-	end)
+	end
+	self:RegisterEvent(event, once)
 end
 
 -- Create or fetch a module by name.

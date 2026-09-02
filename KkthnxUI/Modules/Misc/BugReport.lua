@@ -38,7 +38,21 @@ local function CreateField(parent, label, hint, multiline, height)
 	K.CreateBackground(box, 0.05, 0.05, 0.05, 0.85)
 	K.CreateBorder(box)
 
-	local edit = CreateFrame("EditBox", nil, box)
+	-- A multiline box scrolls. An EditBox does not clip its own text, so anchoring a
+	-- tall paste straight to the frame let a long Lua error draw over the rest of the
+	-- window. The scroll frame clips it and Blizzard's ScrollingEdit helpers keep the
+	-- caret in view while typing.
+	local scroll
+	if multiline then
+		scroll = CreateFrame("ScrollFrame", nil, box, "UIPanelScrollFrameTemplate")
+		scroll:SetPoint("TOPLEFT", 1, -1)
+		scroll:SetPoint("BOTTOMRIGHT", -22, 1)
+		if K.SkinScrollBar and scroll.ScrollBar then
+			K.SkinScrollBar(scroll.ScrollBar)
+		end
+	end
+
+	local edit = CreateFrame("EditBox", nil, multiline and scroll or box)
 	edit:SetFontObject(ChatFontNormal)
 	edit:SetTextColor(1, 1, 1)
 	edit:SetAutoFocus(false)
@@ -47,9 +61,32 @@ local function CreateField(parent, label, hint, multiline, height)
 
 	if multiline then
 		edit:SetMultiLine(true)
-		edit:SetPoint("TOPLEFT", 0, 0)
-		edit:SetPoint("BOTTOMRIGHT", 0, 0)
+		edit:SetMaxLetters(0)
+		-- The scroll child needs a starting size. OnSizeChanged below corrects the
+		-- width as soon as the window lays out, and the height grows with the text.
+		edit:SetWidth(400)
+		edit:SetHeight(height or 22)
 		edit:SetScript("OnEnterPressed", nil)
+		edit:SetScript("OnTextChanged", function(self)
+			ScrollingEdit_OnTextChanged(self, scroll)
+		end)
+		edit:SetScript("OnCursorChanged", ScrollingEdit_OnCursorChanged)
+		edit:SetScript("OnUpdate", function(self, elapsed)
+			ScrollingEdit_OnUpdate(self, elapsed, scroll)
+		end)
+		scroll:SetScrollChild(edit)
+		-- Match the child to the visible width whenever the window lays out, so the
+		-- text wraps inside the border instead of running past it.
+		scroll:SetScript("OnSizeChanged", function(self, w)
+			if w and w > 0 then
+				edit:SetWidth(w)
+			end
+		end)
+		-- Clicking anywhere in the box should start typing, not just the text line.
+		box:EnableMouse(true)
+		box:SetScript("OnMouseDown", function()
+			edit:SetFocus()
+		end)
 	else
 		edit:SetAllPoints(box)
 		edit:SetScript("OnEnterPressed", edit.ClearFocus)
@@ -57,7 +94,9 @@ local function CreateField(parent, label, hint, multiline, height)
 
 	-- Placeholder: a soft grey example that hides while the box has text or focus.
 	if hint then
-		local ghost = box:CreateFontString(nil, "ARTWORK")
+		-- Draw the hint on the scroll frame for a multiline box. A child frame covers
+		-- its parent's textures, so a hint left on the box would sit behind it.
+		local ghost = (scroll or box):CreateFontString(nil, "OVERLAY")
 		K.SetFont(ghost, 12, K.FontOutlineStyle())
 		ghost:SetPoint("TOPLEFT", 8, -5)
 		ghost:SetPoint("BOTTOMRIGHT", -8, 5)
