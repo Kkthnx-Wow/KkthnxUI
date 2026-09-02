@@ -282,7 +282,6 @@ K.ConfigDefaults = {
 		DeleteButton = true, -- show the delete-cheapest-junk button
 		JunkList = {}, -- itemID -> true, items the player flagged as junk
 		ReverseSort = false, -- newest items to the top-left instead
-		AutoSellJunk = false, -- sell grey items on visiting a merchant
 		AutoDepositReagents = false, -- push reagents to the bank on opening it
 		Collapsed = {}, -- section key -> true when the player folded it away
 		Favorites = {}, -- itemID -> true, pinned to their own section on top

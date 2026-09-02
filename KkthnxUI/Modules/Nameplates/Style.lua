@@ -720,7 +720,16 @@ end
 -- times them, so this only sizes and positions the row. Sits above the debuffs
 -- (or the health bar when debuffs are off) and grows right from a centred row.
 local function BuildPrivateAuras(self)
+	-- Retail only. Private auras are a retail feature, and on the classic clients
+	-- the anchor call takes a different argument set, so building the element there
+	-- threw on every plate (GitHub #142, reported on Classic Anniversary).
+	if not (K.Client and K.Client.IsRetail) then
+		return
+	end
 	if not C.Nameplate.PrivateAuras then
+		return
+	end
+	if not (C_UnitAuras and C_UnitAuras.AddPrivateAuraAnchor) then
 		return
 	end
 	local db = C.Nameplate
