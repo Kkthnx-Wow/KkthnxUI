@@ -165,6 +165,11 @@ K.ConfigDefaults = {
 		ShowClock = true, -- time datatext, bottom of the map
 		ClockFontSize = 12,
 		ShowCoords = true, -- player coordinates, centered below the map
+		ShowPerformance = true, -- framerate and latency datatext, movable
+		PerformanceFontSize = 12,
+		PerformanceSeparator = "-", -- what sits between the fps and ms readings
+		PerformanceLabelColor = "White", -- White, Class, or Custom, for the fps and ms labels
+		PerformanceCustomColor = { 1, 1, 1 }, -- used when the label colour is Custom
 		ZoomResetDelay = 0, -- seconds of no wheel input before zoom snaps back out, 0 = off
 		MouseoverFade = false, -- fade the map out until you hover it
 		FadeAlpha = 0.25, -- alpha while faded

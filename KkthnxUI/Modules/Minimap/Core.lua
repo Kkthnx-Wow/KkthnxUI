@@ -249,6 +249,9 @@ function Module:OnEnable()
 	if self.CreateCoords then
 		self:CreateCoords()
 	end
+	if self.CreatePerformance then
+		self:CreatePerformance()
+	end
 
 	-- Corral stray addon minimap buttons into a tidy hover panel.
 	if db.CollectButtons and self.CollectButtons then

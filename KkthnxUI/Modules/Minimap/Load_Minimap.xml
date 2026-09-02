@@ -4,6 +4,7 @@
 	<Script file="Location.lua" />
 	<Script file="Time.lua" />
 	<Script file="Coords.lua" />
+	<Script file="Performance.lua" />
 	<Script file="Tracking.lua" />
 	<Script file="Buttons.lua" />
 </Ui>

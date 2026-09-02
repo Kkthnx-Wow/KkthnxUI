@@ -480,6 +480,19 @@ GUI.schema = {
 			{ kind = "slider", label = L["Clock Text Size"], path = { "Minimap", "ClockFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowClock" } },
 			{ kind = "check", label = L["Show Coordinates"], path = { "Minimap", "ShowCoords" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Show your position just below the minimap, hidden where the map has no player position."] },
 			{ kind = "slider", label = L["Auto Zoom Reset"], path = { "Minimap", "ZoomResetDelay" }, min = 0, max = 30, step = 1, dependsOn = { "Minimap", "Enable" }, tooltip = L["Seconds of no scrolling before the minimap zooms back out. 0 turns it off."] },
+			{ kind = "check", label = L["Show Performance"], path = { "Minimap", "ShowPerformance" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Framerate and latency, graded by colour. Movable, and hovering shows home and world latency plus the addons costing the most time."] },
+			{ kind = "slider", label = L["Performance Text Size"], path = { "Minimap", "PerformanceFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowPerformance" } },
+			{ kind = "dropdown", label = L["Performance Separator"], path = { "Minimap", "PerformanceSeparator" }, options = {
+				{ text = "-", value = "-" },
+				{ text = "/", value = "/" },
+				{ text = "|", value = "|" },
+			}, dependsOn = { "Minimap", "ShowPerformance" } },
+			{ kind = "dropdown", label = L["Performance Label Color"], path = { "Minimap", "PerformanceLabelColor" }, options = {
+				{ text = L["White"], value = "White" },
+				{ text = L["Class Color"], value = "Class" },
+				{ text = L["Custom"], value = "Custom" },
+			}, dependsOn = { "Minimap", "ShowPerformance" }, tooltip = L["Colour of the fps and ms labels. The numbers themselves are always graded green through red."] },
+			{ kind = "color", label = L["Performance Custom Color"], path = { "Minimap", "PerformanceCustomColor" }, dependsOn = { "Minimap", "ShowPerformance" } },
 			{ kind = "check", label = L["Collect Minimap Buttons"], path = { "Minimap", "CollectButtons" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 				{ kind = "dropdown", label = L["Button Collector Corner"], path = { "Minimap", "ButtonCorner" }, options = {
 					{ text = L["Bottom Left"], value = "BOTTOMLEFT" },

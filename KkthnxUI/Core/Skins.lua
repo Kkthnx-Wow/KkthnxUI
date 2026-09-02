@@ -25,6 +25,7 @@ K.Colors = {
 	borderFocus = { 0.259, 0.329, 0.439 }, -- #425470
 	crimson = { 0.898, 0.325, 0.325 }, -- #E55353 alert
 	jade = { 0.306, 0.741, 0.529 }, -- #4EBD87 success
+	ember = { 0.902, 0.502, 0.235 }, -- #E6803C caution, the step between gold and crimson
 }
 
 -- Shared vertical gradient background, inset one pixel so our border stays clean.
