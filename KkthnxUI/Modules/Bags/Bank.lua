@@ -46,6 +46,25 @@ function Module:GetBankBags()
 	return ids
 end
 
+-- Tell the game which bank is active so a right-click deposit lands in it. Blizzard
+-- routes UseContainerItem to BankFrame:GetActiveBankType(), which reads the bank
+-- panel's type but only while the panel reports shown. We keep the stock panel
+-- under our hidden parent, so we flip its shown flag on (invisible) and set its
+-- type. Without this every deposit falls back to the character bank, which is why
+-- the Warband tab was storing into the personal bank.
+function Module:SetActiveBankType(bankType)
+	local panel = _G.BankFrame and _G.BankFrame.BankPanel
+	if not panel then
+		return
+	end
+	if panel.Show and not panel:IsShown() then
+		panel:Show()
+	end
+	if panel.SetBankType then
+		panel:SetBankType(bankType)
+	end
+end
+
 -- Point the bank window at the selected bank and relayout.
 function Module:RefreshBankBags()
 	if not self.BankFrame then
@@ -87,6 +106,7 @@ local function AddTab(frame, label, bankType, index)
 	tab.Text:SetText(label)
 	tab:SetScript("OnClick", function()
 		Module.bankType = bankType
+		Module:SetActiveBankType(bankType)
 		Module:RefreshBankBags()
 	end)
 	K.SkinButton(tab)
@@ -101,8 +121,9 @@ function Module:SetupBank()
 
 	-- Tab strip: character bank and Warband bank.
 	f.Tabs = {}
+	-- 8px below the search box (which ends at y -30), matching the tab-to-grid gap.
 	local charTab = AddTab(f, L["Character"], CHARACTER, 1)
-	charTab:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -34)
+	charTab:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -38)
 	tinsert(f.Tabs, charTab)
 
 	local acctTab = AddTab(f, L["Warband"], ACCOUNT, 2)
@@ -112,7 +133,7 @@ function Module:SetupBank()
 	-- Deposit-all button, mirrors Blizzard's auto-deposit for the active bank.
 	local deposit = CreateFrame("Button", "$parentDeposit", f)
 	deposit:SetSize(90, 20)
-	deposit:SetPoint("TOPRIGHT", f, "TOPRIGHT", -12, -34)
+	deposit:SetPoint("TOPRIGHT", f, "TOPRIGHT", -12, -38)
 	deposit.Text = deposit:CreateFontString(nil, "OVERLAY")
 	K.SetFont(deposit.Text, 12, K.FontOutlineStyle())
 	deposit.Text:SetPoint("CENTER")
@@ -168,6 +189,7 @@ function Module:OpenBank()
 	if not self.BankFrame then
 		return
 	end
+	self:SetActiveBankType(self.bankType)
 	self:RefreshBankBags()
 	self.BankFrame:Show()
 	self:LayoutContainer(self.BankFrame)

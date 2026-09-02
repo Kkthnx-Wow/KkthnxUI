@@ -509,8 +509,11 @@ function Module:CreateContainer(name, title, bags, perRow)
 	K.CreateGradientBackground(f, 0.95)
 	K.CreateBorder(f)
 
+	-- Line the close (and the toolbar buttons that anchor off it) up vertically with
+	-- the search box in the top band: search sits at y -10 and is 20 tall, so a 22
+	-- tall button at y -9 shares its centre.
 	local close = CreateFrame("Button", name .. "Close", f, "UIPanelCloseButton")
-	close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -4)
+	close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -MARGIN, -9)
 	close:SetScript("OnClick", function()
 		Module:CloseAll()
 	end)
