@@ -16,6 +16,32 @@ local tinsert = table.insert
 local ACCENT = K.Colors.accent
 local PANEL = K.Colors.panel
 
+-- Category name to cell index in the shared icon atlas (Media/Textures/GUI). The
+-- sheet also carries Aura Filters (3) and Custom Unit Colors (9), which are
+-- subpages rather than top-level categories, so those cells are simply skipped.
+local CATEGORY_ICON = {
+	General = 0,
+	ActionBar = 1,
+	Unitframe = 2,
+	Minimap = 4,
+	Auras = 5,
+	Cooldown = 6,
+	Chat = 7,
+	Nameplate = 8,
+	Tooltip = 10,
+	ExperienceBar = 11,
+	AlertFrames = 12,
+	PullCountdown = 13,
+	GroupTools = 14,
+	Loot = 15,
+	MicroMenu = 16,
+	Bags = 17,
+	Automation = 18,
+	Skins = 19,
+	Movers = 20,
+	Profiles = 21,
+}
+
 local GUI = K.GUI
 GUI.CustomPanels = GUI.CustomPanels or {}
 
@@ -315,17 +341,25 @@ local function BuildWindow()
 		acc:Hide()
 		btn.Accent = acc
 
-		if category.icon then
+		local atlasIndex = CATEGORY_ICON[category.name]
+		local hasIcon = atlasIndex ~= nil or category.icon
+		if hasIcon then
 			local icon = btn:CreateTexture(nil, "ARTWORK")
-			icon:SetSize(18, 18)
-			icon:SetPoint("LEFT", 8, 0)
-			icon:SetTexture(category.icon)
-			icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+			icon:SetSize(24, 24)
+			icon:SetPoint("LEFT", 6, 0)
+			-- Prefer our icon atlas (one sheet, cropped per category), falling back
+			-- to a plain texture path for anything without an atlas slot.
+			if atlasIndex ~= nil and K.SetGUIIcon then
+				K.SetGUIIcon(icon, atlasIndex)
+			else
+				icon:SetTexture(category.icon)
+				icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+			end
 		end
 
 		local text = btn:CreateFontString(nil, "OVERLAY")
 		K.SetFont(text, 12)
-		text:SetPoint("LEFT", category.icon and 34 or 12, 0)
+		text:SetPoint("LEFT", hasIcon and 34 or 12, 0)
 		text:SetText(category.title)
 		btn.Text = text
 

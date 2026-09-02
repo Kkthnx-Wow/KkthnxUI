@@ -517,7 +517,7 @@ function Module:CreateContainer(name, title, bags, perRow)
 	K.SkinCloseButton(close)
 
 	-- A square icon button sized to match the close button, for the top band.
-	local function IconButton(suffix, atlas, texture, tip, onClick)
+	local function IconButton(suffix, atlas, texture, tip, onClick, iconIndex)
 		local button = CreateFrame("Button", name .. suffix, f)
 		button:SetSize(22, 22)
 		K.SkinButton(button)
@@ -526,7 +526,11 @@ function Module:CreateContainer(name, title, bags, perRow)
 		-- coords, so only trim the transparent edge off a plain texture.
 		icon:SetPoint("TOPLEFT", 1, -1)
 		icon:SetPoint("BOTTOMRIGHT", -1, 1)
-		if atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas) then
+		-- Prefer our shared icon atlas (one sheet, cropped per cell), then a game
+		-- atlas, then a plain texture.
+		if iconIndex ~= nil and K.SetGUIIcon then
+			K.SetGUIIcon(icon, iconIndex)
+		elseif atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas) then
 			icon:SetAtlas(atlas)
 		else
 			icon:SetTexture(texture)
@@ -546,7 +550,7 @@ function Module:CreateContainer(name, title, bags, perRow)
 	-- Sort, top band, right before the close button. A broom for cleanup.
 	local sort = IconButton("Sort", nil, 655994, L["Sort"], function()
 		Module:SortContainer(f)
-	end)
+	end, 22)
 	sort:SetPoint("RIGHT", close, "LEFT", -6, 0)
 	f.Sort = sort
 
@@ -558,7 +562,7 @@ function Module:CreateContainer(name, title, bags, perRow)
 			K:SetConfig({ "Bags", "ShowBagBar" }, not strip:IsShown())
 			Module:ToggleBagStrip(f, C.Bags.ShowBagBar)
 		end
-	end)
+	end, 23)
 	bagToggle:SetPoint("RIGHT", sort, "LEFT", -6, 0)
 	f.BagToggle = bagToggle
 
@@ -568,7 +572,7 @@ function Module:CreateContainer(name, title, bags, perRow)
 			if Module.ToggleManager then
 				Module:ToggleManager()
 			end
-		end)
+		end, 24)
 		manager:SetPoint("RIGHT", bagToggle, "LEFT", -6, 0)
 		f.ManagerButton = manager
 

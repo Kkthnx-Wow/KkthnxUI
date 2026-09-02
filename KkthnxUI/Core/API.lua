@@ -326,3 +326,30 @@ function K.CreateBackground(frame, r, g, b, a)
 	frame.KKUI_Background = bg
 	return bg
 end
+
+-- ---------------------------------------------------------------------------
+-- GUI icon atlas
+-- ---------------------------------------------------------------------------
+-- One texture sheet holds every config and bag toolbar icon on an 8x4 grid of
+-- 128px cells (see Media/Textures/GUI/CategoryIcons). SetGUIIcon points a texture
+-- at the sheet and crops it to one cell by its row-major index (0 based).
+
+local GUI_ICON_ATLAS = "Interface/AddOns/KkthnxUI/Media/Textures/GUI/CategoryIcons"
+local GUI_ICON_COLS, GUI_ICON_ROWS = 8, 4
+-- Crop a little off each cell edge so the dark gap and rounded corner between the
+-- tiles never bleeds into the drawn icon. A fraction of one cell, per side.
+local GUI_ICON_INSET = 0.08
+
+function K.SetGUIIcon(texture, index)
+	if not texture or type(index) ~= "number" then
+		return
+	end
+	local col = index % GUI_ICON_COLS
+	local row = math.floor(index / GUI_ICON_COLS)
+	local left = (col + GUI_ICON_INSET) / GUI_ICON_COLS
+	local right = (col + 1 - GUI_ICON_INSET) / GUI_ICON_COLS
+	local top = (row + GUI_ICON_INSET) / GUI_ICON_ROWS
+	local bottom = (row + 1 - GUI_ICON_INSET) / GUI_ICON_ROWS
+	texture:SetTexture(GUI_ICON_ATLAS)
+	texture:SetTexCoord(left, right, top, bottom)
+end
