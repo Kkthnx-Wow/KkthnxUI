@@ -45,35 +45,63 @@ function GUI.CustomPanels.Movers(parent)
 	listHeader:SetPoint("TOPLEFT", toggle, "BOTTOMLEFT", 0, -16)
 	listHeader:SetText(L["Individual Frames"])
 
-	local y = -8
-	for _, entry in ipairs(K.GetMoverList()) do
-		local row = CreateFrame("Frame", nil, parent)
+	-- Rows are rebuilt every time the panel is shown. The list used to be a single
+	-- snapshot taken when the config window was first opened, so any mover created
+	-- after that never appeared here. Rows are pooled so reopening costs nothing.
+	local rows = {}
+
+	local function AcquireRow(index)
+		local row = rows[index]
+		if row then
+			row:Show()
+			return row
+		end
+
+		row = CreateFrame("Frame", nil, parent)
 		row:SetSize(460, 26)
-		row:SetPoint("TOPLEFT", listHeader, "BOTTOMLEFT", 0, y)
-		y = y - 30
 		K.CreateBackground(row, 0.15, 0.15, 0.15, 0.5)
 		K.CreateBorder(row)
 
-		local label = row:CreateFontString(nil, "OVERLAY")
-		K.SetFont(label, 12)
-		label:SetPoint("LEFT", 8, 0)
-		label:SetText(entry.label)
+		row.Label = row:CreateFontString(nil, "OVERLAY")
+		K.SetFont(row.Label, 12)
+		row.Label:SetPoint("LEFT", 8, 0)
 
-		local reset = MakeButton(row, L["Reset"], 80)
-		reset:SetPoint("RIGHT", -6, 0)
-		reset:SetScript("OnClick", function()
-			K.ResetMover(entry.key)
+		row.Reset = MakeButton(row, L["Reset"], 80)
+		row.Reset:SetPoint("RIGHT", -6, 0)
+		row.Reset:SetScript("OnClick", function()
+			K.ResetMover(row.moverKey)
 		end)
 
-		local locate = MakeButton(row, L["Locate"], 80)
-		locate:SetPoint("RIGHT", reset, "LEFT", -6, 0)
-		locate:SetScript("OnClick", function()
+		row.Locate = MakeButton(row, L["Locate"], 80)
+		row.Locate:SetPoint("RIGHT", row.Reset, "LEFT", -6, 0)
+		row.Locate:SetScript("OnClick", function()
 			if not K.MoversEnabled() then
 				K.ToggleMovers(true)
 			end
-			K.FlashMover(entry.key)
+			K.FlashMover(row.moverKey)
 		end)
+
+		rows[index] = row
+		return row
 	end
 
-	parent:SetHeight(200 - y)
+	local function Populate()
+		local list = K.GetMoverList()
+		local y = -8
+		for index, entry in ipairs(list) do
+			local row = AcquireRow(index)
+			row:ClearAllPoints()
+			row:SetPoint("TOPLEFT", listHeader, "BOTTOMLEFT", 0, y)
+			row.moverKey = entry.key
+			row.Label:SetText(entry.label)
+			y = y - 30
+		end
+		for index = #list + 1, #rows do
+			rows[index]:Hide()
+		end
+		parent:SetHeight(200 - y)
+	end
+
+	parent:HookScript("OnShow", Populate)
+	Populate()
 end
