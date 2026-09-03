@@ -136,12 +136,13 @@ end
 
 -- An "open flyout" button for one bar. The panel is built lazily so the bar's
 -- controls only exist once the user opens it.
-local function BarButton(title, key)
+local function BarButton(title, key, tooltip)
 	return {
 		kind = "extra",
 		label = title,
 		name = "ActionBar_" .. key,
 		title = title,
+		tooltip = tooltip,
 		build = function(child)
 			K.GUI.LayoutControls(child, BarControls(key))
 		end,
@@ -149,12 +150,13 @@ local function BarButton(title, key)
 end
 
 -- Generic flyout button: opens a panel laid out from a fixed control list.
-local function ExtraButton(title, name, controls)
+local function ExtraButton(title, name, controls, tooltip)
 	return {
 		kind = "extra",
 		label = title,
 		name = name,
 		title = title,
+		tooltip = tooltip,
 		build = function(child)
 			K.GUI.LayoutControls(child, controls)
 		end,
@@ -359,14 +361,14 @@ GUI.schema = {
 				{ text = L["Thick Outline"], value = "THICKOUTLINE" },
 			}, apply = ApplyAllBars },
 			{ kind = "header", label = L["Configure Each Bar"] },
-			BarButton(L["Bar 1 (Main)"], "Bar1"),
-			BarButton(L["Bar 2 (Bottom)"], "Bar2"),
-			BarButton(L["Bar 3 (Right)"], "Bar3"),
-			BarButton(L["Bar 4 (Right)"], "Bar4"),
-			BarButton(L["Bar 5 (Left)"], "Bar5"),
-			BarButton(L["Bar 6"], "Bar6"),
-			BarButton(L["Bar 7"], "Bar7"),
-			BarButton(L["Bar 8"], "Bar8"),
+			BarButton(L["Bar 1 (Main, bottom row)"], "Bar1", L["Your main action bar, the bottom row above the others. Bound to the Action Button keys."]),
+			BarButton(L["Bar 2 (Bottom stack, middle)"], "Bar2", L["Sits directly above Bar 1. Bound to the Multi Action Bar 1 keys."]),
+			BarButton(L["Bar 3 (Bottom stack, top)"], "Bar3", L["The top row of the bottom stack, above Bar 2. Bound to the Multi Action Bar 2 keys."]),
+			BarButton(L["Bar 4 (Right, outer)"], "Bar4", L["The vertical bar down the right edge of the screen. Bound to the Multi Action Bar 3 keys."]),
+			BarButton(L["Bar 5 (Right, inner)"], "Bar5", L["The second vertical bar, just left of Bar 4. Bound to the Multi Action Bar 4 keys."]),
+			BarButton(L["Bar 6 (Extra)"], "Bar6", L["An extra bar, parked in the middle of the screen and off by default."]),
+			BarButton(L["Bar 7 (Extra)"], "Bar7", L["An extra bar, parked in the middle of the screen and off by default."]),
+			BarButton(L["Bar 8 (Extra)"], "Bar8", L["An extra bar, parked in the middle of the screen and off by default."]),
 			{ kind = "header", label = L["Extra Bars"] },
 			{ kind = "check", label = L["Enable Pet Bar"], path = { "ActionBar", "PetBar", "Enable" }, reload = true },
 			{ kind = "check", label = L["Enable Stance Bar"], path = { "ActionBar", "StanceBar", "Enable" }, reload = true },
@@ -407,26 +409,36 @@ GUI.schema = {
 				{ text = L["Class Icon"], value = "Class" },
 			}, reload = true, dependsOn = { "Unitframe", "Portrait" } },
 
-			{ kind = "header", label = L["Configure Units"] },
-			ExtraButton(L["Frame Colors"], "UF_Colors", ColorControls()),
-			{ kind = "extra", label = L["Aura Filters"], name = "UF_AuraFilters", title = L["Aura Filters"], build = function(child)
+			-- Grouped so the list reads in the order you actually think about it:
+			-- the frames you always have up, then the ones tied to a target, then
+			-- the group frames. Shared settings sit in their own block at the end
+			-- so they are not mistaken for one more unit.
+			{ kind = "header", label = L["Your Frames"] },
+			ExtraButton(L["Player"], "UF_Player", UnitControls("Player", { power = true, buffs = true, debuffs = true, classPower = true, name = true }), L["Your own frame, including your class resource such as combo points or runes."]),
+			ExtraButton(L["Pet"], "UF_Pet", UnitControls("Pet", { power = true, debuffs = true }), L["Your pet's frame, shown only while you have one out."]),
+
+			{ kind = "header", label = L["Target Frames"] },
+			ExtraButton(L["Target"], "UF_Target", UnitControls("Target", { power = true, buffs = true, debuffs = true }), L["Whatever you currently have targeted."]),
+			ExtraButton(L["Target of Target"], "UF_ToT", UnitControls("TargetOfTarget", { power = true }), L["Who your target is targeting, which is how you spot what a boss is attacking."]),
+			ExtraButton(L["Focus"], "UF_Focus", UnitControls("Focus", { power = true, debuffs = true }), L["Your focus target, set with the focus keybind or the unit menu."]),
+			ExtraButton(L["Focus Target"], "UF_FocusTarget", UnitControls("FocusTarget", { power = true }), L["Who your focus is targeting."]),
+
+			{ kind = "header", label = L["Group Frames"] },
+			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true, raidStyle = true }), L["Frames for a five person party."]),
+			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
+			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true, portrait = true }), L["The boss frames that appear during an encounter."]),
+
+			{ kind = "header", label = L["Shared"] },
+			ExtraButton(L["Frame Colors"], "UF_Colors", ColorControls(), L["Health, power and reaction colours used across every unit frame."]),
+			{ kind = "extra", label = L["Aura Filters"], name = "UF_AuraFilters", title = L["Aura Filters"], tooltip = L["Choose which buffs and debuffs are allowed to show on the unit frames."], build = function(child)
 				K.GUI.CustomPanels.AuraFilters(child)
 			end },
-			ExtraButton(L["Player"], "UF_Player", UnitControls("Player", { power = true, buffs = true, debuffs = true, classPower = true, name = true })),
-			ExtraButton(L["Target"], "UF_Target", UnitControls("Target", { power = true, buffs = true, debuffs = true })),
-			ExtraButton(L["Focus"], "UF_Focus", UnitControls("Focus", { power = true, debuffs = true })),
-			ExtraButton(L["Target of Target"], "UF_ToT", UnitControls("TargetOfTarget", { power = true })),
-			ExtraButton(L["Focus Target"], "UF_FocusTarget", UnitControls("FocusTarget", { power = true })),
-			ExtraButton(L["Pet"], "UF_Pet", UnitControls("Pet", { power = true, debuffs = true })),
-			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true, raidStyle = true })),
-			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true })),
-			{ kind = "button", label = L["Toggle Test Frames"], onClick = function()
+			{ kind = "button", label = L["Toggle Test Frames"], tooltip = L["Show every unit frame filled with placeholder data so you can position and style them without a target or a group."], onClick = function()
 				local uf = K:GetModule("UnitFrames", true)
 				if uf and uf.ToggleTest then
 					uf:ToggleTest()
 				end
 			end },
-			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true, portrait = true })),
 
 			{ kind = "header", label = L["Elements"] },
 			ExtraButton(L["Auras"], "UF_Auras", {

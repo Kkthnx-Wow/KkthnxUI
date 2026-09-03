@@ -8,7 +8,12 @@
 		files can build panels without touching frame internals.
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+
+local format = string.format
+local type = type
+local pairs = pairs
+local ipairs = ipairs
 
 -- Shared theme accent, pulled from the palette so a palette change flows through
 -- every widget instead of leaving stray hardcoded colours behind.
@@ -30,6 +35,116 @@ function GUI.GetValue(path)
 		end
 	end
 	return node
+end
+
+-- The value a setting ships with, read from the defaults table the live config was
+-- built from. Used by the right-click reset and shown in the tooltip.
+function GUI.GetDefault(path)
+	local node = K.ConfigDefaults
+	if not node then
+		return nil
+	end
+	for i = 1, #path do
+		node = node[path[i]]
+		if node == nil then
+			return nil
+		end
+	end
+	return node
+end
+
+-- Render a value the way it reads in a tooltip. Colours are a table of three
+-- numbers, everything else is a plain scalar.
+local function DescribeValue(control, value)
+	if value == nil then
+		return nil
+	end
+	if type(value) == "boolean" then
+		return value and (L["On"]) or (L["Off"])
+	end
+	if type(value) == "table" then
+		if control.kind == "color" and value[1] then
+			return format("|cff%02x%02x%02x%s|r", (value[1] or 0) * 255, (value[2] or 0) * 255, (value[3] or 0) * 255, L["this colour"])
+		end
+		return nil
+	end
+	-- Show the readable label for a dropdown rather than the stored value.
+	if control.options then
+		for _, opt in ipairs(control.options) do
+			if opt.value == value then
+				return tostring(opt.text)
+			end
+		end
+	end
+	if type(value) == "number" then
+		return tostring(K.Round(value * 100) / 100)
+	end
+	return tostring(value)
+end
+
+-- Attach the shared hover tooltip, and wire right-click to put the setting back
+-- to its default. refresh redraws the widget after a reset, since the control
+-- holds its own display state.
+function GUI.AttachTooltip(frame, control, refresh)
+	local resettable = control.path ~= nil
+	if not (control.tooltip or resettable) then
+		return
+	end
+
+	frame:HookScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(control.label or "", 1, 1, 1)
+		if control.tooltip then
+			GameTooltip:AddLine(control.tooltip, 0.8, 0.8, 0.8, true)
+		end
+		if resettable then
+			local shown = DescribeValue(control, GUI.GetDefault(control.path))
+			GameTooltip:AddLine(" ")
+			if shown then
+				GameTooltip:AddLine(format(L["Right click to reset to default (%s)"], shown), 0.6, 0.8, 1, true)
+			else
+				GameTooltip:AddLine(L["Right click to reset to default"], 0.6, 0.8, 1, true)
+			end
+		end
+		GameTooltip:Show()
+	end)
+	frame:HookScript("OnLeave", GameTooltip_Hide)
+
+	if not resettable then
+		return
+	end
+
+	local function Reset(_, button)
+		if button ~= "RightButton" then
+			return
+		end
+		local default = GUI.GetDefault(control.path)
+		if default == nil then
+			return
+		end
+		-- Copy a table default so the live config never shares the defaults table.
+		if type(default) == "table" then
+			local copy = {}
+			for k, v in pairs(default) do
+				copy[k] = v
+			end
+			default = copy
+		end
+		GUI.ApplyChange(control, default)
+		if refresh then
+			refresh(default)
+		end
+	end
+
+	frame:EnableMouse(true)
+	-- Only a Button has OnClick. Plain frames (the slider and dropdown holders)
+	-- take the right-click through OnMouseUp instead.
+	if frame.RegisterForClicks then
+		frame:RegisterForClicks("AnyUp")
+		frame:HookScript("OnClick", Reset)
+	else
+		frame:HookScript("OnMouseUp", Reset)
+	end
 end
 
 -- Apply a changed value: persist it, run any live callback, flag reload need,
@@ -133,18 +248,18 @@ function GUI.CreateCheck(parent, control)
 	check.Text:SetTextColor(1, 1, 1)
 
 	check:SetChecked(GUI.GetValue(control.path) and true or false)
-	check:SetScript("OnClick", function(self)
+	check:SetScript("OnClick", function(self, button)
+		-- Right-click is the reset gesture, and the template flips the box on any
+		-- button, so put it back and let the shared handler do the reset.
+		if button == "RightButton" then
+			self:SetChecked(GUI.GetValue(control.path) and true or false)
+			return
+		end
 		GUI.ApplyChange(control, self:GetChecked() and true or false)
 	end)
-	if control.tooltip then
-		check:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetText(control.label, 1, 1, 1)
-			GameTooltip:AddLine(control.tooltip, 0.8, 0.8, 0.8, true)
-			GameTooltip:Show()
-		end)
-		check:SetScript("OnLeave", GameTooltip_Hide)
-	end
+	GUI.AttachTooltip(check, control, function(value)
+		check:SetChecked(value and true or false)
+	end)
 
 	check.KKUI_SetEnabled = function(enabled)
 		check:SetEnabled(enabled)
@@ -265,6 +380,10 @@ function GUI.CreateSlider(parent, control)
 		holder:SetAlpha(enabled and 1 or 0.4)
 		label:SetTextColor(enabled and 1 or 0.5, enabled and 1 or 0.5, enabled and 1 or 0.5)
 	end
+	GUI.AttachTooltip(holder, control, function(reset)
+		slider:SetValue(K.Clamp(Round(reset), control.min, control.max))
+		valueBox:SetText(Round(reset))
+	end)
 	GUI.RegisterDependent(holder, control)
 
 	holder.KKUI_SetWidth = function(w)
@@ -351,6 +470,10 @@ function GUI.CreateDropdown(parent, control)
 
 	button:SetScript("OnClick", function()
 		menu:SetShown(not menu:IsShown())
+	end)
+
+	GUI.AttachTooltip(holder, control, function()
+		text:SetText(CurrentText())
 	end)
 
 	holder.KKUI_SetEnabled = function(enabled)
@@ -441,6 +564,7 @@ function GUI.CreateButton(parent, control)
 			control.onClick()
 		end
 	end)
+	GUI.AttachTooltip(button, control)
 	button.height = 30
 	return button
 end
@@ -483,6 +607,9 @@ function GUI.CreateEditBox(parent, control)
 		edit:SetAlpha(enabled and 1 or 0.4)
 		label:SetAlpha(enabled and 1 or 0.4)
 	end
+	GUI.AttachTooltip(holder, control, function(value)
+		edit:SetText(value or "")
+	end)
 	GUI.RegisterDependent(holder, control)
 
 	holder.height = 48

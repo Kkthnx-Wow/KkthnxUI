@@ -82,6 +82,7 @@ function GUI.CreateExtraButton(parent, control)
 			extra:Show()
 		end
 	end)
+	GUI.AttachTooltip(button, control)
 	button.height = 30
 	return button
 end
