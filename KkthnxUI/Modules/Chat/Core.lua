@@ -922,15 +922,36 @@ function Module:OnEnable()
 	-- Pin the chat to the bottom-left corner. Edit Mode keeps trying to place it,
 	-- so we hook SetPoint and re-apply, guarded against re-entry. The y offset
 	-- leaves room for the quick-bar that sits just below the frame.
+	-- Edit Mode owns the default chat frame on retail (FCF_RestorePositionAndDimensions
+	-- bails out for it and says so). While Edit Mode still counts the window as being
+	-- in its default position, ApplySystemAnchor hands it back to the managed frame
+	-- container on every world enter, and the container then places it, which is what
+	-- shifted the chat after a loading screen or a teleport. Our SetPoint hook lost
+	-- that race because the container positions the frame afterwards.
+	--
+	-- BreakFromFrameManager is Blizzard's own path for a system that should not be
+	-- managed. It removes the frame from the container, reparents it to UIParent, and
+	-- sets ignoreFramePositionManager, which the managed frame system checks before
+	-- laying a frame out.
+	local function DetachChat()
+		local frame = _G.ChatFrame1
+		if frame.BreakFromFrameManager then
+			frame:BreakFromFrameManager()
+		end
+		-- Set it directly too. BreakFromFrameManager returns early when the frame has
+		-- no container yet, which is the case on an early login pass.
+		frame.ignoreFramePositionManager = true
+	end
+
 	local anchoring
 	local function AnchorChat()
 		if anchoring then
 			return
 		end
 		anchoring = true
+		DetachChat()
 		-- 6px from the left edge, 6px from the bottom, or higher to clear the
-		-- quick-bar when it is enabled. SetUserPlaced stops Edit Mode's managed
-		-- layout from dragging the window back off the corner after a reload.
+		-- quick-bar when it is enabled.
 		local bottom = C.Chat.ChatBar and 34 or 6
 		_G.ChatFrame1:SetUserPlaced(true)
 		_G.ChatFrame1:ClearAllPoints()
@@ -939,6 +960,11 @@ function Module:OnEnable()
 	end
 	AnchorChat()
 	hooksecurefunc(_G.ChatFrame1, "SetPoint", AnchorChat)
+	-- Re-pin straight after Edit Mode re-applies its own anchor, which is the call
+	-- that used to put the window back under the frame manager.
+	if _G.ChatFrame1.ApplySystemAnchor then
+		hooksecurefunc(_G.ChatFrame1, "ApplySystemAnchor", AnchorChat)
+	end
 	-- Edit Mode re-applies its saved layout on world enter, after our first pin, so
 	-- re-assert the corner then.
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChat)
