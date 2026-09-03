@@ -15,24 +15,28 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local _G = _G
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
+local max = math.max
 
 local Module = K:GetModule("ActionBars")
 
 -- Give a Blizzard-owned frame its own mover and keep it pinned there. The frame
 -- is anchored to an invisible holder we own, and any later re-anchor by Blizzard
 -- is undone on the next safe moment.
-function Module:AttachExtraMover(frame, key, label, point, reparent)
+-- width and height override the frame's own size, for a frame whose footprint is
+-- mostly decorative art we hide (see the zone ability frame, which is 256 by 128
+-- of styling around a 52 pixel button).
+function Module:AttachExtraMover(frame, key, label, point, reparent, width, height)
 	if not frame or frame.__kkuiExtra then
 		return
 	end
 	frame.__kkuiExtra = true
 
-	local w = (frame:GetWidth() or 0) > 0 and frame:GetWidth() or C.ActionBar.ExtraBar.Size
-	local h = (frame:GetHeight() or 0) > 0 and frame:GetHeight() or C.ActionBar.ExtraBar.Size
+	local w = width or ((frame:GetWidth() or 0) > 0 and frame:GetWidth() or C.ActionBar.ExtraBar.Size)
+	local h = height or ((frame:GetHeight() or 0) > 0 and frame:GetHeight() or C.ActionBar.ExtraBar.Size)
 
 	local holder = CreateFrame("Frame", "KKUI_" .. key .. "Holder", UIParent)
 	holder:SetSize(w, h)
-	K.CreateMover(holder, key, label, point, w, h)
+	frame.__kkuiMover = K.CreateMover(holder, key, label, point, w, h)
 	frame.__kkuiHolder = holder
 
 	local function Reanchor()
@@ -53,6 +57,20 @@ function Module:AttachExtraMover(frame, key, label, point, reparent)
 	Reanchor()
 	hooksecurefunc(frame, "SetPoint", Reanchor)
 	frame.__kkuiReanchor = Reanchor
+end
+
+-- Re-size a mover after the fact, for a frame whose useful area changes (the zone
+-- ability row grows with the number of abilities on offer).
+function Module:ResizeExtraMover(frame, w, h)
+	if not frame or not w or not h or w <= 0 or h <= 0 then
+		return
+	end
+	if frame.__kkuiHolder then
+		frame.__kkuiHolder:SetSize(w, h)
+	end
+	if frame.__kkuiMover then
+		frame.__kkuiMover:SetSize(w, h)
+	end
 end
 
 -- Encounter / quest extra action button.
@@ -128,18 +146,34 @@ function Module:StyleZoneAbility()
 		if not (container and container.EnumerateActive) then
 			return
 		end
+
+		-- Size the mover to the buttons, not to the frame. The template is 256 by 128
+		-- because that is the footprint of the Style art, which we hide, so measuring
+		-- the frame gave a mover far bigger than anything visible. The row also grows
+		-- with the number of abilities, so re-measure on every update.
+		local count, width, height = 0, 0, 0
 		for button in container:EnumerateActive() do
 			Module:StyleAuxButton(button)
 			StripButtonArt(button)
+			count = count + 1
+			width = width + (button:GetWidth() or 0)
+			height = max(height, button:GetHeight() or 0)
+		end
+		if count > 0 then
+			-- The container lays the buttons out with a 4 pixel gap between them.
+			Module:ResizeExtraMover(frame, width + (count - 1) * 4, height)
 		end
 	end
+
+	-- Start at one button's worth, and build the mover first so the pass below has a
+	-- holder to measure into. StyleButtons re-sizes it once abilities show up.
+	local size = C.ActionBar.ExtraBar.Size
+	self:AttachExtraMover(frame, "ZoneAbility", L["Zone Ability"], { "BOTTOM", UIParent, "BOTTOM", 80, 320 }, nil, size, size)
 
 	StyleButtons()
 	if frame.UpdateDisplayedZoneAbilities then
 		hooksecurefunc(frame, "UpdateDisplayedZoneAbilities", StyleButtons)
 	end
-
-	self:AttachExtraMover(frame, "ZoneAbility", L["Zone Ability"], { "BOTTOM", UIParent, "BOTTOM", 80, 320 })
 end
 
 -- Reuse Blizzard's secure leave-vehicle button, skinned and repositioned. It

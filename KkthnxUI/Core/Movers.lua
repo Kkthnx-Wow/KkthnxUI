@@ -31,6 +31,10 @@ local gridShown = false
 
 local SNAP = 8 -- snap distance in UIParent pixels
 
+-- Assigned by the popup section further down, so a drag or a nudge can push live
+-- numbers into an open popup instead of leaving it showing stale ones.
+local NotifyPopup = function() end
+
 -- A warm, in-world palette so the placement tools read as a natural part of the
 -- game rather than a developer overlay: muted gold accents, soft parchment grid,
 -- deep bronze highlights.
@@ -302,9 +306,14 @@ local function OnMoveUpdate(self)
 	self:ClearAllPoints()
 	self:SetPoint("CENTER", UIParent, "CENTER", K.Round(ox), K.Round(oy))
 
+	-- Report the offset in the point this mover is actually pinned by, so the live
+	-- readout matches what gets saved rather than a centre relative number.
 	if self.Coords then
-		self.Coords:SetFormattedText("%d, %d", K.Round(ox), K.Round(oy))
+		local point = CurrentPoint(self)
+		local px, py = OffsetFor(self, point)
+		self.Coords:SetFormattedText("%s  %d, %d", point, px, py)
 	end
+	NotifyPopup(self)
 
 	-- Position the guide lines at any snapped axis.
 	local vg, hg = Guides()
@@ -344,6 +353,7 @@ local function OnDragStop(self)
 	self:SetScript("OnUpdate", nil)
 	local ox, oy = CurrentOffset(self)
 	ApplyOffset(self, ox, oy)
+	NotifyPopup(self)
 	local vg, hg = Guides()
 	vg:Hide()
 	hg:Hide()
@@ -367,8 +377,9 @@ local function OnKeyDown(self, key)
 	local ox, oy = CurrentOffset(self)
 	ApplyOffset(self, ox + step[1], oy + step[2])
 	if self.Coords then
-		self.Coords:SetFormattedText("%d, %d", ox + step[1], oy + step[2])
+		self.Coords:SetFormattedText("%s  %d, %d", CurrentPoint(self), ox + step[1], oy + step[2])
 	end
+	NotifyPopup(self)
 end
 
 -- ---------------------------------------------------------------------------
@@ -539,6 +550,14 @@ local function RefreshPopup()
 	local point = CurrentPoint(popupTarget)
 	popup.Anchor:SetText(point)
 	popup.AnchorNote:SetFormattedText(L["Offsets are from %s of %s"], point, "UIParent")
+end
+
+-- Let a drag or an arrow-key nudge feed the open popup, so the coordinates and the
+-- anchor line track the frame in real time rather than only on the next open.
+NotifyPopup = function(mover)
+	if popup and popup:IsShown() and popupTarget == mover then
+		RefreshPopup()
+	end
 end
 
 local function Nudge(dx, dy)
