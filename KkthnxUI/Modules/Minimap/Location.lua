@@ -35,6 +35,11 @@ function Module:UpdateLocation()
 	local pvp = GetZonePVPInfo and GetZonePVPInfo()
 	local color = pvp and PVP_COLOR[pvp] or K.Colors.gold
 	text:SetTextColor(color[1], color[2], color[3])
+
+	-- Hide the strip where there is no zone name to sit on.
+	if self.locationShade then
+		self.locationShade:SetShown(zone ~= "")
+	end
 end
 
 function Module:CreateLocation()
@@ -48,6 +53,15 @@ function Module:CreateLocation()
 	loc:SetWidth(Minimap:GetWidth() - 8)
 	loc:SetWordWrap(false)
 	self.location = loc
+
+	-- The same strip the other map readouts wear. The label is already clamped to
+	-- the map width, so a 4px pad each side lands the strip flush with the map edges
+	-- without bleeding past them, however long the zone name is.
+	local shade = K.CreateTextShade(Minimap, "ARTWORK", 6)
+	shade:SetRegion(loc, 4, 2)
+	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
+	shade:Show()
+	self.locationShade = shade
 
 	self:RegisterEvent("ZONE_CHANGED", "UpdateLocation")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateLocation")
