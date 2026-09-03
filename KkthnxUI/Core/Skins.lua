@@ -79,6 +79,55 @@ function K.ShadeGradient(texture, alpha)
 	K.FadeGradient(texture, 0, 0, 0, alpha or K.GradientAlpha.wash)
 end
 
+-- A soft shade behind a piece of text: strongest in the middle, fading out to
+-- both edges. A texture gradient only runs one way, so this is two mirrored
+-- halves that share one switch. Built from our own colours rather than a game
+-- atlas, so every one of these matches the rest of the UI and the colour and
+-- alpha are ours to set.
+function K.CreateTextShade(parent, layer, subLevel)
+	local shade = {}
+	local left = parent:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel or -1)
+	local right = parent:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel or -1)
+	left:SetColorTexture(1, 1, 1)
+	right:SetColorTexture(1, 1, 1)
+	shade.Left, shade.Right = left, right
+
+	-- Frame the given region, padded out by padX and padY.
+	function shade:SetRegion(region, padX, padY)
+		padX, padY = padX or 8, padY or 4
+		left:ClearAllPoints()
+		left:SetPoint("TOPLEFT", region, "TOPLEFT", -padX, padY)
+		left:SetPoint("BOTTOMRIGHT", region, "BOTTOM", 0, -padY)
+		right:ClearAllPoints()
+		right:SetPoint("TOPLEFT", region, "TOP", 0, padY)
+		right:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", padX, -padY)
+	end
+
+	-- Transparent at the outer edges, full in the middle where the text sits.
+	function shade:SetColor(r, g, b, alpha)
+		K.FadeGradient(left, r, g, b, 0, alpha or 1)
+		K.FadeGradient(right, r, g, b, alpha or 1, 0)
+	end
+
+	function shade:SetShown(show)
+		left:SetShown(show)
+		right:SetShown(show)
+	end
+
+	function shade:Show()
+		left:Show()
+		right:Show()
+	end
+
+	function shade:Hide()
+		left:Hide()
+		right:Hide()
+	end
+
+	shade:Hide()
+	return shade
+end
+
 -- Shared vertical gradient background, inset one pixel so our border stays clean.
 -- Returns the texture so the caller can shift it on hover. Called without colours
 -- it leaves the fill untinted, for a caller that follows up with K.ApplyGradient.

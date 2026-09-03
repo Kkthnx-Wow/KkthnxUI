@@ -574,23 +574,20 @@ local function BuildName(self)
 	self:Tag(name, "[kkui:nplevel][kkui:npnamecolor][kkui:name]")
 	self.Name = name
 
-	-- Name-only highlights: a hover glow and a target-select glow framing the name
-	-- text (they only show in name-only mode, driven from the update handlers).
-	local hover = self:CreateTexture(nil, "ARTWORK", nil, 1)
-	hover:SetPoint("TOPLEFT", name, "TOPLEFT", -8, 4)
-	hover:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", 8, -4)
-	hover:SetAtlas("search-highlight", false)
-	hover:SetBlendMode("ADD")
-	hover:Hide()
+	-- Name-only highlights: a hover shade and a target shade framing the name text
+	-- (they only show in name-only mode, driven from the update handlers). These
+	-- were Blizzard search atlases, whose violet was baked into the art and matched
+	-- nothing else we draw. They are our own gradients now, so the colour and the
+	-- alpha come from the shared palette like everything else.
+	local hover = K.CreateTextShade(self, "ARTWORK", 1)
+	hover:SetRegion(name, 10, 4)
+	hover:SetColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3], K.GradientAlpha.lineSoft)
 	self.NameHover = hover
 
-	local selectTex = self:CreateTexture(nil, "ARTWORK", nil, 2)
-	selectTex:SetPoint("TOPLEFT", name, "TOPLEFT", -8, 4)
-	selectTex:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", 8, -4)
-	selectTex:SetAtlas("search-select", false)
-	selectTex:SetBlendMode("ADD")
-	selectTex:Hide()
-	self.NameSelect = selectTex
+	local selectShade = K.CreateTextShade(self, "ARTWORK", 2)
+	selectShade:SetRegion(name, 10, 4)
+	selectShade:SetColor(TARGET_ACCENT[1], TARGET_ACCENT[2], TARGET_ACCENT[3], K.GradientAlpha.lineSoft)
+	self.NameSelect = selectShade
 
 	-- Guild line under the name (players only, empty tag hides itself).
 	if C.Nameplate.ShowGuildName then
@@ -806,15 +803,14 @@ local function BuildIndicators(self)
 		self.QuestCount = count
 	end
 
-	-- Soft shadow behind the name in name-only mode, so the bare name still
-	-- reads over the world. Its own texture, shown only while name-only.
+	-- Soft shade behind the name in name-only mode, so the bare name still reads
+	-- over the world. Our own dark wash rather than the Rewards-Shadow atlas, which
+	-- carried its own tint and a fixed size that did not track the name length.
 	if db.FriendlyNameOnly then
-		local shadow = self:CreateTexture(nil, "BACKGROUND", nil, -1)
-		shadow:SetAtlas("Rewards-Shadow")
-		shadow:SetPoint("CENTER", self.Name, "CENTER", 0, 0)
-		shadow:SetSize(140, 18)
-		shadow:Hide()
-		self.NameShadow = shadow
+		local shade = K.CreateTextShade(self, "BACKGROUND", -1)
+		shade:SetRegion(self.Name, 12, 3)
+		shade:SetColor(0, 0, 0, K.GradientAlpha.wash)
+		self.NameShadow = shade
 	end
 end
 
