@@ -49,10 +49,13 @@ function Module:CreateCoords()
 	coords:SetDrawLayer("OVERLAY", 7)
 	self.coords = coords
 
-	-- The same strip the unit frame names wear, so every readout around the map
-	-- matches. It hugs the text, which grows and shrinks with the coordinates.
+	-- The same strip the zone name wears, spanning the full map width rather than
+	-- hugging the text, so the readouts above and below the map line up.
 	local shade = K.CreateTextShade(Minimap, "ARTWORK", 6)
-	shade:SetRegion(coords, 8, 2)
+	shade.Holder:SetPoint("LEFT", Minimap, "LEFT", 0, 0)
+	shade.Holder:SetPoint("RIGHT", Minimap, "RIGHT", 0, 0)
+	shade.Holder:SetPoint("TOP", coords, "TOP", 0, 2)
+	shade.Holder:SetHeight((C.Minimap.LocationFontSize or 12) + 6)
 	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
 	shade:Show()
 	coords.Shade = shade

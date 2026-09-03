@@ -113,9 +113,14 @@ function Module:CreateClock()
 	clock.Text = text
 	self.clock = clock
 
-	-- The shared name strip, matching the coordinates and the performance readout.
-	local shade = K.CreateTextShade(clock, "ARTWORK", 6)
-	shade:SetRegion(text, 8, 2)
+	-- The shared strip, spanning the full map width like the zone name and the
+	-- coordinates rather than hugging the time. Parented to the map, not the button,
+	-- so it can reach wider than the click area.
+	local shade = K.CreateTextShade(Minimap, "ARTWORK", 6)
+	shade.Holder:SetPoint("LEFT", Minimap, "LEFT", 0, 0)
+	shade.Holder:SetPoint("RIGHT", Minimap, "RIGHT", 0, 0)
+	shade.Holder:SetPoint("TOP", text, "TOP", 0, 2)
+	shade.Holder:SetHeight((C.Minimap.ClockFontSize or 12) + 6)
 	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
 	shade:Show()
 	clock.Shade = shade

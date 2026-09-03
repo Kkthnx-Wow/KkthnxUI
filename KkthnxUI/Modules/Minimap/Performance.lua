@@ -206,7 +206,11 @@ function Module:CreatePerformance()
 	end
 
 	local perf = CreateFrame("Button", "KKUI_Performance", UIParent)
-	perf:SetSize(120, 16)
+	-- Match the map width so the strip lines up with the other readouts around it,
+	-- and keep the height in step with the text size.
+	local width = C.Minimap.Size or 200
+	local height = (C.Minimap.PerformanceFontSize or 13) + 6
+	perf:SetSize(width, height)
 	perf:RegisterForClicks("AnyUp")
 
 	local text = perf:CreateFontString(nil, "OVERLAY")
@@ -217,9 +221,10 @@ function Module:CreatePerformance()
 	perf.Text = text
 	self.performance = perf
 
-	-- The shared name strip, matching the clock and the coordinates.
+	-- The shared strip, spanning the whole readout like the zone name, the clock
+	-- and the coordinates do.
 	local shade = K.CreateTextShade(perf, "ARTWORK", 6)
-	shade:SetRegion(text, 8, 2)
+	shade:SetRegion(perf, 0, 0)
 	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
 	shade:Show()
 	perf.Shade = shade
@@ -227,7 +232,7 @@ function Module:CreatePerformance()
 	-- Sits under the map by default, below the coordinate readout, and is movable
 	-- from there like any other piece of the UI.
 	local default = { "TOP", Minimap, "BOTTOM", 0, C.Minimap.ShowCoords and -22 or -6 }
-	K.CreateMover(perf, "Performance", L["Performance"], default, 120, 16)
+	K.CreateMover(perf, "Performance", L["Performance"], default, width, height)
 
 	-- A manual garbage collect, which is the one genuinely useful action here.
 	perf:SetScript("OnMouseUp", function()
