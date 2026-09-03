@@ -357,9 +357,12 @@ function Module:BuildRoleBar(tab)
 	local bar = CreateFrame("Frame", "KKUI_GroupToolsRoleBar", tab)
 	bar:SetSize(tab:GetWidth(), 22)
 	bar:SetPoint("TOP", tab, "BOTTOM", 0, -4)
-	local bg = bar:CreateTexture(nil, "BACKGROUND")
-	bg:SetAtlas("AftLevelup-ToastBG", false)
-	bg:SetAllPoints(bar)
+	-- Our own gradient rather than the AftLevelup-ToastBG atlas, so this strip and
+	-- the unit frame name strips are the same colour and alpha, set in one place.
+	local shade = K.CreateTextShade(bar, "BACKGROUND")
+	shade.Holder:SetAllPoints(bar)
+	shade:SetColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3], K.GradientAlpha.strip)
+	shade:Show()
 	bar:Hide()
 
 	self.RoleWidgets = self:BuildRoleWidgets(bar)

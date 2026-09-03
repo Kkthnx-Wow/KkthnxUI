@@ -48,18 +48,28 @@ function Module.GradientLabel(self, anchor, size, yOffset)
 	text:SetJustifyH("CENTER")
 	text:SetPoint("BOTTOM", anchor, "TOP", 0, yOffset or 6)
 
-	local bg = self:CreateTexture(nil, "BACKGROUND", nil, -2)
-	-- useAtlasSize = false, or the atlas forces its own size and overhangs.
-	bg:SetAtlas("AftLevelup-ToastBG", false)
+	-- Our own gradient rather than the AftLevelup-ToastBG atlas, whose violet was
+	-- baked into the art, so it matched nothing else and its colour and alpha could
+	-- not be touched. Two mirrored halves give the same fade out to both edges.
+	local shade = K.CreateTextShade(self, "BACKGROUND", -2)
+	local height = (size or 12) + 6
+	local bottom = (yOffset or 6) - 3
+
 	-- Span the anchor width and sit above it at a fixed height. Sizing from the
 	-- name fontstring instead (its TOP/BOTTOM) collapsed the strip to nothing on any
 	-- frame whose name had not populated yet, so some party members showed no
 	-- gradient while others did. A deterministic height keeps every frame identical.
-	bg:SetPoint("LEFT", anchor, "LEFT", 0, 0)
-	bg:SetPoint("RIGHT", anchor, "RIGHT", 0, 0)
-	bg:SetPoint("BOTTOM", anchor, "TOP", 0, (yOffset or 6) - 3)
-	bg:SetHeight((size or 12) + 6)
-	text.BG = bg
+	local holder = shade.Holder
+	holder:SetPoint("LEFT", anchor, "LEFT", 0, 0)
+	holder:SetPoint("RIGHT", anchor, "RIGHT", 0, 0)
+	holder:SetPoint("BOTTOM", anchor, "TOP", 0, bottom)
+	holder:SetHeight(height)
+
+	shade:SetColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3], K.GradientAlpha.strip)
+	shade:Show()
+	-- The holder is what the upward stack anchors to, so hand that over rather than
+	-- the shade table, which is not a region.
+	text.BG = holder
 
 	return text
 end

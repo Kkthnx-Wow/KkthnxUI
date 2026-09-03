@@ -52,6 +52,7 @@ K.GradientAlpha = {
 	line = 0.7, -- a hairline at rest
 	lineSoft = 0.6, -- a quieter hairline
 	lineActive = 1, -- the lit hairline on the selected tab
+	strip = 0.55, -- the name strip behind unit frame and group tool labels
 }
 
 -- Paint a texture with one of the named recipes. Pass an alpha to override the
@@ -86,21 +87,31 @@ end
 -- alpha are ours to set.
 function K.CreateTextShade(parent, layer, subLevel)
 	local shade = {}
+
+	-- An invisible holder gives the pair one rectangle: the halves follow it, and
+	-- anything that needs to stack above the shade has a real frame to anchor to.
+	-- The textures stay on the parent so sitting on a child frame does not change
+	-- the draw layer they were asked for.
+	local holder = CreateFrame("Frame", nil, parent)
+	shade.Holder = holder
+
 	local left = parent:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel or -1)
 	local right = parent:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel or -1)
 	left:SetColorTexture(1, 1, 1)
 	right:SetColorTexture(1, 1, 1)
 	shade.Left, shade.Right = left, right
 
+	left:SetPoint("TOPLEFT", holder, "TOPLEFT", 0, 0)
+	left:SetPoint("BOTTOMRIGHT", holder, "BOTTOM", 0, 0)
+	right:SetPoint("TOPLEFT", holder, "TOP", 0, 0)
+	right:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", 0, 0)
+
 	-- Frame the given region, padded out by padX and padY.
 	function shade:SetRegion(region, padX, padY)
 		padX, padY = padX or 8, padY or 4
-		left:ClearAllPoints()
-		left:SetPoint("TOPLEFT", region, "TOPLEFT", -padX, padY)
-		left:SetPoint("BOTTOMRIGHT", region, "BOTTOM", 0, -padY)
-		right:ClearAllPoints()
-		right:SetPoint("TOPLEFT", region, "TOP", 0, padY)
-		right:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", padX, -padY)
+		holder:ClearAllPoints()
+		holder:SetPoint("TOPLEFT", region, "TOPLEFT", -padX, padY)
+		holder:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", padX, -padY)
 	end
 
 	-- Transparent at the outer edges, full in the middle where the text sits.

@@ -66,6 +66,13 @@ oUF:AddElement("KKUI_SelectHighlight", SelectUpdate, SelectEnable, SelectDisable
 -- A hover texture shown while the cursor is over the frame, and a select texture
 -- shown while the frame's unit is the target. Both frame the health bar's border
 -- with the given atlases. The element above drives the select texture.
+--
+-- These two are the last game atlases we lean on for colour. Their tint is baked
+-- into the art, so unlike the rest of the UI they cannot be recoloured from the
+-- palette. They frame a rectangle rather than text, so K.CreateTextShade is the
+-- wrong shape for them: they want a flat tint or a coloured border instead. Left
+-- as they are for now because changing them alters how a member reads out of a
+-- raid grid, which is worth deciding on deliberately.
 function Build.Highlight(self, hoverAtlas, selectAtlas)
 	local anchor = self.Health or self
 
