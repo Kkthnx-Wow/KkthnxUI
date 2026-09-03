@@ -65,7 +65,7 @@ function Module.GradientLabel(self, anchor, size, yOffset)
 	holder:SetPoint("BOTTOM", anchor, "TOP", 0, bottom)
 	holder:SetHeight(height)
 
-	shade:SetColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3], K.GradientAlpha.strip)
+	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
 	shade:Show()
 	-- The holder is what the upward stack anchors to, so hand that over rather than
 	-- the shade table, which is not a region.

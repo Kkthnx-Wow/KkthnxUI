@@ -52,8 +52,13 @@ K.GradientAlpha = {
 	line = 0.7, -- a hairline at rest
 	lineSoft = 0.6, -- a quieter hairline
 	lineActive = 1, -- the lit hairline on the selected tab
-	strip = 0.55, -- the name strip behind unit frame and group tool labels
+	strip = 0.7, -- the name strip behind unit frame and group tool labels
 }
+
+-- The tint those name strips wear. Deliberately dark and only faintly blue: the
+-- text sitting on it is class coloured, so a bright strip fights it. Kept here so
+-- both the unit frames and the group tools bar read the same value.
+K.StripColor = { 0.075, 0.094, 0.129 }
 
 -- Paint a texture with one of the named recipes. Pass an alpha to override the
 -- recipe's own.

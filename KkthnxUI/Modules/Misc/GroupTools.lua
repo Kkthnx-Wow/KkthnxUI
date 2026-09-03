@@ -361,7 +361,7 @@ function Module:BuildRoleBar(tab)
 	-- the unit frame name strips are the same colour and alpha, set in one place.
 	local shade = K.CreateTextShade(bar, "BACKGROUND")
 	shade.Holder:SetAllPoints(bar)
-	shade:SetColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3], K.GradientAlpha.strip)
+	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
 	shade:Show()
 	bar:Hide()
 
