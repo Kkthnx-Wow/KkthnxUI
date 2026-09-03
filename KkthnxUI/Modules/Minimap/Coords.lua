@@ -49,6 +49,14 @@ function Module:CreateCoords()
 	coords:SetDrawLayer("OVERLAY", 7)
 	self.coords = coords
 
+	-- The same strip the unit frame names wear, so every readout around the map
+	-- matches. It hugs the text, which grows and shrinks with the coordinates.
+	local shade = K.CreateTextShade(Minimap, "ARTWORK", 6)
+	shade:SetRegion(coords, 8, 2)
+	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
+	shade:Show()
+	coords.Shade = shade
+
 	-- A FontString cannot take an OnUpdate, so a small driver frame runs the
 	-- throttled poll and writes the text. Cheaper than a coordinate event and
 	-- always current.

@@ -107,9 +107,18 @@ function Module:CreateClock()
 
 	local text = clock:CreateFontString(nil, "OVERLAY")
 	K.SetFont(text, C.Minimap.ClockFontSize or 12, K.FontOutlineStyle())
-	text:SetAllPoints()
+	-- Centred rather than filling the button, so the strip below can hug the time
+	-- itself instead of stretching the full click area.
+	text:SetPoint("CENTER")
 	clock.Text = text
 	self.clock = clock
+
+	-- The shared name strip, matching the coordinates and the performance readout.
+	local shade = K.CreateTextShade(clock, "ARTWORK", 6)
+	shade:SetRegion(text, 8, 2)
+	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
+	shade:Show()
+	clock.Shade = shade
 
 	clock:SetScript("OnMouseUp", function(_, button)
 		if button == "RightButton" then

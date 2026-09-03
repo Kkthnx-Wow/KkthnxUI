@@ -210,10 +210,19 @@ function Module:CreatePerformance()
 	perf:RegisterForClicks("AnyUp")
 
 	local text = perf:CreateFontString(nil, "OVERLAY")
-	K.SetFont(text, C.Minimap.PerformanceFontSize or 12, K.FontOutlineStyle())
-	text:SetAllPoints()
+	K.SetFont(text, C.Minimap.PerformanceFontSize or 13, K.FontOutlineStyle())
+	-- Centred rather than filling the button, so the strip below hugs the readout
+	-- instead of stretching the full click area.
+	text:SetPoint("CENTER")
 	perf.Text = text
 	self.performance = perf
+
+	-- The shared name strip, matching the clock and the coordinates.
+	local shade = K.CreateTextShade(perf, "ARTWORK", 6)
+	shade:SetRegion(text, 8, 2)
+	shade:SetColor(K.StripColor[1], K.StripColor[2], K.StripColor[3], K.GradientAlpha.strip)
+	shade:Show()
+	perf.Shade = shade
 
 	-- Sits under the map by default, below the coordinate readout, and is movable
 	-- from there like any other piece of the UI.
