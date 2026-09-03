@@ -84,13 +84,53 @@ function Module:StyleZoneAbility()
 		frame.Style:SetAlpha(0)
 	end
 
+	-- The template's own NormalTexture is UI-Quickslot2, anchored well outside the
+	-- button (-16 to +17), so it reads as a second frame sitting around ours.
+	-- StyleAuxButton clears it, but that work is guarded to run once per button and
+	-- these come from a pool, so a button that is released and picked up again can
+	-- come back wearing its art. Clear it on every update rather than trusting the
+	-- one-shot pass.
+	local function StripButtonArt(button)
+		local normal = button.NormalTexture or (button.GetNormalTexture and button:GetNormalTexture())
+		if normal then
+			normal:SetTexture(nil)
+			normal:SetAlpha(0)
+		end
+		if button.SetNormalTexture then
+			button:SetNormalTexture(0)
+		end
+
+		-- Keep the hover inside our border instead of the oversized stock square.
+		local highlight = button.GetHighlightTexture and button:GetHighlightTexture()
+		if highlight then
+			highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+			highlight:ClearAllPoints()
+			highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+			highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+			highlight:SetBlendMode("ADD")
+		end
+
+		-- Refresh re-sets the icon texture, so re-crop and re-anchor it to sit flush.
+		if button.Icon then
+			button.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			button.Icon:ClearAllPoints()
+			button.Icon:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+			button.Icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		end
+	end
+
 	local function StyleButtons()
+		-- The update re-assigns the frame's Style atlas every time, so keep it down.
+		if frame.Style then
+			frame.Style:SetAlpha(0)
+		end
 		local container = frame.SpellButtonContainer
 		if not (container and container.EnumerateActive) then
 			return
 		end
 		for button in container:EnumerateActive() do
 			Module:StyleAuxButton(button)
+			StripButtonArt(button)
 		end
 	end
 

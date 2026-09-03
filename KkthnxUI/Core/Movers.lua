@@ -9,8 +9,9 @@
 		Dragging is hand rolled rather than StartMoving so we can snap to the
 		screen centre, the screen edges, and the edges of other movers, with live
 		guides, an optional grid, and live coordinates. Positions are stored per
-		profile as an offset from the UIParent centre so they survive resolution
-		and scale changes.
+		profile as an offset from a chosen anchor point on UIParent, so a frame
+		pinned by the corner it lives near stays put across resolution and scale
+		changes. The anchor point is editable from the nudge popup.
 -----------------------------------------------------------------------------]]
 
 local K, L = KkthnxUI[1], KkthnxUI[3]
@@ -18,6 +19,7 @@ local K, L = KkthnxUI[1], KkthnxUI[3]
 local ipairs = ipairs
 local pairs = pairs
 local abs = math.abs
+local strfind = string.find
 local InCombatLockdown = InCombatLockdown
 local GetCursorPosition = GetCursorPosition
 
@@ -56,31 +58,96 @@ local function Store()
 	return store
 end
 
-local function ApplyOffset(mover, offsetX, offsetY)
-	Store()[mover.moverKey] = { offsetX, offsetY }
+-- The anchor points a mover can be pinned by, in the order the popup cycles them.
+local ANCHOR_POINTS = { "CENTER", "TOP", "BOTTOM", "LEFT", "RIGHT", "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }
+K.MoverAnchorPoints = ANCHOR_POINTS
+
+-- Screen coordinates of one named point on a frame.
+local function PointCoords(frame, point)
+	local left, bottom = frame:GetLeft(), frame:GetBottom()
+	local width, height = frame:GetWidth(), frame:GetHeight()
+	if not (left and bottom and width and height) then
+		return
+	end
+	local x, y = left + width / 2, bottom + height / 2
+	if strfind(point, "LEFT") then
+		x = left
+	elseif strfind(point, "RIGHT") then
+		x = left + width
+	end
+	if strfind(point, "TOP") then
+		y = bottom + height
+	elseif strfind(point, "BOTTOM") then
+		y = bottom
+	end
+	return x, y
+end
+
+-- Where a mover sits right now, measured from one of UIParent's points. Anchoring
+-- a frame by the corner it lives near keeps it put when the resolution or the UI
+-- scale changes, which a centre-relative offset does not.
+local function OffsetFor(mover, point)
+	local mx, my = PointCoords(mover, point)
+	local ux, uy = PointCoords(UIParent, point)
+	if not (mx and ux) then
+		return 0, 0
+	end
+	return K.Round(mx - ux), K.Round(my - uy)
+end
+
+-- Read a saved position. Older profiles stored a bare { x, y } pair, which always
+-- meant a centre anchor, so those are read back as CENTER.
+local function SavedFor(mover)
+	local saved = Store()[mover.moverKey]
+	if not saved then
+		return
+	end
+	if saved[1] then
+		return "CENTER", saved[1], saved[2]
+	end
+	return saved.point or "CENTER", saved.x or 0, saved.y or 0
+end
+
+-- The point a mover is currently pinned by: its saved one, else the one its
+-- default position declared.
+local function CurrentPoint(mover)
+	local point = SavedFor(mover)
+	if point then
+		return point
+	end
+	local default = mover.moverDefault
+	return (default and default[1]) or "CENTER"
+end
+K.GetMoverPoint = CurrentPoint
+
+local function ApplyOffset(mover, offsetX, offsetY, point)
+	point = point or CurrentPoint(mover)
+	Store()[mover.moverKey] = { point = point, x = offsetX, y = offsetY }
 	mover:ClearAllPoints()
-	mover:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY)
+	mover:SetPoint(point, UIParent, point, offsetX, offsetY)
 end
 
 local function RestorePosition(mover)
 	mover:ClearAllPoints()
-	local saved = Store()[mover.moverKey]
-	if saved then
-		mover:SetPoint("CENTER", UIParent, "CENTER", saved[1], saved[2])
+	local point, x, y = SavedFor(mover)
+	if point then
+		mover:SetPoint(point, UIParent, point, x, y)
 		return
 	end
-	local point = mover.moverDefault
-	mover:SetPoint(point[1], point[2] or UIParent, point[3] or point[1], point[4] or 0, point[5] or 0)
+	local default = mover.moverDefault
+	mover:SetPoint(default[1], default[2] or UIParent, default[3] or default[1], default[4] or 0, default[5] or 0)
 end
 
--- Current position as a whole-pixel offset from the UIParent centre.
+-- Current position as a whole-pixel offset from the point this mover is pinned by.
 local function CurrentOffset(mover)
-	local cx, cy = mover:GetCenter()
-	local ux, uy = UIParent:GetCenter()
-	if not cx or not ux then
-		return 0, 0
-	end
-	return K.Round(cx - ux), K.Round(cy - uy)
+	return OffsetFor(mover, CurrentPoint(mover))
+end
+
+-- Re-pin a mover by a different point without letting it move on screen: the new
+-- offsets are measured from where it already sits.
+local function SetAnchorPoint(mover, point)
+	local x, y = OffsetFor(mover, point)
+	ApplyOffset(mover, x, y, point)
 end
 
 -- ---------------------------------------------------------------------------
@@ -466,6 +533,12 @@ local function RefreshPopup()
 	popup.Y:SetText(oy)
 	popup.X:SetCursorPosition(0)
 	popup.Y:SetCursorPosition(0)
+
+	-- Spell out what the offsets are actually measured from, since the same pair of
+	-- numbers means somewhere quite different depending on the point.
+	local point = CurrentPoint(popupTarget)
+	popup.Anchor:SetText(point)
+	popup.AnchorNote:SetFormattedText(L["Offsets are from %s of %s"], point, "UIParent")
 end
 
 local function Nudge(dx, dy)
@@ -495,7 +568,7 @@ local function BuildPopup()
 	end
 
 	popup = CreateFrame("Frame", "KKUI_MoverPopup", UIParent)
-	popup:SetSize(232, 178)
+	popup:SetSize(232, 236)
 	popup:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 260)
 	popup:SetFrameStrata("DIALOG")
 	popup:SetMovable(true)
@@ -581,9 +654,45 @@ local function BuildPopup()
 	popup.X = MakeInput("X", -8)
 	popup.Y = MakeInput("Y", -52)
 
+	-- Anchor point picker. Clicking steps through the points, and the frame keeps
+	-- its place on screen because the new offsets are measured from where it
+	-- already sits. Pinning a frame by the corner it lives near is what keeps it
+	-- there when the resolution or the UI scale changes.
+	local anchorLabel = popup:CreateFontString(nil, "OVERLAY")
+	K.SetFont(anchorLabel, 11, K.FontOutlineStyle())
+	anchorLabel:SetPoint("TOPLEFT", group, "BOTTOMLEFT", 4, -8)
+	anchorLabel:SetText(L["Anchor"])
+
+	local anchor = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
+	anchor:SetSize(140, 22)
+	anchor:SetPoint("TOPRIGHT", group, "BOTTOMRIGHT", 0, -6)
+	K.SkinButton(anchor)
+	anchor:SetScript("OnClick", function()
+		if not popupTarget then
+			return
+		end
+		local current = CurrentPoint(popupTarget)
+		local index = 1
+		for i, point in ipairs(ANCHOR_POINTS) do
+			if point == current then
+				index = i
+				break
+			end
+		end
+		SetAnchorPoint(popupTarget, ANCHOR_POINTS[(index % #ANCHOR_POINTS) + 1])
+		RefreshPopup()
+	end)
+	popup.Anchor = anchor
+
+	local anchorNote = popup:CreateFontString(nil, "OVERLAY")
+	K.SetFont(anchorNote, 10, K.FontOutlineStyle())
+	anchorNote:SetPoint("TOPLEFT", anchorLabel, "BOTTOMLEFT", 0, -12)
+	anchorNote:SetTextColor(0.6, 0.6, 0.6)
+	popup.AnchorNote = anchorNote
+
 	local reset = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
 	reset:SetSize(208, 24)
-	reset:SetPoint("TOPLEFT", group, "BOTTOMLEFT", 0, -10)
+	reset:SetPoint("TOPLEFT", anchorNote, "BOTTOMLEFT", -4, -8)
 	reset:SetText(L["Reset"])
 	K.SkinButton(reset)
 	reset:SetScript("OnClick", function()
