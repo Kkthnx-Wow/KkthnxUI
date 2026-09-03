@@ -80,8 +80,8 @@ local function HideBlizzardBits()
 end
 
 -- The expansion / garrison landing page button floats wherever Blizzard drops it,
--- which reads as clutter on the square map. Tuck it into the top-right corner and
--- hold it there, since the client re-anchors it on show.
+-- which reads as clutter on the square map. Tuck it into the bottom-left corner
+-- and hold it there, since the client re-anchors it on show.
 local function TidyLandingButton()
 	local button = _G.ExpansionLandingPageMinimapButton or _G.GarrisonLandingPageMinimapButton
 	if not button then
@@ -93,7 +93,7 @@ local function TidyLandingButton()
 		end
 		button.__kkuiAnchoring = true
 		button:ClearAllPoints()
-		button:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 2, 2)
+		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 2, -2)
 		button:SetScale(0.85)
 		button.__kkuiAnchoring = false
 	end
@@ -102,7 +102,7 @@ local function TidyLandingButton()
 end
 
 -- The LFG/queue eye floats at a stock spot off the minimap. Pin it to the
--- bottom-left corner and hold it there (the client re-anchors it as queues come
+-- bottom-right corner and hold it there (the client re-anchors it as queues come
 -- and go), and point its status popup off the button so it opens cleanly.
 local function TidyQueueStatus()
 	local button = _G.QueueStatusButton
@@ -116,7 +116,7 @@ local function TidyQueueStatus()
 		end
 		button.__kkuiAnchoring = true
 		button:ClearAllPoints()
-		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+		button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -4, 4)
 		button:SetScale(0.55)
 		button.__kkuiAnchoring = false
 	end
@@ -126,7 +126,77 @@ local function TidyQueueStatus()
 	local popup = _G.QueueStatusFrame
 	if popup then
 		popup:ClearAllPoints()
-		popup:SetPoint("BOTTOMLEFT", button, "TOPLEFT", 0, 4)
+		popup:SetPoint("BOTTOMRIGHT", button, "TOPRIGHT", 0, 4)
+	end
+end
+
+-- The instance difficulty flag and the mail indicator both hang off
+-- MinimapCluster, which we hide most of, so out of the box they sit against the
+-- stock border rather than our square map.
+--
+-- Blizzard re-anchors both from two places: MinimapCluster:SetHeaderUnderneath
+-- flips them when the header moves, and the global MiniMapIndicatorFrame_UpdatePosition
+-- re-points the indicator frame whenever the tracking button shows or hides. So
+-- pinning once is not enough, both re-anchor paths get a hook.
+function Module:TidyIndicators()
+	local cluster = _G.MinimapCluster
+	if not cluster then
+		return
+	end
+
+	-- Difficulty flag, top right of the map.
+	local difficulty = cluster.InstanceDifficulty
+	if difficulty then
+		local function PinDifficulty()
+			if difficulty.__kkuiAnchoring then
+				return
+			end
+			difficulty.__kkuiAnchoring = true
+			difficulty:ClearAllPoints()
+			difficulty:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 2, 2)
+			difficulty.__kkuiAnchoring = false
+		end
+		PinDifficulty()
+		hooksecurefunc(difficulty, "SetPoint", PinDifficulty)
+		self.PinDifficulty = PinDifficulty
+	end
+
+	-- Mail (and the crafting order indicator beside it) sit just above the clock,
+	-- falling back to the bottom of the map when the clock is switched off.
+	local indicator = cluster.IndicatorFrame
+	if indicator then
+		local function PinIndicator()
+			if indicator.__kkuiAnchoring then
+				return
+			end
+			indicator.__kkuiAnchoring = true
+			indicator:ClearAllPoints()
+			local clock = Module.clock
+			if clock then
+				indicator:SetPoint("BOTTOM", clock, "TOP", 0, 4)
+			else
+				indicator:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 6)
+			end
+			indicator.__kkuiAnchoring = false
+		end
+		PinIndicator()
+		hooksecurefunc(indicator, "SetPoint", PinIndicator)
+		if _G.MiniMapIndicatorFrame_UpdatePosition then
+			hooksecurefunc("MiniMapIndicatorFrame_UpdatePosition", PinIndicator)
+		end
+		self.PinIndicator = PinIndicator
+	end
+
+	-- Both are flipped and re-pointed when the header side changes.
+	if cluster.SetHeaderUnderneath then
+		hooksecurefunc(cluster, "SetHeaderUnderneath", function()
+			if self.PinDifficulty then
+				self.PinDifficulty()
+			end
+			if self.PinIndicator then
+				self.PinIndicator()
+			end
+		end)
 	end
 end
 
@@ -252,6 +322,9 @@ function Module:OnEnable()
 	if self.CreatePerformance then
 		self:CreatePerformance()
 	end
+
+	-- After the datatexts, since the mail indicator anchors above the clock.
+	self:TidyIndicators()
 
 	-- Corral stray addon minimap buttons into a tidy hover panel.
 	if db.CollectButtons and self.CollectButtons then
