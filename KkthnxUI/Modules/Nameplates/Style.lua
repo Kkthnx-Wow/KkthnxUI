@@ -137,6 +137,13 @@ local function UpdateTargetHighlight(self)
 		return
 	end
 
+	-- A plate with a bar carries its target cue on the shadow, never on the name
+	-- glow, so make sure the glow is down. This runs on target change too, which
+	-- does not go through UpdateNameOnly.
+	if self.NameSelect then
+		self.NameSelect:Hide()
+	end
+
 	local shadow = self.KKUI_Shadow
 	if not shadow then
 		return
@@ -319,6 +326,21 @@ local function UpdateNameOnly(self)
 	-- Guild line only makes sense in name-only mode, on a bar it would overlap.
 	if self.GuildName then
 		self.GuildName:SetShown(friendly)
+	end
+
+	-- The two name-only glows have to be cleared explicitly. Both live on every
+	-- plate but are only ever shown by the name-only paths, so a pooled plate that
+	-- was a hovered or targeted friendly kept its glow once the frame came back
+	-- round for a hostile unit with a health bar. Drop the hover watcher with them,
+	-- since it only ever runs for a name-only plate.
+	if not friendly then
+		if self.NameHover then
+			self.NameHover:Hide()
+		end
+		if self.NameSelect then
+			self.NameSelect:Hide()
+		end
+		self:SetScript("OnUpdate", nil)
 	end
 
 	-- Re-anchor the name to the plate centre when the bar is gone.
