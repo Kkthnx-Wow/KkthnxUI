@@ -472,7 +472,7 @@ function Module:OnEnable()
 	tab:Hide()
 	self.Tab = tab
 
-	K.CreateMover(tab, "GroupTools", "Group Tools", { "TOP", UIParent, "TOP", 0, -20 }, 120, 24)
+	K.CreateMover(tab, "GroupTools", "Group Tools", { "TOP", UIParent, "TOP", 0, -26 }, 120, 24)
 
 	self:BuildRoleBar(tab)
 	self:BuildPanel(tab)
