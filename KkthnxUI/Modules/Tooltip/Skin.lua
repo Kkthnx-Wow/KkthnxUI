@@ -13,6 +13,7 @@ local Module = K:GetModule("Tooltip")
 
 local _G = _G
 local ipairs = ipairs
+local pairs = pairs
 
 -- Apply our border and background to a tooltip once, hiding the stock frame.
 local function SkinTooltip(tt)
@@ -94,6 +95,25 @@ local SKIN_LIST = {
 	"GameSmallHeaderTooltip",
 }
 
+-- Tooltips that only exist once a load-on-demand addon has come in, keyed by the
+-- addon that brings them. FrameStackTooltip is the /fstack readout and lives in
+-- Blizzard_DebugTools, which is LoadOnDemand, so it is simply not there at login
+-- and never got picked up by the list above.
+local LOD_TOOLTIPS = {
+	Blizzard_DebugTools = { "FrameStackTooltip" },
+	Blizzard_EventTrace = { "EventTraceTooltip" },
+}
+
+local function SkinLoadOnDemand(addon)
+	local names = LOD_TOOLTIPS[addon]
+	if not names then
+		return
+	end
+	for _, name in ipairs(names) do
+		SkinTooltip(_G[name])
+	end
+end
+
 -- Tooltips that live as fields on another frame rather than as globals.
 local function SkinNestedTooltips()
 	if _G.QuestScrollFrame then
@@ -107,6 +127,17 @@ function Module:SetupSkins()
 		SkinTooltip(_G[name])
 	end
 	SkinNestedTooltips()
+
+	-- Catch the load-on-demand tooltips, both the ones already in and any that
+	-- arrive later. SkinTooltip is idempotent, so a second pass costs nothing.
+	for addon in pairs(LOD_TOOLTIPS) do
+		if C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded(addon) then
+			SkinLoadOnDemand(addon)
+		end
+	end
+	self:RegisterEvent("ADDON_LOADED", function(_, _, addon)
+		SkinLoadOnDemand(addon)
+	end)
 
 	-- Keep Blizzard from re-adding its backdrop on shared tooltips.
 	if _G.SharedTooltip_SetBackdropStyle then

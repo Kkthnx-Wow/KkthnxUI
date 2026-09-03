@@ -69,6 +69,12 @@ function Module:StyleExtraActionButton()
 end
 
 -- Zone ability (dragon glyphs, garrison abilities, etc.).
+--
+-- The buttons are not a fixed frame.SpellButton any more. They come out of a pool
+-- on ZoneAbilityFrame.SpellButtonContainer, built fresh whenever the displayed
+-- abilities change, so styling once at login skinned nothing at all. Walk the
+-- active buttons after every update instead. StyleAuxButton marks what it has
+-- already done, so a recycled button is not styled twice.
 function Module:StyleZoneAbility()
 	local frame = _G.ZoneAbilityFrame
 	if not frame then
@@ -77,9 +83,22 @@ function Module:StyleZoneAbility()
 	if frame.Style then
 		frame.Style:SetAlpha(0)
 	end
-	if frame.SpellButton then
-		self:StyleAuxButton(frame.SpellButton)
+
+	local function StyleButtons()
+		local container = frame.SpellButtonContainer
+		if not (container and container.EnumerateActive) then
+			return
+		end
+		for button in container:EnumerateActive() do
+			Module:StyleAuxButton(button)
+		end
 	end
+
+	StyleButtons()
+	if frame.UpdateDisplayedZoneAbilities then
+		hooksecurefunc(frame, "UpdateDisplayedZoneAbilities", StyleButtons)
+	end
+
 	self:AttachExtraMover(frame, "ZoneAbility", L["Zone Ability"], { "BOTTOM", UIParent, "BOTTOM", 80, 320 })
 end
 
