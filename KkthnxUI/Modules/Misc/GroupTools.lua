@@ -421,7 +421,7 @@ function Module:SetPanelShown(show)
 		return
 	end
 	if not show and InCombatLockdown() then
-		self.__pendingHide = true
+		-- UpdateVisibility runs again on PLAYER_REGEN_ENABLED and calls back here.
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
 		return
 	end
@@ -433,18 +433,34 @@ function Module:UpdateVisibility()
 	if not self.Tab then
 		return
 	end
-	if self.__pendingHide and not InCombatLockdown() then
-		self.__pendingHide = nil
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+
+	local inGroup = IsInGroup()
+
+	-- The leader greying and the role counts touch plain buttons and font strings,
+	-- so they stay live during a fight.
+	if inGroup then
+		self:UpdateLeaderState()
+		self:UpdateRoleCount()
 	end
-	if IsInGroup() then
+
+	-- The panel carries secure world marker buttons, and that makes showing or
+	-- hiding anything above them protected too, the tab included. GROUP_ROSTER_UPDATE
+	-- fires plenty mid fight (someone joining, leaving, or being replaced), so any
+	-- visibility change has to wait for combat to drop or the client blocks it
+	-- (GitHub #148).
+	if InCombatLockdown() then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
+		return
+	end
+
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+
+	if inGroup then
 		self.Tab:Show()
 		-- Role bar is up whenever the panel is closed.
 		if self.RoleBar then
 			self.RoleBar:SetShown(not (self.Panel and self.Panel:IsShown()))
 		end
-		self:UpdateLeaderState()
-		self:UpdateRoleCount()
 	else
 		self.Tab:Hide()
 		if self.RoleBar then
