@@ -84,6 +84,19 @@ local MARK_NAME = {
 	L["Moon"], L["Square"], L["Cross"], L["Skull"],
 }
 
+-- Raid target icon (1 Star through 8 Skull) to the ground flare that matches it.
+-- The two are numbered differently, so a button showing Star has to place flare 8.
+-- Blizzard keeps the translation in WORLD_RAID_MARKER_ORDER and reads it the same
+-- way in its own raid manager (CRFManagerRaidIconButtonMixin runs the displayed
+-- marker through it before calling PlaceRaidMarker). The local copy is only a
+-- fallback for a client that has not loaded the raid frame manager yet.
+local FLARE_FOR_ICON = { 8, 4, 1, 7, 2, 3, 6, 5 }
+
+local function WorldMarkerFor(icon)
+	local order = _G.WORLD_RAID_MARKER_ORDER
+	return (order and order[icon]) or FLARE_FOR_ICON[icon] or icon
+end
+
 local function SetTip(button, title, line)
 	button:HookScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -242,7 +255,11 @@ function Module:BuildPanel(tab)
 		button:SetPoint("TOPLEFT", panel, "TOPLEFT", x, y)
 		button:RegisterForClicks("AnyUp")
 		-- Secure worldmarker action: left toggles the ground marker, right clears it.
-		button:SetAttribute("marker", i)
+		-- The ground flare is NOT numbered the same way as the raid target icon, so
+		-- placing marker i under icon i drops a different colour than the button
+		-- shows. Blizzard keeps the translation in WORLD_RAID_MARKER_ORDER and its
+		-- own raid manager runs every click through it, so use that same table.
+		button:SetAttribute("marker", WorldMarkerFor(i))
 		button:SetAttribute("type1", "worldmarker")
 		button:SetAttribute("action1", "toggle")
 		button:SetAttribute("type2", "worldmarker")
