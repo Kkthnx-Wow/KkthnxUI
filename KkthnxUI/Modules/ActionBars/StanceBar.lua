@@ -105,10 +105,16 @@ function Module:UpdateStanceVisibility(bar)
 		return
 	end
 	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-			Module:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		-- Four files share the ActionBars module and all of them listen for combat
+		-- ending: the keybind reassign, the deferred bar updates, and the extra button
+		-- re-pin. Unregistering the event by name alone would drop every one of those
+		-- too, so this hands back its own handler and leaves the siblings running.
+		local once
+		once = function()
+			Module:UnregisterEvent("PLAYER_REGEN_ENABLED", once)
 			Module:UpdateStanceVisibility(bar)
-		end)
+		end
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", once)
 		return
 	end
 	if (GetNumShapeshiftForms() or 0) > 0 then

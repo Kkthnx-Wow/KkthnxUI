@@ -207,11 +207,15 @@ function K:SetupUIScale(init)
 			pendingScale = true
 			local core = K:GetModule("Core", true)
 			if core then
-				core:RegisterEvent("PLAYER_REGEN_ENABLED", function(mod)
-					mod:UnregisterEvent("PLAYER_REGEN_ENABLED")
+				-- Hand back this exact handler rather than the event name, so a future
+				-- listener on the shared Core module is not dropped along with it.
+				local once
+				once = function(mod)
+					mod:UnregisterEvent("PLAYER_REGEN_ENABLED", once)
 					pendingScale = nil
 					K:SetupUIScale()
-				end)
+				end
+				core:RegisterEvent("PLAYER_REGEN_ENABLED", once)
 			end
 		end
 		return
