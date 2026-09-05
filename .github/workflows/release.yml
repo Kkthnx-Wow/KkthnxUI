@@ -42,5 +42,15 @@ jobs:
           # history to walk, so the changelog comes out empty.
           fetch-depth: 0
 
+      # Retail only for now. Without this the packager reads every TOC in the
+      # folder and would publish the Vanilla, TBC, Cata and Mists builds too,
+      # which are not being supported yet.
+      #
+      # The release type is not set here on purpose: the packager reads it from
+      # the tag. A tag containing "beta" uploads as a beta, "alpha" as an alpha,
+      # anything else as a full release. So while we are in beta, tag it
+      # 11.0.1-beta and CurseForge marks the file beta on its own.
       - name: Package and release
         uses: BigWigsMods/packager@v2
+        with:
+          args: -g retail
