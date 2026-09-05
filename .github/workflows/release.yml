@@ -1,0 +1,46 @@
+# Packages the addon and publishes it to GitHub Releases, CurseForge and Wago.
+#
+# Runs when an annotated tag is pushed. The tag name becomes the version, so tag
+# what you want the release called:
+#
+#   git tag -a 11.0.1 -m "11.0.1"
+#   git push origin 11.0.1
+#
+# The packager reads .pkgmeta for the folder layout and each TOC for the game
+# versions and the CurseForge and Wago project ids, so nothing is duplicated here.
+name: Release
+
+on:
+  push:
+    tags:
+      - "**"
+
+# The packager creates the GitHub release itself, which needs write access to
+# contents. Without this the run fails with "Resource not accessible by
+# integration".
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Package and release
+    runs-on: ubuntu-latest
+
+    env:
+      # Added by hand under Settings, Secrets and variables, Actions.
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+      # Provided by Actions automatically, nothing to add for this one.
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v4
+        with:
+          # The packager walks back through history to find the previous tag and
+          # builds the changelog from the commits since. A shallow clone has no
+          # history to walk, so the changelog comes out empty.
+          fetch-depth: 0
+
+      - name: Package and release
+        uses: BigWigsMods/packager@v2
