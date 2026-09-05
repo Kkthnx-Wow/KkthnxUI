@@ -261,7 +261,7 @@ local function BuildWindow()
 
 	local searchHint = search:CreateFontString(nil, "OVERLAY")
 	K.SetFont(searchHint, 11)
-	searchHint:SetTextColor(0.5, 0.5, 0.5)
+	searchHint:SetTextColor(K.Colors.disabled[1], K.Colors.disabled[2], K.Colors.disabled[3])
 	searchHint:SetPoint("LEFT", search, "LEFT", 4, 0)
 	searchHint:SetText(L["Search..."])
 

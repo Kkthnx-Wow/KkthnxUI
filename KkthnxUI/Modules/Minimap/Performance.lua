@@ -161,7 +161,7 @@ local function AddMemoryLines(tooltip)
 	tooltip:AddLine(L["Addon Memory"], K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 	for i = 1, min(5, #list) do
 		local entry = list[i]
-		tooltip:AddDoubleLine(entry.name, format("%.2f mb", entry.mem / 1024), 1, 1, 1, 0.8, 0.8, 0.8)
+		tooltip:AddDoubleLine(entry.name, format("%.2f mb", entry.mem / 1024), 1, 1, 1, K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3])
 	end
 	tooltip:AddDoubleLine(_G.TOTAL or "Total", format("%.2f mb", total / 1024), 1, 0.82, 0, 1, 1, 1)
 end
@@ -181,10 +181,10 @@ function Module:PerformanceTooltip(anchor)
 	local hc, wc = MSColor(home), MSColor(world)
 	GameTooltip:AddDoubleLine(L["Home Latency"], format("%d ms", home), 1, 1, 1, hc[1], hc[2], hc[3])
 	GameTooltip:AddDoubleLine(L["World Latency"], format("%d ms", world), 1, 1, 1, wc[1], wc[2], wc[3])
-	GameTooltip:AddDoubleLine(L["Bandwidth"], format("%.2f kb/s", bandwidth), 1, 1, 1, 0.8, 0.8, 0.8)
+	GameTooltip:AddDoubleLine(L["Bandwidth"], format("%.2f kb/s", bandwidth), 1, 1, 1, K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3])
 
 	if collectgarbage then
-		GameTooltip:AddDoubleLine(L["UI Memory"], format("%.2f mb", (collectgarbage("count") or 0) / 1024), 1, 1, 1, 0.8, 0.8, 0.8)
+		GameTooltip:AddDoubleLine(L["UI Memory"], format("%.2f mb", (collectgarbage("count") or 0) / 1024), 1, 1, 1, K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3])
 	end
 
 	if not AddProfilerLines(GameTooltip) then
@@ -192,7 +192,7 @@ function Module:PerformanceTooltip(anchor)
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("|cff669dffLeft Click|r " .. L["Collect garbage"], 0.6, 0.6, 0.6)
+	GameTooltip:AddLine("|cff669dffLeft Click|r " .. L["Collect garbage"], K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	GameTooltip:Show()
 end
 

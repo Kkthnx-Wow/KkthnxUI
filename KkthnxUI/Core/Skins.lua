@@ -28,6 +28,11 @@ K.Colors = {
 	ember = { 0.902, 0.502, 0.235 }, -- #E6803C caution, the step between gold and crimson
 	info = { 0.600, 0.800, 1.000 }, -- #99CCFF informational text, tooltip headings and hints
 	offWhite = { 0.925, 0.933, 0.949 }, -- #ECEEF2 body text, softer than pure white against the dark panels
+	-- Two muted tiers for secondary and inactive text. Both carry a little of the
+	-- theme blue rather than being flat grey, which is what keeps a hint or a greyed
+	-- label sitting in the same family as everything around it.
+	muted = { 0.620, 0.655, 0.710 }, -- #9EA7B5 hints, descriptions, secondary lines
+	disabled = { 0.451, 0.478, 0.529 }, -- #737A87 greyed out or unavailable
 }
 
 -- ---------------------------------------------------------------------------

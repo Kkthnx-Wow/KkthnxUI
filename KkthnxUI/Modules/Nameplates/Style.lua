@@ -594,7 +594,7 @@ local function BuildName(self)
 		local guild = self:CreateFontString(nil, "OVERLAY")
 		K.SetFont(guild, C.Nameplate.NameSize - 2, K.FontOutlineStyle())
 		guild:SetPoint("TOP", name, "BOTTOM", 0, -2)
-		guild:SetTextColor(0.7, 0.7, 0.7)
+		guild:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 		self:Tag(guild, "[kkui:npguild]")
 		self.GuildName = guild
 	end

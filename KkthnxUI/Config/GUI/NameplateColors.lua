@@ -41,7 +41,7 @@ function GUI.CustomPanels.NameplateColors(parent)
 
 	local help = parent:CreateFontString(nil, "OVERLAY")
 	K.SetFont(help, 12)
-	help:SetTextColor(0.7, 0.7, 0.7)
+	help:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	help:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
 	help:SetText(L["Paint a mob's health bar by npcID, for kill-first or focus targets."])
 

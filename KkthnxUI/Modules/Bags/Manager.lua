@@ -145,7 +145,7 @@ function Module:BuildManager()
 	local hint = f:CreateFontString(nil, "OVERLAY")
 	K.SetFont(hint, 11, "")
 	hint:SetPoint("TOPLEFT", newGroup, "BOTTOMLEFT", 0, -6)
-	hint:SetTextColor(0.6, 0.6, 0.6)
+	hint:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	hint:SetText(L["Drag an item onto a category to add it."])
 
 	f.rows = {}

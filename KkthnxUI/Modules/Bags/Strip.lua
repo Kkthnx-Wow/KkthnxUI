@@ -72,7 +72,7 @@ local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(name, 1, 1, 1)
 	if total > 0 then
-		GameTooltip:AddLine((total - free) .. " / " .. total, 0.8, 0.8, 0.8)
+		GameTooltip:AddLine((total - free) .. " / " .. total, K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3])
 	end
 	GameTooltip:Show()
 end

@@ -706,7 +706,7 @@ local function BuildPopup()
 	local anchorNote = popup:CreateFontString(nil, "OVERLAY")
 	K.SetFont(anchorNote, 10, K.FontOutlineStyle())
 	anchorNote:SetPoint("TOPLEFT", anchorLabel, "BOTTOMLEFT", 0, -12)
-	anchorNote:SetTextColor(0.6, 0.6, 0.6)
+	anchorNote:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	popup.AnchorNote = anchorNote
 
 	local reset = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")

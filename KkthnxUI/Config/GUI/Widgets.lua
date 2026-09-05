@@ -95,7 +95,7 @@ function GUI.AttachTooltip(frame, control, refresh)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(control.label or "", 1, 1, 1)
 		if control.tooltip then
-			GameTooltip:AddLine(control.tooltip, 0.8, 0.8, 0.8, true)
+			GameTooltip:AddLine(control.tooltip, K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3], true)
 		end
 		if resettable then
 			local shown = DescribeValue(control, GUI.GetDefault(control.path))
@@ -224,7 +224,7 @@ end
 function GUI.CreateDescription(parent, control)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	K.SetFont(fs, 11)
-	fs:SetTextColor(0.7, 0.7, 0.7)
+	fs:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	fs:SetWidth(440)
 	fs:SetJustifyH("LEFT")
 	fs:SetSpacing(3)
@@ -331,13 +331,13 @@ function GUI.CreateSlider(parent, control)
 
 	local low = holder:CreateFontString(nil, "OVERLAY")
 	K.SetFont(low, 10)
-	low:SetTextColor(0.6, 0.6, 0.6)
+	low:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	low:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -2)
 	low:SetText(control.min)
 
 	local high = holder:CreateFontString(nil, "OVERLAY")
 	K.SetFont(high, 10)
-	high:SetTextColor(0.6, 0.6, 0.6)
+	high:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	high:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, -2)
 	high:SetText(control.max)
 

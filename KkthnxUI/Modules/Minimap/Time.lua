@@ -91,7 +91,7 @@ function Module:TimeTooltip(anchor)
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("|cff669dffLeft Click|r Calendar   |cff669dffRight Click|r Stopwatch", 0.6, 0.6, 0.6)
+	GameTooltip:AddLine("|cff669dffLeft Click|r Calendar   |cff669dffRight Click|r Stopwatch", K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	GameTooltip:Show()
 end
 

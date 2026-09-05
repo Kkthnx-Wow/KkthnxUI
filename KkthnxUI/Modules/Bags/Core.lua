@@ -609,7 +609,7 @@ function Module:CreateContainer(name, title, bags, perRow)
 	local placeholder = search:CreateFontString(nil, "ARTWORK")
 	K.SetFont(placeholder, 12, "")
 	placeholder:SetPoint("LEFT", search, "LEFT", 4, 0)
-	placeholder:SetTextColor(0.5, 0.5, 0.5)
+	placeholder:SetTextColor(K.Colors.disabled[1], K.Colors.disabled[2], K.Colors.disabled[3])
 	placeholder:SetText(L["Search"])
 	search.Placeholder = placeholder
 	f.Search = search

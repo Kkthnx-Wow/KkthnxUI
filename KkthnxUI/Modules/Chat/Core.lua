@@ -260,7 +260,7 @@ local function ColorTab(tab, selected)
 		local color = K.ClassColor
 		text:SetTextColor(color.r, color.g, color.b)
 	else
-		text:SetTextColor(0.55, 0.55, 0.55)
+		text:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	end
 end
 

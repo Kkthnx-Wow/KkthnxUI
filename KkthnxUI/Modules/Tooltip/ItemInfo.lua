@@ -55,7 +55,7 @@ local function AddItemLevel(tt)
 	end
 
 	-- Label in grey, value in the item's quality colour, to match our other lines.
-	tt:AddDoubleLine(_G.ITEM_LEVEL_ABBR or "Item Level", ilvl, 0.6, 0.6, 0.6, r, g, b)
+	tt:AddDoubleLine(_G.ITEM_LEVEL_ABBR or "Item Level", ilvl, K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3], r, g, b)
 	tt:Show()
 end
 

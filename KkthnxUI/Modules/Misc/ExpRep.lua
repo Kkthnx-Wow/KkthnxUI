@@ -953,7 +953,7 @@ local function BuildBar()
 	local text = CreateFS(fill, C.ExpRep.FontSize)
 	text:SetPoint("CENTER")
 	text:SetWordWrap(false)
-	text:SetTextColor(0.9, 0.9, 0.9)
+	text:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
 	text:SetDrawLayer("OVERLAY", 7)
 	f.text = text
 

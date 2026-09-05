@@ -251,7 +251,7 @@ function Module:BuildPanel(tab)
 	K.SetFont(wmLabel, 11, K.FontOutlineStyle())
 	wmLabel:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, y)
 	wmLabel:SetText(L["World Markers"])
-	wmLabel:SetTextColor(0.7, 0.7, 0.7)
+	wmLabel:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	y = y - 14
 
 	local x = PAD
@@ -286,7 +286,7 @@ function Module:BuildPanel(tab)
 	K.SetFont(tiLabel, 11, K.FontOutlineStyle())
 	tiLabel:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, y)
 	tiLabel:SetText(L["Target Icons"])
-	tiLabel:SetTextColor(0.7, 0.7, 0.7)
+	tiLabel:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 	y = y - 14
 
 	x = PAD
@@ -379,7 +379,7 @@ function Module:BuildCombatRes(panel, y)
 	K.SetFont(label, 12, K.FontOutlineStyle())
 	label:SetPoint("LEFT", holder, "RIGHT", 8, 0)
 	label:SetText(L["Battle Rez"])
-	label:SetTextColor(0.7, 0.7, 0.7)
+	label:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
 
 	local count = row:CreateFontString(nil, "OVERLAY")
 	K.SetFont(count, 14, K.FontOutlineStyle())

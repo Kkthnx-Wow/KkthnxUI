@@ -22,7 +22,7 @@ local function AddID(tt, label, id)
 	if not id or IsSecret(id) then
 		return
 	end
-	tt:AddDoubleLine(label, tostring(id), 0.7, 0.7, 0.7, ID_COLOR[1], ID_COLOR[2], ID_COLOR[3])
+	tt:AddDoubleLine(label, tostring(id), K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3], ID_COLOR[1], ID_COLOR[2], ID_COLOR[3])
 	tt:Show()
 end
 
