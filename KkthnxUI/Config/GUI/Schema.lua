@@ -667,6 +667,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Show Target"], path = { "Tooltip", "ShowTarget" }, dependsOn = { "Tooltip", "Enable" } },
 			{ kind = "check", label = L["Show Guild"], path = { "Tooltip", "ShowGuild" }, dependsOn = { "Tooltip", "Enable" } },
 			{ kind = "check", label = L["Show Item Level"], path = { "Tooltip", "ShowItemLevel" }, dependsOn = { "Tooltip", "Enable" } },
+			{ kind = "check", label = L["Item Level On Shift"], path = { "Tooltip", "ItemLevelOnShift" }, dependsOn = { "Tooltip", "ShowItemLevel" }, tooltip = L["Only inspect for item level while you hold shift. Hold it before you hover, since the lookup happens as the tooltip is built."] },
 			{ kind = "check", label = L["Show IDs"], path = { "Tooltip", "ShowIDs" }, reload = true, dependsOn = { "Tooltip", "Enable" }, tooltip = L["Append spell, item, currency, and mount ids to tooltips."] },
 			{ kind = "check", label = L["Show Icons"], path = { "Tooltip", "ShowIcons" }, reload = true, dependsOn = { "Tooltip", "Enable" }, tooltip = L["Show the item, spell, or mount icon beside the tooltip title."] },
 			{ kind = "check", label = L["Show Mount Source"], path = { "Tooltip", "ShowMountSource" }, reload = true, dependsOn = { "Tooltip", "Enable" }, tooltip = L["Hold Shift over a player's mount buff to see its collection status and source."] },

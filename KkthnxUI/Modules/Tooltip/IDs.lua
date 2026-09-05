@@ -15,7 +15,7 @@ local Module = K:GetModule("Tooltip")
 local _G = _G
 local IsSecret = K.IsSecret
 
-local ID_COLOR = { 0.6, 0.8, 1 }
+local ID_COLOR = { K.Colors.info[1], K.Colors.info[2], K.Colors.info[3] }
 
 -- Append "<label>: <id>" once. AddDoubleLine puts the id on the right, coloured.
 local function AddID(tt, label, id)

@@ -594,7 +594,13 @@ function Module:SkinSocialButton()
 		if button.FriendCount then
 			button.FriendCount:SetParent(skin)
 			button.FriendCount:ClearAllPoints()
-			button.FriendCount:SetPoint("BOTTOMRIGHT", skin, "BOTTOMRIGHT", 1, -1)
+			button.FriendCount:SetPoint("BOTTOMRIGHT", skin, "BOTTOMRIGHT", 2, -2)
+			-- Stock font is small and unoutlined, which is unreadable sitting on the
+			-- icon art. Give it our outlined font in gold so the number reads at a
+			-- glance, and drop it on the overlay layer so nothing draws over it.
+			K.SetFont(button.FriendCount, 12, K.FontOutlineStyle())
+			button.FriendCount:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
+			button.FriendCount:SetDrawLayer("OVERLAY", 7)
 		end
 	end
 end

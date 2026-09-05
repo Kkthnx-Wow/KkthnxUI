@@ -65,14 +65,14 @@ function Module:TimeTooltip(anchor)
 
 	local today = C_DateAndTime and C_DateAndTime.GetCurrentCalendarTime and C_DateAndTime.GetCurrentCalendarTime()
 	if today and _G.FULLDATE and _G.CALENDAR_WEEKDAY_NAMES and _G.CALENDAR_FULLDATE_MONTH_NAMES then
-		GameTooltip:AddLine(format(_G.FULLDATE, _G.CALENDAR_WEEKDAY_NAMES[today.weekday], _G.CALENDAR_FULLDATE_MONTH_NAMES[today.month], today.monthDay, today.year), 0.4, 0.78, 1)
+		GameTooltip:AddLine(format(_G.FULLDATE, _G.CALENDAR_WEEKDAY_NAMES[today.weekday], _G.CALENDAR_FULLDATE_MONTH_NAMES[today.month], today.monthDay, today.year), K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 		GameTooltip:AddLine(" ")
 	end
 	if GameTime_GetLocalTime then
-		GameTooltip:AddDoubleLine(_G.TIMEMANAGER_TOOLTIP_LOCALTIME or "Local Time", GameTime_GetLocalTime(true), 0.6, 0.8, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(_G.TIMEMANAGER_TOOLTIP_LOCALTIME or "Local Time", GameTime_GetLocalTime(true), K.Colors.info[1], K.Colors.info[2], K.Colors.info[3], 1, 1, 1)
 	end
 	if GameTime_GetGameTime then
-		GameTooltip:AddDoubleLine(_G.TIMEMANAGER_TOOLTIP_REALMTIME or "Realm Time", GameTime_GetGameTime(true), 0.6, 0.8, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(_G.TIMEMANAGER_TOOLTIP_REALMTIME or "Realm Time", GameTime_GetGameTime(true), K.Colors.info[1], K.Colors.info[2], K.Colors.info[3], 1, 1, 1)
 	end
 
 	local saved = GetNumSavedInstances and GetNumSavedInstances() or 0
@@ -82,7 +82,7 @@ function Module:TimeTooltip(anchor)
 		if name and (locked or extended) then
 			if not shownHeader then
 				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine(_G.RAID_INFO or "Saved Instances", 0.6, 0.8, 1)
+				GameTooltip:AddLine(_G.RAID_INFO or "Saved Instances", K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 				shownHeader = true
 			end
 			local r, g, b = extended and 0.3 or 1, 1, extended and 0.3 or 1

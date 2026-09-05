@@ -32,7 +32,7 @@ local pending, pendingUnit
 -- without calling UnitGUID on the secret token GameTooltip:GetUnit() hands back.
 local shownGUID
 
-local ILVL_COLOR = { 0.9, 0.8, 0.5 }
+local ILVL_COLOR = K.Colors.gold
 
 -- Append the cached line to a tooltip. Blizzard already prints spec and class,
 -- so we only add the average item level it leaves out. A double line keeps the

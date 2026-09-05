@@ -26,6 +26,7 @@ K.Colors = {
 	crimson = { 0.898, 0.325, 0.325 }, -- #E55353 alert
 	jade = { 0.306, 0.741, 0.529 }, -- #4EBD87 success
 	ember = { 0.902, 0.502, 0.235 }, -- #E6803C caution, the step between gold and crimson
+	info = { 0.600, 0.800, 1.000 }, -- #99CCFF informational text, tooltip headings and hints
 }
 
 -- ---------------------------------------------------------------------------

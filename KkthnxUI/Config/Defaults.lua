@@ -405,6 +405,7 @@ K.ConfigDefaults = {
 		ShowTarget = true,
 		ShowGuild = true, -- <Guild> line for players
 		ShowItemLevel = true, -- inspect item level + spec on players
+		ItemLevelOnShift = false, -- only look it up while shift is held
 		ShowIDs = true, -- spell / item / currency / mount ids
 		ShowIcons = true, -- icon beside the tooltip title
 		ShowMountSource = true, -- collection status/source on a player's mount buff (hold Shift)

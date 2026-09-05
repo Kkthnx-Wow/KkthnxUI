@@ -210,7 +210,7 @@ function Module:OnUnitTooltip(tt)
 				if rank and rank ~= "" then
 					guildLine:SetText(format("%s |cffababab(%s)|r", guild, rank))
 				end
-				guildLine:SetTextColor(0.85, 0.75, 0.5)
+				guildLine:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
 			end
 		end
 	end
@@ -273,7 +273,7 @@ function Module:OnUnitTooltip(tt)
 			-- Comparing a secret name is illegal while tainted, so only special
 			-- case "you" when the name is a plain value.
 			if not IsSecret(targetName) and targetName == K.Name then
-				tt:AddLine(format("%s: %s", TARGET, "|cffff5555" .. YOU .. "|r"))
+				tt:AddLine(format("%s: %s", TARGET, format("|cff%02x%02x%02x%s|r", K.Colors.crimson[1] * 255, K.Colors.crimson[2] * 255, K.Colors.crimson[3] * 255, YOU)))
 			else
 				tt:AddLine(format("%s: %s", TARGET, targetName), r, g, b)
 			end
@@ -333,7 +333,11 @@ function Module:OnUnitTooltip(tt)
 	end
 
 	-- Item level and spec for players (async inspect, see Inspect.lua).
-	if db.ShowItemLevel and isPlayer and self.AddInspectInfo then
+	-- Inspecting is the expensive part of this tooltip, so it can be put behind
+	-- shift. The lookup runs as the tooltip is built, which means shift has to be
+	-- down before you hover rather than pressed afterwards.
+	local wantItemLevel = db.ShowItemLevel and (not db.ItemLevelOnShift or IsShiftKeyDown())
+	if wantItemLevel and isPlayer and self.AddInspectInfo then
 		self:AddInspectInfo(tt, unit)
 	end
 end

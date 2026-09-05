@@ -799,7 +799,7 @@ local function BuildIndicators(self)
 		local count = self.Health:CreateFontString(nil, "OVERLAY")
 		K.SetFont(count, db.NameSize - 1, K.FontOutlineStyle())
 		count:SetPoint("LEFT", quest, "RIGHT", 1, 0)
-		count:SetTextColor(0.6, 0.8, 1)
+		count:SetTextColor(K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 		self.QuestCount = count
 	end
 

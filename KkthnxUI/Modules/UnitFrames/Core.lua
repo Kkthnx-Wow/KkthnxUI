@@ -386,7 +386,7 @@ function Module:BuildRaidGroupLabels(header, cols, width)
 	for i = 1, cols do
 		local fs = header:CreateFontString(nil, "OVERLAY")
 		K.SetFont(fs, 12, K.FontOutlineStyle())
-		fs:SetTextColor(0.6, 0.8, 1)
+		fs:SetTextColor(K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 		fs:SetText(i)
 		local x = (i - 1) * (width + Module.GAP) + width * 0.5
 		fs:SetPoint("BOTTOM", header, "TOPLEFT", x, 3)

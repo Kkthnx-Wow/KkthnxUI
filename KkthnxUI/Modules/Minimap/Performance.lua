@@ -123,7 +123,7 @@ local function AddProfilerLines(tooltip)
 	end
 
 	tooltip:AddLine(" ")
-	tooltip:AddLine(L["Addon CPU (average per frame)"], 0.6, 0.8, 1)
+	tooltip:AddLine(L["Addon CPU (average per frame)"], K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 	for _, entry in ipairs(results) do
 		local name = entry.addOnName or "?"
 		local value = entry.metricValue or 0
@@ -158,7 +158,7 @@ local function AddMemoryLines(tooltip)
 	end)
 
 	tooltip:AddLine(" ")
-	tooltip:AddLine(L["Addon Memory"], 0.6, 0.8, 1)
+	tooltip:AddLine(L["Addon Memory"], K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 	for i = 1, min(5, #list) do
 		local entry = list[i]
 		tooltip:AddDoubleLine(entry.name, format("%.2f mb", entry.mem / 1024), 1, 1, 1, 0.8, 0.8, 0.8)
@@ -172,7 +172,7 @@ function Module:PerformanceTooltip(anchor)
 
 	GameTooltip:SetOwner(anchor, "ANCHOR_LEFT")
 	GameTooltip:ClearLines()
-	GameTooltip:AddLine(L["Performance"], 0.4, 0.78, 1)
+	GameTooltip:AddLine(L["Performance"], K.Colors.info[1], K.Colors.info[2], K.Colors.info[3])
 	GameTooltip:AddLine(" ")
 
 	local fc = FPSColor(fps)
