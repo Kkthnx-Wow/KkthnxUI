@@ -236,6 +236,20 @@ function Build.DetachedCastbar(self, key, label, width, height, point, iconSide)
 
 	cast.Holder = holder
 
+	-- The holder sits on UIParent so the mover can grab it, which means hiding the
+	-- unit frame does not hide the bar. Dropping a target mid cast sends no stop
+	-- event either, since the unit is simply gone, so the bar ran down to zero and
+	-- then sat there empty (GitHub #146). Follow the frame's own visibility, and put
+	-- the bar itself down with it so a stale one cannot reappear on the next target.
+	holder:SetShown(self:IsShown())
+	self:HookScript("OnHide", function()
+		cast:Hide()
+		holder:Hide()
+	end)
+	self:HookScript("OnShow", function()
+		holder:Show()
+	end)
+
 	K.CreateMover(holder, key, label, point, totalWidth, height)
 	return cast
 end
