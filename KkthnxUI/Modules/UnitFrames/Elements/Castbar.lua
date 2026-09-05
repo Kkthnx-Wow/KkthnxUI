@@ -42,8 +42,12 @@ local NOINTERRUPT_CLR = CreateColor(NOINTERRUPT_COLOR[1], NOINTERRUPT_COLOR[2], 
 -- SetVertexColorFromBoolean which handles the secret natively instead of an if.
 local function OnCastStart(self, _, _, notInterruptible)
 	-- Clear the interrupted state a previous cast may have left behind, so the timer
-	-- text is allowed to update again.
+	-- text is allowed to update again, and switch the duration binding back on since
+	-- an interrupt turns it off to stop the old cast counting down.
 	self.__failed = nil
+	if self.Time and self.Time.binding then
+		self.Time.binding:SetEnabled(true)
+	end
 	local tex = self:GetStatusBarTexture()
 	-- Secret boolean (enemy casts) -> the secret-safe setter. A plain boolean or nil
 	-- -> a normal branch, since the setter rejects non-secret values.
@@ -65,8 +69,20 @@ local function OnCastFail(self)
 	-- stops instead of ticking on.
 	self.__failed = true
 	if self.Time then
+		-- The timer text is not written by us. oUF hands the font string to a client
+		-- side duration binding, which keeps counting the original cast down even
+		-- after it was interrupted, straight over anything we set. Switching the
+		-- binding off is what actually stops it, and it is oUF's own mechanism, the
+		-- same call it makes when the element is disabled.
+		if self.Time.binding then
+			self.Time.binding:SetEnabled(false)
+		end
 		self.Time:SetText("")
 	end
+	-- Fill the bar so a stopped cast reads as stopped rather than frozen part way
+	-- through, the same way the other UIs show an interrupt.
+	self:SetMinMaxValues(0, 1)
+	self:SetValue(1)
 end
 
 -- oUF passes a DurationObject, never a raw number, so this stays safe when the
