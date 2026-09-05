@@ -119,6 +119,7 @@ stds.wow = {
 			"GetChannelName", "Ambiguate", "GetServerTime", "GetRealmName", "UICheckButtonTemplate",
 			"FCF_SetChatWindowFontSize", "ScrollFrameTemplate_OnMouseWheel", "SELECTED_DOCK_FRAME",
 			"ScrollingEdit_OnTextChanged", "ScrollingEdit_OnCursorChanged", "ScrollingEdit_OnUpdate",
+			"GetPlayerInfoByGUID", "GameFontNormal",
 	},
 	globals = {
 		"KkthnxUI", "KkthnxUIDB",

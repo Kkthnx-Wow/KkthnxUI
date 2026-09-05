@@ -564,6 +564,7 @@ GUI.schema = {
 			{ kind = "check", label = L["Whisper Sound"], path = { "Chat", "WhisperSound" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Play a sound when you receive a whisper."] },
 			{ kind = "check", label = L["Remember Chat History"], path = { "Chat", "HistoryPersist" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Replay your recent player chat after a reload or relog."] },
 			{ kind = "check", label = L["Skin Chat Bubbles"], path = { "Chat", "SkinBubbles" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Give the in-world chat bubbles our border and dark background."] },
+			{ kind = "check", label = L["Bubble Speaker Name"], path = { "Chat", "BubbleName" }, reload = true, dependsOn = { "Chat", "SkinBubbles" }, tooltip = L["Show who is speaking above the chat bubble, in their class colour."] },
 			{ kind = "check", label = L["Shorten Channel Names"], path = { "Chat", "ShortenChannels" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Class Colored Names"], path = { "Chat", "ClassColorNames" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Clickable URLs"], path = { "Chat", "URLLinks" }, reload = true, dependsOn = { "Chat", "Enable" } },

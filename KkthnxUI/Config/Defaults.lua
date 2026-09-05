@@ -381,6 +381,7 @@ K.ConfigDefaults = {
 		KeywordSound = true, -- play a sound when a keyword is mentioned
 		KeywordCount = true, -- show a badge counting unread keyword mentions
 		SkinBubbles = true, -- give in-world chat bubbles our border and background
+		BubbleName = true, -- show who is speaking above the bubble, class coloured
 		ShortenChannels = true,
 		ClassColorNames = true,
 		URLLinks = true,
