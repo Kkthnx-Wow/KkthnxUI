@@ -29,6 +29,9 @@ local SPAWN_EVENTS = {
 	CHAT_MSG_MONSTER_PARTY = "chatBubblesParty",
 }
 
+-- How far our backdrop sits inside the bubble holder, in the bubble's own space.
+local INSET = 4
+
 -- Style one bubble. The first child is the holder that carries the text, the
 -- default backdrop on its BORDER layer, and a pointer tail. We drop both and
 -- give the holder our own look.
@@ -47,9 +50,21 @@ local function SkinBubble(bubble)
 		holder.Tail:SetAlpha(0)
 	end
 
-	K.CreateBackground(holder, 0.05, 0.05, 0.05, 0.9)
-	K.CreateBorder(holder)
+	-- Chat bubbles live in the WorldFrame, which does not inherit the UI scale. Our
+	-- border is sized in pixel perfect units derived from UIParent, so drawn straight
+	-- onto the holder it comes out at the wrong thickness against the rest of the UI.
+	-- Put the art on its own frame and scale that back to the UI's effective scale.
+	-- Scaling the holder itself is not an option, it would take the text with it.
+	local backdrop = CreateFrame("Frame", nil, holder)
+	backdrop:SetScale(UIParent:GetEffectiveScale())
+	backdrop:SetPoint("TOPLEFT", holder, "TOPLEFT", INSET, -INSET)
+	backdrop:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -INSET, INSET)
+	backdrop:SetFrameLevel(math.max(0, holder:GetFrameLevel() - 1))
 
+	K.CreateBackground(backdrop, 0.05, 0.05, 0.05, 0.9)
+	K.CreateBorder(backdrop)
+
+	bubble.KKUI_Backdrop = backdrop
 	bubble.KKUI_Styled = true
 end
 
