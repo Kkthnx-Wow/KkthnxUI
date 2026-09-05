@@ -24,7 +24,6 @@ K.ConfigDefaults = {
 	ActionBar = {
 		Enable = true,
 		ShowGrid = true,
-		Cooldowns = true,
 		RangeColoring = "button", -- how out-of-range shows: button, hotkey, or none
 		RangeColor = { 0.8, 0.1, 0.1 }, -- out-of-range tint
 		ManaColor = { 0.5, 0.5, 1.0 }, -- out-of-mana tint
@@ -71,10 +70,6 @@ K.ConfigDefaults = {
 		GroupDispelOnly = true, -- party/raid debuffs: only ones you can dispel + boss
 		AuraWatch = true, -- corner dots on party/raid frames for your tracked heals
 
-		-- User aura filter additions, keyed by spell id. Whitelist always shows an
-		-- aura, blacklist always hides it. Merged with the built-in lists.
-		AuraWhitelist = {},
-		AuraBlacklist = {},
 		-- Text formatting shared by the units below.
 		HealthFormat = "Both", -- None, Current, Percent, Both
 		PowerFormat = "Current", -- None, Current, Percent, Both

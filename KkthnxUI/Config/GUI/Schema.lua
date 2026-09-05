@@ -340,7 +340,6 @@ GUI.schema = {
 			{ kind = "header", label = L["Global"] },
 			{ kind = "check", label = L["Enable Action Bars"], path = { "ActionBar", "Enable" }, reload = true },
 			{ kind = "check", label = L["Show Empty Button Grid"], path = { "ActionBar", "ShowGrid" }, reload = true },
-			{ kind = "check", label = L["Cooldown Count"], path = { "ActionBar", "Cooldowns" }, reload = true },
 			{ kind = "check", label = L["Cast On Key Down"], path = { "ActionBar", "KeyDown" }, reload = true, tooltip = L["Fire actions on key press instead of on release."] },
 			{ kind = "dropdown", label = L["Out of Range"], path = { "ActionBar", "RangeColoring" }, options = {
 				{ text = L["Whole Button"], value = "button" },
@@ -430,9 +429,6 @@ GUI.schema = {
 
 			{ kind = "header", label = L["Shared"] },
 			ExtraButton(L["Frame Colors"], "UF_Colors", ColorControls(), L["Health, power and reaction colours used across every unit frame."]),
-			{ kind = "extra", label = L["Aura Filters"], name = "UF_AuraFilters", title = L["Aura Filters"], tooltip = L["Choose which buffs and debuffs are allowed to show on the unit frames."], build = function(child)
-				K.GUI.CustomPanels.AuraFilters(child)
-			end },
 			{ kind = "button", label = L["Toggle Test Frames"], tooltip = L["Show every unit frame filled with placeholder data so you can position and style them without a target or a group."], onClick = function()
 				local uf = K:GetModule("UnitFrames", true)
 				if uf and uf.ToggleTest then

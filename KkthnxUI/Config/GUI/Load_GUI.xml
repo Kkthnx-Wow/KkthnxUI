@@ -5,7 +5,6 @@
 	<Script file="ExtraGUI.lua" />
 	<Script file="Schema.lua" />
 	<Script file="Profiles.lua" />
-	<Script file="AuraList.lua" />
 	<Script file="NameplateColors.lua" />
 	<Script file="Movers.lua" />
 	<Script file="Window.lua" />

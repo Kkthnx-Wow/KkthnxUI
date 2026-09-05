@@ -252,6 +252,19 @@ function Build.DetachedCastbar(self, key, label, width, height, point, iconSide)
 
 	cast.Holder = holder
 
+	-- Drop a target mid cast and no stop event ever arrives, because the unit is
+	-- simply gone rather than finishing or being interrupted. oUF cannot help there
+	-- either: UpdateAllElements returns early once the unit stops existing. So its
+	-- OnUpdate just keeps running with the cast still flagged as in progress, and a
+	-- detached bar sits on UIParent where nothing hides it, ticking forever (#146).
+	--
+	-- Hiding the bar stops that OnUpdate dead, and the next cast start shows it
+	-- again. Only the bar is touched, never the holder: the holder is an empty
+	-- positioning box for the mover, and everything with art hangs off the bar.
+	self:HookScript("OnHide", function()
+		cast:Hide()
+	end)
+
 	K.CreateMover(holder, key, label, point, totalWidth, height)
 	return cast
 end
