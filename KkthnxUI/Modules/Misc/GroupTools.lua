@@ -22,6 +22,7 @@ local _G = _G
 local ipairs = ipairs
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
+local IsSecret = K.IsSecret
 local IsInGroup = IsInGroup
 local IsInRaid = IsInRaid
 local UnitIsGroupLeader = UnitIsGroupLeader
@@ -241,6 +242,10 @@ function Module:BuildPanel(tab)
 	end
 	y = y - ROW - PAD
 
+	-- Battle rez charges, the one raid number worth having in front of you.
+	self:BuildCombatRes(panel, y)
+	y = y - ICON - PAD
+
 	-- World marker bar: secure worldmarker action, left places, right clears.
 	local wmLabel = panel:CreateFontString(nil, "OVERLAY")
 	K.SetFont(wmLabel, 11, K.FontOutlineStyle())
@@ -334,6 +339,86 @@ function Module:BuildPanel(tab)
 	panel:SetHeight(-y + PAD)
 	self.Panel = panel
 	return panel
+end
+
+-- Battle rez charges. Every class that can combat res draws from one shared pool,
+-- and Rebirth is the spell the game exposes it through, so its charges are the
+-- group's charges whatever you play.
+--
+-- Midnight note: GetSpellCharges is flagged secret when cooldowns are restricted,
+-- and only maxCharges and isActive are never secret. So the count goes out through
+-- SetFormattedText, which is a C call that accepts a secret, the colour is only
+-- applied when the value can actually be compared, and the recharge time is drawn
+-- by a real Cooldown frame rather than by us subtracting timestamps.
+local BATTLE_REZ = 20484
+
+function Module:BuildCombatRes(panel, y)
+	local row = CreateFrame("Frame", nil, panel)
+	row:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, y)
+	row:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -PAD, y)
+	row:SetHeight(ICON)
+
+	local holder = CreateFrame("Frame", nil, row)
+	holder:SetSize(ICON, ICON)
+	holder:SetPoint("LEFT")
+	K.CreateGradientBackground(holder, 0.9)
+	K.CreateBorder(holder)
+
+	local icon = holder:CreateTexture(nil, "ARTWORK")
+	icon:SetPoint("TOPLEFT", 1, -1)
+	icon:SetPoint("BOTTOMRIGHT", -1, 1)
+	icon:SetTexture(C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(BATTLE_REZ))
+	icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+	local cooldown = CreateFrame("Cooldown", nil, holder, "CooldownFrameTemplate")
+	cooldown:SetAllPoints(icon)
+	cooldown:SetHideCountdownNumbers(false)
+	K.StyleCooldownSwipe(cooldown)
+
+	local label = row:CreateFontString(nil, "OVERLAY")
+	K.SetFont(label, 12, K.FontOutlineStyle())
+	label:SetPoint("LEFT", holder, "RIGHT", 8, 0)
+	label:SetText(L["Battle Rez"])
+	label:SetTextColor(0.7, 0.7, 0.7)
+
+	local count = row:CreateFontString(nil, "OVERLAY")
+	K.SetFont(count, 14, K.FontOutlineStyle())
+	count:SetPoint("RIGHT", row, "RIGHT", -2, 0)
+
+	row.Cooldown, row.Count = cooldown, count
+	SetTip(holder, L["Battle Rez"], L["Combat resurrection charges the group has left, and how long until the next one."])
+	self.ResRow = row
+	return row
+end
+
+function Module:UpdateCombatRes()
+	local row = self.ResRow
+	if not row then
+		return
+	end
+
+	local info = C_Spell and C_Spell.GetSpellCharges and C_Spell.GetSpellCharges(BATTLE_REZ)
+	if not info then
+		-- No charge pool here, so there is nothing to report. Outside a raid this is
+		-- the normal case.
+		row:Hide()
+		return
+	end
+	row:Show()
+
+	local charges = info.currentCharges
+	row.Count:SetFormattedText("%s", charges)
+	if IsSecret(charges) then
+		row.Count:SetTextColor(1, 1, 1)
+	elseif charges > 0 then
+		row.Count:SetTextColor(K.Colors.jade[1], K.Colors.jade[2], K.Colors.jade[3])
+	else
+		row.Count:SetTextColor(K.Colors.crimson[1], K.Colors.crimson[2], K.Colors.crimson[3])
+	end
+
+	-- SetCooldown is a C call, so it takes the start and duration even while they
+	-- are secret, and the client draws the countdown itself.
+	row.Cooldown:SetCooldown(info.cooldownStartTime, info.cooldownDuration)
 end
 
 -- A centred row of the three role icons with a live tally, in any parent. Each
@@ -458,6 +543,7 @@ function Module:UpdateVisibility()
 	if inGroup then
 		self:UpdateLeaderState()
 		self:UpdateRoleCount()
+		self:UpdateCombatRes()
 	end
 
 	-- The panel carries secure world marker buttons, and that makes showing or
@@ -529,5 +615,9 @@ function Module:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateVisibility")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateVisibility")
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateRoleCount")
+	self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateCombatRes")
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateCombatRes")
+	self:RegisterEvent("ENCOUNTER_START", "UpdateCombatRes")
+	self:RegisterEvent("ENCOUNTER_END", "UpdateCombatRes")
 	self:UpdateVisibility()
 end
