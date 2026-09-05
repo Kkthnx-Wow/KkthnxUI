@@ -192,7 +192,7 @@ local function SkinButton(button)
 	K.CreateBorder(button)
 	local fs = button:GetFontString()
 	if fs then
-		fs:SetTextColor(1, 1, 1)
+		fs:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
 	end
 end
 
@@ -245,7 +245,7 @@ function GUI.CreateCheck(parent, control)
 	check.Text:SetPoint("LEFT", check, "RIGHT", 8, 0)
 	check.Text:SetText(control.label)
 	K.SetFont(check.Text, 12)
-	check.Text:SetTextColor(1, 1, 1)
+	check.Text:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
 
 	check:SetChecked(GUI.GetValue(control.path) and true or false)
 	check:SetScript("OnClick", function(self, button)

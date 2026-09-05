@@ -253,7 +253,7 @@ local function ColorTab(tab, selected)
 	-- tab still flagged as alerting is not overwritten back to grey.
 	tab.KKUI_Selected = selected
 	if tab.KKUI_Alerting and not selected then
-		text:SetTextColor(1, 0.6, 0.1)
+		text:SetTextColor(K.Colors.ember[1], K.Colors.ember[2], K.Colors.ember[3])
 		return
 	end
 	if selected then
@@ -272,7 +272,7 @@ local function TabAlertStart(chatFrame)
 	local text = tab and (tab.Text or _G[tab:GetName() .. "Text"])
 	if text and not tab.KKUI_Selected then
 		tab.KKUI_Alerting = true
-		text:SetTextColor(1, 0.6, 0.1)
+		text:SetTextColor(K.Colors.ember[1], K.Colors.ember[2], K.Colors.ember[3])
 	end
 end
 
@@ -471,7 +471,7 @@ function Module:CreateCopyWindow()
 	edit:SetAutoFocus(false)
 	edit:EnableMouse(true)
 	edit:SetFontObject(ChatFontNormal)
-	edit:SetTextColor(1, 1, 1)
+	edit:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
 	-- Explicit size, not scroll:GetWidth(). The window is built on first click and
 	-- is not laid out yet, so GetWidth would be 0 and the text would have nowhere to
 	-- draw (which is why the copy box looked empty). 700 wide frame minus the insets.

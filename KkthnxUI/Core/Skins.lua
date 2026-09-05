@@ -27,6 +27,7 @@ K.Colors = {
 	jade = { 0.306, 0.741, 0.529 }, -- #4EBD87 success
 	ember = { 0.902, 0.502, 0.235 }, -- #E6803C caution, the step between gold and crimson
 	info = { 0.600, 0.800, 1.000 }, -- #99CCFF informational text, tooltip headings and hints
+	offWhite = { 0.925, 0.933, 0.949 }, -- #ECEEF2 body text, softer than pure white against the dark panels
 }
 
 -- ---------------------------------------------------------------------------
@@ -238,7 +239,7 @@ function K.SkinButton(button, emphasize)
 	K.ApplyGradient(bg, "buttonRest")
 	K.CreateBorder(button)
 
-	local restColor = emphasize and gold or { 1, 1, 1 }
+	local restColor = emphasize and gold or K.Colors.offWhite
 	local hoverColor = emphasize and { 1, 0.92, 0.4 } or { 0.7, 0.85, 1 }
 	local hoverBorder = emphasize and gold or accent
 
@@ -347,7 +348,7 @@ function K.SkinCloseButton(button)
 	-- Yellow X drawn from two rotated bars, so it stays crisp at any size.
 	local function XBar(rotation)
 		local t = button:CreateTexture(nil, "OVERLAY")
-		t:SetColorTexture(0.953, 0.69, 0.263)
+		t:SetColorTexture(gold[1], gold[2], gold[3])
 		t:SetSize(13, 2.5)
 		t:SetPoint("CENTER")
 		t:SetRotation(rotation)

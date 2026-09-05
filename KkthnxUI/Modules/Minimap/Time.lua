@@ -152,7 +152,7 @@ function Module:CreateClock()
 		if pending then
 			text:SetTextColor(1, 0.2, 0.2)
 		else
-			text:SetTextColor(1, 1, 1)
+			text:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
 		end
 	end)
 end

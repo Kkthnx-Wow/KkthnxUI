@@ -409,7 +409,7 @@ function Module:UpdateCombatRes()
 	local charges = info.currentCharges
 	row.Count:SetFormattedText("%s", charges)
 	if IsSecret(charges) then
-		row.Count:SetTextColor(1, 1, 1)
+		row.Count:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
 	elseif charges > 0 then
 		row.Count:SetTextColor(K.Colors.jade[1], K.Colors.jade[2], K.Colors.jade[3])
 	else

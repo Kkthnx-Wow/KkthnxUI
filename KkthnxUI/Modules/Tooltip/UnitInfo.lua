@@ -368,6 +368,29 @@ function Module:SetupUnitInfo()
 		end
 	end)
 
+	-- Rebuild the tooltip when shift is pressed or released over a unit, so the
+	-- shift-gated item level appears without having to move the cursor away and
+	-- back. There is no refresh call on a tooltip, so the unit is simply set again,
+	-- which re-runs the data provider and the post call above.
+	--
+	-- "mouseover" is used rather than the token GameTooltip:GetUnit hands back,
+	-- because that one can be a secret on Midnight. If the cursor is over a unit at
+	-- all then mouseover is that unit, and it stays readable.
+	local modifierWatcher = CreateFrame("Frame")
+	modifierWatcher:RegisterEvent("MODIFIER_STATE_CHANGED")
+	modifierWatcher:SetScript("OnEvent", function(_, _, key)
+		if not C.Tooltip.ItemLevelOnShift then
+			return
+		end
+		if key ~= "LSHIFT" and key ~= "RSHIFT" then
+			return
+		end
+		local tt = _G.GameTooltip
+		if tt:IsShown() and UnitExists("mouseover") then
+			tt:SetUnit("mouseover")
+		end
+	end)
+
 	-- Drop the standalone "Horde" / "Alliance" faction line, we show a crest on
 	-- the name line instead. Returning true from a line pre-call skips the line
 	-- entirely, so no blank gap is left behind.

@@ -103,7 +103,7 @@ local function BuildPreview()
 
 	local barHeader = frame:CreateFontString(nil, "OVERLAY")
 	K.SetFont(barHeader, 13, "OUTLINE")
-	barHeader:SetTextColor(0.9, 0.8, 0.5)
+	barHeader:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
 	barHeader:SetPoint("TOPLEFT", 16, -42)
 	barHeader:SetText(L["Bar Buttons"])
 
@@ -115,7 +115,7 @@ local function BuildPreview()
 
 	local iconHeader = frame:CreateFontString(nil, "OVERLAY")
 	K.SetFont(iconHeader, 13, "OUTLINE")
-	iconHeader:SetTextColor(0.9, 0.8, 0.5)
+	iconHeader:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
 	iconHeader:SetPoint("TOPLEFT", 16, y - 8)
 	iconHeader:SetText(L["Icon Buttons"])
 
