@@ -87,7 +87,7 @@ local function SkinFrame(frame)
 			K.StripTextures(header)
 		end
 		if header.Text then
-			header.Text:SetTextColor(1, 0.82, 0)
+			header.Text:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
 		end
 		-- A thin accent divider under the header, like the rest of our panels.
 		local line = header:CreateTexture(nil, "ARTWORK")

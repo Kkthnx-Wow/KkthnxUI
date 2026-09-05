@@ -27,7 +27,7 @@ K.Version = C_AddOns.GetAddOnMetadata(AddOnName, "Version") or "dev"
 -- Build tag for tracking day to day changes while the public Version stays put.
 -- Bump this every time you push a change so a bug report can be pinned to an exact
 -- build. Format is YYYY.MM.DD.N, N being the build number for that day.
-K.Build = "2026.09.05.3"
+K.Build = "2026.09.05.4"
 
 -- oUF embeds itself onto our shared addon namespace, so it is reachable here
 -- because every file in the addon receives the same private table.

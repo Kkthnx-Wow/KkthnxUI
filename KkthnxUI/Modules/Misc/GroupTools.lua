@@ -139,7 +139,7 @@ local function IconButton(parent, size, index, secure)
 	K.CreateBorder(button)
 	button:HookScript("OnEnter", function(self)
 		if self.KKUI_Border then
-			self.KKUI_Border:SetVertexColor(1, 0.82, 0, 1)
+			self.KKUI_Border:SetVertexColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3], 1)
 		end
 	end)
 	button:HookScript("OnLeave", function(self)

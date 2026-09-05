@@ -241,7 +241,7 @@ function Module:LOOT_OPENED(_, autoLoot)
 			-- keep the quality edge.
 			slot.quest:SetShown(questID and not isActive and true or false)
 			if questID or isQuestItem then
-				slot.iconFrame.KKUI_Border:SetVertexColor(1, 0.82, 0)
+				slot.iconFrame.KKUI_Border:SetVertexColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
 			end
 
 			widest = max(widest, slot.name:GetStringWidth())

@@ -395,7 +395,17 @@ function Module:StyleCharacterFrame()
 		-- value. The watcher runs in its own execution, so the show stays clean.
 		local watcher = CreateFrame("Frame")
 		local lastWidth
-		watcher:SetScript("OnUpdate", function()
+		-- Throttled rather than every frame. This watcher never stops, because gating
+		-- it on the panel's own show would put our code back in the path we are
+		-- avoiding, so the one thing we can do is make each tick cheap. A resize only
+		-- needs catching within a fraction of a second.
+		local elapsed = 0
+		watcher:SetScript("OnUpdate", function(_, delta)
+			elapsed = elapsed + delta
+			if elapsed < 0.1 then
+				return
+			end
+			elapsed = 0
 			if not CharacterFrame:IsShown() then
 				lastWidth = nil
 				return
