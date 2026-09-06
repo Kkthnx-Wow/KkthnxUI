@@ -126,6 +126,11 @@ local function ThreatPostUpdate(element, _, status, color)
 end
 
 function Build.Threat(self)
+	-- Called from Build.Indicators, so a style that also asks for it directly must
+	-- not end up with a second orphaned texture on every frame.
+	if self.ThreatIndicator then
+		return self.ThreatIndicator
+	end
 	-- oUF wants a widget it can show, hide, and tint. We only care about the
 	-- colour it hands to PostUpdate, so the widget itself stays invisible.
 	local proxy = self.Health:CreateTexture(nil, "OVERLAY")

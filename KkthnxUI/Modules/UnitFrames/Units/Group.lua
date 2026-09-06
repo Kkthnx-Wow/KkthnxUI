@@ -45,8 +45,11 @@ local function ManaPowerPostUpdate(power, unit)
 	if not self then
 		return
 	end
+	-- Guard before comparing, not after. A secret cannot be compared at all, so
+	-- "ptype == 0 and not IsSecret(ptype)" would have thrown on the comparison
+	-- before ever reaching the check. Matches the nameplate caster test.
 	local ptype = unit and UnitPowerType(unit)
-	local isMana = ptype == 0 and not IsSecret(ptype)
+	local isMana = ptype ~= nil and not IsSecret(ptype) and ptype == 0
 	power:SetShown(isMana)
 	RaidHealthFill(self, isMana)
 end
@@ -86,9 +89,8 @@ Module.Styles.Party = function(self)
 	end
 	-- Corner heal-over-time dots for the player's tracked auras.
 	Build.AuraWatch(self, 8)
-	-- Red border when a member pulls aggro (dispel colour still wins over it).
-	-- Range fade is set up inside Build.GroupIndicators.
-	Build.Threat(self)
+	-- Threat and range fade are already set up, threat by Build.Indicators and the
+	-- range fade by Build.GroupIndicators. The dispel colour still wins over threat.
 end
 
 Module.Styles.Raid = function(self)
@@ -122,5 +124,4 @@ Module.Styles.Raid = function(self)
 		Build.DispelHighlight(self)
 	end
 	Build.AuraWatch(self, 7)
-	Build.Threat(self)
 end
