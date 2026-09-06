@@ -23,7 +23,7 @@ local InCombatLockdown = InCombatLockdown
 local C_Container = C_Container
 local C_Item = C_Item
 local GetCoinTextureString = GetCoinTextureString
-local StaticPopup_Show = StaticPopup_Show
+local format = string.format
 
 local POOR = Enum.ItemQuality and Enum.ItemQuality.Poor or 0
 
@@ -61,24 +61,15 @@ function Module:DeleteCheapestJunk()
 		K.Print(L["No junk to delete."])
 		return
 	end
-	StaticPopup_Show("KKUI_BAGS_DELETE_JUNK", item.link, GetCoinTextureString(price or 0), item)
-end
-
--- Register our own dialog entry only, never reassign Blizzard's table.
-_G.StaticPopupDialogs["KKUI_BAGS_DELETE_JUNK"] = {
-	text = L["Delete %s\nworth %s?"],
-	button1 = _G.YES,
-	button2 = _G.NO,
-	OnAccept = function(_, data)
-		if data and not InCombatLockdown() then
-			C_Container.PickupContainerItem(data.bag, data.slot)
-			if _G.DeleteCursorItem then
-				_G.DeleteCursorItem()
-			end
+	K.Confirm(format(L["Delete %s\nworth %s?"], item.link, GetCoinTextureString(price or 0)), function()
+		-- Re-check combat: the dialog stays open across a pull, and the pickup and
+		-- delete pair is blocked once the player is in combat.
+		if InCombatLockdown() then
+			return
 		end
-	end,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	showAlert = true,
-}
+		C_Container.PickupContainerItem(item.bag, item.slot)
+		if _G.DeleteCursorItem then
+			_G.DeleteCursorItem()
+		end
+	end)
+end

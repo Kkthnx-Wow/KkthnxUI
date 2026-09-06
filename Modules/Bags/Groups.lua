@@ -15,12 +15,10 @@ if not Module then
 	return
 end
 
-local _G = _G
 local ipairs = ipairs
 local pairs = pairs
 local tsort = table.sort
 local strtrim = strtrim
-local StaticPopup_Show = StaticPopup_Show
 local MenuUtil = MenuUtil
 
 -- Groups live as a name -> order map so a leaf write persists each one, and the
@@ -101,43 +99,8 @@ end
 -- Name prompt
 -- ---------------------------------------------------------------------------
 
--- Register our own dialog entry. Never reassign the StaticPopupDialogs table
--- itself, doing that from addon code taints Blizzard's popup system.
-_G.StaticPopupDialogs["KKUI_BAGS_GROUPNAME"] = {
-	text = "%s",
-	button1 = _G.ACCEPT,
-	button2 = _G.CANCEL,
-	hasEditBox = true,
-	OnShow = function(self, data)
-		local editBox = self.EditBox or self.editBox
-		if editBox then
-			editBox:SetText(data and data.default or "")
-			editBox:SetFocus()
-			editBox:HighlightText()
-		end
-	end,
-	OnAccept = function(self, data)
-		local editBox = self.EditBox or self.editBox
-		if data and data.callback and editBox then
-			data.callback(editBox:GetText())
-		end
-	end,
-	EditBoxOnEnterPressed = function(self, data)
-		if data and data.callback then
-			data.callback(self:GetText())
-		end
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-}
-
 local function PromptName(title, default, callback)
-	StaticPopup_Show("KKUI_BAGS_GROUPNAME", title, nil, { default = default, callback = callback })
+	K.Prompt(title, default, callback)
 end
 
 -- ---------------------------------------------------------------------------

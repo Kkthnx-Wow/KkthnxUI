@@ -259,6 +259,23 @@ function Module:BuildReport()
 		outLabel:SetTextColor(K.Colors.jade[1], K.Colors.jade[2], K.Colors.jade[3])
 	end)
 
+	-- Start clean every time the window opens. The window is built once and reused,
+	-- so without this the previous report is still sitting in the fields, and the
+	-- next one gets filed with the last bug's text.
+	local outLabelText = outLabel:GetText()
+	frame:SetScript("OnHide", function(self)
+		for _, box in ipairs(self.fields) do
+			box.edit:SetText("")
+			box.edit:ClearFocus()
+		end
+		clean:SetChecked(false)
+		out:SetText("")
+		out:SetHeight(120)
+		out:ClearFocus()
+		outLabel:SetText(outLabelText)
+		outLabel:SetTextColor(K.Colors.gold[1], K.Colors.gold[2], K.Colors.gold[3])
+	end)
+
 	self.frame = frame
 	return frame
 end

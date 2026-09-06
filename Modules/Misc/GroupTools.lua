@@ -42,39 +42,30 @@ local function CanLead()
 	return IsInGroup() and (UnitIsGroupLeader("player") or (IsInRaid() and UnitIsGroupAssistant("player")))
 end
 
--- Disband confirmation. Uninvite every other member, then leave, which ends the
--- group. Registered as a single entry so Blizzard's dialog table is never replaced.
-_G.StaticPopupDialogs["KKUI_GROUPTOOLS_DISBAND"] = {
-	text = L["Disband the group?"],
-	button1 = _G.YES,
-	button2 = _G.NO,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-	OnAccept = function()
-		if not (UnitIsGroupLeader("player") and C_PartyInfo) then
-			return
-		end
-		if IsInRaid() then
-			for i = 1, GetNumGroupMembers() do
-				local name = GetRaidRosterInfo(i)
-				if name and name ~= UnitName("player") then
-					UninviteUnit(name)
-				end
-			end
-		else
-			for i = GetNumGroupMembers() - 1, 1, -1 do
-				local name = UnitName("party" .. i)
-				if name then
-					UninviteUnit(name)
-				end
+-- Uninvite every other member, then leave, which ends the group.
+local function DisbandGroup()
+	if not (UnitIsGroupLeader("player") and C_PartyInfo) then
+		return
+	end
+	if IsInRaid() then
+		for i = 1, GetNumGroupMembers() do
+			local name = GetRaidRosterInfo(i)
+			if name and name ~= UnitName("player") then
+				UninviteUnit(name)
 			end
 		end
-		if C_PartyInfo.LeaveParty then
-			C_PartyInfo.LeaveParty()
+	else
+		for i = GetNumGroupMembers() - 1, 1, -1 do
+			local name = UnitName("party" .. i)
+			if name then
+				UninviteUnit(name)
+			end
 		end
-	end,
-}
+	end
+	if C_PartyInfo.LeaveParty then
+		C_PartyInfo.LeaveParty()
+	end
+end
 
 -- ---------------------------------------------------------------------------
 -- Tooltips
@@ -318,7 +309,7 @@ function Module:BuildPanel(tab)
 	end)
 	convert:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, y)
 	local disband = TextButton(panel, half, ROW, TEAM_DISBAND or L["Disband"], function()
-		StaticPopup_Show("KKUI_GROUPTOOLS_DISBAND")
+		K.Confirm(L["Disband the group?"], DisbandGroup)
 	end)
 	disband:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -PAD, y)
 	SetTip(convert, CONVERT_TO_RAID or L["Convert to Raid"], L["Turn the party into a raid."])

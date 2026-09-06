@@ -22,7 +22,6 @@ local tonumber = tonumber
 local tsort = table.sort
 local strtrim = strtrim
 local CreateFrame = CreateFrame
-local StaticPopup_Show = StaticPopup_Show
 local MenuUtil = MenuUtil
 local GetCursorInfo = GetCursorInfo
 local CursorHasItem = CursorHasItem
@@ -110,16 +109,13 @@ function Module:BuildManager()
 	newGroup.Text:SetText(L["New Group"])
 	K.SkinButton(newGroup)
 	newGroup:SetScript("OnClick", function()
-		StaticPopup_Show("KKUI_BAGS_GROUPNAME", L["New Group"], nil, {
-			default = "",
-			callback = function(text)
-				local name = strtrim(text or "")
-				if name ~= "" then
-					Module:CreateGroup(name)
-					Module:RefreshManager()
-				end
-			end,
-		})
+		K.Prompt(L["New Group"], "", function(text)
+			local name = strtrim(text or "")
+			if name ~= "" then
+				Module:CreateGroup(name)
+				Module:RefreshManager()
+			end
+		end)
 	end)
 
 	local newCat = CreateFrame("Button", nil, f)
@@ -131,15 +127,12 @@ function Module:BuildManager()
 	newCat.Text:SetText(L["New Category"])
 	K.SkinButton(newCat)
 	newCat:SetScript("OnClick", function()
-		StaticPopup_Show("KKUI_BAGS_GROUPNAME", L["New Category"], nil, {
-			default = "",
-			callback = function(text)
-				if Module:CreateCustomCategory(text) then
-					Module:UpdateAll()
-					Module:RefreshManager()
-				end
-			end,
-		})
+		K.Prompt(L["New Category"], "", function(text)
+			if Module:CreateCustomCategory(text) then
+				Module:UpdateAll()
+				Module:RefreshManager()
+			end
+		end)
 	end)
 
 	local hint = f:CreateFontString(nil, "OVERLAY")
@@ -207,17 +200,14 @@ function Module:RefreshManager()
 			MenuUtil.CreateContextMenu(self, function(_, root)
 				root:CreateTitle(cat.name)
 				root:CreateButton(L["New Group"], function()
-					StaticPopup_Show("KKUI_BAGS_GROUPNAME", L["New Group"], nil, {
-						default = "",
-						callback = function(text)
-							local name = strtrim(text or "")
-							if name ~= "" then
-								Module:CreateGroup(name)
-								Module:AssignCategoryGroup(catKey, name)
-								Module:RefreshManager()
-							end
-						end,
-					})
+					K.Prompt(L["New Group"], "", function(text)
+						local name = strtrim(text or "")
+						if name ~= "" then
+							Module:CreateGroup(name)
+							Module:AssignCategoryGroup(catKey, name)
+							Module:RefreshManager()
+						end
+					end)
 				end)
 				root:CreateDivider()
 				root:CreateButton(L["No Group"], function()

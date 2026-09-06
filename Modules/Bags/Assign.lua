@@ -18,7 +18,6 @@ end
 local ipairs = ipairs
 local pairs = pairs
 local strtrim = strtrim
-local StaticPopup_Show = StaticPopup_Show
 local MenuUtil = MenuUtil
 local IsSecret = K.IsSecret
 local C_Container = C_Container
@@ -103,15 +102,12 @@ function Module:ShowAssignMenu(button)
 			end)
 		end
 		root:CreateButton(L["New Category"], function()
-			StaticPopup_Show("KKUI_BAGS_GROUPNAME", L["New Category"], nil, {
-				default = "",
-				callback = function(text)
-					local key = Module:CreateCustomCategory(text)
-					if key then
-						Module:AssignItem(itemID, key)
-					end
-				end,
-			})
+			K.Prompt(L["New Category"], "", function(text)
+				local key = Module:CreateCustomCategory(text)
+				if key then
+					Module:AssignItem(itemID, key)
+				end
+			end)
 		end)
 		if C.Bags.ItemAssignments and C.Bags.ItemAssignments[itemID] then
 			root:CreateButton(L["Unassign"], function()
