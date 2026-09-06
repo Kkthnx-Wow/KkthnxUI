@@ -60,6 +60,8 @@ K.GradientAlpha = {
 	lineSoft = 0.6, -- a quieter hairline
 	lineActive = 1, -- the lit hairline on the selected tab
 	strip = 0.7, -- the name strip behind unit frame and group tool labels
+	hover = 0.15, -- the cursor is over this frame
+	select = 0.22, -- this frame's unit is your target
 }
 
 -- The tint those name strips wear. Deliberately dark and only faintly blue: the

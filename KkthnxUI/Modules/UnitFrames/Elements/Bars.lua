@@ -285,7 +285,7 @@ function Build.Health(self, height)
 
 	-- Mouseover and target-select highlights framing the health border.
 	if Build.Highlight then
-		Build.Highlight(self, "communitiesfinder_card_highlight", "GarrMission_FollowerListButton-Select")
+		Build.Highlight(self)
 	end
 
 	return health

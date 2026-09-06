@@ -64,24 +64,29 @@ end
 oUF:AddElement("KKUI_SelectHighlight", SelectUpdate, SelectEnable, SelectDisable)
 
 -- A hover texture shown while the cursor is over the frame, and a select texture
--- shown while the frame's unit is the target. Both frame the health bar's border
--- with the given atlases. The element above drives the select texture.
+-- shown while the frame's unit is the target. Both sit over the health bar. The
+-- element above drives the select texture.
 --
--- These two are the last game atlases we lean on for colour. Their tint is baked
--- into the art, so unlike the rest of the UI they cannot be recoloured from the
--- palette. They frame a rectangle rather than text, so K.CreateTextShade is the
--- wrong shape for them: they want a flat tint or a coloured border instead. Left
--- as they are for now because changing them alters how a member reads out of a
--- raid grid, which is worth deciding on deliberately.
-function Build.Highlight(self, hoverAtlas, selectAtlas)
+-- These were the last two game atlases we leaned on for colour. Their tint was
+-- baked into the art, so alone in the whole UI they could not be retuned from the
+-- palette. They are a flat additive tint now, accent for the cursor and gold for
+-- your target, which is the same language the rest of the UI speaks. Additive
+-- keeps them lifting the bar underneath rather than covering it, exactly as the
+-- atlas glows did.
+local function TintOverlay(anchor, sublevel, color, alpha)
+	local tex = anchor:CreateTexture(nil, "OVERLAY", nil, sublevel)
+	tex:SetPoint("TOPLEFT", anchor, "TOPLEFT", -1, 1)
+	tex:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 1, -1)
+	tex:SetColorTexture(color[1], color[2], color[3], alpha)
+	tex:SetBlendMode("ADD")
+	tex:Hide()
+	return tex
+end
+
+function Build.Highlight(self)
 	local anchor = self.Health or self
 
-	local hover = anchor:CreateTexture(nil, "OVERLAY", nil, 6)
-	hover:SetPoint("TOPLEFT", anchor, "TOPLEFT", -1, 1)
-	hover:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 1, -1)
-	hover:SetAtlas(hoverAtlas, false)
-	hover:SetBlendMode("ADD")
-	hover:Hide()
+	local hover = TintOverlay(anchor, 6, K.Colors.accent, K.GradientAlpha.hover)
 	self.KKUI_Hover = hover
 	self:HookScript("OnEnter", function()
 		hover:Show()
@@ -94,12 +99,7 @@ function Build.Highlight(self, hoverAtlas, selectAtlas)
 	-- member out of the grid matters. Player, target, focus, and boss frames skip
 	-- it (you always know what those are), so only the hover glow above applies.
 	if self.mystyle == "party" or self.mystyle == "raid" then
-		local selectTex = anchor:CreateTexture(nil, "OVERLAY", nil, 7)
-		selectTex:SetPoint("TOPLEFT", anchor, "TOPLEFT", -1, 1)
-		selectTex:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 1, -1)
-		selectTex:SetAtlas(selectAtlas, false)
-		selectTex:SetBlendMode("ADD")
-		selectTex:Hide()
+		local selectTex = TintOverlay(anchor, 7, K.Colors.gold, K.GradientAlpha.select)
 		self.KKUI_Select = selectTex
 
 		-- Marker so oUF enables the select element (it drives KKUI_Select).
