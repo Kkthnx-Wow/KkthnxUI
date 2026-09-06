@@ -5,10 +5,9 @@
 		A trail of fading dots behind the mouse pointer, so the cursor stays
 		findable in a busy fight.
 
-		Each dot chases the one ahead of it and stops at a fixed distance, so the
-		tail keeps its length and spacing whatever the framerate or how fast the
-		mouse is thrown. Sampling raw positions instead would make the tail grow
-		and shrink with fps.
+		Each dot eases toward the one ahead of it, so the tail flows and bends with
+		the stroke. The chase is scaled by frame time, which keeps it moving at the
+		same speed whatever the framerate.
 
 		Cursor position raises no event, so following it needs a per frame sample.
 		The tail fades out once the pointer sits still, which also covers
@@ -23,7 +22,6 @@ local Module = K:NewModule("CursorTrail")
 local CreateFrame = CreateFrame
 local GetCursorPosition = GetCursorPosition
 local InCombatLockdown = InCombatLockdown
-local sqrt = math.sqrt
 
 -- A soft round glow. Our own Glow texture is a vertical gradient strip meant for
 -- status bars, so it drew the tail as bars rather than dots.
@@ -36,7 +34,7 @@ local IDLE_DELAY = 0.35
 local FADE_TIME = 0.4
 
 local driver, holder, segments
-local count, spacing, opacity
+local count, smoothing, opacity
 local lastX, lastY, idle, fade
 
 -- Live position of each dot. Written in place so the per frame path never
@@ -73,20 +71,20 @@ local function OnUpdate(_, elapsed)
 		holder:Show()
 	end
 
-	-- Every dot walks toward the one in front and halts a fixed gap short of it,
-	-- which is what keeps the tail an even length instead of bunching up when the
-	-- pointer slows and stretching out when it is flicked.
+	-- Each dot eases toward the one in front rather than snapping to a fixed gap
+	-- behind it. Chasing gives a tail that flows and bends with the stroke, where
+	-- a hard distance clamp reads as a rigid string of beads.
+	--
+	-- The step is raised to the frame time so the chase covers the same ground per
+	-- second at any framerate. A plain per frame lerp would whip at 200 fps and
+	-- crawl at 30.
+	local step = 1 - (1 - smoothing) ^ (elapsed * 60)
 	local leadX, leadY = x, y
 	for i = 1, count do
 		local dot = trail[i]
-		local dx, dy = leadX - dot[1], leadY - dot[2]
-		local dist = sqrt(dx * dx + dy * dy)
-		if dist > spacing then
-			local step = (dist - spacing) / dist
-			dot[1] = dot[1] + dx * step
-			dot[2] = dot[2] + dy * step
-			segments[i]:SetPoint("CENTER", UIParent, "BOTTOMLEFT", dot[1], dot[2])
-		end
+		dot[1] = dot[1] + (leadX - dot[1]) * step
+		dot[2] = dot[2] + (leadY - dot[2]) * step
+		segments[i]:SetPoint("CENTER", UIParent, "BOTTOMLEFT", dot[1], dot[2])
 		leadX, leadY = dot[1], dot[2]
 	end
 end
@@ -130,7 +128,7 @@ function Module:OnEnable()
 	end
 
 	count = C.Misc.CursorTrailLength
-	spacing = C.Misc.CursorTrailSpacing
+	smoothing = C.Misc.CursorTrailSmoothing
 	opacity = C.Misc.CursorTrailAlpha
 
 	local size = C.Misc.CursorTrailSize
@@ -151,12 +149,15 @@ function Module:OnEnable()
 	for i = 1, count do
 		local seg = holder:CreateTexture(nil, "OVERLAY")
 		seg:SetTexture(DOT)
-		-- Taper the dots toward the tail so it reads as a trail, not a chain.
+		-- Taper size and alpha toward the tail so it reads as a trail, not a chain.
+		-- Alpha falls on a curve rather than a straight line, which keeps the head
+		-- bright and lets the tail disappear early instead of ending in a hard stop.
 		local along = (i - 1) / count
-		seg:SetSize(size * (1 - along * 0.6), size * (1 - along * 0.6))
+		local scale = 1 - along * 0.65
+		seg:SetSize(size * scale, size * scale)
 		seg:SetVertexColor(r, g, b)
 		seg:SetBlendMode("ADD")
-		seg:SetAlpha(1 - along)
+		seg:SetAlpha((1 - along) ^ 1.5)
 		segments[i] = seg
 		trail[i] = { 0, 0 }
 	end

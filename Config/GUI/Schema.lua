@@ -827,7 +827,7 @@ GUI.schema = {
 			{ kind = "header", label = L["Cursor Trail"] },
 			{ kind = "check", label = L["Enable Cursor Trail"], path = { "Misc", "CursorTrail" }, reload = true, tooltip = L["Trail a line of fading dots behind the mouse pointer so it stays easy to find."] },
 			{ kind = "slider", label = L["Trail Length"], path = { "Misc", "CursorTrailLength" }, min = 4, max = 30, step = 1, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["How many dots the tail is made of."] },
-			{ kind = "slider", label = L["Trail Spacing"], path = { "Misc", "CursorTrailSpacing" }, min = 3, max = 30, step = 1, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["Gap held between dots. Larger spreads the same number of dots over a longer tail."] },
+			{ kind = "slider", label = L["Trail Smoothing"], path = { "Misc", "CursorTrailSmoothing" }, min = 0.1, max = 0.9, step = 0.05, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["How hard each dot chases the one ahead of it. Lower is a longer, lazier tail. Higher keeps it tight to the pointer."] },
 			{ kind = "slider", label = L["Trail Size"], path = { "Misc", "CursorTrailSize" }, min = 8, max = 48, step = 1, reload = true, dependsOn = { "Misc", "CursorTrail" } },
 			{ kind = "slider", label = L["Trail Opacity"], path = { "Misc", "CursorTrailAlpha" }, min = 0.1, max = 1, step = 0.05, reload = true, dependsOn = { "Misc", "CursorTrail" } },
 			{ kind = "check", label = L["Trail In Combat Only"], path = { "Misc", "CursorTrailCombat" }, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["Show the trail only while you are in combat. Nothing runs at all the rest of the time."] },
