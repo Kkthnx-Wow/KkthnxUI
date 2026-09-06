@@ -487,6 +487,8 @@ GUI.schema = {
 			{ kind = "check", label = L["Show Border"], path = { "Minimap", "ShowBorder" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 			{ kind = "check", label = L["Fade Until Hover"], path = { "Minimap", "MouseoverFade" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Fade the minimap out while you are not hovering it."] },
 			{ kind = "slider", label = L["Faded Alpha"], path = { "Minimap", "FadeAlpha" }, min = 0, max = 0.9, step = 0.05, reload = true, dependsOn = { "Minimap", "MouseoverFade" } },
+			{ kind = "check", label = L["Fade Landing Button"], path = { "Minimap", "LandingFade" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Fade the expansion landing page button, the faction symbol in the corner of the map, until you hover it."] },
+			{ kind = "slider", label = L["Landing Button Faded Alpha"], path = { "Minimap", "LandingFadeAlpha" }, min = 0, max = 1, step = 0.05, reload = true, dependsOn = { "Minimap", "LandingFade" } },
 			{ kind = "check", label = L["Show Zone Text"], path = { "Minimap", "ShowLocation" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 			{ kind = "slider", label = L["Zone Text Size"], path = { "Minimap", "LocationFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowLocation" } },
 			{ kind = "check", label = L["Show Clock"], path = { "Minimap", "ShowClock" }, reload = true, dependsOn = { "Minimap", "Enable" } },

@@ -106,7 +106,7 @@ end
 --   pushed and highlight textures and SetSize on the button. So an atlas we set
 --   once is gone the moment the player zones into a garrison, swaps covenant, or
 --   the expansion overlay refreshes.
-local LANDING_SIZE = 32
+local LANDING_SIZE = 30
 
 local function TidyLandingButton()
 	local button = _G.ExpansionLandingPageMinimapButton or _G.GarrisonLandingPageMinimapButton
@@ -137,7 +137,7 @@ local function TidyLandingButton()
 
 		button:SetSize(LANDING_SIZE, LANDING_SIZE)
 		button:ClearAllPoints()
-		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -4, -4)
+		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 1, 1)
 
 		paint(button:GetNormalTexture(), 1, 1, 1)
 		-- Pushed reads as a press by dimming rather than by swapping art.
@@ -160,6 +160,21 @@ local function TidyLandingButton()
 	end
 
 	restyle()
+
+	-- Optional fade, so the symbol sits quietly in the corner and only reads at
+	-- full strength when you go for it. Its own scripts rather than the map's
+	-- hover check, since the button lives outside the map bounds.
+	if C.Minimap.LandingFade then
+		local faded = C.Minimap.LandingFadeAlpha or 0.4
+		button:SetAlpha(faded)
+		button:HookScript("OnEnter", function(self)
+			self:SetAlpha(1)
+		end)
+		button:HookScript("OnLeave", function(self)
+			self:SetAlpha(faded)
+		end)
+	end
+
 	hooksecurefunc(button, "SetPoint", restyle)
 	if button.UpdateIcon then
 		hooksecurefunc(button, "UpdateIcon", restyle)

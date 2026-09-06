@@ -168,6 +168,8 @@ K.ConfigDefaults = {
 		ZoomResetDelay = 0, -- seconds of no wheel input before zoom snaps back out, 0 = off
 		MouseoverFade = false, -- fade the map out until you hover it
 		FadeAlpha = 0.25, -- alpha while faded
+		LandingFade = false, -- fade the expansion landing page button until you hover it
+		LandingFadeAlpha = 0.4, -- alpha for that button while faded
 		CollectButtons = true,
 		ButtonCorner = "BOTTOMLEFT", -- corner the button-collector bracket sits in
 		CollectedButtonSize = 22, -- size of each addon button in the collector flyout
