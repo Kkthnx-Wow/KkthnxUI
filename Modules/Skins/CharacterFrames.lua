@@ -393,12 +393,13 @@ function Module:StyleCharacterFrame()
 		-- UpdateSize. Any of our code running inside the panel show path taints it,
 		-- and Blizzard's numeric health status bar then errors comparing its secret
 		-- value. The watcher runs in its own execution, so the show stays clean.
-		local watcher = CreateFrame("Frame")
+		-- Parented to CharacterFrame so it only ticks while the panel is open. A
+		-- frame under a hidden parent gets no OnUpdate, which gates the watcher for
+		-- free without an OnShow hook, so still nothing of ours runs in the show
+		-- path. Throttled on top, since a resize only needs catching within a
+		-- fraction of a second.
+		local watcher = CreateFrame("Frame", nil, CharacterFrame)
 		local lastWidth
-		-- Throttled rather than every frame. This watcher never stops, because gating
-		-- it on the panel's own show would put our code back in the path we are
-		-- avoiding, so the one thing we can do is make each tick cheap. A resize only
-		-- needs catching within a fraction of a second.
 		local elapsed = 0
 		watcher:SetScript("OnUpdate", function(_, delta)
 			elapsed = elapsed + delta
@@ -406,10 +407,6 @@ function Module:StyleCharacterFrame()
 				return
 			end
 			elapsed = 0
-			if not CharacterFrame:IsShown() then
-				lastWidth = nil
-				return
-			end
 			local width = CharacterFrame:GetWidth()
 			if width ~= lastWidth then
 				lastWidth = width
