@@ -346,7 +346,10 @@ K.ConfigDefaults = {
 	Misc = {
 		CursorTrail = false, -- fading dots trailing the mouse pointer
 		CursorTrailLength = 16, -- how many dots the tail is made of
+		CursorTrailSpacing = 9, -- gap held between dots, so the tail keeps its length
 		CursorTrailSize = 22,
+		CursorTrailAlpha = 0.8,
+		CursorTrailCombat = false, -- only show the trail while in combat
 		CursorTrailClassColor = true,
 		CursorTrailColor = { 0.36, 0.55, 0.81 }, -- used when class colour is off
 	},
