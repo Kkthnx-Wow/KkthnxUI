@@ -360,25 +360,16 @@ local function BuildWindow()
 		resetSection:SetShown(currentCategory ~= nil and currentCategory.controls ~= nil)
 	end
 
-	_G.StaticPopupDialogs["KKUI_GUI_RESET_SECTION"] = {
-		text = L["Put every setting on this page back to its default?"],
-		button1 = _G.YES,
-		button2 = _G.NO,
-		OnAccept = function()
-			local count = GUI.ResetCategory(currentCategory)
-			if count > 0 then
-				K.Print(L["Reset %d settings on this page."], count)
-			end
-		end,
-		timeout = 0,
-		whileDead = 1,
-		hideOnEscape = 1,
-		preferredIndex = 3,
-	}
+	local function ConfirmReset()
+		local count = GUI.ResetCategory(currentCategory)
+		if count > 0 then
+			K.Print(L["Reset %d settings on this page."], count)
+		end
+	end
 
 	resetSection:SetScript("OnClick", function()
 		if currentCategory then
-			StaticPopup_Show("KKUI_GUI_RESET_SECTION")
+			K.Confirm(L["Put every setting on this page back to its default?"], ConfirmReset)
 		end
 	end)
 
