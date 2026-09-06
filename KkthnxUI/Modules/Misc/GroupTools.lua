@@ -498,7 +498,13 @@ function Module:UpdateRoleCount()
 	local members = GetNumGroupMembers()
 	for i = 0, members do
 		local unit = i == 0 and "player" or (prefix .. i)
+		-- UnitGroupRolesAssigned is secret when that member's identity is
+		-- restricted, and a secret cannot be compared, so an unreadable member is
+		-- left out of the tally rather than throwing.
 		local role = UnitGroupRolesAssigned(unit)
+		if IsSecret(role) then
+			role = nil
+		end
 		if role == "TANK" then
 			tanks = tanks + 1
 		elseif role == "HEALER" then

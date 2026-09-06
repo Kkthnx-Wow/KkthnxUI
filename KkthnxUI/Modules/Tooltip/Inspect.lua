@@ -65,8 +65,11 @@ function Module:AddInspectInfo(tt, unit)
 		return
 	end
 
-	-- Our own gear is available without an inspect request.
-	if UnitIsUnit(unit, "player") then
+	-- Our own gear is available without an inspect request. UnitIsUnit is secret
+	-- while unit comparison is restricted, so fall through to the inspect path
+	-- rather than letting a secret drive the branch.
+	local isSelf = UnitIsUnit(unit, "player")
+	if not IsSecret(isSelf) and isSelf then
 		local _, ilvl = GetAverageItemLevel()
 		data = { ilvl = ilvl and floor(ilvl) or 0 }
 		cache[guid] = data

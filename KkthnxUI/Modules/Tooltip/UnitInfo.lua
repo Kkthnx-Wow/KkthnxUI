@@ -179,8 +179,10 @@ function Module:OnUnitTooltip(tt)
 			end
 			-- Role icon prefix for group members.
 			if db.ShowRole then
+				-- Secret for a restricted member, and a secret can key nothing, so
+				-- the icon is simply skipped when it cannot be read.
 				local role = UnitGroupRolesAssigned(unit)
-				if role and ROLE_ICON[role] then
+				if role and not IsSecret(role) and ROLE_ICON[role] then
 					prefix = prefix .. ROLE_ICON[role] .. " "
 				end
 			end

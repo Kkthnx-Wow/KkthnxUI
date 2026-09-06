@@ -89,7 +89,10 @@ local function HandleAura(tt, unit, spellID)
 	if not IsShiftKeyDown() or not unit then
 		return
 	end
-	if not UnitIsPlayer(unit) or UnitIsUnit(unit, "player") then
+	-- UnitIsUnit is secret while unit comparison is restricted. Treat unreadable
+	-- as "not me", which just means the line is offered rather than skipped.
+	local isSelf = UnitIsUnit(unit, "player")
+	if not UnitIsPlayer(unit) or (not IsSecret(isSelf) and isSelf) then
 		return
 	end
 
