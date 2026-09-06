@@ -262,7 +262,17 @@ function Module:CollectButtons()
 	-- stays out of the way of the other minimap buttons.
 	tab = CreateFrame("Button", "KKUI_MinimapButtonTab", Minimap)
 	tab:SetSize(16, 16)
-	tab:SetPoint(corner, Minimap, corner, 0, 0)
+	-- Centre it on our border's own corner piece rather than the map's corner. The
+	-- border is drawn at an offset from the map edge, so anchoring to the map put
+	-- the bracket adrift of the line it is meant to sit on. Anchoring to the border
+	-- itself keeps them together whatever that offset is set to.
+	local mapBorder = Minimap.KKUI_Border
+	local borderCorner = mapBorder and mapBorder[corner]
+	if borderCorner then
+		tab:SetPoint("CENTER", borderCorner, "CENTER", 0, 0)
+	else
+		tab:SetPoint(corner, Minimap, corner, 0, 0)
+	end
 	tab:SetFrameLevel(Minimap:GetFrameLevel() + 6)
 
 	local icon = tab:CreateTexture(nil, "ARTWORK")
@@ -278,6 +288,12 @@ function Module:CollectButtons()
 		local flipV = strfind(corner, "BOTTOM") ~= nil
 		icon:SetTexCoord(flipH and 1 or 0, flipH and 0 or 1, flipV and 1 or 0, flipV and 0 or 1)
 		icon:SetAtlas(CORNER_ATLAS)
+		-- SetAtlas pulls any nine slice margins the atlas carries in the DB, which
+		-- would stretch the middle of a piece meant to be drawn whole and leave the
+		-- bracket looking wrong at this size. We want the art as authored.
+		if icon.ClearTextureSlice then
+			icon:ClearTextureSlice()
+		end
 	else
 		-- Older clients without the edit mode art keep the plain dot.
 		icon:SetAtlas("LevelUp-Dot-Gold")
