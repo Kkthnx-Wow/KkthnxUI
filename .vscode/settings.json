@@ -196,6 +196,9 @@
         "TEXTURE_ITEM_QUEST_BANG",
         "LOOT",
         "ChatFrame1",
-        "FCF_SetChatWindowFontSize"
+        "FCF_SetChatWindowFontSize",
+        "ScrollingEdit_OnCursorChanged",
+        "ScrollingEdit_OnTextChanged",
+        "ScrollingEdit_OnUpdate"
     ]
 }

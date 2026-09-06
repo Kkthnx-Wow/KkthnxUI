@@ -47,6 +47,8 @@ local function HideBlizzardBits()
 	Banish(_G.MinimapNorthTag)
 	Banish(_G.MinimapCompassTexture)
 	Banish(_G.AddonCompartmentFrame)
+	Banish(Minimap.ZoomIn)
+	Banish(Minimap.ZoomOut)
 
 	local cluster = _G.MinimapCluster
 	if cluster then
@@ -56,12 +58,21 @@ local function HideBlizzardBits()
 		-- Keep the tracking button around for its menu logic but take it off the
 		-- map. We drive tracking from our own right-click menu instead.
 		if cluster.Tracking then
+			cluster.Tracking:SetScale(0.0001)
 			cluster.Tracking:SetAlpha(0)
 			cluster.Tracking:EnableMouse(false)
 		end
 	end
 	if _G.MinimapCompassTexture then
 		_G.MinimapCompassTexture:SetAlpha(0)
+	end
+
+	if Minimap.ZoomIn then
+		Minimap.ZoomIn:SetAlpha(0)
+	end
+
+	if Minimap.ZoomOut then
+		Minimap.ZoomOut:SetAlpha(0)
 	end
 
 	-- Kill the archaeology and quest "blob" rings Blizzard paints over the map.
@@ -79,26 +90,84 @@ local function HideBlizzardBits()
 	end
 end
 
--- The expansion / garrison landing page button floats wherever Blizzard drops it,
--- which reads as clutter on the square map. Tuck it into the bottom-left corner
--- and hold it there, since the client re-anchors it on show.
+-- The expansion / garrison landing page button floats wherever Blizzard drops it
+-- and wears whatever art the current expansion ships, so it never matches the
+-- square map. We tuck it into the bottom-left corner and put a plain faction
+-- symbol on it instead, so it reads the same no matter the expansion.
+--
+-- Two things have to be fought here, and both need a secure hook rather than a
+-- one-shot fix at login:
+--
+--   SetLandingPageIconOffset re-points the button with SetPoint every time the
+--   icon updates, so the anchor has to be re-applied.
+--
+--   UpdateIcon picks the art per expansion, either through UpdateIconForGarrison
+--   or SetLandingPageIconFromAtlases, and both call SetAtlas on the normal,
+--   pushed and highlight textures and SetSize on the button. So an atlas we set
+--   once is gone the moment the player zones into a garrison, swaps covenant, or
+--   the expansion overlay refreshes.
+local LANDING_SIZE = 32
+
 local function TidyLandingButton()
 	local button = _G.ExpansionLandingPageMinimapButton or _G.GarrisonLandingPageMinimapButton
 	if not button then
 		return
 	end
-	local function reanchor()
-		if button.__kkuiAnchoring then
+
+	-- HordeSymbol and AllianceSymbol are game atlases, both 32x32, the same pair
+	-- the damage meter uses to mark the enemy team.
+	local symbol = (K.Faction == "Horde") and "HordeSymbol" or "AllianceSymbol"
+
+	local function paint(texture, r, g, b)
+		if not texture then
 			return
 		end
-		button.__kkuiAnchoring = true
-		button:ClearAllPoints()
-		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 2, -2)
-		button:SetScale(0.85)
-		button.__kkuiAnchoring = false
+		-- false so the atlas does not resize the texture out from under the
+		-- explicit anchors below.
+		texture:SetAtlas(symbol, false)
+		texture:SetAllPoints(button)
+		texture:SetVertexColor(r, g, b)
 	end
-	reanchor()
-	hooksecurefunc(button, "SetPoint", reanchor)
+
+	local function restyle()
+		if button.__kkuiStyling then
+			return
+		end
+		button.__kkuiStyling = true
+
+		button:SetSize(LANDING_SIZE, LANDING_SIZE)
+		button:ClearAllPoints()
+		button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -4, -4)
+
+		paint(button:GetNormalTexture(), 1, 1, 1)
+		-- Pushed reads as a press by dimming rather than by swapping art.
+		paint(button:GetPushedTexture(), 0.7, 0.7, 0.7)
+
+		local highlight = button:GetHighlightTexture()
+		paint(highlight, 1, 1, 1)
+		if highlight then
+			highlight:SetBlendMode("ADD")
+			highlight:SetAlpha(0.35)
+		end
+
+		-- The alert pulse still plays, so keep it sized to the new icon instead
+		-- of the expansion art it was built for.
+		if button.LoopingGlow then
+			button.LoopingGlow:SetSize(LANDING_SIZE * 2, LANDING_SIZE * 2)
+		end
+
+		button.__kkuiStyling = false
+	end
+
+	restyle()
+	hooksecurefunc(button, "SetPoint", restyle)
+	if button.UpdateIcon then
+		hooksecurefunc(button, "UpdateIcon", restyle)
+	end
+	if button.SetLandingPageIconFromAtlases then
+		hooksecurefunc(button, "SetLandingPageIconFromAtlases", restyle)
+	end
+	button:HookScript("OnShow", restyle)
 end
 
 -- The LFG/queue eye floats at a stock spot off the minimap. Pin it to the
