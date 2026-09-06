@@ -256,15 +256,32 @@ function Module:CollectButtons()
 		Layout()
 	end
 
-	-- A small gold dot tucked into the chosen minimap corner. Click it to open or
-	-- close the button grid.
+	-- A corner bracket sat on the map's own corner. Click it to open or close the
+	-- button grid. A bracket hugging the corner reads as part of the border rather
+	-- than a marker dropped on the map, so it covers none of the map itself and
+	-- stays out of the way of the other minimap buttons.
 	tab = CreateFrame("Button", "KKUI_MinimapButtonTab", Minimap)
-	tab:SetSize(12, 12)
+	tab:SetSize(16, 16)
 	tab:SetPoint(corner, Minimap, corner, 0, 0)
 	tab:SetFrameLevel(Minimap:GetFrameLevel() + 6)
+
 	local icon = tab:CreateTexture(nil, "ARTWORK")
 	icon:SetAllPoints()
-	icon:SetAtlas("LevelUp-Dot-Gold")
+
+	-- Blizzard builds all four corners of a nine slice from one top-left asset and
+	-- mirrors it, so the piece is flipped into whichever corner the collector sits
+	-- in. The coordinates have to be set BEFORE the atlas, which is the order
+	-- NineSlice itself uses, or the atlas overwrites them.
+	local CORNER_ATLAS = "editmode-actionbar-highlight-NineSlice-Corner"
+	if C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(CORNER_ATLAS) then
+		local flipH = strfind(corner, "RIGHT") ~= nil
+		local flipV = strfind(corner, "BOTTOM") ~= nil
+		icon:SetTexCoord(flipH and 1 or 0, flipH and 0 or 1, flipV and 1 or 0, flipV and 0 or 1)
+		icon:SetAtlas(CORNER_ATLAS)
+	else
+		-- Older clients without the edit mode art keep the plain dot.
+		icon:SetAtlas("LevelUp-Dot-Gold")
+	end
 	icon:SetAlpha(0.7)
 	self.buttonTab = tab
 
