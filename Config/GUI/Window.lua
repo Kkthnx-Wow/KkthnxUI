@@ -184,6 +184,27 @@ function GUI.LayoutControls(host, controls, opts)
 	return total
 end
 
+-- Everything in a category the search should be able to find: its own title plus
+-- the label of every setting it holds. Searching only titles meant a term like
+-- "castbar" or "bubble" found nothing, because the word a person remembers is
+-- almost never the name of the page it lives on.
+local function SearchText(category)
+	local parts = { category.title or category.name or "" }
+	for _, control in ipairs(category.controls or {}) do
+		if control.label then
+			parts[#parts + 1] = control.label
+		end
+		-- A flyout button carries its own page of settings, so fold those labels in
+		-- as well or half the options in the addon stay unsearchable.
+		for _, inner in ipairs(control.searchControls or {}) do
+			if inner.label then
+				parts[#parts + 1] = inner.label
+			end
+		end
+	end
+	return table.concat(parts, " "):lower()
+end
+
 -- Build one category panel (a scroll frame + child) on demand.
 local function BuildPanel(parent, category)
 	local scroll = CreateFrame("ScrollFrame", nil, parent, "UIPanelScrollFrameTemplate")
@@ -327,7 +348,7 @@ local function BuildWindow()
 
 		local btn = CreateFrame("Button", nil, navChild)
 		btn:SetSize(148, 30)
-		order[#order + 1] = { btn = btn, title = category.title }
+		order[#order + 1] = { btn = btn, title = category.title, haystack = SearchText(category) }
 		-- No per-button border: a clean rail where only the accent bar and a soft
 		-- background mark the active tab.
 		K.CreateBackground(btn, 0.16, 0.16, 0.16, 0.5)
@@ -389,7 +410,7 @@ local function BuildWindow()
 		query = query and query:lower() or ""
 		local y = -10
 		for _, entry in ipairs(order) do
-			local match = query == "" or entry.title:lower():find(query, 1, true)
+			local match = query == "" or entry.haystack:find(query, 1, true)
 			if match then
 				entry.btn:ClearAllPoints()
 				entry.btn:SetPoint("TOP", navChild, "TOP", 0, y)

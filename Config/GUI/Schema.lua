@@ -143,6 +143,9 @@ local function BarButton(title, key, tooltip)
 		name = "ActionBar_" .. key,
 		title = title,
 		tooltip = tooltip,
+		-- Exposed so the category search can see the settings inside this flyout,
+		-- not just the button that opens it.
+		searchControls = BarControls(key),
 		build = function(child)
 			K.GUI.LayoutControls(child, BarControls(key))
 		end,
@@ -157,6 +160,8 @@ local function ExtraButton(title, name, controls, tooltip)
 		name = name,
 		title = title,
 		tooltip = tooltip,
+		-- Exposed so the category search can see the settings inside this flyout.
+		searchControls = controls,
 		build = function(child)
 			K.GUI.LayoutControls(child, controls)
 		end,
