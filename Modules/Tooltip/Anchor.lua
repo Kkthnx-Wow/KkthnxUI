@@ -18,10 +18,13 @@ function Module:SetupAnchor()
 	anchor:SetSize(130, 34)
 	self.anchor = anchor
 
-	-- The bag bar module loads after the tooltip, so pin the mover once it exists:
-	-- 6px left of the bag bar (whose bottom already sits 6px above the micro menu),
-	-- falling back to the corner. Deferred so KKUI_BagBar is created first.
-	C_Timer.After(1, function()
+	-- Pin the mover 6px left of the bag bar, whose bottom already sits 6px above
+	-- the micro menu, falling back to the corner when the bag bar is off.
+	--
+	-- The bag bar module is enabled after this one, so KKUI_BagBar does not exist
+	-- yet. PLAYER_ENTERING_WORLD fires after every module has been enabled, which
+	-- is the point where the frame is known to be there.
+	self:RegisterEventOnce("PLAYER_ENTERING_WORLD", function()
 		local bagbar = _G.KKUI_BagBar
 		local point = bagbar and { "BOTTOMRIGHT", bagbar, "BOTTOMLEFT", -6, 0 } or { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -220, 240 }
 		K.CreateMover(anchor, "GameTooltip", L["Tooltip"], point, 130, 34)

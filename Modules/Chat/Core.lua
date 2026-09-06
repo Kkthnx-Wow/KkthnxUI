@@ -971,22 +971,20 @@ function Module:OnEnable()
 	if _G.ChatFrame1.ApplySystemAnchor then
 		hooksecurefunc(_G.ChatFrame1, "ApplySystemAnchor", AnchorChat)
 	end
-	-- Edit Mode re-applies its saved layout on world enter, after our first pin, so
-	-- re-assert the corner then.
+	-- The pass that actually moved the window is EditModeManagerFrame:UpdateLayoutInfo.
+	-- It runs on EDIT_MODE_LAYOUTS_UPDATED and whenever the game swaps to an
+	-- override layout, which is what a teleport into an instance does. Inside it,
+	-- InitSystemAnchors resets every system with ClearAllPoints followed by
+	-- SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0), and UpdateSystems then calls
+	-- ApplySystemAnchor for each one. ChatFrame1 is an Edit Mode system frame
+	-- (EditModeChatFrameSystemTemplate), so it is caught by both.
 	--
-	-- Once is not enough. ApplySystemAnchor ends in UpdateActionBarLayout, and the
-	-- managed frame containers lay out on a later frame, so part of the reposition
-	-- lands after PLAYER_ENTERING_WORLD has already been handled. That is why the
-	-- window still walked off after a teleport into an instance. Re-assert on the
-	-- next frame and twice more as the loading screen settles, which costs nothing
-	-- and covers whichever pass wins the race.
-	local function AnchorChatSoon()
-		AnchorChat()
-		C_Timer.After(0, AnchorChat)
-		C_Timer.After(0.5, AnchorChat)
-		C_Timer.After(2, AnchorChat)
+	-- Hooking UpdateLayoutInfo re-pins once, after the whole layout pass has
+	-- finished, so nothing later in the pass can undo it.
+	if _G.EditModeManagerFrame then
+		hooksecurefunc(_G.EditModeManagerFrame, "UpdateLayoutInfo", AnchorChat)
 	end
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChatSoon)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChat)
 
 	-- Lift the tab dock off the chat frame's top edge so the tabs are not
 	-- crammed against the messages. Guarded against the hook re-entering.
