@@ -1,0 +1,11 @@
+# Controls the "Create new issue" chooser. With good templates in place, the blank
+# option is turned off so every issue starts from a form, and the links below give
+# people a place to go for chat and downloads.
+blank_issues_enabled: false
+contact_links:
+  - name: KkthnxUI Discord
+    url: https://discord.gg/Rc9wcK9cAB
+    about: Chat, quick questions, and general help. Often the fastest place to get an answer.
+  - name: Download on CurseForge
+    url: https://www.curseforge.com/wow/addons/kkthnxui
+    about: Get the latest version and read the changelog.

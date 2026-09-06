@@ -1,0 +1,20 @@
+package-as: KkthnxUI
+
+# Everything is bundled in Libraries, so there is no separate no-lib build.
+enable-nolib-creation: no
+
+# Repository furniture that has no business inside the addon folder.
+ignore:
+    - .gitignore
+    - .gitattributes
+    - .github
+    - _config.yml
+    - CODE_OF_CONDUCT.md
+    - LICENSE.md
+    - README.md
+
+# The addon lives one level down in the repo, so lift it to the package root.
+move-folders:
+    KkthnxUI/KkthnxUI: KkthnxUI
+
+license-output: LICENSE.txt
