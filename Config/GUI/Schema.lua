@@ -821,6 +821,19 @@ GUI.schema = {
 	},
 
 	{
+		name = "Misc",
+		title = L["Misc"],
+		controls = {
+			{ kind = "header", label = L["Cursor Trail"] },
+			{ kind = "check", label = L["Enable Cursor Trail"], path = { "Misc", "CursorTrail" }, reload = true, tooltip = L["Trail a line of fading dots behind the mouse pointer so it stays easy to find."] },
+			{ kind = "slider", label = L["Trail Length"], path = { "Misc", "CursorTrailLength" }, min = 4, max = 30, step = 1, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["How many dots the tail is made of."] },
+			{ kind = "slider", label = L["Trail Size"], path = { "Misc", "CursorTrailSize" }, min = 8, max = 48, step = 1, reload = true, dependsOn = { "Misc", "CursorTrail" } },
+			{ kind = "check", label = L["Trail Uses Class Colour"], path = { "Misc", "CursorTrailClassColor" }, reload = true, dependsOn = { "Misc", "CursorTrail" } },
+			{ kind = "color", label = L["Trail Colour"], path = { "Misc", "CursorTrailColor" }, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["Used when class colour is off."] },
+		},
+	},
+
+	{
 		name = "Automation",
 		icon = "Interface/ICONS/Ability_Rogue_MasterOfSubtlety",
 		title = L["Automation"],

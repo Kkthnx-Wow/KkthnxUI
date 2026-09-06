@@ -342,6 +342,15 @@ K.ConfigDefaults = {
 		Enable = true,
 	},
 
+	-- Odds and ends that do not belong to a bigger system.
+	Misc = {
+		CursorTrail = false, -- fading dots trailing the mouse pointer
+		CursorTrailLength = 16, -- how many dots the tail is made of
+		CursorTrailSize = 22,
+		CursorTrailClassColor = true,
+		CursorTrailColor = { 0.36, 0.55, 0.81 }, -- used when class colour is off
+	},
+
 	-- Small quality-of-life automations. Retail only.
 	Automation = {
 		Enable = true,

@@ -36,6 +36,7 @@ local CATEGORY_ICON = {
 	Loot = "INV_Box_01",
 	MicroMenu = "INV_Misc_Book_09",
 	Bags = "INV_Misc_Bag_08",
+	Misc = "INV_Misc_Gear_02",
 	Automation = "Trade_Engineering",
 	Skins = "Trade_Engraving",
 	Movers = "Ability_Hunter_Pathfinding",

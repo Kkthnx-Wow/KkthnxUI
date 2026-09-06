@@ -9,4 +9,5 @@
 	<Script file="AlreadyKnown.lua" />
 	<Script file="MicroMenu.lua" />
 	<Script file="ButtonPreview.lua" />
+	<Script file="CursorTrail.lua" />
 </Ui>
