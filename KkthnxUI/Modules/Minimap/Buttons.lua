@@ -3,7 +3,7 @@
 	File: Modules/Minimap/Buttons.lua
 	Purpose:
 		Gather the stray addon buttons that pile up around the minimap into one
-		bordered grid, opened by a small dot in the corner. Buttons are matched by shape
+		bordered grid, opened by a bracket on the map corner. Buttons are matched by shape
 		(a small frame or button parented to the minimap) with a blacklist for the
 		Blizzard pieces we keep in place.
 -----------------------------------------------------------------------------]]
@@ -189,15 +189,17 @@ function Module:CollectButtons()
 	-- Collected buttons sit in a tidy grid inside the panel: square-cropped icons,
 	-- a small even gap, and just enough padding to clear the panel border. No
 	-- per-button border, since the panel already frames them and a border on every
-	-- icon reads as busy clutter, so the icons stay clean.
-	local SIZE = 26
+	-- icon reads as busy clutter, so the icons stay clean. Each is drawn at our own
+	-- size rather than whatever the addon authored, so a row reads evenly however
+	-- mixed the sources are.
+	local SIZE = C.Minimap.CollectedButtonSize or 22
 	local GAP = 4
 	local PAD = 6
 	local PER_ROW = 8
 
 	local function Layout()
 		local count = #collected
-		-- No point offering a toggle for an empty bin: hide the dot (and any open
+		-- No point offering a toggle for an empty bin: hide the bracket (and any open
 		-- panel) until there is at least one button to show.
 		if tab then
 			tab:SetShown(count > 0)
@@ -262,14 +264,16 @@ function Module:CollectButtons()
 	-- stays out of the way of the other minimap buttons.
 	tab = CreateFrame("Button", "KKUI_MinimapButtonTab", Minimap)
 	tab:SetSize(16, 16)
-	-- Centre it on our border's own corner piece rather than the map's corner. The
-	-- border is drawn at an offset from the map edge, so anchoring to the map put
-	-- the bracket adrift of the line it is meant to sit on. Anchoring to the border
-	-- itself keeps them together whatever that offset is set to.
+	-- Line the bracket up with our border's own corner piece rather than the map's
+	-- corner, because the border is drawn at an offset from the map edge and
+	-- anchoring to the map leaves the bracket adrift of the line it belongs on.
+	--
+	-- Corner to corner, not centre to centre: the art draws its elbow at the
+	-- texture's own corner, so centring it throws the elbow off by half the size.
 	local mapBorder = Minimap.KKUI_Border
 	local borderCorner = mapBorder and mapBorder[corner]
 	if borderCorner then
-		tab:SetPoint("CENTER", borderCorner, "CENTER", 0, 0)
+		tab:SetPoint(corner, borderCorner, corner, 0, 0)
 	else
 		tab:SetPoint(corner, Minimap, corner, 0, 0)
 	end

@@ -169,7 +169,8 @@ K.ConfigDefaults = {
 		MouseoverFade = false, -- fade the map out until you hover it
 		FadeAlpha = 0.25, -- alpha while faded
 		CollectButtons = true,
-		ButtonCorner = "BOTTOMLEFT", -- corner the button-collector dot sits in
+		ButtonCorner = "BOTTOMLEFT", -- corner the button-collector bracket sits in
+		CollectedButtonSize = 22, -- size of each addon button in the collector flyout
 	},
 
 	WorldMap = {
