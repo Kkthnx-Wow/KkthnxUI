@@ -53,6 +53,19 @@ function GUI.GetDefault(path)
 	return node
 end
 
+-- Copy a default before it reaches the live config, so the two never share a
+-- table and editing a colour cannot rewrite what "default" means.
+local function CopyDefault(value)
+	if type(value) ~= "table" then
+		return value
+	end
+	local copy = {}
+	for k, v in pairs(value) do
+		copy[k] = CopyDefault(v)
+	end
+	return copy
+end
+
 -- Render a value the way it reads in a tooltip. Colours are a table of three
 -- numbers, everything else is a plain scalar.
 local function DescribeValue(control, value)
@@ -122,15 +135,7 @@ function GUI.AttachTooltip(frame, control, refresh)
 		if default == nil then
 			return
 		end
-		-- Copy a table default so the live config never shares the defaults table.
-		if type(default) == "table" then
-			local copy = {}
-			for k, v in pairs(default) do
-				copy[k] = v
-			end
-			default = copy
-		end
-		GUI.ApplyChange(control, default)
+		GUI.ApplyChange(control, CopyDefault(default))
 		if refresh then
 			refresh(default)
 		end
@@ -145,6 +150,41 @@ function GUI.AttachTooltip(frame, control, refresh)
 	else
 		frame:HookScript("OnMouseUp", Reset)
 	end
+end
+
+-- Put every setting in one category back to what it ships with. Right-click
+-- already resets a single control, but a page like Unitframes holds dozens and
+-- clicking through them one at a time is not a fix, it is a chore.
+--
+-- Flyout pages are reached through searchControls, the same list the category
+-- search reads, so a reset covers the per-bar and per-unit settings that live
+-- one level down rather than stopping at the button that opens them.
+local function ResetControls(controls, count)
+	for _, control in ipairs(controls or {}) do
+		if control.path then
+			local default = GUI.GetDefault(control.path)
+			if default ~= nil then
+				K:SetConfig(control.path, CopyDefault(default))
+				count = count + 1
+			end
+		end
+		count = ResetControls(control.searchControls, count)
+	end
+	return count
+end
+
+function GUI.ResetCategory(category)
+	if not category then
+		return 0
+	end
+	local count = ResetControls(category.controls, 0)
+	if count > 0 and GUI.MarkReload then
+		-- The widgets on screen still show the old values, and rebuilding the
+		-- whole window live would drop scroll position and open flyouts. A reload
+		-- is the honest way to land it.
+		GUI.MarkReload()
+	end
+	return count
 end
 
 -- Apply a changed value: persist it, run any live callback, flag reload need,

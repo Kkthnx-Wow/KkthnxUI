@@ -20,6 +20,11 @@ local Build = Module.Build
 local oUF = K.oUF
 
 local IsSecret = K.IsSecret
+
+-- Enum.LFGRole values, pulled out once. UnitGroupRolesAssignedEnum returns these
+-- numbers and oUF passes them straight through to the role PostUpdate.
+local LFG_TANK = Enum.LFGRole and Enum.LFGRole.Tank
+local LFG_HEALER = Enum.LFGRole and Enum.LFGRole.Healer
 local CreateColor = CreateColor
 local DebuffTypeColor = DebuffTypeColor
 local UnitExists = UnitExists
@@ -347,13 +352,17 @@ function Build.GroupIndicators(self)
 
 	-- Clean role glyphs from the modern icon set. Only tank and healer are worth
 	-- showing, a DPS icon on every damage dealer is pure noise, so hide that role.
+	--
+	-- The role handed to PostUpdate is an Enum.LFGRole number from
+	-- UnitGroupRolesAssignedEnum, not the old "TANK" and "HEALER" strings. Testing
+	-- for the strings matched nothing, so the icon was hidden for everyone.
 	self.GroupRoleIndicator = Icon(health, 12, "BOTTOMLEFT", health, "BOTTOMLEFT", 1, 1)
 	self.GroupRoleIndicator.PostUpdate = function(element, role)
-		if role == "TANK" then
-			element:SetAtlas("UI-LFG-RoleIcon-Tank")
+		if role == LFG_TANK then
+			element:SetAtlas("icons_16x16_tank")
 			element:Show()
-		elseif role == "HEALER" then
-			element:SetAtlas("UI-LFG-RoleIcon-Healer")
+		elseif role == LFG_HEALER then
+			element:SetAtlas("icons_16x16_heal")
 			element:Show()
 		else
 			element:Hide()

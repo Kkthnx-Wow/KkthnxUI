@@ -199,6 +199,8 @@
         "FCF_SetChatWindowFontSize",
         "ScrollingEdit_OnCursorChanged",
         "ScrollingEdit_OnTextChanged",
-        "ScrollingEdit_OnUpdate"
+        "ScrollingEdit_OnUpdate",
+        "YES",
+        "NO"
     ]
 }

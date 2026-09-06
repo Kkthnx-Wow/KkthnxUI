@@ -203,6 +203,28 @@ local function MakeInitializer(opts)
 		-- Register the regions with the engine.
 		pcall(button.SetIcon, button, icon)
 		pcall(button.SetDurationCooldown, button, cooldown)
+
+		-- Blizzard drives this cooldown through ApplyDurationCooldown, which passes
+		-- clearIfZero as false. Buttons are pooled, so a button that held a timed
+		-- aura and now holds a permanent one keeps the old swipe painted across the
+		-- icon, which is the stray dark wedge that shows up on buffs that have no
+		-- timer. Clear it ourselves when the duration comes through as zero.
+		--
+		-- Hooked on the instance rather than the template, since only our own
+		-- cooldowns should behave this way. Everything is pcalled because the
+		-- cooldown carries the Cooldown secret aspect and writes are denied while
+		-- auras are secret.
+		if cooldown.SetCooldownFromDurationObject then
+			hooksecurefunc(cooldown, "SetCooldownFromDurationObject", function(self, auraDuration)
+				if not auraDuration then
+					return
+				end
+				local ok, isZero = pcall(auraDuration.IsZero, auraDuration)
+				if ok and isZero then
+					pcall(self.Clear, self)
+				end
+			end)
+		end
 		pcall(button.SetApplicationCount, button, count, {})
 		local fmt = GetDurationFormatter()
 		pcall(button.SetDurationText, button, duration, fmt and { textFormatter = fmt } or {})

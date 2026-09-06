@@ -323,8 +323,25 @@ local function BuildWindow()
 	titleRule:SetPoint("TOPLEFT", content, "TOPLEFT", 8, -28)
 	titleRule:SetPoint("TOPRIGHT", content, "TOPRIGHT", -8, -28)
 
+	-- Reset the whole page. Right-click already resets one control, but a page
+	-- like Unitframes holds dozens, so this covers the section in one go. It sits
+	-- on the title rule rather than in the footer so it reads as belonging to the
+	-- page it acts on.
+	-- UIPanelButtonTemplate so SkinButton finds a font string to recolour on hover,
+	-- the same way the footer reload button is built.
+	local resetSection = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+	resetSection:SetSize(112, 20)
+	resetSection:SetPoint("TOPRIGHT", content, "TOPRIGHT", -10, -5)
+	resetSection:SetText(L["Reset Section"])
+	K.SkinButton(resetSection)
+	local resetFont = resetSection:GetFontString()
+	if resetFont then
+		K.SetFont(resetFont, 11, "")
+	end
+
 	local panels = {}
 	local buttons = {}
+	local currentCategory
 	local function Select(name)
 		for key, panel in pairs(panels) do
 			panel:SetShown(key == name)
@@ -337,14 +354,42 @@ local function BuildWindow()
 			end
 		end
 		contentTitle:SetText(GUI.categoryTitles and GUI.categoryTitles[name] or "")
+		currentCategory = GUI.categoryByName and GUI.categoryByName[name]
+		-- A custom page (profiles, movers, nameplate colours) owns its own state
+		-- and has no control list to walk, so there is nothing to reset there.
+		resetSection:SetShown(currentCategory ~= nil and currentCategory.controls ~= nil)
 	end
 
+	_G.StaticPopupDialogs["KKUI_GUI_RESET_SECTION"] = {
+		text = L["Put every setting on this page back to its default?"],
+		button1 = _G.YES,
+		button2 = _G.NO,
+		OnAccept = function()
+			local count = GUI.ResetCategory(currentCategory)
+			if count > 0 then
+				K.Print(L["Reset %d settings on this page."], count)
+			end
+		end,
+		timeout = 0,
+		whileDead = 1,
+		hideOnEscape = 1,
+		preferredIndex = 3,
+	}
+
+	resetSection:SetScript("OnClick", function()
+		if currentCategory then
+			StaticPopup_Show("KKUI_GUI_RESET_SECTION")
+		end
+	end)
+
 	GUI.categoryTitles = {}
+	GUI.categoryByName = {}
 
 	local order = {}
 	for _, category in ipairs(GUI.schema) do
 		panels[category.name] = BuildPanel(content, category)
 		GUI.categoryTitles[category.name] = category.title
+		GUI.categoryByName[category.name] = category
 
 		local btn = CreateFrame("Button", nil, navChild)
 		btn:SetSize(148, 30)

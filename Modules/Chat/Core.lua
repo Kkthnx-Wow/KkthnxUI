@@ -973,7 +973,20 @@ function Module:OnEnable()
 	end
 	-- Edit Mode re-applies its saved layout on world enter, after our first pin, so
 	-- re-assert the corner then.
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChat)
+	--
+	-- Once is not enough. ApplySystemAnchor ends in UpdateActionBarLayout, and the
+	-- managed frame containers lay out on a later frame, so part of the reposition
+	-- lands after PLAYER_ENTERING_WORLD has already been handled. That is why the
+	-- window still walked off after a teleport into an instance. Re-assert on the
+	-- next frame and twice more as the loading screen settles, which costs nothing
+	-- and covers whichever pass wins the race.
+	local function AnchorChatSoon()
+		AnchorChat()
+		C_Timer.After(0, AnchorChat)
+		C_Timer.After(0.5, AnchorChat)
+		C_Timer.After(2, AnchorChat)
+	end
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChatSoon)
 
 	-- Lift the tab dock off the chat frame's top edge so the tabs are not
 	-- crammed against the messages. Guarded against the hook re-entering.
