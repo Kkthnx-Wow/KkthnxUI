@@ -344,12 +344,16 @@ K.ConfigDefaults = {
 
 	-- Odds and ends that do not belong to a bigger system.
 	Misc = {
-		CursorTrail = false, -- fading dots trailing the mouse pointer
-		CursorTrailLength = 16, -- how many dots the tail is made of
-		CursorTrailSmoothing = 0.35, -- how hard each dot chases the one ahead, lower is a longer lazier tail
-		CursorTrailSize = 22,
-		CursorTrailAlpha = 0.8,
+		CursorTrail = false, -- glowing dots trailing the mouse pointer
+		CursorTrailLength = 48, -- most dots that can be on screen at once
+		CursorTrailSpacing = 8, -- pixels the pointer must travel before another dot is dropped
+		CursorTrailLifetime = 0.45, -- seconds a dot takes to fade out
+		CursorTrailShape = "Glow", -- Glow, Spark, Ping, or Streak
+		CursorTrailSize = 18,
+		CursorTrailAlpha = 0.85,
+		CursorTrailShrink = true, -- dots get smaller as they fade
 		CursorTrailCombat = false, -- only show the trail while in combat
+		CursorTrailHideTurning = true, -- hide it while turning or looking with the mouse
 		CursorTrailClassColor = true,
 		CursorTrailColor = { 0.36, 0.55, 0.81 }, -- used when class colour is off
 	},
