@@ -351,6 +351,8 @@ GUI.schema = {
 				{ text = L["Hotkey Only"], value = "hotkey" },
 				{ text = L["None"], value = "none" },
 			}, apply = ApplyAllBars, tooltip = L["How a button shows an ability that is out of range."] },
+			{ kind = "color", label = L["Out of Range Colour"], path = { "ActionBar", "RangeColor" }, apply = ApplyAllBars, dependsOn = { "ActionBar", "RangeColoring" } },
+			{ kind = "color", label = L["Out of Mana Colour"], path = { "ActionBar", "ManaColor" }, apply = ApplyAllBars, tooltip = L["Tint used when you cannot afford an ability."] },
 			{ kind = "dropdown", label = L["Proc Glow"], path = { "ActionBar", "ProcGlow" }, reload = true, options = {
 				{ text = L["Pixel"], value = "Pixel" },
 				{ text = L["Autocast Shine"], value = "Autocast" },
@@ -566,6 +568,7 @@ GUI.schema = {
 		controls = {
 			{ kind = "header", label = L["Chat"] },
 			{ kind = "check", label = L["Enable Chat Skin"], path = { "Chat", "Enable" }, reload = true },
+			{ kind = "dropdown", label = L["Font"], path = { "Chat", "Font" }, options = MediaOptions(C.Media.Fonts), reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Font used for chat text, separate from the interface font."] },
 			{ kind = "slider", label = L["Font Size"], path = { "Chat", "FontSize" }, min = 10, max = 20, step = 1, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Font Outline"], path = { "Chat", "FontOutline" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Mouse Wheel Scroll"], path = { "Chat", "MouseWheelScroll" }, reload = true, dependsOn = { "Chat", "Enable" } },
