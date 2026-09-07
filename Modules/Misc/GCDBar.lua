@@ -18,12 +18,19 @@
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
+-- The duration object and the engine driven status bar timer are retail only, so
+-- there is nothing to build on the older flavours.
+if not (K.Client and K.Client.IsRetail) then
+	return
+end
+
 local Module = K:NewModule("GCDBar")
 
 local CreateFrame = CreateFrame
 local UnitAffectingCombat = UnitAffectingCombat
 local C_Spell = C_Spell
 local C_Timer = C_Timer
+local max = math.max
 
 -- The hidden spell the client hangs the global cooldown on.
 local GCD_SPELL = 61304
@@ -41,14 +48,17 @@ end
 -- Cooldown chatter fires constantly and knows nothing about which spell caused
 -- it, so letting it open the bar flashes an empty icon box.
 local function Arm(refreshOnly)
+	-- Checked before anything is read, since cooldown updates fire constantly and
+	-- almost none of them concern a bar that is not even up.
+	if refreshOnly and not bar:IsShown() then
+		return
+	end
+
 	-- Always take a fresh object. A stored handle goes stale when a cooldown is
 	-- reset, and re-arming it plays the original countdown out again instead of
 	-- the new one.
 	local duration = C_Spell.GetSpellCooldownDuration(GCD_SPELL)
 	if not duration or not duration:IsActive() then
-		return
-	end
-	if refreshOnly and not bar:IsShown() then
 		return
 	end
 
@@ -168,7 +178,15 @@ function Module:OnEnable()
 		bar.Holder = holder
 	end
 
-	K.CreateMover(bar, "GCDBar", L["GCD Bar"], { "CENTER", UIParent, "CENTER", 0, -215 }, width, height)
+	-- The mover covers the icon too, or the handle in edit mode is narrower than
+	-- the thing it moves.
+	local moverWidth = width
+	local moverHeight = height
+	if showIcon then
+		moverWidth = width + db.GCDBarIconSize + 6
+		moverHeight = max(height, db.GCDBarIconSize)
+	end
+	K.CreateMover(bar, "GCDBar", L["GCD Bar"], { "CENTER", UIParent, "CENTER", 0, -215 }, moverWidth, moverHeight, "RIGHT")
 
 	SetAlpha()
 
