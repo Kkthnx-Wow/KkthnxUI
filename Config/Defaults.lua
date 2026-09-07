@@ -344,6 +344,16 @@ K.ConfigDefaults = {
 
 	-- Odds and ends that do not belong to a bigger system.
 	Misc = {
+		GCDBar = false, -- a bar tracking the global cooldown
+		GCDBarWidth = 220,
+		GCDBarHeight = 10,
+		GCDBarIcon = true, -- show the icon of the spell that started the cooldown
+		GCDBarDrain = true, -- drain the bar as the cooldown runs out, rather than fill it
+		GCDBarAlpha = 1, -- opacity while in combat
+		GCDBarRestAlpha = 0.5, -- opacity out of combat
+		GCDBarClassColor = true,
+		GCDBarColor = { 0.36, 0.55, 0.81 }, -- used when class colour is off
+
 		CursorTrail = false, -- glowing dots trailing the mouse pointer
 		CursorTrailLength = 48, -- most dots that can be on screen at once
 		CursorTrailSpacing = 8, -- pixels the pointer must travel before another dot is dropped

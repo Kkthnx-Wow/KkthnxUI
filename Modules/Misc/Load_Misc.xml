@@ -10,4 +10,5 @@
 	<Script file="MicroMenu.lua" />
 	<Script file="ButtonPreview.lua" />
 	<Script file="CursorTrail.lua" />
+	<Script file="GCDBar.lua" />
 </Ui>

@@ -824,6 +824,17 @@ GUI.schema = {
 		name = "Misc",
 		title = L["Misc"],
 		controls = {
+			{ kind = "header", label = L["GCD Bar"] },
+			{ kind = "check", label = L["Enable GCD Bar"], path = { "Misc", "GCDBar" }, reload = true, tooltip = L["A bar tracking the global cooldown, with the icon of the spell that started it."] },
+			{ kind = "slider", label = L["GCD Bar Width"], path = { "Misc", "GCDBarWidth" }, min = 80, max = 500, step = 10, reload = true, dependsOn = { "Misc", "GCDBar" } },
+			{ kind = "slider", label = L["GCD Bar Height"], path = { "Misc", "GCDBarHeight" }, min = 4, max = 40, step = 1, reload = true, dependsOn = { "Misc", "GCDBar" } },
+			{ kind = "check", label = L["Show Spell Icon"], path = { "Misc", "GCDBarIcon" }, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Show the icon of the spell that started the cooldown beside the bar."] },
+			{ kind = "check", label = L["Drain The Bar"], path = { "Misc", "GCDBarDrain" }, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Empty the bar as the cooldown runs down. Turn off to fill it instead."] },
+			{ kind = "slider", label = L["GCD Bar Opacity"], path = { "Misc", "GCDBarAlpha" }, min = 0.1, max = 1, step = 0.05, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Opacity while you are in combat."] },
+			{ kind = "slider", label = L["GCD Bar Resting Opacity"], path = { "Misc", "GCDBarRestAlpha" }, min = 0, max = 1, step = 0.05, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Opacity out of combat. Set to zero to hide it until you are fighting."] },
+			{ kind = "check", label = L["GCD Bar Uses Class Colour"], path = { "Misc", "GCDBarClassColor" }, reload = true, dependsOn = { "Misc", "GCDBar" } },
+			{ kind = "color", label = L["GCD Bar Colour"], path = { "Misc", "GCDBarColor" }, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Used when class colour is off."] },
+
 			{ kind = "header", label = L["Cursor Trail"] },
 			{ kind = "check", label = L["Enable Cursor Trail"], path = { "Misc", "CursorTrail" }, reload = true, tooltip = L["Trail a line of fading dots behind the mouse pointer so it stays easy to find."] },
 			{ kind = "slider", label = L["Trail Length"], path = { "Misc", "CursorTrailLength" }, min = 16, max = 120, step = 4, reload = true, dependsOn = { "Misc", "CursorTrail" }, tooltip = L["Most dots that can be on screen at once. Higher looks denser and costs more."] },

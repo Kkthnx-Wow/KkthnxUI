@@ -1,0 +1,126 @@
+--[[-----------------------------------------------------------------------------
+	Addon: KkthnxUI
+	File: Modules/Misc/GCDBar.lua
+	Purpose:
+		A bar tracking the global cooldown, with the icon of the spell that
+		started it.
+
+		The fill is handed to the engine. C_Spell.GetSpellCooldownDuration returns
+		a duration object, and StatusBar:SetTimerDuration renders it in C from
+		there, so the bar animates at full framerate with no Lua running per frame
+		and nothing to poll. It also never reads the value, so a secret cooldown
+		cannot break it.
+
+		The bar stays on screen and simply sits empty between casts, which means
+		there is no end-of-cooldown signal to chase. Off by default.
+-----------------------------------------------------------------------------]]
+
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+
+local Module = K:NewModule("GCDBar")
+
+local CreateFrame = CreateFrame
+local UnitAffectingCombat = UnitAffectingCombat
+local C_Spell = C_Spell
+
+-- The hidden spell the client hangs the global cooldown on.
+local GCD_SPELL = 61304
+
+local bar, icon
+local combatAlpha, restAlpha
+
+local function Arm()
+	local duration = C_Spell.GetSpellCooldownDuration(GCD_SPELL)
+	if not duration then
+		return
+	end
+	bar:SetTimerDuration(duration, nil, bar.direction)
+end
+
+local function SetAlpha()
+	bar:SetAlpha(UnitAffectingCombat("player") and combatAlpha or restAlpha)
+end
+
+-- The spell that just went off owns the global cooldown that follows it, so read
+-- the icon here rather than guessing from the cooldown alone.
+function Module:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
+	if unit ~= "player" then
+		return
+	end
+	if icon and spellID then
+		icon:SetTexture(C_Spell.GetSpellTexture(spellID))
+	end
+	Arm()
+end
+
+-- Catches a global cooldown started by something that never casts, an item or a
+-- toy, where no cast event arrives.
+function Module:SPELL_UPDATE_COOLDOWN()
+	Arm()
+end
+
+function Module:PLAYER_REGEN_DISABLED()
+	SetAlpha()
+end
+
+function Module:PLAYER_REGEN_ENABLED()
+	SetAlpha()
+end
+
+function Module:OnEnable()
+	local db = C.Misc
+	if not db.GCDBar then
+		return
+	end
+
+	combatAlpha = db.GCDBarAlpha
+	restAlpha = db.GCDBarRestAlpha
+
+	local width, height = db.GCDBarWidth, db.GCDBarHeight
+	local showIcon = db.GCDBarIcon
+
+	bar = CreateFrame("StatusBar", "KKUI_GCDBar", UIParent)
+	bar:SetSize(width, height)
+	bar:SetPoint("CENTER", UIParent, "CENTER", 0, -215)
+	bar:SetStatusBarTexture(K.GetTexture(C.Unitframe.Texture))
+	bar:SetMinMaxValues(0, 1)
+	bar:SetValue(0)
+	K.CreateBorder(bar)
+
+	-- Drain reads better than fill for a cooldown, but both are one enum apart.
+	bar.direction = db.GCDBarDrain and Enum.StatusBarTimerDirection.RemainingTime or Enum.StatusBarTimerDirection.ElapsedTime
+
+	local bg = bar:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetColorTexture(K.Colors.voidDark[1], K.Colors.voidDark[2], K.Colors.voidDark[3], 0.7)
+
+	if db.GCDBarClassColor then
+		bar:SetStatusBarColor(K.ClassColor.r, K.ClassColor.g, K.ClassColor.b)
+	else
+		local custom = db.GCDBarColor
+		bar:SetStatusBarColor(custom[1], custom[2], custom[3])
+	end
+
+	if showIcon then
+		-- Square icon on the left, sized to the bar so the pair reads as one piece.
+		local holder = CreateFrame("Frame", nil, bar)
+		holder:SetSize(height, height)
+		holder:SetPoint("RIGHT", bar, "LEFT", -6, 0)
+		K.CreateBorder(holder)
+
+		icon = holder:CreateTexture(nil, "ARTWORK")
+		icon:SetPoint("TOPLEFT", holder, "TOPLEFT", 1, -1)
+		icon:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -1, 1)
+		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		bar.Holder = holder
+	end
+
+	K.CreateMover(bar, "GCDBar", L["GCD Bar"], { "CENTER", UIParent, "CENTER", 0, -215 }, width, height)
+
+	SetAlpha()
+
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "UNIT_SPELLCAST_SUCCEEDED")
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "SPELL_UPDATE_COOLDOWN")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "PLAYER_REGEN_DISABLED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "PLAYER_REGEN_ENABLED")
+end
