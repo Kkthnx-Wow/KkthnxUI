@@ -11,8 +11,9 @@
 		and nothing to poll. It also never reads the value, so a secret cooldown
 		cannot break it.
 
-		The bar stays on screen and simply sits empty between casts, which means
-		there is no end-of-cooldown signal to chase. Off by default.
+		It hides between cooldowns. The duration object reports how long is left,
+		so the hide is scheduled once at that exact moment rather than polled for.
+		Off by default.
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
@@ -22,19 +23,45 @@ local Module = K:NewModule("GCDBar")
 local CreateFrame = CreateFrame
 local UnitAffectingCombat = UnitAffectingCombat
 local C_Spell = C_Spell
+local C_Timer = C_Timer
 
 -- The hidden spell the client hangs the global cooldown on.
 local GCD_SPELL = 61304
 
 local bar, icon
 local combatAlpha, restAlpha
+local hideTimer
+
+local function HideBar()
+	hideTimer = nil
+	bar:Hide()
+end
 
 local function Arm()
+	-- Always take a fresh object. A stored handle goes stale when a cooldown is
+	-- reset, and re-arming it plays the original countdown out again instead of
+	-- the new one.
 	local duration = C_Spell.GetSpellCooldownDuration(GCD_SPELL)
-	if not duration then
+	if not duration or not duration:IsActive() then
 		return
 	end
-	bar:SetTimerDuration(duration, nil, bar.direction)
+
+	bar:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, bar.direction)
+	bar:Show()
+
+	-- Hide at the moment the cooldown ends. The duration object knows how long is
+	-- left, so this is one shot at a known time rather than something polled for.
+	-- Cancelling the old handle is what keeps a finished cooldown from hiding the
+	-- one that replaced it, and it costs no closure per cast.
+	if hideTimer then
+		hideTimer:Cancel()
+	end
+	if duration:HasSecretValues() then
+		-- Remaining time is unreadable, so fall back to the cooldown update below.
+		hideTimer = nil
+		return
+	end
+	hideTimer = C_Timer.NewTimer(duration:GetRemainingDuration(), HideBar)
 end
 
 local function SetAlpha()
@@ -57,6 +84,14 @@ end
 -- toy, where no cast event arrives.
 function Module:SPELL_UPDATE_COOLDOWN()
 	Arm()
+	-- Also the safety net for a cooldown whose remaining time could not be read,
+	-- since this fires again once it has run out.
+	if not hideTimer and bar:IsShown() then
+		local duration = C_Spell.GetSpellCooldownDuration(GCD_SPELL)
+		if not duration or not duration:IsActive() then
+			bar:Hide()
+		end
+	end
 end
 
 function Module:PLAYER_REGEN_DISABLED()
@@ -85,6 +120,7 @@ function Module:OnEnable()
 	bar:SetStatusBarTexture(K.GetTexture(C.Unitframe.Texture))
 	bar:SetMinMaxValues(0, 1)
 	bar:SetValue(0)
+	bar:Hide()
 	K.CreateBorder(bar)
 
 	-- Drain reads better than fill for a cooldown, but both are one enum apart.
@@ -102,9 +138,11 @@ function Module:OnEnable()
 	end
 
 	if showIcon then
-		-- Square icon on the left, sized to the bar so the pair reads as one piece.
+		-- The icon carries its own size rather than matching the bar. A GCD bar is
+		-- typically a thin strip, and an icon that thin is unreadable.
 		local holder = CreateFrame("Frame", nil, bar)
-		holder:SetSize(height, height)
+		local iconSize = db.GCDBarIconSize
+		holder:SetSize(iconSize, iconSize)
 		holder:SetPoint("RIGHT", bar, "LEFT", -6, 0)
 		K.CreateBorder(holder)
 

@@ -829,6 +829,7 @@ GUI.schema = {
 			{ kind = "slider", label = L["GCD Bar Width"], path = { "Misc", "GCDBarWidth" }, min = 80, max = 500, step = 10, reload = true, dependsOn = { "Misc", "GCDBar" } },
 			{ kind = "slider", label = L["GCD Bar Height"], path = { "Misc", "GCDBarHeight" }, min = 4, max = 40, step = 1, reload = true, dependsOn = { "Misc", "GCDBar" } },
 			{ kind = "check", label = L["Show Spell Icon"], path = { "Misc", "GCDBarIcon" }, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Show the icon of the spell that started the cooldown beside the bar."] },
+			{ kind = "slider", label = L["Spell Icon Size"], path = { "Misc", "GCDBarIconSize" }, min = 12, max = 48, step = 1, reload = true, dependsOn = { "Misc", "GCDBarIcon" } },
 			{ kind = "check", label = L["Drain The Bar"], path = { "Misc", "GCDBarDrain" }, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Empty the bar as the cooldown runs down. Turn off to fill it instead."] },
 			{ kind = "slider", label = L["GCD Bar Opacity"], path = { "Misc", "GCDBarAlpha" }, min = 0.1, max = 1, step = 0.05, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Opacity while you are in combat."] },
 			{ kind = "slider", label = L["GCD Bar Resting Opacity"], path = { "Misc", "GCDBarRestAlpha" }, min = 0, max = 1, step = 0.05, reload = true, dependsOn = { "Misc", "GCDBar" }, tooltip = L["Opacity out of combat. Set to zero to hide it until you are fighting."] },

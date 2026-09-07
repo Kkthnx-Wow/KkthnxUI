@@ -348,6 +348,7 @@ K.ConfigDefaults = {
 		GCDBarWidth = 220,
 		GCDBarHeight = 10,
 		GCDBarIcon = true, -- show the icon of the spell that started the cooldown
+		GCDBarIconSize = 24,
 		GCDBarDrain = true, -- drain the bar as the cooldown runs out, rather than fill it
 		GCDBarAlpha = 1, -- opacity while in combat
 		GCDBarRestAlpha = 0.5, -- opacity out of combat
