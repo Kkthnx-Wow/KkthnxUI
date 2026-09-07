@@ -13,8 +13,4 @@ ignore:
     - LICENSE.md
     - README.md
 
-# The addon lives one level down in the repo, so lift it to the package root.
-move-folders:
-    KkthnxUI/KkthnxUI: KkthnxUI
-
 license-output: LICENSE.txt
