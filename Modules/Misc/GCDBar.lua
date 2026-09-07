@@ -37,12 +37,18 @@ local function HideBar()
 	bar:Hide()
 end
 
-local function Arm()
+-- refreshOnly means "update a bar that is already up, but do not open one".
+-- Cooldown chatter fires constantly and knows nothing about which spell caused
+-- it, so letting it open the bar flashes an empty icon box.
+local function Arm(refreshOnly)
 	-- Always take a fresh object. A stored handle goes stale when a cooldown is
 	-- reset, and re-arming it plays the original countdown out again instead of
 	-- the new one.
 	local duration = C_Spell.GetSpellCooldownDuration(GCD_SPELL)
 	if not duration or not duration:IsActive() then
+		return
+	end
+	if refreshOnly and not bar:IsShown() then
 		return
 	end
 
@@ -75,15 +81,22 @@ function Module:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellID)
 		return
 	end
 	if icon and spellID then
-		icon:SetTexture(C_Spell.GetSpellTexture(spellID))
+		-- GetSpellTexture returns nothing when the spell is unknown, and passing
+		-- that straight through would blank the icon instead of leaving the last
+		-- one up.
+		local texture = C_Spell.GetSpellTexture(spellID)
+		if texture then
+			icon:SetTexture(texture)
+			icon:Show()
+		end
 	end
 	Arm()
 end
 
--- Catches a global cooldown started by something that never casts, an item or a
--- toy, where no cast event arrives.
+-- Keeps an open bar in step with a cooldown that changed under it, and closes it
+-- when the remaining time could not be read.
 function Module:SPELL_UPDATE_COOLDOWN()
-	Arm()
+	Arm(true)
 	-- Also the safety net for a cooldown whose remaining time could not be read,
 	-- since this fires again once it has run out.
 	if not hideTimer and bar:IsShown() then
@@ -150,6 +163,8 @@ function Module:OnEnable()
 		icon:SetPoint("TOPLEFT", holder, "TOPLEFT", 1, -1)
 		icon:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -1, 1)
 		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		-- Nothing to show until the first cast names a spell.
+		icon:Hide()
 		bar.Holder = holder
 	end
 
