@@ -48,8 +48,8 @@ jobs:
       #
       # The release type is not set here on purpose: the packager reads it from
       # the tag. A tag containing "beta" uploads as a beta, "alpha" as an alpha,
-      # anything else as a full release. So while we are in beta, tag it
-      # 11.0.1-beta and CurseForge marks the file beta on its own.
+      # anything else as a full release. So a plain 11.0.5 publishes as a
+      # release, and adding -beta is all it takes to go back to betas.
       - name: Package and release
         uses: BigWigsMods/packager@v2
         with:
