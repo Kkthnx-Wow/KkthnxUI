@@ -15,6 +15,7 @@
 	<Script file="Core\AuraContainer.lua" />
 	<Script file="Core\Skins.lua" />
 	<Script file="Core\Dialog.lua" />
+	<Script file="Core\Debug.lua" />
 	<Script file="Core\Movers.lua" />
 	<Script file="Core\Core.lua" />
 

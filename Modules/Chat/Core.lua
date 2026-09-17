@@ -949,6 +949,17 @@ function Module:OnEnable()
 		frame.ignoreFramePositionManager = true
 	end
 
+	-- A frame of ours that owns the spot, with the chat window stretched across it.
+	-- Chasing the chat's own single anchor never held, because the client restores
+	-- geometry with SetSize as well as SetPoint and a SetPoint hook cannot see a
+	-- resize. Pinned by two opposing corners the size is derived from the anchors
+	-- instead of stored on the frame, so a SetSize behind our back changes nothing
+	-- on screen and there is only one thing left to defend.
+	local bottom = C.Chat.ChatBar and 34 or 6
+	local holder = CreateFrame("Frame", "KKUI_ChatHolder", UIParent)
+	holder:SetSize(C.Chat.Width, C.Chat.Height)
+	holder:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, bottom)
+
 	local anchoring
 	local function AnchorChat()
 		if anchoring then
@@ -956,15 +967,32 @@ function Module:OnEnable()
 		end
 		anchoring = true
 		DetachChat()
-		-- 6px from the left edge, 6px from the bottom, or higher to clear the
-		-- quick-bar when it is enabled.
-		local bottom = C.Chat.ChatBar and 34 or 6
-		_G.ChatFrame1:SetUserPlaced(true)
-		_G.ChatFrame1:ClearAllPoints()
-		_G.ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, bottom)
+		local frame = _G.ChatFrame1
+		frame:SetUserPlaced(true)
+		frame:ClearAllPoints()
+		frame:SetPoint("TOPLEFT", holder, "TOPLEFT", 0, 0)
+		frame:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", 0, 0)
 		anchoring = false
+
+		-- Record the state we actually leave behind. An event snapshot later shows
+		-- what survived, which is not the same thing.
+		local stream = K.Debug and K.Debug.Get("chat")
+		if stream then
+			stream:SnapshotSettled(frame, "after AnchorChat")
+		end
 	end
 	AnchorChat()
+
+	-- The function the client calls to put a chat window back where its saved
+	-- settings say. It returns early for the default frame, but the call still
+	-- happens, so it is the earliest reliable point to re-assert from.
+	if _G.FCF_RestorePositionAndDimensions then
+		hooksecurefunc("FCF_RestorePositionAndDimensions", AnchorChat)
+	end
+
+	-- Moving the holder moves the chat, and the client never touches the holder, so
+	-- a dragged position is the one thing here that cannot be fought over.
+	K.CreateMover(holder, "Chat", L["Chat"], { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, bottom }, C.Chat.Width, C.Chat.Height)
 	hooksecurefunc(_G.ChatFrame1, "SetPoint", AnchorChat)
 	-- Re-pin straight after Edit Mode re-applies its own anchor, which is the call
 	-- that used to put the window back under the frame manager.
@@ -985,6 +1013,22 @@ function Module:OnEnable()
 		hooksecurefunc(_G.EditModeManagerFrame, "UpdateLayoutInfo", AnchorChat)
 	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChat)
+	-- A scale change re-derives the window from Blizzard's stored fractions, so it
+	-- has to be pinned again afterwards.
+	self:RegisterEvent("UI_SCALE_CHANGED", AnchorChat)
+	-- The two that were actually letting it drift. Both fire on a zone change and
+	-- both run FloatingChatFrame_Update, which re-applies the window geometry the
+	-- client has stored. That path resizes as well as moves, so a SetPoint hook
+	-- never sees half of it.
+	self:RegisterEvent("UPDATE_CHAT_WINDOWS", AnchorChat)
+	self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS", AnchorChat)
+
+	-- Write the result into Blizzard's own saved chat settings. Without this the
+	-- client keeps re-deriving a position from its stored values and we spend the
+	-- session correcting it.
+	if _G.FCF_SavePositionAndDimensions then
+		_G.FCF_SavePositionAndDimensions(_G.ChatFrame1)
+	end
 
 	-- Lift the tab dock off the chat frame's top edge so the tabs are not
 	-- crammed against the messages. Guarded against the hook re-entering.

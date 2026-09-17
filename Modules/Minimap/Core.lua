@@ -42,11 +42,10 @@ end
 local function HideBlizzardBits()
 	Banish(_G.GameTimeFrame) -- calendar button
 	Banish(_G.TimeManagerClockButton) -- clock
-	Banish(_G.MinimapZoomIn)
-	Banish(_G.MinimapZoomOut)
-	Banish(_G.MinimapNorthTag)
 	Banish(_G.MinimapCompassTexture)
 	Banish(_G.AddonCompartmentFrame)
+	-- Retail hangs the zoom buttons off the map itself. The old MinimapZoomIn and
+	-- MinimapZoomOut globals are gone, so banishing those did nothing.
 	Banish(Minimap.ZoomIn)
 	Banish(Minimap.ZoomOut)
 
@@ -109,7 +108,7 @@ end
 local LANDING_SIZE = 30
 
 local function TidyLandingButton()
-	local button = _G.ExpansionLandingPageMinimapButton or _G.GarrisonLandingPageMinimapButton
+	local button = _G.ExpansionLandingPageMinimapButton
 	if not button then
 		return
 	end

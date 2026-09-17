@@ -471,7 +471,7 @@ GUI.schema = {
 				{ kind = "header", label = L["Target"] },
 				{ kind = "slider", label = L["Width"], path = { "Unitframe", "Castbar", "TargetWidth" }, min = 120, max = 500, step = 2, reload = true, dependsOn = CASTBAR_DEP },
 				{ kind = "slider", label = L["Height"], path = { "Unitframe", "Castbar", "TargetHeight" }, min = 12, max = 50, step = 1, reload = true, dependsOn = CASTBAR_DEP },
-				{ kind = "header", label = L["Focus"] },
+			{ kind = "header", label = L["Focus"] },
 				{ kind = "slider", label = L["Width"], path = { "Unitframe", "Castbar", "FocusWidth" }, min = 120, max = 500, step = 2, reload = true, dependsOn = CASTBAR_DEP },
 				{ kind = "slider", label = L["Height"], path = { "Unitframe", "Castbar", "FocusHeight" }, min = 12, max = 50, step = 1, reload = true, dependsOn = CASTBAR_DEP },
 			}),
@@ -568,6 +568,8 @@ GUI.schema = {
 		controls = {
 			{ kind = "header", label = L["Chat"] },
 			{ kind = "check", label = L["Enable Chat Skin"], path = { "Chat", "Enable" }, reload = true },
+			{ kind = "slider", label = L["Chat Width"], path = { "Chat", "Width" }, min = 250, max = 900, step = 10, reload = true, dependsOn = { "Chat", "Enable" } },
+			{ kind = "slider", label = L["Chat Height"], path = { "Chat", "Height" }, min = 100, max = 600, step = 10, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "dropdown", label = L["Font"], path = { "Chat", "Font" }, options = MediaOptions(C.Media.Fonts), reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Font used for chat text, separate from the interface font."] },
 			{ kind = "slider", label = L["Font Size"], path = { "Chat", "FontSize" }, min = 10, max = 20, step = 1, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Font Outline"], path = { "Chat", "FontOutline" }, reload = true, dependsOn = { "Chat", "Enable" } },
@@ -827,6 +829,29 @@ GUI.schema = {
 		name = "Misc",
 		title = L["Misc"],
 		controls = {
+			{ kind = "header", label = L["Focus"] },
+			{ kind = "dropdown", label = L["Set Focus On"], path = { "Misc", "FocusModifier" }, reload = true, options = {
+				{ text = L["Off"], value = "None" },
+				{ text = L["Shift Click"], value = "Shift" },
+				{ text = L["Ctrl Click"], value = "Ctrl" },
+				{ text = L["Alt Click"], value = "Alt" },
+			}, tooltip = L["Hold this and click a unit to set it as your focus. Works on unit frames and nameplates."] },
+			{ kind = "dropdown", label = L["Focus Mouse Button"], path = { "Misc", "FocusButton" }, reload = true, dependsOn = { "Misc", "FocusModifier" }, options = {
+				{ text = L["Left"], value = "Left" },
+				{ text = L["Right"], value = "Right" },
+				{ text = L["Middle"], value = "Middle" },
+			} },
+
+			{ kind = "header", label = L["Windows"] },
+			{ kind = "check", label = L["Enhanced Mail"], path = { "Misc", "EnhancedMail" }, reload = true, tooltip = L["Adds a collect gold button that leaves the items, a take all button on an open mail, and lists what is attached when you hover a mail."] },
+			{ kind = "check", label = L["Move Blizzard Windows"], path = { "Misc", "MoveFrames" }, reload = true, tooltip = L["Drag Blizzard windows by their title bar and they stay where you put them. Takes them out of Blizzard's panel layout, so they no longer shuffle each other around."] },
+			{ kind = "button", label = L["Reset Window Positions"], dependsOn = { "Misc", "MoveFrames" }, onClick = function()
+				local module = K:GetModule("MoveFrames", true)
+				if module then
+					module:ResetPositions()
+				end
+			end },
+
 			{ kind = "header", label = L["GCD Bar"] },
 			{ kind = "check", label = L["Enable GCD Bar"], path = { "Misc", "GCDBar" }, reload = true, tooltip = L["A bar tracking the global cooldown, with the icon of the spell that started it."] },
 			{ kind = "slider", label = L["GCD Bar Width"], path = { "Misc", "GCDBarWidth" }, min = 80, max = 500, step = 10, reload = true, dependsOn = { "Misc", "GCDBar" } },

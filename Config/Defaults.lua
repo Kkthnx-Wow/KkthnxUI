@@ -344,6 +344,13 @@ K.ConfigDefaults = {
 
 	-- Odds and ends that do not belong to a bigger system.
 	Misc = {
+		EnhancedMail = false, -- collect gold only, take all, and an attachment tooltip
+		MoveFrames = false, -- drag Blizzard windows and keep where they land
+		MovedFrames = {}, -- saved positions, written as you drag
+
+		FocusModifier = "None", -- None, Shift, Ctrl or Alt, sets focus on a modified click
+		FocusButton = "Left", -- Left, Right or Middle
+
 		GCDBar = false, -- a bar tracking the global cooldown
 		GCDBarWidth = 220,
 		GCDBarHeight = 10,
@@ -394,6 +401,8 @@ K.ConfigDefaults = {
 
 	Chat = {
 		Enable = true,
+		Width = 420, -- Edit Mode also restores chat size, so we hold both
+		Height = 180,
 		Font = "Normal",
 		FontSize = 13,
 		FontOutline = false,

@@ -52,8 +52,8 @@ local PLAYER = _G.PLAYER
 -- Faction crest markup, shown inline on the name line in place of the "Horde" /
 -- "Alliance" text line (which we drop).
 local FACTION_ICON = {
-	Horde = "|A:communities-create-button-wow-horde:13:15|a ",
-	Alliance = "|A:communities-create-button-wow-alliance:13:15|a ",
+	Horde = "|A:CharacterSelection_Horde_Icon:14:11|a ",
+	Alliance = "|A:CharacterSelection_Alliance_Icon:14:15|a ",
 }
 
 -- Coloured classification suffix for the level line, mirroring the frames.

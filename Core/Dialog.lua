@@ -126,3 +126,76 @@ end
 function K.Prompt(text, default, onAccept)
 	Open(text, default or "", onAccept)
 end
+
+-- ---------------------------------------------------------------------------
+-- Copy window
+-- ---------------------------------------------------------------------------
+-- A scrollable box of selectable text, for anything the player needs to get out
+-- of the game and into a bug report or a paste. Built on first use like the
+-- dialog above.
+
+local copyFrame
+
+local function BuildCopy()
+	local frame = CreateFrame("Frame", "KKUI_CopyWindow", UIParent)
+	frame:SetSize(640, 420)
+	frame:SetPoint("CENTER")
+	frame:SetFrameStrata("FULLSCREEN_DIALOG")
+	frame:EnableMouse(true)
+	frame:SetMovable(true)
+	frame:SetClampedToScreen(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:SetScript("OnDragStart", frame.StartMoving)
+	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+	frame:Hide()
+	K.CreateGradientBackground(frame, 0.96)
+	K.CreateBorder(frame)
+	tinsert(_G.UISpecialFrames, "KKUI_CopyWindow")
+
+	frame.Title = frame:CreateFontString(nil, "OVERLAY")
+	K.SetFont(frame.Title, 15, "OUTLINE")
+	frame.Title:SetPoint("TOP", 0, -12)
+	frame.Title:SetTextColor(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3])
+
+	local hint = frame:CreateFontString(nil, "OVERLAY")
+	K.SetFont(hint, 11, "")
+	hint:SetPoint("TOP", frame.Title, "BOTTOM", 0, -2)
+	hint:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
+	hint:SetText(L["Ctrl+A then Ctrl+C to copy it all."])
+
+	local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+	close:SetPoint("TOPRIGHT", -4, -4)
+	K.SkinCloseButton(close)
+
+	local scroll = CreateFrame("ScrollFrame", "KKUI_CopyWindowScroll", frame, "UIPanelScrollFrameTemplate")
+	scroll:SetPoint("TOPLEFT", 14, -48)
+	scroll:SetPoint("BOTTOMRIGHT", -32, 14)
+	K.SkinScrollBar(scroll.ScrollBar)
+
+	local edit = CreateFrame("EditBox", nil, scroll)
+	edit:SetMultiLine(true)
+	edit:SetAutoFocus(false)
+	edit:SetFontObject(_G.ChatFontNormal)
+	edit:SetTextColor(K.Colors.offWhite[1], K.Colors.offWhite[2], K.Colors.offWhite[3])
+	edit:SetWidth(580)
+	edit:SetScript("OnEscapePressed", function()
+		frame:Hide()
+	end)
+	scroll:SetScrollChild(edit)
+	frame.Edit = edit
+
+	return frame
+end
+
+-- Show `text` in a selectable box titled `title`.
+function K.ShowCopyText(title, text)
+	if not copyFrame then
+		copyFrame = BuildCopy()
+	end
+	copyFrame.Title:SetText(title or "")
+	copyFrame.Edit:SetText(text or "")
+	copyFrame.Edit:SetCursorPosition(0)
+	copyFrame:Show()
+	copyFrame.Edit:SetFocus()
+	copyFrame.Edit:HighlightText()
+end

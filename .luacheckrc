@@ -47,6 +47,8 @@ stds.wow = {
 		"GetAverageItemLevel", "C_PaperDollInfo", "SPECIALIZATION", "STAT_AVERAGE_ITEM_LEVEL",
 		"ToggleChatColorNamesByClassGroup", "SetItemRef", "GetTime", "getmetatable",
 		"ClearOverrideBindings", "SetOverrideBindingClick", "GetBindingKey",
+		"C_Mail", "GetInboxNumItems", "GetInboxHeaderInfo", "GetInboxItem", "HasInboxItem",
+		"TakeInboxMoney", "TakeInboxItem",
 		"CompactPartyFrame", "CompactRaidFrameManager", "CompactRaidFrameManager_SetSetting",
 		"CompactRaidFrameContainer",
 		"ChatTypeInfo", "ChatEdit_UpdateHeader", "ChatFrame_ReplyTell", "RandomRoll", "ChatFrame1",

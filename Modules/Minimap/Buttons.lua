@@ -25,9 +25,6 @@ local Minimap = _G.Minimap
 -- Frames that live near the minimap but are ours to keep, not collect.
 local IGNORE = {
 	MiniMapTracking = true,
-	MinimapZoomIn = true,
-	MinimapZoomOut = true,
-	MinimapNorthTag = true,
 	GameTimeFrame = true,
 	MinimapCluster = true,
 	MinimapBackdrop = true,
