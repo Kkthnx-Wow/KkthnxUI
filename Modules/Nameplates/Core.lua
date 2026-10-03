@@ -43,6 +43,11 @@ function Module:SetupCVars()
 	SetCVar("nameplateOccludedAlphaMult", 0.4)
 	-- Stacking mode so plates slide apart instead of piling on top of each other.
 	SetCVar("nameplateMotion", 1)
+	-- The client's own stacking setting is the nameplateStackingTypes bitfield, which
+	-- the Blizzard options write the same way. Only the enemy bit is ours.
+	if C_CVar and C_CVar.SetCVarBitfield and Enum.NamePlateStackType and C_CVar.GetCVar("nameplateStackingTypes") then
+		C_CVar.SetCVarBitfield("nameplateStackingTypes", Enum.NamePlateStackType.Enemy, true)
+	end
 	SetCVar("nameplateMaxDistance", db.MaxDistance)
 	SetCVar("nameplateOverlapH", 0.8)
 	SetCVar("nameplateOverlapV", 1.1)

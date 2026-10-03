@@ -16,7 +16,7 @@ local gsub = string.gsub
 local format = string.format
 local IsSecret = K.IsSecret
 
-local NUM_FRAMES = NUM_CHAT_WINDOWS or 10
+local NUM_FRAMES = Constants.ChatFrameConstants.MaxChatWindows
 
 -- ---------------------------------------------------------------------------
 -- Gradient backdrop
@@ -480,15 +480,14 @@ function Module:CreateCopyWindow()
 	edit:SetScript("OnEscapePressed", function()
 		frame:Hide()
 	end)
-	-- Jump to the top when fresh text is set (userInput is nil then).
+	-- Show the newest lines when fresh text is set (userInput is nil then). One jump
+	-- to the end of the range, where it used to replay a mouse wheel step per unit.
 	edit:SetScript("OnTextChanged", function(_, userInput)
 		if userInput then
 			return
 		end
 		local _, maxVal = scroll.ScrollBar:GetMinMaxValues()
-		for _ = 1, maxVal do
-			_G.ScrollFrameTemplate_OnMouseWheel(scroll, -1)
-		end
+		scroll.ScrollBar:SetValue(maxVal)
 	end)
 	scroll:SetScrollChild(edit)
 	scroll:HookScript("OnVerticalScroll", function(self, offset)
@@ -784,10 +783,10 @@ function Module:InstallChat()
 	_G.ChatFrame1:Show()
 
 	-- General: everything but trade and the recruitment channels.
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
+	_G.ChatFrame1:RemoveAllMessageGroups()
 	for _, channel in ipairs({ TRADE, GENERAL, "LocalDefense", "LookingForGroup", "GuildRecruitment", "Services" }) do
 		if channel then
-			ChatFrame_RemoveChannel(_G.ChatFrame1, channel)
+			_G.ChatFrame1:RemoveChannel(channel)
 		end
 	end
 	local general = {
@@ -821,7 +820,7 @@ function Module:InstallChat()
 		"ACHIEVEMENT",
 	}
 	for _, group in ipairs(general) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame1, group)
+		_G.ChatFrame1:AddMessageGroup(group)
 	end
 
 	-- Combat log stays docked as the second tab.
@@ -834,17 +833,17 @@ function Module:InstallChat()
 	local whispers = FCF_OpenNewWindow(L["Whispers"])
 	FCF_SetLocked(whispers, true)
 	FCF_DockFrame(whispers)
-	ChatFrame_RemoveAllMessageGroups(whispers)
+	whispers:RemoveAllMessageGroups()
 	for _, group in ipairs({ "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }) do
-		ChatFrame_AddMessageGroup(whispers, group)
+		whispers:AddMessageGroup(group)
 	end
 
 	-- Trade and the general channels.
 	local trade = FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(trade, true)
 	FCF_DockFrame(trade)
-	ChatFrame_RemoveAllMessageGroups(trade)
-	-- ChatFrame_AddChannel is gone in 12.0, the frame carries the method now.
+	trade:RemoveAllMessageGroups()
+	-- The frame carries the channel methods now, the old global wrappers are deprecated.
 	if TRADE then
 		trade:AddChannel(TRADE)
 	end
@@ -856,9 +855,9 @@ function Module:InstallChat()
 	local loot = FCF_OpenNewWindow(L["Loot"])
 	FCF_SetLocked(loot, true)
 	FCF_DockFrame(loot)
-	ChatFrame_RemoveAllMessageGroups(loot)
+	loot:RemoveAllMessageGroups()
 	for _, group in ipairs({ "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "CURRENCY", "MONEY", "SKILL" }) do
-		ChatFrame_AddMessageGroup(loot, group)
+		loot:AddMessageGroup(group)
 	end
 
 	-- Chat behaviour CVars.
@@ -960,6 +959,26 @@ function Module:OnEnable()
 	holder:SetSize(C.Chat.Width, C.Chat.Height)
 	holder:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, bottom)
 
+	-- Edit Mode owns the chat frame's clamp insets and rewrites them on every system
+	-- update (a teleport, a layout swap, anything that reapplies the layout): the
+	-- chat template is clamped to the screen, and UpdateClampOffsets sets the insets
+	-- to the Selection overlay's rect, which reaches 32 out to the left, 32 below
+	-- and 60 above the window. The engine then keeps that whole rect on screen, so a
+	-- chat sitting closer than that to an edge is pushed in to roughly Blizzard's own
+	-- default spot, whatever our anchors say. Insets of zero make the clamp use the
+	-- window itself, which is what the anchors describe.
+	local function ClearClampInsets()
+		local frame = _G.ChatFrame1
+		local l, r, t, b = frame:GetClampRectInsets()
+		if l ~= 0 or r ~= 0 or t ~= 0 or b ~= 0 then
+			local stream = K.Debug and K.Debug.Get("chat")
+			if stream then
+				stream:Log("clamp insets were %s %s %s %s, cleared", l, r, t, b)
+			end
+			frame:SetClampRectInsets(0, 0, 0, 0)
+		end
+	end
+
 	local anchoring
 	local function AnchorChat()
 		if anchoring then
@@ -967,6 +986,7 @@ function Module:OnEnable()
 		end
 		anchoring = true
 		DetachChat()
+		ClearClampInsets()
 		local frame = _G.ChatFrame1
 		frame:SetUserPlaced(true)
 		frame:ClearAllPoints()
@@ -1011,6 +1031,12 @@ function Module:OnEnable()
 	-- finished, so nothing later in the pass can undo it.
 	if _G.EditModeManagerFrame then
 		hooksecurefunc(_G.EditModeManagerFrame, "UpdateLayoutInfo", AnchorChat)
+	end
+	-- The call that rewrites the insets. UpdateSystem runs ApplySystemAnchor (hooked
+	-- above) and then AnchorSelectionFrame, which lands on this, so the insets are
+	-- set after our anchor pass and need clearing again right behind it.
+	if _G.ChatFrame1.UpdateClampOffsets then
+		hooksecurefunc(_G.ChatFrame1, "UpdateClampOffsets", ClearClampInsets)
 	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", AnchorChat)
 	-- A scale change re-derives the window from Blizzard's stored fractions, so it

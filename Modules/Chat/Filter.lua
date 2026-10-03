@@ -27,10 +27,15 @@ local WINDOW = 30 -- seconds a message counts as a repeat
 
 function Module:EnableFilter()
 	local seen = {}
+	-- Blizzard runs every filter once per chat window that shows the event, so a
+	-- line shown in two windows reaches this function twice. Without a memory of the
+	-- first answer the second window would see its own sibling as a repeat and drop
+	-- the line. The verdict is kept per line ID so every window gets the same one.
+	local verdicts = {}
 	local lastSweep = 0
 	local player = UnitName("player")
 
-	local function RepeatFilter(_, _, msg, author)
+	local function RepeatFilter(_, _, msg, author, _, _, _, _, _, _, _, _, lineID)
 		-- Never touch a secret string (cannot be keyed or compared) or your own
 		-- messages, so what you send is always shown even if you repeat it.
 		if not msg or not author or IsSecret(msg) or IsSecret(author) then
@@ -40,9 +45,13 @@ function Module:EnableFilter()
 			return false
 		end
 
+		if lineID and verdicts[lineID] ~= nil then
+			return verdicts[lineID]
+		end
+
 		local now = GetTime()
 
-		-- Sweep expired keys now and then so the table does not grow all session.
+		-- Sweep expired keys now and then so the tables do not grow all session.
 		if now - lastSweep > WINDOW then
 			lastSweep = now
 			for key, stamp in pairs(seen) do
@@ -50,17 +59,21 @@ function Module:EnableFilter()
 					seen[key] = nil
 				end
 			end
+			wipe(verdicts)
 		end
 
 		local key = author .. "\001" .. msg
-		if seen[key] and (now - seen[key]) < WINDOW then
-			return true
+		local repeated = seen[key] and (now - seen[key]) < WINDOW or false
+		if not repeated then
+			seen[key] = now
 		end
-		seen[key] = now
-		return false
+		if lineID then
+			verdicts[lineID] = repeated
+		end
+		return repeated
 	end
 
 	for _, event in ipairs(FILTER_EVENTS) do
-		ChatFrame_AddMessageEventFilter(event, RepeatFilter)
+		ChatFrameUtil.AddMessageEventFilter(event, RepeatFilter)
 	end
 end

@@ -121,8 +121,8 @@ function Module:CreateSideButtons()
 		local channelBar = _G.KKUI_ChatBar
 		if channelBar then
 			channelBar:SetShown(not channelBar:IsShown())
-		elseif ChatFrame_OpenChat then
-			ChatFrame_OpenChat("", CurrentFrame())
+		else
+			ChatFrameUtil.OpenChat("", CurrentFrame())
 		end
 	end)
 
@@ -171,10 +171,24 @@ function Module:CreateSideButtons()
 	-- as hovering the chat so the strip stays up while picking a tab.
 	local dock = _G.GeneralDockManager
 	local elapsed = 0
+	local target = FADE_OUT
 	local FADE_STEP = 4 -- alpha per second, so a full fade takes about a quarter second
+	local CHECK = 0.05 -- how often hover is read, the fade itself still glides every frame
 	bar:SetScript("OnUpdate", function(_, delta)
-		local over = bar:IsMouseOver() or anchor:IsMouseOver() or (dock and dock:IsMouseOver())
-		local target = over and FADE_IN or FADE_OUT
+		elapsed = elapsed + delta
+		if elapsed >= CHECK then
+			-- The hover read and the jump button check are the costly part, so they
+			-- run on the throttle and the frames in between only move the alpha.
+			local over = bar:IsMouseOver() or anchor:IsMouseOver() or (dock and dock:IsMouseOver())
+			target = over and FADE_IN or FADE_OUT
+
+			-- Only show the jump-to-newest button while the window is scrolled up,
+			-- so it tracks scrolling and new lines.
+			local frame = CurrentFrame()
+			scroll:SetShown(frame and not frame:AtBottom())
+			elapsed = 0
+		end
+
 		local current = bar:GetAlpha()
 		if current ~= target then
 			local step = FADE_STEP * delta
@@ -183,15 +197,6 @@ function Module:CreateSideButtons()
 			else
 				bar:SetAlpha(math.max(target, current - step))
 			end
-		end
-
-		-- Only show the jump-to-newest button while the window is scrolled up,
-		-- checked on a light throttle so it tracks scrolling and new lines.
-		elapsed = elapsed + delta
-		if elapsed >= 0.2 then
-			elapsed = 0
-			local frame = CurrentFrame()
-			scroll:SetShown(frame and not frame:AtBottom())
 		end
 	end)
 

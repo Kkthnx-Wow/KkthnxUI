@@ -120,7 +120,7 @@ K.ConfigDefaults = {
 		Boss = { Enable = true, Width = 150, Height = 24, PowerHeight = 10, ShowPower = true, Spacing = 34, Debuffs = true, Castbar = true, Portrait = true },
 
 		Auras = {
-			BuffSize = 24,
+			BuffSize = 26,
 			DebuffSize = 26,
 			PerRow = 7,
 			NumBuffs = 12,
@@ -243,6 +243,7 @@ K.ConfigDefaults = {
 		GameMenu = true, -- skin the pause menu and add a KkthnxUI options button
 		ObjectiveTracker = true, -- tidy the quest tracker header/minimise and recolour its bars
 		ObjectiveTrackerClassColor = true, -- class colour the tracker bars instead of the accent
+		Details = true, -- offer a KkthnxUI skin in the damage meter's skin list, nothing changes until it is picked
 	},
 
 	-- Movable, reskinned micro menu. Retail only for now.

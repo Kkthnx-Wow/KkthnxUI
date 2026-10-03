@@ -21,6 +21,7 @@ local oUF = K.oUF
 local tinsert = table.insert
 local floor = math.floor
 local max = math.max
+local min = math.min
 local pcall = pcall
 
 -- ---------------------------------------------------------------------------
@@ -84,7 +85,12 @@ function Build.Auras(self, cfg)
 	local width = cfg.Width or 220
 	local perRow = max(1, db.PerRow)
 	local spacing = db.Spacing
-	local size = max(8, floor((width - (perRow - 1) * spacing) / perRow))
+	-- The size sliders are a ceiling. A row can never be wider than the frame, so the
+	-- icon shrinks to fit when the chosen size would not (a narrow focus frame, or a
+	-- high icons per row count).
+	local fit = max(8, floor((width - (perRow - 1) * spacing) / perRow))
+	local debuffSize = min(db.DebuffSize or fit, fit)
+	local buffSize = min(db.BuffSize or fit, fit)
 
 	if cfg.Debuffs then
 		local filter = db.OnlyPlayerDebuffs and "HARMFUL|PLAYER" or "HARMFUL"
@@ -93,7 +99,7 @@ function Build.Auras(self, cfg)
 		local anchorTo = self.__stackUp or self
 		local container = K.CreateAuraContainer(self, {
 			point = { "BOTTOMLEFT", anchorTo, "TOPLEFT", 0, Module.GAP },
-			size = size,
+			size = debuffSize,
 			spacing = spacing,
 			perRow = perRow,
 			anchorPoint = "BOTTOMLEFT",
@@ -111,7 +117,7 @@ function Build.Auras(self, cfg)
 	if cfg.Buffs then
 		local container = K.CreateAuraContainer(self, {
 			point = { "TOPLEFT", self, "BOTTOMLEFT", 0, -Module.GAP },
-			size = size,
+			size = buffSize,
 			spacing = spacing,
 			perRow = perRow,
 			anchorPoint = "TOPLEFT",

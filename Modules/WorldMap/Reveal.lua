@@ -36,7 +36,6 @@ local C_Map = C_Map
 local C_MapExplorationInfo = C_MapExplorationInfo
 local WorldMapFrame = _G.WorldMapFrame
 local GameTooltip = _G.GameTooltip
-local TexturePool_HideAndClearAnchors = _G.TexturePool_HideAndClearAnchors
 
 -- Scratch tables reused across refreshes so a redraw never churns garbage. shown
 -- holds the overlays we drew this pass (so the toggle can show/hide them live).
@@ -167,28 +166,23 @@ local function RefreshOverlays(pin, fullUpdate)
 	end
 end
 
--- Return a pooled overlay texture to a clean state before it is reused.
-local function ResetTexture(pool, texture)
-	texture:SetVertexColor(1, 1, 1)
-	texture:SetAlpha(1)
-	return TexturePool_HideAndClearAnchors(pool, texture)
-end
-
 -- The pins are created when the map first draws, so hooking may need a retry on
 -- the first show. Runs once successfully.
+--
+-- There used to be a line here that assigned a reset function onto the pin's
+-- texture pool. In 12.1 those pools are secure variants reached through a proxy
+-- and their reset hook is a private field called resetFunc, so that assignment
+-- wrote a key nothing reads. It did nothing and is gone.
 local hooked
 local function HookPins()
-	-- Only take the hook while reveal is on. A secure hook here spreads taint into
-	-- the map refresh, so an off setting must leave the map completely alone.
+	-- Only take the hook while reveal is on, so an off setting leaves the map
+	-- completely alone.
 	if not C.WorldMap.Reveal or hooked or not WorldMapFrame.EnumeratePinsByTemplate then
 		return
 	end
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
 		hooked = true
 		hooksecurefunc(pin, "RefreshOverlays", RefreshOverlays)
-		if pin.overlayTexturePool then
-			pin.overlayTexturePool.resetterFunc = ResetTexture
-		end
 	end
 end
 

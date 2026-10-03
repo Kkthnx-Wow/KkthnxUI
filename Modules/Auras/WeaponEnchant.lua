@@ -6,6 +6,12 @@
 		stones, oils) next to the player buffs. These are not auras, so the aura
 		container never carries them. Each slot gets an icon, a quality-tinted
 		border, and a depleting cooldown ring with the remaining time.
+
+		Refreshes the way Blizzard's own buff frame does, from WEAPON_ENCHANT_CHANGED
+		and WEAPON_SLOT_CHANGED, with nothing polling. It reads each slot through
+		C_PaperDollInfo.GetTemporaryEnchantmentInfo. GetWeaponEnchantInfo, which this
+		used before, is a deprecated shim that only exists while the
+		loadDeprecationFallbacks setting is on and is marked for removal.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -18,7 +24,8 @@ local Module = K:GetModule("Auras")
 
 local _G = _G
 local CreateFrame = CreateFrame
-local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local C_PaperDollInfo = C_PaperDollInfo
+local C_Timer = C_Timer
 local GetInventoryItemTexture = GetInventoryItemTexture
 local GetInventoryItemQuality = GetInventoryItemQuality
 local GetItemQualityColor = C_Item and C_Item.GetItemQualityColor
@@ -87,20 +94,40 @@ local function DurationBucket(remain)
 	return ceil(remain / 3600) * 3600
 end
 
+-- The timer set for the moment the soonest enchant runs out. The documentation
+-- does not say whether expiry raises WEAPON_ENCHANT_CHANGED, so this makes it
+-- certain. One shot, replaced on every refresh, so nothing ticks while idle.
+local expiryTimer
+
+local function OnExpiry()
+	expiryTimer = nil
+	Module:UpdateWeaponEnchants()
+end
+
+local function ArmExpiry(soonest)
+	if expiryTimer then
+		expiryTimer:Cancel()
+		expiryTimer = nil
+	end
+	-- A little past the expiry so the client has dropped the enchant by then.
+	if soonest and soonest > 0 then
+		expiryTimer = C_Timer.NewTimer(soonest + 0.1, OnExpiry)
+	end
+end
+
 function Module:UpdateWeaponEnchants()
 	local buttons = self.EnchantButtons
 	if not buttons then
 		return
 	end
 
-	local hasMain, mainExp, _, _, hasOff, offExp = GetWeaponEnchantInfo()
-	local has = { hasMain, hasOff }
-	local expiration = { mainExp, offExp }
 	local shown = 0
+	local soonest
 
 	for i, slot in ipairs(SLOTS) do
 		local button = buttons[i]
-		if has[i] then
+		local info = C_PaperDollInfo.GetTemporaryEnchantmentInfo(slot)
+		if info then
 			button.Icon:SetTexture(GetInventoryItemTexture("player", slot))
 
 			-- Quality border, falling back to the configured border colour for common
@@ -117,14 +144,26 @@ function Module:UpdateWeaponEnchants()
 				end
 			end
 
-			-- Only restart the ring when the timer actually changed, so a refresh
-			-- every second does not keep resetting the sweep.
-			local remain = (expiration[i] or 0) / 1000
-			local ends = GetTime() + remain
-			if not button:IsShown() or abs(ends - (button.ends or 0)) > 1 then
-				local duration = DurationBucket(remain)
-				button.Cooldown:SetCooldown(ends - duration, duration)
-				button.ends = ends
+			-- Some enchants never run out on a timer, only on charges. Blizzard's own
+			-- frame skips the timer for those, so there is no ring to draw.
+			if info.hasExpirationTime then
+				local remain = info.remainingTimeMs / 1000
+				local ends = GetTime() + remain
+
+				-- Only restart the ring when the timer actually changed, so a refresh
+				-- does not keep resetting the sweep.
+				if not button:IsShown() or abs(ends - (button.ends or 0)) > 1 then
+					local duration = DurationBucket(remain)
+					button.Cooldown:SetCooldown(ends - duration, duration)
+					button.ends = ends
+				end
+
+				if not soonest or remain < soonest then
+					soonest = remain
+				end
+			else
+				button.Cooldown:Clear()
+				button.ends = nil
 			end
 
 			button:Show()
@@ -136,6 +175,7 @@ function Module:UpdateWeaponEnchants()
 	end
 
 	self.WeaponEnchant:SetShown(shown > 0)
+	ArmExpiry(soonest)
 end
 
 -- ---------------------------------------------------------------------------
@@ -173,17 +213,12 @@ function Module:SetupWeaponEnchants()
 		self.EnchantButtons[i] = button
 	end
 
-	holder:RegisterEvent("UNIT_INVENTORY_CHANGED")
+	-- The same two events Blizzard's buff frame refreshes on, plus entering the world
+	-- for the first read.
+	holder:RegisterEvent("WEAPON_ENCHANT_CHANGED")
+	holder:RegisterEvent("WEAPON_SLOT_CHANGED")
 	holder:RegisterEvent("PLAYER_ENTERING_WORLD")
-	holder:SetScript("OnEvent", function(_, _, unit)
-		if unit and unit ~= "player" then
-			return
-		end
-		Module:UpdateWeaponEnchants()
-	end)
-
-	-- A slow ticker catches an enchant quietly expiring, which fires no event.
-	C_Timer.NewTicker(1, function()
+	holder:SetScript("OnEvent", function()
 		Module:UpdateWeaponEnchants()
 	end)
 

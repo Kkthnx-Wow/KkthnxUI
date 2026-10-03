@@ -12,5 +12,6 @@ ignore:
     - CODE_OF_CONDUCT.md
     - LICENSE.md
     - README.md
+    - DEVLOG.md
 
 license-output: LICENSE.txt

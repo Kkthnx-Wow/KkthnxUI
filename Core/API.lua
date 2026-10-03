@@ -246,7 +246,7 @@ do
 		if role == "TANK" then
 			return true
 		end
-		local spec = _G.GetSpecialization and _G.GetSpecialization()
+		local spec = C_SpecializationInfo and C_SpecializationInfo.GetSpecialization and C_SpecializationInfo.GetSpecialization()
 		if spec and _G.GetSpecializationRole then
 			return _G.GetSpecializationRole(spec) == "TANK"
 		end

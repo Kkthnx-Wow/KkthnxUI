@@ -6,4 +6,5 @@
 	<Script file="Battlenet.lua" />
 	<Script file="GameMenu.lua" />
 	<Script file="ObjectiveTracker.lua" />
+	<Script file="Details.lua" />
 </Ui>

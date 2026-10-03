@@ -20,7 +20,7 @@ local function OpenChat(chatType)
 		return
 	end
 	edit:SetAttribute("chatType", chatType)
-	ChatEdit_UpdateHeader(edit)
+	edit:UpdateHeader()
 	edit:Show()
 	edit:SetFocus()
 end
@@ -32,7 +32,7 @@ local function BuildButtons()
 			OpenChat("SAY")
 		end },
 		{ 1, 0.5, 1, "Wsp", function()
-			ChatFrame_ReplyTell(_G.ChatFrame1)
+			ChatFrameUtil.ReplyTell(_G.ChatFrame1)
 		end },
 		{ 0.65, 0.65, 1, "Party", function()
 			OpenChat("PARTY")

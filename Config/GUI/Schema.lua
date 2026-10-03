@@ -547,7 +547,7 @@ GUI.schema = {
 			{ kind = "slider", label = L["Debuff Size"], path = { "Auras", "DebuffSize" }, min = 20, max = 44, step = 1, reload = true, dependsOn = { "Auras", "Enable" } },
 			{ kind = "slider", label = L["Per Row"], path = { "Auras", "PerRow" }, min = 4, max = 16, step = 1, reload = true, dependsOn = { "Auras", "Enable" } },
 			{ kind = "slider", label = L["Spacing"], path = { "Auras", "Spacing" }, min = 0, max = 12, step = 1, reload = true, dependsOn = { "Auras", "Enable" } },
-				{ kind = "check", label = L["Show Weapon Enchants"], path = { "Auras", "WeaponEnchant" }, reload = true, dependsOn = { "Auras", "Enable" } },
+			{ kind = "check", label = L["Show Weapon Enchants"], path = { "Auras", "WeaponEnchant" }, reload = true, dependsOn = { "Auras", "Enable" } },
 		},
 	},
 
@@ -844,7 +844,7 @@ GUI.schema = {
 
 			{ kind = "header", label = L["Windows"] },
 			{ kind = "check", label = L["Enhanced Mail"], path = { "Misc", "EnhancedMail" }, reload = true, tooltip = L["Adds a collect gold button that leaves the items, a take all button on an open mail, and lists what is attached when you hover a mail."] },
-			{ kind = "check", label = L["Move Blizzard Windows"], path = { "Misc", "MoveFrames" }, reload = true, tooltip = L["Drag Blizzard windows by their title bar and they stay where you put them. Takes them out of Blizzard's panel layout, so they no longer shuffle each other around."] },
+			{ kind = "check", label = L["Move Blizzard Windows (Experimental)"], path = { "Misc", "MoveFrames" }, reload = true, tooltip = L["Drag Blizzard windows by their title bar and they stay where you put them. Takes them out of Blizzard's panel layout, so they no longer shuffle each other around. Experimental: if a window stops opening or you see taint errors, turn this off and reload."] },
 			{ kind = "button", label = L["Reset Window Positions"], dependsOn = { "Misc", "MoveFrames" }, onClick = function()
 				local module = K:GetModule("MoveFrames", true)
 				if module then
@@ -930,6 +930,18 @@ GUI.schema = {
 
 				{ kind = "header", label = L["Game Menu"] },
 				{ kind = "check", label = L["Skin Game Menu"], path = { "Skins", "GameMenu" }, reload = true, tooltip = L["Restyle the pause menu and add a KkthnxUI button that opens these options."] },
+
+				{ kind = "header", label = L["Details"] },
+				{ kind = "check", label = L["Details KkthnxUI Skin"], path = { "Skins", "Details" }, reload = true, tooltip = L["Adds a KkthnxUI skin to the Details! skin list. Nothing changes until you pick it in a window's options or use the button below."] },
+				{ kind = "button", label = L["Apply To Details Windows"], dependsOn = { "Skins", "Details" }, onClick = function()
+					local module = K:GetModule("DetailsSkin", true)
+					local count = module and module:ApplyToAll() or 0
+					if count > 0 then
+						K.Print(L["Applied the KkthnxUI skin to %d Details windows."], count)
+					else
+						K.Print(L["No open Details windows to apply it to. Is Details loaded?"])
+					end
+				end },
 
 				{ kind = "header", label = L["Objective Tracker"] },
 				{ kind = "check", label = L["Skin Objective Tracker"], path = { "Skins", "ObjectiveTracker" }, reload = true, tooltip = L["Hide the quest tracker header backgrounds, tidy the minimise button, and recolour its bars."] },

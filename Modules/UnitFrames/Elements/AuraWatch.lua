@@ -153,7 +153,9 @@ local function Update(self, _, unit)
 			if not data then
 				break
 			end
-			local entry = data.spellId and element.watch[data.spellId]
+			-- A secret spell ID cannot key the watch table, so that aura is skipped.
+			local spellId = data.spellId
+			local entry = spellId and not IsSecret(spellId) and element.watch[spellId]
 			if entry then
 				local mine = data.isFromPlayerOrPlayerPet
 				if not entry.mine or (mine and not IsSecret(mine)) then

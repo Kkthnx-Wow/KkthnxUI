@@ -29,7 +29,7 @@ local floor = math.floor
 local ceil = math.ceil
 local CreateFrame = CreateFrame
 local C_Bank = C_Bank
-local GetCoinTextureString = GetCoinTextureString
+local GetCoinTextureString = C_CurrencyInfo.GetCoinTextureString
 
 local SLOT = 28
 local PAD = 6

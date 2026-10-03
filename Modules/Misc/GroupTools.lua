@@ -51,14 +51,14 @@ local function DisbandGroup()
 		for i = 1, GetNumGroupMembers() do
 			local name = GetRaidRosterInfo(i)
 			if name and name ~= UnitName("player") then
-				UninviteUnit(name)
+				C_PartyInfo.UninviteUnit(name)
 			end
 		end
 	else
 		for i = GetNumGroupMembers() - 1, 1, -1 do
 			local name = UnitName("party" .. i)
 			if name then
-				UninviteUnit(name)
+				C_PartyInfo.UninviteUnit(name)
 			end
 		end
 	end

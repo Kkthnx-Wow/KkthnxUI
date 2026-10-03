@@ -14,9 +14,13 @@ local Module = K:GetModule("Chat")
 local _G = _G
 local pcall = pcall
 
-local NUM_FRAMES = NUM_CHAT_WINDOWS or 10
+local NUM_FRAMES = Constants.ChatFrameConstants.MaxChatWindows
 
 local function OnHyperlinkEnter(frame, link)
+	-- A link inside a secret message can itself be secret, and cannot be matched.
+	if K.IsSecret(link) then
+		return
+	end
 	local kind = link:match("^(%a+):")
 	-- Only object links have a useful tooltip, plain URLs and player links do not.
 	if not kind or kind == "kkurl" or kind == "player" or kind == "channel" or kind == "BNplayer" then

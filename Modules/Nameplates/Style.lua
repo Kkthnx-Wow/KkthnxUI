@@ -256,7 +256,62 @@ local function QuestProgress(unit)
 	return nil
 end
 
-local function UpdateQuest(self)
+-- QuestProgress builds the unit's tooltip, and UpdateQuest runs from the health
+-- element, which means on every health event of every plate. The answer only moves
+-- when quest progress does, so it is kept per GUID and re-read when the epoch
+-- changes. The epoch is bumped by the quest events, which also covers a unit that
+-- was off screen while its objective was completed elsewhere. Units whose GUID is
+-- secret are never cached.
+local questCache = {}
+local questCacheSize = 0
+local questEpoch = 0
+local MAX_QUEST_CACHE = 300
+
+local function BumpQuestEpoch()
+	questEpoch = questEpoch + 1
+end
+
+local questWatcher
+local function EnsureQuestWatcher()
+	if questWatcher then
+		return
+	end
+	questWatcher = CreateFrame("Frame")
+	questWatcher:RegisterEvent("QUEST_LOG_UPDATE")
+	questWatcher:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
+	-- The instance check inside QuestProgress changes with the zone.
+	questWatcher:RegisterEvent("PLAYER_ENTERING_WORLD")
+	questWatcher:SetScript("OnEvent", BumpQuestEpoch)
+end
+
+local function CachedQuestProgress(unit, force)
+	local guid = UnitGUID(unit)
+	if not guid or IsSecret(guid) then
+		return QuestProgress(unit)
+	end
+
+	local entry = questCache[guid]
+	if entry and entry.epoch == questEpoch and not force then
+		return entry.progress or nil, entry.fromParty
+	end
+
+	local progress, fromParty = QuestProgress(unit)
+	if not entry then
+		if questCacheSize >= MAX_QUEST_CACHE then
+			wipe(questCache)
+			questCacheSize = 0
+		end
+		entry = {}
+		questCache[guid] = entry
+		questCacheSize = questCacheSize + 1
+	end
+	entry.epoch = questEpoch
+	entry.progress = progress or false
+	entry.fromParty = fromParty
+	return progress, fromParty
+end
+
+local function UpdateQuest(self, force)
 	local icon = self.QuestIcon
 	if not icon then
 		return
@@ -264,7 +319,7 @@ local function UpdateQuest(self)
 	local unit = self.unit
 	local progress, fromParty
 	if unit then
-		progress, fromParty = QuestProgress(unit)
+		progress, fromParty = CachedQuestProgress(unit, force)
 	end
 	if not progress then
 		if self.QuestCount then
@@ -343,12 +398,17 @@ local function UpdateNameOnly(self)
 		self:SetScript("OnUpdate", nil)
 	end
 
-	-- Re-anchor the name to the plate centre when the bar is gone.
-	self.Name:ClearAllPoints()
-	if friendly then
-		self.Name:SetPoint("CENTER", self, "CENTER", 0, 0)
-	else
-		self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 4)
+	-- Re-anchor the name to the plate centre when the bar is gone. This runs on every
+	-- health event, and the anchor is a pure function of the state, so it is only
+	-- rewritten when the state actually changed.
+	if self.__nameAnchored ~= friendly then
+		self.__nameAnchored = friendly
+		self.Name:ClearAllPoints()
+		if friendly then
+			self.Name:SetPoint("CENTER", self, "CENTER", 0, 0)
+		else
+			self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 4)
+		end
 	end
 end
 
@@ -415,7 +475,7 @@ local function OnMouseover(self)
 end
 
 local function OnQuestLogUpdate(self)
-	UpdateQuest(self)
+	UpdateQuest(self, true)
 end
 
 -- ---------------------------------------------------------------------------
@@ -630,23 +690,38 @@ local function CastRecolor(cast, notInterruptible)
 end
 
 local function OnCastStart(cast, _, _, notInterruptible)
+	-- An interrupt turns the duration binding off so the old cast stops counting
+	-- down, so bring it back for the new one.
+	cast.__failed = nil
+	if cast.Time and cast.Time.binding then
+		cast.Time.binding:SetEnabled(true)
+	end
 	CastRecolor(cast, notInterruptible)
 end
 
 local function OnCastInterruptible(cast, _, _, notInterruptible)
+	-- A bar held on screen after an interrupt keeps its red.
+	if cast.__failed then
+		return
+	end
 	CastRecolor(cast, notInterruptible)
 end
 
--- A failed or interrupted cast goes grey so the outcome reads before the bar
--- fades, matching the unit frame castbars.
+-- A failed or interrupted cast goes red and fills, and its timer stops. The timer
+-- text belongs to a client side duration binding that keeps counting the original
+-- cast down over anything we write, so it has to be switched off, the same as on
+-- the unit frame castbars.
 local function OnCastFail(cast)
 	cast:SetStatusBarColor(FAIL_COLOR[1], FAIL_COLOR[2], FAIL_COLOR[3])
-end
-
-local function CastTimeText(cast, duration)
+	cast.__failed = true
 	if cast.Time then
-		cast.Time:SetFormattedText("%.1f", duration:GetRemainingDuration())
+		if cast.Time.binding then
+			cast.Time.binding:SetEnabled(false)
+		end
+		cast.Time:SetText("")
 	end
+	cast:SetMinMaxValues(0, 1)
+	cast:SetValue(1)
 end
 
 local function BuildCastbar(self)
@@ -702,7 +777,6 @@ local function BuildCastbar(self)
 	time:SetPoint("RIGHT", cast, "RIGHT", -3, 0)
 	time:SetJustifyH("RIGHT")
 	cast.Time = time
-	cast.CustomTimeText = CastTimeText
 	name:SetPoint("RIGHT", time, "LEFT", -4, 0)
 
 	self.Castbar = cast
@@ -839,6 +913,9 @@ function Module.Style(self, unit)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", OnTargetChanged, true)
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", OnMouseover, true)
 	if self.QuestIcon then
+		EnsureQuestWatcher()
 		self:RegisterEvent("QUEST_LOG_UPDATE", OnQuestLogUpdate, true)
+		-- A party member's objective moving does not raise QUEST_LOG_UPDATE for you.
+		self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", OnQuestLogUpdate, true)
 	end
 end

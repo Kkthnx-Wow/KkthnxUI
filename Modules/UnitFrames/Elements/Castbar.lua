@@ -40,14 +40,7 @@ local NOINTERRUPT_CLR = CreateColor(NOINTERRUPT_COLOR[1], NOINTERRUPT_COLOR[2], 
 -- PostCastStart argument (the current oUF keeps it in element state, not on the
 -- element), and it is a Midnight secret boolean, so we drive the colour through
 -- SetVertexColorFromBoolean which handles the secret natively instead of an if.
-local function OnCastStart(self, _, _, notInterruptible)
-	-- Clear the interrupted state a previous cast may have left behind, so the timer
-	-- text is allowed to update again, and switch the duration binding back on since
-	-- an interrupt turns it off to stop the old cast counting down.
-	self.__failed = nil
-	if self.Time and self.Time.binding then
-		self.Time.binding:SetEnabled(true)
-	end
+local function Recolor(self, notInterruptible)
 	local tex = self:GetStatusBarTexture()
 	-- Secret boolean (enemy casts) -> the secret-safe setter. A plain boolean or nil
 	-- -> a normal branch, since the setter rejects non-secret values.
@@ -60,6 +53,27 @@ local function OnCastStart(self, _, _, notInterruptible)
 	else
 		self:SetStatusBarColor(CAST_COLOR[1], CAST_COLOR[2], CAST_COLOR[3])
 	end
+end
+
+local function OnCastStart(self, _, _, notInterruptible)
+	-- Clear the interrupted state a previous cast may have left behind, and switch the
+	-- duration binding back on since an interrupt turns it off to stop the old cast
+	-- counting down.
+	self.__failed = nil
+	if self.Time and self.Time.binding then
+		self.Time.binding:SetEnabled(true)
+	end
+	Recolor(self, notInterruptible)
+end
+
+-- The cast flipped between interruptible and not while running. Only the colour
+-- changes. It must not clear the failed state, or an interrupted bar still on screen
+-- for its hold time would start counting again.
+local function OnCastInterruptible(self, _, _, notInterruptible)
+	if self.__failed then
+		return
+	end
+	Recolor(self, notInterruptible)
 end
 
 local function OnCastFail(self)
@@ -83,22 +97,6 @@ local function OnCastFail(self)
 	-- through, the same way the other UIs show an interrupt.
 	self:SetMinMaxValues(0, 1)
 	self:SetValue(1)
-end
-
--- oUF passes a DurationObject, never a raw number, so this stays safe when the
--- remaining time is a secret value.
-local function CustomTimeText(self, duration)
-	if not self.Time or self.__failed then
-		return
-	end
-	self.Time:SetFormattedText("%.1f", duration:GetRemainingDuration())
-end
-
-local function CustomDelayText(self, duration)
-	if not self.Time or self.__failed then
-		return
-	end
-	self.Time:SetFormattedText("%.1f|cffff5555%s%.1f|r", duration:GetRemainingDuration(), self.channeling and "-" or "+", self.delay)
 end
 
 -- Empower stage separators. A plain line reads better on our flat bars than the
@@ -162,8 +160,8 @@ local function CreateBar(self, opts)
 	cast.timeToHold = db.TimeToHold
 	cast.PostCastStart = OnCastStart
 	-- Same colouring when a cast flips interruptible mid-cast (a kick immunity
-	-- dropping, say). PostCastInterruptible shares PostCastStart's signature.
-	cast.PostCastInterruptible = OnCastStart
+	-- dropping, say).
+	cast.PostCastInterruptible = OnCastInterruptible
 	cast.PostCastFail = OnCastFail
 	cast.PostCastInterrupted = OnCastFail
 	cast.CreatePip = CreatePip
@@ -200,8 +198,6 @@ local function CreateBar(self, opts)
 		time:SetPoint("RIGHT", cast, "RIGHT", -4, 0)
 		time:SetJustifyH("RIGHT")
 		cast.Time = time
-		cast.CustomTimeText = CustomTimeText
-		cast.CustomDelayText = CustomDelayText
 
 		-- Keep the spell name from running under the timer.
 		name:SetPoint("RIGHT", time, "LEFT", -6, 0)
@@ -319,9 +315,12 @@ function Build.TopCastbar(self, height, side)
 	K.CreateBorder(cast)
 
 	cast.PostCastStart = OnCastStart
-	cast.PostCastInterruptible = OnCastStart
+	cast.PostCastInterruptible = OnCastInterruptible
 	cast.PostCastFail = OnCastFail
 	cast.PostCastInterrupted = OnCastFail
+	-- Empowered casts get the same flat stage lines as the other bars, not the stock
+	-- pip art.
+	cast.CreatePip = CreatePip
 
 	-- Square spell icon in its own slot beside the bar. Parented to the bar so it
 	-- hides with it when no cast is running.
@@ -360,8 +359,6 @@ function Build.TopCastbar(self, height, side)
 		time:SetPoint("RIGHT", cast, "RIGHT", -4, 0)
 		time:SetJustifyH("RIGHT")
 		cast.Time = time
-		cast.CustomTimeText = CustomTimeText
-		cast.CustomDelayText = CustomDelayText
 		name:SetPoint("RIGHT", time, "LEFT", -4, 0)
 	else
 		name:SetPoint("RIGHT", cast, "RIGHT", -4, 0)

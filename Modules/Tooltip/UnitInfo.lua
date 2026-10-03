@@ -252,7 +252,8 @@ function Module:OnUnitTooltip(tt)
 				-- Class-colour the spec line directly under the level line.
 				local specLine = levelIndex and _G["GameTooltipTextLeft" .. (levelIndex + 1)]
 				local _, class = UnitClass(unit)
-				local cc = class and classColors[class]
+				-- The class token can be a secret, and a secret can never key a table.
+				local cc = class and not IsSecret(class) and classColors[class]
 				if specLine and cc then
 					specLine:SetTextColor(cc.r, cc.g, cc.b)
 				end
@@ -270,11 +271,11 @@ function Module:OnUnitTooltip(tt)
 	-- Target line.
 	if db.ShowTarget and UnitExists(unit .. "target") then
 		local targetName = UnitName(unit .. "target")
-		if targetName then
+		-- A secret name cannot be compared or formatted into a string while tainted,
+		-- so the line is left out rather than erroring the whole tooltip.
+		if targetName and not IsSecret(targetName) then
 			local r, g, b = UnitColor(unit .. "target")
-			-- Comparing a secret name is illegal while tainted, so only special
-			-- case "you" when the name is a plain value.
-			if not IsSecret(targetName) and targetName == K.Name then
+			if targetName == K.Name then
 				tt:AddLine(format("%s: %s", TARGET, format("|cff%02x%02x%02x%s|r", K.Colors.crimson[1] * 255, K.Colors.crimson[2] * 255, K.Colors.crimson[3] * 255, YOU)))
 			else
 				tt:AddLine(format("%s: %s", TARGET, targetName), r, g, b)

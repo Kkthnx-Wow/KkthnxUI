@@ -191,6 +191,12 @@ function Module:SetupSkins()
 			end
 			for i = 1, tt:GetNumPoints() do
 				local point, relTo, relPoint, x, y = tt:GetPoint(i)
+				-- GetPoint is documented to return secrets when the region's anchoring
+				-- is secret, and the offset is added to below. All five values are
+				-- secret together, so checking the first covers the rest.
+				if K.IsSecret(point) then
+					return
+				end
 				if relTo ~= st1 and relTo ~= st2 then
 					if point == "LEFT" and relPoint == "RIGHT" then
 						tt:SetPoint("LEFT", relTo, "RIGHT", (x or 0) + GAP, y or 0)

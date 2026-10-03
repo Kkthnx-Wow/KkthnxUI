@@ -19,6 +19,8 @@ local ipairs = ipairs
 local gsub = string.gsub
 local format = string.format
 local lower = string.lower
+local select = select
+local Ambiguate = Ambiguate
 local upper = string.upper
 local max = math.max
 local GetTime = GetTime
@@ -39,6 +41,9 @@ local EVENTS = {
 }
 
 local keywords = {}
+local counted = {} -- line IDs already tallied, so a line shown in two windows counts once
+local countedSize = 0
+local MAX_COUNTED = 200
 local lastSound = 0
 local mentions = 0
 local badge
@@ -46,6 +51,9 @@ local badge
 -- Build a case-insensitive Lua pattern from a plain word, e.g. Foo -> [Ff][Oo][Oo],
 -- with magic characters escaped so odd keywords do not break the match.
 local function CaseInsensitive(word)
+	-- Escape the pattern characters first. An unescaped bracket or percent sign in a
+	-- keyword is a malformed pattern, which would throw on every chat line.
+	word = gsub(word, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
 	return (gsub(word, "(%a)", function(letter)
 		return "[" .. upper(letter) .. lower(letter) .. "]"
 	end))
@@ -98,6 +106,9 @@ local function Filter(_, _, message, ...)
 		return false, message, ...
 	end
 
+	-- Payload after the text: author is 1, line ID is 10 (see CHAT_MSG_SAY).
+	local author, lineID = select(1, ...), select(10, ...)
+
 	local c = C.Chat.KeywordColor
 	local hex = format("|cff%02x%02x%02x", (c[1] or 1) * 255, (c[2] or 1) * 255, (c[3] or 1) * 255)
 	local hit = false
@@ -109,6 +120,24 @@ local function Filter(_, _, message, ...)
 			hit = true
 			message = replaced
 		end
+	end
+
+	-- Blizzard runs this once per window showing the line, and the sound and the tally
+	-- belong to the line, not to each window. Your own lines are not mentions of you.
+	if hit and lineID then
+		if counted[lineID] then
+			hit = false
+		else
+			if countedSize >= MAX_COUNTED then
+				wipe(counted)
+				countedSize = 0
+			end
+			counted[lineID] = true
+			countedSize = countedSize + 1
+		end
+	end
+	if hit and author and not IsSecret(author) and Ambiguate(author, "short") == UnitName("player") then
+		hit = false
 	end
 
 	if hit then
@@ -167,7 +196,7 @@ end
 function Module:SetupKeywords()
 	self:RefreshKeywords()
 	for _, event in ipairs(EVENTS) do
-		ChatFrame_AddMessageEventFilter(event, Filter)
+		ChatFrameUtil.AddMessageEventFilter(event, Filter)
 	end
 	if C.Chat.KeywordCount then
 		CreateBadge()

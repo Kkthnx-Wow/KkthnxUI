@@ -206,10 +206,25 @@ local function TidyQueueStatus()
 	reanchor()
 	hooksecurefunc(button, "SetPoint", reanchor)
 
+	-- The client re-anchors the popup from QueueStatusFrameMixin:UpdatePosition, which
+	-- the micro menu container calls on every layout pass, so a one time anchor is
+	-- lost. Re-apply after that call.
 	local popup = _G.QueueStatusFrame
 	if popup then
-		popup:ClearAllPoints()
-		popup:SetPoint("BOTTOMRIGHT", button, "TOPRIGHT", 0, 4)
+		local pinning
+		local function PinPopup()
+			if pinning then
+				return
+			end
+			pinning = true
+			popup:ClearAllPoints()
+			popup:SetPoint("BOTTOMRIGHT", button, "TOPRIGHT", 0, 4)
+			pinning = false
+		end
+		PinPopup()
+		if popup.UpdatePosition then
+			hooksecurefunc(popup, "UpdatePosition", PinPopup)
+		end
 	end
 end
 

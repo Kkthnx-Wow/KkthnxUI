@@ -27,9 +27,9 @@ local GetBindingKey = GetBindingKey
 -- being hardcoded, the way Blizzard's OverrideActionBar builds them, so
 -- vehicle abilities always land on the right page.
 local function GetPageDriver()
-	local override = GetOverrideBarIndex and GetOverrideBarIndex() or 14
-	local vehicle = GetVehicleBarIndex and GetVehicleBarIndex() or 12
-	local shapeshift = GetTempShapeshiftBarIndex and GetTempShapeshiftBarIndex() or 13
+	local override = C_ActionBar.GetOverrideBarIndex()
+	local vehicle = C_ActionBar.GetVehicleBarIndex()
+	local shapeshift = C_ActionBar.GetTempShapeshiftBarIndex()
 	return format(
 		"[overridebar] %d; [vehicleui][possessbar] %d; [shapeshift] %d; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10; [bonusbar:5] 11; 1",
 		override, vehicle, shapeshift
@@ -169,32 +169,65 @@ end
 -- Mouseover fade
 -- ---------------------------------------------------------------------------
 
--- Apply a static alpha, or a mouseover fader that shows the bar on hover.
 -- How fast the bar glides between hidden and shown, in alpha per second.
 local FADE_SPEED = 5
 
-function Module:SetupFade(bar, cfg)
-	-- No fader: a plain static alpha.
-	if not (cfg.Mouseover or cfg.FadeCombat) then
-		bar:SetScript("OnUpdate", nil)
-		bar:SetAlpha(cfg.Alpha)
+-- While a bar is thought to be hovered, how often that is double checked. Hover
+-- comes from OnEnter and OnLeave, but hiding the button under the cursor (dragging
+-- a spell off its slot, say) never sends OnLeave, so a hovered bar re-verifies on
+-- this throttle until the pointer is really gone.
+local HOVER_RECHECK = 0.1
+
+-- Per bar fade state, kept in weak tables so a bar that goes away takes its entry
+-- with it. Nothing is written onto the bars themselves.
+local faders = setmetatable({}, { __mode = "k" })
+local hooked = setmetatable({}, { __mode = "k" })
+local fadeEvents
+
+local FadeTick
+
+-- Work out where a bar should be resting and start the glide if it is not there.
+-- Called when something that decides that changes: a hover, or combat starting or
+-- ending. Between those the bar has no per frame cost at all.
+local function Retarget(bar)
+	local state = faders[bar]
+	if not state then
 		return
 	end
 
-	local target = cfg.Alpha
-	-- Alpha the bar rests at while faded. Zero for a pure mouseover bar, or the
-	-- configured value for a combat fade that leaves the bar dimly visible.
-	local faded = cfg.FadeAlpha or 0
-	local current = target
-	bar:SetAlpha(target)
-	bar:SetScript("OnUpdate", function(self, delta)
-		-- Full while fighting, and (for mouseover bars) while hovered. Otherwise the
-		-- bar rests at the faded alpha. A combat-fade bar therefore hides out of
-		-- combat and snaps up the moment a fight starts. Glide instead of snapping.
-		local want = (InCombatLockdown() or (cfg.Mouseover and self:IsMouseOver())) and target or faded
-		if current == want then
-			return
+	-- Full while fighting, and (for mouseover bars) while hovered. Otherwise the bar
+	-- rests at the faded alpha. A combat fade bar therefore hides out of combat and
+	-- comes up the moment a fight starts.
+	local want = (InCombatLockdown() or (state.mouseover and state.hovered)) and state.target or state.faded
+	state.want = want
+
+	if state.current ~= want or state.hovered then
+		bar:SetScript("OnUpdate", FadeTick)
+	end
+end
+
+-- Runs only while the bar is gliding or hovered, and removes itself the moment it
+-- is neither.
+FadeTick = function(bar, delta)
+	local state = faders[bar]
+	if not state then
+		bar:SetScript("OnUpdate", nil)
+		return
+	end
+
+	if state.hovered then
+		state.recheck = (state.recheck or 0) + delta
+		if state.recheck >= HOVER_RECHECK then
+			state.recheck = 0
+			if not bar:IsMouseOver() then
+				state.hovered = false
+				Retarget(bar)
+			end
 		end
+	end
+
+	local current, want = state.current, state.want
+	if current ~= want then
 		local step = FADE_SPEED * delta
 		if want > current then
 			current = current + step
@@ -207,8 +240,98 @@ function Module:SetupFade(bar, cfg)
 				current = want
 			end
 		end
-		self:SetAlpha(current)
-	end)
+		state.current = current
+		bar:SetAlpha(current)
+	end
+
+	if state.current == state.want and not state.hovered then
+		bar:SetScript("OnUpdate", nil)
+	end
+end
+
+local function OnFadeEvent()
+	for bar in pairs(faders) do
+		Retarget(bar)
+	end
+end
+
+-- One shared frame for the combat events. It is its own frame rather than the
+-- module's event registry on purpose: a split module can lose a handler when
+-- another file unregisters the same event by name.
+local function EnsureFadeEvents()
+	if fadeEvents then
+		return
+	end
+	fadeEvents = CreateFrame("Frame")
+	fadeEvents:RegisterEvent("PLAYER_REGEN_DISABLED")
+	fadeEvents:RegisterEvent("PLAYER_REGEN_ENABLED")
+	fadeEvents:SetScript("OnEvent", OnFadeEvent)
+end
+
+-- Apply a static alpha, or a fader that shows the bar on hover and in combat.
+function Module:SetupFade(bar, cfg)
+	-- No fader: a plain static alpha.
+	if not (cfg.Mouseover or cfg.FadeCombat) then
+		faders[bar] = nil
+		bar:SetScript("OnUpdate", nil)
+		bar:SetAlpha(cfg.Alpha)
+		return
+	end
+
+	local state = {
+		target = cfg.Alpha,
+		-- Alpha the bar rests at while faded. Zero for a pure mouseover bar, or the
+		-- configured value for a combat fade that leaves the bar dimly visible.
+		faded = cfg.FadeAlpha or 0,
+		mouseover = cfg.Mouseover and true or false,
+		hovered = false,
+	}
+	state.current = state.target
+	faders[bar] = state
+	bar:SetAlpha(state.target)
+
+	-- The hooks read the live state through the weak table, so they are added once
+	-- and a later SetupFade with new settings just swaps the state under them.
+	if state.mouseover and not hooked[bar] then
+		hooked[bar] = true
+
+		local function Enter()
+			local s = faders[bar]
+			if s then
+				s.hovered = true
+				Retarget(bar)
+			end
+		end
+		local function Leave()
+			local s = faders[bar]
+			if s then
+				-- Moving between buttons fires a leave then an enter, and the pointer
+				-- is still over the bar for the first of those.
+				s.hovered = bar:IsMouseOver()
+				Retarget(bar)
+			end
+		end
+
+		bar:HookScript("OnEnter", Enter)
+		bar:HookScript("OnLeave", Leave)
+		for _, button in ipairs(bar.buttons or {}) do
+			button:HookScript("OnEnter", Enter)
+			button:HookScript("OnLeave", Leave)
+		end
+
+		-- A bar that hides while hovered (a vehicle taking over) must not come back
+		-- believing the pointer is still on it.
+		bar:HookScript("OnHide", function()
+			local s = faders[bar]
+			if s then
+				s.hovered = false
+				Retarget(bar)
+			end
+		end)
+	end
+
+	EnsureFadeEvents()
+	Retarget(bar)
 end
 
 -- ---------------------------------------------------------------------------

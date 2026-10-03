@@ -47,7 +47,7 @@ local function TimeText()
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return format("%02d:%02d", hour, minute), pending
 	end
-	local suffix = hour < 12 and "AM" or "PM"
+	local suffix = hour < 12 and (_G.TIMEMANAGER_AM or "AM") or (_G.TIMEMANAGER_PM or "PM")
 	local h = hour % 12
 	if h == 0 then
 		h = 12

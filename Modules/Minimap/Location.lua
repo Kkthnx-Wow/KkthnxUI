@@ -12,7 +12,7 @@ local Module = K:GetModule("Minimap")
 
 local _G = _G
 local GetMinimapZoneText = _G.GetMinimapZoneText
-local GetZonePVPInfo = _G.GetZonePVPInfo
+local GetZonePVPInfo = _G.C_PvP and _G.C_PvP.GetZonePVPInfo
 
 local Minimap = _G.Minimap
 

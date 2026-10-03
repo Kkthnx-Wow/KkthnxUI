@@ -22,7 +22,7 @@ local IsSecret = K.IsSecret
 local InCombatLockdown = InCombatLockdown
 local C_Container = C_Container
 local C_Item = C_Item
-local GetCoinTextureString = GetCoinTextureString
+local GetCoinTextureString = C_CurrencyInfo.GetCoinTextureString
 local format = string.format
 
 local POOR = Enum.ItemQuality and Enum.ItemQuality.Poor or 0

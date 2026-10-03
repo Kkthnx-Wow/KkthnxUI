@@ -109,9 +109,15 @@ function Module:UpdateStanceVisibility(bar)
 		-- ending: the keybind reassign, the deferred bar updates, and the extra button
 		-- re-pin. Unregistering the event by name alone would drop every one of those
 		-- too, so this hands back its own handler and leaves the siblings running.
+		-- One deferred refresh is enough however many form changes arrive mid fight.
+		if self.stanceRefreshQueued then
+			return
+		end
+		self.stanceRefreshQueued = true
 		local once
 		once = function()
 			Module:UnregisterEvent("PLAYER_REGEN_ENABLED", once)
+			Module.stanceRefreshQueued = nil
 			Module:UpdateStanceVisibility(bar)
 		end
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", once)

@@ -3,9 +3,9 @@
 	File: Modules/Nameplates/TargetPower.lua
 	Purpose:
 		Show the player's class resource (combo points, chi, holy power, and the
-		like) as a segmented bar that follows the current target's nameplate, the
-		way Plater and other UIs put combo points on the target. One bar re-anchors
-		to whichever plate is the target rather than a widget on every plate.
+		like) as a segmented bar that follows the current target's nameplate. One
+		bar re-anchors to whichever plate is the target rather than a widget on
+		every plate.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]

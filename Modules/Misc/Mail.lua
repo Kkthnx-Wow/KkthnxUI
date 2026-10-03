@@ -32,7 +32,7 @@ local TakeInboxItem = TakeInboxItem
 local HasInboxItem = HasInboxItem
 local C_Mail = C_Mail
 local C_Item = C_Item
-local GetCoinTextureString = GetCoinTextureString
+local GetCoinTextureString = C_CurrencyInfo.GetCoinTextureString
 local wipe, pairs, format = wipe, pairs, string.format
 
 -- Matches OPEN_ALL_MAIL_MIN_DELAY in Blizzard's mail frame. Anything shorter

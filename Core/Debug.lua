@@ -73,6 +73,14 @@ K.Debug = Debug
 local streams = {}
 local streamMixin = {}
 
+-- Tools that are run once rather than recorded over time register a command, so
+-- /kkdebug <name> does something instead of toggling a stream.
+local commands = {}
+
+function Debug.Command(name, description, handler)
+	commands[name] = { description = description, run = handler }
+end
+
 -- ---------------------------------------------------------------------------
 -- Recording
 -- ---------------------------------------------------------------------------
@@ -153,6 +161,11 @@ end
 
 -- Where a frame actually is, resolved. This is what the player sees, as opposed
 -- to what the anchors claim.
+--
+-- Caution: reading a rect makes the layout engine resolve the frame, and that
+-- resolution may be attributed to this addon. A snapshot of a Blizzard frame can
+-- therefore taint the very frame it is measuring. Leave geometry streams off in
+-- normal play and use them only while chasing a specific problem.
 function streamMixin:Snapshot(frame, tag)
 	if not self.enabled or not frame then
 		return
@@ -366,7 +379,7 @@ end
 
 local function List()
 	local names = SortedNames()
-	if #names == 0 then
+	if #names == 0 and not next(commands) then
 		K.Print(L["No debug streams registered. Something failed to load."])
 		return
 	end
@@ -380,6 +393,18 @@ local function List()
 			stream.enabled and L["on"] or L["off"],
 			stream.description
 		))
+	end
+
+	if next(commands) then
+		K.Print(L["Debug commands:"])
+		local cmds = {}
+		for name in pairs(commands) do
+			cmds[#cmds + 1] = name
+		end
+		sort(cmds)
+		for _, name in ipairs(cmds) do
+			print(format("  |cff5C8BCF%s|r  |cff9EA7B5%s|r", name, commands[name].description))
+		end
 	end
 end
 
@@ -503,6 +528,9 @@ _G.SlashCmdList.KKUI_DEBUG = function(input)
 			-- Frame names are case sensitive, so this one keeps the raw text.
 			WatchByName(argument)
 		end
+	elseif commands[command] then
+		-- Handed the raw argument, since frame and global names are case sensitive.
+		commands[command].run(argument)
 	else
 		Debug.Toggle(command)
 	end

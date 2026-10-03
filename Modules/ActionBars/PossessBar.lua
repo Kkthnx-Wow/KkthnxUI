@@ -56,9 +56,36 @@ function Module:CreatePossessBar()
 
 	K.CreateMover(bar, "PossessBar", L["Possess Bar"], { "BOTTOM", UIParent, "BOTTOM", 0, 280 }, bar:GetWidth(), bar:GetHeight())
 
-	-- Only visible while possessing something, and never in a pet battle.
-	RegisterStateDriver(bar, "visibility", "[petbattle] hide; [possessbar] show; hide")
+	-- Only visible while possessing something, never in a pet battle, and never in
+	-- a vehicle UI. The last one mirrors Blizzard's own bar, which shows only when
+	-- the possess bar is visible and the player does not have the vehicle UI
+	-- (PossessActionBarMixin:Update). Without it ours stayed up in situations
+	-- where Blizzard's would have been hidden, leaving a stray pair of buttons.
+	--
+	-- overridebar is left out on purpose. It is not established that mind control
+	-- never sets it, and hiding the bar there would hide the cancel button.
+	RegisterStateDriver(bar, "visibility", "[petbattle][vehicleui] hide; [possessbar] show; hide")
 	self:SetupFade(bar, cfg)
+
+	-- Record the states that decide visibility each time the bar shows, so a bad
+	-- case can be read instead of guessed at. Off until /kkdebug possess.
+	local stream = K.Debug and K.Debug.Register("possess", "Possess bar visibility and the states behind it")
+	if stream then
+		bar:HookScript("OnShow", function(self)
+			stream:Log(
+				"possess bar shown: IsPossessBarVisible=%s UnitHasVehicleUI=%s HasOverrideActionBar=%s HasVehicleActionBar=%s slot1=%s slot2=%s",
+				tostring(C_ActionBar.IsPossessBarVisible()),
+				tostring(UnitHasVehicleUI("player")),
+				tostring(C_ActionBar.HasOverrideActionBar()),
+				tostring(C_ActionBar.HasVehicleActionBar()),
+				tostring((GetPossessInfo(1))),
+				tostring((GetPossessInfo(2)))
+			)
+		end)
+		bar:HookScript("OnHide", function()
+			stream:Log("possess bar hidden")
+		end)
+	end
 
 	self.bars.PossessBar = bar
 	return bar

@@ -245,16 +245,34 @@ local function ColorEnemyFill(element, unit)
 	end
 end
 
+-- Your own pet reads its owner's class colour. oUF's class pet option asks the
+-- client for the pet's class instead, and a pet reports a fixed class of its own
+-- (the warrior token), which is the tan brown the pet bar used to show.
+local function ColorOwnPet(element, unit)
+	if unit ~= "pet" or not element.colorOwnerClass then
+		return false
+	end
+	local color = element.__owner.colors.class[K.Class]
+	if not color then
+		return false
+	end
+	element:SetStatusBarColor(color:GetRGB())
+	return true
+end
+
 local function OnHealthColor(element, unit)
 	local frame = element.__owner
-	frame.__unitColor = UnitBorderColor(frame, unit)
+	local petColored = ColorOwnPet(element, unit)
+	frame.__unitColor = petColored and frame.colors.class[K.Class] or UnitBorderColor(frame, unit)
 	Module.RefreshHealthBorder(frame)
 
 	if element.__shaded then
 		ShadeBar(element)
 	end
 
-	ColorEnemyFill(element, unit)
+	if not petColored then
+		ColorEnemyFill(element, unit)
+	end
 end
 
 function Build.Health(self, height)
@@ -269,7 +287,7 @@ function Build.Health(self, height)
 	health.colorTapping = true
 	if C.Unitframe.ClassHealth then
 		health.colorClass = true
-		health.colorClassPet = true
+		health.colorOwnerClass = true
 		health.colorReaction = true
 	end
 	-- Last link in oUF's colour chain either way. Without it a unit that matches

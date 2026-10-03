@@ -18,7 +18,7 @@ local Module = K:GetModule("Automation")
 
 local C_MerchantFrame = C_MerchantFrame
 local GetMoney = GetMoney
-local GetCoinTextureString = GetCoinTextureString
+local GetCoinTextureString = C_CurrencyInfo.GetCoinTextureString
 
 function Module:MERCHANT_SHOW_SELLJUNK()
 	if not C.Automation.SellJunk or not (C_MerchantFrame and C_MerchantFrame.SellAllJunkItems) then

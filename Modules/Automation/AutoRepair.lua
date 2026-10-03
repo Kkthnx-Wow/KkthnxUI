@@ -30,7 +30,7 @@ local RepairAllItems = RepairAllItems
 local CanGuildBankRepair = CanGuildBankRepair
 local GetGuildBankWithdrawMoney = GetGuildBankWithdrawMoney
 local GetMoney = GetMoney
-local GetCoinTextureString = GetCoinTextureString
+local GetCoinTextureString = C_CurrencyInfo.GetCoinTextureString
 local IsInGuild = IsInGuild
 
 -- The repair in flight: the bill, whether guild funds were asked for, and the
