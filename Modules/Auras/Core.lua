@@ -21,20 +21,21 @@ local CreateFrame = CreateFrame
 -- Hide the Blizzard aura frames
 -- ---------------------------------------------------------------------------
 
+-- The stock buff and debuff frames are Edit Mode systems. Reparenting them,
+-- unregistering their events and writing into them all reach code that Edit Mode
+-- runs later, and unregistering leaves fields unset that it then reads. So they
+-- are only hidden, and put back to hidden from a post hook when Blizzard shows
+-- them again. Neither frame is protected.
 function Module:HideBlizzard()
-	local hidden = _G.KKUI_HiddenParent
-	if not hidden then
-		hidden = CreateFrame("Frame", "KKUI_HiddenParent", UIParent)
-		hidden:Hide()
-	end
 	for _, name in ipairs({ "BuffFrame", "DebuffFrame" }) do
 		local frame = _G[name]
 		if frame then
-			frame:UnregisterAllEvents()
-			frame:SetParent(hidden)
-			if frame.numHideableBuffs then
-				frame.numHideableBuffs = 0
-			end
+			frame:Hide()
+			hooksecurefunc(frame, "Show", function(self)
+				if C.Auras.Enable then
+					self:Hide()
+				end
+			end)
 		end
 	end
 end

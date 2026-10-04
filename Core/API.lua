@@ -57,8 +57,40 @@ K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 
 local titleTag = "|cff5C8BCFKkthnxUI|r: "
 
+-- Chat output goes through the default chat frame and not the global print. The
+-- global one is handled on the C side and taints the chat frame, and a tainted
+-- chat frame is how a whisper window ends up opening from tainted code. Output is
+-- also dropped where addon chat is restricted, in raid combat, an active Mythic+
+-- run and combat in a battleground or arena, since adding a line there is itself
+-- the taint. Nothing printed from this addon is worth that.
+local function ChatAllowed()
+	local _, instanceType = IsInInstance()
+	if instanceType == "raid" and InCombatLockdown() then
+		return false
+	end
+	if instanceType == "party" and C_ChallengeMode and C_ChallengeMode.IsChallengeModeActive and C_ChallengeMode.IsChallengeModeActive() then
+		return false
+	end
+	if (instanceType == "pvp" or instanceType == "arena") and InCombatLockdown() then
+		return false
+	end
+	return true
+end
+
+function K.PrintRaw(text)
+	local frame = DEFAULT_CHAT_FRAME
+	if frame and ChatAllowed() then
+		frame:AddMessage(text)
+	end
+end
+
 function K.Print(...)
-	print(titleTag .. format(...))
+	-- A single argument is a finished message, only several are a format string.
+	if select("#", ...) > 1 then
+		K.PrintRaw(titleTag .. format(...))
+	else
+		K.PrintRaw(titleTag .. tostring((...)))
+	end
 end
 
 -- Shared no-op, handy for neutering Blizzard globals.

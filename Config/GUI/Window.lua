@@ -385,7 +385,7 @@ local function BuildWindow()
 
 		local btn = CreateFrame("Button", nil, navChild)
 		btn:SetSize(148, 30)
-		order[#order + 1] = { btn = btn, title = category.title, haystack = SearchText(category) }
+		order[#order + 1] = { btn = btn, title = category.title, haystack = SearchText(category), first = category.name == GUI.schema[1].name }
 		-- No per-button border: a clean rail where only the accent bar and a soft
 		-- background mark the active tab.
 		K.CreateBackground(btn, 0.16, 0.16, 0.16, 0.5)
@@ -440,6 +440,15 @@ local function BuildWindow()
 		end)
 		buttons[category.name] = btn
 	end
+
+	-- Alphabetical by the title shown, so a page is easy to find. The first schema
+	-- page (General) stays on top since it is where the window opens.
+	table.sort(order, function(a, b)
+		if a.first ~= b.first then
+			return a.first
+		end
+		return a.title:lower() < b.title:lower()
+	end)
 
 	-- Stack the buttons that match the search text and size the scroll child to
 	-- them. An empty query shows everything.

@@ -1207,6 +1207,9 @@ function Module:OnEnable()
 
 	-- Sticky whispers: keep the edit box on WHISPER after you reply, so a back and
 	-- forth does not need re-selecting the channel each line.
+	-- ChatFrameEditBoxMixin:OnEnterPressed reads ChatTypeInfo[type].sticky, so a flag
+	-- written here is read by Blizzard's secure Enter handler as a tainted value.
+	-- That is why this is off unless asked for.
 	if C.Chat.StickyWhisper and _G.ChatTypeInfo then
 		_G.ChatTypeInfo.WHISPER.sticky = 1
 		_G.ChatTypeInfo.BN_WHISPER.sticky = 1

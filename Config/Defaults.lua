@@ -177,7 +177,7 @@ K.ConfigDefaults = {
 
 	WorldMap = {
 		Enable = true,
-		SmallerMap = true, -- shrink the maximized map so it does not cover the screen
+		SmallerMap = false, -- shrink the maximized map so it does not cover the screen, off because resizing the map from addon code taints its pin layout
 		Scale = 0.9,
 		Coordinates = true, -- player and cursor coordinates in a corner of the map
 		CoordPosition = "BOTTOMLEFT",
@@ -241,7 +241,7 @@ K.ConfigDefaults = {
 		GearInfo = true, -- per-slot item level, gems, and enchant marks
 		SocialColors = true, -- class/difficulty colour the Friends, Who, and Guild panels
 		GameMenu = true, -- skin the pause menu and add a KkthnxUI options button
-		ObjectiveTracker = true, -- tidy the quest tracker header/minimise and recolour its bars
+		ObjectiveTracker = false, -- tidy the quest tracker header/minimise and recolour its bars, off while the scenario tracker taint reports are open
 		ObjectiveTrackerClassColor = true, -- class colour the tracker bars instead of the accent
 		Details = true, -- offer a KkthnxUI skin in the damage meter's skin list, nothing changes until it is picked
 	},
@@ -412,7 +412,7 @@ K.ConfigDefaults = {
 		IdleFade = false, -- dim the whole chat to a resting alpha when idle, lift on hover
 		IdleFadeAlpha = 0.25, -- resting alpha while idle
 		MouseWheelScroll = true,
-		StickyWhisper = true,
+		StickyWhisper = false, -- writes a flag the chat edit box reads in its Enter handler, off by default
 		WhisperSound = true, -- play a sound on an incoming whisper
 		HistoryPersist = true, -- keep recent player chat across a reload or relog
 		KeywordHighlight = true, -- highlight your name and custom keywords in chat

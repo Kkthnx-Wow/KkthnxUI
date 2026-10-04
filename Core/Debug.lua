@@ -386,7 +386,7 @@ local function List()
 	K.Print(L["Debug streams:"])
 	for _, name in ipairs(names) do
 		local stream = streams[name]
-		print(format(
+		K.PrintRaw(format(
 			"  |cff%s%s|r  %s  |cff9EA7B5%s|r",
 			stream.enabled and "4CD97B" or "737A87",
 			name,
@@ -403,7 +403,7 @@ local function List()
 		end
 		sort(cmds)
 		for _, name in ipairs(cmds) do
-			print(format("  |cff5C8BCF%s|r  |cff9EA7B5%s|r", name, commands[name].description))
+			K.PrintRaw(format("  |cff5C8BCF%s|r  |cff9EA7B5%s|r", name, commands[name].description))
 		end
 	end
 end

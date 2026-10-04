@@ -191,13 +191,15 @@ end
 -- Panel backdrop: a subtle top-lit vertical gradient with a faint accent line at
 -- the top edge, so large frames read with depth instead of a flat black slab.
 -- Pair with K.CreateBorder. Returns the background texture.
-function K.CreateGradientBackground(frame, alpha)
+function K.CreateGradientBackground(frame, alpha, keepOffFrame)
 	local a = alpha or 0.95
 	local bg = frame:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints()
 	bg:SetColorTexture(1, 1, 1)
 	K.ApplyGradient(bg, "panel", a)
-	frame.KKUI_Background = bg
+	if not keepOffFrame then
+		frame.KKUI_Background = bg
+	end
 
 	local top = frame:CreateTexture(nil, "BORDER")
 	top:SetHeight(1)

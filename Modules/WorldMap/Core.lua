@@ -50,17 +50,16 @@ local coords
 -- Smaller map
 -- ---------------------------------------------------------------------------
 
+-- Only frame setters here. Blizzard's own methods (OnFrameSizeChanged, the nav
+-- bar refresh) used to be called from these hooks, which ran them, and the pin
+-- layout they drive, under our taint. A later pin acquire then hit a protected
+-- call (Button:SetPassThroughButtons) and was blocked. The frame still gets its
+-- size change event from the engine, so Blizzard runs those itself.
 function Module:SetLargeWorldMap()
 	local map = _G.WorldMapFrame
 	map:SetScale(1)
 	if map.ScrollContainer and map.ScrollContainer.Child then
 		map.ScrollContainer.Child:SetScale(scale)
-	end
-	if map.OnFrameSizeChanged then
-		map:OnFrameSizeChanged()
-	end
-	if map:GetMapID() and map.NavBar and map.NavBar.Refresh then
-		map.NavBar:Refresh()
 	end
 end
 

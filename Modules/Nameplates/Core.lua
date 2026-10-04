@@ -72,10 +72,34 @@ function Module:OnEnable()
 
 	-- Spawn the plates, then size the clickable footprint on the driver.
 	local driver = oUF:SpawnNamePlates("KKUI_NamePlate")
-	if driver and driver.SetSize then
+	self.driver = driver
+
+	local function ApplyPlateSize()
+		if not (driver and driver.SetSize) then
+			return
+		end
+		-- The size call is blocked in combat, so it waits for the fight to end.
+		if InCombatLockdown() then
+			Module.sizePending = true
+			return
+		end
+		Module.sizePending = nil
 		driver:SetSize(C.Nameplate.Width, C.Nameplate.Height + 24)
 	end
-	self.driver = driver
+	ApplyPlateSize()
+
+	-- Blizzard's own nameplate options pass sets its size straight back on a display
+	-- size change, a UI scale change and a relevant console variable change
+	-- (NamePlateDriverMixin:UpdateNamePlateOptions), which throws the click area
+	-- and the stacking bounds off until a reload. Put ours back after each pass.
+	if _G.NamePlateDriverFrame and _G.NamePlateDriverFrame.UpdateNamePlateOptions then
+		hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", ApplyPlateSize)
+	end
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+		if Module.sizePending then
+			ApplyPlateSize()
+		end
+	end)
 
 	self:SetupCVars()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "SetupCVars")

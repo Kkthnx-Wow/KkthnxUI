@@ -119,6 +119,21 @@ function Module:SetupBank()
 	f.extraTop = 26 -- room for the tab strip under the title band
 	self.BankFrame = f
 
+	-- The stock bank frame is parked, so nothing else ends the bank interaction when
+	-- this window is closed by hand or with Escape. Left open, the banker stays
+	-- engaged until you walk away. Ending it while it is already over (the window
+	-- closing because the client closed the bank) is skipped.
+	f:HookScript("OnHide", function()
+		local manager = _G.C_PlayerInteractionManager
+		local types = _G.Enum and _G.Enum.PlayerInteractionType
+		if not (manager and manager.IsInteractingWithNpcOfType and types and _G.C_Bank and _G.C_Bank.CloseBankFrame) then
+			return
+		end
+		if manager.IsInteractingWithNpcOfType(types.Banker) or manager.IsInteractingWithNpcOfType(types.AccountBanker) then
+			_G.C_Bank.CloseBankFrame()
+		end
+	end)
+
 	-- Tab strip: character bank and Warband bank.
 	f.Tabs = {}
 	-- 8px below the search box (which ends at y -30), matching the tab-to-grid gap.

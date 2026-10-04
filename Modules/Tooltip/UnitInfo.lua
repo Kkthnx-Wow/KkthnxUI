@@ -141,9 +141,10 @@ function Module:OnUnitTooltip(tt)
 
 	-- Colour the border to match the unit (class for players, reaction otherwise),
 	-- so it reads the same as the frames. Runs after the SetOwner reset, so it wins.
-	if db.BorderColor and tt.KKUI_Border then
+	local border = K.GetBorder(tt)
+	if db.BorderColor and border then
 		local r, g, b = UnitColor(unit)
-		tt.KKUI_Border:SetVertexColor(r, g, b)
+		border:SetVertexColor(r, g, b)
 	end
 	if isPlayer and line then
 		local name = line:GetText()
@@ -221,7 +222,7 @@ function Module:OnUnitTooltip(tt)
 	local bar = _G.GameTooltipStatusBar
 	if bar then
 		local r, g, b = UnitColor(unit)
-		bar:SetStatusBarColor(r, g, b)
+		Module.ColorHealthBar(bar, r, g, b)
 		if Module.PositionHealthBar then
 			Module.PositionHealthBar(bar)
 		end
@@ -412,7 +413,8 @@ function Module:SetupUnitInfo()
 	-- Colour the border by item quality on any of our skinned item tooltips,
 	-- including the compare (shopping) tooltips, not just the main one.
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tt)
-		if not C.Tooltip.BorderColor or not tt.KKUI_Border then
+		local border = K.GetBorder(tt)
+		if not C.Tooltip.BorderColor or not border then
 			return
 		end
 		local _, link
@@ -422,9 +424,9 @@ function Module:SetupUnitInfo()
 		local quality = link and C_Item and C_Item.GetItemInfo and select(3, C_Item.GetItemInfo(link))
 		if quality and quality > 1 and C_Item.GetItemQualityColor then
 			local r, g, b = C_Item.GetItemQualityColor(quality)
-			tt.KKUI_Border:SetVertexColor(r, g, b)
+			border:SetVertexColor(r, g, b)
 		else
-			K.ResetBorderColor(tt.KKUI_Border)
+			K.ResetBorderColor(border)
 		end
 	end)
 

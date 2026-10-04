@@ -27,7 +27,7 @@ K.Version = C_AddOns.GetAddOnMetadata(AddOnName, "Version") or "dev"
 -- Build tag for tracking day to day changes while the public Version stays put.
 -- Bump this every time you push a change so a bug report can be pinned to an exact
 -- build. Format is YYYY.MM.DD.N, N being the build number for that day.
-K.Build = "2026.10.03.12"
+K.Build = "2026.10.04.6"
 
 -- oUF embeds itself onto our shared addon namespace, so it is reachable here
 -- because every file in the addon receives the same private table.
@@ -101,6 +101,12 @@ local dispatch = CreateFrame("Frame")
 -- MERCHANT_SHOW), so storing one handler per module let whichever registered last
 -- silently replace the other.
 local eventMap = {}
+-- event -> modules in the order they first registered for it, and a set to keep
+-- that list free of duplicates. Dispatch walks this list, not the map, so every
+-- module sees an event in the same order on every login. pairs over the map has no
+-- defined order, which made one module's handler race another's.
+local eventOrder = {}
+local inOrder = {}
 
 local function CallHandler(module, handler, event, ...)
 	if handler == true then
@@ -121,16 +127,25 @@ end
 
 dispatch:SetScript("OnEvent", function(_, event, ...)
 	local handlers = eventMap[event]
-	if not handlers then
+	local order = eventOrder[event]
+	if not handlers or not order then
 		return
 	end
-	for module, list in pairs(handlers) do
-		-- Walk a snapshot length so a handler that unregisters during dispatch
-		-- cannot make us skip or re-run one of its siblings.
-		for i = 1, #list do
-			local handler = list[i]
-			if handler ~= nil then
-				CallHandler(module, handler, event, ...)
+	for m = 1, #order do
+		local module = order[m]
+		-- A module that unregistered while this event was being dispatched has no
+		-- list any more and is skipped.
+		local list = handlers[module]
+		if list then
+			-- Walk a snapshot length so a handler that unregisters during dispatch
+			-- cannot make us skip or re-run one of its siblings.
+			for i = 1, #list do
+				local handler = list[i]
+				if handler ~= nil then
+					-- One handler throwing must not stop the rest of the addon
+					-- hearing the event. The error still goes to the error handler.
+					xpcall(CallHandler, errorHandler, module, handler, event, ...)
+				end
 			end
 		end
 	end
@@ -159,6 +174,17 @@ function moduleMixin:RegisterEvent(event, handler)
 		end
 	end
 	list[#list + 1] = handler
+
+	local order = eventOrder[event]
+	if not order then
+		order = {}
+		eventOrder[event] = order
+		inOrder[event] = {}
+	end
+	if not inOrder[event][self] then
+		inOrder[event][self] = true
+		order[#order + 1] = self
+	end
 end
 
 -- Drop this module's handlers for an event. Pass the handler to remove just that
@@ -185,6 +211,8 @@ function moduleMixin:UnregisterEvent(event, handler)
 	handlers[self] = nil
 	if not next(handlers) then
 		eventMap[event] = nil
+		eventOrder[event] = nil
+		inOrder[event] = nil
 		dispatch:UnregisterEvent(event)
 	end
 end
@@ -195,6 +223,8 @@ function moduleMixin:UnregisterAllEvents()
 			handlers[self] = nil
 			if not next(handlers) then
 				eventMap[event] = nil
+				eventOrder[event] = nil
+				inOrder[event] = nil
 				dispatch:UnregisterEvent(event)
 			end
 		end
@@ -260,7 +290,7 @@ local function InitializeModules()
 	if K.SetupConfig then
 		K:SetupConfig()
 	end
-	for _, module in pairs(modules) do
+	for _, module in ipairs(moduleOrder) do
 		if module.OnInitialize then
 			safeCall(module.OnInitialize, module)
 		end

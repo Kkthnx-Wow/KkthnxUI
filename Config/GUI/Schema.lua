@@ -522,7 +522,7 @@ GUI.schema = {
 
 				{ kind = "header", label = L["World Map"] },
 				{ kind = "check", label = L["Enable World Map Tweaks"], path = { "WorldMap", "Enable" }, reload = true, tooltip = L["Shrink the maximized world map and show coordinates."] },
-				{ kind = "check", label = L["Smaller World Map"], path = { "WorldMap", "SmallerMap" }, reload = true, dependsOn = { "WorldMap", "Enable" }, tooltip = L["Scale the maximized map down so it no longer covers the whole screen."] },
+				{ kind = "check", label = L["Smaller World Map (Experimental)"], path = { "WorldMap", "SmallerMap" }, reload = true, dependsOn = { "WorldMap", "Enable" }, tooltip = L["Scale the maximized map down so it no longer covers the whole screen. Experimental: resizing the map from addon code can block map pin clicks."] },
 				{ kind = "slider", label = L["Map Scale"], path = { "WorldMap", "Scale" }, min = 0.6, max = 1, step = 0.05, reload = true, dependsOn = { "WorldMap", "Enable" } },
 				{ kind = "check", label = L["Map Coordinates"], path = { "WorldMap", "Coordinates" }, reload = true, dependsOn = { "WorldMap", "Enable" }, tooltip = L["Show player and cursor coordinates in a corner of the map."] },
 				{ kind = "dropdown", label = L["Coordinate Position"], path = { "WorldMap", "CoordPosition" }, options = {
@@ -574,7 +574,7 @@ GUI.schema = {
 			{ kind = "slider", label = L["Font Size"], path = { "Chat", "FontSize" }, min = 10, max = 20, step = 1, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Font Outline"], path = { "Chat", "FontOutline" }, reload = true, dependsOn = { "Chat", "Enable" } },
 			{ kind = "check", label = L["Mouse Wheel Scroll"], path = { "Chat", "MouseWheelScroll" }, reload = true, dependsOn = { "Chat", "Enable" } },
-			{ kind = "check", label = L["Sticky Whisper"], path = { "Chat", "StickyWhisper" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Keep the edit box on whisper after replying."] },
+			{ kind = "check", label = L["Sticky Whisper (Experimental)"], path = { "Chat", "StickyWhisper" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Keep the edit box on whisper after replying. Experimental: it changes a chat setting that the stock edit box reads when you press Enter, which can taint whisper handling."] },
 			{ kind = "check", label = L["Whisper Sound"], path = { "Chat", "WhisperSound" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Play a sound when you receive a whisper."] },
 			{ kind = "check", label = L["Remember Chat History"], path = { "Chat", "HistoryPersist" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Replay your recent player chat after a reload or relog."] },
 			{ kind = "check", label = L["Skin Chat Bubbles"], path = { "Chat", "SkinBubbles" }, reload = true, dependsOn = { "Chat", "Enable" }, tooltip = L["Give the in-world chat bubbles our border and dark background."] },

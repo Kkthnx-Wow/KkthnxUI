@@ -39,7 +39,7 @@ stds.wow = {
 		"GameTooltip_SetDefaultAnchor", "SharedTooltip_SetBackdropStyle",
 		"PVP_ENABLED", "TARGET", "YOU", "UnitIsUnit",
 		"NUM_PET_ACTION_SLOTS", "GetNumShapeshiftForms",
-		"Constants", "ChatFrameUtil", "C_SpecializationInfo", "IsShiftKeyDown", "ChatFontNormal",
+		"Constants", "ChatFrameUtil", "C_ChallengeMode", "NUM_CONTAINER_FRAMES", "IsAnyBagOpen", "DEFAULT_CHAT_FRAME", "GameTooltip_AddInstructionLine", "GameTooltip_AddBlankLineToTooltip", "UNIT_POPUP_RIGHT_CLICK", "GetNumSubgroupMembers", "C_SpecializationInfo", "IsShiftKeyDown", "ChatFontNormal",
 		"FCF_OpenTemporaryWindow", "ChatFrame_AddMessageEventFilter",
 		"UnitClassification", "C_TooltipInfo", "GetGuildInfo",
 		"CanInspect", "NotifyInspect", "ClearInspectPlayer", "GetInspectSpecialization",

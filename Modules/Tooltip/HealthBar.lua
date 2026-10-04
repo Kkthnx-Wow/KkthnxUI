@@ -30,6 +30,18 @@ local function PositionHealthBar(bar)
 end
 Module.PositionHealthBar = PositionHealthBar
 
+-- The colour we want on the bar, kept here and not on the bar. Blizzard's own
+-- health handler reads a lockColor key off the bar, so writing that key from our
+-- code means Blizzard's code reads a tainted value on every health tick. Instead
+-- the stock handler is left alone and our colour is put back right after it.
+local barColor = setmetatable({}, { __mode = "k" })
+local colorHooked = false
+
+function Module.ColorHealthBar(bar, r, g, b)
+	barColor[bar] = { r, g, b }
+	bar:SetStatusBarColor(r, g, b)
+end
+
 function Module:StyleHealthBar()
 	local bar = _G.GameTooltipStatusBar
 	if not bar then
@@ -39,10 +51,16 @@ function Module:StyleHealthBar()
 	bar:SetHeight(12)
 	PositionHealthBar(bar)
 
-	-- Blizzard's HealthBar_OnValueChanged forces the bar green on every health
-	-- tick unless lockColor is set. Lock it so our class/reaction colour from the
-	-- unit post-call is what sticks.
-	bar.lockColor = true
+	-- Blizzard recolours the bar green on every value change. Put ours back after it.
+	if not colorHooked then
+		colorHooked = true
+		hooksecurefunc(bar, "SetValue", function(self)
+			local color = barColor[self]
+			if color then
+				self:SetStatusBarColor(color[1], color[2], color[3])
+			end
+		end)
+	end
 
 	if not bar.KKUI_Background then
 		K.CreateBackground(bar, 0.1, 0.1, 0.1, 0.9)
@@ -57,7 +75,10 @@ function Module:StyleHealthBar()
 		text:SetPoint("CENTER", bar, "CENTER", 0, 0)
 		bar.KKUI_Text = text
 
-		bar:HookScript("OnValueChanged", function(self, value)
+		-- Hooked on SetValue rather than the OnValueChanged script. A script hook on
+		-- the tooltip bar runs inside the tooltip's own update, which is the same
+		-- execution that goes on to build widget sets.
+		hooksecurefunc(bar, "SetValue", function(self, value)
 			local fs = self.KKUI_Text
 			if not fs then
 				return

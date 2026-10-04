@@ -837,28 +837,81 @@ function Module:CloseAll()
 	end
 end
 
--- Route Blizzard's global bag entry points to our window. Nothing calls the
--- stock ContainerFrame show path once these are replaced, so it stays hidden.
+-- Follow Blizzard's bags with ours instead of replacing its functions. The stock
+-- bag entry points (OpenAllBags, CloseAllBags and the rest) are called from
+-- secure code all over the interface: the mail window, the auction house, a
+-- merchant, item upgrade and others call them from their show and hide handlers.
+-- A global of ours standing in for one of them runs in the middle of that handler
+-- and leaves the rest of it tainted. So those keep running as Blizzard wrote them,
+-- its bag frames are parked under a hidden parent, and a post hook afterwards
+-- opens or closes our window to match whether Blizzard considers any bag open.
+-- Only the three toggles are replaced, since they come from a key press or a bag
+-- button click with nothing secure left to run after them. Replacing them also
+-- means a key press toggles our window directly even after it was closed by hand.
+local BLIZZARD_ENTRY_POINTS = {
+	"OpenAllBags",
+	"CloseAllBags",
+	"OpenBackpack",
+	"CloseBackpack",
+	"OpenBag",
+	"CloseBag",
+}
+
 function Module:HookBlizzard()
-	local function open()
-		self:OpenBags()
+	local hidden = _G.KKUI_HiddenParent
+	if not hidden then
+		hidden = CreateFrame("Frame", "KKUI_HiddenParent", UIParent)
+		hidden:Hide()
 	end
-	local function close()
-		self:CloseBags()
+
+	-- A frame that holds secure item buttons cannot be reparented in combat, so this
+	-- only runs out of it. The next sync after combat catches anything missed.
+	local function Banish()
+		if InCombatLockdown() then
+			return
+		end
+		for i = 1, _G.NUM_CONTAINER_FRAMES or 13 do
+			local frame = _G["ContainerFrame" .. i]
+			if frame and frame:GetParent() ~= hidden then
+				frame:SetParent(hidden)
+			end
+		end
+		local combined = _G.ContainerFrameCombinedBags
+		if combined and combined:GetParent() ~= hidden then
+			combined:SetParent(hidden)
+		end
 	end
+
+	local function Sync()
+		Banish()
+		if not (_G.IsAnyBagOpen and self.BagFrame) then
+			return
+		end
+		local wanted = _G.IsAnyBagOpen() and true or false
+		if wanted == (self.BagFrame:IsShown() and true or false) then
+			return
+		end
+		if wanted then
+			self:OpenBags()
+		else
+			self:CloseBags()
+		end
+	end
+
+	Banish()
+
 	local function toggle()
 		self:ToggleBags()
 	end
-
-	_G.OpenAllBags = open
-	_G.OpenBackpack = open
-	_G.CloseAllBags = close
-	_G.CloseBackpack = close
 	_G.ToggleAllBags = toggle
 	_G.ToggleBackpack = toggle
 	_G.ToggleBag = toggle
-	_G.OpenBag = open
-	_G.CloseBag = close
+
+	for _, name in ipairs(BLIZZARD_ENTRY_POINTS) do
+		if type(_G[name]) == "function" then
+			hooksecurefunc(name, Sync)
+		end
+	end
 end
 
 function Module:OnEnable()

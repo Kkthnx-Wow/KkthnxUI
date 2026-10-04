@@ -18,6 +18,16 @@ local BORDER_KEY = "KKUI_Border"
 
 local Border = {}
 
+-- Borders kept off the frame they decorate, for frames Blizzard owns. Writing a key
+-- into a Blizzard table marks that key as ours, and Blizzard code that walks or
+-- reads the table then runs tainted, so those frames get their border recorded
+-- here and are looked up through K.GetBorder.
+local offFrame = setmetatable({}, { __mode = "k" })
+
+function K.GetBorder(frame)
+	return frame[BORDER_KEY] or offFrame[frame]
+end
+
 local function GetDefaultStyle()
 	return (C.General and C.General.BorderStyle) or "KkthnxUI"
 end
@@ -50,7 +60,7 @@ local function UpdateTexCoords(border, tile)
 end
 
 local function OnResize(frame)
-	local border = frame and frame[BORDER_KEY]
+	local border = frame and K.GetBorder(frame)
 	if not border then
 		return
 	end
@@ -64,6 +74,23 @@ local function OnResize(frame)
 		return
 	end
 	UpdateTexCoords(border, GetTileCount(border, width))
+end
+
+-- The tile count depends on the frame width, so something has to see resizes.
+-- That is not done with a script on the framed object. Tooltips, trackers and
+-- other Blizzard frames get resized from inside Blizzard code, and the engine
+-- dispatches OnSizeChanged for that synchronously, so an insecure handler on the
+-- frame runs in the middle of the secure call and leaves the rest of it tainted.
+-- (A widget tooltip built on a map point then fails on a secret number.) A child
+-- frame stretched over the object is resized by the layout pass instead, outside
+-- any Blizzard function, and its handler is ours alone.
+local function AttachSizeWatcher(frame)
+	local watcher = CreateFrame("Frame", nil, frame)
+	watcher:SetAllPoints(frame)
+	watcher:EnableMouse(false)
+	watcher:SetScript("OnSizeChanged", function()
+		OnResize(frame)
+	end)
 end
 
 -- ---------------------------------------------------------------------------
@@ -162,8 +189,8 @@ end
 -- Factory
 -- ---------------------------------------------------------------------------
 
-function K.CreateBorder(frame, drawLayer, subLevel)
-	local existing = frame[BORDER_KEY]
+function K.CreateBorder(frame, drawLayer, subLevel, keepOffFrame)
+	local existing = K.GetBorder(frame)
 	if existing then
 		return existing
 	end
@@ -197,13 +224,13 @@ function K.CreateBorder(frame, drawLayer, subLevel)
 	border.RIGHT:SetPoint("TOPRIGHT", border.TOPRIGHT, "BOTTOMRIGHT", 0, 0)
 	border.RIGHT:SetPoint("BOTTOMRIGHT", border.BOTTOMRIGHT, "TOPRIGHT", 0, 0)
 
-	if not frame:GetScript("OnSizeChanged") then
-		frame:SetScript("OnSizeChanged", OnResize)
-	else
-		frame:HookScript("OnSizeChanged", OnResize)
-	end
+	AttachSizeWatcher(frame)
 
-	frame[BORDER_KEY] = border
+	if keepOffFrame then
+		offFrame[frame] = border
+	else
+		frame[BORDER_KEY] = border
+	end
 
 	local style = GetDefaultStyle()
 	border:SetOffset(-4)

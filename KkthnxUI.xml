@@ -17,6 +17,7 @@
 	<Script file="Core\Dialog.lua" />
 	<Script file="Core\Debug.lua" />
 	<Script file="Core\TaintScan.lua" />
+	<Script file="Core\TrackerWatch.lua" />
 	<Script file="Core\Movers.lua" />
 	<Script file="Core\Core.lua" />
 

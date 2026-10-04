@@ -38,8 +38,9 @@ function Module:SetupAnchor()
 	-- item data is added, so the item and unit colouring that follows still wins.
 	if _G.GameTooltip and _G.GameTooltip.SetOwner then
 		hooksecurefunc(_G.GameTooltip, "SetOwner", function(tt)
-			if C.Tooltip.BorderColor and tt.KKUI_Border then
-				K.ResetBorderColor(tt.KKUI_Border)
+			local border = K.GetBorder(tt)
+			if C.Tooltip.BorderColor and border then
+				K.ResetBorderColor(border)
 			end
 		end)
 	end
@@ -59,8 +60,9 @@ function Module:SetupAnchor()
 		-- Fresh border for each default-anchored tooltip so a previous unit or item
 		-- colour does not carry over. Safe from here (a hooksecurefunc, not an insecure
 		-- script hook), and map POIs do not use this anchor, so nothing taints them.
-		if C.Tooltip.BorderColor and tt.KKUI_Border then
-			K.ResetBorderColor(tt.KKUI_Border)
+		local border = K.GetBorder(tt)
+		if C.Tooltip.BorderColor and border then
+			K.ResetBorderColor(border)
 		end
 	end)
 end

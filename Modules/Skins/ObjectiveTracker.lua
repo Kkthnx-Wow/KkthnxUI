@@ -50,6 +50,36 @@ local function ReskinBar(bar)
 	end
 end
 
+-- Work asked for from inside a Blizzard hook is not done there. The container
+-- update runs every module in one pass, and anything these hooks do to the
+-- tracker's frames while that pass is still running can leave the rest of it
+-- tainted. The scenario module's Maw buff aura read then fails, the pass unwinds
+-- before Blizzard clears its dirty flag, and the tracker stops updating until a
+-- reload (progress stuck, objectives not tracked). So each hook only records what
+-- it was called with and one timer applies the lot after the pass is over.
+local pendingBars = {}
+local pendingHeaders = {}
+local flushQueued = false
+
+local function Flush()
+	flushQueued = false
+	for bar in pairs(pendingBars) do
+		pendingBars[bar] = nil
+		ReskinBar(bar)
+	end
+	for header, collapsed in pairs(pendingHeaders) do
+		pendingHeaders[header] = nil
+		Module.ApplyCollapsed(header, collapsed)
+	end
+end
+
+local function QueueFlush()
+	if not flushQueued then
+		flushQueued = true
+		C_Timer.After(0, Flush)
+	end
+end
+
 local function HideHeaderBackground(header)
 	if header and header.Background then
 		header.Background:Hide()
@@ -58,7 +88,7 @@ end
 
 -- Swap the minimise button art for the smaller secondary set so it reads as a
 -- quiet chevron. Hooked on SetCollapsed so it tracks the state without us polling.
-local function SetCollapsed(header, collapsed)
+function Module.ApplyCollapsed(header, collapsed)
 	local minimize = header and header.MinimizeButton
 	if not minimize then
 		return
@@ -82,12 +112,23 @@ end
 -- secure hook) and tint it.
 local function HandleProgressBar(tracker, key)
 	local pb = tracker.usedProgressBars and tracker.usedProgressBars[key]
-	ReskinBar(pb and pb.Bar)
+	if pb and pb.Bar then
+		pendingBars[pb.Bar] = true
+		QueueFlush()
+	end
 end
 
 local function HandleTimerBar(tracker, key)
 	local tb = tracker.usedTimerBars and tracker.usedTimerBars[key]
-	ReskinBar(tb and tb.Bar)
+	if tb and tb.Bar then
+		pendingBars[tb.Bar] = true
+		QueueFlush()
+	end
+end
+
+local function OnCollapsed(header, collapsed)
+	pendingHeaders[header] = collapsed
+	QueueFlush()
 end
 
 local function SkinHeader(header)
@@ -101,8 +142,8 @@ local function SkinHeader(header)
 		if minimize.SetHighlightAtlas then
 			minimize:SetHighlightAtlas("UI-QuestTrackerButton-Yellow-Highlight", "ADD")
 		end
-		SetCollapsed(header, header.isCollapsed)
-		hooksecurefunc(header, "SetCollapsed", SetCollapsed)
+		Module.ApplyCollapsed(header, header.isCollapsed)
+		hooksecurefunc(header, "SetCollapsed", OnCollapsed)
 	end
 end
 

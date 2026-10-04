@@ -25,6 +25,7 @@ local ipairs = ipairs
 local pairs = pairs
 local min = math.min
 local ceil = math.ceil
+local IsSecret = K.IsSecret
 
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES or 8
 
@@ -99,8 +100,60 @@ end
 -- Blizzard's UnitFrame_OnEnter feeds self.unit straight into GameTooltip:SetUnit,
 -- which errors when the unit is nil (an unassigned group slot, a frame mid-setup).
 -- Guard it so hovering such a frame never throws.
+-- Group frames are secure header children, and the unit they carry comes from a
+-- secure attribute. A tooltip filled from that token hands the same secret token
+-- back from GameTooltip:GetUnit, so everything that enriches the unit tooltip has
+-- to give up on a party or raid frame in restricted content. The same unit under
+-- its plain "party3" or "raid12" name has no such origin, so the tooltip is built
+-- from that instead, matched by GUID.
+local function CleanToken(unit)
+	local guid = UnitGUID(unit)
+	if not guid or IsSecret(guid) then
+		return unit
+	end
+	if UnitGUID("player") == guid then
+		return "player"
+	end
+	local prefix, count
+	if IsInRaid() then
+		prefix, count = "raid", GetNumGroupMembers()
+	else
+		prefix, count = "party", GetNumSubgroupMembers()
+	end
+	for i = 1, count do
+		local token = prefix .. i
+		local other = UnitGUID(token)
+		if other and not IsSecret(other) and other == guid then
+			return token
+		end
+	end
+	return unit
+end
+
+local function ShowGroupTooltip(self)
+	local unit = self.unit
+	if not (unit and UnitExists(unit)) then
+		self.UpdateTooltip = nil
+		return
+	end
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	if GameTooltip:SetUnit(CleanToken(unit), self.hideStatusOnTooltip) then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip)
+		GameTooltip_AddInstructionLine(GameTooltip, UNIT_POPUP_RIGHT_CLICK)
+		GameTooltip:Show()
+		self.UpdateTooltip = ShowGroupTooltip
+	else
+		self.UpdateTooltip = nil
+	end
+end
+
 local function SafeOnEnter(self)
-	if self.unit and UnitExists(self.unit) then
+	if not (self.unit and UnitExists(self.unit)) then
+		return
+	end
+	if self.mystyle == "party" or self.mystyle == "raid" then
+		ShowGroupTooltip(self)
+	else
 		UnitFrame_OnEnter(self)
 	end
 end

@@ -83,6 +83,19 @@ function oUF:DisableBlizzard(unit)
 
 	if(unit == 'player') then
 		handleFrame(PlayerFrame)
+
+		-- The standalone alternate power bars hang off the player frame but keep
+		-- their own power, spec and world entry events after the frame is silenced.
+		-- Those events still run the player frame art update, which refreshes the
+		-- stock buff frame, and that read of the player's auras fails while the
+		-- execution is tainted. Unregistering their events is taint safe and legal
+		-- in combat, and our own elements draw these resources.
+		for _, name in next, { 'AlternatePowerBar', 'MonkStaggerBar', 'EvokerEbonMightBar', 'DemonHunterSoulFragmentsBar' } do
+			local bar = _G[name]
+			if(bar and bar.UnregisterAllEvents) then
+				bar:UnregisterAllEvents()
+			end
+		end
 	elseif(unit == 'pet') then
 		handleFrame(PetFrame)
 	elseif(unit == 'target') then

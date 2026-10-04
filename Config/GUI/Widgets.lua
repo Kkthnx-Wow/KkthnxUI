@@ -98,6 +98,31 @@ end
 -- Attach the shared hover tooltip, and wire right-click to put the setting back
 -- to its default. refresh redraws the widget after a reset, since the control
 -- holds its own display state.
+-- The label of the setting a control depends on, so a greyed row can say what to
+-- switch on. Built once from the schema, keyed by config path.
+local labelByPath
+local function DependencyLabel(path)
+	if not labelByPath then
+		labelByPath = {}
+		local function Walk(node, depth)
+			if type(node) ~= "table" or depth > 8 then
+				return
+			end
+			if type(node.path) == "table" and type(node.label) == "string" then
+				local key = table.concat(node.path, ".")
+				labelByPath[key] = labelByPath[key] or node.label
+			end
+			for _, child in pairs(node) do
+				if type(child) == "table" and child ~= node.path then
+					Walk(child, depth + 1)
+				end
+			end
+		end
+		Walk(GUI.schema, 0)
+	end
+	return labelByPath[table.concat(path, ".")]
+end
+
 function GUI.AttachTooltip(frame, control, refresh)
 	local resettable = control.path ~= nil
 	if not (control.tooltip or resettable) then
@@ -109,6 +134,12 @@ function GUI.AttachTooltip(frame, control, refresh)
 		GameTooltip:SetText(control.label or "", 1, 1, 1)
 		if control.tooltip then
 			GameTooltip:AddLine(control.tooltip, K.Colors.silver[1], K.Colors.silver[2], K.Colors.silver[3], true)
+		end
+		-- Say why a greyed row is greyed.
+		if control.dependsOn and not GUI.GetValue(control.dependsOn) then
+			local dependency = DependencyLabel(control.dependsOn)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(dependency and format(L["Turn on %s first to use this."], dependency) or L["Another setting has to be on first."], 1, 0.5, 0.25, true)
 		end
 		if resettable then
 			local shown = DescribeValue(control, GUI.GetDefault(control.path))

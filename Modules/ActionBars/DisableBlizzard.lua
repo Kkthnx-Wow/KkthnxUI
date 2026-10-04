@@ -45,21 +45,6 @@ local FRAMES_TO_DISABLE = {
 	"StatusTrackingBarManager",
 }
 
-local SCRIPTS = {
-	"OnShow", "OnHide", "OnEvent", "OnEnter", "OnLeave",
-	"OnUpdate", "OnValueChanged", "OnClick", "OnMouseDown", "OnMouseUp",
-}
-
-local function StripScripts(frame)
-	for _, script in ipairs(SCRIPTS) do
-		if frame:HasScript(script) then
-			frame:SetScript(script, nil)
-		end
-	end
-end
-
--- Keep Blizzard's button event frame from re-registering the default buttons,
--- while still allowing ExtraActionButtons to work.
 local function TrimButtonEventFrames(self)
 	local frames = self.frames
 	if not frames then
@@ -92,18 +77,6 @@ local function DisableControllerEvents()
 		hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", TrimButtonEventFrames)
 		TrimButtonEventFrames(_G.ActionBarButtonEventsFrame)
 	end
-	-- Known to be a taint source, left in place until it can be tested out. This
-	-- replaces a Blizzard global with a function of ours, and Blizzard calls it
-	-- from secure code: PlayerSpellsFrameMixin:OnShow, the professions book, and
-	-- ActionButtonUtil.ShowAllActionButtonGrids. Everything after the call in those
-	-- runs with our taint on it. All the real function does is SetShowGrid on
-	-- Blizzard's own multi bars, which we keep hidden.
-	--
-	-- What is not established is whether it is safe to remove with the stock bars
-	-- reparented the way we do it. See DEVLOG.md, and /kkdebug taint lists it.
-	if _G.MultiActionBar_ShowAllGrids then
-		_G.MultiActionBar_ShowAllGrids = K.Noop
-	end
 end
 
 function Module:DisableBlizzardBars()
@@ -126,7 +99,6 @@ function Module:DisableBlizzardBars()
 		local frame = _G[name]
 		if frame then
 			frame:UnregisterAllEvents()
-			StripScripts(frame)
 		end
 	end
 

@@ -16,11 +16,15 @@ local ipairs = ipairs
 local pairs = pairs
 
 -- Apply our border and background to a tooltip once, hiding the stock frame.
+-- Which tooltips and bars are already skinned, kept here and not as keys on the
+-- Blizzard frames themselves.
+local skinned = setmetatable({}, { __mode = "k" })
+
 local function SkinTooltip(tt)
-	if not tt or tt.__kkuiSkinned then
+	if not tt or skinned[tt] then
 		return
 	end
-	tt.__kkuiSkinned = true
+	skinned[tt] = true
 
 	if tt.NineSlice then
 		tt.NineSlice:SetAlpha(0)
@@ -31,8 +35,8 @@ local function SkinTooltip(tt)
 
 	-- The navy gradient panel, matching the bags and options window instead of a
 	-- flat black fill.
-	K.CreateGradientBackground(tt, 0.92)
-	K.CreateBorder(tt)
+	K.CreateGradientBackground(tt, 0.92, true)
+	K.CreateBorder(tt, nil, nil, true)
 end
 Module.SkinTooltip = SkinTooltip
 
@@ -44,10 +48,10 @@ end
 -- level requirements). We strip their border/divider art and give them our own
 -- texture and backdrop so they match the rest of the tooltip.
 local function SkinInsetStatusBar(bar)
-	if not bar or bar.__kkuiBar then
+	if not bar or skinned[bar] then
 		return
 	end
-	bar.__kkuiBar = true
+	skinned[bar] = true
 	local fill = bar:GetStatusBarTexture()
 	for _, region in ipairs({ bar:GetRegions() }) do
 		if region ~= fill and region.GetObjectType and region:GetObjectType() == "Texture" then
@@ -61,10 +65,10 @@ end
 
 local function SkinInsetProgressBar(progressBar)
 	local bar = progressBar and progressBar.Bar
-	if not bar or bar.__kkuiBar then
+	if not bar or skinned[bar] then
 		return
 	end
-	bar.__kkuiBar = true
+	skinned[bar] = true
 	for _, key in ipairs({ "BorderLeft", "BorderRight", "BorderMid", "LeftDivider", "RightDivider" }) do
 		if bar[key] then
 			bar[key]:SetTexture(nil)
