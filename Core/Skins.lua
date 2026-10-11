@@ -253,13 +253,23 @@ function K.SkinButton(button, emphasize)
 	local hoverBorder = emphasize and gold or accent
 
 	local fs = button:GetFontString()
-	if fs then
-		fs:SetTextColor(restColor[1], restColor[2], restColor[3])
+	local dim = { 0.45, 0.47, 0.50 }
+
+	-- A disabled button reads as grey and does not react to the mouse.
+	local function RestText(self)
+		if fs then
+			local c = self:IsEnabled() and restColor or dim
+			fs:SetTextColor(c[1], c[2], c[3])
+		end
 	end
+	RestText(button)
 
 	-- Hover: lift the fill toward the accent and light the border, so every control
 	-- reacts the same and the hover reads at a glance.
 	button:HookScript("OnEnter", function(self)
+		if not self:IsEnabled() then
+			return
+		end
 		K.ApplyGradient(bg, "buttonHover")
 		if self.KKUI_Border then
 			self.KKUI_Border:SetVertexColor(hoverBorder[1], hoverBorder[2], hoverBorder[3], 1)
@@ -273,9 +283,12 @@ function K.SkinButton(button, emphasize)
 		if self.KKUI_Border then
 			K.ResetBorderColor(self.KKUI_Border)
 		end
-		if fs then
-			fs:SetTextColor(restColor[1], restColor[2], restColor[3])
-		end
+		RestText(self)
+	end)
+	button:HookScript("OnEnable", RestText)
+	button:HookScript("OnDisable", function(self)
+		K.ApplyGradient(bg, "buttonRest")
+		RestText(self)
 	end)
 	return button
 end
