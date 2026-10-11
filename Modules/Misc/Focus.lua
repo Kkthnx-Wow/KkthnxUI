@@ -33,6 +33,7 @@ local next = next
 -- Frames that wanted the attribute while we were locked down.
 local queued = {}
 local attribute, binding
+local ApplyQueued
 
 -- The click handler reads "<modifier prefix>type<button>", and the prefix is
 -- lower case with a trailing dash.
@@ -59,6 +60,7 @@ local function Apply(frame)
 	end
 	if InCombatLockdown() then
 		queued[frame] = true
+		K.DeferCombat("Focus", ApplyQueued)
 		return
 	end
 	frame:SetAttribute(attribute, "focus")
@@ -76,11 +78,9 @@ local function ApplyAll()
 	end
 end
 
-function Module:PLAYER_REGEN_ENABLED()
-	if next(queued) then
-		for frame in next, queued do
-			Apply(frame)
-		end
+function ApplyQueued()
+	for frame in next, queued do
+		Apply(frame)
 	end
 	ApplyAll()
 end
@@ -112,7 +112,6 @@ function Module:OnEnable()
 
 	ApplyAll()
 
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GROUP_ROSTER_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "PLAYER_ENTERING_WORLD")
 

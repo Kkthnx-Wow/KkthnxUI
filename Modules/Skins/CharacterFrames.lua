@@ -329,7 +329,11 @@ end
 
 function Module:RestoreCharacterLayout()
 	if InCombatLockdown() then
-		self.pendingCharacterRestore = true
+		K.DeferCombat("CharacterRestore", function()
+			if not ShouldStyle() then
+				Module:RestoreCharacterLayout()
+			end
+		end)
 		return
 	end
 
@@ -510,7 +514,11 @@ end
 
 function Module:RestoreInspectLayout()
 	if InCombatLockdown() then
-		self.pendingInspectRestore = true
+		K.DeferCombat("InspectRestore", function()
+			if not ShouldStyle() then
+				Module:RestoreInspectLayout()
+			end
+		end)
 		return
 	end
 
@@ -634,21 +642,6 @@ function Module:ADDON_LOADED(_, addon)
 	end
 end
 
-function Module:PLAYER_REGEN_ENABLED()
-	if self.pendingCharacterRestore then
-		self.pendingCharacterRestore = nil
-		if not ShouldStyle() then
-			self:RestoreCharacterLayout()
-		end
-	end
-	if self.pendingInspectRestore then
-		self.pendingInspectRestore = nil
-		if not ShouldStyle() then
-			self:RestoreInspectLayout()
-		end
-	end
-end
-
 function Module:OnEnable()
 	if not ShouldStyle() then
 		return
@@ -667,6 +660,5 @@ function Module:OnEnable()
 		RefreshPawnButtons()
 	end
 
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("ADDON_LOADED")
 end

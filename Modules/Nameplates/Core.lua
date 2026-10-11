@@ -80,10 +80,9 @@ function Module:OnEnable()
 		end
 		-- The size call is blocked in combat, so it waits for the fight to end.
 		if InCombatLockdown() then
-			Module.sizePending = true
+			K.DeferCombat("NameplateSize", ApplyPlateSize)
 			return
 		end
-		Module.sizePending = nil
 		driver:SetSize(C.Nameplate.Width, C.Nameplate.Height + 24)
 	end
 	ApplyPlateSize()
@@ -95,11 +94,6 @@ function Module:OnEnable()
 	if _G.NamePlateDriverFrame and _G.NamePlateDriverFrame.UpdateNamePlateOptions then
 		hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", ApplyPlateSize)
 	end
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-		if Module.sizePending then
-			ApplyPlateSize()
-		end
-	end)
 
 	self:SetupCVars()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "SetupCVars")

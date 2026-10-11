@@ -88,11 +88,10 @@ local function Build()
 		return
 	end
 	if InCombatLockdown() then
-		Module:RegisterEvent("PLAYER_REGEN_ENABLED", Build)
+		K.DeferCombat("TradeTabs", Build)
 		return
 	end
 	built = true
-	Module:UnregisterEvent("PLAYER_REGEN_ENABLED", Build)
 
 	if K.Class == "DEATHKNIGHT" and C_SpellBook.IsSpellKnown(RUNEFORGING) then
 		AddTab(RUNEFORGING)

@@ -520,8 +520,10 @@ function Module:SetPanelShown(show)
 		return
 	end
 	if not show and InCombatLockdown() then
-		-- UpdateVisibility runs again on PLAYER_REGEN_ENABLED and calls back here.
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
+		-- UpdateVisibility runs again once combat ends and calls back here.
+		K.DeferCombat("GroupToolsVisibility", function()
+			Module:UpdateVisibility()
+		end)
 		return
 	end
 	self.Panel:SetShown(show)
@@ -549,11 +551,11 @@ function Module:UpdateVisibility()
 	-- visibility change has to wait for combat to drop or the client blocks it
 	-- (GitHub #148).
 	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
+		K.DeferCombat("GroupToolsVisibility", function()
+			Module:UpdateVisibility()
+		end)
 		return
 	end
-
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 
 	if inGroup then
 		self.Tab:Show()
