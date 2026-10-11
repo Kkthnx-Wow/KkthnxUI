@@ -134,8 +134,6 @@ function Module:GetButtonConfig(key)
 	local size = db.FontSize
 	local flag = db.FontFlag ~= "NONE" and db.FontFlag or ""
 	return {
-		-- Cast on key down when enabled, otherwise on release.
-		clickOnDown = db.KeyDown ~= false,
 		showGrid = db.ShowGrid,
 		outOfRangeColoring = db.RangeColoring or "button",
 		-- Out-of-range and out-of-mana tints, tunable from the options.

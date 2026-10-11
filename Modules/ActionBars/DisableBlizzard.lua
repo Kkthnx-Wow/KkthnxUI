@@ -30,9 +30,9 @@ local FRAMES_TO_HIDE = {
 	"OverrideActionBar",
 }
 
--- Frames we also silence: unregister events and strip scripts. StanceBar is
--- left alive on purpose: we reuse its buttons in our own stance bar and need
--- Blizzard to keep driving their state.
+-- Frames we also silence by unregistering their events. StanceBar is not on the
+-- list because we reuse its buttons in our own stance bar. Its controller is
+-- silenced below with the rest, so StanceBar.lua refreshes those buttons itself.
 local FRAMES_TO_DISABLE = {
 	"MultiBarBottomLeft",
 	"MultiBarBottomRight",
