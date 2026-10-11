@@ -32,8 +32,8 @@ local SetItemButtonTexture = SetItemButtonTexture
 local SetItemButtonCount = SetItemButtonCount
 local SetItemButtonDesaturated = SetItemButtonDesaturated
 local CooldownFrame_Set = CooldownFrame_Set
-local SetItemCraftingQualityOverlay = SetItemCraftingQualityOverlay
-local ClearItemCraftingQualityOverlay = ClearItemCraftingQualityOverlay
+local C_TradeSkillUI = C_TradeSkillUI
+local TextureKitConstants = TextureKitConstants
 local pcall = pcall
 
 local Enum = Enum
@@ -164,6 +164,14 @@ local function Skin(button)
 	pawn:Hide()
 	button.KKUI_Pawn = pawn
 
+	-- Crafting quality pip (the little reagent or gear tier diamond), drawn with a
+	-- texture of ours. Blizzard's own overlay call writes isCraftedItem,
+	-- isProfessionItem and its overlay onto the secure item button and registers a
+	-- callback for it, none of which an addon should do to that button.
+	local pip = button:CreateTexture(nil, "OVERLAY", nil, 7)
+	pip:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 2)
+	pip:Hide()
+	button.KKUI_Quality = pip
 	-- Favourite star, top-right, hidden until the item is pinned.
 	local star = button:CreateTexture(nil, "OVERLAY", nil, 2)
 	star:SetAtlas("auctionhouse-icon-favorite")
@@ -200,6 +208,13 @@ local function Skin(button)
 			end
 		end)
 	end
+end
+
+-- The atlas of an item's crafting quality pip, or nil. Reagents carry a tier of
+-- their own and crafted gear a quality, and the game answers for either.
+local function PipAtlas(link)
+	local quality = C_TradeSkillUI.GetItemReagentQualityInfo(link) or C_TradeSkillUI.GetItemCraftedQualityInfo(link)
+	return quality and quality.iconInventory
 end
 
 -- Pawn's own verdict on whether an item is an upgrade. Blizzard has no equivalent
@@ -365,8 +380,8 @@ function Module:UpdateSlot(button, bag, slot)
 		if button.KKUI_Scrap then
 			button.KKUI_Scrap:Hide()
 		end
-		if ClearItemCraftingQualityOverlay and button.ProfessionQualityOverlay then
-			ClearItemCraftingQualityOverlay(button)
+		if button.KKUI_Quality then
+			button.KKUI_Quality:Hide()
 		end
 		local c = C.General.BorderColor
 		SetBorder(button, c[1], c[2], c[3], false)
@@ -388,15 +403,21 @@ function Module:UpdateSlot(button, bag, slot)
 
 	SetBorder(button, QualityColor(quality))
 
-	-- Crafting quality pip (the little reagent/gear tier diamond). The client builds
-	-- and manages button.ProfessionQualityOverlay off the item link. alwaysShow makes
-	-- crafted gear show its tier in the bag too, not only while the professions window
-	-- is open. Guarded: a secret link cannot be read from our tainted code.
-	if SetItemCraftingQualityOverlay and info.hyperlink and not IsSecret(info.hyperlink) then
-		button.alwaysShowProfessionsQuality = true
-		pcall(SetItemCraftingQualityOverlay, button, info.hyperlink)
-	elseif ClearItemCraftingQualityOverlay and button.ProfessionQualityOverlay then
-		ClearItemCraftingQualityOverlay(button)
+	-- Crafting quality pip, shown for reagents and for crafted gear alike. Guarded:
+	-- a secret link cannot be read from our tainted code.
+	local pip = button.KKUI_Quality
+	if pip then
+		local atlas
+		if C_TradeSkillUI and info.hyperlink and not IsSecret(info.hyperlink) then
+			local ok, found = pcall(PipAtlas, info.hyperlink)
+			atlas = ok and found or nil
+		end
+		if atlas then
+			pip:SetAtlas(atlas, TextureKitConstants.UseAtlasSize)
+			pip:Show()
+		else
+			pip:Hide()
+		end
 	end
 
 	-- Favourite star.
