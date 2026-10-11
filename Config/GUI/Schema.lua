@@ -345,7 +345,11 @@ GUI.schema = {
 			{ kind = "header", label = L["Global"] },
 			{ kind = "check", label = L["Enable Action Bars"], path = { "ActionBar", "Enable" }, reload = true },
 			{ kind = "check", label = L["Show Empty Button Grid"], path = { "ActionBar", "ShowGrid" }, reload = true },
-			{ kind = "check", label = L["Cast On Key Down"], path = { "ActionBar", "KeyDown" }, reload = true, tooltip = L["Fire actions on key press instead of on release."] },
+			{ kind = "dropdown", label = L["Cast Actions On"], path = { "ActionBar", "KeyDown" }, apply = ApplyAllBars, options = {
+				{ text = L["Game Setting"], value = "Default" },
+				{ text = L["Key Press"], value = "Press" },
+				{ text = L["Key Release"], value = "Release" },
+			}, tooltip = L["When an action fires. Game Setting follows the option in the game's own Combat settings, the others override it for these bars only."] },
 			{ kind = "dropdown", label = L["Out of Range"], path = { "ActionBar", "RangeColoring" }, options = {
 				{ text = L["Whole Button"], value = "button" },
 				{ text = L["Hotkey Only"], value = "hotkey" },

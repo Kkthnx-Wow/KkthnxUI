@@ -124,11 +124,24 @@ local function CurrentPoint(mover)
 end
 K.GetMoverPoint = CurrentPoint
 
+-- A frame can ask to hear when its mover has been put somewhere new, by setting
+-- mover.OnMoved. It is called a frame later, once the frame has followed the
+-- mover and its own position can be read.
+local function NotifyMoved(mover)
+	local callback = mover.OnMoved
+	if callback then
+		C_Timer.After(0, function()
+			callback(mover)
+		end)
+	end
+end
+
 local function ApplyOffset(mover, offsetX, offsetY, point)
 	point = point or CurrentPoint(mover)
 	Store()[mover.moverKey] = { point = point, x = offsetX, y = offsetY }
 	mover:ClearAllPoints()
 	mover:SetPoint(point, UIParent, point, offsetX, offsetY)
+	NotifyMoved(mover)
 end
 
 local function RestorePosition(mover)
@@ -136,10 +149,11 @@ local function RestorePosition(mover)
 	local point, x, y = SavedFor(mover)
 	if point then
 		mover:SetPoint(point, UIParent, point, x, y)
-		return
+	else
+		local default = mover.moverDefault
+		mover:SetPoint(default[1], default[2] or UIParent, default[3] or default[1], default[4] or 0, default[5] or 0)
 	end
-	local default = mover.moverDefault
-	mover:SetPoint(default[1], default[2] or UIParent, default[3] or default[1], default[4] or 0, default[5] or 0)
+	NotifyMoved(mover)
 end
 
 -- Current position as a whole-pixel offset from the point this mover is pinned by.

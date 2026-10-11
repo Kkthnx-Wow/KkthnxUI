@@ -4,8 +4,14 @@
 	Purpose:
 		The stance / shapeshift bar. Stances are not a LibActionButton type, so we
 		reuse Blizzard's stance buttons: reparent them onto our own bar, skin them,
-		and re-lay the row whenever the available forms change. Blizzard still
-		drives the underlying stance state.
+		and re-lay the row whenever the available forms change.
+
+		The stock controller that normally refreshes these buttons is switched off
+		with the rest of the stock bars (see DisableBlizzard.lua), and its bar is
+		never shown, so nothing else tells the buttons how many forms there are or
+		what each one looks like. This file does both: it shows only the buttons for
+		forms that exist, and keeps each icon, active mark, usable tint and cooldown
+		current from the form events.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -17,6 +23,8 @@ local ceil = math.ceil
 local floor = math.floor
 local InCombatLockdown = InCombatLockdown
 local GetNumShapeshiftForms = GetNumShapeshiftForms
+local GetShapeshiftFormInfo = GetShapeshiftFormInfo
+local GetShapeshiftFormCooldown = GetShapeshiftFormCooldown
 
 local NUM_STANCE_SLOTS = 10
 
@@ -41,6 +49,55 @@ function Module:LayoutStanceBar()
 		local row = floor((i - 1) / perRow)
 		button:ClearAllPoints()
 		button:SetPoint("TOPLEFT", bar, "TOPLEFT", col * (size + space), -row * (size + space))
+	end
+
+	-- The footprint changes with the number of forms, so the mover follows it.
+	local mover = bar.KKUI_Mover
+	if mover then
+		mover:SetSize(bar:GetWidth(), bar:GetHeight())
+	end
+end
+
+-- Icon, active mark, tint and cooldown for each form. Plain texture and colour
+-- calls only, so it is safe in combat. The cooldown goes straight to the cooldown
+-- frame, which accepts the values even when the game hides them.
+function Module:UpdateStanceState()
+	local bar = self.bars and self.bars.StanceBar
+	if not bar then
+		return
+	end
+	local count = GetNumShapeshiftForms() or 0
+	for index, button in ipairs(bar.buttons) do
+		if index <= count then
+			local texture, isActive, isCastable = GetShapeshiftFormInfo(index)
+			button.icon:SetTexture(texture)
+			button:SetChecked(isActive and true or false)
+			if isCastable then
+				button.icon:SetVertexColor(1, 1, 1)
+			else
+				button.icon:SetVertexColor(0.4, 0.4, 0.4)
+			end
+			if button.cooldown then
+				local start, duration = GetShapeshiftFormCooldown(index)
+				button.cooldown:SetCooldown(start or 0, duration or 0)
+			end
+		end
+	end
+end
+
+-- Show a button for every form and hide the rest. The stock layout code decides
+-- visibility from the statehidden attribute, so that is set as well, otherwise it
+-- would put the spare buttons back. Protected frames, so out of combat only.
+function Module:UpdateStanceButtons()
+	local bar = self.bars and self.bars.StanceBar
+	if not bar or InCombatLockdown() then
+		return
+	end
+	local count = GetNumShapeshiftForms() or 0
+	for index, button in ipairs(bar.buttons) do
+		local wanted = index <= count
+		button:SetAttribute("statehidden", (not wanted) or nil)
+		button:SetShown(wanted)
 	end
 end
 
@@ -82,47 +139,35 @@ function Module:CreateStanceBar()
 	end
 	K.CreateMover(bar, "StanceBar", "Stance Bar", { "BOTTOM", UIParent, "BOTTOM", 0, 250 }, w, h)
 
-	-- Re-lay whenever the set of forms changes, and once on entering the world.
-	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", function()
-		Module:LayoutStanceBar()
-		Module:UpdateStanceVisibility(bar)
-	end)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-		Module:LayoutStanceBar()
-		Module:UpdateStanceVisibility(bar)
-	end)
+	-- Forms change when a talent or spec does, and the buttons need telling what
+	-- each form looks like whenever one is used.
+	for _, event in ipairs({ "UPDATE_SHAPESHIFT_FORMS", "PLAYER_ENTERING_WORLD", "SPELLS_CHANGED", "PLAYER_REGEN_ENABLED" }) do
+		self:RegisterEvent(event, function()
+			Module:UpdateStanceVisibility(bar)
+		end)
+	end
+	for _, event in ipairs({ "UPDATE_SHAPESHIFT_FORM", "UPDATE_SHAPESHIFT_USABLE", "UPDATE_SHAPESHIFT_COOLDOWN" }) do
+		self:RegisterEvent(event, function()
+			Module:UpdateStanceState()
+		end)
+	end
 
 	self:UpdateStanceVisibility(bar)
 	return bar
 end
 
 -- Show the bar only when the class actually has forms, and never over a pet
--- battle, vehicle, or override bar. The form count is a plain value, but the
--- driver swap is protected, so defer it out of combat when needed.
+-- battle, vehicle, or override bar. Buttons and the visibility driver are
+-- protected, so a change that arrives in combat waits for the next
+-- PLAYER_REGEN_ENABLED, which is also registered above.
 function Module:UpdateStanceVisibility(bar)
 	bar = bar or (self.bars and self.bars.StanceBar)
-	if not bar then
+	if not bar or InCombatLockdown() then
 		return
 	end
-	if InCombatLockdown() then
-		-- Four files share the ActionBars module and all of them listen for combat
-		-- ending: the keybind reassign, the deferred bar updates, and the extra button
-		-- re-pin. Unregistering the event by name alone would drop every one of those
-		-- too, so this hands back its own handler and leaves the siblings running.
-		-- One deferred refresh is enough however many form changes arrive mid fight.
-		if self.stanceRefreshQueued then
-			return
-		end
-		self.stanceRefreshQueued = true
-		local once
-		once = function()
-			Module:UnregisterEvent("PLAYER_REGEN_ENABLED", once)
-			Module.stanceRefreshQueued = nil
-			Module:UpdateStanceVisibility(bar)
-		end
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", once)
-		return
-	end
+	self:UpdateStanceButtons()
+	self:LayoutStanceBar()
+	self:UpdateStanceState()
 	if (GetNumShapeshiftForms() or 0) > 0 then
 		RegisterStateDriver(bar, "visibility", "[petbattle][vehicleui][overridebar] hide; show")
 	else

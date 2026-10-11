@@ -22,18 +22,71 @@ local ClearOverrideBindings = ClearOverrideBindings
 local SetOverrideBindingClick = SetOverrideBindingClick
 local GetBindingKey = GetBindingKey
 
--- Mirrors Blizzard's own paging (stances, stealth, vehicles, bonus bars). The
--- override / vehicle / shapeshift page numbers come from the client rather than
--- being hardcoded, the way Blizzard's OverrideActionBar builds them, so
--- vehicle abilities always land on the right page.
+-- Mirrors Blizzard's own paging. Its order of precedence is: a vehicle or
+-- override bar, a temporary shapeshift bar, the page chosen by hand, and only
+-- then the bonus bar of a form or stance, which applies on page 1 alone. The
+-- override, vehicle and shapeshift page numbers are read from the client the
+-- way Blizzard's own controller reads them, not hardcoded.
+--
+-- A form only gets a page here if the game really gives it one. Many forms and
+-- stances have no bonus bar at all, and paging to a page nothing lives on would
+-- leave the bar looking empty. The starting table is for the classes known to
+-- have them, and anything else the game reports is learned and kept (see
+-- LearnBonusBars), so no form is guessed at.
+local STARTING_BONUS_PAGES = {
+	DRUID = { [1] = 7, [3] = 9, [4] = 10 },
+	ROGUE = { [1] = 7 },
+}
+
+-- Page for the skyriding mount bar, shared by every class.
+local SKYRIDING_BONUS_BAR = 5
+local SKYRIDING_PAGE = 11
+
+local function BonusPages()
+	local pages = {}
+	for offset, page in pairs(STARTING_BONUS_PAGES[K.Class] or {}) do
+		pages[offset] = page
+	end
+	-- What the game has reported for this class, on top of the starting table.
+	local learned = K.DB and K.DB.bonusBarPages and K.DB.bonusBarPages[K.Class]
+	if learned then
+		for offset, page in pairs(learned) do
+			pages[offset] = page
+		end
+	end
+	return pages
+end
+
 local function GetPageDriver()
 	local override = C_ActionBar.GetOverrideBarIndex()
 	local vehicle = C_ActionBar.GetVehicleBarIndex()
 	local shapeshift = C_ActionBar.GetTempShapeshiftBarIndex()
-	return format(
-		"[overridebar] %d; [vehicleui][possessbar] %d; [shapeshift] %d; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10; [bonusbar:5] 11; 1",
-		override, vehicle, shapeshift
-	)
+
+	local parts = {
+		format("[overridebar] %d", override),
+		format("[vehicleui][possessbar] %d", vehicle),
+		format("[shapeshift] %d", shapeshift),
+	}
+	for page = 2, 6 do
+		parts[#parts + 1] = format("[bar:%d] %d", page, page)
+	end
+
+	local pages = BonusPages()
+	local offsets = {}
+	for offset in pairs(pages) do
+		offsets[#offsets + 1] = offset
+	end
+	table.sort(offsets)
+	for _, offset in ipairs(offsets) do
+		-- Prowl and plain cat form share a page, so one clause covers both.
+		parts[#parts + 1] = format("[bonusbar:%d] %d", offset, pages[offset])
+	end
+
+	if not pages[SKYRIDING_BONUS_BAR] then
+		parts[#parts + 1] = format("[bonusbar:%d] %d", SKYRIDING_BONUS_BAR, SKYRIDING_PAGE)
+	end
+	parts[#parts + 1] = "1"
+	return table.concat(parts, "; ")
 end
 
 local MAX_BUTTONS = 12
@@ -71,6 +124,34 @@ end
 -- Layout / live update
 -- ---------------------------------------------------------------------------
 
+-- Which way a flyout opens from this bar, chosen the way the stock bars do it:
+-- a wide bar opens up or down toward the middle of the screen, a tall bar opens
+-- sideways toward the middle, so a flyout never lands on top of its own bar.
+-- Before the bar has a position there is nothing to go on, so it opens upward.
+function Module:GetFlyoutDirection(bar, cfg)
+	local x, y = bar:GetCenter()
+	if not (x and y) then
+		return "UP"
+	end
+	local rows = ceil(cfg.Buttons / cfg.PerRow)
+	if cfg.PerRow >= rows then
+		return y < GetScreenHeight() / 2 and "UP" or "DOWN"
+	end
+	return x > GetScreenWidth() / 2 and "LEFT" or "RIGHT"
+end
+
+-- The "cast on key press" choice for our buttons. "Default" hands it back to the
+-- game's own setting. An older boolean in a saved profile still counts.
+function Module:GetKeyDownSetting()
+	local value = C.ActionBar.KeyDown
+	if value == "Press" or value == true then
+		return true
+	elseif value == "Release" or value == false then
+		return false
+	end
+	return nil
+end
+
 -- Re-lay a bar from its current config. Safe to call any time out of combat.
 function Module:UpdateBar(key)
 	local bar = self.bars[key]
@@ -92,6 +173,8 @@ function Module:UpdateBar(key)
 	bar:SetSize(perRow * size + (perRow - 1) * space, rows * size + (rows - 1) * space)
 
 	local buttonConfig = self:GetButtonConfig(key)
+	buttonConfig.flyoutDirection = self:GetFlyoutDirection(bar, cfg)
+	local keyDown = self:GetKeyDownSetting()
 	for i, button in ipairs(bar.buttons) do
 		if i <= count then
 			button:SetSize(size, size)
@@ -104,6 +187,8 @@ function Module:UpdateBar(key)
 			-- shared table per iteration is fine.
 			buttonConfig.keyBoundTarget = bar.bindName and (bar.bindName .. i) or false
 			button:UpdateConfig(buttonConfig)
+			-- nil leaves the choice to the game's own "cast on key press" setting.
+			button:SetAttribute("useOnKeyDown", keyDown)
 			-- LAB has no count hide flag, so toggle its alpha per bar.
 			if button.Count then
 				button.Count:SetAlpha(cfg.Count and 1 or 0)
@@ -340,6 +425,65 @@ end
 
 -- Main bar paging using LAB's state system. Each button carries an action for
 -- every page state, the secure header switches states through the page driver.
+-- Ask the game which page a form or stance really pages to, once, and remember
+-- it. This is how a form that is not in the starting table gets its page without
+-- anyone guessing. It only learns while nothing else is overriding the bar, with
+-- the first page selected, out of combat, since those are the same conditions the
+-- game itself pages the bonus bar under.
+local function LearnBonusBars()
+	if InCombatLockdown() or not K.DB then
+		return
+	end
+	local api = C_ActionBar
+	if api.HasOverrideActionBar() or api.HasVehicleActionBar() or api.HasTempShapeshiftActionBar() or api.IsPossessBarVisible() then
+		return
+	end
+	if api.GetActionBarPage() ~= 1 then
+		return
+	end
+	local offset = api.GetBonusBarOffset()
+	if not offset or offset == 0 or offset == SKYRIDING_BONUS_BAR then
+		return
+	end
+
+	-- Only a bar the game confirms is recorded. A form with no bar simply never
+	-- gets a clause, and one reading of "no bar" during a form change is not
+	-- trusted enough to take a page away.
+	if not api.HasBonusActionBar() then
+		return
+	end
+	local page = api.GetBonusBarIndex()
+	if not page or page == 0 then
+		return
+	end
+	local store = K.DB.bonusBarPages
+	if not store then
+		store = {}
+		K.DB.bonusBarPages = store
+	end
+	local byClass = store[K.Class]
+	if not byClass then
+		byClass = {}
+		store[K.Class] = byClass
+	end
+
+	local known = BonusPages()[offset]
+	if known == page then
+		return
+	end
+	byClass[offset] = page
+
+	local stream = K.Debug and K.Debug.Register("actionbars", "Action bar paging decisions")
+	if stream then
+		stream:Log("bonus bar %d on %s: page %d (was %s)", offset, K.Class, page, tostring(known))
+	end
+
+	local main = Module.bars.Bar1
+	if main then
+		RegisterStateDriver(main, "page", GetPageDriver())
+	end
+end
+
 function Module:SetupMainBar(bar)
 	for i, button in ipairs(bar.buttons) do
 		-- Cover all 18 possible page states (the original mapped the same range).
@@ -350,6 +494,11 @@ function Module:SetupMainBar(bar)
 	end
 	bar:SetAttribute("_onstate-page", [[ control:ChildUpdate("state", newstate) ]])
 	RegisterStateDriver(bar, "page", GetPageDriver())
+
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", LearnBonusBars)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+		C_Timer.After(1, LearnBonusBars)
+	end)
 end
 
 -- Point every button on a bar at a fixed page of the action table.

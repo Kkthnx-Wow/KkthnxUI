@@ -5,8 +5,13 @@
 		The possess bar: the small set of buttons shown while you control another
 		unit (mind control, some vehicles and cutscene mounts). We reuse Blizzard's
 		possess buttons, reparent them onto our own movable bar, skin them, and lay
-		them in a row. Blizzard keeps driving what each button does and when it is
-		shown.
+		them in a row. Blizzard still handles what a click does.
+
+		What Blizzard no longer does is fill the buttons in: that was the stock
+		controller's job, and it is switched off with the other stock bars. The
+		buttons are also created hidden, because the stock bar only reveals them
+		when it updates. So both are done here: the buttons are shown once, out of
+		combat, and the icons are set from the possess events.
 -----------------------------------------------------------------------------]]
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
@@ -17,7 +22,30 @@ local _G = _G
 local ceil = math.ceil
 local floor = math.floor
 
+local InCombatLockdown = InCombatLockdown
+local GetPossessInfo = GetPossessInfo
+
 local NUM_POSSESS_SLOTS = _G.NUM_POSSESS_SLOTS or 2
+
+-- Icon for each possess slot (the second is always the cancel button). Plain
+-- texture calls, so it can run in combat, which is when mind control tends to
+-- begin.
+function Module:UpdatePossessState()
+	local bar = self.bars and self.bars.PossessBar
+	if not bar then
+		return
+	end
+	for index, button in ipairs(bar.buttons) do
+		local texture = GetPossessInfo(index)
+		button.icon:SetTexture(texture)
+		button.icon:SetDesaturated(false)
+		button.icon:SetVertexColor(1, 1, 1)
+		if button.cooldown then
+			button.cooldown:Hide()
+		end
+		button:SetChecked(false)
+	end
+end
 
 function Module:CreatePossessBar()
 	local cfg = C.ActionBar.PossessBar
@@ -54,6 +82,25 @@ function Module:CreatePossessBar()
 		button:SetPoint("TOPLEFT", bar, "TOPLEFT", col * (size + space), -row * (size + space))
 	end
 
+	-- Show both buttons while it is safe to. Whether the bar itself is on screen is
+	-- the visibility driver's job, so the buttons can simply stay shown. If the UI
+	-- is loaded in combat, wait for the fight to end.
+	local function ShowButtons()
+		if InCombatLockdown() then
+			return
+		end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", ShowButtons)
+		for _, button in ipairs(bar.buttons) do
+			button:SetAttribute("statehidden", nil)
+			button:Show()
+		end
+	end
+	if InCombatLockdown() then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", ShowButtons)
+	else
+		ShowButtons()
+	end
+
 	K.CreateMover(bar, "PossessBar", L["Possess Bar"], { "BOTTOM", UIParent, "BOTTOM", 0, 280 }, bar:GetWidth(), bar:GetHeight())
 
 	-- Only visible while possessing something, never in a pet battle, and never in
@@ -66,6 +113,14 @@ function Module:CreatePossessBar()
 	-- never sets it, and hiding the bar there would hide the cancel button.
 	RegisterStateDriver(bar, "visibility", "[petbattle][vehicleui] hide; [possessbar] show; hide")
 	self:SetupFade(bar, cfg)
+
+	self.bars.PossessBar = bar
+	for _, event in ipairs({ "UPDATE_POSSESS_BAR", "UPDATE_VEHICLE_ACTIONBAR", "UPDATE_OVERRIDE_ACTIONBAR", "PLAYER_ENTERING_WORLD" }) do
+		self:RegisterEvent(event, function()
+			Module:UpdatePossessState()
+		end)
+	end
+	self:UpdatePossessState()
 
 	-- Record the states that decide visibility each time the bar shows, so a bad
 	-- case can be read instead of guessed at. Off until /kkdebug possess.

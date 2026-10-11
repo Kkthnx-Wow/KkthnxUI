@@ -62,7 +62,13 @@ function Module:AttachMover(def, bar)
 	end
 
 	local label = "Action Bar " .. (def.key:gsub("Bar", ""))
-	K.CreateMover(bar, "ActionBar_" .. def.key, label, { p[1], relFrame, p[3], p[4], p[5] }, bar:GetWidth(), bar:GetHeight())
+	local mover = K.CreateMover(bar, "ActionBar_" .. def.key, label, { p[1], relFrame, p[3], p[4], p[5] }, bar:GetWidth(), bar:GetHeight())
+	-- Flyouts open away from the screen edge the bar sits near, so a bar that has
+	-- been moved needs them pointed again.
+	mover.OnMoved = function()
+		Module:UpdateBar(def.key)
+	end
+	self:UpdateBar(def.key)
 end
 
 function Module:OnEnable()
