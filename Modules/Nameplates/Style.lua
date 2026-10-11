@@ -173,15 +173,22 @@ local function UpdateClassification(self)
 		return
 	end
 	local class = self.unit and UnitClassification(self.unit)
-	if IsSecret(class) then
-		icon:Hide()
+	local kind = false
+	if not IsSecret(class) then
+		if class == "worldboss" or class == "elite" then
+			kind = "gold"
+		elseif class == "rareelite" or class == "rare" then
+			kind = "silver"
+		end
+	end
+	-- This runs on every health event of every plate, and most events leave the
+	-- kind as it was, so the icon is only touched when it changes.
+	if icon.__kind == kind then
 		return
 	end
-	if class == "worldboss" or class == "elite" then
-		icon:SetAtlas("nameplates-icon-elite-gold")
-		icon:Show()
-	elseif class == "rareelite" or class == "rare" then
-		icon:SetAtlas("nameplates-icon-elite-silver")
+	icon.__kind = kind
+	if kind then
+		icon:SetAtlas(kind == "gold" and "nameplates-icon-elite-gold" or "nameplates-icon-elite-silver")
 		icon:Show()
 	else
 		icon:Hide()
@@ -271,17 +278,31 @@ local function BumpQuestEpoch()
 	questEpoch = questEpoch + 1
 end
 
+-- Quest events come in bursts, and each plate used to rebuild its unit tooltip on
+-- every one of them. One shared watcher now bumps the epoch and, a moment after the
+-- burst settles, refreshes the plates once.
 local questWatcher
+local RefreshQuestPlates
+local questRefreshQueued
+local QUEST_REFRESH_DELAY = 0.3
+
 local function EnsureQuestWatcher()
 	if questWatcher then
 		return
 	end
 	questWatcher = CreateFrame("Frame")
 	questWatcher:RegisterEvent("QUEST_LOG_UPDATE")
+	-- A party member's objective moving does not raise QUEST_LOG_UPDATE for you.
 	questWatcher:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
 	-- The instance check inside QuestProgress changes with the zone.
 	questWatcher:RegisterEvent("PLAYER_ENTERING_WORLD")
-	questWatcher:SetScript("OnEvent", BumpQuestEpoch)
+	questWatcher:SetScript("OnEvent", function(_, event)
+		BumpQuestEpoch()
+		if event ~= "PLAYER_ENTERING_WORLD" and not questRefreshQueued then
+			questRefreshQueued = true
+			C_Timer.After(QUEST_REFRESH_DELAY, RefreshQuestPlates)
+		end
+	end)
 end
 
 local function CachedQuestProgress(unit, force)
@@ -360,6 +381,13 @@ local function UpdateNameOnly(self)
 		friendly = reaction and not IsSecret(reaction) and reaction >= 5 or false
 	end
 	self.__nameOnly = friendly
+
+	-- Everything below is a pure function of friendly, so a plate already in this
+	-- state has nothing to do. This runs on every health event of every plate.
+	if self.__nameApplied == friendly then
+		return
+	end
+	self.__nameApplied = friendly
 
 	self.Health:SetShown(not friendly)
 	if self.KKUI_Shadow then
@@ -461,7 +489,10 @@ local function HoverWatch(self, elapsed)
 end
 
 local function OnMouseover(self)
-	if not self.NameHover then
+	-- Only a name-only plate has a hover glow. Every other plate had it cleared when
+	-- it left that mode, and this event fires on every plate each time the pointer
+	-- crosses a unit.
+	if not self.NameHover or not self.__nameOnly then
 		return
 	end
 	if IsHovered(self) then
@@ -474,8 +505,13 @@ local function OnMouseover(self)
 	end
 end
 
-local function OnQuestLogUpdate(self)
-	UpdateQuest(self, true)
+function RefreshQuestPlates()
+	questRefreshQueued = nil
+	for _, frame in next, oUF.objects do
+		if frame.isNamePlate and frame.QuestIcon and frame.unit and frame:IsShown() then
+			UpdateQuest(frame, true)
+		end
+	end
 end
 
 -- ---------------------------------------------------------------------------
@@ -690,6 +726,13 @@ local function CastRecolor(cast, notInterruptible)
 end
 
 local function OnCastStart(cast, _, _, notInterruptible)
+	-- A friendly name-only plate has no bar to hang a cast on, and the health event
+	-- that used to hide it again no longer runs on every update.
+	local owner = cast.__owner
+	if owner and owner.__nameOnly then
+		cast:Hide()
+		return
+	end
 	-- An interrupt turns the duration binding off so the old cast stops counting
 	-- down, so bring it back for the new one.
 	cast.__failed = nil
@@ -914,8 +957,5 @@ function Module.Style(self, unit)
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", OnMouseover, true)
 	if self.QuestIcon then
 		EnsureQuestWatcher()
-		self:RegisterEvent("QUEST_LOG_UPDATE", OnQuestLogUpdate, true)
-		-- A party member's objective moving does not raise QUEST_LOG_UPDATE for you.
-		self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", OnQuestLogUpdate, true)
 	end
 end
