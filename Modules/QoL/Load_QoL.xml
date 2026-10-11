@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Core.lua first: it creates the module and the shared alert text. -->
+	<Script file="Core.lua" />
+	<Script file="CombatAlert.lua" />
+	<Script file="Durability.lua" />
+	<Script file="GroupDeath.lua" />
+	<Script file="HideErrors.lua" />
+	<Script file="HideTips.lua" />
+	<Script file="BossBanner.lua" />
+	<Script file="SecondaryStats.lua" />
+	<Script file="RareAlert.lua" />
+	<Script file="BlockInvites.lua" />
+	<Script file="CopyName.lua" />
+	<Script file="Lockout.lua" />
+	<Script file="TeleportPrompt.lua" />
+	<Script file="GuildBest.lua" />
+	<Script file="TradeTabs.lua" />
+	<Script file="Crosshair.lua" />
+	<Script file="QuestAnnounce.lua" />
+	<Script file="AchievementShot.lua" />
+	<Script file="AutoLog.lua" />
+</Ui>

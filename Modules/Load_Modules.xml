@@ -15,5 +15,6 @@
 	<Include file="Misc\Load_Misc.xml" />
 	<Include file="Bags\Load_Bags.xml" />
 	<Include file="Automation\Load_Automation.xml" />
+	<Include file="QoL\Load_QoL.xml" />
 	<Include file="Installer\Load_Installer.xml" />
 </Ui>

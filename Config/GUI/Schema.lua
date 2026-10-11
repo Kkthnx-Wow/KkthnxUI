@@ -73,6 +73,20 @@ local function ApplyExpRep()
 	end
 end
 
+-- Live apply for the centre screen alert size.
+local function ApplyQoL()
+	local m = K:GetModule("QoL", true)
+	if m and m.Refresh then
+		m:Refresh()
+	end
+	if m and m.RestyleStats then
+		m:RestyleStats()
+	end
+	if m and m.RestyleCrosshair then
+		m:RestyleCrosshair()
+	end
+end
+
 -- Live apply for the alert-frame stack spacing / talking head toggle.
 local function ApplyAlertFrames()
 	local m = K:GetModule("AlertFrames", true)
@@ -917,6 +931,59 @@ GUI.schema = {
 					{ text = ALT_KEY_TEXT or "Alt", value = "ALT" },
 					{ text = NONE or "None", value = "NONE" },
 				}, tooltip = L["Hold this key to pause automation while the NPC window is open."] },
+		},
+	},
+
+	{
+		name = "QoL",
+		icon = "Interface/ICONS/INV_Misc_Gear_01",
+		title = L["Quality of Life"],
+		controls = {
+			{ kind = "header", label = L["Alerts"] },
+			{ kind = "slider", label = L["Alert Text Size"], path = { "QoL", "AlertSize" }, min = 14, max = 48, step = 1, apply = ApplyQoL, tooltip = L["Size of the centre screen alert text. Drag the alerts from Move UI."] },
+			{ kind = "check", label = L["Combat Alert"], path = { "QoL", "CombatAlert" }, reload = true, tooltip = L["Show +Combat and -Combat in the middle of the screen when combat starts and ends."] },
+			{ kind = "check", label = L["Low Durability Warning"], path = { "QoL", "LowDurability" }, reload = true, tooltip = L["Pulse a warning while your most worn piece of gear is below the chosen percentage."] },
+			{ kind = "slider", label = L["Warn Below"], path = { "QoL", "DurabilityThreshold" }, min = 5, max = 75, step = 5, dependsOn = { "QoL", "LowDurability" }, tooltip = L["Durability percentage that starts the warning."] },
+			{ kind = "check", label = L["Group Death Alert"], path = { "QoL", "GroupDeath" }, reload = true, tooltip = L["Show the name of a party or raid member in the middle of the screen when they die."] },
+
+			{ kind = "header", label = L["Stats"] },
+			{ kind = "check", label = L["Secondary Stats"], path = { "QoL", "SecondaryStats" }, reload = true, tooltip = L["Show critical strike, haste, mastery and versatility on screen. Values freeze while the game hides them in encounters."] },
+			{ kind = "slider", label = L["Stats Text Size"], path = { "QoL", "StatsSize" }, min = 9, max = 28, step = 1, apply = ApplyQoL, dependsOn = { "QoL", "SecondaryStats" } },
+
+			{ kind = "header", label = L["Finds and Invites"] },
+			{ kind = "check", label = L["Rare Alert"], path = { "QoL", "RareAlert" }, reload = true, tooltip = L["Announce rares and other unique creatures when they appear on the minimap. Not used inside instances."] },
+			{ kind = "check", label = L["Rare Alert Sound"], path = { "QoL", "RareAlertSound" }, dependsOn = { "QoL", "RareAlert" } },
+			{ kind = "check", label = L["Rare Alert Chat Link"], path = { "QoL", "RareAlertChat" }, dependsOn = { "QoL", "RareAlert" }, tooltip = L["Print a clickable map link to the creature in chat."] },
+			{ kind = "check", label = L["Block Stranger Invites"], path = { "QoL", "BlockInvites" }, reload = true, tooltip = L["Turn away group invites from anyone who is not a friend, Battle.net friend or guild member. Not used while you have a group finder application or listing."] },
+			{ kind = "check", label = L["Block Join Requests"], path = { "QoL", "BlockRequests" }, dependsOn = { "QoL", "BlockInvites" }, tooltip = L["Also turn away requests from strangers to join your group."] },
+			{ kind = "check", label = L["Copy Name Menu Entry"], path = { "QoL", "CopyName" }, reload = true, tooltip = L["Add Copy Name to the right click menu of players."] },
+
+			{ kind = "header", label = L["Quiet the Interface"] },
+			{ kind = "check", label = L["Hide Error Messages"], path = { "QoL", "HideErrors" }, reload = true, tooltip = L["Hide the red error text such as not enough rage. Full bags, a full quest log and group kick messages stay."] },
+			{ kind = "check", label = L["Hide Tutorials"], path = { "QoL", "HideTips" }, reload = true, tooltip = L["Turn off tutorial pop ups, help tips and the round help buttons on panels."] },
+			{ kind = "check", label = L["Hide Boss Banner"], path = { "QoL", "HideBossBanner" }, reload = true, tooltip = L["Hide the banner that drops from the top of the screen when a boss dies."] },
+
+			{ kind = "header", label = L["Raid and Dungeon"] },
+			{ kind = "check", label = L["Lust Lockout Icon"], path = { "QoL", "LustLockout" }, reload = true, tooltip = L["Show the Bloodlust lockout as an icon with a countdown, so the group knows when the next one is allowed."] },
+			{ kind = "check", label = L["Dungeon Teleport Prompt"], path = { "QoL", "TeleportPrompt" }, reload = true, tooltip = L["After you join a Group Finder group for a dungeon you can teleport to, show a button that casts the teleport."] },
+			{ kind = "check", label = L["Guild Best Runs"], path = { "QoL", "GuildBest" }, reload = true, tooltip = L["List your guild's best Mythic Plus runs of the week on the dungeons window."] },
+			{ kind = "check", label = L["Profession Tabs"], path = { "QoL", "TradeTabs" }, reload = true, tooltip = L["Add an icon for each profession down the side of the professions window."] },
+			{ kind = "check", label = L["Announce Quests To Group"], path = { "QoL", "QuestAnnounce" }, reload = true, tooltip = L["Tell your party or raid when you accept or finish a quest. World quests are left out."] },
+
+			{ kind = "header", label = L["Crosshair"] },
+			{ kind = "check", label = L["Show Crosshair"], path = { "QoL", "Crosshair" }, reload = true, tooltip = L["A small crosshair in the middle of the screen."] },
+			{ kind = "slider", label = L["Crosshair Size"], path = { "QoL", "CrosshairSize" }, min = 6, max = 40, step = 1, apply = ApplyQoL, dependsOn = { "QoL", "Crosshair" } },
+			{ kind = "color", label = L["Crosshair Colour"], path = { "QoL", "CrosshairColor" }, apply = ApplyQoL, dependsOn = { "QoL", "Crosshair" } },
+			{ kind = "check", label = L["Crosshair In Combat Only"], path = { "QoL", "CrosshairCombatOnly" }, reload = true, dependsOn = { "QoL", "Crosshair" } },
+
+			{ kind = "header", label = L["Keepsakes"] },
+			{ kind = "check", label = L["Achievement Screenshot"], path = { "QoL", "AchievementShot" }, reload = true, tooltip = L["Take a screenshot a moment after you earn an achievement."] },
+			{ kind = "check", label = L["Automatic Combat Logging"], path = { "QoL", "AutoLog" }, reload = true, tooltip = L["Turn combat logging on in the content below and off half a minute after you leave. A log you start yourself is never stopped."] },
+			{ kind = "check", label = L["Normal Raids"], path = { "QoL", "AutoLogRaidNormal" }, dependsOn = { "QoL", "AutoLog" } },
+			{ kind = "check", label = L["Heroic Raids"], path = { "QoL", "AutoLogRaidHeroic" }, dependsOn = { "QoL", "AutoLog" } },
+			{ kind = "check", label = L["Mythic Raids"], path = { "QoL", "AutoLogRaidMythic" }, dependsOn = { "QoL", "AutoLog" } },
+			{ kind = "check", label = L["Raid Finder"], path = { "QoL", "AutoLogRaidFinder" }, dependsOn = { "QoL", "AutoLog" } },
+			{ kind = "check", label = L["Mythic and Mythic Plus Dungeons"], path = { "QoL", "AutoLogDungeon" }, dependsOn = { "QoL", "AutoLog" } },
 		},
 	},
 

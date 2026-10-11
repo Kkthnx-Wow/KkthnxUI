@@ -388,6 +388,43 @@ K.ConfigDefaults = {
 		SellJunk = false, -- sell grey items when a merchant opens, independent of the bags
 	},
 
+	-- Small quality of life features, each off until switched on. Retail only.
+	QoL = {
+		AlertSize = 24, -- text size shared by the centre screen alerts
+		CombatAlert = false, -- +Combat and -Combat text
+		LowDurability = false, -- pulsing warning when gear is badly worn
+		DurabilityThreshold = 25, -- warn below this percentage
+		GroupDeath = false, -- "name DIED" when a group member dies
+		SecondaryStats = false, -- crit, haste, mastery and versatility readout
+		StatsSize = 13, -- text size of the stats readout
+		RareAlert = false, -- announce rares that show on the minimap
+		RareAlertSound = true, -- play a sound with the rare alert
+		RareAlertChat = true, -- print a map link in chat with the rare alert
+		BlockInvites = false, -- turn away group invites from strangers
+		BlockRequests = false, -- also turn away requests to join your group
+		CopyName = false, -- add Copy Name to player right click menus
+		HideErrors = false, -- hide the red error text except the useful ones
+		HideTips = false, -- hide tutorial pop ups and help tips
+		HideBossBanner = false, -- hide the boss kill banner
+		LustLockout = false, -- Bloodlust lockout icon with a countdown
+		TeleportPrompt = false, -- teleport button after joining a group finder dungeon
+		GuildBest = false, -- guild best runs on the Mythic Plus window
+		TradeTabs = false, -- profession icons beside the professions window
+		Crosshair = false, -- crosshair in the middle of the screen
+		CrosshairSize = 12,
+		CrosshairColor = { 1, 1, 1 },
+		CrosshairCombatOnly = false,
+		CrosshairOffset = 0, -- vertical offset from the centre
+		QuestAnnounce = false, -- tell the group about accepted and finished quests
+		AchievementShot = false, -- screenshot when an achievement is earned
+		AutoLog = false, -- switch combat logging on in logged content
+		AutoLogRaidNormal = true,
+		AutoLogRaidHeroic = true,
+		AutoLogRaidMythic = true,
+		AutoLogRaidFinder = false,
+		AutoLogDungeon = true, -- Mythic and Mythic Plus dungeons
+	},
+
 	-- Hands-off questing: accept, turn in, and reward selection. Retail only.
 	AutoQuest = {
 		Enable = true,
