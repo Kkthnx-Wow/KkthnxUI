@@ -59,6 +59,19 @@ local POWER_TOKEN = {
 	[Enum.PowerType.ArcaneCharges] = "ARCANE_CHARGES",
 	[Enum.PowerType.Essence] = "ESSENCE",
 }
+-- The token UNIT_POWER_UPDATE carries for each resource. Every other power the
+-- player has (mana, energy, rage) raises the same event, often several times a
+-- second, and none of it concerns this row.
+local EVENT_TOKEN = {
+	[Enum.PowerType.ComboPoints] = "COMBO_POINTS",
+	[Enum.PowerType.ArcaneCharges] = "ARCANE_CHARGES",
+	[Enum.PowerType.Chi] = "CHI",
+	[Enum.PowerType.HolyPower] = "HOLY_POWER",
+	[Enum.PowerType.SoulShards] = "SOUL_SHARDS",
+	[Enum.PowerType.Essence] = "ESSENCE",
+}
+local eventToken = powerType and EVENT_TOKEN[powerType]
+
 local FILLED = { K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3] }
 local token = powerType and POWER_TOKEN[powerType]
 local tokenColor = token and _G.PowerBarColor and _G.PowerBarColor[token]
@@ -77,9 +90,10 @@ local SPACING = 6
 -- few segments. The holder is the exact health width and centre-anchored to the
 -- plate, so the row lines up with the health bar below.
 local function Layout(count)
-	if count < 1 then
+	if count < 1 or holder.count == count then
 		return
 	end
+	holder.count = count
 	local target = C.Nameplate.Width
 	holder:SetWidth(target)
 
@@ -180,9 +194,11 @@ function Module:SetupTargetPower()
 	watcher:RegisterEvent("PLAYER_TARGET_CHANGED")
 	watcher:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 	watcher:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-	watcher:SetScript("OnEvent", function(_, event)
+	watcher:SetScript("OnEvent", function(_, event, _, powerToken)
 		if event == "UNIT_POWER_UPDATE" or event == "UNIT_MAXPOWER" then
-			if holder:IsShown() then
+			-- The token is not always sent, so only a token that is present and
+			-- belongs to another power is ignored.
+			if holder:IsShown() and (not powerToken or not eventToken or powerToken == eventToken) then
 				Update()
 			end
 		else
