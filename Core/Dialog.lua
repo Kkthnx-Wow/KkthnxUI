@@ -161,11 +161,29 @@ local function BuildCopy()
 	K.SetFont(hint, 11, "")
 	hint:SetPoint("TOP", frame.Title, "BOTTOM", 0, -2)
 	hint:SetTextColor(K.Colors.muted[1], K.Colors.muted[2], K.Colors.muted[3])
-	hint:SetText(L["Ctrl+A then Ctrl+C to copy it all."])
+	frame.Hint = hint
 
 	local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
 	close:SetPoint("TOPRIGHT", -4, -4)
 	K.SkinCloseButton(close)
+
+	-- Shown only when the window is used to paste text in (see K.ShowImportBox).
+	local action = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+	action:SetSize(90, 22)
+	action:SetPoint("TOPLEFT", 14, -10)
+	action:SetText(L["Import"])
+	K.SkinButton(action, true)
+	K.SetFont(action:GetFontString(), 12, "")
+	action:SetScript("OnClick", function()
+		local callback = frame.onAccept
+		local text = frame.Edit:GetText()
+		frame:Hide()
+		if callback then
+			callback(text)
+		end
+	end)
+	action:Hide()
+	frame.Action = action
 
 	local scroll = CreateFrame("ScrollFrame", "KKUI_CopyWindowScroll", frame, "UIPanelScrollFrameTemplate")
 	scroll:SetPoint("TOPLEFT", 14, -48)
@@ -193,9 +211,27 @@ function K.ShowCopyText(title, text)
 		copyFrame = BuildCopy()
 	end
 	copyFrame.Title:SetText(title or "")
+	copyFrame.Hint:SetText(L["Ctrl+A then Ctrl+C to copy it all."])
+	copyFrame.Action:Hide()
+	copyFrame.onAccept = nil
 	copyFrame.Edit:SetText(text or "")
 	copyFrame.Edit:SetCursorPosition(0)
 	copyFrame:Show()
 	copyFrame.Edit:SetFocus()
 	copyFrame.Edit:HighlightText()
+end
+
+-- The same window, empty, for pasting text in. The callback receives whatever was
+-- pasted when the player presses Import.
+function K.ShowImportBox(title, onAccept)
+	if not copyFrame then
+		copyFrame = BuildCopy()
+	end
+	copyFrame.Title:SetText(title or "")
+	copyFrame.Hint:SetText(L["Paste the profile text here, then press Import."])
+	copyFrame.Action:Show()
+	copyFrame.onAccept = onAccept
+	copyFrame.Edit:SetText("")
+	copyFrame:Show()
+	copyFrame.Edit:SetFocus()
 end

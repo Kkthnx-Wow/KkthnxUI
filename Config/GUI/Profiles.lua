@@ -11,6 +11,9 @@ local K, L = KkthnxUI[1], KkthnxUI[3]
 
 local GUI = K.GUI
 
+local format = string.format
+local strtrim = strtrim
+
 local function MakeButton(parent, text, width)
 	local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
 	button:SetSize(width or 90, 22)
@@ -20,6 +23,10 @@ local function MakeButton(parent, text, width)
 end
 
 GUI.CustomPanels = GUI.CustomPanels or {}
+
+local function AskReload()
+	K.Confirm(L["Reload the UI now to apply this?"], ReloadUI)
+end
 
 function GUI.CustomPanels.Profiles(parent)
 	local title = parent:CreateFontString(nil, "OVERLAY")
@@ -48,7 +55,13 @@ function GUI.CustomPanels.Profiles(parent)
 	end
 
 	Refresh = function()
-		current:SetText(L["Active profile"] .. ": |cff5C8BCF" .. K:GetActiveProfileName() .. "|r")
+		local active = K:GetActiveProfileName()
+		local pending = K:GetPendingProfileName()
+		local text = L["Active profile"] .. ": |cff5C8BCF" .. active .. "|r"
+		if pending ~= active then
+			text = text .. "   " .. L["After reload"] .. ": |cff5C8BCF" .. pending .. "|r"
+		end
+		current:SetText(text)
 		ClearRows()
 
 		local names = K:ListProfiles()
@@ -66,28 +79,61 @@ function GUI.CustomPanels.Profiles(parent)
 			local label = row:CreateFontString(nil, "OVERLAY")
 			K.SetFont(label, 12)
 			label:SetPoint("LEFT", 8, 0)
+			label:SetWidth(120)
+			label:SetJustifyH("LEFT")
+			label:SetWordWrap(false)
 			label:SetText(name)
 
-			local use = MakeButton(row, L["Use"], 70)
-			use:SetPoint("RIGHT", -8, 0)
+			local del = MakeButton(row, L["Delete"], 60)
+			del:SetPoint("RIGHT", -8, 0)
+			del:SetScript("OnClick", function()
+				K.Confirm(format(L["Delete the profile %s?"], name), function()
+					if K:DeleteProfile(name) then
+						Refresh()
+					else
+						K.Print(L["Cannot delete the active profile."])
+					end
+				end)
+			end)
+
+			del:SetEnabled(name ~= active)
+
+			local export = MakeButton(row, L["Export"], 60)
+			export:SetPoint("RIGHT", del, "LEFT", -4, 0)
+			export:SetScript("OnClick", function()
+				local str, err = K:ExportProfile(name)
+				if str then
+					K.ShowCopyText(format(L["Export: %s"], name), str)
+				else
+					K.Print(L[err])
+				end
+			end)
+
+			local copy = MakeButton(row, L["Copy"], 60)
+			copy:SetPoint("RIGHT", export, "LEFT", -4, 0)
+			copy:SetScript("OnClick", function()
+				K.Confirm(format(L["Replace the active profile with a copy of %s?"], name), function()
+					if K:CopyProfile(name) then
+						Refresh()
+						AskReload()
+					end
+				end)
+			end)
+			copy:SetEnabled(name ~= active)
+
+			local use = MakeButton(row, L["Use"], 60)
+			use:SetPoint("RIGHT", copy, "LEFT", -4, 0)
 			use:SetScript("OnClick", function()
 				K:SetProfile(name)
 				Refresh()
+				AskReload()
 			end)
-
-			local del = MakeButton(row, L["Delete"], 70)
-			del:SetPoint("RIGHT", use, "LEFT", -6, 0)
-			del:SetScript("OnClick", function()
-				if K:DeleteProfile(name) then
-					Refresh()
-				else
-					K.Print(L["Cannot delete the active profile."])
-				end
-			end)
+			use:SetEnabled(name ~= pending)
 
 			rows[#rows + 1] = row
 		end
 		listHolder:SetHeight(-y + 4)
+		parent:SetHeight(math.max(520, 330 - y))
 	end
 
 	-- Create a new profile from a text box.
@@ -100,29 +146,49 @@ function GUI.CustomPanels.Profiles(parent)
 	edit:SetSize(200, 22)
 	edit:SetPoint("TOPLEFT", createLabel, "BOTTOMLEFT", 6, -6)
 	edit:SetAutoFocus(false)
+	edit:SetMaxLetters(32)
 	K.SkinEditBox(edit)
 
 	local create = MakeButton(parent, L["Create"], 90)
 	create:SetPoint("LEFT", edit, "RIGHT", 8, 0)
 	create:SetScript("OnClick", function()
-		local name = edit:GetText()
+		local name = strtrim(edit:GetText())
 		if K:CreateProfile(name) then
 			edit:SetText("")
 			edit:ClearFocus()
 			Refresh()
+		else
+			K.Print(L["Pick a profile name that is not already used."])
 		end
+	end)
+
+	-- Bring a profile in from text. Two steps: the pasted string, then a name.
+	local import = MakeButton(parent, L["Import Profile"], 180)
+	import:SetPoint("TOPLEFT", edit, "BOTTOMLEFT", -6, -16)
+	import:SetScript("OnClick", function()
+		K.ShowImportBox(L["Import Profile"], function(text)
+			K.Prompt(L["Name for the imported profile"], L["Imported"], function(name)
+				local imported, err = K:ImportProfile(text, strtrim(name or ""))
+				if imported then
+					K.Print(L["Profile imported. Press Use on it to switch."])
+					Refresh()
+				else
+					K.Print(L[err])
+				end
+			end)
+		end)
 	end)
 
 	-- Reset the active profile.
 	local reset = MakeButton(parent, L["Reset Active Profile"], 180)
-	reset:SetPoint("TOPLEFT", edit, "BOTTOMLEFT", -6, -16)
+	reset:SetPoint("TOPLEFT", import, "BOTTOMLEFT", 0, -10)
 	reset:SetScript("OnClick", function()
-		K:ResetProfile()
-		Refresh()
+		K.Confirm(L["Put every setting of the active profile back to its default?"], function()
+			K:ResetProfile()
+			Refresh()
+			AskReload()
+		end)
 	end)
 
 	Refresh()
-
-	-- Size the scroll child to fit.
-	parent:SetHeight(520)
 end
