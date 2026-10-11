@@ -276,6 +276,7 @@ function Module:AcquireSlot(container)
 		-- combat, and the combat-end refresh fills anything that was skipped.
 		if InCombatLockdown() then
 			container.poolUsed = container.poolUsed - 1
+			Module:RefreshAfterCombat()
 			return nil
 		end
 		button = BuildSlot(container, index)

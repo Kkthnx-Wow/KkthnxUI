@@ -677,6 +677,15 @@ end
 -- Refresh pipeline
 -- ---------------------------------------------------------------------------
 
+-- Combat blocks building item buttons, so a refresh that could not finish is
+-- run once combat ends, after topping the button pools back up.
+function Module:RefreshAfterCombat()
+	K.DeferCombat("BagsRefresh", function()
+		Module:PrewarmAll()
+		Module:UpdateAll()
+	end)
+end
+
 -- Mark the open windows for a relayout, coalescing a burst of events into one
 -- pass on the next frame. Deferred out of combat.
 function Module:MarkDirty()
@@ -687,7 +696,7 @@ function Module:MarkDirty()
 	C_Timer.After(0, function()
 		self.dirty = false
 		if InCombatLockdown() then
-			self.combatPending = true
+			self:RefreshAfterCombat()
 			return
 		end
 		self:UpdateAll()
@@ -977,16 +986,6 @@ function Module:OnEnable()
 	self:RegisterEvent("MERCHANT_CLOSED", function()
 		self:UpdateSellButton(self.BagFrame)
 	end)
-	-- Combat is over, so top the pools back up and reapply anything that was held
-	-- off or skipped while locked down.
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-		self:PrewarmAll()
-		if self.combatPending then
-			self.combatPending = false
-		end
-		self:UpdateAll()
-	end)
-
 	-- Build the pools up front while safely out of combat.
 	self:PrewarmAll()
 end

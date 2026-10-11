@@ -179,7 +179,14 @@ function Module:Setup()
 		end
 		if bagsBar.Layout then
 			hooksecurefunc(bagsBar, "Layout", function()
-				if not InCombatLockdown() then
+				-- Reparenting is blocked in combat, so the layout is put back once
+				-- it ends.
+				if InCombatLockdown() then
+					K.DeferCombat("BagBarLayout", function()
+						Layout()
+						ReapplyIcons()
+					end)
+				else
 					Layout()
 				end
 			end)
@@ -220,11 +227,6 @@ function Module:Setup()
 	K.CreateMover(bar, "BagBar", L["Bag Bar"], point, bar:GetWidth(), bar:GetHeight())
 
 	self:RegisterEvent("BAG_UPDATE_DELAYED", ReapplyIcons)
-	-- Reparenting is blocked in combat, so re-assert the layout once it ends.
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-		Layout()
-		ReapplyIcons()
-	end)
 end
 
 function Module:OnEnable()
