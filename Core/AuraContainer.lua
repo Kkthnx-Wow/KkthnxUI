@@ -32,6 +32,7 @@ local pcall = pcall
 local ipairs = ipairs
 local unpack = unpack
 local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
 
 -- Feature probe: the intrinsic and its enums only exist on the Midnight client.
 local function Available()
@@ -71,6 +72,74 @@ local function GetDurationFormatter()
 	return durationFormatter or nil
 end
 
+-- Resizing a button and changing what it answers clicks to are protected calls
+-- on these buttons. From addon code during combat the client blocks them and
+-- reports the addon, and a pcall does not stop that report. Because they are
+-- reached through pcall(method, object) the report carries no function name,
+-- only UNKNOWN(). So they wait for combat to end, one pending job per button,
+-- and the job reads the live state when it runs.
+local debugStream
+
+local function NoteDeferred(button)
+	if not debugStream then
+		if not K.Debug then
+			return
+		end
+		debugStream = K.Debug.Register("auras", "Aura button calls put off until combat ends")
+	end
+	-- Checked here so the aura update hook allocates nothing while the stream is off.
+	if debugStream.enabled then
+		debugStream:Log("put off for %s", button:GetName() or tostring(button))
+	end
+end
+
+local ApplyClicks
+
+local function ApplyLocked(button, cancel, size)
+	if InCombatLockdown() then
+		NoteDeferred(button)
+		K.DeferCombat(button, function()
+			ApplyLocked(button, cancel, size)
+		end)
+		return
+	end
+	pcall(button.SetSize, button, size, size)
+	ApplyClicks(button, cancel)
+end
+
+-- Cancel-on-click slots (player buffs) need clicks explicitly enabled or the
+-- button stays click-through and right-click never reaches the cancel path.
+-- Everything else turns clicks off so aura icons do not eat target-switch clicks
+-- on nameplates. The cancel tokens are re-applied after every display update,
+-- since the engine's update resets the button's click state.
+-- The display update hook runs on every aura change, in combat too, so the
+-- pending job is built once per button and reused as its own queue key. Aura
+-- buttons are pooled for the whole session, so nothing here needs to be weak.
+local clickJobs = {}
+
+function ApplyClicks(button, cancel)
+	if InCombatLockdown() then
+		NoteDeferred(button)
+		local job = clickJobs[button]
+		if not job then
+			job = function()
+				ApplyClicks(button, cancel)
+			end
+			clickJobs[button] = job
+		end
+		K.DeferCombat(job, job)
+		return
+	end
+	pcall(button.SetMouseClickEnabled, button, cancel)
+	if cancel then
+		-- Cancel on the DOWN edge. The intrinsic denies addon buttons the input
+		-- aspects that let Blizzard's legacy icons swallow the right-button press,
+		-- so an Up token loses the release to WorldFrame mouselook and the buff
+		-- survives. Firing on press cancels before mouselook can grab the mouse.
+		pcall(button.SetCancelAuraButtons, button, "RightButtonDown")
+	end
+end
+
 -- Build the per-button styling callback. The engine calls this once when it
 -- creates a button, then drives the registered regions itself. Regions must be
 -- created and given a font BEFORE they are registered, because each register
@@ -79,12 +148,6 @@ end
 local function MakeInitializer(opts)
 	local size = opts.size or 26
 	return function(button)
-		-- Cancel-on-click slots (player buffs) need clicks explicitly enabled or the
-		-- button stays click-through and right-click never reaches the cancel path.
-		-- Everything else turns clicks off so aura icons do not eat target-switch
-		-- clicks on nameplates.
-		pcall(button.SetMouseClickEnabled, button, opts.cancel and true or false)
-
 		local icon = button:CreateTexture(nil, "ARTWORK")
 		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 		icon:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
@@ -196,9 +259,9 @@ local function MakeInitializer(opts)
 			})
 		end
 
-		-- Size before registering so the flow layout has a rect. Guarded because
-		-- writes to the button are denied while auras are secret (combat).
-		pcall(button.SetSize, button, size, size)
+		-- Size before registering so the flow layout has a rect. In combat this waits
+		-- until combat ends (see ApplyLocked).
+		ApplyLocked(button, opts.cancel and true or false, size)
 
 		-- Register the regions with the engine.
 		pcall(button.SetIcon, button, icon)
@@ -229,25 +292,13 @@ local function MakeInitializer(opts)
 		local fmt = GetDurationFormatter()
 		pcall(button.SetDurationText, button, duration, fmt and { textFormatter = fmt } or {})
 
-		if opts.cancel then
-			-- Right-click cancel. The intrinsic wants a string of click tokens (matched
-			-- to the key-down cvar), and it must be re-applied after every display
-			-- update: the engine runs UpdateAuraDisplay right after this callback and on
-			-- each aura change, which resets the button's click state and wipes a
-			-- one-time setup. Re-assert both the mouse enable and the cancel tokens
-			-- there so it sticks through every aura update.
-			local function ApplyCancel(self)
-				pcall(self.SetMouseClickEnabled, self, true)
-				-- Cancel on the DOWN edge. The intrinsic denies addon buttons the input
-				-- aspects that let Blizzard's legacy icons swallow the right-button press,
-				-- so an Up token loses the release to WorldFrame mouselook and the buff
-				-- survives. Firing on press cancels before mouselook can grab the mouse.
-				pcall(self.SetCancelAuraButtons, self, "RightButtonDown")
-			end
-			ApplyCancel(button)
-			if button.UpdateAuraDisplay then
-				hooksecurefunc(button, "UpdateAuraDisplay", ApplyCancel)
-			end
+		if opts.cancel and button.UpdateAuraDisplay then
+			-- The engine runs UpdateAuraDisplay right after this callback and on each
+			-- aura change, which resets the button's click state and wipes a one-time
+			-- setup. Re-assert the clicks after every update so it sticks.
+			hooksecurefunc(button, "UpdateAuraDisplay", function(self)
+				ApplyClicks(self, true)
+			end)
 		end
 	end
 end
