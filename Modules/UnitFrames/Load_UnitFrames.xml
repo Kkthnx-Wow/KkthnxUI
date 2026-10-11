@@ -4,7 +4,6 @@
 	     stacking helpers that every builder below calls into. -->
 	<Script file="Core.lua" />
 	<Script file="Colors.lua" />
-	<Script file="AuraFilter.lua" />
 	<Script file="AuraWatchList.lua" />
 	<Script file="Tags.lua" />
 

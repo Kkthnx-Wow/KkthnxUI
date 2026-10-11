@@ -167,6 +167,12 @@ local function DispelColor(name)
 	return name and dispelColors[name]
 end
 
+local DISPEL_FILTER = "HARMFUL|RAID"
+
+-- Used when the school of a dispellable debuff is hidden or has no colour of its
+-- own. The border still lights up, just in a neutral shade.
+local UNKNOWN_SCHOOL = CreateColor(1, 1, 1)
+
 -- Colour the health border for the first dispellable debuff on the unit. Aura
 -- fields can be secret in Midnight, so the dispel type is only trusted when it
 -- reads as a plain string. Implemented as a real oUF element so oUF drives it on
@@ -181,22 +187,17 @@ local function Update(self, _, unit)
 		return
 	end
 
+	-- The RAID flag on a harmful filter keeps only the debuffs the player can remove
+	-- right now, spec and talents included, so the first aura it returns is the one
+	-- to show and there is nothing to walk.
 	local color
-	for i = 1, 40 do
-		local data = K.GetAuraData(unit, i, "HARMFUL")
-		if not data then
-			break
-		end
+	local data = K.GetAuraData(unit, 1, DISPEL_FILTER)
+	if data then
 		local dispel = data.dispelName
-		-- Only highlight debuffs this class can actually remove, so it never
-		-- nags you about a school you cannot dispel.
-		if dispel and not IsSecret(dispel) and K.CanDispel and K.CanDispel[dispel] then
-			local c = DispelColor(dispel)
-			if c then
-				color = c
-				break
-			end
+		if dispel and not IsSecret(dispel) then
+			color = DispelColor(dispel)
 		end
+		color = color or UNKNOWN_SCHOOL
 	end
 
 	self.__dispelColor = color
