@@ -114,7 +114,7 @@ K.ConfigDefaults = {
 		Party = { Enable = true, Width = 150, Height = 26, PowerHeight = 10, ShowPower = true, ShowSolo = false, ShowPlayer = true, Debuffs = true, DispelHighlight = true, Portrait = true, Castbar = true, RaidStyle = false },
 		-- Height is the health bar, the power bar (PowerHeight) sits below it with a
 		-- PowerGap so the two read as separate bars. PowerMode: All, Mana, or None.
-		Raid = { Enable = true, Width = 80, Height = 30, PowerHeight = 6, PowerGap = 6, PowerMode = "All", GroupsPerRow = 5, GroupBy = "GROUP", RaidWide = false, SortDirection = "ASC", Orientation = "DOWN_RIGHT", DispelHighlight = true, ShowGroupNumber = true },
+		Raid = { Enable = true, Width = 80, Height = 30, PowerHeight = 6, PowerGap = 6, PowerMode = "All", GroupsPerRow = 5, GroupBy = "GROUP", RaidWide = false, SortDirection = "ASC", Orientation = "DOWN_RIGHT", DispelHighlight = true, ShowGroupNumber = true, Debuffs = false, DebuffSize = 16 },
 		-- Spacing has to clear the frame plus its attached castbar, otherwise the
 		-- bar for boss1 lands on top of boss2's name.
 		Boss = { Enable = true, Width = 150, Height = 24, PowerHeight = 10, ShowPower = true, Spacing = 34, Debuffs = true, Castbar = true, Portrait = true },

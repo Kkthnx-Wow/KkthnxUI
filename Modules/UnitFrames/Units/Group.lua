@@ -124,4 +124,7 @@ Module.Styles.Raid = function(self)
 		Build.DispelHighlight(self)
 	end
 	Build.AuraWatch(self, 7)
+	if cfg.Debuffs then
+		Build.RaidDebuffs(self, 3, cfg.DebuffSize or 16)
+	end
 end

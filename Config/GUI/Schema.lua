@@ -255,6 +255,9 @@ local function UnitControls(key, opts)
 	if opts.debuffs then
 		Add({ kind = "check", label = L["Show Debuffs"], path = { "Unitframe", key, "Debuffs" }, reload = true, dependsOn = dep })
 	end
+	if opts.debuffSize then
+		Add({ kind = "slider", label = L["Debuff Size"], path = { "Unitframe", key, "DebuffSize" }, min = 10, max = 26, step = 1, reload = true, dependsOn = dep })
+	end
 	if opts.portrait then
 		Add({ kind = "check", label = L["Show Portrait"], path = { "Unitframe", key, "Portrait" }, reload = true, dependsOn = dep })
 	end
@@ -450,7 +453,7 @@ GUI.schema = {
 
 			{ kind = "header", label = L["Group Frames"] },
 			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true, raidStyle = true }), L["Frames for a five person party."]),
-			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
+			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, debuffs = true, debuffSize = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
 			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true, portrait = true }), L["The boss frames that appear during an encounter."]),
 
 			{ kind = "header", label = L["Shared"] },

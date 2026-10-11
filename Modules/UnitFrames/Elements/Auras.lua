@@ -177,3 +177,22 @@ function Build.GroupDebuffs(self, count, size, side)
 	Track(self, container)
 	return container
 end
+
+-- Debuffs laid over the bottom corner of a raid frame, which has no room beside
+-- it. Same filters as the party row, growing in from the right edge.
+function Build.RaidDebuffs(self, count, size)
+	local container = K.CreateAuraContainer(self, {
+		point = { "BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -2, 2 },
+		size = size,
+		spacing = 2,
+		perRow = count,
+		anchorPoint = "BOTTOMRIGHT",
+		growthH = "Left",
+		growthV = "Up",
+		dispelBorder = true,
+		slots = GroupDebuffSlots(count),
+	})
+	self.KKUI_Debuffs = container
+	Track(self, container)
+	return container
+end
