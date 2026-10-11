@@ -130,6 +130,25 @@ function Build.Auras(self, cfg)
 	end
 end
 
+-- The aura groups a party or raid debuff row is made of. Healers usually only
+-- want what they can act on, so with GroupDispelOnly the row holds what the
+-- player's raid can dispel, then the debuffs the game flags for raid frames in
+-- combat (boss mechanics) that are not already in the first group. The second
+-- filter excludes the first, so nothing shows twice. Off, every debuff shows.
+local DISPELLABLE = "HARMFUL|RAID_PLAYER_DISPELLABLE"
+local BOSS_MECHANICS = "HARMFUL|RAID_IN_COMBAT|!RAID_PLAYER_DISPELLABLE"
+local BOSS_SLOTS = 2
+
+local function GroupDebuffSlots(count)
+	if C.Unitframe.GroupDispelOnly then
+		return {
+			{ key = "gdispel", filter = DISPELLABLE, max = count },
+			{ key = "gboss", filter = BOSS_MECHANICS, max = BOSS_SLOTS },
+		}
+	end
+	return { { key = "gdebuffs", filter = "HARMFUL", max = count } }
+end
+
 -- Compact debuff row beside a group frame's health bar. side "right" clears the
 -- party portrait, "left" is the default for the raid.
 function Build.GroupDebuffs(self, count, size, side)
@@ -143,10 +162,6 @@ function Build.GroupDebuffs(self, count, size, side)
 		anchorPoint, growthH = "BOTTOMRIGHT", "Left"
 	end
 
-	-- Healers usually only want debuffs they can act on, so default the group rows
-	-- to the auras the player can dispel (Blizzard's own filter token). Toggle off
-	-- to show every debuff.
-	local filter = C.Unitframe.GroupDispelOnly and "HARMFUL|RAID_PLAYER_DISPELLABLE" or "HARMFUL"
 	local container = K.CreateAuraContainer(self, {
 		point = point,
 		size = size,
@@ -156,7 +171,7 @@ function Build.GroupDebuffs(self, count, size, side)
 		growthH = growthH,
 		growthV = "Up",
 		dispelBorder = true,
-		slots = { { key = "gdebuffs", filter = filter, max = count } },
+		slots = GroupDebuffSlots(count),
 	})
 	self.KKUI_Debuffs = container
 	Track(self, container)

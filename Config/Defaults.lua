@@ -67,7 +67,7 @@ K.ConfigDefaults = {
 		HealthPrediction = true,
 		RangeFade = true, -- dim units that are out of range
 		RangeAlpha = 0.4, -- how faded an out-of-range unit gets
-		GroupDispelOnly = true, -- party/raid debuffs: only ones you can dispel + boss
+		GroupDispelOnly = true, -- party/raid debuffs: what your raid can dispel, plus boss mechanics
 		AuraWatch = true, -- corner dots on party/raid frames for your tracked heals
 
 		-- Text formatting shared by the units below.
