@@ -14,18 +14,25 @@ local Module = K:GetModule("ActionBars")
 
 local _G = _G
 local gsub = string.gsub
+local ipairs = ipairs
+
+-- Game strings go into the table below as patterns, and a localized name can hold
+-- a pattern character (a hyphen, a bracket). Escape them so they match literally.
+local function Literal(text)
+	return (gsub(text, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0"))
+end
 
 -- Localized modifier and key names with English fallbacks.
-local L_BUTTON = (_G.KEY_BUTTON3 and _G.KEY_BUTTON3:gsub("3", "")) or "Button"
-local L_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP or "Mouse Wheel Up"
-local L_MOUSEWHEELDN = _G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down"
-local L_NUMPAD = (_G.KEY_NUMPAD0 and _G.KEY_NUMPAD0:gsub("0", "")) or "Num Pad"
-local L_PAGEUP = _G.KEY_PAGEUP or "Page Up"
-local L_PAGEDOWN = _G.KEY_PAGEDOWN or "Page Down"
-local L_SPACE = _G.KEY_SPACE or "Space"
-local L_INSERT = _G.KEY_INSERT or "Insert"
-local L_HOME = _G.KEY_HOME or "Home"
-local L_DELETE = _G.KEY_DELETE or "Delete"
+local L_BUTTON = Literal((_G.KEY_BUTTON3 and _G.KEY_BUTTON3:gsub("3", "")) or "Button")
+local L_MOUSEWHEELUP = Literal(_G.KEY_MOUSEWHEELUP or "Mouse Wheel Up")
+local L_MOUSEWHEELDN = Literal(_G.KEY_MOUSEWHEELDOWN or "Mouse Wheel Down")
+local L_NUMPAD = Literal((_G.KEY_NUMPAD0 and _G.KEY_NUMPAD0:gsub("0", "")) or "Num Pad")
+local L_PAGEUP = Literal(_G.KEY_PAGEUP or "Page Up")
+local L_PAGEDOWN = Literal(_G.KEY_PAGEDOWN or "Page Down")
+local L_SPACE = Literal(_G.KEY_SPACE or "Space")
+local L_INSERT = Literal(_G.KEY_INSERT or "Insert")
+local L_HOME = Literal(_G.KEY_HOME or "Home")
+local L_DELETE = Literal(_G.KEY_DELETE or "Delete")
 
 -- Order matters: modifiers first, then named keys, then generic patterns.
 local REPLACEMENTS = {
@@ -69,6 +76,26 @@ local REPLACEMENTS = {
 	{ "NUMPAD", "N" },
 }
 
+-- Keys come from a small fixed set, so each distinct text is worked out once and
+-- remembered. Running the whole table on every SetText costs 38 substitutions.
+local abbreviated = {}
+
+local function Shorten(text)
+	local short = abbreviated[text]
+	if short == nil then
+		short = text
+		if text == _G.RANGE_INDICATOR then
+			short = ""
+		else
+			for _, pair in ipairs(REPLACEMENTS) do
+				short = gsub(short, pair[1], pair[2])
+			end
+		end
+		abbreviated[text] = short
+	end
+	return short
+end
+
 -- Abbreviate the given hotkey font string. Called as a SetText hook, so it
 -- guards against recursion with a flag.
 local function Abbreviate(hotkey)
@@ -80,13 +107,7 @@ local function Abbreviate(hotkey)
 		return
 	end
 
-	if text == _G.RANGE_INDICATOR then
-		text = ""
-	else
-		for _, pair in ipairs(REPLACEMENTS) do
-			text = gsub(text, pair[1], pair[2])
-		end
-	end
+	text = Shorten(text)
 
 	hotkey.__setting = true
 	hotkey:SetText(text)
