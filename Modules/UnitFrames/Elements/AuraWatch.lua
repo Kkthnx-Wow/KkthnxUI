@@ -8,9 +8,14 @@
 		the debuff row. Registered as our own oUF element so it refreshes on
 		UNIT_AURA like everything else.
 
+		Each entry names the one filter it can be found under: buffs by default,
+		debuffs with debuff = true, and only the player's own with mine = true.
+		Only those filters are walked, so a frame with a few tracked heals never
+		iterates the whole buff list, and "is it mine" is answered by the game's
+		PLAYER filter instead of an aura field.
+
 		Midnight notes: aura fields can be secret values, so the count and swipe
-		are only driven when they read as plain numbers, and the "is it mine"
-		flag is treated as not-mine when it is secret rather than risking a taint.
+		are only driven when they read as plain numbers.
 -----------------------------------------------------------------------------]]
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
@@ -132,6 +137,13 @@ end
 -- oUF element
 -- ---------------------------------------------------------------------------
 
+-- The filter an entry is found under. Part of the lookup, so it is worked out once
+-- per entry when the element is built.
+local function FilterFor(entry)
+	local base = entry.debuff and "HARMFUL" or "HELPFUL"
+	return entry.mine and (base .. "|PLAYER") or base
+end
+
 local function Update(self, _, unit)
 	if unit and unit ~= self.unit then
 		return
@@ -156,11 +168,10 @@ local function Update(self, _, unit)
 			-- A secret spell ID cannot key the watch table, so that aura is skipped.
 			local spellId = data.spellId
 			local entry = spellId and not IsSecret(spellId) and element.watch[spellId]
-			if entry then
-				local mine = data.isFromPlayerOrPlayerPet
-				if not entry.mine or (mine and not IsSecret(mine)) then
-					ShowEntry(element, entry, data)
-				end
+			-- An aura can show up under a wider filter than its entry asked for, a
+			-- shared buff walk finding someone else's copy of a "mine" entry.
+			if entry and element.entryFilter[spellId] == filter then
+				ShowEntry(element, entry, data)
 			end
 		end
 	end
@@ -215,8 +226,17 @@ function Build.AuraWatch(self, size)
 	element.size = size or 8
 	element.corners = {}
 	element.watch = watch
-	-- Both lists so a tracked debuff (rare) can share the system with buffs.
-	element.filters = { "HELPFUL", "HARMFUL" }
+	local filters, entryFilter, seen = {}, {}, {}
+	for spellId, entry in pairs(watch) do
+		local filter = FilterFor(entry)
+		entryFilter[spellId] = filter
+		if not seen[filter] then
+			seen[filter] = true
+			filters[#filters + 1] = filter
+		end
+	end
+	element.filters = filters
+	element.entryFilter = entryFilter
 
 	self.AuraWatch = element
 	return element

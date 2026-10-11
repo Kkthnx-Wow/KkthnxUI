@@ -12,6 +12,7 @@
 			color  - dot colour {r, g, b} (dot style only)
 			style  - "dot" (default) or "icon" (shows the spell icon and its swipe)
 			mine   - true to only light up when the aura is ours
+			debuff - true for a harmful aura, which is looked up under HARMFUL
 
 		These are sensible starting points. The list lives in one table so it is
 		easy to extend per class without touching the element code.
