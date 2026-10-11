@@ -45,6 +45,31 @@ local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 
+-- The action queries moved to C_ActionBar in 12.0. The old globals only exist
+-- while the client loads its deprecation fallbacks, which is a setting that is
+-- meant to go away, so the new calls are used first and the globals only fill in
+-- on clients that do not have them yet. Arguments and results are identical.
+local ActionAPI = {}
+do
+	local api = C_ActionBar
+	local function pick(name, legacy)
+		return (api and api[name]) or legacy
+	end
+	ActionAPI.HasAction = pick("HasAction", _G.HasAction)
+	ActionAPI.GetActionTexture = pick("GetActionTexture", _G.GetActionTexture)
+	ActionAPI.GetActionText = pick("GetActionText", _G.GetActionText)
+	ActionAPI.IsAttackAction = pick("IsAttackAction", _G.IsAttackAction)
+	ActionAPI.IsEquippedAction = pick("IsEquippedAction", _G.IsEquippedAction)
+	ActionAPI.IsCurrentAction = pick("IsCurrentAction", _G.IsCurrentAction)
+	ActionAPI.IsAutoRepeatAction = pick("IsAutoRepeatAction", _G.IsAutoRepeatAction)
+	ActionAPI.IsUsableAction = pick("IsUsableAction", _G.IsUsableAction)
+	ActionAPI.IsConsumableAction = pick("IsConsumableAction", _G.IsConsumableAction)
+	ActionAPI.IsStackableAction = pick("IsStackableAction", _G.IsStackableAction)
+	ActionAPI.IsItemAction = pick("IsItemAction", _G.IsItemAction)
+	ActionAPI.IsActionInRange = pick("IsActionInRange", _G.IsActionInRange)
+	ActionAPI.SetActionUIButton = pick("RegisterActionUIButton", _G.SetActionUIButton)
+end
+
 local UseVanillaOverlayGlow = false -- WoWRetail and ActionButtonSpellAlertManager
 local DisableOverlayGlow = WoWClassic or WoWBCC or WoWWrath
 
@@ -1531,7 +1556,7 @@ function OnEvent(frame, event, arg1, ...)
 			if button._state_type == "action" then
 				local actionType, _id = GetActionInfo(button._state_action)
 				if actionType == "summonpet" then
-					local texture = GetActionTexture(button._state_action)
+					local texture = ActionAPI.GetActionTexture(button._state_action)
 					if texture then
 						button.icon:SetTexture(texture)
 					end
@@ -1765,7 +1790,7 @@ function Generic:UpdateAction(force)
 		-- set action attribute for action buttons
 		self.action = self._state_type == "action" and action or 0
 		if self.config.actionButtonUI then
-			SetActionUIButton(self, self.action, self.cooldown)
+			ActionAPI.SetActionUIButton(self, self.action, self.cooldown)
 		end
 
 		Update(self)
@@ -2670,20 +2695,20 @@ local GetActionCooldownInfo = C_ActionBar and C_ActionBar.GetActionCooldown or G
 local GetActionChargeInfo = C_ActionBar and C_ActionBar.GetActionCharges or GetActionChargeInfoFallback
 local GetActionLoCCooldownInfo = C_ActionBar and C_ActionBar.GetActionLossOfControlCooldownInfo or GetActionLoCCooldownInfoFallback
 
-Action.HasAction                = function(self) return HasAction(self._state_action) end
-Action.GetActionText            = function(self) return GetActionText(self._state_action) end
-Action.GetTexture               = function(self) return GetActionTexture(self._state_action) end
+Action.HasAction                = function(self) return ActionAPI.HasAction(self._state_action) end
+Action.GetActionText            = function(self) return ActionAPI.GetActionText(self._state_action) end
+Action.GetTexture               = function(self) return ActionAPI.GetActionTexture(self._state_action) end
 Action.GetCount                 = function(self) return GetActionCount(self._state_action) end
 Action.GetChargeInfo            = function(self) return GetActionChargeInfo(self._state_action) end
 Action.GetCooldownInfo          = function(self) return GetActionCooldownInfo(self._state_action) end
 Action.GetLoCCooldownInfo       = function(self) return GetActionLoCCooldownInfo(self._state_action) end
-Action.IsAttack                 = function(self) return IsAttackAction(self._state_action) end
-Action.IsEquipped               = function(self) return IsEquippedAction(self._state_action) end
-Action.IsCurrentlyActive        = function(self) return IsCurrentAction(self._state_action) end
-Action.IsAutoRepeat             = function(self) return IsAutoRepeatAction(self._state_action) end
-Action.IsUsable                 = function(self) return IsUsableAction(self._state_action) end
-Action.IsConsumableOrStackable  = function(self) return IsConsumableAction(self._state_action) or IsStackableAction(self._state_action) or (not IsItemAction(self._state_action) and GetActionCount(self._state_action) > 0) end
-Action.IsUnitInRange            = function(self, unit) return IsActionInRange(self._state_action, unit) end
+Action.IsAttack                 = function(self) return ActionAPI.IsAttackAction(self._state_action) end
+Action.IsEquipped               = function(self) return ActionAPI.IsEquippedAction(self._state_action) end
+Action.IsCurrentlyActive        = function(self) return ActionAPI.IsCurrentAction(self._state_action) end
+Action.IsAutoRepeat             = function(self) return ActionAPI.IsAutoRepeatAction(self._state_action) end
+Action.IsUsable                 = function(self) return ActionAPI.IsUsableAction(self._state_action) end
+Action.IsConsumableOrStackable  = function(self) return ActionAPI.IsConsumableAction(self._state_action) or ActionAPI.IsStackableAction(self._state_action) or (not ActionAPI.IsItemAction(self._state_action) and GetActionCount(self._state_action) > 0) end
+Action.IsUnitInRange            = function(self, unit) return ActionAPI.IsActionInRange(self._state_action, unit) end
 Action.SetTooltip               = function(self) return GameTooltip:SetAction(self._state_action) end
 Action.GetSpellId               = function(self)
 	local actionType, id, subType = GetActionInfo(self._state_action)
@@ -2723,7 +2748,7 @@ if WoWClassic then
 		Action.GetCount = function(self) return LibClassicSpellActionCount:GetActionCount(self._state_action) end
 	else
 		-- if we don't have the library, only show count for items, like the default UI
-		Action.IsConsumableOrStackable = function(self) return IsItemAction(self._state_action) and (IsConsumableAction(self._state_action) or IsStackableAction(self._state_action)) end
+		Action.IsConsumableOrStackable = function(self) return ActionAPI.IsItemAction(self._state_action) and (ActionAPI.IsConsumableAction(self._state_action) or ActionAPI.IsStackableAction(self._state_action)) end
 	end
 end
 
