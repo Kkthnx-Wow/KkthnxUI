@@ -112,9 +112,10 @@ oUF.Tags.Methods["kkui:nameshort"] = function(unit)
 	if IsSecret(name) then
 		return name
 	end
+	local limit = C.Unitframe.Raid.NameLength or 5
 	local utf8len, utf8sub = string.utf8len, string.utf8sub
-	if utf8len and utf8sub and utf8len(name) > 5 then
-		return utf8sub(name, 1, 5)
+	if utf8len and utf8sub and utf8len(name) > limit then
+		return utf8sub(name, 1, limit)
 	end
 	return name
 end

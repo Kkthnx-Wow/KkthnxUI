@@ -255,6 +255,15 @@ local function UnitControls(key, opts)
 	if opts.debuffs then
 		Add({ kind = "check", label = L["Show Debuffs"], path = { "Unitframe", key, "Debuffs" }, reload = true, dependsOn = dep })
 	end
+	if opts.raidText then
+		Add({ kind = "dropdown", label = L["Health Text"], path = { "Unitframe", key, "HealthText" }, options = {
+			{ text = L["None"], value = "None" },
+			{ text = L["Missing Health"], value = "Deficit" },
+			{ text = L["Percent"], value = "Percent" },
+			{ text = L["Current"], value = "Current" },
+		}, reload = true, dependsOn = dep, tooltip = L["A health value under the name. Missing Health shows what is lost and disappears at full health."] })
+		Add({ kind = "slider", label = L["Name Length"], path = { "Unitframe", key, "NameLength" }, min = 3, max = 12, step = 1, reload = true, dependsOn = dep, tooltip = L["How many letters of a name show."] })
+	end
 	if opts.debuffSize then
 		Add({ kind = "slider", label = L["Debuff Size"], path = { "Unitframe", key, "DebuffSize" }, min = 10, max = 26, step = 1, reload = true, dependsOn = dep })
 	end
@@ -295,6 +304,10 @@ local function UnitControls(key, opts)
 	end
 	if opts.raidLayout then
 		Add({ kind = "check", label = L["Raid-Wide Sorting"], path = { "Unitframe", key, "RaidWide" }, reload = true, dependsOn = dep, tooltip = L["Sort the whole raid as one list spread across the columns, instead of one column per group."] })
+		Add({ kind = "dropdown", label = L["Order Within Group"], path = { "Unitframe", key, "SortBy" }, options = {
+			{ text = L["Group Order"], value = "INDEX" },
+			{ text = L["Name"], value = "NAME" },
+		}, reload = true, dependsOn = dep })
 		Add({ kind = "dropdown", label = L["Sort Direction"], path = { "Unitframe", key, "SortDirection" }, options = {
 			{ text = L["Ascending"], value = "ASC" },
 			{ text = L["Descending"], value = "DESC" },
@@ -460,7 +473,7 @@ GUI.schema = {
 
 			{ kind = "header", label = L["Group Frames"] },
 			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true, raidStyle = true }), L["Frames for a five person party."]),
-			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, debuffs = true, debuffSize = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
+			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, debuffs = true, debuffSize = true, raidText = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
 			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true, portrait = true }), L["The boss frames that appear during an encounter."]),
 
 			{ kind = "header", label = L["Shared"] },

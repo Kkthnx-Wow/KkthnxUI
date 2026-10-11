@@ -116,7 +116,12 @@ Module.Styles.Raid = function(self)
 		RaidHealthFill(self, false)
 	end
 
-	Build.NameCenter(self, 10, 0, "[kkui:namecolor][kkui:nameshort]")
+	-- With a health value on the bar the name moves up a little to share it.
+	local hasText = cfg.HealthText and cfg.HealthText ~= "None"
+	Build.NameCenter(self, 10, hasText and 5 or 0, "[kkui:namecolor][kkui:nameshort]")
+	if hasText then
+		Build.RaidHealthText(self, 9, -6)
+	end
 	Build.Indicators(self, 12)
 	Build.GroupIndicators(self)
 

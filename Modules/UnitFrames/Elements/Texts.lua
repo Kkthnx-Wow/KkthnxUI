@@ -26,6 +26,7 @@ local UnitIsConnected = UnitIsConnected
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 local SCALE_TO_100 = CurveConstants and CurveConstants.ScaleTo100
+local UnitHealthMissing = UnitHealthMissing
 
 local function NewText(parent, size)
 	local text = parent:CreateFontString(nil, "OVERLAY")
@@ -182,6 +183,74 @@ function Build.HealthText(self, size, yOffset, anchor)
 
 	self.Health.__kkuiText = text
 	self.Health.PostUpdate = UpdateHealthText
+	self.HealthValue = text
+	return text
+end
+
+-- Raid frame health value. Three looks, none of which compare or do arithmetic on
+-- a hidden number: the missing health is handed to AbbreviateNumbers as it is,
+-- and a curve turns the health fraction into an alpha so the deficit fades out at
+-- full health without ever testing it.
+local deficitAlpha
+local function DeficitAlpha()
+	if deficitAlpha == nil then
+		deficitAlpha = false
+		if C_CurveUtil and C_CurveUtil.CreateCurve and Enum.LuaCurveType then
+			-- Fully shown at any missing health, gone at exactly full. A steep ramp
+			-- over the last hundredth of a percent rather than a hard step, so the
+			-- result does not depend on how a step curve snaps.
+			local curve = C_CurveUtil.CreateCurve()
+			curve:SetType(Enum.LuaCurveType.Linear)
+			curve:AddPoint(0, 1)
+			curve:AddPoint(0.9999, 1)
+			curve:AddPoint(1, 0)
+			deficitAlpha = curve
+		end
+	end
+	return deficitAlpha or nil
+end
+
+local function UpdateRaidHealthText(element, unit, cur)
+	local text = element.__kkuiText
+	if not text then
+		return
+	end
+	text:SetAlpha(1)
+	if not UnitIsConnected(unit) then
+		text:SetText(PLAYER_OFFLINE)
+		return
+	end
+	if UnitIsDeadOrGhost(unit) then
+		text:SetText(DEAD)
+		return
+	end
+	local mode = C.Unitframe.Raid.HealthText
+	if mode == "Deficit" then
+		text:SetFormattedText("-%s", AbbreviateNumbers(UnitHealthMissing(unit)))
+		local curve = DeficitAlpha()
+		if curve then
+			text:SetAlpha(UnitHealthPercent(unit, true, curve))
+		end
+	elseif mode == "Percent" then
+		text:SetFormattedText("%d%%", UnitHealthPercent(unit, true, SCALE_TO_100))
+	else
+		text:SetText(AbbreviateNumbers(cur))
+	end
+end
+
+-- Health value for a raid frame, sharing the bar with the name. Off unless the
+-- Raid health text option is set.
+function Build.RaidHealthText(self, size, yOffset)
+	local mode = C.Unitframe.Raid.HealthText
+	if not mode or mode == "None" then
+		return
+	end
+	local text = NewText(self.Health, size or 9)
+	text:SetPoint("LEFT", self.Health, "LEFT", 3, yOffset or 0)
+	text:SetPoint("RIGHT", self.Health, "RIGHT", -3, yOffset or 0)
+	text:SetJustifyH("CENTER")
+	self.Health.__kkuiText = text
+	self.Health.PostUpdate = UpdateRaidHealthText
 	self.HealthValue = text
 	return text
 end

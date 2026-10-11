@@ -407,7 +407,7 @@ function Module:SpawnRaid()
 		"point", orient.point,
 		"groupBy", groupBy,
 		"groupingOrder", groupingOrder,
-		"sortMethod", "INDEX",
+		"sortMethod", cfg.SortBy == "NAME" and "NAME" or "INDEX",
 		"sortDir", sortDir,
 		"maxColumns", maxColumns,
 		"unitsPerColumn", perColumn,
