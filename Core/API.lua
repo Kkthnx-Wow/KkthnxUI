@@ -24,7 +24,9 @@ local max = math.max
 local min = math.min
 local format = string.format
 local strfind = string.find
+local tremove = table.remove
 
+local CreateFrame = CreateFrame
 local UIParent = UIParent
 local GetPhysicalScreenSize = GetPhysicalScreenSize
 local InCombatLockdown = InCombatLockdown
@@ -111,6 +113,70 @@ function K.GetAuraData(unit, index, filter)
 		return data
 	end
 	return nil
+end
+
+-- ---------------------------------------------------------------------------
+-- Combat queue
+-- ---------------------------------------------------------------------------
+-- The one way to put work off until combat ends. Anything a lockdown blocks
+-- (secure frames, bindings, reparenting, attributes) goes through here rather
+-- than through its own PLAYER_REGEN_ENABLED registration.
+--
+--   K.DeferCombat(key, fn)   run fn once, after the next combat ends
+--   K.CancelCombat(key)      drop a pending key
+--
+-- A key is one pending job. Deferring it again keeps its place in the line and
+-- swaps in the new function, so a burst of requests runs once. The line drains
+-- in the order keys first arrived, each function isolated so one error cannot
+-- stop the rest. The event is only registered while something is waiting.
+--
+-- A call made out of combat still waits for the next combat to end, so a caller
+-- checks InCombatLockdown() itself and runs the work directly when it can. A
+-- function should read live state when it runs, not what was true when it was
+-- queued, and may defer itself again for the drain after that.
+local combatFrame = CreateFrame("Frame")
+local combatKeys, combatJobs = {}, {}
+
+local function DrainCombatQueue()
+	combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	-- Swap the line out first, so a job that defers again lands in a fresh one.
+	local keys, jobs = combatKeys, combatJobs
+	combatKeys, combatJobs = {}, {}
+	for index = 1, #keys do
+		K.SafeCall(jobs[keys[index]])
+	end
+end
+
+combatFrame:SetScript("OnEvent", DrainCombatQueue)
+
+function K.DeferCombat(key, fn)
+	if key == nil or type(fn) ~= "function" then
+		return
+	end
+	if combatJobs[key] == nil then
+		local count = #combatKeys
+		combatKeys[count + 1] = key
+		if count == 0 then
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		end
+	end
+	combatJobs[key] = fn
+end
+
+function K.CancelCombat(key)
+	if combatJobs[key] == nil then
+		return
+	end
+	combatJobs[key] = nil
+	for index = 1, #combatKeys do
+		if combatKeys[index] == key then
+			tremove(combatKeys, index)
+			break
+		end
+	end
+	if #combatKeys == 0 then
+		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	end
 end
 
 -- ---------------------------------------------------------------------------
