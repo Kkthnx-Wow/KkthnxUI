@@ -676,6 +676,8 @@ GUI.schema = {
 			{ kind = "check", label = L["Role Colors"], path = { "Nameplate", "RoleColors" }, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Colour hostile plates by caster or melee so casters stand out. A unit that runs on mana is read as a caster."] },
 			{ kind = "color", label = L["Caster Color"], path = { "Nameplate", "CasterColor" }, reload = true, dependsOn = { "Nameplate", "RoleColors" } },
 			{ kind = "color", label = L["Melee Color"], path = { "Nameplate", "MeleeColor" }, reload = true, dependsOn = { "Nameplate", "RoleColors" } },
+			{ kind = "slider", label = L["Execute Range"], path = { "Nameplate", "ExecuteRange" }, min = 0, max = 50, step = 5, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Tint an enemy's health bar once it drops below this percent. Zero turns it off."] },
+			{ kind = "color", label = L["Execute Color"], path = { "Nameplate", "ExecuteColor" }, reload = true, dependsOn = { "Nameplate", "ExecuteRange" } },
 			{ kind = "check", label = L["Target Highlight"], path = { "Nameplate", "TargetHighlight" }, reload = true, dependsOn = { "Nameplate", "Enable" } },
 			{ kind = "check", label = L["Target Class Resource"], path = { "Nameplate", "TargetPower" }, reload = true, dependsOn = { "Nameplate", "Enable" }, tooltip = L["Show your combo points / class resource on the target's nameplate."] },
 			{ kind = "check", label = L["Show Castbar"], path = { "Nameplate", "ShowCastbar" }, reload = true, dependsOn = { "Nameplate", "Enable" } },

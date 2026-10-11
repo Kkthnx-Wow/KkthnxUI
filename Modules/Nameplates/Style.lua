@@ -20,6 +20,8 @@ local UnitHealthMax = UnitHealthMax
 local UnitLevel = UnitLevel
 local UnitReaction = UnitReaction
 local UnitPowerType = UnitPowerType
+local UnitCanAttack = UnitCanAttack
+local UnitHealthPercent = UnitHealthPercent
 local UnitThreatSituation = UnitThreatSituation
 local GetThreatStatusColor = GetThreatStatusColor
 local UnitIsPlayer = UnitIsPlayer
@@ -440,11 +442,50 @@ local function UpdateNameOnly(self)
 	end
 end
 
+-- Execute range: a tint over the filled part of an enemy's health bar once its
+-- health drops under the chosen percent. Enemy health is a hidden number in
+-- instances, so nothing is compared. The health fraction goes through a curve
+-- that gives an alpha, and the alpha is handed straight to the texture.
+local executeCurve
+local EXECUTE_ALPHA = 0.55
+local function GetExecuteCurve()
+	if executeCurve == nil then
+		executeCurve = false
+		local range = C.Nameplate.ExecuteRange or 0
+		if range > 0 and C_CurveUtil and C_CurveUtil.CreateCurve and Enum.LuaCurveType then
+			local ratio = range / 100
+			local curve = C_CurveUtil.CreateCurve()
+			curve:SetType(Enum.LuaCurveType.Linear)
+			curve:AddPoint(0, EXECUTE_ALPHA)
+			curve:AddPoint(ratio, EXECUTE_ALPHA)
+			-- A short ramp past the threshold rather than a hard edge.
+			curve:AddPoint(math.min(ratio + 0.004, 1), 0)
+			curve:AddPoint(1, 0)
+			executeCurve = curve
+		end
+	end
+	return executeCurve or nil
+end
+
+local function UpdateExecute(self, unit)
+	local tint = self.ExecuteTint
+	if not tint then
+		return
+	end
+	local curve = GetExecuteCurve()
+	if curve and UnitCanAttack("player", unit) then
+		tint:SetAlpha(UnitHealthPercent(unit, true, curve))
+	else
+		tint:SetAlpha(0)
+	end
+end
+
 local function PostUpdateHealth(health, unit)
 	local self = health.__owner
 	if not self then
 		return
 	end
+	UpdateExecute(self, unit)
 	-- Name-only first: the target highlight reads self.__nameOnly.
 	UpdateNameOnly(self)
 	UpdateTargetHighlight(self)
@@ -643,8 +684,16 @@ local function BuildHealth(self)
 	bg:SetAllPoints()
 	bg:SetColorTexture(0.12, 0.12, 0.12, 0.9)
 	health.bg = bg
-
 	self.Health = health
+
+	if (db.ExecuteRange or 0) > 0 then
+		local color = db.ExecuteColor or { 0.9, 0.2, 0.2 }
+		local tint = health:CreateTexture(nil, "OVERLAY", nil, 1)
+		tint:SetAllPoints(health:GetStatusBarTexture())
+		tint:SetColorTexture(color[1], color[2], color[3], 1)
+		tint:SetAlpha(0)
+		self.ExecuteTint = tint
+	end
 	-- Soft shadow instead of the hard border. Its colour doubles as the
 	-- target highlight and threat cue (see UpdateTargetHighlight).
 	K.CreateShadow(health)
