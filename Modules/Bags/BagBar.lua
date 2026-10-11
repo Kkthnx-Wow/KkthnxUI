@@ -54,7 +54,6 @@ local function CropIcon(btn, name)
 	if name == "MainMenuBarBackpackButton" or not tex or tex == DEFAULT_TEX then
 		icon:SetTexture(BACKPACK_ICON)
 	end
-	icon.Show = nil
 	icon:Show()
 	icon:ClearAllPoints()
 	icon:SetPoint("TOPLEFT", btn, "TOPLEFT", 1, -1)

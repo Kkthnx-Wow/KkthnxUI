@@ -26,7 +26,7 @@ local Module = K:NewModule("AlertFrames")
 local _G = _G
 local ipairs = ipairs
 local select = select
-local tremove = table.remove
+local setmetatable = setmetatable
 local wipe = wipe
 
 local CreateFrame = CreateFrame
@@ -45,6 +45,7 @@ local parentFrame
 -- Monotonic counter stamped on each alert as it appears, so the stack keeps the
 -- order alerts arrived in rather than pool-enumeration order.
 local showSequence = 0
+local showOrder = setmetatable({}, { __mode = "k" })
 local hooksInstalled = false
 local talkingHeadHidden = false
 
@@ -85,7 +86,7 @@ local function QueuedAlertsInStackOrder(pool)
 		end
 	end
 	table.sort(scratchAlerts, function(a, b)
-		local orderA, orderB = a.KKUI_ShowSequence or 0, b.KKUI_ShowSequence or 0
+		local orderA, orderB = showOrder[a] or 0, showOrder[b] or 0
 		if orderA ~= orderB then
 			return orderA < orderB
 		end
@@ -127,21 +128,21 @@ local function AdjustAnchorsNonAlert(self, relativeAlert)
 	return relativeAlert
 end
 
--- Swap in the right anchor routine for a subsystem based on how it stores its
--- frames (pooled queue, single alert frame, or a plain anchor frame).
-local function AdjustPosition(subSystem)
+-- Pick the anchor routine for a subsystem from how it stores its frames (pooled
+-- queue, single alert frame, or a plain anchor frame). Blizzard's own subsystem
+-- tables are only read, never written, so nothing in them carries our taint.
+local function AdjustFor(subSystem, relativeAlert)
 	if subSystem.alertFramePool then
-		subSystem.AdjustAnchors = AdjustQueuedAnchors
+		return AdjustQueuedAnchors(subSystem, relativeAlert)
 	elseif not subSystem.anchorFrame then
-		subSystem.AdjustAnchors = AdjustAnchors
-	else
-		subSystem.AdjustAnchors = AdjustAnchorsNonAlert
+		return AdjustAnchors(subSystem, relativeAlert)
 	end
+	return AdjustAnchorsNonAlert(subSystem, relativeAlert)
 end
 
 -- Flip stacking direction depending on which half of the screen the mover sits
--- in, then point Blizzard's own base anchor (and the loot container) at it.
-local function SyncAnchorDirection(alertContainer)
+-- in, then point the loot container at it.
+local function SyncAnchorDirection()
 	local y = select(2, parentFrame:GetCenter())
 	local screenHeight = UIParent:GetTop()
 	if y and screenHeight and y > screenHeight / 2 then
@@ -150,27 +151,23 @@ local function SyncAnchorDirection(alertContainer)
 		POSITION, ANCHOR_POINT = "BOTTOM", "TOP"
 	end
 
-	if alertContainer.SetBaseAnchorFrame then
-		alertContainer:SetBaseAnchorFrame(parentFrame)
-	end
 	if GroupLootContainer then
 		GroupLootContainer:ClearAllPoints()
 		GroupLootContainer:SetPoint(POSITION, parentFrame)
 	end
 end
 
--- Re-run the whole anchor chain with the current direction and spacing. The
--- Blizzard post-hook can fire before direction is synced, so this settles it.
+-- Re-run the anchor chain from our mover after Blizzard's own pass has finished.
+-- Blizzard has already sorted the subsystem list by then. The Talking Head is
+-- skipped because it is placed or hidden separately.
 local function RepositionAllAlerts(alertContainer)
-	if alertContainer.CleanAnchorPriorities then
-		alertContainer:CleanAnchorPriorities()
-	end
-	local relativeFrame = alertContainer.baseAnchorFrame or alertContainer
+	local relativeFrame = parentFrame
 	for _, subSystem in ipairs(alertContainer.alertFrameSubSystems) do
-		AdjustPosition(subSystem)
-		local resultFrame = subSystem:AdjustAnchors(relativeFrame)
-		if not resultFrame or not resultFrame.IsInDefaultPosition or resultFrame:IsInDefaultPosition() then
-			relativeFrame = resultFrame
+		if subSystem.anchorFrame ~= _G.TalkingHeadFrame then
+			local resultFrame = AdjustFor(subSystem, relativeFrame)
+			if not resultFrame or not resultFrame.IsInDefaultPosition or resultFrame:IsInDefaultPosition() then
+				relativeFrame = resultFrame
+			end
 		end
 	end
 end
@@ -179,7 +176,7 @@ local function OnUpdateAnchors(alertContainer)
 	if not IsActive() then
 		return
 	end
-	SyncAnchorDirection(alertContainer)
+	SyncAnchorDirection()
 	RepositionAllAlerts(alertContainer)
 	if GroupLootContainer and _G.GroupLootContainer_Update then
 		_G.GroupLootContainer_Update(GroupLootContainer)
@@ -253,20 +250,6 @@ local function InstallHooks()
 	GroupLootContainer:EnableMouse(false)
 	GroupLootContainer.ignoreFramePositionManager = true
 
-	-- Take the Talking Head subsystem out of the alert stack (we place or hide it
-	-- ourselves) and prime the anchor routine on every other subsystem.
-	for index = #AlertFrame.alertFrameSubSystems, 1, -1 do
-		local subSystem = AlertFrame.alertFrameSubSystems[index]
-		if subSystem.anchorFrame and subSystem.anchorFrame == _G.TalkingHeadFrame then
-			tremove(AlertFrame.alertFrameSubSystems, index)
-		else
-			AdjustPosition(subSystem)
-		end
-	end
-
-	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(_, subSystem)
-		AdjustPosition(subSystem)
-	end)
 	hooksecurefunc(AlertFrame, "UpdateAnchors", OnUpdateAnchors)
 	hooksecurefunc("GroupLootContainer_Update", OnGroupLootUpdate)
 
@@ -274,7 +257,7 @@ local function InstallHooks()
 	if _G.AlertFrame_ShowNewAlert then
 		hooksecurefunc("AlertFrame_ShowNewAlert", function(frame)
 			showSequence = showSequence + 1
-			frame.KKUI_ShowSequence = showSequence
+			showOrder[frame] = showSequence
 		end)
 	end
 end

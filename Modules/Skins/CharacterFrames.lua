@@ -574,7 +574,6 @@ function Module:StyleInspectFrame()
 	K.SetFont(averageItemLevelText, 12, K.FontOutlineStyle())
 	averageItemLevelText:SetJustifyH("CENTER")
 	averageItemLevelText:SetPoint("BOTTOM", InspectFrame.Inset, "BOTTOM", 0, 46)
-	InspectPaperDollItemsFrame.AverageItemLevelText = averageItemLevelText
 
 	if _G.InspectPaperDollFrame_SetLevel and _G.C_PaperDollInfo and _G.C_PaperDollInfo.GetInspectItemLevel then
 		hooksecurefunc("InspectPaperDollFrame_SetLevel", function()
