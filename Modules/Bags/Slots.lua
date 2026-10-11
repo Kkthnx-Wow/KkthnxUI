@@ -188,6 +188,15 @@ local function Skin(button)
 	scrap:SetPoint("TOP", button, "TOP", 0, 1)
 	scrap:Hide()
 	button.KKUI_Scrap = scrap
+	-- Equipment set marker: a small accent square on the bottom edge, shown on any
+	-- item that belongs to a saved equipment set, so a set piece is not sold or
+	-- deleted by mistake. A plain square needs no atlas to exist.
+	local setMark = button:CreateTexture(nil, "OVERLAY", nil, 2)
+	setMark:SetSize(6, 6)
+	setMark:SetPoint("BOTTOM", button, "BOTTOM", 0, 2)
+	setMark:SetColorTexture(K.Colors.accent[1], K.Colors.accent[2], K.Colors.accent[3], 1)
+	setMark:Hide()
+	button.KKUI_Set = setMark
 
 	-- Alt-click pins or unpins the item. This hooks alongside the template's own
 	-- click handler rather than replacing it, so use, pickup, and split keep
@@ -380,6 +389,9 @@ function Module:UpdateSlot(button, bag, slot)
 		if button.KKUI_Scrap then
 			button.KKUI_Scrap:Hide()
 		end
+		if button.KKUI_Set then
+			button.KKUI_Set:Hide()
+		end
 		if button.KKUI_Quality then
 			button.KKUI_Quality:Hide()
 		end
@@ -531,5 +543,14 @@ function Module:UpdateSlot(button, bag, slot)
 			end
 		end
 		button.KKUI_Scrap:SetShown(scrappable)
+	end
+
+	-- Equipment set marker.
+	if button.KKUI_Set then
+		local inSet = false
+		if C.Bags.ShowEquipmentSet then
+			inSet = C_Container.GetContainerItemEquipmentSetInfo(bag, slot)
+		end
+		button.KKUI_Set:SetShown(inSet and true or false)
 	end
 end
