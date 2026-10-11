@@ -20,6 +20,7 @@ Module.LAB = LibStub and LibStub("LibActionButton-1.0-KkthnxUI", true)
 
 Module.bars = {}
 Module.buttons = {}
+Module.enableAfterCombat = true
 
 -- Static definition of each bar: which config key it reads, its action page
 -- (or "main" for the paged primary bar), and where it anchors by default. Anchor

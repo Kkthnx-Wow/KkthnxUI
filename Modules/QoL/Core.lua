@@ -36,6 +36,7 @@ if not (K.Client and K.Client.IsRetail) then
 end
 
 local Module = K:NewModule("QoL")
+Module.enableAfterCombat = true
 
 local CreateFrame = CreateFrame
 local UIParent = UIParent

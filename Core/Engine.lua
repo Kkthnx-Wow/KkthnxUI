@@ -47,6 +47,7 @@ local tremove = table.remove
 local xpcall = xpcall
 local geterrorhandler = geterrorhandler
 local CreateFrame = CreateFrame
+local InCombatLockdown = InCombatLockdown
 
 -- ---------------------------------------------------------------------------
 -- Client / flavor detection
@@ -297,11 +298,20 @@ local function InitializeModules()
 	end
 end
 
+-- A module that builds secure frames sets enableAfterCombat. Loading in combat
+-- (a /reload mid fight) leaves the client refusing to create or configure those,
+-- so such a module is enabled when combat ends instead.
 local function EnableModules()
 	for _, module in ipairs(moduleOrder) do
 		if module.enabledState and not module.__enabled and module.OnEnable then
 			module.__enabled = true
-			safeCall(module.OnEnable, module)
+			if module.enableAfterCombat and InCombatLockdown() then
+				K.DeferCombat("Enable:" .. module.moduleName, function()
+					safeCall(module.OnEnable, module)
+				end)
+			else
+				safeCall(module.OnEnable, module)
+			end
 		end
 	end
 end

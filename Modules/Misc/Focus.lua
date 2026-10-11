@@ -25,6 +25,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local Module = K:NewModule("Focus")
+Module.enableAfterCombat = true
 
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown

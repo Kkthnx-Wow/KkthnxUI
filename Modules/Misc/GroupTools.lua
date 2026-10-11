@@ -17,6 +17,7 @@ if not (K.Client and K.Client.IsRetail) then
 end
 
 local Module = K:NewModule("GroupTools")
+Module.enableAfterCombat = true
 
 local _G = _G
 local ipairs = ipairs
