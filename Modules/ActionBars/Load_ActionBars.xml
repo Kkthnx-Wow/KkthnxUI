@@ -5,6 +5,7 @@
 	<Script file="Keybind.lua" />
 	<Script file="ButtonStyle.lua" />
 	<Script file="Bars.lua" />
+	<Script file="BindMode.lua" />
 	<Script file="PetBar.lua" />
 	<Script file="StanceBar.lua" />
 	<Script file="PossessBar.lua" />

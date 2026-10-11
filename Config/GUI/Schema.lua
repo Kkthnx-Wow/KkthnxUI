@@ -362,6 +362,13 @@ GUI.schema = {
 			{ kind = "header", label = L["Global"] },
 			{ kind = "check", label = L["Enable Action Bars"], path = { "ActionBar", "Enable" }, reload = true },
 			{ kind = "check", label = L["Show Empty Button Grid"], path = { "ActionBar", "ShowGrid" }, reload = true },
+			{ kind = "button", label = L["Keybind Mode"], tooltip = L["Hover an action button and press a key to bind it. Escape clears the button under the pointer. Also /kkbind."], onClick = function()
+				local m = K:GetModule("ActionBars", true)
+				if m and m.ToggleBindMode then
+					K.GUI.Hide()
+					m:ToggleBindMode()
+				end
+			end },
 			{ kind = "dropdown", label = L["Cast Actions On"], path = { "ActionBar", "KeyDown" }, apply = ApplyAllBars, options = {
 				{ text = L["Game Setting"], value = "Default" },
 				{ text = L["Key Press"], value = "Press" },
