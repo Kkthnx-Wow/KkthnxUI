@@ -287,7 +287,6 @@ function Pixel.Snap(value)
 end
 
 -- Apply the configured (or auto) UIParent scale. Deferred in combat.
-local pendingScale
 function K:SetupUIScale(init)
 	local general = C.General or {}
 	if general.AutoScale then
@@ -301,21 +300,9 @@ function K:SetupUIScale(init)
 	end
 
 	if InCombatLockdown() then
-		if not pendingScale then
-			pendingScale = true
-			local core = K:GetModule("Core", true)
-			if core then
-				-- Hand back this exact handler rather than the event name, so a future
-				-- listener on the shared Core module is not dropped along with it.
-				local once
-				once = function(mod)
-					mod:UnregisterEvent("PLAYER_REGEN_ENABLED", once)
-					pendingScale = nil
-					K:SetupUIScale()
-				end
-				core:RegisterEvent("PLAYER_REGEN_ENABLED", once)
-			end
-		end
+		K.DeferCombat("UIScale", function()
+			K:SetupUIScale()
+		end)
 		return
 	end
 
