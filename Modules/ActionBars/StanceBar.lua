@@ -141,7 +141,7 @@ function Module:CreateStanceBar()
 
 	-- Forms change when a talent or spec does, and the buttons need telling what
 	-- each form looks like whenever one is used.
-	for _, event in ipairs({ "UPDATE_SHAPESHIFT_FORMS", "PLAYER_ENTERING_WORLD", "SPELLS_CHANGED", "PLAYER_REGEN_ENABLED" }) do
+	for _, event in ipairs({ "UPDATE_SHAPESHIFT_FORMS", "PLAYER_ENTERING_WORLD", "SPELLS_CHANGED" }) do
 		self:RegisterEvent(event, function()
 			Module:UpdateStanceVisibility(bar)
 		end)
@@ -158,11 +158,16 @@ end
 
 -- Show the bar only when the class actually has forms, and never over a pet
 -- battle, vehicle, or override bar. Buttons and the visibility driver are
--- protected, so a change that arrives in combat waits for the next
--- PLAYER_REGEN_ENABLED, which is also registered above.
+-- protected, so a change that arrives in combat waits for combat to end.
 function Module:UpdateStanceVisibility(bar)
 	bar = bar or (self.bars and self.bars.StanceBar)
-	if not bar or InCombatLockdown() then
+	if not bar then
+		return
+	end
+	if InCombatLockdown() then
+		K.DeferCombat("StanceBar", function()
+			Module:UpdateStanceVisibility()
+		end)
 		return
 	end
 	self:UpdateStanceButtons()

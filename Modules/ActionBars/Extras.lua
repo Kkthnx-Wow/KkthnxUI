@@ -40,7 +40,13 @@ function Module:AttachExtraMover(frame, key, label, point, reparent, width, heig
 	frame.__kkuiHolder = holder
 
 	local function Reanchor()
-		if frame.__kkuiPinning or InCombatLockdown() then
+		if frame.__kkuiPinning then
+			return
+		end
+		-- Moving a protected frame is blocked in combat, so it is pinned again
+		-- once combat ends.
+		if InCombatLockdown() then
+			K.DeferCombat("ExtraAnchor:" .. key, Reanchor)
 			return
 		end
 		frame.__kkuiPinning = true
@@ -56,7 +62,6 @@ function Module:AttachExtraMover(frame, key, label, point, reparent, width, heig
 
 	Reanchor()
 	hooksecurefunc(frame, "SetPoint", Reanchor)
-	frame.__kkuiReanchor = Reanchor
 end
 
 -- Re-size a mover after the fact, for a frame whose useful area changes (the zone
@@ -224,16 +229,6 @@ function Module:StyleVehicleLeave()
 	self:AttachExtraMover(button, "VehicleLeave", L["Leave Vehicle"], { "BOTTOM", UIParent, "BOTTOM", -80, 320 }, true)
 end
 
--- Re-pin every extra once combat ends, since we skip re-anchoring in combat.
-function Module:PinExtras()
-	for _, key in ipairs({ "ExtraActionButton1", "ZoneAbilityFrame", "MainMenuBarVehicleLeaveButton" }) do
-		local frame = _G[key]
-		if frame and frame.__kkuiReanchor then
-			frame.__kkuiReanchor()
-		end
-	end
-end
-
 function Module:CreateExtras()
 	if not C.ActionBar.ExtraBar.Enable then
 		return
@@ -241,6 +236,4 @@ function Module:CreateExtras()
 	self:StyleExtraActionButton()
 	self:StyleZoneAbility()
 	self:StyleVehicleLeave()
-
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "PinExtras")
 end

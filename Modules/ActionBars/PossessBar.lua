@@ -87,19 +87,15 @@ function Module:CreatePossessBar()
 	-- is loaded in combat, wait for the fight to end.
 	local function ShowButtons()
 		if InCombatLockdown() then
+			K.DeferCombat("PossessButtons", ShowButtons)
 			return
 		end
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", ShowButtons)
 		for _, button in ipairs(bar.buttons) do
 			button:SetAttribute("statehidden", nil)
 			button:Show()
 		end
 	end
-	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", ShowButtons)
-	else
-		ShowButtons()
-	end
+	ShowButtons()
 
 	K.CreateMover(bar, "PossessBar", L["Possess Bar"], { "BOTTOM", UIParent, "BOTTOM", 0, 280 }, bar:GetWidth(), bar:GetHeight())
 

@@ -122,7 +122,6 @@ function Module:OnEnable()
 	-- Bind keys to our buttons and keep them in sync with binding changes.
 	self:ReassignBindings()
 	self:RegisterEvent("UPDATE_BINDINGS", "ReassignBindings")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "ReassignBindings")
 
 	self:UpdateBorders()
 end

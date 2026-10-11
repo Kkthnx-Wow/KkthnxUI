@@ -214,6 +214,9 @@ end
 -- combat only, re-run whenever bindings change.
 function Module:ReassignBindings()
 	if InCombatLockdown() then
+		K.DeferCombat("ActionBarBindings", function()
+			Module:ReassignBindings()
+		end)
 		return
 	end
 	for _, def in ipairs(self.BarDefs) do
@@ -235,19 +238,9 @@ end
 
 -- Defer a layout change until combat ends.
 function Module:QueueCombatUpdate(key)
-	self.pendingUpdates = self.pendingUpdates or {}
-	self.pendingUpdates[key] = true
-	if not self.combatWatcher then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-			if self.pendingUpdates then
-				for pending in pairs(self.pendingUpdates) do
-					self:UpdateBar(pending)
-				end
-				self.pendingUpdates = nil
-			end
-		end)
-		self.combatWatcher = true
-	end
+	K.DeferCombat("ActionBar:" .. key, function()
+		Module:UpdateBar(key)
+	end)
 end
 
 -- ---------------------------------------------------------------------------
