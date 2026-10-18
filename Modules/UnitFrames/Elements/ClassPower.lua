@@ -116,7 +116,9 @@ function Build.ClassPower(self)
 	-- to re-divide the row. Combo-point classes also get the per-point ramp so
 	-- each point reads distinctly.
 	local combo = COMBO_CLASS[K.Class]
-	bars.PostUpdate = function(_, _, max, hasMaxChanged)
+	-- Arguments are (element, cur, max, hasCurChanged, hasMaxChanged, ...). Reading
+	-- the wrong flag here left the row undivided when only the maximum changed.
+	bars.PostUpdate = function(_, _, max, _, hasMaxChanged)
 		if hasMaxChanged and max and max > 0 then
 			LayoutSegments(holder, max)
 		end
