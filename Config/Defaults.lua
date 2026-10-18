@@ -36,19 +36,19 @@ K.ConfigDefaults = {
 		-- Each bar is fully self-contained: size, spacing, layout, opacity,
 		-- mouseover fade, and its own text toggles. Sizes and spacing match the
 		-- original KkthnxUI (38px buttons, 6px spacing).
-		Bar1 = { Enable = true, Buttons = 12, PerRow = 12, Size = 38, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
-		Bar2 = { Enable = true, Buttons = 12, PerRow = 12, Size = 38, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
-		Bar3 = { Enable = true, Buttons = 12, PerRow = 12, Size = 38, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
-		Bar4 = { Enable = true, Buttons = 12, PerRow = 1, Size = 38, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
-		Bar5 = { Enable = true, Buttons = 12, PerRow = 1, Size = 38, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
+		Bar1 = { Enable = true, Buttons = 12, PerRow = 12, Size = 38, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
+		Bar2 = { Enable = true, Buttons = 12, PerRow = 12, Size = 38, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
+		Bar3 = { Enable = true, Buttons = 12, PerRow = 12, Size = 38, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
+		Bar4 = { Enable = true, Buttons = 12, PerRow = 1, Size = 38, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
+		Bar5 = { Enable = true, Buttons = 12, PerRow = 1, Size = 38, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
 		-- Bars 6-8 are the extra multibars, off by default so they do not clutter.
-		Bar6 = { Enable = false, Buttons = 12, PerRow = 12, Size = 34, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
-		Bar7 = { Enable = false, Buttons = 12, PerRow = 12, Size = 34, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
-		Bar8 = { Enable = false, Buttons = 12, PerRow = 12, Size = 34, Space = 6, Alpha = 1, Mouseover = false, HotKey = true, MacroName = true, Count = true },
+		Bar6 = { Enable = false, Buttons = 12, PerRow = 12, Size = 34, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
+		Bar7 = { Enable = false, Buttons = 12, PerRow = 12, Size = 34, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
+		Bar8 = { Enable = false, Buttons = 12, PerRow = 12, Size = 34, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true, MacroName = true, Count = true },
 		-- Pet, stance, and the extra/zone ability button.
-		PetBar = { Enable = true, PerRow = 10, Size = 30, Space = 6, Alpha = 1, Mouseover = false, HotKey = true },
-		StanceBar = { Enable = true, PerRow = 10, Size = 30, Space = 6, Alpha = 1, Mouseover = false, HotKey = true },
-		PossessBar = { Enable = true, PerRow = 2, Size = 30, Space = 6, Alpha = 1, Mouseover = false, HotKey = true },
+		PetBar = { Enable = true, PerRow = 10, Size = 30, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true },
+		StanceBar = { Enable = true, PerRow = 10, Size = 30, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true },
+		PossessBar = { Enable = true, PerRow = 2, Size = 30, Space = 6, Alpha = 1, Mouseover = false, FadeCombat = false, HotKey = true },
 		ExtraBar = { Enable = true, Size = 46 },
 	},
 

@@ -258,6 +258,9 @@ local function UnitControls(key, opts)
 		Add({ kind = "check", label = L["Show Power Bar"], path = { "Unitframe", key, "ShowPower" }, reload = true, dependsOn = dep, tooltip = L["Hide the power bar for this frame and let the health bar fill the space."] })
 		Add({ kind = "slider", label = L["Power Height"], path = { "Unitframe", key, "PowerHeight" }, min = 0, max = 30, step = 1, reload = true, dependsOn = dep })
 	end
+	if opts.powerHeight then
+		Add({ kind = "slider", label = L["Power Height"], path = { "Unitframe", key, "PowerHeight" }, min = 0, max = 30, step = 1, reload = true, dependsOn = dep })
+	end
 	if opts.powerMode then
 		Add({ kind = "dropdown", label = L["Power Bar"], path = { "Unitframe", key, "PowerMode" }, options = {
 			{ text = L["All Powers"], value = "All" },
@@ -490,7 +493,7 @@ GUI.schema = {
 
 			{ kind = "header", label = L["Group Frames"] },
 			ExtraButton(L["Party"], "UF_Party", UnitControls("Party", { power = true, debuffs = true, portrait = true, showSolo = true, showPlayer = true, dispelHighlight = true, castbar = true, raidStyle = true }), L["Frames for a five person party."]),
-			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { power = true, powerMode = true, debuffs = true, debuffSize = true, raidText = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
+			ExtraButton(L["Raid"], "UF_Raid", UnitControls("Raid", { powerHeight = true, powerMode = true, debuffs = true, debuffSize = true, raidText = true, groupsPerRow = true, groupBy = true, groupNumber = true, raidLayout = true, dispelHighlight = true }), L["Frames for a raid group, with their own layout and grouping options."]),
 			ExtraButton(L["Boss"], "UF_Boss", UnitControls("Boss", { power = true, debuffs = true, spacing = true, castbar = true, portrait = true }), L["The boss frames that appear during an encounter."]),
 
 			{ kind = "header", label = L["Shared"] },
