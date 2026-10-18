@@ -24,7 +24,6 @@ local floor = math.floor
 local InCombatLockdown = InCombatLockdown
 local GetNumShapeshiftForms = GetNumShapeshiftForms
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
-local GetShapeshiftFormCooldown = GetShapeshiftFormCooldown
 
 local NUM_STANCE_SLOTS = 10
 
@@ -58,9 +57,10 @@ function Module:LayoutStanceBar()
 	end
 end
 
--- Icon, active mark, tint and cooldown for each form. Plain texture and colour
--- calls only, so it is safe in combat. The cooldown goes straight to the cooldown
--- frame, which accepts the values even when the game hides them.
+-- Icon, active mark and tint for each form. Plain texture and colour calls only,
+-- so it is safe in combat. The cooldown swipe is left to the stock bar, which
+-- redraws it on UPDATE_SHAPESHIFT_COOLDOWN. Setting a cooldown from here would be
+-- an addon call on a protected cooldown frame, which 12.1.5 no longer allows.
 function Module:UpdateStanceState()
 	local bar = self.bars and self.bars.StanceBar
 	if not bar then
@@ -76,10 +76,6 @@ function Module:UpdateStanceState()
 				button.icon:SetVertexColor(1, 1, 1)
 			else
 				button.icon:SetVertexColor(0.4, 0.4, 0.4)
-			end
-			if button.cooldown then
-				local start, duration = GetShapeshiftFormCooldown(index)
-				button.cooldown:SetCooldown(start or 0, duration or 0)
 			end
 		end
 	end

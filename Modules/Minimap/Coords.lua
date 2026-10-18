@@ -37,10 +37,24 @@ local function PlayerXY()
 	return x * 100, y * 100
 end
 
+-- Since 12.1.5 the minimap carries its own player coordinates readout, off until
+-- the player turns it on in the game settings. Ours replaces it, so it is taken
+-- off the map rather than printing the same numbers twice. It is only hidden, not
+-- reparented or changed, so turning ours off and reloading brings it back.
+local function HideStockCoords()
+	local container = _G.MinimapCluster and _G.MinimapCluster.MinimapContainer
+	local stock = container and container.PlayerCoords
+	if stock then
+		stock:Hide()
+	end
+end
+
 function Module:CreateCoords()
 	if not C.Minimap.ShowCoords then
 		return
 	end
+
+	HideStockCoords()
 
 	local coords = Minimap:CreateFontString(nil, "OVERLAY")
 	K.SetFont(coords, C.Minimap.LocationFontSize or 12, K.FontOutlineStyle())
@@ -73,7 +87,7 @@ function Module:CreateCoords()
 		elapsed = 0
 		local x, y = PlayerXY()
 		if x then
-			coords:SetFormattedText("%.1f, %.1f", x, y)
+			coords:SetText(K.FormatCoords(x, y))
 			coords:Show()
 		else
 			coords:SetText("")

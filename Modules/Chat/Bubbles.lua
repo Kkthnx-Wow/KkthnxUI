@@ -165,7 +165,12 @@ local function OnUpdate(self, elapsed)
 	self.elapsed = 0
 	self:Hide()
 
-	for _, bubble in pairs(GetAllChatBubbles()) do
+	-- The list can come back as a secret table, which cannot be walked.
+	local bubbles = GetAllChatBubbles()
+	if not bubbles or IsSecret(bubbles) then
+		return
+	end
+	for _, bubble in pairs(bubbles) do
 		SkinBubble(bubble)
 	end
 end

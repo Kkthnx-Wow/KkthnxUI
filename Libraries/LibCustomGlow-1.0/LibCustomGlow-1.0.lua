@@ -13,7 +13,7 @@ if not lib then return end
 local Masque = LibStub("Masque", true)
 local AnimateTexCoords = (TextureUtil and TextureUtil.AnimateTexCoords) or _G.AnimateTexCoords
 
-local fallbackLevel = 0 -- NDui: decreased from 8
+local fallbackLevel = 0 -- lowered from the stock 8
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local textureList = {
 	empty = [[Interface\AdventureMap\BrokenIsles\AM_29]],
@@ -954,7 +954,7 @@ table.insert(lib.glowList, "Proc Glow")
 lib.startList["Proc Glow"] = lib.ProcGlow_Start
 lib.stopList["Proc Glow"] = lib.ProcGlow_Stop
 
--- NDui
+
 local LCG_GlowList = {
 	[1] = "Pixel Glow",
 	[2] = "Autocast Shine",
@@ -962,7 +962,7 @@ local LCG_GlowList = {
 	[4] = "Proc Glow",
 }
 local function GetGlowType()
-	return LCG_GlowList[NDuiADB and NDuiADB.GlowMode or 3]
+	return LCG_GlowList[3]
 end
 
 lib.ShowOverlayGlow = function(button)

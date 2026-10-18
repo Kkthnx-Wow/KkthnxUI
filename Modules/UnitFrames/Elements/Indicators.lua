@@ -352,21 +352,29 @@ function Build.GroupIndicators(self)
 	self.AssistantIndicator = Icon(health, 12, "TOPLEFT", health, "TOPLEFT", 1, -1)
 
 	-- Clean role glyphs from the modern icon set. Only tank and healer are worth
-	-- showing, a DPS icon on every damage dealer is pure noise, so hide that role.
+	-- showing, a DPS icon on every damage dealer is pure noise, so that role gets a
+	-- blank atlas.
 	--
-	-- The role handed to PostUpdate is an Enum.LFGRole number from
-	-- UnitGroupRolesAssignedEnum, not the old "TANK" and "HEALER" strings. Testing
-	-- for the strings matched nothing, so the icon was hidden for everyone.
+	-- On 12.1.5 and later the role is chosen by the game's own unit frame helper,
+	-- which stays correct when a unit's role is hidden from addons, and it is told
+	-- which art to use per role. The older path hands PostUpdate an Enum.LFGRole
+	-- number from UnitGroupRolesAssignedEnum instead, so that callback is only kept
+	-- for clients without the helper.
 	self.GroupRoleIndicator = Icon(health, 12, "BOTTOMLEFT", health, "BOTTOMLEFT", 1, 1)
-	self.GroupRoleIndicator.PostUpdate = function(element, role)
-		if role == LFG_TANK then
-			element:SetAtlas("icons_16x16_tank")
-			element:Show()
-		elseif role == LFG_HEALER then
-			element:SetAtlas("icons_16x16_heal")
-			element:Show()
-		else
-			element:Hide()
+	self.GroupRoleIndicator.tankAtlas = "icons_16x16_tank"
+	self.GroupRoleIndicator.healerAtlas = "icons_16x16_heal"
+	self.GroupRoleIndicator.damageAtlas = ""
+	if not _G.UnitFrameUtil then
+		self.GroupRoleIndicator.PostUpdate = function(element, role)
+			if role == LFG_TANK then
+				element:SetAtlas("icons_16x16_tank")
+				element:Show()
+			elseif role == LFG_HEALER then
+				element:SetAtlas("icons_16x16_heal")
+				element:Show()
+			else
+				element:Hide()
+			end
 		end
 	end
 	self.RaidRoleIndicator = Icon(health, 11, "BOTTOMRIGHT", health, "BOTTOMRIGHT", -1, 1)

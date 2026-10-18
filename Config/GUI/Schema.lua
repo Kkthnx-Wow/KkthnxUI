@@ -538,6 +538,11 @@ GUI.schema = {
 			{ kind = "check", label = L["Show Clock"], path = { "Minimap", "ShowClock" }, reload = true, dependsOn = { "Minimap", "Enable" } },
 			{ kind = "slider", label = L["Clock Text Size"], path = { "Minimap", "ClockFontSize" }, min = 8, max = 20, step = 1, reload = true, dependsOn = { "Minimap", "ShowClock" } },
 			{ kind = "check", label = L["Show Coordinates"], path = { "Minimap", "ShowCoords" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Show your position just below the minimap, hidden where the map has no player position."] },
+			{ kind = "dropdown", label = L["Coordinate Precision"], path = { "General", "CoordPrecision" }, options = {
+				{ text = L["Game Setting"], value = "Game" },
+				{ text = L["Tenths"], value = "Tenths" },
+				{ text = L["Whole Numbers"], value = "Whole" },
+			}, tooltip = L["How exact the coordinates on the minimap and world map are. Game Setting follows the coordinates option in the game's own interface settings."] },
 			{ kind = "slider", label = L["Auto Zoom Reset"], path = { "Minimap", "ZoomResetDelay" }, min = 0, max = 30, step = 1, dependsOn = { "Minimap", "Enable" }, tooltip = L["Seconds of no scrolling before the minimap zooms back out. 0 turns it off."] },
 			{ kind = "slider", label = L["Collected Button Size"], path = { "Minimap", "CollectedButtonSize" }, min = 16, max = 32, step = 1, reload = true, dependsOn = { "Minimap", "CollectButtons" }, tooltip = L["How big each addon button is inside the collector flyout."] },
 			{ kind = "check", label = L["Show Performance"], path = { "Minimap", "ShowPerformance" }, reload = true, dependsOn = { "Minimap", "Enable" }, tooltip = L["Framerate and latency, graded by colour. Movable, and hovering shows home and world latency plus the addons costing the most time."] },

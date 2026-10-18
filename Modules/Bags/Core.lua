@@ -923,6 +923,31 @@ function Module:HookBlizzard()
 	end
 end
 
+-- Where the bags open until the player moves them. The two side action bars hug
+-- the right edge of the screen, and the old fixed spot landed on top of them, so
+-- the window is placed just left of whichever of them are on. With neither on it
+-- sits near the edge. The width comes from the same config the bars are laid out
+-- from, so it follows their size and spacing.
+local EDGE_GAP = 4
+local BAR_GAP = 6
+local BAG_CLEARANCE = 14
+
+local function SideBarsWidth()
+	local bars = C.ActionBar
+	local width, count = EDGE_GAP, 0
+	if bars and bars.Enable then
+		for _, key in ipairs({ "Bar4", "Bar5" }) do
+			local cfg = bars[key]
+			if cfg and cfg.Enable then
+				local columns = math.min(cfg.PerRow, cfg.Buttons)
+				width = width + columns * cfg.Size + (columns - 1) * cfg.Space + (count > 0 and BAR_GAP or 0)
+				count = count + 1
+			end
+		end
+	end
+	return width + BAG_CLEARANCE
+end
+
 function Module:OnEnable()
 	if not C.Bags.Enable then
 		return
@@ -936,14 +961,14 @@ function Module:OnEnable()
 	local mainBags = detach and { 0, 1, 2, 3, 4 } or self.BagIDs
 
 	self.BagFrame = self:CreateContainer("KKUI_BagFrame", L["Inventory"], mainBags, C.Bags.BagsPerRow)
-	K.CreateMover(self.BagFrame, "Bags", L["Inventory"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -60, 60 }, self.BagFrame:GetWidth(), self.BagFrame:GetHeight())
+	K.CreateMover(self.BagFrame, "Bags", L["Inventory"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -SideBarsWidth(), 100 }, self.BagFrame:GetWidth(), self.BagFrame:GetHeight())
 	K.EnableFrameDrag(self.BagFrame)
 
 	if detach then
 		local reagent = self:CreateContainer("KKUI_ReagentFrame", L["Reagent Bag"], { REAGENT_BAG }, C.Bags.BagsPerRow)
 		reagent.noCategories = true
 		self.ReagentFrame = reagent
-		K.CreateMover(reagent, "ReagentBags", L["Reagent Bag"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -60, 320 }, reagent:GetWidth(), reagent:GetHeight())
+		K.CreateMover(reagent, "ReagentBags", L["Reagent Bag"], { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -SideBarsWidth(), 100 + self.BagFrame:GetHeight() + 10 }, reagent:GetWidth(), reagent:GetHeight())
 		K.EnableFrameDrag(reagent)
 	end
 

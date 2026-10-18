@@ -315,6 +315,27 @@ K.IsSecret = _G.issecretvalue or function()
 	return false
 end
 
+-- Coordinates as text, in the precision the player asked for. "Game" follows the
+-- game's own coordinates setting (the same one its map panel and minimap readout
+-- use, a CVar from 12.1.5), so every readout on screen agrees. Tenths or whole
+-- numbers can also be forced from the options.
+function K.FormatCoords(x, y)
+	local general = C.General
+	local mode = general and general.CoordPrecision
+	local tenths
+	if mode == "Tenths" then
+		tenths = true
+	elseif mode == "Whole" then
+		tenths = false
+	else
+		tenths = GetCVarBool("coordsByTenths")
+	end
+	if tenths then
+		return format("%.1f, %.1f", x, y)
+	end
+	return format("%d, %d", floor(x + 0.5), floor(y + 0.5))
+end
+
 -- Threat colouring shared by nameplates and unit frames, so both read the same
 -- way. The colour flips by role: a tank wants aggro (green while holding it), while
 -- everyone else wants none (red the moment they pull it). A nil result means the

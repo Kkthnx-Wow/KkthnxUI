@@ -129,7 +129,7 @@ function Module:UpdateCoords()
 	if sc and sc:IsMouseOver() then
 		local mx, my = sc:GetNormalizedCursorPosition()
 		if mx and my and mx >= 0 and my >= 0 then
-			coords.mouse:SetFormattedText("%s:  %.1f, %.1f", MOUSE_LABEL, mx * 100, my * 100)
+			coords.mouse:SetFormattedText("%s:  %s", MOUSE_LABEL, K.FormatCoords(mx * 100, my * 100))
 		else
 			coords.mouse:SetText("")
 		end
@@ -139,7 +139,7 @@ function Module:UpdateCoords()
 
 	local px, py = PlayerXY()
 	if px then
-		coords.player:SetFormattedText("%s:  %.1f, %.1f", PLAYER_LABEL, px * 100, py * 100)
+		coords.player:SetFormattedText("%s:  %s", PLAYER_LABEL, K.FormatCoords(px * 100, py * 100))
 	else
 		coords.player:SetFormattedText("%s:  %s", PLAYER_LABEL, "N/A")
 	end

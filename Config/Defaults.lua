@@ -19,6 +19,7 @@ K.ConfigDefaults = {
 		Font = "Normal",
 		FontOutline = true,
 		WelcomeMessage = true,
+		CoordPrecision = "Game", -- Game follows the game's coordinates setting, Tenths and Whole force one
 	},
 
 	ActionBar = {
