@@ -237,6 +237,17 @@ overlay:SetScript("OnMouseDown", function(_, mouseButton)
 	Bind(mods .. key)
 end)
 
+-- The wheel can carry a binding too, so it is read from the overlay the same way
+-- as the extra mouse buttons.
+overlay:EnableMouseWheel(true)
+overlay:SetScript("OnMouseWheel", function(_, delta)
+	if not command then
+		return
+	end
+	local mods = (IsAltKeyDown() and "ALT-" or "") .. (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "")
+	Bind(mods .. (delta > 0 and "MOUSEWHEELUP" or "MOUSEWHEELDOWN"))
+end)
+
 function Module:ToggleBindMode()
 	if active then
 		Leave()

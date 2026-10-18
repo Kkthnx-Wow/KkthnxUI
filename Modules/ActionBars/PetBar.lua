@@ -7,13 +7,12 @@
 		pet action state. Shown only while a pet with an action bar exists.
 -----------------------------------------------------------------------------]]
 
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local Module = K:GetModule("ActionBars")
 
 local _G = _G
-local ceil = math.ceil
-local floor = math.floor
+local InCombatLockdown = InCombatLockdown
 
 local NUM_PET_SLOTS = NUM_PET_ACTION_SLOTS or 10
 
@@ -36,26 +35,32 @@ function Module:CreatePetBar()
 		end
 	end
 
-	local size, space, perRow = cfg.Size, cfg.Space, cfg.PerRow
-	local count = #bar.buttons
-	local rows = ceil(count / perRow)
-	bar:SetSize(perRow * size + (perRow - 1) * space, rows * size + (rows - 1) * space)
-	for i, button in ipairs(bar.buttons) do
-		button:SetSize(size, size)
-		local col = (i - 1) % perRow
-		local row = floor((i - 1) / perRow)
-		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", bar, "TOPLEFT", col * (size + space), -row * (size + space))
-	end
+	self.bars.PetBar = bar
+	self:LayoutPetBar()
 
-	K.CreateMover(bar, "PetBar", "Pet Bar", { "BOTTOM", UIParent, "BOTTOM", 0, 210 }, bar:GetWidth(), bar:GetHeight())
+	K.CreateMover(bar, "PetBar", L["Pet Bar"], { "BOTTOM", UIParent, "BOTTOM", 0, 210 }, bar:GetWidth(), bar:GetHeight())
 
 	-- Only visible with a controllable pet, and never in a pet battle or while an
 	-- override, vehicle, possess, or shapeshift bar has taken over (some quests put
 	-- a bonus bar on the pet state, which otherwise showed this bar spuriously).
 	RegisterStateDriver(bar, "visibility", "[petbattle][overridebar][vehicleui][possessbar][shapeshift] hide; [pet] show; hide")
+	self:ApplyAuxHotKeys(bar, cfg)
 	self:SetupFade(bar, cfg)
 
-	self.bars.PetBar = bar
 	return bar
+end
+
+-- Lay the pet buttons out from the current settings. Out of combat only.
+function Module:LayoutPetBar()
+	local bar = self.bars.PetBar
+	if not bar then
+		return
+	end
+	if InCombatLockdown() then
+		K.DeferCombat("PetBarLayout", function()
+			Module:LayoutPetBar()
+		end)
+		return
+	end
+	self:LayoutAuxGrid(bar, C.ActionBar.PetBar)
 end

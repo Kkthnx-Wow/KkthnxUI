@@ -152,6 +152,47 @@ function Module:GetKeyDownSetting()
 	return nil
 end
 
+-- The pet, stance and possess bars reuse Blizzard's own buttons instead of LAB
+-- ones, so each lays itself out through its own function.
+local AUX_LAYOUT = { PetBar = "LayoutPetBar", StanceBar = "LayoutStanceBar", PossessBar = "LayoutPossessBar" }
+
+-- Grid layout shared by those three. `shown` is how many buttons are in use, which
+-- decides the footprint, while every button keeps its own grid slot. The mover
+-- follows the footprint. Moves protected buttons, so out of combat only.
+function Module:LayoutAuxGrid(bar, cfg, shown)
+	local size, space, perRow = cfg.Size, cfg.Space, cfg.PerRow
+	shown = shown or #bar.buttons
+	local rows = shown > 0 and ceil(shown / perRow) or 1
+	local cols = shown > 0 and (shown < perRow and shown or perRow) or 1
+	bar:SetSize(cols * size + (cols - 1) * space, rows * size + (rows - 1) * space)
+
+	for i, button in ipairs(bar.buttons) do
+		button:SetSize(size, size)
+		local col = (i - 1) % perRow
+		local row = floor((i - 1) / perRow)
+		button:ClearAllPoints()
+		button:SetPoint("TOPLEFT", bar, "TOPLEFT", col * (size + space), -row * (size + space))
+	end
+
+	local mover = bar.KKUI_Mover
+	if mover then
+		mover:SetSize(bar:GetWidth(), bar:GetHeight())
+	end
+end
+
+-- Hotkey text on the stock buttons, shown or hidden from the bar's own setting.
+-- Alpha rather than Hide, since the stock code shows and hides these itself.
+function Module:ApplyAuxHotKeys(bar, cfg)
+	local alpha = cfg.HotKey and 1 or 0
+	for _, button in ipairs(bar.buttons) do
+		local name = button:GetName()
+		local hotkey = button.HotKey or (name and _G[name .. "HotKey"])
+		if hotkey then
+			hotkey:SetAlpha(alpha)
+		end
+	end
+end
+
 -- Re-lay a bar from its current config. Safe to call any time out of combat.
 function Module:UpdateBar(key)
 	local bar = self.bars[key]
@@ -161,6 +202,14 @@ function Module:UpdateBar(key)
 	end
 	if InCombatLockdown() then
 		self:QueueCombatUpdate(key)
+		return
+	end
+
+	local aux = AUX_LAYOUT[key]
+	if aux then
+		self[aux](self)
+		self:ApplyAuxHotKeys(bar, cfg)
+		self:SetupFade(bar, cfg)
 		return
 	end
 

@@ -19,8 +19,6 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("ActionBars")
 
 local _G = _G
-local ceil = math.ceil
-local floor = math.floor
 
 local InCombatLockdown = InCombatLockdown
 local GetPossessInfo = GetPossessInfo
@@ -47,6 +45,21 @@ function Module:UpdatePossessState()
 	end
 end
 
+-- Lay the possess buttons out from the current settings. Out of combat only.
+function Module:LayoutPossessBar()
+	local bar = self.bars and self.bars.PossessBar
+	if not bar then
+		return
+	end
+	if InCombatLockdown() then
+		K.DeferCombat("PossessBarLayout", function()
+			Module:LayoutPossessBar()
+		end)
+		return
+	end
+	self:LayoutAuxGrid(bar, C.ActionBar.PossessBar)
+end
+
 function Module:CreatePossessBar()
 	local cfg = C.ActionBar.PossessBar
 	if not cfg or not cfg.Enable then
@@ -70,17 +83,8 @@ function Module:CreatePossessBar()
 		return
 	end
 
-	local size, space, perRow = cfg.Size, cfg.Space, cfg.PerRow
-	local count = #bar.buttons
-	local rows = ceil(count / perRow)
-	bar:SetSize(perRow * size + (perRow - 1) * space, rows * size + (rows - 1) * space)
-	for i, button in ipairs(bar.buttons) do
-		button:SetSize(size, size)
-		local col = (i - 1) % perRow
-		local row = floor((i - 1) / perRow)
-		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", bar, "TOPLEFT", col * (size + space), -row * (size + space))
-	end
+	self.bars.PossessBar = bar
+	self:LayoutPossessBar()
 
 	-- Show both buttons while it is safe to. Whether the bar itself is on screen is
 	-- the visibility driver's job, so the buttons can simply stay shown. If the UI
@@ -108,9 +112,9 @@ function Module:CreatePossessBar()
 	-- overridebar is left out on purpose. It is not established that mind control
 	-- never sets it, and hiding the bar there would hide the cancel button.
 	RegisterStateDriver(bar, "visibility", "[petbattle][vehicleui] hide; [possessbar] show; hide")
+	self:ApplyAuxHotKeys(bar, cfg)
 	self:SetupFade(bar, cfg)
 
-	self.bars.PossessBar = bar
 	for _, event in ipairs({ "UPDATE_POSSESS_BAR", "UPDATE_VEHICLE_ACTIONBAR", "UPDATE_OVERRIDE_ACTIONBAR", "PLAYER_ENTERING_WORLD" }) do
 		self:RegisterEvent(event, function()
 			Module:UpdatePossessState()

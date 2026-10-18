@@ -19,8 +19,6 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBars")
 
 local _G = _G
-local ceil = math.ceil
-local floor = math.floor
 local InCombatLockdown = InCombatLockdown
 local GetNumShapeshiftForms = GetNumShapeshiftForms
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
@@ -34,27 +32,8 @@ function Module:LayoutStanceBar()
 	if not bar or InCombatLockdown() then
 		return
 	end
-	local cfg = C.ActionBar.StanceBar
-	local size, space, perRow = cfg.Size, cfg.Space, cfg.PerRow
-
-	local shown = GetNumShapeshiftForms() or 0
-	local rows = shown > 0 and ceil(shown / perRow) or 1
-	local cols = shown > 0 and (shown < perRow and shown or perRow) or 1
-	bar:SetSize(cols * size + (cols - 1) * space, rows * size + (rows - 1) * space)
-
-	for i, button in ipairs(bar.buttons) do
-		button:SetSize(size, size)
-		local col = (i - 1) % perRow
-		local row = floor((i - 1) / perRow)
-		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", bar, "TOPLEFT", col * (size + space), -row * (size + space))
-	end
-
 	-- The footprint changes with the number of forms, so the mover follows it.
-	local mover = bar.KKUI_Mover
-	if mover then
-		mover:SetSize(bar:GetWidth(), bar:GetHeight())
-	end
+	self:LayoutAuxGrid(bar, C.ActionBar.StanceBar, GetNumShapeshiftForms() or 0)
 end
 
 -- Icon, active mark and tint for each form. Plain texture and colour calls only,
@@ -124,6 +103,7 @@ function Module:CreateStanceBar()
 	self.bars.StanceBar = bar
 
 	self:LayoutStanceBar()
+	self:ApplyAuxHotKeys(bar, cfg)
 	self:SetupFade(bar, cfg)
 
 	-- Size first so the mover box matches, with a sane fallback when the class

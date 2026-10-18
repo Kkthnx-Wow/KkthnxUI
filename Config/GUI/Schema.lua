@@ -137,6 +137,23 @@ local function BarControls(key)
 	}
 end
 
+-- Controls for the pet, stance and possess bars. They have no button count, since
+-- the game decides how many buttons exist, and the rest is the same as above.
+local function AuxBarControls(key, enableTooltip)
+	local apply = ApplyBar(key)
+	local dep = { "ActionBar", key, "Enable" }
+	return {
+		{ kind = "check", label = L["Enable Bar"], path = { "ActionBar", key, "Enable" }, reload = true, tooltip = enableTooltip },
+		{ kind = "slider", label = L["Buttons Per Row"], path = { "ActionBar", key, "PerRow" }, min = 1, max = 10, step = 1, apply = apply, dependsOn = dep },
+		{ kind = "slider", label = L["Button Size"], path = { "ActionBar", key, "Size" }, min = 20, max = 50, step = 1, apply = apply, dependsOn = dep },
+		{ kind = "slider", label = L["Button Spacing"], path = { "ActionBar", key, "Space" }, min = 0, max = 12, step = 1, apply = apply, dependsOn = dep },
+		{ kind = "slider", label = L["Bar Opacity"], path = { "ActionBar", key, "Alpha" }, min = 0, max = 1, step = 0.05, apply = apply, dependsOn = dep },
+		{ kind = "check", label = L["Mouseover Only"], path = { "ActionBar", key, "Mouseover" }, apply = apply, dependsOn = dep },
+		{ kind = "check", label = L["Fade Out Of Combat"], path = { "ActionBar", key, "FadeCombat" }, apply = apply, dependsOn = dep, tooltip = L["Fade the bar while out of combat and show it the moment a fight starts."] },
+		{ kind = "check", label = L["Show Hotkey"], path = { "ActionBar", key, "HotKey" }, apply = apply, dependsOn = dep },
+	}
+end
+
 -- Concatenate several control lists into one.
 local function Join(...)
 	local out = {}
@@ -417,9 +434,9 @@ GUI.schema = {
 			BarButton(L["Bar 7 (Extra)"], "Bar7", L["An extra bar, parked in the middle of the screen and off by default."]),
 			BarButton(L["Bar 8 (Extra)"], "Bar8", L["An extra bar, parked in the middle of the screen and off by default."]),
 			{ kind = "header", label = L["Extra Bars"] },
-			{ kind = "check", label = L["Enable Pet Bar"], path = { "ActionBar", "PetBar", "Enable" }, reload = true },
-			{ kind = "check", label = L["Enable Stance Bar"], path = { "ActionBar", "StanceBar", "Enable" }, reload = true },
-			{ kind = "check", label = L["Enable Possess Bar"], path = { "ActionBar", "PossessBar", "Enable" }, reload = true, tooltip = L["The small bar that appears while you are controlling another unit, such as a mind control or a vehicle eject."] },
+			ExtraButton(L["Pet Bar"], "ActionBar_PetBar", AuxBarControls("PetBar"), L["The bar for your pet's abilities, shown while you have a controllable pet."]),
+			ExtraButton(L["Stance Bar"], "ActionBar_StanceBar", AuxBarControls("StanceBar"), L["The bar for your stances and forms, shown for classes that have them."]),
+			ExtraButton(L["Possess Bar"], "ActionBar_PossessBar", AuxBarControls("PossessBar", L["The small bar that appears while you are controlling another unit, such as a mind control or a vehicle eject."]), L["The small bar that appears while you are controlling another unit, such as a mind control or a vehicle eject."]),
 			{ kind = "check", label = L["Enable Extra Buttons"], path = { "ActionBar", "ExtraBar", "Enable" }, reload = true },
 		}),
 	},
